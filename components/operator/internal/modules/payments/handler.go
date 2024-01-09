@@ -50,7 +50,7 @@ func (p module) Versions() map[string]modules.Version {
 					Annotations:             ctx.Configuration.Spec.Services.Payments.Annotations.Service,
 					Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 						return modules.Container{
-							Env:   paymentsEnvVars(resolveContext),
+							Env:   p.paymentsEnvVars(resolveContext),
 							Image: modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
 							Resources: modules.GetResourcesWithDefault(
 								resolveContext.Configuration.Spec.Services.Payments.ResourceProperties,
@@ -63,7 +63,7 @@ func (p module) Versions() map[string]modules.Version {
 						return []modules.Container{{
 							Name:    "migrate",
 							Image:   modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
-							Env:     paymentsEnvVars(resolveContext),
+							Env:     p.paymentsEnvVars(resolveContext),
 							Command: migrateCommand,
 							Debug:   resolveContext.Configuration.Spec.Services.Payments.Debug,
 						}}
@@ -83,7 +83,7 @@ func (p module) Versions() map[string]modules.Version {
 			},
 			PostUpgrade: PostUpgradePreV1,
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServices(p.Name(), paymentsEnvVars)
+				return paymentsServices(p.Name(), p.paymentsEnvVars)
 			},
 		},
 		"v0.6.7": {
@@ -97,7 +97,7 @@ func (p module) Versions() map[string]modules.Version {
 				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServices(p.Name(), paymentsEnvVars)
+				return paymentsServices(p.Name(), p.paymentsEnvVars)
 			},
 		},
 		"v0.6.8": {
@@ -111,7 +111,7 @@ func (p module) Versions() map[string]modules.Version {
 				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServices(p.Name(), paymentsEnvVars)
+				return paymentsServices(p.Name(), p.paymentsEnvVars)
 			},
 		},
 		"v0.7.0": {
@@ -125,7 +125,7 @@ func (p module) Versions() map[string]modules.Version {
 			},
 			PostUpgrade: PostUpgradePreV1,
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServices(p.Name(), paymentsEnvVars)
+				return paymentsServices(p.Name(), p.paymentsEnvVars)
 			},
 		},
 		"v0.8.0": {
@@ -139,7 +139,7 @@ func (p module) Versions() map[string]modules.Version {
 			},
 			PostUpgrade: PostUpgradePreV1,
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServices(p.Name(), paymentsEnvVars)
+				return paymentsServices(p.Name(), p.paymentsEnvVars)
 			},
 		},
 		"v0.8.1": {
@@ -153,7 +153,7 @@ func (p module) Versions() map[string]modules.Version {
 			},
 			PostUpgrade: PostUpgradePreV1,
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServices(p.Name(), paymentsEnvVars)
+				return paymentsServices(p.Name(), p.paymentsEnvVars)
 			},
 		},
 		"v0.9.0": {
@@ -166,7 +166,7 @@ func (p module) Versions() map[string]modules.Version {
 				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServices(p.Name(), paymentsEnvVars)
+				return paymentsServices(p.Name(), p.paymentsEnvVars)
 			},
 		},
 		"v0.9.1": {
@@ -179,7 +179,7 @@ func (p module) Versions() map[string]modules.Version {
 				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServices(p.Name(), paymentsEnvVars)
+				return paymentsServices(p.Name(), p.paymentsEnvVars)
 			},
 		},
 		"v0.9.4": {
@@ -192,7 +192,7 @@ func (p module) Versions() map[string]modules.Version {
 				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServices(p.Name(), paymentsEnvVars)
+				return paymentsServices(p.Name(), p.paymentsEnvVars)
 			},
 		},
 		"v0.10.0": {
@@ -205,7 +205,7 @@ func (p module) Versions() map[string]modules.Version {
 				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServices(p.Name(), paymentsEnvVars)
+				return paymentsServices(p.Name(), p.paymentsEnvVars)
 			},
 		},
 		"v1.0.0-alpha.1": {
@@ -218,7 +218,7 @@ func (p module) Versions() map[string]modules.Version {
 				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServices(p.Name(), paymentsEnvVars)
+				return paymentsServices(p.Name(), p.paymentsEnvVars)
 			},
 		},
 		"v1.0.0-alpha.3": {
@@ -231,7 +231,7 @@ func (p module) Versions() map[string]modules.Version {
 				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServices(p.Name(), paymentsEnvVars)
+				return paymentsServices(p.Name(), p.paymentsEnvVars)
 			},
 		},
 		"v1.0.0-alpha.6": {
@@ -244,7 +244,7 @@ func (p module) Versions() map[string]modules.Version {
 				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServicesSplitted(p.Name(), paymentsEnvVars)
+				return paymentsServicesSplitted(p.Name(), p.paymentsEnvVars)
 			},
 		},
 		"v1.0.0-beta.3": {
@@ -268,7 +268,7 @@ func (p module) Versions() map[string]modules.Version {
 				},
 			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
-				return paymentsServicesSplitted(p.Name(), paymentsEnvVars)
+				return paymentsServicesSplitted(p.Name(), p.paymentsEnvVars)
 			},
 		},
 	}
@@ -283,8 +283,11 @@ func init() {
 	modules.Register(Module)
 }
 
-func paymentsEnvVars(resolveContext modules.ContainerResolutionConfiguration) modules.ContainerEnv {
+func (p module) paymentsEnvVars(resolveContext modules.ContainerResolutionConfiguration) modules.ContainerEnv {
 	return modules.BrokerEnvVars(resolveContext.Configuration.Spec.Broker, "payments").
+		Append(
+			modules.AuthEnvVars(resolveContext.Stack.URL(), p.Name(), resolveContext.Configuration.Spec.Auth)...,
+		).
 		Append(
 			modules.Env("POSTGRES_DATABASE_NAME", "$(POSTGRES_DATABASE)"),
 			modules.Env("CONFIG_ENCRYPTION_KEY", resolveContext.Configuration.Spec.Services.Payments.EncryptionKey),

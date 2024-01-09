@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/auth"
 
 	"github.com/formancehq/orchestration/internal/api"
 	v1 "github.com/formancehq/orchestration/internal/api/v1"
@@ -26,6 +27,7 @@ func TestModule(t *testing.T) {
 
 	var mux *chi.Mux
 	app := fxtest.New(t,
+		auth.Module(auth.ModuleConfig{Enabled: false}),
 		fx.Supply(&health.HealthController{}),
 		fx.Supply(api.ServiceInfo{}),
 		fx.Replace(fx.Annotate(backend, fx.As(new(api.Backend)))),

@@ -56,7 +56,7 @@ func HTTPModule(serviceInfo api.ServiceInfo, bind, stackURL string) fx.Option {
 		}),
 		fx.Provide(fx.Annotate(service.New, fx.As(new(backend.Service)))),
 		fx.Provide(backend.NewDefaultBackend),
-		fx.Provide(fx.Annotate(httpRouter, fx.ParamTags(``, ``, ``, `group:"connectorHandlers"`))),
+		fx.Provide(fx.Annotate(httpRouter, fx.ParamTags(``, ``, ``, ``, `group:"connectorHandlers"`))),
 		fx.Provide(func() *messages.Messages {
 			return messages.NewMessages(stackURL)
 		}),

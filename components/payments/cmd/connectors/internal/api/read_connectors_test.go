@@ -10,6 +10,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/internal/models"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
@@ -111,7 +112,7 @@ func TestReadConnectors(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, nil)
+			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
 
 			req := httptest.NewRequest(http.MethodGet, "/connectors", nil)
 			rec := httptest.NewRecorder()

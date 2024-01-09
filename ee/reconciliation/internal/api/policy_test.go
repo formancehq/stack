@@ -13,6 +13,7 @@ import (
 	"github.com/formancehq/reconciliation/internal/models"
 	"github.com/formancehq/reconciliation/internal/storage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/auth"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -143,7 +144,7 @@ func TestCreatePolicy(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := newRouter(backend, sharedapi.ServiceInfo{}, nil)
+			router := newRouter(backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
 
 			var body []byte
 			if testCase.invalidBody {
@@ -240,7 +241,7 @@ func TestDeletePolicy(t *testing.T) {
 					Return(testCase.serviceError)
 			}
 
-			router := newRouter(backend, sharedapi.ServiceInfo{}, nil)
+			router := newRouter(backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
 
 			req := httptest.NewRequest(http.MethodDelete, "/policies/"+testCase.policyID, nil)
 			rec := httptest.NewRecorder()
@@ -345,7 +346,7 @@ func TestGetPolicy(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := newRouter(backend, sharedapi.ServiceInfo{}, nil)
+			router := newRouter(backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
 
 			req := httptest.NewRequest(http.MethodGet, "/policies/"+testCase.policyID, nil)
 			rec := httptest.NewRecorder()

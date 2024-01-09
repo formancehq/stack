@@ -6,6 +6,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/api/backend"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
@@ -16,6 +17,7 @@ func httpRouter(
 	logger logging.Logger,
 	b backend.ServiceBackend,
 	serviceInfo api.ServiceInfo,
+	a auth.Auth,
 	connectorHandlers []connectorHandler,
 ) *mux.Router {
 	rootMux := mux.NewRouter()
@@ -44,6 +46,7 @@ func httpRouter(
 	subRouter.Path("/_info").Handler(api.InfoHandler(serviceInfo))
 
 	authGroup := subRouter.Name("authenticated").Subrouter()
+	authGroup.Use(auth.Middleware(a))
 
 	authGroup.Path("/bank-accounts").Methods(http.MethodPost).Handler(createBankAccountHandler(b))
 
@@ -54,21 +57,24 @@ func httpRouter(
 
 	authGroup.HandleFunc("/connectors", readConnectorsHandler(b))
 
-	connectorGroup := authGroup.PathPrefix("/connectors").Subrouter()
-	connectorGroup.Path("/configs").Handler(connectorConfigsHandler())
+	connectorGroupAuthenticated := authGroup.PathPrefix("/connectors").Subrouter()
+	connectorGroupAuthenticated.Path("/configs").Handler(connectorConfigsHandler())
+
+	// Needed for webhooks
+	connectorGroupUnauthenticated := subRouter.PathPrefix("/connectors").Subrouter()
 
 	for _, h := range connectorHandlers {
-		connectorGroup.PathPrefix("/" + h.Provider.String()).Handler(
+		connectorGroupAuthenticated.PathPrefix("/" + h.Provider.String()).Handler(
 			http.StripPrefix("/connectors", h.Handler))
 
-		connectorGroup.PathPrefix("/" + h.Provider.StringLower()).Handler(
+		connectorGroupAuthenticated.PathPrefix("/" + h.Provider.StringLower()).Handler(
 			http.StripPrefix("/connectors", h.Handler))
 
 		if h.WebhookHandler != nil {
-			connectorGroup.PathPrefix("/webhooks/" + h.Provider.String()).Handler(
+			connectorGroupUnauthenticated.PathPrefix("/webhooks/" + h.Provider.String()).Handler(
 				http.StripPrefix("/connectors", h.WebhookHandler))
 
-			connectorGroup.PathPrefix("/webhooks/" + h.Provider.StringLower()).Handler(
+			connectorGroupUnauthenticated.PathPrefix("/webhooks/" + h.Provider.StringLower()).Handler(
 				http.StripPrefix("/connectors", h.WebhookHandler))
 		}
 	}

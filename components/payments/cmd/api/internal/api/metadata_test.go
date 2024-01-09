@@ -12,6 +12,7 @@ import (
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -128,7 +129,7 @@ func TestMetadata(t *testing.T) {
 					Return(testCase.serviceError)
 			}
 
-			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{})
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
 
 			req := httptest.NewRequest(http.MethodPatch, fmt.Sprintf("/payments/%s/metadata", testCase.paymentID), strings.NewReader(testCase.body))
 			rec := httptest.NewRecorder()

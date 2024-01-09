@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/formancehq/stack/libs/go-libs/auth"
+	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
 )
@@ -27,7 +29,10 @@ func NewRootCommand() *cobra.Command {
 	}
 	cmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	cmd.PersistentFlags().BoolP(service.DebugFlag, "d", false, "Debug mode")
-	cmd.AddCommand(newServeCommand())
+	serverCmd := newServeCommand()
+	auth.InitAuthFlags(serverCmd.Flags())
+	otlptraces.InitOTLPTracesFlags(serverCmd.Flags())
+	cmd.AddCommand(serverCmd)
 	return cmd
 }
 

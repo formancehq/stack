@@ -5,6 +5,7 @@ import (
 
 	"github.com/formancehq/payments/cmd/api/internal/api/backend"
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
@@ -15,6 +16,7 @@ func httpRouter(
 	b backend.Backend,
 	logger logging.Logger,
 	serviceInfo api.ServiceInfo,
+	a auth.Auth,
 ) *mux.Router {
 	rootMux := mux.NewRouter()
 
@@ -42,6 +44,7 @@ func httpRouter(
 	subRouter.Path("/_info").Handler(api.InfoHandler(serviceInfo))
 
 	authGroup := subRouter.Name("authenticated").Subrouter()
+	authGroup.Use(auth.Middleware(a))
 
 	authGroup.Path("/payments").Methods(http.MethodPost).Handler(createPaymentHandler(b))
 	authGroup.Path("/payments").Methods(http.MethodGet).Handler(listPaymentsHandler(b))

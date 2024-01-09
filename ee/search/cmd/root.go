@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	_ "github.com/bombsimon/logrusr/v3"
+	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -31,7 +32,10 @@ func NewRootCommand() *cobra.Command {
 		DisableAutoGenTag: true,
 	}
 
-	root.AddCommand(NewVersion(), NewServer(), NewInitMapping(), NewUpdateMapping())
+	serverCmd := NewServer()
+	auth.InitAuthFlags(serverCmd.Flags())
+
+	root.AddCommand(NewVersion(), serverCmd, NewInitMapping(), NewUpdateMapping())
 
 	root.Flags().Bool(service.DebugFlag, false, "debug mode")
 	err := viper.BindPFlags(root.Flags())

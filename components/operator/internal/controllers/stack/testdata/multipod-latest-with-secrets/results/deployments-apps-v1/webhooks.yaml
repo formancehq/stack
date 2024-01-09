@@ -89,6 +89,10 @@ spec:
                       value: kafka1:1234 kafka2:1234
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
+                    - name: AUTH_ENABLED
+                      value: "true"
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                   image: ghcr.io/formancehq/webhooks:latest
                   imagePullPolicy: Always
                   livenessProbe:

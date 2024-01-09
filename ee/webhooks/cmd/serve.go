@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/formancehq/webhooks/cmd/flag"
 	"github.com/formancehq/webhooks/pkg/backoff"
@@ -29,6 +30,7 @@ func serve(cmd *cobra.Command, _ []string) error {
 				Version: Version,
 			}
 		}),
+		auth.CLIAuthModule(viper.GetViper()),
 		postgres.NewModule(viper.GetString(flag.StoragePostgresConnString)),
 		otlp.HttpClientModule(),
 		server.StartModule(viper.GetString(flag.Listen)),

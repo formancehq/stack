@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
@@ -71,6 +72,7 @@ func NewRootCommand() *cobra.Command {
 	cmd.AddCommand(newServeCommand(), newVersionCommand(), newWorkerCommand())
 
 	publish.InitCLIFlags(cmd)
+	auth.InitAuthFlags(cmd.PersistentFlags())
 
 	return cmd
 }
@@ -97,6 +99,7 @@ func commonOptions(output io.Writer) fx.Option {
 		),
 		storage.NewModule(viper.GetString(postgresDSNFlag), viper.GetBool(service.DebugFlag), output),
 		publish.CLIPublisherModule(viper.GetViper(), "orchestration"),
+		auth.CLIAuthModule(viper.GetViper()),
 		workflow.NewModule(viper.GetString(temporalTaskQueueFlag)),
 		triggers.NewModule(viper.GetString(temporalTaskQueueFlag)),
 		fx.Provide(func() *http.Client {

@@ -1,7 +1,6 @@
 package reconciliation
 
 import (
-	"github.com/formancehq/operator/apis/stack/v1beta3"
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/modules"
 	"github.com/formancehq/operator/internal/modules/ledger"
@@ -26,7 +25,7 @@ func (o module) IsEE() bool {
 	return true
 }
 
-func (p module) Postgres(ctx modules.ReconciliationConfig) v1beta3.PostgresConfig {
+func (p module) Postgres(ctx modules.ReconciliationConfig) stackv1beta3.PostgresConfig {
 	return ctx.Configuration.Spec.Services.Reconciliation.Postgres
 }
 
@@ -53,7 +52,7 @@ func (o module) Versions() map[string]modules.Version {
 						Annotations:        ctx.Configuration.Spec.Services.Reconciliation.Annotations.Service,
 						Container: func(resolveContext modules.ContainerResolutionConfiguration) modules.Container {
 							return modules.Container{
-								Env:   reconciliationEnvVars(resolveContext),
+								Env:   o.reconciliationEnvVars(resolveContext),
 								Image: modules.GetImage("reconciliation", resolveContext.Versions.Spec.Reconciliation),
 								Resources: modules.GetResourcesWithDefault(
 									resolveContext.Configuration.Spec.Services.Reconciliation.ResourceProperties,
@@ -69,11 +68,13 @@ func (o module) Versions() map[string]modules.Version {
 	}
 }
 
-func reconciliationEnvVars(resolveContext modules.ContainerResolutionConfiguration) modules.ContainerEnv {
+func (o module) reconciliationEnvVars(resolveContext modules.ContainerResolutionConfiguration) modules.ContainerEnv {
 	env := modules.NewEnv().Append(
 		modules.Env("POSTGRES_DATABASE_NAME", "$(POSTGRES_DATABASE)"),
 		modules.Env("STACK_CLIENT_ID", resolveContext.Stack.Status.StaticAuthClients["reconciliation"].ID),
 		modules.Env("STACK_CLIENT_SECRET", resolveContext.Stack.Status.StaticAuthClients["reconciliation"].Secrets[0]),
+	).Append(
+		modules.AuthEnvVars(resolveContext.Stack.URL(), o.Name(), resolveContext.Configuration.Spec.Auth)...,
 	)
 
 	return env

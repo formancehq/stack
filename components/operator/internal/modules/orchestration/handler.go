@@ -149,6 +149,8 @@ func orchestrationEnvVars(resolveContext modules.ContainerResolutionConfiguratio
 		modules.Env("TEMPORAL_NAMESPACE", resolveContext.Configuration.Spec.Temporal.Namespace),
 		modules.Env("STACK_CLIENT_ID", resolveContext.Stack.Status.StaticAuthClients["orchestration"].ID),
 		modules.Env("STACK_CLIENT_SECRET", resolveContext.Stack.Status.StaticAuthClients["orchestration"].Secrets[0]),
+	).Append(
+		modules.AuthEnvVars(resolveContext.Stack.URL(), "orchestration", resolveContext.Configuration.Spec.Auth)...,
 	)
 
 	if resolveContext.Configuration.Spec.Temporal.TLS.SecretName == "" {

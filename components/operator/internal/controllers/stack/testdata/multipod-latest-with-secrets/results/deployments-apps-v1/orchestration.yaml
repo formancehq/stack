@@ -89,6 +89,10 @@ spec:
                       value: orchestration
                     - name: STACK_CLIENT_SECRET
                       value: mocked-secret
+                    - name: AUTH_ENABLED
+                      value: "true"
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: TEMPORAL_SSL_CLIENT_KEY
                       valueFrom:
                         secretKeyRef:

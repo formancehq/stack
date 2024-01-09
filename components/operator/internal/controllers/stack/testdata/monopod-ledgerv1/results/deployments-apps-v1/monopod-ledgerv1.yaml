@@ -290,6 +290,10 @@ spec:
                       value: "true"
                     - name: NUMARY_PUBLISHER_KAFKA_BROKER
                       value: kafka:1234
+                    - name: NUMARY_AUTH_ENABLED
+                      value: "true"
+                    - name: NUMARY_AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: NUMARY_LOCK_STRATEGY
                       value: memory
                     - name: NUMARY_STORAGE_POSTGRES_CONN_STRING
@@ -371,6 +375,10 @@ spec:
                       value: orchestration
                     - name: STACK_CLIENT_SECRET
                       value: mocked-secret
+                    - name: AUTH_ENABLED
+                      value: "true"
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: TEMPORAL_SSL_CLIENT_KEY
                     - name: TEMPORAL_SSL_CLIENT_CERT
                   image: ghcr.io/formancehq/orchestration:latest
@@ -452,6 +460,10 @@ spec:
                       value: orchestration
                     - name: STACK_CLIENT_SECRET
                       value: mocked-secret
+                    - name: AUTH_ENABLED
+                      value: "true"
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: TEMPORAL_SSL_CLIENT_KEY
                     - name: TEMPORAL_SSL_CLIENT_CERT
                     - name: BROKER
@@ -526,6 +538,10 @@ spec:
                       value: "true"
                     - name: PUBLISHER_KAFKA_BROKER
                       value: kafka:1234
+                    - name: AUTH_ENABLED
+                      value: "true"
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: POSTGRES_DATABASE_NAME
                       value: $(POSTGRES_DATABASE)
                     - name: CONFIG_ENCRYPTION_KEY
@@ -609,6 +625,10 @@ spec:
                       value: "true"
                     - name: PUBLISHER_KAFKA_BROKER
                       value: kafka:1234
+                    - name: AUTH_ENABLED
+                      value: "true"
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: POSTGRES_DATABASE_NAME
                       value: $(POSTGRES_DATABASE)
                     - name: CONFIG_ENCRYPTION_KEY
@@ -692,6 +712,10 @@ spec:
                       value: http
                     - name: MAPPING_INIT_DISABLED
                       value: "true"
+                    - name: AUTH_ENABLED
+                      value: "true"
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: ES_INDICES
                       value: stacks
                   image: ghcr.io/formancehq/search:latest
@@ -921,6 +945,10 @@ spec:
                       value: wallets
                     - name: STACK_CLIENT_SECRET
                       value: mocked-secret
+                    - name: AUTH_ENABLED
+                      value: "true"
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                   image: ghcr.io/formancehq/wallets:latest
                   imagePullPolicy: Always
                   livenessProbe:
@@ -998,6 +1026,10 @@ spec:
                       value: kafka:1234
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
+                    - name: AUTH_ENABLED
+                      value: "true"
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                   image: ghcr.io/formancehq/webhooks:latest
                   imagePullPolicy: Always
                   livenessProbe:
@@ -1077,6 +1109,10 @@ spec:
                       value: kafka:1234
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
+                    - name: AUTH_ENABLED
+                      value: "true"
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: KAFKA_TOPICS
                       value: monopod-ledgerv1-ledger monopod-ledgerv1-payments
                   image: ghcr.io/formancehq/webhooks:latest

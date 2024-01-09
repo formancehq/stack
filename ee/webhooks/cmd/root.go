@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
@@ -25,6 +26,7 @@ func NewRootCommand() *cobra.Command {
 
 	otlptraces.InitOTLPTracesFlags(root.PersistentFlags())
 	publish.InitCLIFlags(root)
+	auth.InitAuthFlags(root.PersistentFlags())
 	flag.Init(root.PersistentFlags())
 
 	root.AddCommand(newServeCommand())

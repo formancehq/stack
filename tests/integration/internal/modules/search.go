@@ -2,10 +2,11 @@ package modules
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/formancehq/search/cmd"
 	"github.com/formancehq/stack/tests/integration/internal"
 	"github.com/ory/dockertest/v3"
-	"net/http"
 )
 
 var Search = internal.NewModule("search").
@@ -14,6 +15,7 @@ var Search = internal.NewModule("search").
 			WithArgs(func(test *internal.Test) []string {
 				return []string{
 					"serve",
+					"--auth-enabled=false",
 					"--open-search-service=" + internal.GetOpenSearchUrl(),
 					"--open-search-scheme=http",
 					"--open-search-username=admin",

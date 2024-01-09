@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/formancehq/stack/libs/go-libs/auth"
+	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
+	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
 )
@@ -34,6 +37,10 @@ func NewRootCommand() *cobra.Command {
 	cmd.PersistentFlags().String(stackURLFlag, "", "Stack url")
 	cmd.PersistentFlags().String(stackClientIDFlag, "", "Stack client ID")
 	cmd.PersistentFlags().String(stackClientSecretFlag, "", "Stack client secret")
+
+	otlpmetrics.InitOTLPMetricsFlags(cmd.PersistentFlags())
+	otlptraces.InitOTLPTracesFlags(cmd.PersistentFlags())
+	auth.InitAuthFlags(cmd.PersistentFlags())
 
 	serveCmd := newServeCommand(Version)
 	cmd.AddCommand(serveCmd)

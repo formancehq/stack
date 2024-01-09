@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"sort"
 
+	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -12,7 +13,7 @@ import (
 
 type Version struct {
 	Version int
-	Builder func(backend Backend) *chi.Mux
+	Builder func(backend Backend, a auth.Auth) *chi.Mux
 }
 
 type versionsSlice []Version
@@ -29,7 +30,12 @@ func (v versionsSlice) Swap(i, j int) {
 	v[i], v[j] = v[j], v[i]
 }
 
-func NewRouter(backend Backend, info ServiceInfo, healthController *health.HealthController, versions ...Version) *chi.Mux {
+func NewRouter(
+	backend Backend,
+	info ServiceInfo,
+	healthController *health.HealthController,
+	a auth.Auth,
+	versions ...Version) *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(middleware.Recoverer)
 	r.Use(func(handler http.Handler) http.Handler {
@@ -46,10 +52,10 @@ func NewRouter(backend Backend, info ServiceInfo, healthController *health.Healt
 
 	for _, version := range sortedVersions[1:] {
 		prefix := fmt.Sprintf("/v%d", version.Version)
-		r.Handle(prefix+"/*", http.StripPrefix(prefix, version.Builder(backend)))
+		r.Handle(prefix+"/*", http.StripPrefix(prefix, version.Builder(backend, a)))
 	}
 
-	r.Handle("/*", versions[0].Builder(backend)) // V1 has no prefix
+	r.Handle("/*", versions[0].Builder(backend, a)) // V1 has no prefix
 
 	return r
 }

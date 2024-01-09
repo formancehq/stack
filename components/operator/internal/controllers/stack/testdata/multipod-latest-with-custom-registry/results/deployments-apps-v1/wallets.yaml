@@ -67,6 +67,10 @@ spec:
                       value: wallets
                     - name: STACK_CLIENT_SECRET
                       value: mocked-secret
+                    - name: AUTH_ENABLED
+                      value: "true"
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                   image: localhost:5000/formancehq/wallets:latest
                   imagePullPolicy: Always
                   livenessProbe:

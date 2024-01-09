@@ -18,6 +18,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/internal/models"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -204,7 +205,7 @@ func TestReadConfig(t *testing.T) {
 					Return(*testCase.installed, nil)
 			}
 
-			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, []connectorHandler{
+			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), []connectorHandler{
 				{
 					Handler:  connectorRouter[dummypay.Config](models.ConnectorProviderDummyPay, managerBackend),
 					Provider: models.ConnectorProviderDummyPay,
@@ -493,7 +494,7 @@ func TestListTasks(t *testing.T) {
 					Return(*testCase.installed, nil)
 			}
 
-			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, []connectorHandler{
+			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), []connectorHandler{
 				{
 					Handler:  connectorRouter[dummypay.Config](models.ConnectorProviderDummyPay, managerBackend),
 					Provider: models.ConnectorProviderDummyPay,
@@ -752,7 +753,7 @@ func TestReadTask(t *testing.T) {
 					Return(*testCase.installed, nil)
 			}
 
-			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, []connectorHandler{
+			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), []connectorHandler{
 				{
 					Handler:  connectorRouter[dummypay.Config](models.ConnectorProviderDummyPay, managerBackend),
 					Provider: models.ConnectorProviderDummyPay,
@@ -960,7 +961,7 @@ func TestUninstall(t *testing.T) {
 					Return(*testCase.installed, nil)
 			}
 
-			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, []connectorHandler{
+			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), []connectorHandler{
 				{
 					Handler:  connectorRouter[dummypay.Config](models.ConnectorProviderDummyPay, managerBackend),
 					Provider: models.ConnectorProviderDummyPay,
@@ -1116,7 +1117,7 @@ func TestInstall(t *testing.T) {
 					Return(models.ConnectorID{}, testCase.managerError)
 			}
 
-			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, []connectorHandler{
+			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), []connectorHandler{
 				{
 					Handler:  connectorRouter[dummypay.Config](models.ConnectorProviderDummyPay, managerBackend),
 					Provider: models.ConnectorProviderDummyPay,
@@ -1318,7 +1319,7 @@ func TestReset(t *testing.T) {
 					Return(*testCase.installed, nil)
 			}
 
-			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, []connectorHandler{
+			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), []connectorHandler{
 				{
 					Handler:  connectorRouter[dummypay.Config](models.ConnectorProviderDummyPay, managerBackend),
 					Provider: models.ConnectorProviderDummyPay,

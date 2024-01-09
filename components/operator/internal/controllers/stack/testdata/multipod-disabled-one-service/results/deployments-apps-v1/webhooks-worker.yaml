@@ -85,6 +85,10 @@ spec:
                       value: kafka:1234
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
+                    - name: AUTH_ENABLED
+                      value: "true"
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: KAFKA_TOPICS
                       value: multipod-disabled-one-service-ledger multipod-disabled-one-service-payments
                   image: ghcr.io/formancehq/webhooks:latest

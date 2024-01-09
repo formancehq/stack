@@ -14,6 +14,7 @@ var Webhooks = internal.NewModule("webhooks").
 			WithArgs(func(test *internal.Test) []string {
 				return []string{
 					"serve",
+					"--auth-enabled=false",
 					"--storage-postgres-conn-string=" + test.GetDatabaseSourceName("webhooks"),
 					"--listen=0.0.0.0:0",
 					"--worker",
