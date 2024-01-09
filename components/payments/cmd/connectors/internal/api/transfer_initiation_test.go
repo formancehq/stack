@@ -69,10 +69,10 @@ func TestCreateTransferInitiations(t *testing.T) {
 			},
 		},
 		{
-			name: "missing reference",
+			name: "nominal without description",
 			req: &service.CreateTransferInitiationRequest{
+				Reference:            "ref1",
 				ScheduledAt:          time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
-				Description:          "test_nominal",
 				SourceAccountID:      sourceAccountID.String(),
 				DestinationAccountID: destinationAccountID.String(),
 				ConnectorID:          connectorID.String(),
@@ -81,15 +81,16 @@ func TestCreateTransferInitiations(t *testing.T) {
 				Amount:               big.NewInt(100),
 				Asset:                "EUR/2",
 				Validated:            false,
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
 			},
-			expectedStatusCode: http.StatusBadRequest,
-			expectedErrorCode:  ErrValidation,
 		},
 		{
-			name: "missing description",
+			name: "missing reference",
 			req: &service.CreateTransferInitiationRequest{
-				Reference:            "ref1",
 				ScheduledAt:          time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				Description:          "test_nominal",
 				SourceAccountID:      sourceAccountID.String(),
 				DestinationAccountID: destinationAccountID.String(),
 				ConnectorID:          connectorID.String(),

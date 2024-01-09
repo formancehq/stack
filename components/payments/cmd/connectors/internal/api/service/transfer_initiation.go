@@ -33,10 +33,6 @@ func (r *CreateTransferInitiationRequest) Validate() error {
 		return errors.New("reference is required")
 	}
 
-	if r.Description == "" {
-		return errors.New("description is required")
-	}
-
 	if r.SourceAccountID != "" {
 		_, err := models.AccountIDFromString(r.SourceAccountID)
 		if err != nil {
