@@ -11,6 +11,7 @@ func AuthEnvVars(stackURL, moduleName string, auth *v1beta3.AuthConfig) Containe
 	ret := ContainerEnv{}
 
 	ret = ret.Append(
+		Env("AUTH_ENABLED", "true"),
 		Env("AUTH_ISSUER", fmt.Sprintf("%s/api/auth", stackURL)),
 	)
 

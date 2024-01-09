@@ -15,7 +15,7 @@ const (
 )
 
 func InitAuthFlags(flags *flag.FlagSet) {
-	flags.Bool(AuthEnabled, true, "Enable auth")
+	flags.Bool(AuthEnabled, false, "Enable auth")
 	flags.String(AuthIssuerFlag, "", "Issuer")
 	flags.Int(AuthReadKeySetMaxRetriesFlag, 10, "ReadKeySetMaxRetries")
 	flags.Bool(AuthCheckScopesFlag, false, "CheckScopes")
