@@ -20,18 +20,20 @@ func NewRouter(
 ) *chi.Mux {
 	r := chi.NewRouter()
 
+	r.Use(func(handler http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			handler.ServeHTTP(w, r)
+		})
+	})
+
 	r.Get("/_healthcheck", healthController.Check)
 	r.Get("/_info", sharedapi.InfoHandler(serviceInfo))
 	r.Group(func(r chi.Router) {
 		r.Use(auth.Middleware(a))
 		r.Use(otelchi.Middleware("wallets"))
 		r.Use(middleware.AllowContentType("application/json"))
-		r.Use(func(handler http.Handler) http.Handler {
-			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				handler.ServeHTTP(w, r)
-			})
-		})
+
 		main := NewMainHandler(manager)
 
 		r.Route("/wallets", func(r chi.Router) {
