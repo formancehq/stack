@@ -72,6 +72,36 @@ func TestCreateTransferInitiation(t *testing.T) {
 			},
 		},
 		{
+			name: "nominal without description",
+			req: &CreateTransferInitiationRequest{
+				Reference:            "ref1",
+				ScheduledAt:          time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC),
+				SourceAccountID:      sourceAccountID.String(),
+				DestinationAccountID: destinationAccountID.String(),
+				ConnectorID:          connectorDummyPay.ID.String(),
+				Provider:             string(models.ConnectorProviderDummyPay),
+				Type:                 models.TransferInitiationTypeTransfer.String(),
+				Amount:               big.NewInt(100),
+				Asset:                "EUR/2",
+				Validated:            false,
+			},
+			expectedTF: &models.TransferInitiation{
+				ID: models.TransferInitiationID{
+					Reference:   "ref1",
+					ConnectorID: connectorDummyPay.ID,
+				},
+				ScheduledAt:          time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC),
+				DestinationAccountID: destinationAccountID,
+				SourceAccountID:      &sourceAccountID,
+				ConnectorID:          connectorDummyPay.ID,
+				Provider:             models.ConnectorProviderDummyPay,
+				Type:                 models.TransferInitiationTypeTransfer,
+				Amount:               big.NewInt(100),
+				Asset:                models.Asset("EUR/2"),
+				Status:               models.TransferInitiationStatusWaitingForValidation,
+			},
+		},
+		{
 			name: "nominal with status changed",
 			req: &CreateTransferInitiationRequest{
 				Reference:            "ref1",
