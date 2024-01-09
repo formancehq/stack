@@ -1,7 +1,7 @@
 package core
 
 import (
-	"github.com/formancehq/operator/v2/api/v1beta1"
+	"github.com/formancehq/operator/v2/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/api/core/v1"

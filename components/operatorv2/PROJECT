@@ -2,7 +2,6 @@
 # This file is used to track the info used to scaffold your project
 # and allow the plugins properly work.
 # More info: https://book.kubebuilder.io/reference/project-config.html
-domain: com
 layout:
 - go.kubebuilder.io/v4
 multigroup: true
@@ -12,175 +11,152 @@ resources:
 - api:
     crdVersion: v1
   controller: true
-  domain: com
-  group: formance
+  group: formance.com
   kind: Database
   path: github.com/formancehq/operator/v2/api/v1beta1
   version: v1beta1
 - api:
     crdVersion: v1
-  domain: com
-  group: formance
+  group: formance.com
   kind: DatabaseConfiguration
   path: github.com/formancehq/operator/v2/api/v1beta1
   version: v1beta1
 - api:
     crdVersion: v1
   controller: true
-  domain: com
-  group: formance
+  group: formance.com
   kind: Stack
   path: github.com/formancehq/operator/v2/api/v1beta1
   version: v1beta1
 - api:
     crdVersion: v1
   controller: true
-  domain: com
-  group: formance
+  group: formance.com
   kind: Topic
   path: github.com/formancehq/operator/v2/api/v1beta1
   version: v1beta1
 - api:
     crdVersion: v1
-  domain: com
-  group: formance
+  group: formance.com
   kind: BrokerConfig
   path: github.com/formancehq/operator/v2/api/v1beta1
   version: v1beta1
 - api:
     crdVersion: v1
   controller: true
-  domain: com
-  group: formance
+  group: formance.com
   kind: TopicQuery
   path: github.com/formancehq/operator/v2/api/v1beta1
   version: v1beta1
 - api:
     crdVersion: v1
   controller: true
-  domain: com
-  group: formance
+  group: formance.com
   kind: HTTPAPI
   path: github.com/formancehq/operator/v2/api/v1beta1
   version: v1beta1
 - api:
     crdVersion: v1
   controller: true
-  domain: com
-  group: formance
+  group: formance.com
   kind: Ledger
   path: github.com/formancehq/operator/v2/api/v1beta1
   version: v1beta1
 - api:
     crdVersion: v1
-  domain: com
-  group: formance
+  group: formance.com
   kind: OpenTelemetryConfiguration
   path: github.com/formancehq/operator/v2/api/v1beta1
   version: v1beta1
 - api:
     crdVersion: v1
   controller: true
-  domain: com
-  group: formance
+  group: formance.com
   kind: Gateway
   path: github.com/formancehq/operator/v2/api/v1beta1
   version: v1beta1
 - api:
     crdVersion: v1
   controller: true
-  domain: com
-  group: formance
+  group: formance.com
   kind: Auth
   path: github.com/formancehq/operator/v2/api/v1beta1
   version: v1beta1
 - api:
     crdVersion: v1
-  domain: com
-  group: formance
+  group: formance.com
   kind: AuthClient
   path: github.com/formancehq/operator/v2/api/v1beta1
   version: v1beta1
 - api:
     crdVersion: v1
   controller: true
-  domain: com
-  group: formance
+  group: formance.com
   kind: Wallet
   path: github.com/formancehq/operator/v2/api/v1beta1
   version: v1beta1
 - api:
     crdVersion: v1
   controller: true
-  domain: com
-  group: formance
+  group: formance.com
   kind: Orchestration
   path: github.com/formancehq/operator/v2/api/v1beta1
   version: v1beta1
 - api:
     crdVersion: v1
   controller: true
-  domain: com
-  group: formance
+  group: formance.com
   kind: Webhooks
   path: github.com/formancehq/operator/v2/api/v1beta1
   version: v1beta1
 - api:
     crdVersion: v1
   controller: true
-  domain: com
-  group: formance
+  group: formance.com
   kind: Reconciliation
   path: github.com/formancehq/operator/v2/api/v1beta1
   version: v1beta1
 - api:
     crdVersion: v1
   controller: true
-  domain: com
-  group: formance
+  group: formance.com
   kind: Payments
   path: github.com/formancehq/operator/v2/api/v1beta1
   version: v1beta1
 - api:
     crdVersion: v1
   controller: true
-  domain: com
-  group: formance
+  group: formance.com
   kind: Search
   path: github.com/formancehq/operator/v2/api/v1beta1
   version: v1beta1
 - api:
     crdVersion: v1
-  domain: com
-  group: formance
+  group: formance.com
   kind: Stream
   path: github.com/formancehq/operator/v2/api/v1beta1
   version: v1beta1
 - api:
     crdVersion: v1
-  domain: com
-  group: formance
+  group: formance.com
   kind: StreamProcessor
   path: github.com/formancehq/operator/v2/api/v1beta1
   version: v1beta1
 - api:
     crdVersion: v1
-  domain: com
-  group: formance
+  group: formance.com
   kind: ElasticSearchConfiguration
   path: github.com/formancehq/operator/v2/api/v1beta1
   version: v1beta1
 - api:
     crdVersion: v1
-  domain: com
-  group: formance
+  group: formance.com
   kind: Registries
   path: github.com/formancehq/operator/v2/api/v1beta1
   version: v1beta1
 - api:
     crdVersion: v1
-  domain: com
-  group: formance
+  group: formance.com
   kind: Stargate
   path: github.com/formancehq/operator/v2/api/v1beta1
   version: v1beta1

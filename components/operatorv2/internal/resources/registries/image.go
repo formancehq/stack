@@ -2,7 +2,7 @@ package registries
 
 import (
 	"fmt"
-	"github.com/formancehq/operator/v2/api/v1beta1"
+	"github.com/formancehq/operator/v2/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/v2/internal/core"
 	"strings"
 

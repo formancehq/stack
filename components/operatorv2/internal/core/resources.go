@@ -1,7 +1,7 @@
 package core
 
 import (
-	"github.com/formancehq/operator/v2/api/v1beta1"
+	"github.com/formancehq/operator/v2/api/formance.com/v1beta1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 )

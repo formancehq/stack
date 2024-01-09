@@ -2,7 +2,7 @@ package stacks
 
 import (
 	"context"
-	"github.com/formancehq/operator/v2/api/v1beta1"
+	"github.com/formancehq/operator/v2/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"

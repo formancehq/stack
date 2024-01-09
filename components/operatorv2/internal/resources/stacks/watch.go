@@ -2,7 +2,7 @@ package stacks
 
 import (
 	"context"
-	"github.com/formancehq/operator/v2/api/v1beta1"
+	"github.com/formancehq/operator/v2/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/v2/internal/core"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"

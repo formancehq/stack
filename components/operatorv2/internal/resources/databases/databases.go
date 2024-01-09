@@ -1,7 +1,7 @@
 package databases
 
 import (
-	"github.com/formancehq/operator/v2/api/v1beta1"
+	v1beta1 "github.com/formancehq/operator/v2/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/v2/internal/core"
 	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

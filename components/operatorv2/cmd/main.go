@@ -19,6 +19,7 @@ package main
 import (
 	"crypto/tls"
 	"flag"
+	formancev1beta1 "github.com/formancehq/operator/v2/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/reconcilers"
 	"net/http"
@@ -37,8 +38,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 
-	formancev1beta1 "github.com/formancehq/operator/v2/api/v1beta1"
-	_ "github.com/formancehq/operator/v2/internal/controllers"
+	_ "github.com/formancehq/operator/v2/internal/controller/formance.com"
 	//+kubebuilder:scaffold:imports
 )
 
