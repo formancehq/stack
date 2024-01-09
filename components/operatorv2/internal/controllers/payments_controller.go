@@ -38,6 +38,7 @@ import (
 	"net/http"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
@@ -142,9 +143,25 @@ func (r *PaymentsController) createReadDeployment(ctx Context, stack *v1beta1.St
 		return err
 	}
 
-	if err := streams.LoadFromFileSystem(ctx, benthos.Streams, payments.Spec.Stack, "streams/payments/v0.0.0",
-		WithController[*v1beta1.Stream](ctx.GetScheme(), payments)); err != nil {
+	hasSearch, err := stacks.HasDependency[*v1beta1.Search](ctx, stack.Name)
+	if err != nil {
 		return err
+	}
+	if hasSearch {
+		if err := streams.LoadFromFileSystem(ctx, benthos.Streams, payments.Spec.Stack, "streams/payments/v0.0.0",
+			WithController[*v1beta1.Stream](ctx.GetScheme(), payments),
+			WithLabels[*v1beta1.Stream](map[string]string{
+				"service": "payments",
+			}),
+		); err != nil {
+			return err
+		}
+	} else {
+		if err := ctx.GetClient().DeleteAllOf(ctx, &v1beta1.Stream{}, client.MatchingLabels{
+			"service": "payments",
+		}); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -275,6 +292,10 @@ func (r *PaymentsController) SetupWithManager(mgr Manager) (*builder.Builder, er
 		Watches(
 			&v1beta1.Registries{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Payments](mgr)),
+		).
+		Watches(
+			&v1beta1.Search{},
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependents[*v1beta1.Ledger](mgr)),
 		).
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).

@@ -71,6 +71,19 @@ func WithAnnotations[T client.Object](newAnnotations map[string]string) ObjectMu
 	}
 }
 
+func WithLabels[T client.Object](newLabels map[string]string) ObjectMutator[T] {
+	return func(t T) {
+		annotations := t.GetLabels()
+		if annotations == nil {
+			annotations = make(map[string]string)
+		}
+		for k, v := range newLabels {
+			annotations[k] = v
+		}
+		t.SetLabels(annotations)
+	}
+}
+
 func CreateOrUpdate[T client.Object](ctx Context,
 	key types.NamespacedName, mutators ...ObjectMutator[T]) (T, controllerutil.OperationResult, error) {
 

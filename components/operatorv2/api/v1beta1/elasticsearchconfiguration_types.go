@@ -56,9 +56,7 @@ func (in *ElasticSearchConfigurationSpec) Endpoint() string {
 }
 
 // ElasticSearchConfigurationStatus defines the observed state of ElasticSearchConfiguration
-type ElasticSearchConfigurationStatus struct {
-	// TODO: Add ready status
-}
+type ElasticSearchConfigurationStatus struct{}
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status

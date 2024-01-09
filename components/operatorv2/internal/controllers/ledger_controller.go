@@ -37,6 +37,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
@@ -74,9 +75,25 @@ func (r *LedgerController) Reconcile(ctx Context, ledger *v1beta1.Ledger) error 
 		return err
 	}
 
-	if err := streams.LoadFromFileSystem(ctx, benthos.Streams, ledger.Spec.Stack, "streams/ledger/v2.0.0",
-		WithController[*v1beta1.Stream](ctx.GetScheme(), ledger)); err != nil {
+	hasSearch, err := stacks.HasDependency[*v1beta1.Search](ctx, stack.Name)
+	if err != nil {
 		return err
+	}
+	if hasSearch {
+		if err := streams.LoadFromFileSystem(ctx, benthos.Streams, ledger.Spec.Stack, "streams/ledger/v2.0.0",
+			WithController[*v1beta1.Stream](ctx.GetScheme(), ledger),
+			WithLabels[*v1beta1.Stream](map[string]string{
+				"service": "ledger",
+			}),
+		); err != nil {
+			return err
+		}
+	} else {
+		if err := ctx.GetClient().DeleteAllOf(ctx, &v1beta1.Stream{}, client.MatchingLabels{
+			"service": "ledger",
+		}); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -346,6 +363,10 @@ func (r *LedgerController) SetupWithManager(mgr Manager) (*builder.Builder, erro
 		Watches(
 			&v1beta1.Registries{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Ledger](mgr)),
+		).
+		Watches(
+			&v1beta1.Search{},
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependents[*v1beta1.Ledger](mgr)),
 		).
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).

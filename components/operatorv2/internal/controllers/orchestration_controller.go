@@ -150,7 +150,6 @@ func (r *OrchestrationController) createDeployment(ctx Context, stack *v1beta1.S
 		)
 	}
 
-	// TODO: Add topic env vars
 	brokerEnvVars, err := brokerconfigurations.GetEnvVars(ctx, stack.Name, "orchestration")
 	if err != nil && !errors.Is(err, stacks.ErrNotFound) {
 		return err

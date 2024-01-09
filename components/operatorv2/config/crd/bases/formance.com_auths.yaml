@@ -60,6 +60,8 @@ spec:
                 type: object
               dev:
                 type: boolean
+              enableScopes:
+                type: boolean
               resourceProperties:
                 properties:
                   limits:

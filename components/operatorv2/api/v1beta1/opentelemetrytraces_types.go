@@ -31,9 +31,8 @@ type OtlpSpec struct {
 	// +kubebuilder:validation:default:=grpc
 	// +optional
 	Mode string `json:"mode,omitempty"`
-	// todo: set a map ?
 	// +optional
-	ResourceAttributes string `json:"resourceAttributes,omitempty"`
+	ResourceAttributes map[string]string `json:"resourceAttributes,omitempty"`
 }
 
 type TracesSpec struct {

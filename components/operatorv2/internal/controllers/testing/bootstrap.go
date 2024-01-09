@@ -179,6 +179,10 @@ func Get(key types.NamespacedName, ob client.Object) error {
 	return k8sClient.Get(ctx, key, ob)
 }
 
+func List(list client.ObjectList, opts ...client.ListOption) error {
+	return k8sClient.List(ctx, list, opts...)
+}
+
 func Client() client.Client {
 	return k8sClient
 }

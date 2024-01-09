@@ -16,7 +16,6 @@ var _ = Describe("AuthController", func() {
 	Context("When creating a Auth object", func() {
 		var (
 			stack                 *v1beta1.Stack
-			gateway               *v1beta1.Gateway
 			auth                  *v1beta1.Auth
 			databaseConfiguration *v1beta1.DatabaseConfiguration
 		)
@@ -24,15 +23,6 @@ var _ = Describe("AuthController", func() {
 			stack = &v1beta1.Stack{
 				ObjectMeta: RandObjectMeta(),
 				Spec:       v1beta1.StackSpec{},
-			}
-			gateway = &v1beta1.Gateway{
-				ObjectMeta: RandObjectMeta(),
-				Spec: v1beta1.GatewaySpec{
-					StackDependency: v1beta1.StackDependency{
-						Stack: stack.Name,
-					},
-					Ingress: &v1beta1.GatewayIngress{},
-				},
 			}
 			databaseConfiguration = &v1beta1.DatabaseConfiguration{
 				ObjectMeta: metav1.ObjectMeta{
@@ -55,13 +45,11 @@ var _ = Describe("AuthController", func() {
 		})
 		JustBeforeEach(func() {
 			Expect(Create(stack)).To(Succeed())
-			Expect(Create(gateway)).To(Succeed())
 			Expect(Create(databaseConfiguration)).To(Succeed())
 			Expect(Create(auth)).To(Succeed())
 		})
 		AfterEach(func() {
 			Expect(Delete(auth)).To(Succeed())
-			Expect(Delete(gateway)).To(Succeed())
 			Expect(Delete(databaseConfiguration)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 		})
@@ -71,6 +59,9 @@ var _ = Describe("AuthController", func() {
 				return LoadResource(stack.Name, "auth", deployment)
 			}).Should(Succeed())
 			Expect(deployment).To(BeControlledBy(auth))
+			Expect(deployment.Spec.Template.Spec.Containers[0].Env).To(ContainElements(
+				core.Env("BASE_URL", "http://auth:8080"),
+			))
 		})
 		It("Should create a new HTTPAPI object", func() {
 			httpService := &v1beta1.HTTPAPI{}
@@ -103,6 +94,53 @@ var _ = Describe("AuthController", func() {
 				cm := &corev1.ConfigMap{}
 				Expect(LoadResource(stack.Name, "auth-configuration", cm)).To(Succeed())
 				Expect(cm.Data["config.yaml"]).To(MatchGoldenFile("auth-controller", "config-with-auth-client.yaml"))
+			})
+		})
+		Context("with a Gateway", func() {
+			var (
+				gateway *v1beta1.Gateway
+			)
+			BeforeEach(func() {
+				gateway = &v1beta1.Gateway{
+					ObjectMeta: RandObjectMeta(),
+					Spec: v1beta1.GatewaySpec{
+						StackDependency: v1beta1.StackDependency{
+							Stack: stack.Name,
+						},
+					},
+				}
+			})
+			JustBeforeEach(func() {
+				Expect(Create(gateway)).To(Succeed())
+			})
+			AfterEach(func() {
+				Expect(Delete(gateway)).To(Succeed())
+			})
+			It("Should create a deployment with proper BASE_URL env var", func() {
+				deployment := &appsv1.Deployment{}
+				Eventually(func(g Gomega) []corev1.EnvVar {
+					g.Expect(LoadResource(stack.Name, "auth", deployment)).To(Succeed())
+					return deployment.Spec.Template.Spec.Containers[0].Env
+				}).Should(ContainElements(
+					core.Env("BASE_URL", "http://gateway:8080/api/auth"),
+				))
+			})
+			Context("with an ingress", func() {
+				BeforeEach(func() {
+					gateway.Spec.Ingress = &v1beta1.GatewayIngress{
+						Host:   "example.net",
+						Scheme: "https",
+					}
+				})
+				It("Should create a deployment with proper BASE_URL env var", func() {
+					deployment := &appsv1.Deployment{}
+					Eventually(func(g Gomega) []corev1.EnvVar {
+						g.Expect(LoadResource(stack.Name, "auth", deployment)).To(Succeed())
+						return deployment.Spec.Template.Spec.Containers[0].Env
+					}).Should(ContainElements(
+						core.Env("BASE_URL", "https://example.net/api/auth"),
+					))
+				})
 			})
 		})
 	})

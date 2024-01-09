@@ -18,7 +18,6 @@ func LoadFromFileSystem(ctx core.Context, fs embed.FS,
 		return err
 	}
 
-	// TODO: Only if search enabled
 	for _, file := range streamFiles {
 		streamContent, err := fs.ReadFile(streamDirectory + "/" + file.Name())
 		if err != nil {

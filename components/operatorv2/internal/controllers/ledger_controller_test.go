@@ -77,9 +77,7 @@ var _ = Describe("LedgerController", func() {
 			}).Should(Succeed())
 		})
 		Context("with monitoring enabled", func() {
-			var (
-				openTelemetryConfiguration *v1beta1.OpenTelemetryConfiguration
-			)
+			var openTelemetryConfiguration *v1beta1.OpenTelemetryConfiguration
 			BeforeEach(func() {
 				openTelemetryConfiguration = &v1beta1.OpenTelemetryConfiguration{
 					ObjectMeta: metav1.ObjectMeta{
@@ -218,6 +216,50 @@ var _ = Describe("LedgerController", func() {
 					return LoadResource(stack.Name, "ledger-gateway", gateway)
 				}).Should(Succeed())
 				Expect(gateway).To(BeControlledBy(ledger))
+			})
+		})
+		Context("With Search enabled", func() {
+			var search *v1beta1.Search
+			BeforeEach(func() {
+				search = &v1beta1.Search{
+					ObjectMeta: RandObjectMeta(),
+					Spec: v1beta1.SearchSpec{
+						StackDependency: v1beta1.StackDependency{
+							Stack: stack.Name,
+						},
+					},
+				}
+			})
+			JustBeforeEach(func() {
+				Expect(Create(search)).To(Succeed())
+			})
+			JustAfterEach(func() {
+				Expect(client.IgnoreNotFound(Delete(search))).To(Succeed())
+			})
+			checkStreamsExists := func() {
+				l := &v1beta1.StreamList{}
+				Eventually(func(g Gomega) int {
+					g.Expect(List(l)).To(Succeed())
+					return len(collectionutils.Filter(l.Items, func(stream v1beta1.Stream) bool {
+						return stream.Spec.Stack == stack.Name
+					}))
+				}).Should(BeNumerically(">", 0))
+			}
+			It("Should create streams", checkStreamsExists)
+			Context("Then when removing search", func() {
+				JustBeforeEach(func() {
+					checkStreamsExists()
+					Expect(Delete(search)).To(Succeed())
+				})
+				It("Should remove streams", func() {
+					l := &v1beta1.StreamList{}
+					Eventually(func(g Gomega) int {
+						g.Expect(List(l)).To(Succeed())
+						return len(collectionutils.Filter(l.Items, func(stream v1beta1.Stream) bool {
+							return stream.Spec.Stack == stack.Name
+						}))
+					}).Should(BeZero())
+				})
 			})
 		})
 	})

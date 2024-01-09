@@ -25,6 +25,7 @@ type GatewayIngressTLS struct {
 }
 
 type GatewayIngress struct {
+	//+required
 	Host string `json:"host"`
 	// +kubebuilder:default:="https"
 	Scheme      string            `json:"scheme"`
@@ -39,8 +40,6 @@ type GatewaySpec struct {
 	CommonServiceProperties `json:",inline"`
 	//+optional
 	Ingress *GatewayIngress `json:"ingress,omitempty"`
-	//+optional
-	EnableAudit bool `json:"enableAudit,omitempty"`
 }
 
 // GatewayStatus defines the observed state of Gateway

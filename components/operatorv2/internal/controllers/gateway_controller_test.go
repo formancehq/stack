@@ -36,7 +36,8 @@ var _ = Describe("GatewayController", func() {
 						Stack: stack.Name,
 					},
 					Ingress: &v1beta1.GatewayIngress{
-						Host: "example.net",
+						Host:   "example.net",
+						Scheme: "https",
 					},
 				},
 			}
@@ -180,7 +181,7 @@ var _ = Describe("GatewayController", func() {
 		Context("With audit enabled", func() {
 			var brokerConfiguration *v1beta1.BrokerConfiguration
 			BeforeEach(func() {
-				gateway.Spec.EnableAudit = true
+				stack.Spec.EnableAudit = true
 				brokerConfiguration = &v1beta1.BrokerConfiguration{
 					ObjectMeta: metav1.ObjectMeta{
 						Name: uuid.NewString(),

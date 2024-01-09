@@ -55,8 +55,6 @@ spec:
                 type: boolean
               dev:
                 type: boolean
-              enableAudit:
-                type: boolean
               ingress:
                 properties:
                   annotations:

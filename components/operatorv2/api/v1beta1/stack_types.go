@@ -25,6 +25,8 @@ type StackSpec struct {
 	DevProperties `json:",inline"`
 	// +kubebuilder:default:="latest"
 	Version string `json:"version"`
+	//+optional
+	EnableAudit bool `json:"enableAudit,omitempty"`
 }
 
 // StackStatus defines the observed state of Stack

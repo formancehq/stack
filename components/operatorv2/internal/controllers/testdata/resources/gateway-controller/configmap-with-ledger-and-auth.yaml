@@ -8,7 +8,7 @@
 }
 (auth) {
 	auth {
-		issuer ://example.net/api/auth
+		issuer https://example.net/api/auth
 
 		read_key_set_max_retries 10
 	}

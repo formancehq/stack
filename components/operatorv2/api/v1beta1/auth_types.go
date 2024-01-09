@@ -37,6 +37,8 @@ type AuthSpec struct {
 	SigningKey string `json:"signingKey,omitempty"`
 	//+optional
 	SigningKeyFromSecret *v1.SecretKeySelector `json:"signingKeyFromSecret,omitempty"`
+	//+optional
+	EnableScopes bool `json:"enableScopes"`
 }
 
 // AuthStatus defines the observed state of Auth

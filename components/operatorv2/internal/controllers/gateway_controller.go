@@ -60,7 +60,7 @@ func (r *GatewayController) Reconcile(ctx Context, gateway *v1beta1.Gateway) err
 		return err
 	}
 
-	authEnabled, err := stacks.HasDependency[*v1beta1.Auth](ctx, stack.Name)
+	auth, err := stacks.GetIfEnabled[*v1beta1.Auth](ctx, stack.Name)
 	if err != nil {
 		return err
 	}
@@ -70,7 +70,7 @@ func (r *GatewayController) Reconcile(ctx Context, gateway *v1beta1.Gateway) err
 		return err
 	}
 
-	configMap, err := r.createConfigMap(ctx, stack, gateway, httpAPIs, authEnabled, topic)
+	configMap, err := r.createConfigMap(ctx, stack, gateway, httpAPIs, auth, topic)
 	if err != nil {
 		return err
 	}
@@ -90,15 +90,15 @@ func (r *GatewayController) Reconcile(ctx Context, gateway *v1beta1.Gateway) err
 	gateway.Status.SyncHTTPAPIs = Map(httpAPIs, func(from *v1beta1.HTTPAPI) string {
 		return from.Spec.Name
 	})
-	gateway.Status.AuthEnabled = authEnabled
+	gateway.Status.AuthEnabled = auth != nil
 
 	return nil
 }
 
 func (r *GatewayController) createConfigMap(ctx Context, stack *v1beta1.Stack,
-	gateway *v1beta1.Gateway, httpAPIs []*v1beta1.HTTPAPI, authEnabled bool, auditTopic *v1beta1.Topic) (*corev1.ConfigMap, error) {
+	gateway *v1beta1.Gateway, httpAPIs []*v1beta1.HTTPAPI, auth *v1beta1.Auth, auditTopic *v1beta1.Topic) (*corev1.ConfigMap, error) {
 
-	caddyfile, err := r.createCaddyfile(ctx, stack, gateway, httpAPIs, authEnabled, auditTopic)
+	caddyfile, err := r.createCaddyfile(ctx, stack, gateway, httpAPIs, auth, auditTopic)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +119,7 @@ func (r *GatewayController) createConfigMap(ctx Context, stack *v1beta1.Stack,
 }
 
 func (r *GatewayController) createAuditTopic(ctx Context, stack *v1beta1.Stack, gateway *v1beta1.Gateway) (*v1beta1.Topic, error) {
-	if gateway.Spec.EnableAudit {
+	if stack.Spec.EnableAudit {
 		topic, err := topics.CreateOrUpdate(ctx, stack, gateway, "gateway", "audit")
 		if err != nil {
 			return nil, err
@@ -140,7 +140,7 @@ func (r *GatewayController) createDeployment(ctx Context, stack *v1beta1.Stack,
 		return err
 	}
 
-	if gateway.Spec.EnableAudit {
+	if stack.Spec.EnableAudit {
 		env = append(env,
 			brokerconfigurations.BrokerEnvVars(*auditTopic.Status.Configuration, stack.Name, "gateway")...,
 		)
@@ -231,7 +231,7 @@ func (r *GatewayController) handleIngress(ctx Context, stack *v1beta1.Stack,
 }
 
 func (r *GatewayController) createCaddyfile(ctx Context, stack *v1beta1.Stack,
-	gateway *v1beta1.Gateway, httpAPIs []*v1beta1.HTTPAPI, authEnabled bool, auditTopic *v1beta1.Topic) (string, error) {
+	gateway *v1beta1.Gateway, httpAPIs []*v1beta1.HTTPAPI, auth *v1beta1.Auth, auditTopic *v1beta1.Topic) (string, error) {
 
 	sort.Slice(httpAPIs, func(i, j int) bool {
 		return httpAPIs[i].Spec.Name < httpAPIs[j].Spec.Name
@@ -245,19 +245,17 @@ func (r *GatewayController) createCaddyfile(ctx Context, stack *v1beta1.Stack,
 		"Debug":    stack.Spec.Debug,
 		"Port":     8080,
 	}
-	if authEnabled {
+	if auth != nil {
 		if gateway.Spec.Ingress == nil {
 			return "", fmt.Errorf("missing ingress configuration when using Auth component")
 		}
 		data["Auth"] = map[string]any{
-			// TODO(gfyrag): make functional without public uri
-			"Issuer": fmt.Sprintf("%s://%s/api/auth", gateway.Spec.Ingress.Scheme, gateway.Spec.Ingress.Host),
-			// TODO: set from config
-			"EnableScopes": false,
+			"Issuer":       fmt.Sprintf("%s/api/auth", gateways.URL(gateway)),
+			"EnableScopes": auth.Spec.EnableScopes,
 		}
 	}
 
-	if gateway.Spec.EnableAudit {
+	if stack.Spec.EnableAudit {
 		data["EnableAudit"] = true
 		data["Broker"] = func() string {
 			if auditTopic.Status.Configuration.Kafka != nil {
@@ -281,6 +279,10 @@ func (r *GatewayController) SetupWithManager(mgr Manager) (*builder.Builder, err
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).
 		Owns(&networkingv1.Ingress{}).
+		Watches(
+			&v1beta1.Stack{},
+			handler.EnqueueRequestsFromMapFunc(stacks.Watch[*v1beta1.Gateway](mgr)),
+		).
 		Watches(
 			&v1beta1.Topic{},
 			handler.EnqueueRequestsFromMapFunc(

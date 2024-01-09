@@ -53,8 +53,9 @@ spec:
                         format: int32
                         type: integer
                       resourceAttributes:
-                        description: 'todo: set a map ?'
-                        type: string
+                        additionalProperties:
+                          type: string
+                        type: object
                     type: object
                 type: object
               traces:
@@ -74,8 +75,9 @@ spec:
                         format: int32
                         type: integer
                       resourceAttributes:
-                        description: 'todo: set a map ?'
-                        type: string
+                        additionalProperties:
+                          type: string
+                        type: object
                     type: object
                 type: object
             type: object

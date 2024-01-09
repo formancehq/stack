@@ -29,6 +29,7 @@ import (
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
@@ -58,6 +59,11 @@ func (r *StreamProcessorController) Reconcile(ctx Context, streamProcessor *v1be
 	elasticSearchConfiguration, err := stacks.Require[*v1beta1.ElasticSearchConfiguration](ctx, streamProcessor.Spec.Stack)
 	if err != nil {
 		return errors.Wrap(err, "searching elasticsearch configuration")
+	}
+
+	stack, err := stacks.GetStack(ctx, streamProcessor.Spec)
+	if err != nil {
+		return err
 	}
 
 	env := []corev1.EnvVar{
@@ -157,12 +163,25 @@ func (r *StreamProcessorController) Reconcile(ctx Context, streamProcessor *v1be
 		})
 	}
 
-	//if enableAuditPlugin(ctx) {
-	//	directories = append(directories, directory{
-	//		name: "audit",
-	//		fs:   benthosOperator.Audit,
-	//	})
-	//}
+	if stack.Spec.EnableAudit {
+		directories = append(directories, directory{
+			name: "audit",
+			fs:   benthosOperator.Audit,
+		})
+	} else {
+		kinds, _, err := ctx.GetScheme().ObjectKinds(&corev1.ConfigMap{})
+		if err != nil {
+			return err
+		}
+
+		object := &unstructured.Unstructured{}
+		object.SetGroupVersionKind(kinds[0])
+		object.SetNamespace(stack.Name)
+		object.SetName("stream-processor-audit")
+		if err := client.IgnoreNotFound(ctx.GetClient().Delete(ctx, object)); err != nil {
+			return errors.Wrap(err, "deleting audit config map")
+		}
+	}
 
 	for _, x := range directories {
 		data := make(map[string]string)
@@ -172,9 +191,12 @@ func (r *StreamProcessorController) Reconcile(ctx Context, streamProcessor *v1be
 		_, _, err := CreateOrUpdate[*corev1.ConfigMap](ctx, types.NamespacedName{
 			Namespace: streamProcessor.Spec.Stack,
 			Name:      "stream-processor-" + x.name,
-		}, func(t *corev1.ConfigMap) {
-			t.Data = data
-		})
+		},
+			func(t *corev1.ConfigMap) {
+				t.Data = data
+			},
+			WithController[*corev1.ConfigMap](ctx.GetScheme(), streamProcessor),
+		)
 		if err != nil {
 			return err
 		}
@@ -196,10 +218,9 @@ func (r *StreamProcessorController) Reconcile(ctx Context, streamProcessor *v1be
 		})
 	}
 
-	//TODO: add audit plugin
-	//if enableAuditPlugin(ctx) {
-	//	cmd = append(cmd, resolveContext.GetConfig("audit").GetMountPath()+"/gateway_audit.yaml")
-	//}
+	if stack.Spec.EnableAudit {
+		cmd = append(cmd, "/audit/gateway_audit.yaml")
+	}
 
 	streamList := &v1beta1.StreamList{}
 	if err := ctx.GetClient().List(ctx, streamList, client.MatchingFields{
@@ -272,9 +293,12 @@ func (r *StreamProcessorController) SetupWithManager(mgr Manager) (*builder.Buil
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.StreamProcessor](mgr)),
 		).
 		Watches(
+			&v1beta1.Stack{},
+			handler.EnqueueRequestsFromMapFunc(stacks.Watch[*v1beta1.StreamProcessor](mgr)),
+		).
+		Watches(
 			&v1beta1.Stream{},
-			handler.EnqueueRequestsFromMapFunc(
-				stacks.WatchDependents[*v1beta1.StreamProcessor](mgr)),
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependents[*v1beta1.StreamProcessor](mgr)),
 		).
 		Watches(
 			&v1beta1.Registries{},

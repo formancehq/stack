@@ -34,7 +34,6 @@ type StreamController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=streams/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=streams/finalizers,verbs=update
 
-// TODO: Check if we can add a worker to the operator to fetch stats from benthos api
 func (r *StreamController) Reconcile(ctx Context, stream *v1beta1.Stream) error {
 	_, _, err := CreateOrUpdate[*corev1.ConfigMap](ctx, types.NamespacedName{
 		Namespace: stream.Spec.Stack,

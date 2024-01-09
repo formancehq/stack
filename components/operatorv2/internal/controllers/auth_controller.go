@@ -22,6 +22,7 @@ import (
 	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/databases"
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
+	"github.com/formancehq/operator/v2/internal/resources/gateways"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
 	. "github.com/formancehq/operator/v2/internal/resources/registries"
 	"github.com/formancehq/operator/v2/internal/resources/stacks"
@@ -124,10 +125,19 @@ func (r *AuthController) createDeployment(ctx Context, stack *v1beta1.Stack, aut
 			GetObjectName(stack.Name, "auth"),
 		)...,
 	)
-	env = append(env,
-		Env("CONFIG", "/config/config.yaml"),
-		Env("BASE_URL", "$(STACK_PUBLIC_URL)/api/auth"),
-	)
+	env = append(env, Env("CONFIG", "/config/config.yaml"))
+
+	gateway, err := stacks.GetIfEnabled[*v1beta1.Gateway](ctx, stack.Name)
+	if err != nil {
+		return err
+	}
+
+	baseUrl := "http://auth:8080"
+	if gateway != nil {
+		baseUrl = fmt.Sprintf("%s/api/auth", gateways.URL(gateway))
+	}
+	env = append(env, Env("BASE_URL", baseUrl))
+
 	if auth.Spec.SigningKey != "" && auth.Spec.SigningKeyFromSecret != nil {
 		return fmt.Errorf("cannot specify signing key using both .spec.signingKey and .spec.signingKeyFromSecret fields")
 	}
