@@ -51,12 +51,12 @@ type DatabaseController struct{}
 
 func (r *DatabaseController) Reconcile(ctx Context, database *v1beta1.Database) error {
 
-	serviceSelectorRequirement, err := labels.NewRequirement("formance.com/service", selection.In, []string{"any", database.Spec.Service})
+	serviceSelectorRequirement, err := labels.NewRequirement(ServiceLabel, selection.In, []string{"any", database.Spec.Service})
 	if err != nil {
 		return err
 	}
 
-	stackSelectorRequirement, err := labels.NewRequirement("formance.com/stack", selection.In, []string{"any", database.Spec.Stack})
+	stackSelectorRequirement, err := labels.NewRequirement(StackLabel, selection.In, []string{"any", database.Spec.Stack})
 	if err != nil {
 		return err
 	}

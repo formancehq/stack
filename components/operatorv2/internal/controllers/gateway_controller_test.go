@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controllers/testing"
+	"github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
 	"github.com/formancehq/operator/v2/internal/resources/opentelemetryconfigurations"
@@ -186,7 +187,7 @@ var _ = Describe("GatewayController", func() {
 					ObjectMeta: metav1.ObjectMeta{
 						Name: uuid.NewString(),
 						Labels: map[string]string{
-							"formance.com/stack": stack.Name,
+							core.StackLabel: stack.Name,
 						},
 					},
 					Spec: v1beta1.BrokerConfigurationSpec{
@@ -234,7 +235,7 @@ var _ = Describe("GatewayController", func() {
 					ObjectMeta: metav1.ObjectMeta{
 						Name: uuid.NewString(),
 						Labels: map[string]string{
-							"formance.com/stack": stack.Name,
+							core.StackLabel: stack.Name,
 						},
 					},
 					Spec: v1beta1.OpenTelemetryConfigurationSpec{

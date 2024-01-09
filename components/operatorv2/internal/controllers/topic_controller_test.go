@@ -33,7 +33,7 @@ var _ = Describe("TopicController", func() {
 				ObjectMeta: v1.ObjectMeta{
 					Name: uuid.NewString(),
 					Labels: map[string]string{
-						"formance.com/stack": stack.Name,
+						core.StackLabel: stack.Name,
 					},
 				},
 				Spec: v1beta1.BrokerConfigurationSpec{

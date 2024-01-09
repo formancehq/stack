@@ -31,7 +31,7 @@ var _ = Describe("StreamProcessorController", func() {
 				ObjectMeta: metav1.ObjectMeta{
 					Name: uuid.NewString(),
 					Labels: map[string]string{
-						"formance.com/stack": stack.Name,
+						core.StackLabel: stack.Name,
 					},
 				},
 				Spec: v1beta1.ElasticSearchConfigurationSpec{},
@@ -40,7 +40,7 @@ var _ = Describe("StreamProcessorController", func() {
 				ObjectMeta: metav1.ObjectMeta{
 					Name: uuid.NewString(),
 					Labels: map[string]string{
-						"formance.com/stack": stack.Name,
+						core.StackLabel: stack.Name,
 					},
 				},
 				Spec: v1beta1.BrokerConfigurationSpec{},

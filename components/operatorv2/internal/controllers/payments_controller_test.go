@@ -38,8 +38,8 @@ var _ = Describe("PaymentsController", func() {
 				ObjectMeta: metav1.ObjectMeta{
 					Name: uuid.NewString(),
 					Labels: map[string]string{
-						"formance.com/stack":   stack.Name,
-						"formance.com/service": "any",
+						core.StackLabel:   stack.Name,
+						core.ServiceLabel: "any",
 					},
 				},
 				Spec: v1beta1.DatabaseConfigurationSpec{},

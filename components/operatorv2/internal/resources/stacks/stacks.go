@@ -122,9 +122,9 @@ func IsEnabledByLabel[T client.Object](ctx core.Context, stackName string) (bool
 func WatchUsingLabels[T client.Object](mgr core.Manager) func(ctx context.Context, object client.Object) []reconcile.Request {
 	return func(ctx context.Context, object client.Object) []reconcile.Request {
 		options := make([]client.ListOption, 0)
-		if object.GetLabels()["formance.com/stack"] != "any" {
+		if object.GetLabels()[core.StackLabel] != "any" {
 			options = append(options, client.MatchingFields{
-				"stack": object.GetLabels()["formance.com/stack"],
+				"stack": object.GetLabels()[core.StackLabel],
 			})
 		}
 
@@ -152,7 +152,7 @@ func GetByLabel[T client.Object](ctx core.Context, stackName string) (T, error) 
 	var (
 		zeroValue T
 	)
-	stackSelectorRequirement, err := labels.NewRequirement("formance.com/stack", selection.In, []string{"any", stackName})
+	stackSelectorRequirement, err := labels.NewRequirement(core.StackLabel, selection.In, []string{"any", stackName})
 	if err != nil {
 		return zeroValue, err
 	}

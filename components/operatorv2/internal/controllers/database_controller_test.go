@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/formancehq/operator/v2/api/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/controllers/testing"
+	"github.com/formancehq/operator/v2/internal/core"
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -29,8 +30,8 @@ var _ = Describe("DatabaseController", func() {
 				ObjectMeta: metav1.ObjectMeta{
 					Name: uuid.NewString(),
 					Labels: map[string]string{
-						"formance.com/service": "any",
-						"formance.com/stack":   stack.Name,
+						core.ServiceLabel: "any",
+						core.StackLabel:   stack.Name,
 					},
 				},
 				Spec: v1beta1.DatabaseConfigurationSpec{},
