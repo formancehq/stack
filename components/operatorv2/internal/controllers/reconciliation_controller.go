@@ -126,7 +126,7 @@ func (r *ReconciliationController) SetupWithManager(mgr Manager) (*builder.Build
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Reconciliation](mgr)),
 		).
 		Watches(
-			&v1beta1.Registries{},
+			&v1beta1.RegistriesConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Reconciliation](mgr)),
 		).
 		Owns(&v1beta1.Database{}).

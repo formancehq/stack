@@ -20,41 +20,41 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type RegistryConfiguration struct {
+type RegistryConfigurationSpec struct {
 	Endpoint string `json:"endpoint"`
 }
 
-// RegistriesSpec defines the desired state of Registries
-type RegistriesSpec struct {
-	Registries map[string]RegistryConfiguration `json:"registries"`
+// RegistriesConfigurationSpec defines the desired state of RegistriesConfiguration
+type RegistriesConfigurationSpec struct {
+	Registries map[string]RegistryConfigurationSpec `json:"registries"`
 }
 
-// RegistriesStatus defines the observed state of Registries
-type RegistriesStatus struct {
+// RegistriesConfigurationStatus defines the observed state of RegistriesConfiguration
+type RegistriesConfigurationStatus struct {
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
 
-// Registries is the Schema for the registries API
-type Registries struct {
+// RegistriesConfiguration is the Schema for the registries API
+type RegistriesConfiguration struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   RegistriesSpec   `json:"spec,omitempty"`
-	Status RegistriesStatus `json:"status,omitempty"`
+	Spec   RegistriesConfigurationSpec   `json:"spec,omitempty"`
+	Status RegistriesConfigurationStatus `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 
-// RegistriesList contains a list of Registries
-type RegistriesList struct {
+// RegistriesConfigurationList contains a list of RegistriesConfiguration
+type RegistriesConfigurationList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []Registries `json:"items"`
+	Items           []RegistriesConfiguration `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&Registries{}, &RegistriesList{})
+	SchemeBuilder.Register(&RegistriesConfiguration{}, &RegistriesConfigurationList{})
 }

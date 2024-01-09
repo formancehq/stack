@@ -207,7 +207,7 @@ func (r *OrchestrationController) SetupWithManager(mgr Manager) (*builder.Builde
 				stacks.WatchDependents[*v1beta1.Orchestration](mgr)),
 		).
 		Watches(
-			&v1beta1.Registries{},
+			&v1beta1.RegistriesConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Orchestration](mgr)),
 		).
 		Owns(&v1beta1.TopicQuery{}).

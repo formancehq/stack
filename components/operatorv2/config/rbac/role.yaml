@@ -462,6 +462,32 @@ rules:
 - apiGroups:
   - formance.com
   resources:
+  - registriesconfigurations
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - registriesconfigurations/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - registriesconfigurations/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
   - searches
   verbs:
   - create

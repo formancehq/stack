@@ -53,11 +53,11 @@ spec:
                         format: int32
                         type: integer
                       resourceAttributes:
-                        type: string
+                        additionalProperties:
+                          type: string
+                        type: object
                     type: object
                 type: object
-              stack:
-                type: string
               traces:
                 properties:
                   otlp:
@@ -75,11 +75,11 @@ spec:
                         format: int32
                         type: integer
                       resourceAttributes:
-                        type: string
+                        additionalProperties:
+                          type: string
+                        type: object
                     type: object
                 type: object
-            required:
-            - stack
             type: object
           status:
             description: OpenTelemetryConfigurationStatus defines the observed state

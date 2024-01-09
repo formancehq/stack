@@ -199,7 +199,7 @@ func (r *DatabaseController) SetupWithManager(mgr Manager) (*builder.Builder, er
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Database](mgr)),
 		).
 		Watches(
-			&v1beta1.Registries{},
+			&v1beta1.RegistriesConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Database](mgr)),
 		).
 		Owns(&batchv1.Job{}), nil

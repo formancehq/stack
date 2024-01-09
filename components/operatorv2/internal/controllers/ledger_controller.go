@@ -361,7 +361,7 @@ func (r *LedgerController) SetupWithManager(mgr Manager) (*builder.Builder, erro
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Ledger](mgr)),
 		).
 		Watches(
-			&v1beta1.Registries{},
+			&v1beta1.RegistriesConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Ledger](mgr)),
 		).
 		Watches(

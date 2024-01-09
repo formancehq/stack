@@ -139,7 +139,7 @@ func (r *SearchController) SetupWithManager(mgr Manager) (*builder.Builder, erro
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Search](mgr)),
 		).
 		Watches(
-			&v1beta1.Registries{},
+			&v1beta1.RegistriesConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Search](mgr)),
 		).
 		Owns(&v1beta1.StreamProcessor{}).

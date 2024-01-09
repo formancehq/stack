@@ -116,7 +116,7 @@ rules:
 - apiGroups:
   - formance.com
   resources:
-  - HTTPAPIs
+  - authclients
   verbs:
   - create
   - delete
@@ -128,13 +128,13 @@ rules:
 - apiGroups:
   - formance.com
   resources:
-  - HTTPAPIs/finalizers
+  - authclients/finalizers
   verbs:
   - update
 - apiGroups:
   - formance.com
   resources:
-  - HTTPAPIs/status
+  - authclients/status
   verbs:
   - get
   - patch
@@ -168,11 +168,63 @@ rules:
 - apiGroups:
   - formance.com
   resources:
+  - brokerconfigurations
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - brokerconfigurations/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - brokerconfigurations/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
   - configurations
   verbs:
   - get
   - list
   - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - databaseconfigurations
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - databaseconfigurations/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - databaseconfigurations/status
+  verbs:
+  - get
+  - patch
+  - update
 - apiGroups:
   - formance.com
   resources:
@@ -195,6 +247,32 @@ rules:
   - formance.com
   resources:
   - databases/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - elasticsearchconfigurations
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - elasticsearchconfigurations/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - elasticsearchconfigurations/status
   verbs:
   - get
   - patch
@@ -228,6 +306,32 @@ rules:
 - apiGroups:
   - formance.com
   resources:
+  - httpapis
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - httpapis/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - httpapis/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
   - ledgers
   verbs:
   - create
@@ -254,6 +358,162 @@ rules:
 - apiGroups:
   - formance.com
   resources:
+  - opentelemetryconfigurations
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - opentelemetryconfigurations/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - opentelemetryconfigurations/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - orchestrations
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - orchestrations/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - orchestrations/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - payments
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - payments/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - payments/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - reconciliations
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - reconciliations/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - reconciliations/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - registriesconfigurations
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - registriesconfigurations/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - registriesconfigurations/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - searches
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - searches/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - searches/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
   - stacks
   verbs:
   - create
@@ -273,6 +533,84 @@ rules:
   - formance.com
   resources:
   - stacks/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - stargates
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - stargates/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - stargates/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - streamprocessors
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - streamprocessors/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - streamprocessors/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - streams
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - streams/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - streams/status
   verbs:
   - get
   - patch
@@ -337,6 +675,58 @@ rules:
   - get
   - list
   - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - wallets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - wallets/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - wallets/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - webhooks
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - webhooks/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - webhooks/status
+  verbs:
+  - get
+  - patch
+  - update
 - apiGroups:
   - networking.k8s.io
   resources:

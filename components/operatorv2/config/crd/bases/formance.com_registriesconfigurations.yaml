@@ -4,20 +4,20 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.13.0
-  name: registries.formance.com
+  name: registriesconfigurations.formance.com
 spec:
   group: formance.com
   names:
-    kind: Registries
-    listKind: RegistriesList
-    plural: registries
-    singular: registries
+    kind: RegistriesConfiguration
+    listKind: RegistriesConfigurationList
+    plural: registriesconfigurations
+    singular: registriesconfiguration
   scope: Cluster
   versions:
   - name: v1beta1
     schema:
       openAPIV3Schema:
-        description: Registries is the Schema for the registries API
+        description: RegistriesConfiguration is the Schema for the registries API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -32,7 +32,8 @@ spec:
           metadata:
             type: object
           spec:
-            description: RegistriesSpec defines the desired state of Registries
+            description: RegistriesConfigurationSpec defines the desired state of
+              RegistriesConfiguration
             properties:
               registries:
                 additionalProperties:
@@ -47,7 +48,8 @@ spec:
             - registries
             type: object
           status:
-            description: RegistriesStatus defines the observed state of Registries
+            description: RegistriesConfigurationStatus defines the observed state
+              of RegistriesConfiguration
             type: object
         type: object
     served: true

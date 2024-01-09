@@ -104,7 +104,7 @@ func (r *WalletsController) SetupWithManager(mgr Manager) (*builder.Builder, err
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Wallets](mgr)),
 		).
 		Watches(
-			&v1beta1.Registries{},
+			&v1beta1.RegistriesConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Wallets](mgr)),
 		).
 		Owns(&v1beta1.AuthClient{}).

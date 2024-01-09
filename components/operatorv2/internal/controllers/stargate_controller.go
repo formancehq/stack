@@ -98,7 +98,7 @@ func (r *StargateController) SetupWithManager(mgr Manager) (*builder.Builder, er
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Stargate](mgr)),
 		).
 		Watches(
-			&v1beta1.Registries{},
+			&v1beta1.RegistriesConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Stargate](mgr)),
 		).
 		Owns(&appsv1.Deployment{}).

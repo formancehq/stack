@@ -54,6 +54,9 @@ const (
 // +kubebuilder:rbac:groups=formance.com,resources=elasticsearchconfigurations,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=formance.com,resources=elasticsearchconfigurations/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=formance.com,resources=elasticsearchconfigurations/finalizers,verbs=update
+// +kubebuilder:rbac:groups=formance.com,resources=registriesconfigurations,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=formance.com,resources=registriesconfigurations/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=formance.com,resources=registriesconfigurations/finalizers,verbs=update
 
 // Reconciler reconciles a Stack object
 type StackController struct{}

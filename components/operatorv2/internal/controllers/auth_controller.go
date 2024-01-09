@@ -215,7 +215,7 @@ func (r *AuthController) SetupWithManager(mgr Manager) (*builder.Builder, error)
 		Owns(&v1beta1.Database{}).
 		Owns(&corev1.ConfigMap{}).
 		Watches(
-			&v1beta1.Registries{},
+			&v1beta1.RegistriesConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Auth](mgr)),
 		).
 		Watches(

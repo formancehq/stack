@@ -14,7 +14,24 @@ spec:
     singular: database
   scope: Cluster
   versions:
-  - name: v1beta1
+  - additionalPrinterColumns:
+    - description: Ready
+      jsonPath: .status.ready
+      name: Ready
+      type: string
+    - description: Bound to database configuration
+      jsonPath: .status.boundTo
+      name: Bound to
+      type: string
+    - description: Is the databse configuration out of sync
+      jsonPath: .status.outOfSync
+      name: Out of sync
+      type: string
+    - description: Error
+      jsonPath: .status.error
+      name: Error
+      type: string
+    name: v1beta1
     schema:
       openAPIV3Schema:
         description: Database is the Schema for the databases API
@@ -40,11 +57,12 @@ spec:
                 type: string
             required:
             - service
-            - stack
             type: object
           status:
             description: DatabaseStatus defines the observed state of Database
             properties:
+              boundTo:
+                type: string
               configuration:
                 properties:
                   credentialsFromSecret:
@@ -70,11 +88,10 @@ spec:
                 type: object
               error:
                 type: string
+              outOfSync:
+                type: boolean
               ready:
                 type: boolean
-            required:
-            - error
-            - ready
             type: object
         type: object
     served: true

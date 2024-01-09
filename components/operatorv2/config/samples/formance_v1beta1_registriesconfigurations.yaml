@@ -1,14 +1,14 @@
 apiVersion: formance.com/v1beta1
-kind: Registries
+kind: RegistriesConfiguration
 metadata:
   labels:
-    app.kubernetes.io/name: registries
-    app.kubernetes.io/instance: registries-sample
+    app.kubernetes.io/name: registriesconfigurations
+    app.kubernetes.io/instance: registriesconfigurations
     app.kubernetes.io/part-of: operatorv2
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/created-by: operatorv2
     formance.com/stack: any
-  name: registries0
+  name: registriesconfiguration0
 spec:
   #registries:
   #  ghcr.io:

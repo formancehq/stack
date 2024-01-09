@@ -23,7 +23,7 @@ resources:
 - bases/formance.com_streams.yaml
 - bases/formance.com_streamprocessors.yaml
 - bases/formance.com_elasticsearchconfigurations.yaml
-- bases/formance.com_registries.yaml
+- bases/formance.com_registriesconfiguration.yaml
 - bases/formance.com_stargates.yaml
 #+kubebuilder:scaffold:crdkustomizeresource
 
@@ -51,7 +51,7 @@ patches:
 #- path: patches/webhook_in_streams.yaml
 #- path: patches/webhook_in_streamprocessors.yaml
 #- path: patches/webhook_in_elasticsearchconfigurations.yaml
-#- path: patches/webhook_in_registries.yaml
+#- path: patches/webhook_in_registriesconfigurations.yaml
 #- path: patches/webhook_in_stargates.yaml
 #+kubebuilder:scaffold:crdkustomizewebhookpatch
 
@@ -78,7 +78,7 @@ patches:
 #- path: patches/cainjection_in_streams.yaml
 #- path: patches/cainjection_in_streamprocessors.yaml
 #- path: patches/cainjection_in_elasticsearchconfigurations.yaml
-#- path: patches/cainjection_in_registries.yaml
+#- path: patches/cainjection_in_registriesconfigurations.yaml
 #- path: patches/cainjection_in_stargates.yaml
 #+kubebuilder:scaffold:crdkustomizecainjectionpatch
 
