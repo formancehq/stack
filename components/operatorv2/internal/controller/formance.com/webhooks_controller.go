@@ -17,7 +17,7 @@ limitations under the License.
 package formance_com
 
 import (
-	v1beta1 "github.com/formancehq/operator/v2/api/formance.com/v1beta1"
+	"github.com/formancehq/operator/v2/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/databases"
@@ -63,7 +63,8 @@ func (r *WebhooksController) Reconcile(ctx Context, webhooks *v1beta1.Webhooks) 
 		return err
 	}
 
-	if err := httpapis.Create(ctx, stack, webhooks, "webhooks"); err != nil {
+	if err := httpapis.Create(ctx, stack, webhooks, "webhooks",
+		httpapis.WithServiceConfiguration(webhooks.Spec.Service)); err != nil {
 		return err
 	}
 

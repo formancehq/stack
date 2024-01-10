@@ -49,8 +49,10 @@ var _ = Describe("GatewayController", func() {
 						Stack: stack.Name,
 					},
 					Name: "ledger",
-					Annotations: map[string]string{
-						"foo": "bar",
+					Service: &v1beta1.ServiceConfiguration{
+						Annotations: map[string]string{
+							"foo": "bar",
+						},
 					},
 					Rules: []v1beta1.HTTPAPIRule{httpapis.RuleSecured()},
 				},

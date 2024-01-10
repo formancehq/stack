@@ -72,7 +72,8 @@ func (r *AuthController) Reconcile(ctx Context, auth *v1beta1.Auth) error {
 	}
 
 	if err := httpapis.Create(ctx, stack, auth, "auth",
-		httpapis.WithRules(httpapis.RuleUnsecured())); err != nil {
+		httpapis.WithRules(httpapis.RuleUnsecured()),
+		httpapis.WithServiceConfiguration(auth.Spec.Service)); err != nil {
 		return err
 	}
 

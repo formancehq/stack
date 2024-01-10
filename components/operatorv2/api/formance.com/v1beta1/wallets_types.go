@@ -24,6 +24,8 @@ import (
 type WalletsSpec struct {
 	CommonServiceProperties `json:",inline"`
 	StackDependency         `json:",inline"`
+	//+optional
+	Service *ServiceConfiguration `json:"service,omitempty"`
 }
 
 // WalletsStatus defines the observed state of Wallets

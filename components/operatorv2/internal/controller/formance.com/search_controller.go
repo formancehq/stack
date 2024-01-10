@@ -121,7 +121,8 @@ func (r *SearchController) Reconcile(ctx Context, search *v1beta1.Search) error 
 		}),
 	)
 
-	if err := httpapis.Create(ctx, stack, search, "search"); err != nil {
+	if err := httpapis.Create(ctx, stack, search, "search",
+		httpapis.WithServiceConfiguration(search.Spec.Service)); err != nil {
 		return err
 	}
 

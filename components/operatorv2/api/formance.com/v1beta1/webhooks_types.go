@@ -24,6 +24,8 @@ import (
 type WebhooksSpec struct {
 	StackDependency         `json:",inline"`
 	CommonServiceProperties `json:",inline"`
+	//+optional
+	Service *ServiceConfiguration `json:"service,omitempty"`
 }
 
 // WebhooksStatus defines the observed state of Webhooks

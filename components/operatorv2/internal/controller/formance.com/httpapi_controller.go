@@ -43,7 +43,9 @@ func (r *HTTPAPI) Reconcile(ctx Context, httpAPI *v1beta1.HTTPAPI) error {
 		Name:      httpAPI.Spec.Name,
 	},
 		func(t *corev1.Service) {
-			t.ObjectMeta.Annotations = httpAPI.Spec.Annotations
+			if httpAPI.Spec.Service != nil {
+				t.ObjectMeta.Annotations = httpAPI.Spec.Service.Annotations
+			}
 
 			t.Labels = map[string]string{
 				"app.kubernetes.io/service-name": httpAPI.Name,

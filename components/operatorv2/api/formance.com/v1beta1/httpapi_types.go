@@ -28,15 +28,21 @@ type HTTPAPIRule struct {
 	Secured bool `json:"secured"`
 }
 
+type ServiceConfiguration struct {
+	//+optional
+	Annotations map[string]string `json:"annotations,omitempty"`
+}
+
 // HTTPAPISpec defines the desired state of HTTPAPI
 type HTTPAPISpec struct {
 	StackDependency `json:",inline"`
 	// Name indicates prefix api
 	Name string `json:"name"`
-	//+optional
-	Annotations map[string]string `json:"annotations,omitempty"`
 	// Rules
 	Rules []HTTPAPIRule `json:"rules"`
+	// ServiceConfiguration
+	//+optional
+	Service *ServiceConfiguration `json:"service,omitempty"`
 }
 
 // HTTPAPIStatus defines the observed state of HTTPAPI

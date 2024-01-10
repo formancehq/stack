@@ -33,6 +33,8 @@ type SearchSpec struct {
 	Batching *Batching `json:"batching,omitempty"`
 	// +optional
 	StreamProcessor *SearchStreamProcessorSpec `json:"streamProcessor,omitempty"`
+	//+optional
+	Service *ServiceConfiguration `json:"service,omitempty"`
 }
 
 // SearchStatus defines the observed state of Search

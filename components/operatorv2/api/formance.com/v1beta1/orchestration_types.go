@@ -40,6 +40,8 @@ type OrchestrationSpec struct {
 	StackDependency         `json:",inline"`
 	CommonServiceProperties `json:",inline"`
 	Temporal                TemporalConfig `json:"temporal"`
+	//+optional
+	Service *ServiceConfiguration `json:"service,omitempty"`
 }
 
 // OrchestrationStatus defines the observed state of Orchestration

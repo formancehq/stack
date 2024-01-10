@@ -39,6 +39,12 @@ func WithRules(rules ...v1beta1.HTTPAPIRule) func(httpapi *v1beta1.HTTPAPI) {
 	}
 }
 
+func WithServiceConfiguration(serviceConfiguration *v1beta1.ServiceConfiguration) func(httpapi *v1beta1.HTTPAPI) {
+	return func(httpapi *v1beta1.HTTPAPI) {
+		httpapi.Spec.Service = serviceConfiguration
+	}
+}
+
 func RuleSecured() v1beta1.HTTPAPIRule {
 	return v1beta1.HTTPAPIRule{
 		Path: "/",

@@ -52,8 +52,10 @@ var _ = Describe("HTTPAPI", func() {
 		})
 		Context("With user defined annotations", func() {
 			BeforeEach(func() {
-				httpAPI.Spec.Annotations = map[string]string{
-					"foo": "bar",
+				httpAPI.Spec.Service = &v1beta1.ServiceConfiguration{
+					Annotations: map[string]string{
+						"foo": "bar",
+					},
 				}
 			})
 			It("should add annotations to the service", func() {

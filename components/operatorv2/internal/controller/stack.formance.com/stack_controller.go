@@ -161,6 +161,11 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			t.Spec.Version = versions.Spec.Ledger
 			t.Spec.DeploymentStrategy = configuration.Spec.Services.Ledger.DeploymentStrategy
 			t.Spec.ResourceProperties = configuration.Spec.Services.Ledger.ResourceProperties
+			if annotations := configuration.Spec.Services.Ledger.Annotations.Service; annotations != nil {
+				t.Spec.Service = &v1beta1.ServiceConfiguration{
+					Annotations: annotations,
+				}
+			}
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating ledger service")
@@ -175,6 +180,11 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Payments
 			t.Spec.ResourceProperties = configuration.Spec.Services.Payments.ResourceProperties
+			if annotations := configuration.Spec.Services.Payments.Annotations.Service; annotations != nil {
+				t.Spec.Service = &v1beta1.ServiceConfiguration{
+					Annotations: annotations,
+				}
+			}
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating payments service")
@@ -189,6 +199,11 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Wallets
 			t.Spec.ResourceProperties = configuration.Spec.Services.Wallets.ResourceProperties
+			if annotations := configuration.Spec.Services.Wallets.Annotations.Service; annotations != nil {
+				t.Spec.Service = &v1beta1.ServiceConfiguration{
+					Annotations: annotations,
+				}
+			}
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating wallets service")
@@ -203,6 +218,11 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Orchestration
 			t.Spec.ResourceProperties = configuration.Spec.Services.Orchestration.ResourceProperties
+			if annotations := configuration.Spec.Services.Orchestration.Annotations.Service; annotations != nil {
+				t.Spec.Service = &v1beta1.ServiceConfiguration{
+					Annotations: annotations,
+				}
+			}
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating orchestration service")
@@ -217,6 +237,11 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Webhooks
 			t.Spec.ResourceProperties = configuration.Spec.Services.Webhooks.ResourceProperties
+			if annotations := configuration.Spec.Services.Webhooks.Annotations.Service; annotations != nil {
+				t.Spec.Service = &v1beta1.ServiceConfiguration{
+					Annotations: annotations,
+				}
+			}
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating webhooks service")
@@ -234,6 +259,11 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Reconciliation
 			t.Spec.ResourceProperties = configuration.Spec.Services.Reconciliation.ResourceProperties
+			if annotations := configuration.Spec.Services.Reconciliation.Annotations.Service; annotations != nil {
+				t.Spec.Service = &v1beta1.ServiceConfiguration{
+					Annotations: annotations,
+				}
+			}
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating reconciliation service")
@@ -253,6 +283,11 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 					ResourceProperties: resourceProperties,
 				}
 			}
+			if annotations := configuration.Spec.Services.Search.Annotations.Service; annotations != nil {
+				t.Spec.Service = &v1beta1.ServiceConfiguration{
+					Annotations: annotations,
+				}
+			}
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating search service")
@@ -267,6 +302,11 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Auth
 			t.Spec.ResourceProperties = configuration.Spec.Services.Auth.ResourceProperties
+			if annotations := configuration.Spec.Services.Auth.Annotations.Service; annotations != nil {
+				t.Spec.Service = &v1beta1.ServiceConfiguration{
+					Annotations: annotations,
+				}
+			}
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating auth service")
@@ -287,6 +327,11 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 				Annotations: configuration.Spec.Ingress.Annotations,
 			}
 			t.Spec.ResourceProperties = configuration.Spec.Services.Gateway.ResourceProperties
+			if annotations := configuration.Spec.Services.Gateway.Annotations.Service; annotations != nil {
+				t.Spec.Service = &v1beta1.ServiceConfiguration{
+					Annotations: annotations,
+				}
+			}
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating gateway service")

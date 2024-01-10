@@ -71,7 +71,8 @@ func (r *LedgerController) Reconcile(ctx Context, ledger *v1beta1.Ledger) error 
 		return err
 	}
 
-	if err := httpapis.Create(ctx, stack, ledger, "ledger"); err != nil {
+	if err := httpapis.Create(ctx, stack, ledger, "ledger",
+		httpapis.WithServiceConfiguration(ledger.Spec.Service)); err != nil {
 		return err
 	}
 

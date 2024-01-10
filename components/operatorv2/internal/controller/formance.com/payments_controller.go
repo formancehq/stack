@@ -19,7 +19,7 @@ package formance_com
 import (
 	_ "embed"
 	"fmt"
-	v1beta1 "github.com/formancehq/operator/v2/api/formance.com/v1beta1"
+	"github.com/formancehq/operator/v2/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/databases"
@@ -82,7 +82,7 @@ func (r *PaymentsController) Reconcile(ctx Context, payments *v1beta1.Payments) 
 				Secured: true,
 			},
 			httpapis.RuleSecured(),
-		)); err != nil {
+		), httpapis.WithServiceConfiguration(payments.Spec.Service)); err != nil {
 		return err
 	}
 

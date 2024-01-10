@@ -25,6 +25,8 @@ type PaymentsSpec struct {
 	StackDependency         `json:",inline"`
 	CommonServiceProperties `json:",inline"`
 	EncryptionKey           string `json:"encryptionKey"`
+	//+optional
+	Service *ServiceConfiguration `json:"service,omitempty"`
 }
 
 // PaymentsStatus defines the observed state of Payments

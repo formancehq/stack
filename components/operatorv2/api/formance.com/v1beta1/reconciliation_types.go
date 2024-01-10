@@ -24,6 +24,8 @@ import (
 type ReconciliationSpec struct {
 	StackDependency         `json:",inline"`
 	CommonServiceProperties `json:",inline"`
+	//+optional
+	Service *ServiceConfiguration `json:"service,omitempty"`
 }
 
 // ReconciliationStatus defines the observed state of Reconciliation

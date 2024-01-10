@@ -75,6 +75,13 @@ spec:
                         type: string
                     type: object
                 type: object
+              service:
+                properties:
+                  annotations:
+                    additionalProperties:
+                      type: string
+                    type: object
+                type: object
               stack:
                 type: string
               streamProcessor:

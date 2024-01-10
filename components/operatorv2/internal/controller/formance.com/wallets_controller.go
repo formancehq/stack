@@ -17,7 +17,7 @@ limitations under the License.
 package formance_com
 
 import (
-	v1beta1 "github.com/formancehq/operator/v2/api/formance.com/v1beta1"
+	"github.com/formancehq/operator/v2/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/authclients"
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
@@ -40,25 +40,26 @@ type WalletsController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=wallets/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=wallets/finalizers,verbs=update
 
-func (r *WalletsController) Reconcile(ctx Context, wallet *v1beta1.Wallets) error {
+func (r *WalletsController) Reconcile(ctx Context, wallets *v1beta1.Wallets) error {
 
-	stack, err := stacks.GetStack(ctx, wallet.Spec)
+	stack, err := stacks.GetStack(ctx, wallets.Spec)
 	if err != nil {
 		return err
 	}
 
-	authClient, err := authclients.Create(ctx, stack, wallet, "wallets", func(spec *v1beta1.AuthClientSpec) {
+	authClient, err := authclients.Create(ctx, stack, wallets, "wallets", func(spec *v1beta1.AuthClientSpec) {
 		spec.Scopes = []string{"ledger:read", "ledger:write"}
 	})
 	if err != nil {
 		return err
 	}
 
-	if err := r.createDeployment(ctx, stack, wallet, authClient); err != nil {
+	if err := r.createDeployment(ctx, stack, wallets, authClient); err != nil {
 		return err
 	}
 
-	if err := httpapis.Create(ctx, stack, wallet, "wallets"); err != nil {
+	if err := httpapis.Create(ctx, stack, wallets, "wallets",
+		httpapis.WithServiceConfiguration(wallets.Spec.Service)); err != nil {
 		return err
 	}
 

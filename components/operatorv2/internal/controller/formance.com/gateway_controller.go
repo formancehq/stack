@@ -167,11 +167,16 @@ func (r *GatewayController) createDeployment(ctx Context, stack *v1beta1.Stack,
 
 func (r *GatewayController) createService(ctx Context, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway) error {
+
 	_, _, err := CreateOrUpdate[*corev1.Service](ctx, types.NamespacedName{
 		Name:      "gateway",
 		Namespace: stack.Name,
 	},
-		services.ConfigureK8SService("gateway"),
+		services.ConfigureK8SService("gateway", func(service *corev1.Service) {
+			if gateway.Spec.Service != nil {
+				service.Annotations = gateway.Spec.Service.Annotations
+			}
+		}),
 		WithController[*corev1.Service](ctx.GetScheme(), gateway),
 	)
 	return err

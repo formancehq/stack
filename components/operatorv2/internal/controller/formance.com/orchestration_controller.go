@@ -75,7 +75,8 @@ func (r *OrchestrationController) Reconcile(ctx Context, orchestration *v1beta1.
 		return err
 	}
 
-	if err := httpapis.Create(ctx, stack, orchestration, "orchestration"); err != nil {
+	if err := httpapis.Create(ctx, stack, orchestration, "orchestration",
+		httpapis.WithServiceConfiguration(orchestration.Spec.Service)); err != nil {
 		return err
 	}
 

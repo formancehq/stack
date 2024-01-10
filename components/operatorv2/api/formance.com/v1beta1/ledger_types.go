@@ -33,6 +33,8 @@ type LedgerSpec struct {
 	StackDependency         `json:",inline"`
 	//+optional
 	DeploymentStrategy DeploymentStrategy `json:"deploymentStrategy,omitempty"`
+	//+optional
+	Service *ServiceConfiguration `json:"service,omitempty"`
 }
 
 // LedgerStatus defines the observed state of Ledger
