@@ -122,7 +122,7 @@ require (
 
 replace (
 	github.com/formancehq/membership-api/client => ./client
-	github.com/formancehq/operator => ../../components/operator
+	github.com/formancehq/operator => ./../../components/operator_legacy
 	github.com/formancehq/payments => ../../components/payments
 	github.com/formancehq/search => ../search
 	github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs

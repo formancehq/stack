@@ -6,8 +6,8 @@ import (
 
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 
-	"github.com/formancehq/operator/apis/stack/v1beta3"
-	clientv1beta3 "github.com/formancehq/operator/pkg/client/v1beta3"
+	"github.com/formancehq/operator_legacy/apis/stack/v1beta3"
+	clientv1beta3 "github.com/formancehq/operator_legacy/pkg/client/v1beta3"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"

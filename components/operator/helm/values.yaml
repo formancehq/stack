@@ -8,7 +8,7 @@ image:
   repository: ghcr.io/formancehq/operator
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v0.17.0"
+  tag: "latest"
 
 
 imagePullSecrets: []
@@ -16,12 +16,6 @@ nameOverride: ""
 fullnameOverride: ""
 
 operator:
-  # Disable webhooks
-  disableWebhooks: false
-  
-  # Enable stack finalizer
-  enableStackFinalizer: false
-
   # The region to use for the operator
   region: "eu-west-1"
   # The environment to use for the operator
@@ -63,3 +57,6 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+webhooks:
+  enabled: false

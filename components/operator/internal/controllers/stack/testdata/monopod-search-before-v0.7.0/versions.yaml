@@ -1,6 +1,0 @@
-apiVersion: stack.formance.com/v1beta3
-kind: Versions
-metadata:
-  name: default
-spec:
-  search: v0.6.2

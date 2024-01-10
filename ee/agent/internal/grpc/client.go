@@ -10,10 +10,10 @@ import (
 	"reflect"
 	"strings"
 
-	clientv1beta3 "github.com/formancehq/operator/pkg/client/v1beta3"
+	clientv1beta3 "github.com/formancehq/operator_legacy/pkg/client/v1beta3"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 
-	"github.com/formancehq/operator/apis/stack/v1beta3"
+	"github.com/formancehq/operator_legacy/apis/stack/v1beta3"
 	"github.com/formancehq/stack/components/agent/internal/grpc/generated"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
