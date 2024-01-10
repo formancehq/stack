@@ -1179,6 +1179,7 @@ components:
         - FAILED
         - REJECTED
         - VALIDATED
+        - RETRIED
     ConnectorConfig:
       anyOf:
         - $ref: '#/components/schemas/StripeConfig'

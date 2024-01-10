@@ -16,6 +16,7 @@ const (
 	TransferInitiationStatusFailed               TransferInitiationStatus = "FAILED"
 	TransferInitiationStatusRejected             TransferInitiationStatus = "REJECTED"
 	TransferInitiationStatusValidated            TransferInitiationStatus = "VALIDATED"
+	TransferInitiationStatusRetried              TransferInitiationStatus = "RETRIED"
 )
 
 func (e TransferInitiationStatus) ToPointer() *TransferInitiationStatus {
@@ -39,6 +40,8 @@ func (e *TransferInitiationStatus) UnmarshalJSON(data []byte) error {
 	case "REJECTED":
 		fallthrough
 	case "VALIDATED":
+		fallthrough
+	case "RETRIED":
 		*e = TransferInitiationStatus(v)
 		return nil
 	default:

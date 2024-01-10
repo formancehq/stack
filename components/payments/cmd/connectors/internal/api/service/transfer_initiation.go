@@ -298,8 +298,8 @@ func (s *Service) RetryTransferInitiation(ctx context.Context, id string) error 
 	adjustment := &models.TransferInitiationAdjustments{
 		ID:                   uuid.New(),
 		TransferInitiationID: transferID,
-		CreatedAt:            time.Time{},
-		Status:               models.TransferInitiationStatusProcessing,
+		CreatedAt:            time.Now(),
+		Status:               models.TransferInitiationStatusRetried,
 		Error:                "",
 		Metadata:             map[string]string{},
 	}

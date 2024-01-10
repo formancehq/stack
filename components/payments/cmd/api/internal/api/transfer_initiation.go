@@ -138,6 +138,7 @@ func listTransferInitiationsHandler(b backend.Backend) http.HandlerFunc {
 
 		data := make([]*transferInitiationResponse, len(ret))
 		for i := range ret {
+			ret[i].SortRelatedAdjustments()
 			data[i] = &transferInitiationResponse{
 				ID:                   ret[i].ID.String(),
 				Reference:            ret[i].ID.Reference,

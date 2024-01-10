@@ -96,6 +96,7 @@ func (s TransferInitiationStatus) String() string {
 		"FAILED",
 		"REJECTED",
 		"VALIDATED",
+		"RETRIED",
 	}[s]
 }
 
@@ -113,6 +114,8 @@ func TransferInitiationStatusFromString(s string) (TransferInitiationStatus, err
 		return TransferInitiationStatusRejected, nil
 	case "VALIDATED":
 		return TransferInitiationStatusValidated, nil
+	case "RETRIED":
+		return TransferInitiationStatusRetried, nil
 	default:
 		return TransferInitiationStatusWaitingForValidation, errors.New("invalid status")
 	}

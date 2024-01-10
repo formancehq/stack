@@ -56,7 +56,8 @@ func (s *Storage) ListTransferInitiations(ctx context.Context, pagination Pagina
 
 	query := s.db.NewSelect().
 		Column("id", "connector_id", "created_at", "scheduled_at", "description", "type", "source_account_id", "destination_account_id", "provider", "amount", "asset", "metadata").
-		Model(&tfs)
+		Model(&tfs).
+		Relation("RelatedAdjustments")
 
 	if pagination.queryBuilder != nil {
 		where, args, err := s.transferInitiationQueryContext(pagination.queryBuilder)
@@ -98,7 +99,8 @@ func (s *Storage) ListTransferInitiations(ctx context.Context, pagination Pagina
 
 		query = s.db.NewSelect().
 			Column("id", "connector_id", "created_at", "description", "type", "source_account_id", "destination_account_id", "provider", "amount", "asset", "metadata").
-			Model(&tfs)
+			Model(&tfs).
+			Relation("RelatedAdjustments")
 
 		hasPrevious, err = pagination.hasPrevious(ctx, query, "transfer_initiation.created_at", firstReference)
 		if err != nil {
