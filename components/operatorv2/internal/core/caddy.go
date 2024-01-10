@@ -1,14 +1,13 @@
 package core
 
 import (
-	"github.com/formancehq/operator/v2/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/api/core/v1"
 )
 
 func ConfigureCaddy(caddyfile *v1.ConfigMap, image string, env []v1.EnvVar,
-	resourceProperties *v1beta1.ResourceProperties) []ObjectMutator[*appsv1.Deployment] {
+	resourceRequirements *v1.ResourceRequirements) []ObjectMutator[*appsv1.Deployment] {
 	return []ObjectMutator[*appsv1.Deployment]{
 		func(t *appsv1.Deployment) {
 			t.Spec.Template.Annotations = collectionutils.MergeMaps(t.Spec.Template.Annotations, map[string]string{
@@ -28,7 +27,7 @@ func ConfigureCaddy(caddyfile *v1.ConfigMap, image string, env []v1.EnvVar,
 					},
 					Image:     image,
 					Env:       env,
-					Resources: GetResourcesWithDefault(resourceProperties, ResourceSizeSmall()),
+					Resources: GetResourcesRequirementsWithDefault(resourceRequirements, ResourceSizeSmall()),
 					VolumeMounts: []v1.VolumeMount{
 						volumeMount("caddyfile", "/gateway"),
 					},

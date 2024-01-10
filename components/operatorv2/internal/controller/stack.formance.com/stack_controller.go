@@ -6,6 +6,8 @@ import (
 	"github.com/formancehq/operator/v2/api/stack.formance.com/v1beta3"
 	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/pkg/errors"
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
@@ -160,7 +162,7 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Ledger
 			t.Spec.DeploymentStrategy = configuration.Spec.Services.Ledger.DeploymentStrategy
-			t.Spec.ResourceProperties = configuration.Spec.Services.Ledger.ResourceProperties
+			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Ledger.ResourceProperties)
 			if annotations := configuration.Spec.Services.Ledger.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
 					Annotations: annotations,
@@ -179,7 +181,7 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}, WithController[*v1beta1.Payments](ctx.GetScheme(), stack), func(t *v1beta1.Payments) {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Payments
-			t.Spec.ResourceProperties = configuration.Spec.Services.Payments.ResourceProperties
+			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Payments.ResourceProperties)
 			if annotations := configuration.Spec.Services.Payments.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
 					Annotations: annotations,
@@ -198,7 +200,7 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}, WithController[*v1beta1.Wallets](ctx.GetScheme(), stack), func(t *v1beta1.Wallets) {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Wallets
-			t.Spec.ResourceProperties = configuration.Spec.Services.Wallets.ResourceProperties
+			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Wallets.ResourceProperties)
 			if annotations := configuration.Spec.Services.Wallets.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
 					Annotations: annotations,
@@ -217,7 +219,7 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}, WithController[*v1beta1.Orchestration](ctx.GetScheme(), stack), func(t *v1beta1.Orchestration) {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Orchestration
-			t.Spec.ResourceProperties = configuration.Spec.Services.Orchestration.ResourceProperties
+			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Orchestration.ResourceProperties)
 			if annotations := configuration.Spec.Services.Orchestration.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
 					Annotations: annotations,
@@ -236,7 +238,7 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}, WithController[*v1beta1.Webhooks](ctx.GetScheme(), stack), func(t *v1beta1.Webhooks) {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Webhooks
-			t.Spec.ResourceProperties = configuration.Spec.Services.Webhooks.ResourceProperties
+			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Webhooks.ResourceProperties)
 			if annotations := configuration.Spec.Services.Webhooks.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
 					Annotations: annotations,
@@ -258,7 +260,7 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}, WithController[*v1beta1.Reconciliation](ctx.GetScheme(), stack), func(t *v1beta1.Reconciliation) {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Reconciliation
-			t.Spec.ResourceProperties = configuration.Spec.Services.Reconciliation.ResourceProperties
+			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Reconciliation.ResourceProperties)
 			if annotations := configuration.Spec.Services.Reconciliation.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
 					Annotations: annotations,
@@ -280,7 +282,7 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			t.Spec.Batching = &configuration.Spec.Services.Search.Batching
 			if resourceProperties := configuration.Spec.Services.Search.BenthosResourceProperties; resourceProperties != nil {
 				t.Spec.StreamProcessor = &v1beta1.SearchStreamProcessorSpec{
-					ResourceProperties: resourceProperties,
+					ResourceRequirements: resourceRequirements(resourceProperties),
 				}
 			}
 			if annotations := configuration.Spec.Services.Search.Annotations.Service; annotations != nil {
@@ -301,7 +303,7 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}, WithController[*v1beta1.Auth](ctx.GetScheme(), stack), func(t *v1beta1.Auth) {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Auth
-			t.Spec.ResourceProperties = configuration.Spec.Services.Auth.ResourceProperties
+			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Auth.ResourceProperties)
 			if annotations := configuration.Spec.Services.Auth.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
 					Annotations: annotations,
@@ -326,7 +328,7 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 				TLS:         configuration.Spec.Ingress.TLS,
 				Annotations: configuration.Spec.Ingress.Annotations,
 			}
-			t.Spec.ResourceProperties = configuration.Spec.Services.Gateway.ResourceProperties
+			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Gateway.ResourceProperties)
 			if annotations := configuration.Spec.Services.Gateway.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
 					Annotations: annotations,
@@ -345,7 +347,7 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}, WithController[*v1beta1.Stargate](ctx.GetScheme(), stack), func(t *v1beta1.Stargate) {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Stargate
-			t.Spec.ResourceProperties = configuration.Spec.Services.Stargate.ResourceProperties
+			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Stargate.ResourceProperties)
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating stargate service")
@@ -397,4 +399,40 @@ func isDisabled(stack *v1beta3.Stack, configuration *v1beta3.Configuration, isEE
 	} else {
 		return stack.Spec.Services.IsExplicitlyDisabled(name) || configuration.Spec.Services.IsExplicitlyDisabled(name)
 	}
+}
+
+func resourceRequirements(resourceProperties *v1beta3.ResourceProperties) *corev1.ResourceRequirements {
+	if resourceProperties == nil {
+		return nil
+	}
+	resources := &corev1.ResourceRequirements{}
+	if resourceProperties.Request != nil {
+		if resources.Requests == nil {
+			resources.Requests = make(corev1.ResourceList)
+		}
+
+		if resourceProperties.Request.Cpu != "" {
+			resources.Requests[corev1.ResourceCPU] = resource.MustParse(resourceProperties.Request.Cpu)
+		}
+
+		if resourceProperties.Request.Memory != "" {
+			resources.Requests[corev1.ResourceMemory] = resource.MustParse(resourceProperties.Request.Memory)
+		}
+	}
+
+	if resourceProperties.Limits != nil {
+		if resources.Limits == nil {
+			resources.Limits = make(corev1.ResourceList)
+		}
+
+		if resourceProperties.Limits.Cpu != "" {
+			resources.Limits[corev1.ResourceCPU] = resource.MustParse(resourceProperties.Limits.Cpu)
+		}
+
+		if resourceProperties.Limits.Memory != "" {
+			resources.Limits[corev1.ResourceMemory] = resource.MustParse(resourceProperties.Limits.Memory)
+		}
+	}
+
+	return resources
 }

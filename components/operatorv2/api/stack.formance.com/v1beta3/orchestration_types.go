@@ -7,6 +7,6 @@ type OrchestrationSpec struct {
 	CommonServiceProperties `json:",inline"`
 	Postgres                v1beta1.DatabaseConfigurationSpec `json:"postgres"`
 	// +optional
-	ResourceProperties *v1beta1.ResourceProperties `json:"resourceProperties,omitempty"`
-	Annotations        AnnotationsServicesSpec     `json:"annotations,omitempty"`
+	ResourceProperties *ResourceProperties     `json:"resourceProperties,omitempty"`
+	Annotations        AnnotationsServicesSpec `json:"annotations,omitempty"`
 }

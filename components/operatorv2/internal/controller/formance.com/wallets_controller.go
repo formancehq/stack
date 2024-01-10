@@ -86,7 +86,7 @@ func (r *WalletsController) createDeployment(ctx Context, stack *v1beta1.Stack, 
 				Args:          []string{"serve"},
 				Env:           env,
 				Image:         image,
-				Resources:     GetResourcesWithDefault(wallets.Spec.ResourceProperties, ResourceSizeSmall()),
+				Resources:     GetResourcesRequirementsWithDefault(wallets.Spec.ResourceRequirements, ResourceSizeSmall()),
 				Ports:         []corev1.ContainerPort{deployments.StandardHTTPPort()},
 				LivenessProbe: deployments.DefaultLiveness("http"),
 			}}

@@ -79,7 +79,7 @@ func (r *StargateController) createDeployment(ctx Context, stack *v1beta1.Stack,
 				Name:          "stargate",
 				Env:           env,
 				Image:         image,
-				Resources:     GetResourcesWithDefault(stargate.Spec.ResourceProperties, ResourceSizeSmall()),
+				Resources:     GetResourcesRequirementsWithDefault(stargate.Spec.ResourceRequirements, ResourceSizeSmall()),
 				Ports:         []corev1.ContainerPort{deployments.StandardHTTPPort()},
 				LivenessProbe: deployments.DefaultLiveness("http"),
 			}}

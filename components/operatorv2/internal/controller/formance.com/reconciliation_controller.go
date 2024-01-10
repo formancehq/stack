@@ -100,7 +100,7 @@ func (r *ReconciliationController) createDeployment(ctx Context, stack *v1beta1.
 				Name:          "reconciliation",
 				Env:           env,
 				Image:         image,
-				Resources:     GetResourcesWithDefault(reconciliation.Spec.ResourceProperties, ResourceSizeSmall()),
+				Resources:     GetResourcesRequirementsWithDefault(reconciliation.Spec.ResourceRequirements, ResourceSizeSmall()),
 				Ports:         []corev1.ContainerPort{deployments.StandardHTTPPort()},
 				LivenessProbe: deployments.DefaultLiveness("http"),
 			}}

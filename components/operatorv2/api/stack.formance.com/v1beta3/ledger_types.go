@@ -36,8 +36,8 @@ type LedgerSpec struct {
 	// +optional
 	AllowPastTimestamps bool `json:"allowPastTimestamps"`
 	// +optional
-	ResourceProperties *v1beta1.ResourceProperties `json:"resourceProperties,omitempty"`
-	Annotations        AnnotationsServicesSpec     `json:"annotations,omitempty"`
+	ResourceProperties *ResourceProperties     `json:"resourceProperties,omitempty"`
+	Annotations        AnnotationsServicesSpec `json:"annotations,omitempty"`
 	// +optional
 	DeploymentStrategy v1beta1.DeploymentStrategy `json:"deploymentStrategy,omitempty"`
 	// +optional

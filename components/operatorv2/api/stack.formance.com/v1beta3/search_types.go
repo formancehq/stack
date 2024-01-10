@@ -51,9 +51,8 @@ type SearchSpec struct {
 	Batching v1beta1.Batching `json:"batching"`
 
 	// +optional
-	SearchResourceProperties *v1beta1.ResourceProperties `json:"searchResourceProperties,omitempty"`
+	SearchResourceProperties *ResourceProperties `json:"searchResourceProperties,omitempty"`
 	// +optional
-	BenthosResourceProperties *v1beta1.ResourceProperties `json:"benthosResourceProperties,omitempty"`
-	// todo: handle for all services
-	Annotations AnnotationsServicesSpec `json:"annotations,omitempty"`
+	BenthosResourceProperties *ResourceProperties     `json:"benthosResourceProperties,omitempty"`
+	Annotations               AnnotationsServicesSpec `json:"annotations,omitempty"`
 }

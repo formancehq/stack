@@ -17,12 +17,13 @@ limitations under the License.
 package v1beta1
 
 import (
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type SearchStreamProcessorSpec struct {
 	//+optional
-	ResourceProperties *ResourceProperties `json:"resourceProperties,omitempty"`
+	ResourceRequirements *v1.ResourceRequirements `json:"resourceRequirements,omitempty"`
 }
 
 // SearchSpec defines the desired state of Search

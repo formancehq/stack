@@ -90,7 +90,7 @@ func (r *SearchController) Reconcile(ctx Context, search *v1beta1.Search) error 
 			t.Spec.Batching = search.Spec.Batching
 			t.Spec.DevProperties = search.Spec.DevProperties
 			if streamProcessor := search.Spec.StreamProcessor; streamProcessor != nil {
-				t.Spec.ResourceProperties = search.Spec.StreamProcessor.ResourceProperties
+				t.Spec.ResourceProperties = search.Spec.StreamProcessor.ResourceRequirements
 			}
 			t.Spec.InitContainers = []corev1.Container{{
 				Name:  "init-mapping",
@@ -115,7 +115,7 @@ func (r *SearchController) Reconcile(ctx Context, search *v1beta1.Search) error 
 			Image:           image,
 			Ports:           []corev1.ContainerPort{deployments.StandardHTTPPort()},
 			Env:             env,
-			Resources:       GetResourcesWithDefault(search.Spec.ResourceProperties, ResourceSizeSmall()),
+			Resources:       GetResourcesRequirementsWithDefault(search.Spec.ResourceRequirements, ResourceSizeSmall()),
 			ImagePullPolicy: GetPullPolicy(image),
 			LivenessProbe:   deployments.DefaultLiveness("http"),
 		}),

@@ -181,7 +181,7 @@ func (r *AuthController) createDeployment(ctx Context, stack *v1beta1.Stack, aut
 				Args:      []string{"serve"},
 				Env:       env,
 				Image:     image,
-				Resources: GetResourcesWithDefault(auth.Spec.ResourceProperties, ResourceSizeSmall()),
+				Resources: GetResourcesRequirementsWithDefault(auth.Spec.ResourceRequirements, ResourceSizeSmall()),
 				VolumeMounts: []corev1.VolumeMount{{
 					Name:      "config",
 					ReadOnly:  true,

@@ -19,7 +19,7 @@ package formance_com
 import (
 	"embed"
 	"fmt"
-	v1beta1 "github.com/formancehq/operator/v2/api/formance.com/v1beta1"
+	"github.com/formancehq/operator/v2/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/deployments"
 	"github.com/formancehq/operator/v2/internal/resources/opentelemetryconfigurations"

@@ -261,7 +261,7 @@ func (r *LedgerController) setCommonContainerConfiguration(ctx Context, stack *v
 		return err
 	}
 
-	container.Resources = GetResourcesWithDefault(ledger.Spec.ResourceProperties, ResourceSizeSmall())
+	container.Resources = GetResourcesRequirementsWithDefault(ledger.Spec.ResourceRequirements, ResourceSizeSmall())
 	container.Image = image
 	container.ImagePullPolicy = GetPullPolicy(container.Image)
 	container.Env = append(container.Env, env...)

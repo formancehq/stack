@@ -1,49 +1,24 @@
 package core
 
 import (
-	"github.com/formancehq/operator/v2/api/formance.com/v1beta1"
+	"github.com/imdario/mergo"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 )
 
-func GetResourcesWithDefault(
-	resourceProperties *v1beta1.ResourceProperties,
+func GetResourcesRequirementsWithDefault(
+	resourceProperties *corev1.ResourceRequirements,
 	defaultResources corev1.ResourceRequirements,
 ) corev1.ResourceRequirements {
 	if resourceProperties == nil {
 		return defaultResources
 	}
 
-	resources := defaultResources
-	if resourceProperties.Request != nil {
-		if resources.Requests == nil {
-			resources.Requests = make(corev1.ResourceList)
-		}
-
-		if resourceProperties.Request.Cpu != "" {
-			resources.Requests[corev1.ResourceCPU] = resource.MustParse(resourceProperties.Request.Cpu)
-		}
-
-		if resourceProperties.Request.Memory != "" {
-			resources.Requests[corev1.ResourceMemory] = resource.MustParse(resourceProperties.Request.Memory)
-		}
+	if err := mergo.Merge(&defaultResources, resourceProperties); err != nil {
+		panic(err)
 	}
 
-	if resourceProperties.Limits != nil {
-		if resources.Limits == nil {
-			resources.Limits = make(corev1.ResourceList)
-		}
-
-		if resourceProperties.Limits.Cpu != "" {
-			resources.Limits[corev1.ResourceCPU] = resource.MustParse(resourceProperties.Limits.Cpu)
-		}
-
-		if resourceProperties.Limits.Memory != "" {
-			resources.Limits[corev1.ResourceMemory] = resource.MustParse(resourceProperties.Limits.Memory)
-		}
-	}
-
-	return resources
+	return defaultResources
 }
 
 func ResourceSizeSmall() corev1.ResourceRequirements {

@@ -31,7 +31,7 @@ type StreamProcessorSpec struct {
 	StackDependency `json:",inline"`
 	DevProperties   `json:",inline"`
 	//+optional
-	ResourceProperties *ResourceProperties `json:"resourceProperties,omitempty"`
+	ResourceProperties *corev1.ResourceRequirements `json:"resourceRequirements,omitempty"`
 	//+optional
 	Batching *Batching `json:"batching,omitempty"`
 	//+optional

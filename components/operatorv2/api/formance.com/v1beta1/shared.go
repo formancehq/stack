@@ -1,6 +1,7 @@
 package v1beta1
 
 import (
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -24,25 +25,12 @@ func (p DevProperties) IsDev() bool {
 	return p.Dev
 }
 
-type resource struct {
-	Cpu    string `json:"cpu,omitempty"`
-	Memory string `json:"memory,omitempty"`
-}
-
-// TODO: use k8s object
-type ResourceProperties struct {
-	// +optional
-	Request *resource `json:"request,omitempty"`
-	// +optional
-	Limits *resource `json:"limits,omitempty"`
-}
-
 type CommonServiceProperties struct {
 	DevProperties `json:",inline"`
 	//+optional
 	Version string `json:"version,omitempty"`
 	//+optional
-	ResourceProperties *ResourceProperties `json:"resourceProperties,omitempty"`
+	ResourceRequirements *v1.ResourceRequirements `json:"resourceRequirements,omitempty"`
 }
 
 // Condition contains details for one aspect of the current state of this API Resource.

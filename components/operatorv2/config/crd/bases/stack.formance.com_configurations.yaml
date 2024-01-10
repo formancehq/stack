@@ -188,7 +188,6 @@ spec:
                         - port
                         type: object
                       resourceProperties:
-                        description: 'TODO: use k8s object'
                         properties:
                           limits:
                             properties:
@@ -255,7 +254,6 @@ spec:
                       livenessEndpoint:
                         type: string
                       resourceProperties:
-                        description: 'TODO: use k8s object'
                         properties:
                           limits:
                             properties:
@@ -342,7 +340,6 @@ spec:
                         - port
                         type: object
                       resourceProperties:
-                        description: 'TODO: use k8s object'
                         properties:
                           limits:
                             properties:
@@ -398,7 +395,6 @@ spec:
                         - port
                         type: object
                       resourceProperties:
-                        description: 'TODO: use k8s object'
                         properties:
                           limits:
                             properties:
@@ -456,7 +452,6 @@ spec:
                         - port
                         type: object
                       resourceProperties:
-                        description: 'TODO: use k8s object'
                         properties:
                           limits:
                             properties:
@@ -513,7 +508,6 @@ spec:
                         - port
                         type: object
                       resourceProperties:
-                        description: 'TODO: use k8s object'
                         properties:
                           limits:
                             properties:
@@ -536,7 +530,6 @@ spec:
                   search:
                     properties:
                       annotations:
-                        description: 'todo: handle for all services'
                         properties:
                           service:
                             additionalProperties:
@@ -554,7 +547,6 @@ spec:
                         - period
                         type: object
                       benthosResourceProperties:
-                        description: 'TODO: use k8s object'
                         properties:
                           limits:
                             properties:
@@ -608,7 +600,6 @@ spec:
                             type: object
                         type: object
                       searchResourceProperties:
-                        description: 'TODO: use k8s object'
                         properties:
                           limits:
                             properties:
@@ -642,7 +633,6 @@ spec:
                       dev:
                         type: boolean
                       resourceProperties:
-                        description: 'TODO: use k8s object'
                         properties:
                           limits:
                             properties:
@@ -676,7 +666,6 @@ spec:
                       disabled:
                         type: boolean
                       resourceProperties:
-                        description: 'TODO: use k8s object'
                         properties:
                           limits:
                             properties:
@@ -730,7 +719,6 @@ spec:
                         - port
                         type: object
                       resourceProperties:
-                        description: 'TODO: use k8s object'
                         properties:
                           limits:
                             properties:

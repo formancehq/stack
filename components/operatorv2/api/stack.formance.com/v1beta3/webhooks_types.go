@@ -9,6 +9,6 @@ type WebhooksSpec struct {
 	// +optional
 	v1beta1.DevProperties `json:",inline"`
 	// +optional
-	ResourceProperties *v1beta1.ResourceProperties `json:"resourceProperties,omitempty"`
-	Annotations        AnnotationsServicesSpec     `json:"annotations,omitempty"`
+	ResourceProperties *ResourceProperties     `json:"resourceProperties,omitempty"`
+	Annotations        AnnotationsServicesSpec `json:"annotations,omitempty"`
 }
