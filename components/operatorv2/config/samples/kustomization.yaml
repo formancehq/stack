@@ -23,4 +23,7 @@ resources:
 - formance_v1beta1_elasticsearchconfiguration.yaml
 - formance_v1beta1_registries.yaml
 - formance_v1beta1_stargate.yaml
+- stack.formance.com_v1beta3_stack.yaml
+- stack.formance.com_v1beta3_configuration.yaml
+- stack.formance.com_v1beta3_versions.yaml
 #+kubebuilder:scaffold:manifestskustomizesamples

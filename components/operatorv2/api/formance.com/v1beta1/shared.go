@@ -29,6 +29,7 @@ type resource struct {
 	Memory string `json:"memory,omitempty"`
 }
 
+// TODO: use k8s object
 type ResourceProperties struct {
 	// +optional
 	Request *resource `json:"request,omitempty"`

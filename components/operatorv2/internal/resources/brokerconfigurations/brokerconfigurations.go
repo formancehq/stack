@@ -24,7 +24,8 @@ func GetEnvVars(ctx core.Context, stackName, serviceName string) ([]v1.EnvVar, e
 func BrokerEnvVars(broker v1beta1.BrokerConfigurationSpec, stackName, serviceName string) []v1.EnvVar {
 	ret := make([]v1.EnvVar, 0)
 
-	if broker.Kafka != nil {
+	switch {
+	case broker.Kafka != nil:
 		ret = append(ret,
 			core.Env("BROKER", "kafka"),
 			core.Env("PUBLISHER_KAFKA_ENABLED", "true"),
@@ -44,7 +45,7 @@ func BrokerEnvVars(broker v1beta1.BrokerConfigurationSpec, stackName, serviceNam
 				core.Env("PUBLISHER_KAFKA_TLS_ENABLED", "true"),
 			)
 		}
-	} else {
+	case broker.Nats != nil:
 		ret = append(ret,
 			core.Env("BROKER", "nats"),
 			core.Env("PUBLISHER_NATS_ENABLED", "true"),
@@ -52,5 +53,6 @@ func BrokerEnvVars(broker v1beta1.BrokerConfigurationSpec, stackName, serviceNam
 			core.Env("PUBLISHER_NATS_CLIENT_ID", fmt.Sprintf("%s-%s", stackName, serviceName)),
 		)
 	}
+
 	return ret
 }

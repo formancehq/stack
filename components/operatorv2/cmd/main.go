@@ -19,12 +19,14 @@ package main
 import (
 	"crypto/tls"
 	"flag"
+	"net/http"
+	"os"
+
+	"sigs.k8s.io/controller-runtime/pkg/client"
+
 	formancev1beta1 "github.com/formancehq/operator/v2/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/reconcilers"
-	"net/http"
-	"os"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
@@ -38,6 +40,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 
+	stackformancecomv1beta3 "github.com/formancehq/operator/v2/api/stack.formance.com/v1beta3"
 	_ "github.com/formancehq/operator/v2/internal/controller/formance.com"
 	//+kubebuilder:scaffold:imports
 )
@@ -50,6 +53,7 @@ var (
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 	utilruntime.Must(formancev1beta1.AddToScheme(scheme))
+	utilruntime.Must(stackformancecomv1beta3.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme
 }
 

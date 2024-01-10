@@ -3,7 +3,7 @@ package formance_com_test
 import (
 	"fmt"
 	v1beta1 "github.com/formancehq/operator/v2/api/formance.com/v1beta1"
-	. "github.com/formancehq/operator/v2/internal/controller/formance.com/testing"
+	. "github.com/formancehq/operator/v2/internal/controller/testing"
 	"github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/resources/brokerconfigurations"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"

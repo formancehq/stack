@@ -3,7 +3,7 @@ package formance_com_test
 import (
 	"fmt"
 	v1beta1 "github.com/formancehq/operator/v2/api/formance.com/v1beta1"
-	. "github.com/formancehq/operator/v2/internal/controller/formance.com/testing"
+	. "github.com/formancehq/operator/v2/internal/controller/testing"
 	"github.com/formancehq/operator/v2/internal/core"
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
@@ -69,6 +69,12 @@ var _ = Describe("TopicController", func() {
 		})
 		Context("Then updating removing all owner references", func() {
 			BeforeEach(func() {
+				Eventually(func(g Gomega) bool {
+					t := &v1beta1.Topic{}
+					g.Expect(Get(core.GetResourceName(topic.Name), t)).To(Succeed())
+					return t.Status.Ready
+				}).Should(BeTrue())
+
 				patch := client.MergeFrom(topic.DeepCopy())
 				Expect(controllerutil.RemoveOwnerReference(stack, topic, GetScheme())).To(Succeed())
 				Expect(Patch(topic, patch)).To(Succeed())

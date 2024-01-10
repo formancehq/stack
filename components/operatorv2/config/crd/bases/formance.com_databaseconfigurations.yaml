@@ -37,8 +37,6 @@ spec:
             properties:
               credentialsFromSecret:
                 type: string
-              debug:
-                type: boolean
               disableSSLMode:
                 type: boolean
               host:

@@ -49,17 +49,24 @@ func (r *TopicController) Reconcile(ctx Context, topic *v1beta1.Topic) error {
 
 	if !topic.DeletionTimestamp.IsZero() {
 		if controllerutil.ContainsFinalizer(topic, topicFinalizer) {
-			job, err := r.createDeleteJob(ctx, topic)
-			if err != nil {
-				return err
+			patch := client.MergeFrom(topic.DeepCopy())
+			if topic.Status.Configuration != nil {
+				switch {
+				case topic.Status.Configuration.Nats != nil:
+					job, err := r.createDeleteJob(ctx, topic)
+					if err != nil {
+						return err
+					}
+
+					if job.Status.Succeeded == 0 {
+						return ErrDeleted
+					}
+				}
 			}
 
-			if job.Status.Succeeded > 0 {
-				patch := client.MergeFrom(topic.DeepCopy())
-				if updated := controllerutil.RemoveFinalizer(topic, topicFinalizer); updated {
-					if err := ctx.GetClient().Patch(ctx, topic, patch); err != nil {
-						return errors.Wrap(err, "removing finalizer")
-					}
+			if updated := controllerutil.RemoveFinalizer(topic, topicFinalizer); updated {
+				if err := ctx.GetClient().Patch(ctx, topic, patch); err != nil {
+					return errors.Wrap(err, "removing finalizer")
 				}
 			}
 		}
@@ -82,6 +89,15 @@ func (r *TopicController) Reconcile(ctx Context, topic *v1beta1.Topic) error {
 		return err
 	}
 
+	patch := client.MergeFrom(topic.DeepCopy())
+	if controllerutil.AddFinalizer(topic, topicFinalizer) {
+		if err := ctx.GetClient().Patch(ctx, topic, patch); err != nil {
+			return err
+		}
+	}
+
+	topic.Status.Configuration = &brokerConfiguration.Spec
+
 	switch {
 	case brokerConfiguration.Spec.Nats != nil:
 		job, err := r.createJob(ctx, topic, *brokerConfiguration)
@@ -89,14 +105,6 @@ func (r *TopicController) Reconcile(ctx Context, topic *v1beta1.Topic) error {
 			return err
 		}
 
-		patch := client.MergeFrom(topic.DeepCopy())
-		if controllerutil.AddFinalizer(topic, topicFinalizer) {
-			if err := ctx.GetClient().Patch(ctx, topic, patch); err != nil {
-				return err
-			}
-		}
-
-		topic.Status.Configuration = &brokerConfiguration.Spec
 		if job.Status.Succeeded == 0 {
 			return ErrPending
 		}

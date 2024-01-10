@@ -40,8 +40,6 @@ const (
 // +kubebuilder:rbac:groups=formance.com,resources=stacks,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=formance.com,resources=stacks/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=formance.com,resources=stacks/finalizers,verbs=update
-// +kubebuilder:rbac:groups=formance.com,resources=configurations,verbs=get;list;watch
-// +kubebuilder:rbac:groups=formance.com,resources=versions,verbs=get;list;watch
 // +kubebuilder:rbac:groups=formance.com,resources=opentelemetryconfigurations,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=formance.com,resources=opentelemetryconfigurations/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=formance.com,resources=opentelemetryconfigurations/finalizers,verbs=update

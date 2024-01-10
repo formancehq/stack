@@ -89,7 +89,9 @@ func (r *SearchController) Reconcile(ctx Context, search *v1beta1.Search) error 
 			t.Spec.Stack = stack.Name
 			t.Spec.Batching = search.Spec.Batching
 			t.Spec.DevProperties = search.Spec.DevProperties
-			t.Spec.ResourceProperties = search.Spec.CommonServiceProperties.ResourceProperties
+			if streamProcessor := search.Spec.StreamProcessor; streamProcessor != nil {
+				t.Spec.ResourceProperties = search.Spec.StreamProcessor.ResourceProperties
+			}
 			t.Spec.InitContainers = []corev1.Container{{
 				Name:  "init-mapping",
 				Image: image,

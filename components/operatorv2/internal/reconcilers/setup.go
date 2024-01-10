@@ -57,9 +57,11 @@ func Setup(mgr ctrl.Manager, platform core.Platform) error {
 		us.SetGroupVersionKind(kinds[0])
 		if err := mgr.GetFieldIndexer().
 			IndexField(context.Background(), us, "stack", func(object client.Object) []string {
-				return []string{
-					object.(*unstructured.Unstructured).Object["spec"].(map[string]any)["stack"].(string),
+				stack := object.(*unstructured.Unstructured).Object["spec"].(map[string]any)["stack"]
+				if stack == nil {
+					return []string{}
 				}
+				return []string{stack.(string)}
 			}); err != nil {
 			mgr.GetLogger().Error(err, "indexing stack field", "type", &unstructured.Unstructured{})
 			return err

@@ -20,12 +20,19 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+type SearchStreamProcessorSpec struct {
+	//+optional
+	ResourceProperties *ResourceProperties `json:"resourceProperties,omitempty"`
+}
+
 // SearchSpec defines the desired state of Search
 type SearchSpec struct {
 	StackDependency         `json:",inline"`
 	CommonServiceProperties `json:",inline"`
 	//+optional
 	Batching *Batching `json:"batching,omitempty"`
+	// +optional
+	StreamProcessor *SearchStreamProcessorSpec `json:"streamProcessor,omitempty"`
 }
 
 // SearchStatus defines the observed state of Search

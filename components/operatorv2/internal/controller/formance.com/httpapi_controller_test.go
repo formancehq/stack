@@ -2,7 +2,7 @@ package formance_com_test
 
 import (
 	v1beta1 "github.com/formancehq/operator/v2/api/formance.com/v1beta1"
-	. "github.com/formancehq/operator/v2/internal/controller/formance.com/testing"
+	. "github.com/formancehq/operator/v2/internal/controller/testing"
 	"github.com/formancehq/operator/v2/internal/resources/httpapis"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"

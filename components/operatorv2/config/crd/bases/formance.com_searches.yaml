@@ -58,6 +58,7 @@ spec:
               dev:
                 type: boolean
               resourceProperties:
+                description: 'TODO: use k8s object'
                 properties:
                   limits:
                     properties:
@@ -76,6 +77,27 @@ spec:
                 type: object
               stack:
                 type: string
+              streamProcessor:
+                properties:
+                  resourceProperties:
+                    description: 'TODO: use k8s object'
+                    properties:
+                      limits:
+                        properties:
+                          cpu:
+                            type: string
+                          memory:
+                            type: string
+                        type: object
+                      request:
+                        properties:
+                          cpu:
+                            type: string
+                          memory:
+                            type: string
+                        type: object
+                    type: object
+                type: object
               version:
                 type: string
             type: object

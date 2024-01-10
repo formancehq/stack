@@ -3,7 +3,9 @@ package testing
 import (
 	"context"
 	"github.com/formancehq/operator/v2/api/formance.com/v1beta1"
+	"github.com/formancehq/operator/v2/api/stack.formance.com/v1beta3"
 	_ "github.com/formancehq/operator/v2/internal/controller/formance.com"
+	_ "github.com/formancehq/operator/v2/internal/controller/stack.formance.com"
 	"github.com/formancehq/operator/v2/internal/core"
 	"github.com/formancehq/operator/v2/internal/reconcilers"
 	. "github.com/onsi/ginkgo/v2"
@@ -25,6 +27,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	"sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
+	"time"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -48,7 +51,7 @@ var _ = BeforeSuite(func() {
 
 	testEnv = &envtest.Environment{
 		CRDDirectoryPaths: []string{
-			filepath.Join(filepath.Dir(filename), "..", "..", "..", "..", "config", "crd", "bases"),
+			filepath.Join(filepath.Dir(filename), "..", "..", "..", "config", "crd", "bases"),
 		},
 		ErrorIfCRDPathMissing: true,
 	}
@@ -59,6 +62,7 @@ var _ = BeforeSuite(func() {
 	Expect(restConfig).NotTo(BeNil())
 
 	Expect(v1beta1.AddToScheme(scheme.Scheme)).To(Succeed())
+	Expect(v1beta3.AddToScheme(scheme.Scheme)).To(Succeed())
 
 	k8sClient, err = client.New(restConfig, client.Options{
 		Scheme: scheme.Scheme,
@@ -80,7 +84,7 @@ var _ = BeforeSuite(func() {
 	})
 	Expect(err).ToNot(HaveOccurred())
 
-	//SetDefaultEventuallyTimeout(5 * time.Second)
+	SetDefaultEventuallyTimeout(5 * time.Second)
 
 	Expect(reconcilers.Setup(mgr, core.Platform{
 		Region:      "us-west-1",

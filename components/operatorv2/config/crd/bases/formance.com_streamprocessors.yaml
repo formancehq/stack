@@ -1365,6 +1365,7 @@ spec:
                   type: object
                 type: array
               resourceProperties:
+                description: 'TODO: use k8s object'
                 properties:
                   limits:
                     properties:
