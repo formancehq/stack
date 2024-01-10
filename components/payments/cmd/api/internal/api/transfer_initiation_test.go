@@ -159,7 +159,6 @@ func TestListTransferInitiations(t *testing.T) {
 					},
 					CreatedAt:   time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
 					ScheduledAt: time.Date(2023, 11, 22, 8, 30, 0, 0, time.UTC),
-					UpdatedAt:   time.Date(2023, 11, 22, 8, 30, 0, 0, time.UTC),
 					Description: "test1",
 					Type:        models.TransferInitiationTypePayout,
 					SourceAccountID: &models.AccountID{
@@ -174,9 +173,26 @@ func TestListTransferInitiations(t *testing.T) {
 					ConnectorID: connectorID,
 					Amount:      big.NewInt(100),
 					Asset:       models.Asset("EUR/2"),
-					Attempts:    1,
-					Status:      models.TransferInitiationStatusProcessed,
-					Error:       "",
+					RelatedAdjustments: []*models.TransferInitiationAdjustments{
+						{
+							ID: uuid.New(),
+							TransferInitiationID: models.TransferInitiationID{
+								Reference:   "t1",
+								ConnectorID: connectorID,
+							},
+							CreatedAt: time.Date(2023, 11, 22, 8, 45, 0, 0, time.UTC),
+							Status:    models.TransferInitiationStatusProcessed,
+						},
+						{
+							ID: uuid.New(),
+							TransferInitiationID: models.TransferInitiationID{
+								Reference:   "t1",
+								ConnectorID: connectorID,
+							},
+							CreatedAt: time.Date(2023, 11, 22, 8, 40, 0, 0, time.UTC),
+							Status:    models.TransferInitiationStatusWaitingForValidation,
+						},
+					},
 					RelatedPayments: []*models.TransferInitiationPayments{
 						{
 							TransferInitiationID: models.TransferInitiationID{
@@ -206,7 +222,6 @@ func TestListTransferInitiations(t *testing.T) {
 					},
 					CreatedAt:   time.Date(2023, 11, 22, 9, 0, 0, 0, time.UTC),
 					ScheduledAt: time.Date(2023, 11, 22, 9, 30, 0, 0, time.UTC),
-					UpdatedAt:   time.Date(2023, 11, 22, 9, 30, 0, 0, time.UTC),
 					Description: "test2",
 					Type:        models.TransferInitiationTypeTransfer,
 					SourceAccountID: &models.AccountID{
@@ -221,9 +236,27 @@ func TestListTransferInitiations(t *testing.T) {
 					ConnectorID: connectorID,
 					Amount:      big.NewInt(2000),
 					Asset:       models.Asset("USD/2"),
-					Attempts:    4,
-					Status:      models.TransferInitiationStatusFailed,
-					Error:       "error",
+					RelatedAdjustments: []*models.TransferInitiationAdjustments{
+						{
+							ID: uuid.New(),
+							TransferInitiationID: models.TransferInitiationID{
+								Reference:   "t2",
+								ConnectorID: connectorID,
+							},
+							CreatedAt: time.Date(2023, 11, 22, 9, 45, 0, 0, time.UTC),
+							Status:    models.TransferInitiationStatusFailed,
+							Error:     "error",
+						},
+						{
+							ID: uuid.New(),
+							TransferInitiationID: models.TransferInitiationID{
+								Reference:   "t2",
+								ConnectorID: connectorID,
+							},
+							CreatedAt: time.Date(2023, 11, 22, 9, 40, 0, 0, time.UTC),
+							Status:    models.TransferInitiationStatusWaitingForValidation,
+						},
+					},
 				},
 			}
 
@@ -232,7 +265,6 @@ func TestListTransferInitiations(t *testing.T) {
 					ID:                   listTFsResponse[0].ID.String(),
 					Reference:            listTFsResponse[0].ID.Reference,
 					CreatedAt:            listTFsResponse[0].CreatedAt,
-					UpdatedAt:            listTFsResponse[0].UpdatedAt,
 					ScheduledAt:          listTFsResponse[0].ScheduledAt,
 					Description:          listTFsResponse[0].Description,
 					SourceAccountID:      listTFsResponse[0].SourceAccountID.String(),
@@ -241,16 +273,15 @@ func TestListTransferInitiations(t *testing.T) {
 					Type:                 listTFsResponse[0].Type.String(),
 					Amount:               listTFsResponse[0].Amount,
 					Asset:                listTFsResponse[0].Asset.String(),
-					Status:               listTFsResponse[0].Status.String(),
+					Status:               models.TransferInitiationStatusProcessed.String(),
 					ConnectorID:          listTFsResponse[0].ConnectorID.String(),
-					Error:                listTFsResponse[0].Error,
+					Error:                "",
 					Metadata:             listTFsResponse[0].Metadata,
 				},
 				{
 					ID:                   listTFsResponse[1].ID.String(),
 					Reference:            listTFsResponse[1].ID.Reference,
 					CreatedAt:            listTFsResponse[1].CreatedAt,
-					UpdatedAt:            listTFsResponse[1].UpdatedAt,
 					ScheduledAt:          listTFsResponse[1].ScheduledAt,
 					Description:          listTFsResponse[1].Description,
 					SourceAccountID:      listTFsResponse[1].SourceAccountID.String(),
@@ -260,8 +291,8 @@ func TestListTransferInitiations(t *testing.T) {
 					Amount:               listTFsResponse[1].Amount,
 					Asset:                listTFsResponse[1].Asset.String(),
 					ConnectorID:          listTFsResponse[1].ConnectorID.String(),
-					Status:               listTFsResponse[1].Status.String(),
-					Error:                listTFsResponse[1].Error,
+					Status:               models.TransferInitiationStatusFailed.String(),
+					Error:                "error",
 					Metadata:             listTFsResponse[1].Metadata,
 				},
 			}
@@ -405,7 +436,6 @@ func TestGetTransferInitiation(t *testing.T) {
 					},
 					CreatedAt:   time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
 					ScheduledAt: time.Date(2023, 11, 22, 8, 30, 0, 0, time.UTC),
-					UpdatedAt:   time.Date(2023, 11, 22, 8, 30, 0, 0, time.UTC),
 					Description: "test1",
 					Type:        models.TransferInitiationTypePayout,
 					SourceAccountID: &models.AccountID{
@@ -420,9 +450,26 @@ func TestGetTransferInitiation(t *testing.T) {
 					ConnectorID: connectorID,
 					Amount:      big.NewInt(100),
 					Asset:       models.Asset("EUR/2"),
-					Attempts:    1,
-					Status:      models.TransferInitiationStatusProcessed,
-					Error:       "",
+					RelatedAdjustments: []*models.TransferInitiationAdjustments{
+						{
+							ID: uuid.New(),
+							TransferInitiationID: models.TransferInitiationID{
+								Reference:   "t1",
+								ConnectorID: connectorID,
+							},
+							CreatedAt: time.Date(2023, 11, 22, 8, 45, 0, 0, time.UTC),
+							Status:    models.TransferInitiationStatusProcessed,
+						},
+						{
+							ID: uuid.New(),
+							TransferInitiationID: models.TransferInitiationID{
+								Reference:   "t1",
+								ConnectorID: connectorID,
+							},
+							CreatedAt: time.Date(2023, 11, 22, 8, 40, 0, 0, time.UTC),
+							Status:    models.TransferInitiationStatusWaitingForValidation,
+						},
+					},
 					RelatedPayments: []*models.TransferInitiationPayments{
 						{
 							TransferInitiationID: models.TransferInitiationID{
@@ -451,7 +498,6 @@ func TestGetTransferInitiation(t *testing.T) {
 						ID:                   getTransferInitiationResponse.ID.String(),
 						Reference:            getTransferInitiationResponse.ID.Reference,
 						CreatedAt:            getTransferInitiationResponse.CreatedAt,
-						UpdatedAt:            getTransferInitiationResponse.UpdatedAt,
 						ScheduledAt:          getTransferInitiationResponse.ScheduledAt,
 						Description:          getTransferInitiationResponse.Description,
 						SourceAccountID:      getTransferInitiationResponse.SourceAccountID.String(),
@@ -461,8 +507,8 @@ func TestGetTransferInitiation(t *testing.T) {
 						Amount:               getTransferInitiationResponse.Amount,
 						ConnectorID:          getTransferInitiationResponse.ConnectorID.String(),
 						Asset:                getTransferInitiationResponse.Asset.String(),
-						Status:               getTransferInitiationResponse.Status.String(),
-						Error:                getTransferInitiationResponse.Error,
+						Status:               models.TransferInitiationStatusProcessed.String(),
+						Error:                "",
 						Metadata:             getTransferInitiationResponse.Metadata,
 					},
 					RelatedPayments: []*transferInitiationPaymentsResponse{
@@ -471,6 +517,22 @@ func TestGetTransferInitiation(t *testing.T) {
 							CreatedAt: getTransferInitiationResponse.RelatedPayments[0].CreatedAt,
 							Status:    getTransferInitiationResponse.RelatedPayments[0].Status.String(),
 							Error:     getTransferInitiationResponse.RelatedPayments[0].Error,
+						},
+					},
+					RelatedAdjustments: []*transferInitiationAdjustmentsResponse{
+						{
+							AdjustmentID: getTransferInitiationResponse.RelatedAdjustments[0].ID.String(),
+							CreatedAt:    getTransferInitiationResponse.RelatedAdjustments[0].CreatedAt,
+							Status:       getTransferInitiationResponse.RelatedAdjustments[0].Status.String(),
+							Error:        getTransferInitiationResponse.RelatedAdjustments[0].Error,
+							Metadata:     getTransferInitiationResponse.RelatedAdjustments[0].Metadata,
+						},
+						{
+							AdjustmentID: getTransferInitiationResponse.RelatedAdjustments[1].ID.String(),
+							CreatedAt:    getTransferInitiationResponse.RelatedAdjustments[1].CreatedAt,
+							Status:       getTransferInitiationResponse.RelatedAdjustments[1].Status.String(),
+							Error:        getTransferInitiationResponse.RelatedAdjustments[1].Error,
+							Metadata:     getTransferInitiationResponse.RelatedAdjustments[1].Metadata,
 						},
 					},
 				}
@@ -482,7 +544,6 @@ func TestGetTransferInitiation(t *testing.T) {
 					},
 					CreatedAt:   time.Date(2023, 11, 22, 9, 0, 0, 0, time.UTC),
 					ScheduledAt: time.Date(2023, 11, 22, 9, 30, 0, 0, time.UTC),
-					UpdatedAt:   time.Date(2023, 11, 22, 9, 30, 0, 0, time.UTC),
 					Description: "test2",
 					Type:        models.TransferInitiationTypeTransfer,
 					SourceAccountID: &models.AccountID{
@@ -497,16 +558,33 @@ func TestGetTransferInitiation(t *testing.T) {
 					ConnectorID: connectorID,
 					Amount:      big.NewInt(2000),
 					Asset:       models.Asset("USD/2"),
-					Attempts:    4,
-					Status:      models.TransferInitiationStatusFailed,
-					Error:       "error",
+					RelatedAdjustments: []*models.TransferInitiationAdjustments{
+						{
+							ID: uuid.New(),
+							TransferInitiationID: models.TransferInitiationID{
+								Reference:   "t2",
+								ConnectorID: connectorID,
+							},
+							CreatedAt: time.Date(2023, 11, 22, 9, 45, 0, 0, time.UTC),
+							Status:    models.TransferInitiationStatusFailed,
+							Error:     "error",
+						},
+						{
+							ID: uuid.New(),
+							TransferInitiationID: models.TransferInitiationID{
+								Reference:   "t2",
+								ConnectorID: connectorID,
+							},
+							CreatedAt: time.Date(2023, 11, 22, 9, 40, 0, 0, time.UTC),
+							Status:    models.TransferInitiationStatusWaitingForValidation,
+						},
+					},
 				}
 				expectedTransferInitiationResponse = &readTransferInitiationResponse{
 					transferInitiationResponse: transferInitiationResponse{
 						ID:                   getTransferInitiationResponse.ID.String(),
 						Reference:            getTransferInitiationResponse.ID.Reference,
 						CreatedAt:            getTransferInitiationResponse.CreatedAt,
-						UpdatedAt:            getTransferInitiationResponse.UpdatedAt,
 						ScheduledAt:          getTransferInitiationResponse.ScheduledAt,
 						Description:          getTransferInitiationResponse.Description,
 						SourceAccountID:      getTransferInitiationResponse.SourceAccountID.String(),
@@ -516,9 +594,25 @@ func TestGetTransferInitiation(t *testing.T) {
 						Amount:               getTransferInitiationResponse.Amount,
 						ConnectorID:          getTransferInitiationResponse.ConnectorID.String(),
 						Asset:                getTransferInitiationResponse.Asset.String(),
-						Status:               getTransferInitiationResponse.Status.String(),
-						Error:                getTransferInitiationResponse.Error,
+						Status:               models.TransferInitiationStatusFailed.String(),
+						Error:                "error",
 						Metadata:             getTransferInitiationResponse.Metadata,
+					},
+					RelatedAdjustments: []*transferInitiationAdjustmentsResponse{
+						{
+							AdjustmentID: getTransferInitiationResponse.RelatedAdjustments[0].ID.String(),
+							CreatedAt:    getTransferInitiationResponse.RelatedAdjustments[0].CreatedAt,
+							Status:       getTransferInitiationResponse.RelatedAdjustments[0].Status.String(),
+							Error:        getTransferInitiationResponse.RelatedAdjustments[0].Error,
+							Metadata:     getTransferInitiationResponse.RelatedAdjustments[0].Metadata,
+						},
+						{
+							AdjustmentID: getTransferInitiationResponse.RelatedAdjustments[1].ID.String(),
+							CreatedAt:    getTransferInitiationResponse.RelatedAdjustments[1].CreatedAt,
+							Status:       getTransferInitiationResponse.RelatedAdjustments[1].Status.String(),
+							Error:        getTransferInitiationResponse.RelatedAdjustments[1].Error,
+							Metadata:     getTransferInitiationResponse.RelatedAdjustments[1].Metadata,
+						},
 					},
 				}
 			}

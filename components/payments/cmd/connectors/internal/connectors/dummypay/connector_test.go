@@ -94,7 +94,7 @@ func (m *MockIngester) IngestBalances(ctx context.Context, batch ingestion.Balan
 	return nil
 }
 
-func (m *MockIngester) UpdateTransferInitiationPaymentsStatus(ctx context.Context, tf *models.TransferInitiation, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, attempts int, updatedAt time.Time) error {
+func (m *MockIngester) UpdateTransferInitiationPaymentsStatus(ctx context.Context, tf *models.TransferInitiation, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, updatedAt time.Time) error {
 	return nil
 }
 

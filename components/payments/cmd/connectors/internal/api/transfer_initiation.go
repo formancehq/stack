@@ -16,7 +16,6 @@ import (
 type transferInitiationResponse struct {
 	ID                   string            `json:"id"`
 	CreatedAt            time.Time         `json:"createdAt"`
-	UpdatedAt            time.Time         `json:"updatedAt"`
 	ScheduledAt          time.Time         `json:"scheduledAt"`
 	Description          string            `json:"description"`
 	SourceAccountID      string            `json:"sourceAccountID"`
@@ -54,7 +53,6 @@ func createTransferInitiationHandler(b backend.ServiceBackend) http.HandlerFunc 
 		data := &transferInitiationResponse{
 			ID:                   tf.ID.String(),
 			CreatedAt:            tf.CreatedAt,
-			UpdatedAt:            tf.UpdatedAt,
 			ScheduledAt:          tf.ScheduledAt,
 			Description:          tf.Description,
 			SourceAccountID:      tf.SourceAccountID.String(),
@@ -63,9 +61,13 @@ func createTransferInitiationHandler(b backend.ServiceBackend) http.HandlerFunc 
 			Type:                 tf.Type.String(),
 			Amount:               tf.Amount,
 			Asset:                tf.Asset.String(),
-			Status:               tf.Status.String(),
-			Error:                tf.Error,
 			Metadata:             tf.Metadata,
+		}
+
+		if len(tf.RelatedAdjustments) > 0 {
+			// Take the status and error from the last adjustment
+			data.Status = tf.RelatedAdjustments[0].Status.String()
+			data.Error = tf.RelatedAdjustments[0].Error
 		}
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[transferInitiationResponse]{

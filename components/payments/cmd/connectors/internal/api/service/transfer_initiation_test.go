@@ -68,7 +68,15 @@ func TestCreateTransferInitiation(t *testing.T) {
 				Type:                 models.TransferInitiationTypeTransfer,
 				Amount:               big.NewInt(100),
 				Asset:                models.Asset("EUR/2"),
-				Status:               models.TransferInitiationStatusWaitingForValidation,
+				RelatedAdjustments: []*models.TransferInitiationAdjustments{
+					{
+						TransferInitiationID: models.TransferInitiationID{
+							Reference:   "ref1",
+							ConnectorID: connectorDummyPay.ID,
+						},
+						Status: models.TransferInitiationStatusWaitingForValidation,
+					},
+				},
 			},
 		},
 		{
@@ -98,7 +106,15 @@ func TestCreateTransferInitiation(t *testing.T) {
 				Type:                 models.TransferInitiationTypeTransfer,
 				Amount:               big.NewInt(100),
 				Asset:                models.Asset("EUR/2"),
-				Status:               models.TransferInitiationStatusWaitingForValidation,
+				RelatedAdjustments: []*models.TransferInitiationAdjustments{
+					{
+						TransferInitiationID: models.TransferInitiationID{
+							Reference:   "ref1",
+							ConnectorID: connectorDummyPay.ID,
+						},
+						Status: models.TransferInitiationStatusWaitingForValidation,
+					},
+				},
 			},
 		},
 		{
@@ -130,7 +146,15 @@ func TestCreateTransferInitiation(t *testing.T) {
 				Type:                 models.TransferInitiationTypeTransfer,
 				Amount:               big.NewInt(100),
 				Asset:                models.Asset("EUR/2"),
-				Status:               models.TransferInitiationStatusValidated,
+				RelatedAdjustments: []*models.TransferInitiationAdjustments{
+					{
+						TransferInitiationID: models.TransferInitiationID{
+							Reference:   "ref1",
+							ConnectorID: connectorDummyPay.ID,
+						},
+						Status: models.TransferInitiationStatusValidated,
+					},
+				},
 			},
 		},
 		{
@@ -326,7 +350,9 @@ func TestCreateTransferInitiation(t *testing.T) {
 			} else {
 				require.NoError(t, err)
 				tc.expectedTF.CreatedAt = tf.CreatedAt
-				tc.expectedTF.UpdatedAt = tf.UpdatedAt
+				require.Len(t, tf.RelatedAdjustments, 1)
+				tc.expectedTF.RelatedAdjustments[0].CreatedAt = tf.RelatedAdjustments[0].CreatedAt
+				tc.expectedTF.RelatedAdjustments[0].ID = tf.RelatedAdjustments[0].ID
 				require.Equal(t, tc.expectedTF, tf)
 			}
 		})

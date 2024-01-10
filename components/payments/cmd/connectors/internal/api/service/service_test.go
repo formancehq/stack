@@ -39,7 +39,6 @@ var (
 		},
 		CreatedAt:   time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
 		ScheduledAt: time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
-		UpdatedAt:   time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
 		Description: "test",
 		Type:        models.TransferInitiationTypeTransfer,
 		SourceAccountID: &models.AccountID{
@@ -54,8 +53,17 @@ var (
 		ConnectorID: connectorDummyPay.ID,
 		Amount:      big.NewInt(100),
 		Asset:       "EUR/2",
-		Attempts:    0,
-		Status:      models.TransferInitiationStatusWaitingForValidation,
+		RelatedAdjustments: []*models.TransferInitiationAdjustments{
+			{
+				ID: uuid.New(),
+				TransferInitiationID: models.TransferInitiationID{
+					Reference:   "ref1",
+					ConnectorID: connectorDummyPay.ID,
+				},
+				CreatedAt: time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				Status:    models.TransferInitiationStatusWaitingForValidation,
+			},
+		},
 	}
 
 	transferInitiationFailed = models.TransferInitiation{
@@ -65,7 +73,6 @@ var (
 		},
 		CreatedAt:   time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
 		ScheduledAt: time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
-		UpdatedAt:   time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
 		Description: "test",
 		Type:        models.TransferInitiationTypeTransfer,
 		SourceAccountID: &models.AccountID{
@@ -80,9 +87,27 @@ var (
 		ConnectorID: connectorDummyPay.ID,
 		Amount:      big.NewInt(100),
 		Asset:       "EUR/2",
-		Attempts:    1,
-		Status:      models.TransferInitiationStatusFailed,
-		Error:       "some error",
+		RelatedAdjustments: []*models.TransferInitiationAdjustments{
+			{
+				ID: uuid.New(),
+				TransferInitiationID: models.TransferInitiationID{
+					Reference:   "ref2",
+					ConnectorID: connectorDummyPay.ID,
+				},
+				CreatedAt: time.Date(2023, 11, 22, 9, 0, 0, 0, time.UTC),
+				Status:    models.TransferInitiationStatusFailed,
+				Error:     "some error",
+			},
+			{
+				ID: uuid.New(),
+				TransferInitiationID: models.TransferInitiationID{
+					Reference:   "ref2",
+					ConnectorID: connectorDummyPay.ID,
+				},
+				CreatedAt: time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				Status:    models.TransferInitiationStatusWaitingForValidation,
+			},
+		},
 	}
 )
 
@@ -169,7 +194,7 @@ func (m *MockStore) ReadTransferInitiation(ctx context.Context, id models.Transf
 	return nil, storage.ErrNotFound
 }
 
-func (m *MockStore) UpdateTransferInitiationPaymentsStatus(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, attempts int, updatedAt time.Time) error {
+func (m *MockStore) UpdateTransferInitiationPaymentsStatus(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, adjustment *models.TransferInitiationAdjustments) error {
 	return nil
 }
 

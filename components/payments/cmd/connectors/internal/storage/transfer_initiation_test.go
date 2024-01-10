@@ -8,20 +8,24 @@ import (
 
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )
 
 var (
-	t1ID models.TransferInitiationID
-	t1T  = time.Date(2023, 11, 14, 5, 8, 0, 0, time.UTC)
-	t1   *models.TransferInitiation
+	t1ID        models.TransferInitiationID
+	t1T         = time.Date(2023, 11, 14, 5, 8, 0, 0, time.UTC)
+	t1          *models.TransferInitiation
+	adjumentID1 = uuid.New()
 
-	t2ID models.TransferInitiationID
-	t2T  = time.Date(2023, 11, 14, 5, 7, 0, 0, time.UTC)
-	t2   *models.TransferInitiation
+	t2ID        models.TransferInitiationID
+	t2T         = time.Date(2023, 11, 14, 5, 7, 0, 0, time.UTC)
+	t2          *models.TransferInitiation
+	adjumentID2 = uuid.New()
 
-	tAddPayments  = time.Date(2023, 11, 14, 5, 1, 10, 0, time.UTC)
-	tUpdateStatus = time.Date(2023, 11, 14, 5, 1, 15, 0, time.UTC)
+	tAddPayments   = time.Date(2023, 11, 14, 5, 9, 10, 0, time.UTC)
+	tUpdateStatus1 = time.Date(2023, 11, 14, 5, 9, 15, 0, time.UTC)
+	tUpdateStatus2 = time.Date(2023, 11, 14, 5, 9, 16, 0, time.UTC)
 )
 
 func TestTransferInitiations(t *testing.T) {
@@ -48,14 +52,20 @@ func testCreateTransferInitiations(t *testing.T, store *storage.Storage) {
 		ID:          t1ID,
 		CreatedAt:   t1T,
 		ScheduledAt: t1T,
-		UpdatedAt:   t1T,
 		Description: "test_description",
 		Type:        models.TransferInitiationTypeTransfer,
 		ConnectorID: connectorID,
 		Provider:    models.ConnectorProviderDummyPay,
 		Amount:      big.NewInt(100),
 		Asset:       models.Asset("USD/2"),
-		Status:      models.TransferInitiationStatusWaitingForValidation,
+		RelatedAdjustments: []*models.TransferInitiationAdjustments{
+			{
+				ID:                   adjumentID1,
+				TransferInitiationID: t1ID,
+				CreatedAt:            t1T,
+				Status:               models.TransferInitiationStatusWaitingForValidation,
+			},
+		},
 	}
 
 	t2ID = models.TransferInitiationID{
@@ -66,7 +76,6 @@ func testCreateTransferInitiations(t *testing.T, store *storage.Storage) {
 		ID:                   t2ID,
 		CreatedAt:            t2T,
 		ScheduledAt:          t2T,
-		UpdatedAt:            t2T,
 		Description:          "test_description2",
 		Type:                 models.TransferInitiationTypeTransfer,
 		ConnectorID:          connectorID,
@@ -75,7 +84,14 @@ func testCreateTransferInitiations(t *testing.T, store *storage.Storage) {
 		Asset:                models.Asset("USD/2"),
 		SourceAccountID:      &acc1ID,
 		DestinationAccountID: acc2ID,
-		Status:               models.TransferInitiationStatusWaitingForValidation,
+		RelatedAdjustments: []*models.TransferInitiationAdjustments{
+			{
+				ID:                   adjumentID2,
+				TransferInitiationID: t2ID,
+				CreatedAt:            t2T,
+				Status:               models.TransferInitiationStatusWaitingForValidation,
+			},
+		},
 	}
 
 	// Missing source account id and destination account id
@@ -102,7 +118,7 @@ func testListTransferInitiations(t *testing.T, store *storage.Storage) {
 	require.NoError(t, err)
 	require.Len(t, tfs, 1)
 	require.True(t, paginationDetails.HasMore)
-	checkTransferInitiationsEqual(t, t1, tfs[0])
+	checkTransferInitiationsEqual(t, t1, tfs[0], false)
 
 	query, err = storage.Paginate(1, paginationDetails.NextPage, nil, nil)
 	require.NoError(t, err)
@@ -111,7 +127,7 @@ func testListTransferInitiations(t *testing.T, store *storage.Storage) {
 	require.NoError(t, err)
 	require.Len(t, tfs, 1)
 	require.False(t, paginationDetails.HasMore)
-	checkTransferInitiationsEqual(t, t2, tfs[0])
+	checkTransferInitiationsEqual(t, t2, tfs[0], false)
 
 	query, err = storage.Paginate(1, paginationDetails.PreviousPage, nil, nil)
 	require.NoError(t, err)
@@ -120,7 +136,7 @@ func testListTransferInitiations(t *testing.T, store *storage.Storage) {
 	require.NoError(t, err)
 	require.Len(t, tfs, 1)
 	require.True(t, paginationDetails.HasMore)
-	checkTransferInitiationsEqual(t, t1, tfs[0])
+	checkTransferInitiationsEqual(t, t1, tfs[0], false)
 
 	query, err = storage.Paginate(2, "", nil, nil)
 	require.NoError(t, err)
@@ -129,8 +145,8 @@ func testListTransferInitiations(t *testing.T, store *storage.Storage) {
 	require.NoError(t, err)
 	require.Len(t, tfs, 2)
 	require.False(t, paginationDetails.HasMore)
-	checkTransferInitiationsEqual(t, t1, tfs[0])
-	checkTransferInitiationsEqual(t, t2, tfs[1])
+	checkTransferInitiationsEqual(t, t1, tfs[0], false)
+	checkTransferInitiationsEqual(t, t2, tfs[1], false)
 }
 
 func testGetTransferInitiation(
@@ -155,14 +171,13 @@ func testGetTransferInitiation(
 		tf.RelatedPayments = payments
 	}
 
-	checkTransferInitiationsEqual(t, expected, tf)
+	checkTransferInitiationsEqual(t, expected, tf, true)
 }
 
-func checkTransferInitiationsEqual(t *testing.T, t1, t2 *models.TransferInitiation) {
+func checkTransferInitiationsEqual(t *testing.T, t1, t2 *models.TransferInitiation, checkRelatedAdjusment bool) {
 	require.Equal(t, t1.ID, t2.ID)
 	require.Equal(t, t1.CreatedAt.UTC(), t2.CreatedAt.UTC())
 	require.Equal(t, t1.ScheduledAt.UTC(), t2.ScheduledAt.UTC())
-	require.Equal(t, t1.UpdatedAt.UTC(), t2.UpdatedAt.UTC())
 	require.Equal(t, t1.Description, t2.Description)
 	require.Equal(t, t1.Type, t2.Type)
 	require.Equal(t, t1.Provider, t2.Provider)
@@ -170,13 +185,21 @@ func checkTransferInitiationsEqual(t *testing.T, t1, t2 *models.TransferInitiati
 	require.Equal(t, t1.Asset, t2.Asset)
 	require.Equal(t, t1.SourceAccountID, t2.SourceAccountID)
 	require.Equal(t, t1.DestinationAccountID, t2.DestinationAccountID)
-	require.Equal(t, t1.Status, t2.Status)
 	for i := range t1.RelatedPayments {
 		require.Equal(t, t1.RelatedPayments[i].TransferInitiationID, t2.RelatedPayments[i].TransferInitiationID)
 		require.Equal(t, t1.RelatedPayments[i].PaymentID, t2.RelatedPayments[i].PaymentID)
 		require.Equal(t, t1.RelatedPayments[i].CreatedAt.UTC(), t2.RelatedPayments[i].CreatedAt.UTC())
 		require.Equal(t, t1.RelatedPayments[i].Status, t2.RelatedPayments[i].Status)
 		require.Equal(t, t1.RelatedPayments[i].Error, t2.RelatedPayments[i].Error)
+	}
+	if checkRelatedAdjusment {
+		for i := range t1.RelatedAdjustments {
+			require.Equal(t, t1.RelatedAdjustments[i].TransferInitiationID, t2.RelatedAdjustments[i].TransferInitiationID)
+			require.Equal(t, t1.RelatedAdjustments[i].CreatedAt.UTC(), t2.RelatedAdjustments[i].CreatedAt.UTC())
+			require.Equal(t, t1.RelatedAdjustments[i].Status, t2.RelatedAdjustments[i].Status)
+			require.Equal(t, t1.RelatedAdjustments[i].Error, t2.RelatedAdjustments[i].Error)
+			require.Equal(t, t1.RelatedAdjustments[i].Metadata, t2.RelatedAdjustments[i].Metadata)
+		}
 	}
 }
 
@@ -221,40 +244,46 @@ func testAddTransferInitiationPayments(t *testing.T, store *storage.Storage) {
 }
 
 func testUpdateTransferInitiationStatus(t *testing.T, store *storage.Storage) {
+	adjustment1 := &models.TransferInitiationAdjustments{
+		ID:                   uuid.New(),
+		TransferInitiationID: t1ID,
+		CreatedAt:            tUpdateStatus1,
+		Status:               models.TransferInitiationStatusRejected,
+		Error:                "test_error",
+	}
 	err := store.UpdateTransferInitiationPaymentsStatus(
 		context.Background(),
 		t1ID,
 		nil,
-		models.TransferInitiationStatusRejected,
-		"test_error",
-		2,
-		tUpdateStatus,
+		adjustment1,
 	)
 	require.NoError(t, err)
 
-	t1.Status = models.TransferInitiationStatusRejected
-	t1.Error = "test_error"
-	t1.UpdatedAt = tUpdateStatus
-	t1.Attempts = 2
+	t1.RelatedAdjustments = append([]*models.TransferInitiationAdjustments{
+		adjustment1,
+	}, t1.RelatedAdjustments...)
 	testGetTransferInitiation(t, store, t1ID, true, t1, nil)
 
+	adjustment2 := &models.TransferInitiationAdjustments{
+		ID:                   uuid.New(),
+		TransferInitiationID: t1ID,
+		CreatedAt:            tUpdateStatus2,
+		Status:               models.TransferInitiationStatusFailed,
+		Error:                "test_error2",
+	}
 	err = store.UpdateTransferInitiationPaymentsStatus(
 		context.Background(),
 		t1ID,
 		p1ID,
-		models.TransferInitiationStatusFailed,
-		"test_error2",
-		3,
-		tUpdateStatus,
+		adjustment2,
 	)
 	require.NoError(t, err)
 
 	t1.RelatedPayments[0].Status = models.TransferInitiationStatusFailed
 	t1.RelatedPayments[0].Error = "test_error2"
-	t1.Status = models.TransferInitiationStatusFailed
-	t1.Error = "test_error2"
-	t1.UpdatedAt = tUpdateStatus
-	t1.Attempts = 3
+	t1.RelatedAdjustments = append([]*models.TransferInitiationAdjustments{
+		adjustment2,
+	}, t1.RelatedAdjustments...)
 	testGetTransferInitiation(t, store, t1ID, true, t1, nil)
 }
 
