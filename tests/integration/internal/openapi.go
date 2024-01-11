@@ -72,7 +72,7 @@ func (c *openapiCheckerRoundTripper) RoundTrip(req *http.Request) (*http.Respons
 var _ http.RoundTripper = &openapiCheckerRoundTripper{}
 
 func newOpenapiCheckerTransport(ctx context.Context, rt http.RoundTripper) (*openapiCheckerRoundTripper, error) {
-	openapiRawSpec, err := os.ReadFile(filepath.Join("..", "..", "..", "libs", "clients", "build", "generate.json"))
+	openapiRawSpec, err := os.ReadFile(filepath.Join("..", "..", "..", "releases", "build", "latest.json"))
 	if err != nil {
 		return nil, errors.Wrap(err, "loading spec file")
 	}
