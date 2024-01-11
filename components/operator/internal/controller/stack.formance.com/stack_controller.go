@@ -61,6 +61,15 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		return err
 	}
 
+	if stack.Spec.Versions == "" {
+		patch := client.MergeFrom(stack.DeepCopy())
+		stack.Spec.Versions = "default"
+		if err := ctx.GetClient().Patch(ctx, stack, patch); err != nil {
+			return err
+		}
+		return ErrPending
+	}
+
 	configuration := &v1beta3.Configuration{}
 	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
 		Name: stack.Spec.Seed,
