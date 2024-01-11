@@ -37,14 +37,14 @@ const (
 	gcFinalizer = "gc"
 )
 
-// TopicQueryController reconciles a TopicQuery object
+// TopicQueryController reconciles a BrokerTopicConsumer object
 type TopicQueryController struct{}
 
 //+kubebuilder:rbac:groups=formance.com,resources=topicqueries,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=formance.com,resources=topicqueries/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=topicqueries/finalizers,verbs=update
 
-func (r *TopicQueryController) Reconcile(ctx Context, topicQuery *v1beta1.TopicQuery) error {
+func (r *TopicQueryController) Reconcile(ctx Context, topicQuery *v1beta1.BrokerTopicConsumer) error {
 
 	if !topicQuery.DeletionTimestamp.IsZero() {
 		topic := &v1beta1.BrokerTopic{}
@@ -123,19 +123,19 @@ func (r *TopicQueryController) Reconcile(ctx Context, topicQuery *v1beta1.TopicQ
 func (r *TopicQueryController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 
 	indexer := mgr.GetFieldIndexer()
-	if err := indexer.IndexField(context.Background(), &v1beta1.TopicQuery{}, ".spec.service", func(rawObj client.Object) []string {
-		return []string{rawObj.(*v1beta1.TopicQuery).Spec.Service}
+	if err := indexer.IndexField(context.Background(), &v1beta1.BrokerTopicConsumer{}, ".spec.service", func(rawObj client.Object) []string {
+		return []string{rawObj.(*v1beta1.BrokerTopicConsumer).Spec.Service}
 	}); err != nil {
 		return nil, err
 	}
 
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&v1beta1.TopicQuery{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		For(&v1beta1.BrokerTopicConsumer{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Watches(
 			&v1beta1.BrokerTopic{},
-			// WatchUsingLabels update of BrokerTopic to be able to set Ready flag on TopicQuery
+			// WatchUsingLabels update of BrokerTopic to be able to set Ready flag on BrokerTopicConsumer
 			handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, object client.Object) []reconcile.Request {
-				list := v1beta1.TopicQueryList{}
+				list := v1beta1.BrokerTopicConsumerList{}
 				if err := mgr.GetClient().List(ctx, &list, client.MatchingFields{
 					".spec.service": object.(*v1beta1.BrokerTopic).Spec.Service,
 					"stack":         object.(*v1beta1.BrokerTopic).Spec.Stack,
@@ -145,7 +145,7 @@ func (r *TopicQueryController) SetupWithManager(mgr Manager) (*builder.Builder, 
 				}
 
 				return MapObjectToReconcileRequests(
-					Map(list.Items, ToPointer[v1beta1.TopicQuery])...,
+					Map(list.Items, ToPointer[v1beta1.BrokerTopicConsumer])...,
 				)
 			}),
 		), nil

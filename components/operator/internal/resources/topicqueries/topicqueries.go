@@ -11,15 +11,15 @@ import (
 
 func Create(ctx core.Context, stack *v1beta1.Stack, service string, owner client.Object) error {
 	queriedBy := strings.ToLower(owner.GetObjectKind().GroupVersionKind().Kind)
-	_, _, err := core.CreateOrUpdate[*v1beta1.TopicQuery](ctx, types.NamespacedName{
+	_, _, err := core.CreateOrUpdate[*v1beta1.BrokerTopicConsumer](ctx, types.NamespacedName{
 		Name: core.GetObjectName(stack.Name, fmt.Sprintf("%s-%s", queriedBy, service)),
 	},
-		func(t *v1beta1.TopicQuery) {
+		func(t *v1beta1.BrokerTopicConsumer) {
 			t.Spec.QueriedBy = queriedBy
 			t.Spec.Stack = stack.Name
 			t.Spec.Service = service
 		},
-		core.WithController[*v1beta1.TopicQuery](ctx.GetScheme(), owner),
+		core.WithController[*v1beta1.BrokerTopicConsumer](ctx.GetScheme(), owner),
 	)
 	return err
 }

@@ -4,14 +4,14 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.13.0
-  name: topicqueries.formance.com
+  name: brokertopicconsumers.formance.com
 spec:
   group: formance.com
   names:
-    kind: TopicQuery
-    listKind: TopicQueryList
-    plural: topicqueries
-    singular: topicquery
+    kind: BrokerTopicConsumer
+    listKind: BrokerTopicConsumerList
+    plural: brokertopicconsumers
+    singular: brokertopicconsumer
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -26,7 +26,7 @@ spec:
     name: v1beta1
     schema:
       openAPIV3Schema:
-        description: TopicQuery is the Schema for the topicqueries API
+        description: BrokerTopicConsumer is the Schema for the topicqueries API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -41,7 +41,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: TopicQuerySpec defines the desired state of TopicQuery
+            description: BrokerTopicConsumerSpec defines the desired state of BrokerTopicConsumer
             properties:
               queriedBy:
                 type: string
@@ -54,7 +54,7 @@ spec:
             - service
             type: object
           status:
-            description: TopicQueryStatus defines the observed state of TopicQuery
+            description: BrokerTopicConsumerStatus defines the observed state of BrokerTopicConsumer
             properties:
               conditions:
                 items:

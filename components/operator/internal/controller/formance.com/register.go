@@ -9,7 +9,7 @@ func init() {
 	reconcilers.Register(
 		reconcilers.New[*v1beta1.Stack](ForStack()),
 		reconcilers.New[*v1beta1.BrokerTopic](ForTopic()),
-		reconcilers.New[*v1beta1.TopicQuery](ForTopicQuery()),
+		reconcilers.New[*v1beta1.BrokerTopicConsumer](ForTopicQuery()),
 		reconcilers.New[*v1beta1.Ledger](ForLedger()),
 		reconcilers.New[*v1beta1.HTTPAPI](ForHTTPAPI()),
 		reconcilers.New[*v1beta1.Gateway](ForGateway()),

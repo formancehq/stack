@@ -217,7 +217,7 @@ func (r *OrchestrationController) SetupWithManager(mgr Manager) (*builder.Builde
 			&v1beta1.RegistriesConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Orchestration](mgr)),
 		).
-		Owns(&v1beta1.TopicQuery{}).
+		Owns(&v1beta1.BrokerTopicConsumer{}).
 		Owns(&v1beta1.AuthClient{}).
 		For(&v1beta1.Orchestration{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }

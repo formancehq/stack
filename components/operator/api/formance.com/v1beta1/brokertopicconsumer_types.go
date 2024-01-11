@@ -20,15 +20,15 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// TopicQuerySpec defines the desired state of TopicQuery
-type TopicQuerySpec struct {
+// BrokerTopicConsumerSpec defines the desired state of BrokerTopicConsumer
+type BrokerTopicConsumerSpec struct {
 	StackDependency `json:",inline"`
 	Service         string `json:"service"`
 	QueriedBy       string `json:"queriedBy"`
 }
 
-// TopicQueryStatus defines the observed state of TopicQuery
-type TopicQueryStatus struct {
+// BrokerTopicConsumerStatus defines the observed state of BrokerTopicConsumer
+type BrokerTopicConsumerStatus struct {
 	CommonStatus `json:",inline"`
 }
 
@@ -38,28 +38,28 @@ type TopicQueryStatus struct {
 //+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Ready"
 //+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
 
-// TopicQuery is the Schema for the topicqueries API
-type TopicQuery struct {
+// BrokerTopicConsumer is the Schema for the topicqueries API
+type BrokerTopicConsumer struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   TopicQuerySpec   `json:"spec,omitempty"`
-	Status TopicQueryStatus `json:"status,omitempty"`
+	Spec   BrokerTopicConsumerSpec   `json:"spec,omitempty"`
+	Status BrokerTopicConsumerStatus `json:"status,omitempty"`
 }
 
-func (a TopicQuery) GetStack() string {
+func (a BrokerTopicConsumer) GetStack() string {
 	return a.Spec.Stack
 }
 
 //+kubebuilder:object:root=true
 
-// TopicQueryList contains a list of TopicQuery
-type TopicQueryList struct {
+// BrokerTopicConsumerList contains a list of BrokerTopicConsumer
+type BrokerTopicConsumerList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []TopicQuery `json:"items"`
+	Items           []BrokerTopicConsumer `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&TopicQuery{}, &TopicQueryList{})
+	SchemeBuilder.Register(&BrokerTopicConsumer{}, &BrokerTopicConsumerList{})
 }

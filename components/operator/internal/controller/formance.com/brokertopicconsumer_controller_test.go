@@ -12,9 +12,9 @@ import (
 )
 
 var _ = Describe("TopicQueryController", func() {
-	Context("When creating a TopicQuery", func() {
+	Context("When creating a BrokerTopicConsumer", func() {
 		var (
-			topicQuery   *v1beta1.TopicQuery
+			topicQuery   *v1beta1.BrokerTopicConsumer
 			brokerConfig *v1beta1.BrokerConfiguration
 			stack        *v1beta1.Stack
 		)
@@ -34,9 +34,9 @@ var _ = Describe("TopicQueryController", func() {
 				Spec: v1beta1.BrokerConfigurationSpec{},
 			}
 			Expect(Create(brokerConfig)).To(Succeed())
-			topicQuery = &v1beta1.TopicQuery{
+			topicQuery = &v1beta1.BrokerTopicConsumer{
 				ObjectMeta: RandObjectMeta(),
-				Spec: v1beta1.TopicQuerySpec{
+				Spec: v1beta1.BrokerTopicConsumerSpec{
 					Service:   "ledger",
 					QueriedBy: "orchestration",
 					StackDependency: v1beta1.StackDependency{
@@ -63,19 +63,19 @@ var _ = Describe("TopicQueryController", func() {
 					return t.Status.Ready
 				}).Should(BeTrue())
 			})
-			It("Should set the TopicQuery to ready status", func() {
+			It("Should set the BrokerTopicConsumer to ready status", func() {
 				Eventually(func(g Gomega) bool {
 					g.Expect(LoadResource("", topicQuery.Name, topicQuery)).To(Succeed())
 
 					return topicQuery.Status.Ready
 				}).Should(BeTrue())
 			})
-			Context("Then create a new TopicQuery on the same service", func() {
-				topicQuery2 := &v1beta1.TopicQuery{}
+			Context("Then create a new BrokerTopicConsumer on the same service", func() {
+				topicQuery2 := &v1beta1.BrokerTopicConsumer{}
 				BeforeEach(func() {
-					topicQuery2 = &v1beta1.TopicQuery{
+					topicQuery2 = &v1beta1.BrokerTopicConsumer{
 						ObjectMeta: RandObjectMeta(),
-						Spec: v1beta1.TopicQuerySpec{
+						Spec: v1beta1.BrokerTopicConsumerSpec{
 							Service:   topicQuery.Spec.Service,
 							QueriedBy: "webhooks",
 							StackDependency: v1beta1.StackDependency{
@@ -92,7 +92,7 @@ var _ = Describe("TopicQueryController", func() {
 						return topicQuery2.Status.Ready
 					}).Should(BeTrue())
 				})
-				Context("Then first TopicQuery object", func() {
+				Context("Then first BrokerTopicConsumer object", func() {
 					BeforeEach(func() {
 						Expect(Delete(topicQuery)).To(Succeed())
 					})
@@ -103,7 +103,7 @@ var _ = Describe("TopicQueryController", func() {
 							return topic
 						}).ShouldNot(BeControlledBy(topicQuery))
 					})
-					Context("Then removing the last TopicQuery", func() {
+					Context("Then removing the last BrokerTopicConsumer", func() {
 						BeforeEach(func() {
 							Expect(Delete(topicQuery2)).To(Succeed())
 						})
