@@ -1,87 +1,109 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-const lightCodeTheme = require('prism-react-renderer/themes/github');
-const darkCodeTheme = require('prism-react-renderer/themes/palenight');
-const math = require('remark-math');
-const katex = require('rehype-katex');
-const  path = require('path');
+import {themes as prismThemes} from 'prism-react-renderer';
+import math from 'remark-math';
+import katex from 'rehype-katex';
+import  path from 'node:path';
+import shiki from 'shiki';
+import withShiki from '@stefanprobst/rehype-shiki';
+import fs from 'node:fs';
 
+// const numscriptLangDefinition = fs.readFileSync('./lib/numscript.tmLanguage.json', 'utf8');
 
-/** @type {import('@docusaurus/types').Config} */
-const config = {
-  title: 'Formance Developer Docs',
-  tagline: 'The open source foundation you need to build and scale money-movements within your app',
-  url: 'https://docs.formance.com/',
-  baseUrl: '/',
-  onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'throw',
-  favicon: 'img/f-shape.ico',
-  organizationName: 'formancehq', // Usually your GitHub org/user name.
-  projectName: 'docs', // Usually your repo name.
+export default async function createConfig() {
 
-  presets: [
-    [
-      '@docusaurus/preset-classic',
-      /** @type {import('@docusaurus/preset-classic').Options} */
-      ({
-        sitemap: {
-          filename: 'sitemap.xml',
-        },
-        docs: {
-          path: './docs',
-          routeBasePath: '/',
-          sidebarPath: require.resolve('./sidebars.js'),
-          remarkPlugins: [math],
-          rehypePlugins: [katex],
-          disableVersioning: false,
-          lastVersion: 'current',
-          versions: {
-            current: {
-              label: 'v1.x',
-            }
-          }
-        },
-        theme: {
-          customCss: require.resolve('./src/css/custom.css'),
-        },
-        blog: false,
-        pages: false,
-      }),
-    ],
-    [
-      'redocusaurus',
-      {
-        debug: Boolean(process.env.DEBUG || process.env.CI),
-        config: path.join(__dirname, 'redocly.yaml'),
-        specs: [
-          {
-            spec: './openapi/v1.json',
-            route: '/api/v1.x',
-            id: 'api-v1',
+  // const highlighter = await shiki.getHighlighter({
+  //   theme: 'one-dark-pro'
+  // });
+
+  // // Load numscript synthax highlighting
+  // highlighter.loadLanguage({
+  //   id: 'numscript',
+  //   scopeName: 'source.numscript',
+  //   grammar: JSON.parse(numscriptLangDefinition),
+  //   path: '',
+  //   aliases: ['num', 'numscript', 'Numscript', 'numscript-lang'],
+  //   displayName: 'Numscript',
+  // })
+
+  /** @type {import('@docusaurus/types').Config} */
+  const config = {
+    title: 'Formance Developer Docs',
+    tagline: 'The open source foundation you need to build and scale money-movements within your app',
+    url: 'https://docs.formance.com/',
+    baseUrl: '/',
+    onBrokenLinks: 'throw',
+    onBrokenMarkdownLinks: 'throw',
+    favicon: 'img/f-shape.ico',
+    organizationName: 'formancehq', // Usually your GitHub org/user name.
+    projectName: 'docs', // Usually your repo name.
+
+    presets: [
+      [
+        '@docusaurus/preset-classic',
+        /** @type {import('@docusaurus/preset-classic').Options} */
+        ({
+          sitemap: {
+            filename: 'sitemap.xml',
           },
-          {
-            spec: './openapi/v2.json',
-            route: '/api/v2.x',
-            id: 'api-v2',
-          }
-        ],
-      }
+          docs: {
+            path: './docs',
+            routeBasePath: '/',
+            sidebarPath: require.resolve('./sidebars.js'),
+            remarkPlugins: [math],
+            rehypePlugins: [
+              katex, 
+              //[withShiki, { highlighter: highlighter }]
+            ],
+            disableVersioning: false,
+            lastVersion: 'current',
+            versions: {
+              current: {
+                label: 'v1.x',
+              }
+            }
+          },
+          theme: {
+            customCss: require.resolve('./src/css/custom.css'),
+          },
+          blog: false,
+          pages: false,
+        }),
+      ],
+      [
+        'redocusaurus',
+        {
+          debug: Boolean(process.env.DEBUG || process.env.CI),
+          config: path.join(__dirname, 'redocly.yaml'),
+          specs: [
+            {
+              spec: './openapi/v1.json',
+              route: '/api/v1.x',
+              id: 'api-v1',
+            },
+            {
+              spec: './openapi/v2.json',
+              route: '/api/v2.x',
+              id: 'api-v2',
+            }
+          ],
+        }
+      ]
     ],
-  ],
 
-  stylesheets: [
-    {
-      href: 'https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css',
-      type: 'text/css',
-      integrity:
-        'sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM',
-      crossorigin: 'anonymous',
-    },
-  ],
+    stylesheets: [
+      {
+        href: 'https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css',
+        type: 'text/css',
+        integrity:
+          'sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM',
+        crossorigin: 'anonymous',
+      },
+    ],
 
-  themeConfig:
-  /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
+    themeConfig:
+      /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
       ({
         docs: {
           sidebar: {
@@ -175,7 +197,8 @@ const config = {
           copyright: `Copyright © 2021-2023 Formance, Inc`,
         },
         prism: {
-          theme: darkCodeTheme,
+          additionalLanguages: ['bash', 'javascript', 'typescript'],
+          theme: prismThemes.vsDark,
         },
         posthog: {
           apiKey: 'phc_hRDv01yOHJNUM7l5SmXPUtSQUuNw4r5am9FtV83Z9om',
@@ -202,6 +225,7 @@ const config = {
           //... other Algolia params
         },
       })
-};
+  };
 
-module.exports = config;
+  return config;
+}

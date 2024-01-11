@@ -3,7 +3,6 @@ title: Transactions with multiple destinations
 description: Sometimes you need to split a payment across multiple destinations. Learn how to do this with Numscript.
 ---
 
-import { NumscriptBlock } from 'react-numscript-codeblock';
 import Prerequisites from '@site/docs/ledger/partials/numscript/_prerequisites.mdx';
 import Prereqwarn from '@site/docs/ledger/partials/numscript/_prereq_warning.mdx';
 
@@ -22,13 +21,16 @@ Since we're in the game land of Cones Dunshire, let's consider that last case. A
 
 We can describe the transaction using Numscript. Create a file called `split.num` with:
 
-<NumscriptBlock script={`send [COIN 75] (
+```numscript title="test.num"
+send [COIN 75] (
+  // highlight-next-line
   source = @centralbank
   destination = {
     50% to @player:leslieknope
     remaining to @player:annperkins
   }
-)`}></NumscriptBlock>
+)
+```
 
 And run it with
 
@@ -59,20 +61,23 @@ Second, we're avoiding mistakes in our own calculations by telling Numscript to 
 
 Let's take the previous scenario, and add a twist. Let's suppose we need to withhold taxes from the payment—Dunshire imposes a flat 15% sales tax for goods and services. We could modify `split.num` to reflect a three-way transaction:
 
-<NumscriptBlock script={`send [COIN 75] (
+```numscript
+send [COIN 75] (
   source = @centralbank
   destination = {
     15% to @salestax
     43% to @player:leslieknope
     remaining to @player:annperkins
   }
-)`}></NumscriptBlock>
+)
+```
 
 But there is a problem: Scripting the transaction this way requires us to manually do the math to figure out that `leslieknope` should get 42.5% of the transaction (which we've had to round up).
 
 There's a better way: Nested destinations. Using nested destinations allows us to be clearer about our intent, and leaves much of the math off to Numscript to sort out:
 
-<NumscriptBlock script={`send [COIN 75] (
+```numscript
+send [COIN 75] (
   source = @centralbank
   destination = {
     15% to @salestax
@@ -81,7 +86,8 @@ There's a better way: Nested destinations. Using nested destinations allows us t
         remaining to @player:annperkins
     }
   }
-)`}></NumscriptBlock>
+)
+```
 
 <Prereqwarn />
 

@@ -1,8 +1,6 @@
 ---
 title: Architecting for scale
 ---
-import { NumscriptBlock } from 'react-numscript-codeblock';
-import { Numscript } from '@site/src/components/Numscript';
 
 ## Scaling for writes
 
@@ -16,7 +14,8 @@ As a result, write heavy applications above this threshold are advised to levera
 
 As outlined in the performance model [section](/ledger/reference/performance), we consider the cost of a write to be `O(N) + W`. Let's consider the following example:
 
-<Numscript script={`send [USD/2 9900] (
+```numscript
+send [USD/2 9900] (
   source = {
     @users:1234:main
     @users:1234:vouchers
@@ -24,7 +23,8 @@ As outlined in the performance model [section](/ledger/reference/performance), w
     @world
   }
   destination = @payments:1234
-)`}></Numscript>
+)
+```
 
 In this transaction, we are attempting to increase the balance of `@payments:1234` by $99.00, sourcing the funds from three user accounts before defaulting `@world` as the source of last resort. Let's break down the operations that will be performed:
 * Read the balance of `@users:1234:main`

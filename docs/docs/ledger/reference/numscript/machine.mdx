@@ -1,7 +1,6 @@
 ---
 title: Machine
 ---
-import { NumscriptBlock } from 'react-numscript-codeblock';
 
 Numscript is a Domain-Specific Language (DSL) designed to help you model complex financial transactions. It follows three design principles:
 
@@ -13,14 +12,17 @@ These principles are the guiding light behind Numscript, and they are reflected 
 
 Here is a simple transaction example. We use multiple `send`, which will result in a single transaction with multiple postings:
 
-<NumscriptBlock script={`send [USD/2 599] (
+```numscript
+send [USD/2 599] (
   source = @world
   destination = @payments:001
 )
+
 send [USD/2 599] (
   source = @payments:001
   destination = @rides:0234
 )
+
 send [USD/2 599] (
   source = @rides:0234
   destination = {
@@ -30,4 +32,5 @@ send [USD/2 599] (
       remaining to @platform:fees
     }
   }
-)`}></NumscriptBlock>
+)
+```

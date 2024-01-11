@@ -1,0 +1,70 @@
+{
+	"fileTypes": ["num"],
+	"name": "numscript",
+	"scopeName": "source.numscript",
+	"patterns": [
+		{
+			"match": "\\b(?i:(vars|source|destination))\\b",
+			"name": "constant.language.numscript"
+		},
+		{
+			"match": "\\b(?i:(set_tx_meta|set_account_meta))\\b",
+			"name": "keyword.meta.numscript"
+		},
+		{
+			"match": "\\b(?i:(print|fail|save))\\b",
+			"name": "keyword.control.numscript"
+		},
+		{
+			"match": "\\b(?i:send|remaining|to|max|from)\\b",
+			"name": "entity.name.function.numscript"
+		},
+		{
+			"match": "\\b(?i:(account|monetary|asset|number|string|portion))\\b",
+			"name": "keyword.state.numscript"
+		},
+		{
+			"match": "@[a-zA-Z_]+[a-zA-Z0-9_:]*",
+			"name": "string.other.numscript"
+		},
+		{
+			"match": "\\$[a-z_]+[a-z0-9_]*",
+			"name": "variable.parameter.function.numscript"
+		},
+		{
+			"match": "(\".*?\")",
+			"name": "string.quoted.double.numscript"
+		},
+		{
+			"match": "\\[[^\\]]+\\]",
+			"name": "string.regexp.numscript"
+		},
+		{
+			"match": "(//[^\n]*)",
+			"name": "comment.line.double-slash.numscript"
+		},
+		{
+			"begin": "/\\*",
+			"end": "\\*/",
+			"name": "comment.block.numscript",
+			"patterns": [
+				{
+					"match": "(\\b\\w+\\b)",
+					"name": "comment.block.numscript"
+				}
+			]
+		},
+		{
+			"match": "\\b[0-9]+\\b",
+			"name": "constant.numeric.decimal.numscript"
+		},
+		{
+			"match": "\\b[0-9]+(\\.[0-9]+)?%\\b",
+			"name": "constant.numeric.percentage.numscript"
+		},
+		{
+			"match": "\\b[0-9]+/[0-9]+\\b",
+			"name": "constant.numeric.fraction.numscript"
+		}
+	]
+}

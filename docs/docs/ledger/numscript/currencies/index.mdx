@@ -3,9 +3,7 @@ title: Working with currencies
 description: How does Numscript handle different currencies, and how do you specify the level of precision you need to work with?
 ---
 
-import { NumscriptBlock } from 'react-numscript-codeblock';
 import Prerequisites from '@site/docs/ledger/partials/numscript/_prerequisites.mdx';
-import Prereqwarn from '@site/docs/ledger/partials/numscript/_prereq_warning.mdx';
 
 Formance Ledger has robust support for working in different currencies. Let's go a little deeper into how that works.
 
@@ -15,10 +13,12 @@ Formance Ledger has robust support for working in different currencies. Let's go
 
 The game world of Cones of Dunshire operates on primarily on a currency called coins. Coins are indivisible, and are the universal medium of exchange among game players and with the game system. We've seen coins in use in transactions expressed in Numscript before:
 
-<NumscriptBlock script={`send [COIN 100] (
+```numscript
+send [COIN 100] (
   source = @centralbank
   destination = @player:benwyatt
-)`}></NumscriptBlock>
+)
+```
 
 This Numscript instructs Formance Ledger to transfer 100 coins to the player `benwyatt`. Notice that we specify the currency and amount together, and that we specify the currency as `COIN` singular. All amounts in Numscript are always specified in this way.
 
@@ -28,10 +28,12 @@ However, lately, the economy of Cones of Dunshire has been undergoing significan
 
 Let's suppose that our intrepid player `benwyatt` has completed a new task for us, but this time we're paying him in 1,000 pieces-of-ten instead of 100 coin. Here's what the Numscript would look like:
 
-<NumscriptBlock script={`send [DSP/1 10000] (
+```numscript
+send [DSP/1 10000] (
   source = @centralbank
   destination = @player:benwyatt
-)`}></NumscriptBlock>
+)
+```
 
 ### What's going on here?
 
