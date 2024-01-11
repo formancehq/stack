@@ -2,7 +2,7 @@ import React from 'react'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 
-import { findFirstCategoryLink, useDocById } from '@docusaurus/theme-common/internal'
+import { findFirstSidebarItemLink, useDocById } from '@docusaurus/theme-common/internal'
 
 export function DocCardGrid({ children }) {
 	return (
@@ -94,7 +94,7 @@ export function DocCard({ children, headline, icon, link, cta, highlight }) {
 function filterItems(items) {
 	return items.filter((item) => {
 		if (item.type === 'category') {
-			return !!findFirstCategoryLink(item)
+			return !!findFirstSidebarItemLink(item)
 		}
 		return true
 	})

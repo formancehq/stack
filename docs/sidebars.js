@@ -9,7 +9,7 @@
  Create as many sidebars as you want.
  */
 
-const { Collapse } = require('@material-ui/core');
+const { Collapse } = require('@mui/material');
 
 // @ts-check
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import styles from './HomepageFeatures.module.css';
-import Icon from "@material-ui/core/Icon";
+import Icon from "@mui/material/Icon";
 
 const FeatureList = [
   {
