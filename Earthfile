@@ -61,7 +61,6 @@ openapi:
     FOR component IN $(cd ./ee && ls -d */)
         COPY (./ee/$component+openapi/src/ee/$component) /src/ee/$component
     END
-    RUN toto
     SAVE ARTIFACT /src
 
 goreleaser:
