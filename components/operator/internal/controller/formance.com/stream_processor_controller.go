@@ -69,7 +69,8 @@ func (r *StreamProcessorController) Reconcile(ctx Context, streamProcessor *v1be
 	env := []corev1.EnvVar{
 		Env("OPENSEARCH_URL", elasticSearchConfiguration.Spec.Endpoint()),
 		Env("TOPIC_PREFIX", streamProcessor.Spec.Stack+"-"),
-		Env("OPENSEARCH_INDEX", "stack"),
+		Env("OPENSEARCH_INDEX", "stacks"),
+		Env("STACK", streamProcessor.Spec.Stack),
 	}
 	if streamProcessor.Spec.Batching != nil {
 		env = append(env,

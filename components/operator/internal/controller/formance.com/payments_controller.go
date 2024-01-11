@@ -110,12 +110,15 @@ func (r *PaymentsController) createReadDeployment(ctx Context, stack *v1beta1.St
 	if err != nil {
 		return err
 	}
+<<<<<<< HEAD
 
 	authEnvVars, err := auths.EnvVars(ctx, stack, "payments", payments.Spec.Auth)
 	if err != nil {
 		return err
 	}
 	env = append(env, authEnvVars...)
+=======
+>>>>>>> 605cd650c (fix: various things)
 
 	image, err := GetImage(ctx, stack, "payments", payments.Spec.Version)
 	if err != nil {
@@ -179,7 +182,10 @@ func (r *PaymentsController) createReadDeployment(ctx Context, stack *v1beta1.St
 
 func (r *PaymentsController) createConnectorsDeployment(ctx Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) error {
 
-	env, _ := r.commonEnvVars(ctx, stack, payments, database)
+	env, err := r.commonEnvVars(ctx, stack, payments, database)
+	if err != nil {
+		return err
+	}
 
 	topic, err := topics.Find(ctx, stack, "payments")
 	if err != nil {

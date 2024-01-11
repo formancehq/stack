@@ -63,7 +63,12 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta1.Stack) error {
 
 	_, _, err := CreateOrUpdate(ctx, types.NamespacedName{
 		Name: stack.Name,
-	}, WithController[*corev1.Namespace](ctx.GetScheme(), stack))
+	},
+		WithController[*corev1.Namespace](ctx.GetScheme(), stack),
+		WithAnnotations[*corev1.Namespace](map[string]string{
+			OperatorVersionKey: OperatorVersion,
+		}),
+	)
 	if err != nil {
 		return err
 	}

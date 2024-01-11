@@ -12,16 +12,16 @@ sources:
     WORKDIR /src
     COPY (stack+sources/out --LOCATION=ee/search) ee/search
     COPY (stack+sources/out --LOCATION=libs/go-libs) libs/go-libs
-    WORKDIR /src/components/operatorv2
-    COPY --dir api internal cmd .
+    WORKDIR /src/components/operator
+    COPY --dir api internal cmd pkg .
     COPY go.* .
     SAVE ARTIFACT /src
 
 compile:
     FROM core+builder-image
     COPY (+sources/*) /src
-    COPY --pass-args (+generate/*) /src/components/operatorv2
-    WORKDIR /src/components/operatorv2/cmd
+    COPY --pass-args (+generate/*) /src/components/operator
+    WORKDIR /src/components/operator/cmd
 	DO --pass-args core+GO_COMPILE
 
 build-image:
@@ -39,7 +39,7 @@ controller-gen:
 manifests:
     FROM --pass-args +controller-gen
     COPY (+sources/*) /src
-    WORKDIR /src/components/operatorv2
+    WORKDIR /src/components/operator
     COPY --dir config .
     RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
         --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
@@ -50,7 +50,7 @@ manifests:
 generate:
     FROM --pass-args +controller-gen
     COPY +sources/* /src
-    WORKDIR /src/components/operatorv2
+    WORKDIR /src/components/operator
     COPY --dir hack .
     RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
         --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
@@ -87,12 +87,20 @@ deploy:
         --create-namespace \
         --create-namespace \
         --set image.tag=$tag .
+    WORKDIR /
+    COPY .earthly .earthly
+    WORKDIR .earthly
+    RUN kubectl get versions default || kubectl apply -f k8s-versions.yaml
+    ARG user
+    RUN --secret tld helm upgrade --install operator-configuration ./configuration \
+        --namespace formance-system \
+        --set gateway.fallback=https://console.$user.$tld
 
 lint:
     FROM core+builder-image
     COPY (+sources/*) /src
     COPY --pass-args +tidy/go.* .
-    WORKDIR /src/components/operatorv2
+    WORKDIR /src/components/operator
     DO --pass-args stack+GO_LINT
     SAVE ARTIFACT api AS LOCAL api
     SAVE ARTIFACT internal AS LOCAL internal
@@ -107,10 +115,10 @@ tests:
     ENV KUBEBUILDER_ASSETS /root/.local/share/kubebuilder-envtest/k8s/$ENVTEST_VERSION-linux-$(go env GOHOSTARCH)
     DO --pass-args core+GO_INSTALL --package=github.com/onsi/ginkgo/v2/ginkgo@v2.13.2
     COPY (+sources/*) /src
-    COPY --pass-args (+manifests/config) /src/components/operatorv2/config
-    COPY --pass-args (+generate/internal) /src/components/operatorv2/internal
-    COPY --pass-args (+generate/api) /src/components/operatorv2/api
-    WORKDIR /src/components/operatorv2
+    COPY --pass-args (+manifests/config) /src/components/operator/config
+    COPY --pass-args (+generate/internal) /src/components/operator/internal
+    COPY --pass-args (+generate/api) /src/components/operator/api
+    WORKDIR /src/components/operator
     COPY --dir hack .
     ARG GOPROXY
     ARG updateTestData=0
@@ -127,7 +135,7 @@ generate-docs:
     FROM core+builder-image
     COPY (+sources/*) /src
     RUN go install github.com/elastic/crd-ref-docs@latest
-    WORKDIR /src/components/operatorv2
+    WORKDIR /src/components/operator
     COPY docs.config.yaml .
     COPY --dir docs .
     RUN crd-ref-docs --source-path=api/v1beta1 --renderer=markdown --output-path=./docs/crd.md --config=./docs.config.yaml
@@ -149,5 +157,5 @@ openapi:
 tidy:
     FROM core+builder-image
     COPY --pass-args (+sources/src) /src
-    WORKDIR /src/components/operatorv2
+    WORKDIR /src/components/operator
     DO --pass-args stack+GO_TIDY

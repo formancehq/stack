@@ -50,7 +50,7 @@ func (r *TopicController) Reconcile(ctx Context, topic *v1beta1.Topic) error {
 	if !topic.DeletionTimestamp.IsZero() {
 		if controllerutil.ContainsFinalizer(topic, topicFinalizer) {
 			patch := client.MergeFrom(topic.DeepCopy())
-			if topic.Status.Configuration != nil {
+			if topic.Status.Ready && topic.Status.Configuration != nil {
 				switch {
 				case topic.Status.Configuration.Nats != nil:
 					job, err := r.createDeleteJob(ctx, topic)

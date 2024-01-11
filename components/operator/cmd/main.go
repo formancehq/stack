@@ -42,6 +42,7 @@ import (
 
 	stackformancecomv1beta3 "github.com/formancehq/operator/api/stack.formance.com/v1beta3"
 	_ "github.com/formancehq/operator/internal/controller/formance.com"
+	_ "github.com/formancehq/operator/internal/controller/stack.formance.com"
 	//+kubebuilder:scaffold:imports
 )
 

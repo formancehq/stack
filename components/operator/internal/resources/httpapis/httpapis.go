@@ -46,14 +46,11 @@ func WithServiceConfiguration(serviceConfiguration *v1beta1.ServiceConfiguration
 }
 
 func RuleSecured() v1beta1.HTTPAPIRule {
-	return v1beta1.HTTPAPIRule{
-		Path: "/",
-	}
+	return v1beta1.HTTPAPIRule{}
 }
 
 func RuleUnsecured() v1beta1.HTTPAPIRule {
 	return v1beta1.HTTPAPIRule{
-		Path:    "/",
 		Secured: true,
 	}
 }

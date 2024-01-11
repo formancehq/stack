@@ -167,6 +167,8 @@ spec:
                     type: integer
                   type: object
                 type: object
+              ready:
+                type: boolean
               staticAuthClients:
                 additionalProperties:
                   properties:

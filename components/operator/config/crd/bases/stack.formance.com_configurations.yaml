@@ -91,8 +91,7 @@ spec:
                 description: LightMode is experimental and indicate we want monopods
                 type: boolean
               monitoring:
-                description: OpenTelemetryConfigurationSpec defines the desired state
-                  of OpenTelemetryConfiguration
+                description: MonitoringSpec defines the desired state of OpenTelemetryConfiguration
                 properties:
                   metrics:
                     properties:
@@ -111,9 +110,7 @@ spec:
                             format: int32
                             type: integer
                           resourceAttributes:
-                            additionalProperties:
-                              type: string
-                            type: object
+                            type: string
                         type: object
                     type: object
                   traces:
@@ -133,9 +130,7 @@ spec:
                             format: int32
                             type: integer
                           resourceAttributes:
-                            additionalProperties:
-                              type: string
-                            type: object
+                            type: string
                         type: object
                     type: object
                 type: object

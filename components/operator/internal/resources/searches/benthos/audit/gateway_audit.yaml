@@ -10,6 +10,7 @@ pipeline:
   - switch_event_type:
       events:
       - label: AUDIT
+        version: v1
         processors:
         - bloblang: |
             root = {

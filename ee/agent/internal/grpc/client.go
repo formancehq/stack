@@ -4,16 +4,17 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"io"
 	"net/http"
 	"net/url"
 	"reflect"
 	"strings"
 
-	clientv1beta3 "github.com/formancehq/operator_legacy/pkg/client/v1beta3"
+	clientv1beta3 "github.com/formancehq/operator/pkg/client/stack.formance.com/v1beta3"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 
-	"github.com/formancehq/operator_legacy/apis/stack/v1beta3"
+	"github.com/formancehq/operator/api/stack.formance.com/v1beta3"
 	"github.com/formancehq/stack/components/agent/internal/grpc/generated"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
@@ -133,7 +134,7 @@ func (client *client) createStack(stack *generated.Stack) *v1beta3.Stack {
 			Name: stack.ClusterName,
 		},
 		Spec: v1beta3.StackSpec{
-			DevProperties: v1beta3.DevProperties{
+			DevProperties: v1beta1.DevProperties{
 				Debug: false,
 				Dev:   false,
 			},
@@ -144,12 +145,9 @@ func (client *client) createStack(stack *generated.Stack) *v1beta3.Stack {
 					ClientID:     stack.AuthConfig.ClientId,
 					ClientSecret: stack.AuthConfig.ClientSecret,
 				},
-				StaticClients: []v1beta3.StaticClient{{
-					ClientConfiguration: v1beta3.ClientConfiguration{
-						Public: true,
-					},
-					ID:      "fctl",
-					Secrets: []string{},
+				StaticClients: []*v1beta1.AuthClientSpec{{
+					Public: true,
+					ID:     "fctl",
 				}},
 			},
 			Host:   fmt.Sprintf("%s.%s", stack.ClusterName, client.clientInfo.BaseUrl.Host),
@@ -260,7 +258,7 @@ func (client *client) Start(ctx context.Context) error {
 				switch {
 				case stack.Spec.Disabled:
 					status = generated.StackStatus_Disabled
-				case stack.IsReady():
+				case stack.Status.Ready:
 					status = generated.StackStatus_Ready
 				default:
 					status = generated.StackStatus_Progressing

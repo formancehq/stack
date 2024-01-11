@@ -28,13 +28,14 @@ var _ = Describe("StackController (legacy)", func() {
 							},
 						},
 					},
-					Monitoring: &v1beta1.OpenTelemetryConfigurationSpec{
-						Traces: &v1beta1.TracesSpec{
-							Otlp: &v1beta1.OtlpSpec{
-								Endpoint: "collector",
-								Port:     4317,
-								Insecure: false,
-								Mode:     "grpc",
+					Monitoring: &v1beta3.MonitoringSpec{
+						Traces: &v1beta3.TracesSpec{
+							Otlp: &v1beta3.OtlpSpec{
+								Endpoint:           "collector",
+								Port:               4317,
+								Insecure:           false,
+								Mode:               "grpc",
+								ResourceAttributes: "foo=bar",
 							},
 						},
 					},

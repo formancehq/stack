@@ -46,12 +46,6 @@ type IngressGlobalConfig struct {
 	TLS *v1beta1.GatewayIngressTLS `json:"tls,omitempty"`
 }
 
-type DelegatedOIDCServerConfiguration struct {
-	Issuer       string `json:"issuer,omitempty"`
-	ClientID     string `json:"clientID,omitempty"`
-	ClientSecret string `json:"clientSecret,omitempty"`
-}
-
 type ClientConfiguration struct {
 	// +optional
 	Public bool `json:"public"`
@@ -73,7 +67,7 @@ type StaticClient struct {
 }
 
 type StackAuthSpec struct {
-	DelegatedOIDCServer DelegatedOIDCServerConfiguration `json:"delegatedOIDCServer"`
+	DelegatedOIDCServer v1beta1.DelegatedOIDCServerConfiguration `json:"delegatedOIDCServer"`
 	// +optional
 	StaticClients []*v1beta1.AuthClientSpec `json:"staticClients,omitempty"`
 }
@@ -130,13 +124,16 @@ type ControlAuthentication struct {
 type StackStatus struct {
 	Status `json:",inline"`
 
-	// +optional
+	//+optional
+	Ready bool `json:"ready"`
+
+	//+optional
 	Ports map[string]map[string]int32 `json:"ports,omitempty"`
 
-	// +optional
+	//+optional
 	StaticAuthClients map[string]StaticClient `json:"staticAuthClients,omitempty"`
 
-	// +optional
+	//+optional
 	LightMode bool `json:"light"`
 }
 

@@ -27,6 +27,39 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+type OtlpSpec struct {
+	// +optional
+	Endpoint string `json:"endpoint,omitempty"`
+	// +optional
+	Port int32 `json:"port,omitempty"`
+	// +optional
+	Insecure bool `json:"insecure,omitempty"`
+	// +kubebuilder:validation:Enum:={grpc,http}
+	// +kubebuilder:validation:default:=grpc
+	// +optional
+	Mode string `json:"mode,omitempty"`
+	// +optional
+	ResourceAttributes string `json:"resourceAttributes,omitempty"`
+}
+
+type TracesSpec struct {
+	// +optional
+	Otlp *OtlpSpec `json:"otlp,omitempty"`
+}
+
+type MetricsSpec struct {
+	// +optional
+	Otlp *OtlpSpec `json:"otlp,omitempty"`
+}
+
+// MonitoringSpec defines the desired state of OpenTelemetryConfiguration
+type MonitoringSpec struct {
+	// +optional
+	Traces *TracesSpec `json:"traces,omitempty"`
+	// +optional
+	Metrics *MetricsSpec `json:"metrics,omitempty"`
+}
+
 // ConfigurationServicesSpec define all existing services for a stack.
 // Fields order is important.
 // For example, auth must be defined later as other services create static auth clients which must be used by auth.
@@ -54,21 +87,6 @@ func (in *ConfigurationServicesSpec) List() []string {
 	return ret
 }
 
-type TemporalTLSConfig struct {
-	// +optional
-	CRT string `json:"crt"`
-	// +optional
-	Key string `json:"key"`
-	// +optional
-	SecretName string `json:"secretName"`
-}
-
-type TemporalConfig struct {
-	Address   string            `json:"address"`
-	Namespace string            `json:"namespace"`
-	TLS       TemporalTLSConfig `json:"tls,omitempty"`
-}
-
 type AnnotationsServicesSpec struct {
 	// +optional
 	Service map[string]string `json:"service,omitempty"`
@@ -82,11 +100,11 @@ type ConfigurationSpec struct {
 	Services ConfigurationServicesSpec       `json:"services"`
 	Broker   v1beta1.BrokerConfigurationSpec `json:"broker"`
 	// +optional
-	Monitoring *v1beta1.OpenTelemetryConfigurationSpec `json:"monitoring,omitempty"`
+	Monitoring *MonitoringSpec `json:"monitoring,omitempty"`
 
 	// +optional
-	Ingress  IngressGlobalConfig `json:"ingress,omitempty"`
-	Temporal TemporalConfig      `json:"temporal"`
+	Ingress  IngressGlobalConfig    `json:"ingress,omitempty"`
+	Temporal v1beta1.TemporalConfig `json:"temporal"`
 	// LightMode is experimental and indicate we want monopods
 	// +optional
 	LightMode bool `json:"light,omitempty"`

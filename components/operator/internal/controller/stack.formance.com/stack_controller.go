@@ -1,16 +1,25 @@
 package stack_formance_com
 
 import (
+	"context"
 	"fmt"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/api/stack.formance.com/v1beta3"
 	. "github.com/formancehq/operator/internal/core"
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
+	controllererrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/resource"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
+	"strings"
 
 	ctrl "sigs.k8s.io/controller-runtime"
 )
@@ -26,6 +35,32 @@ type StackController struct{}
 
 func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 
+	if stack.Spec.Disabled {
+		return client.IgnoreNotFound(ctx.GetClient().Delete(ctx, &corev1.Namespace{
+			ObjectMeta: v1.ObjectMeta{
+				Name: stack.Name,
+			},
+		}))
+	}
+
+	ns := &corev1.Namespace{}
+	err := ctx.GetClient().Get(ctx, types.NamespacedName{
+		Name: stack.Name,
+	}, ns)
+	switch {
+	case controllererrors.IsNotFound(err):
+	case err == nil: // Namespace found
+		if ns.Annotations[OperatorVersionKey] != OperatorVersion {
+			return ctx.GetClient().Delete(ctx, &corev1.Namespace{
+				ObjectMeta: v1.ObjectMeta{
+					Name: stack.Name,
+				},
+			})
+		}
+	default:
+		return err
+	}
+
 	configuration := &v1beta3.Configuration{}
 	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
 		Name: stack.Spec.Seed,
@@ -35,12 +70,17 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 
 	versions := &v1beta3.Versions{}
 	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
-		Name: stack.Spec.Versions,
+		Name: func() string {
+			if stack.Spec.Versions == "" {
+				return "default"
+			}
+			return stack.Spec.Versions
+		}(),
 	}, versions); err != nil {
 		return err
 	}
 
-	_, _, err := CreateOrUpdate[*v1beta1.Stack](ctx, types.NamespacedName{
+	_, _, err = CreateOrUpdate[*v1beta1.Stack](ctx, types.NamespacedName{
 		Name: stack.Name,
 	}, func(t *v1beta1.Stack) {
 	}, WithController[*v1beta1.Stack](ctx.GetScheme(), stack), func(t *v1beta1.Stack) {
@@ -106,7 +146,26 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		_, _, err := CreateOrUpdate[*v1beta1.OpenTelemetryConfiguration](ctx, types.NamespacedName{
 			Name: stack.Name,
 		}, func(t *v1beta1.OpenTelemetryConfiguration) {
-			t.Spec = *configuration.Spec.Monitoring
+			t.Spec = v1beta1.OpenTelemetryConfigurationSpec{
+				Traces: func() *v1beta1.TracesSpec {
+					traces := configuration.Spec.Monitoring.Traces
+					if traces == nil {
+						return nil
+					}
+					return &v1beta1.TracesSpec{
+						Otlp: convertOtlpSpec(traces.Otlp),
+					}
+				}(),
+				Metrics: func() *v1beta1.MetricsSpec {
+					metrics := configuration.Spec.Monitoring.Metrics
+					if metrics == nil {
+						return nil
+					}
+					return &v1beta1.MetricsSpec{
+						Otlp: convertOtlpSpec(metrics.Otlp),
+					}
+				}(),
+			}
 			t.Labels = map[string]string{
 				StackLabel: stack.Name,
 			}
@@ -182,6 +241,7 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Payments
 			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Payments.ResourceProperties)
+			t.Spec.EncryptionKey = configuration.Spec.Services.Payments.EncryptionKey
 			if annotations := configuration.Spec.Services.Payments.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
 					Annotations: annotations,
@@ -225,6 +285,7 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 					Annotations: annotations,
 				}
 			}
+			t.Spec.Temporal = configuration.Spec.Temporal
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating orchestration service")
@@ -309,6 +370,7 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 					Annotations: annotations,
 				}
 			}
+			t.Spec.DelegatedOIDCServer = &stack.Spec.Auth.DelegatedOIDCServer
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating auth service")
@@ -341,16 +403,28 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 	}
 
 	if !isDisabled(stack, configuration, false, "stargate") {
-		_, _, err = CreateOrUpdate[*v1beta1.Stargate](ctx, types.NamespacedName{
-			Name: stack.Name,
-		}, func(t *v1beta1.Stargate) {
-		}, WithController[*v1beta1.Stargate](ctx.GetScheme(), stack), func(t *v1beta1.Stargate) {
-			t.Spec.Stack = stack.Name
-			t.Spec.Version = versions.Spec.Stargate
-			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Stargate.ResourceProperties)
-		})
-		if err != nil {
-			return errors.Wrap(err, "creating stargate service")
+		parts := strings.Split(stack.Name, "-")
+		if len(parts) == 2 {
+			organizationID := parts[0]
+			stackID := parts[1]
+
+			_, _, err = CreateOrUpdate[*v1beta1.Stargate](ctx, types.NamespacedName{
+				Name: stack.Name,
+			}, func(t *v1beta1.Stargate) {
+			}, WithController[*v1beta1.Stargate](ctx.GetScheme(), stack), func(t *v1beta1.Stargate) {
+				t.Spec.Stack = stack.Name
+				t.Spec.Version = versions.Spec.Stargate
+				t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Stargate.ResourceProperties)
+				t.Spec.ServerURL = stack.Spec.Stargate.StargateServerURL
+				t.Spec.OrganizationID = organizationID
+				t.Spec.StackID = stackID
+				t.Spec.Auth.Issuer = stack.Spec.Auth.DelegatedOIDCServer.Issuer
+				t.Spec.Auth.ClientID = stack.Spec.Auth.DelegatedOIDCServer.ClientID
+				t.Spec.Auth.ClientSecret = stack.Spec.Auth.DelegatedOIDCServer.ClientSecret
+			})
+			if err != nil {
+				return errors.Wrap(err, "creating stargate service")
+			}
 		}
 	}
 
@@ -367,11 +441,26 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}
 	}
 
+	stack.Status.Ready = true
+
 	return nil
 }
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *StackController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
+	if err := mgr.GetFieldIndexer().
+		IndexField(context.Background(), &v1beta3.Stack{}, ".spec.seed", func(rawObj client.Object) []string {
+			return []string{rawObj.(*v1beta3.Stack).Spec.Seed}
+		}); err != nil {
+		return nil, err
+	}
+	if err := mgr.GetFieldIndexer().
+		IndexField(context.Background(), &v1beta3.Stack{}, ".spec.versions", func(rawObj client.Object) []string {
+			return []string{rawObj.(*v1beta3.Stack).Spec.Versions}
+		}); err != nil {
+		return nil, err
+	}
+
 	return ctrl.NewControllerManagedBy(mgr).
 		Owns(&v1beta1.DatabaseConfiguration{}).
 		Owns(&v1beta1.BrokerConfiguration{}).
@@ -386,6 +475,16 @@ func (r *StackController) SetupWithManager(mgr Manager) (*builder.Builder, error
 		Owns(&v1beta1.Gateway{}).
 		Owns(&v1beta1.Stargate{}).
 		Owns(&v1beta1.Stack{}).
+		Watches(
+			&v1beta3.Configuration{},
+			watch(mgr, ".spec.seed"),
+			builder.WithPredicates(predicate.ResourceVersionChangedPredicate{}),
+		).
+		Watches(
+			&v1beta3.Versions{},
+			watch(mgr, ".spec.versions"),
+			builder.WithPredicates(predicate.ResourceVersionChangedPredicate{}),
+		).
 		For(&v1beta3.Stack{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
 
@@ -435,4 +534,56 @@ func resourceRequirements(resourceProperties *v1beta3.ResourceProperties) *corev
 	}
 
 	return resources
+}
+
+func convertOtlpSpec(otlp *v1beta3.OtlpSpec) *v1beta1.OtlpSpec {
+	if otlp == nil {
+		return nil
+	}
+
+	return &v1beta1.OtlpSpec{
+		Endpoint: otlp.Endpoint,
+		Port:     otlp.Port,
+		Insecure: otlp.Insecure,
+		Mode:     otlp.Mode,
+		ResourceAttributes: func() map[string]string {
+			if otlp.ResourceAttributes == "" {
+				return nil
+			}
+			parts := strings.Split(otlp.ResourceAttributes, " ")
+			ret := make(map[string]string)
+			for _, part := range parts {
+				parts := strings.Split(part, "=")
+				ret[parts[0]] = parts[1]
+			}
+
+			return ret
+		}(),
+	}
+}
+
+func listStacksAndReconcile(mgr ctrl.Manager, opts ...client.ListOption) []reconcile.Request {
+	stacks := &v1beta3.StackList{}
+	err := mgr.GetClient().List(context.TODO(), stacks, opts...)
+	if err != nil {
+		panic(err)
+	}
+
+	return collectionutils.Map(stacks.Items, func(s v1beta3.Stack) reconcile.Request {
+		return reconcile.Request{
+			NamespacedName: types.NamespacedName{
+				Name:      s.GetName(),
+				Namespace: s.GetNamespace(),
+			},
+		}
+	})
+}
+
+func watch(mgr ctrl.Manager, field string) handler.EventHandler {
+	return handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, object client.Object) []reconcile.Request {
+		return listStacksAndReconcile(mgr, &client.ListOptions{
+			FieldSelector: fields.OneTermEqualSelector(field, object.GetName()),
+			Namespace:     object.GetNamespace(),
+		})
+	})
 }
