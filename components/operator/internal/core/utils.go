@@ -17,10 +17,12 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
-func HashFromConfigMap(configMap *corev1.ConfigMap) string {
+func HashFromConfigMaps(configMaps ...*corev1.ConfigMap) string {
 	digest := sha256.New()
-	if err := json.NewEncoder(digest).Encode(configMap.Data); err != nil {
-		panic(err)
+	for _, configMap := range configMaps {
+		if err := json.NewEncoder(digest).Encode(configMap.Data); err != nil {
+			panic(err)
+		}
 	}
 	return base64.StdEncoding.EncodeToString(digest.Sum(nil))
 }

@@ -184,12 +184,14 @@ func (r *StreamProcessorController) Reconcile(ctx Context, streamProcessor *v1be
 		}
 	}
 
+	configMaps := make([]*corev1.ConfigMap, 0)
+
 	for _, x := range directories {
 		data := make(map[string]string)
 
 		CopyDir(x.fs, x.name, x.name, &data)
 
-		_, _, err := CreateOrUpdate[*corev1.ConfigMap](ctx, types.NamespacedName{
+		configMap, _, err := CreateOrUpdate[*corev1.ConfigMap](ctx, types.NamespacedName{
 			Namespace: streamProcessor.Spec.Stack,
 			Name:      "stream-processor-" + x.name,
 		},
@@ -201,6 +203,8 @@ func (r *StreamProcessorController) Reconcile(ctx Context, streamProcessor *v1be
 		if err != nil {
 			return err
 		}
+
+		configMaps = append(configMaps, configMap)
 
 		volumes = append(volumes, corev1.Volume{
 			Name: x.name,
@@ -273,6 +277,11 @@ func (r *StreamProcessorController) Reconcile(ctx Context, streamProcessor *v1be
 				},
 			},
 		})...),
+		func(t *appsv1.Deployment) {
+			t.Spec.Template.Annotations = MergeMaps(t.Spec.Template.Annotations, map[string]string{
+				"config-hash": HashFromConfigMaps(configMaps...),
+			})
+		},
 	)
 	return err
 }

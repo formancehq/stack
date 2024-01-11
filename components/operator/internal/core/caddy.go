@@ -11,7 +11,7 @@ func ConfigureCaddy(caddyfile *v1.ConfigMap, image string, env []v1.EnvVar,
 	return []ObjectMutator[*appsv1.Deployment]{
 		func(t *appsv1.Deployment) {
 			t.Spec.Template.Annotations = collectionutils.MergeMaps(t.Spec.Template.Annotations, map[string]string{
-				"caddyfile-hash": HashFromConfigMap(caddyfile),
+				"caddyfile-hash": HashFromConfigMaps(caddyfile),
 			})
 			t.Spec.Template.Spec.Volumes = []v1.Volume{
 				volumeFromConfigMap("caddyfile", caddyfile),

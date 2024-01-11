@@ -169,7 +169,7 @@ func (r *AuthController) createDeployment(ctx Context, stack *v1beta1.Stack, aut
 		func(t *appsv1.Deployment) {
 
 			t.Spec.Template.Annotations = MergeMaps(t.Spec.Template.Annotations, map[string]string{
-				"config-hash": HashFromConfigMap(configMap),
+				"config-hash": HashFromConfigMaps(configMap),
 			})
 			t.Spec.Template.Spec.Containers = []corev1.Container{{
 				Name:      "auth",
