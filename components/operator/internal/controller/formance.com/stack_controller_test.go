@@ -2,7 +2,7 @@ package formance_com_test
 
 import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
-	"github.com/formancehq/operator/internal/controller/formance.com"
+	formance_com "github.com/formancehq/operator/internal/controller/formance.com"
 	. "github.com/formancehq/operator/internal/controller/testing"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/google/uuid"

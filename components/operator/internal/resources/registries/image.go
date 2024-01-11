@@ -2,9 +2,10 @@ package registries
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
-	"strings"
 
 	"golang.org/x/mod/semver"
 	corev1 "k8s.io/api/core/v1"

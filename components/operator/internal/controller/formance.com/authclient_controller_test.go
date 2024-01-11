@@ -2,6 +2,7 @@ package formance_com_test
 
 import (
 	"fmt"
+
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/controller/testing"
 	"github.com/google/uuid"

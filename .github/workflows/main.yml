@@ -62,7 +62,7 @@ jobs:
           --secret FURY_TOKEN=$FURY_TOKEN
           --secret GORELEASER_KEY=$GORELEASER_KEY
           ${{ contains(github.event.pull_request.labels.*.name, 'no-cache') && '--no-cache' || '' }}
-          +pr
+          +tests
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}

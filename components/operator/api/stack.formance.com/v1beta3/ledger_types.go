@@ -1,8 +1,9 @@
 package v1beta3
 
 import (
-	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"time"
+
+	"github.com/formancehq/operator/api/formance.com/v1beta1"
 )
 
 type LockingStrategyRedisConfig struct {

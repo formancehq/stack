@@ -39,10 +39,6 @@ spec:
           spec:
             description: HTTPAPISpec defines the desired state of HTTPAPI
             properties:
-              annotations:
-                additionalProperties:
-                  type: string
-                type: object
               name:
                 description: Name indicates prefix api
                 type: string
@@ -62,6 +58,14 @@ spec:
                   - path
                   type: object
                 type: array
+              service:
+                description: ServiceConfiguration
+                properties:
+                  annotations:
+                    additionalProperties:
+                      type: string
+                    type: object
+                type: object
               stack:
                 type: string
             required:

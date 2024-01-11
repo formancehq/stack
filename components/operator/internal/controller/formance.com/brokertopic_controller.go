@@ -19,6 +19,7 @@ package formance_com
 import (
 	"context"
 	"fmt"
+
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/stacks"

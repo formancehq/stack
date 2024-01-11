@@ -1,6 +1,6 @@
 package deployments
 
-import "k8s.io/api/core/v1"
+import v1 "k8s.io/api/core/v1"
 
 func StandardHTTPPort() v1.ContainerPort {
 	return v1.ContainerPort{

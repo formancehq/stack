@@ -2,6 +2,7 @@ package topics
 
 import (
 	"fmt"
+
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"k8s.io/apimachinery/pkg/types"

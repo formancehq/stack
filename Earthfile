@@ -148,6 +148,7 @@ pre-commit: # Generate the final spec and run all the pre-commit hooks
     END
     BUILD --pass-args ./tests/integration+pre-commit
 
+<<<<<<< HEAD
 tidy: # Run tidy on all the components
     LOCALLY
     FOR component IN $(cd ./components && ls -d */)
@@ -159,6 +160,9 @@ tidy: # Run tidy on all the components
     BUILD --pass-args ./tests/integration+tidy
 
 pr:
+=======
+tests:
+>>>>>>> c88a93c0c (feat: update generated files)
     LOCALLY
     BUILD --pass-args +tests-all
     BUILD --pass-args +tests-integration

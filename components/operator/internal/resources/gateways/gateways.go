@@ -3,10 +3,11 @@ package gateways
 import (
 	_ "embed"
 	"fmt"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/stacks"
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 )
 
 //go:embed Caddyfile.gotpl

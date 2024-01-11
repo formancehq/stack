@@ -2,6 +2,9 @@ package formance_com
 
 import (
 	"bytes"
+	"strings"
+	"text/template"
+
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/gateways"
@@ -10,8 +13,6 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
-	"strings"
-	"text/template"
 )
 
 func GetDevEnvVars(stack *v1beta1.Stack, service interface {

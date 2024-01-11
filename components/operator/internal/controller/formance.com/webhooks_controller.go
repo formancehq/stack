@@ -17,6 +17,8 @@ limitations under the License.
 package formance_com
 
 import (
+	"strings"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/auths"
@@ -35,7 +37,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
-	"strings"
 )
 
 // WebhooksController reconciles a Webhooks object

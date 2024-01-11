@@ -2,11 +2,12 @@ package testing
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+
 	"github.com/google/go-cmp/cmp"
 	gomegaTypes "github.com/onsi/gomega/types"
 	"github.com/pkg/errors"
-	"os"
-	"path/filepath"
 )
 
 type matchGoldenFile struct {

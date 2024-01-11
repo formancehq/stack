@@ -3,12 +3,13 @@ package reconcilers
 import (
 	"context"
 	"fmt"
+	"reflect"
+
 	"github.com/formancehq/operator/internal/core"
 	pkgError "github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
-	"reflect"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"

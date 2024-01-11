@@ -4,14 +4,14 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.9.2
   creationTimestamp: null
-  name: topics.formance.com
+  name: brokertopics.formance.com
 spec:
   group: formance.com
   names:
-    kind: Topic
-    listKind: TopicList
-    plural: topics
-    singular: topic
+    kind: BrokerTopic
+    listKind: BrokerTopicList
+    plural: brokertopics
+    singular: brokertopic
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -26,7 +26,7 @@ spec:
     name: v1beta1
     schema:
       openAPIV3Schema:
-        description: Topic is the Schema for the topics API
+        description: BrokerTopic is the Schema for the topics API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -41,7 +41,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: TopicSpec defines the desired state of Topic
+            description: BrokerTopicSpec defines the desired state of BrokerTopic
             properties:
               service:
                 type: string
@@ -51,7 +51,7 @@ spec:
             - service
             type: object
           status:
-            description: TopicStatus defines the observed state of Topic
+            description: BrokerTopicStatus defines the observed state of BrokerTopic
             properties:
               conditions:
                 items:

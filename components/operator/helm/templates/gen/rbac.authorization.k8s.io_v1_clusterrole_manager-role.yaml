@@ -194,11 +194,29 @@ rules:
 - apiGroups:
   - formance.com
   resources:
-  - configurations
+  - brokertopics
   verbs:
+  - create
+  - delete
   - get
   - list
+  - patch
+  - update
   - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - brokertopics/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - brokertopics/status
+  verbs:
+  - get
+  - patch
+  - update
 - apiGroups:
   - formance.com
   resources:
@@ -644,40 +662,6 @@ rules:
 - apiGroups:
   - formance.com
   resources:
-  - topics
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - formance.com
-  resources:
-  - topics/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - formance.com
-  resources:
-  - topics/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - formance.com
-  resources:
-  - versions
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - formance.com
-  resources:
   - wallets
   verbs:
   - create
@@ -738,4 +722,46 @@ rules:
   - list
   - patch
   - update
+  - watch
+- apiGroups:
+  - stack.formance.com
+  resources:
+  - configurations
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - stack.formance.com
+  resources:
+  - stacks
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - stack.formance.com
+  resources:
+  - stacks/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - stack.formance.com
+  resources:
+  - stacks/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - stack.formance.com
+  resources:
+  - versions
+  verbs:
+  - get
+  - list
   - watch

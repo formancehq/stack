@@ -17,10 +17,11 @@ limitations under the License.
 package v1beta3
 
 import (
+	"reflect"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/stoewer/go-strcase"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"reflect"
 )
 
 type IngressConfig struct {

@@ -2,10 +2,11 @@ package messages
 
 import (
 	"fmt"
-	"github.com/golang-jwt/jwt/v5"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/google/uuid"

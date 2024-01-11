@@ -3,6 +3,8 @@ package stack_formance_com
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/api/stack.formance.com/v1beta3"
 	. "github.com/formancehq/operator/internal/core"
@@ -19,7 +21,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
-	"strings"
 
 	ctrl "sigs.k8s.io/controller-runtime"
 )

@@ -18,10 +18,11 @@ package v1beta3
 
 import (
 	"fmt"
-	"github.com/formancehq/operator/api/formance.com/v1beta1"
-	"github.com/stoewer/go-strcase"
 	"reflect"
 	"strings"
+
+	"github.com/formancehq/operator/api/formance.com/v1beta1"
+	"github.com/stoewer/go-strcase"
 
 	"github.com/pkg/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

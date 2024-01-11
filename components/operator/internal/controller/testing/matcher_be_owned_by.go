@@ -2,11 +2,12 @@ package testing
 
 import (
 	"fmt"
+	"reflect"
+
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	gomegaTypes "github.com/onsi/gomega/types"
 	"github.com/pkg/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"reflect"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 

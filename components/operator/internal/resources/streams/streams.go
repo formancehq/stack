@@ -3,12 +3,14 @@ package streams
 import (
 	"embed"
 	"fmt"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 
+	"strings"
+
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/types"
-	"strings"
 )
 
 func LoadFromFileSystem(ctx core.Context, fs embed.FS,

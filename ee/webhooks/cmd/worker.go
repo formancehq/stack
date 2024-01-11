@@ -11,6 +11,8 @@ import (
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 
+	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
+
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/formancehq/webhooks/cmd/flag"

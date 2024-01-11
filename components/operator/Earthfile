@@ -138,7 +138,7 @@ generate-docs:
     WORKDIR /src/components/operator
     COPY docs.config.yaml .
     COPY --dir docs .
-    RUN crd-ref-docs --source-path=api/v1beta1 --renderer=markdown --output-path=./docs/crd.md --config=./docs.config.yaml
+    RUN crd-ref-docs --source-path=api/formance.com/v1beta1 --renderer=markdown --output-path=./docs/crd.md --config=./docs.config.yaml
     SAVE ARTIFACT docs/crd.md AS LOCAL docs/crd.md
 
 pre-commit:

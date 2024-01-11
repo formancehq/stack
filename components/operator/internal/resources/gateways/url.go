@@ -2,6 +2,7 @@ package gateways
 
 import (
 	"fmt"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 )
 

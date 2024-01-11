@@ -2,6 +2,7 @@ package v1beta3
 
 import (
 	"fmt"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 )
 

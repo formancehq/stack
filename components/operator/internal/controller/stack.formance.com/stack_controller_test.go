@@ -2,6 +2,8 @@ package stack_formance_com_test
 
 import (
 	"fmt"
+	"math/rand"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/api/stack.formance.com/v1beta3"
 	. "github.com/formancehq/operator/internal/controller/testing"
@@ -9,7 +11,6 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"math/rand"
 )
 
 var _ = Describe("StackController (legacy)", func() {

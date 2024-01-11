@@ -1,9 +1,10 @@
 package core
 
 import (
+	"reflect"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"reflect"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 

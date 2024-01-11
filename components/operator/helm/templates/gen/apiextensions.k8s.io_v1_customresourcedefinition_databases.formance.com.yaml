@@ -69,8 +69,6 @@ spec:
                     type: string
                   database:
                     type: string
-                  debug:
-                    type: boolean
                   disableSSLMode:
                     type: boolean
                   host:
