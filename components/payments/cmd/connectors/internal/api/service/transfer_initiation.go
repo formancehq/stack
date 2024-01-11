@@ -10,6 +10,7 @@ import (
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
 	"github.com/formancehq/stack/libs/go-libs/publish"
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 )
 
@@ -113,14 +114,14 @@ func (s *Service) CreateTransferInitiation(ctx context.Context, req *CreateTrans
 		return nil, newStorageError(err, "getting destination account")
 	}
 
+	id := models.TransferInitiationID{
+		Reference:   req.Reference,
+		ConnectorID: connectorID,
+	}
 	createdAt := time.Now()
 	tf := &models.TransferInitiation{
-		ID: models.TransferInitiationID{
-			Reference:   req.Reference,
-			ConnectorID: connectorID,
-		},
+		ID:                   id,
 		CreatedAt:            createdAt,
-		UpdatedAt:            createdAt, // When created, should be the same
 		ScheduledAt:          req.ScheduledAt,
 		Description:          req.Description,
 		DestinationAccountID: models.MustAccountIDFromString(req.DestinationAccountID),
@@ -129,8 +130,15 @@ func (s *Service) CreateTransferInitiation(ctx context.Context, req *CreateTrans
 		Type:                 models.MustTransferInitiationTypeFromString(req.Type),
 		Amount:               req.Amount,
 		Asset:                models.Asset(req.Asset),
-		Status:               status,
 		Metadata:             req.Metadata,
+		RelatedAdjustments: []*models.TransferInitiationAdjustments{
+			{
+				ID:                   uuid.New(),
+				TransferInitiationID: id,
+				CreatedAt:            createdAt,
+				Status:               status,
+			},
+		},
 	}
 
 	if req.SourceAccountID != "" {
@@ -217,13 +225,24 @@ func (s *Service) UpdateTransferInitiationStatus(ctx context.Context, id string,
 		return newStorageError(err, "reading transfer initiation")
 	}
 
-	if previousTransferInitiation.Status != models.TransferInitiationStatusWaitingForValidation {
+	// Check last status
+	if len(previousTransferInitiation.RelatedAdjustments) == 0 ||
+		previousTransferInitiation.RelatedAdjustments[0].Status != models.TransferInitiationStatusWaitingForValidation {
 		return errors.Wrap(ErrValidation, "only waiting for validation transfer initiation can be updated")
 	}
-	previousTransferInitiation.Status = status
-	previousTransferInitiation.Attempts++
 
-	err = s.store.UpdateTransferInitiationPaymentsStatus(ctx, transferID, nil, status, "", previousTransferInitiation.Attempts, time.Now())
+	adjustment := &models.TransferInitiationAdjustments{
+		ID:                   uuid.New(),
+		TransferInitiationID: transferID,
+		CreatedAt:            time.Now(),
+		Status:               status,
+		Error:                "",
+	}
+
+	previousTransferInitiation.RelatedAdjustments = append(previousTransferInitiation.RelatedAdjustments, adjustment)
+	previousTransferInitiation.SortRelatedAdjustments()
+
+	err = s.store.UpdateTransferInitiationPaymentsStatus(ctx, transferID, nil, adjustment)
 	if err != nil {
 		return newStorageError(err, "updating transfer initiation payments status")
 	}
@@ -271,13 +290,21 @@ func (s *Service) RetryTransferInitiation(ctx context.Context, id string) error 
 		return newStorageError(err, "reading transfer initiation")
 	}
 
-	if previousTransferInitiation.Status != models.TransferInitiationStatusFailed {
+	if len(previousTransferInitiation.RelatedAdjustments) == 0 ||
+		previousTransferInitiation.RelatedAdjustments[0].Status != models.TransferInitiationStatusFailed {
 		return errors.Wrap(ErrValidation, "only failed transfer initiation can be retried")
 	}
-	previousTransferInitiation.Status = models.TransferInitiationStatusProcessing
-	previousTransferInitiation.Attempts++
 
-	err = s.store.UpdateTransferInitiationPaymentsStatus(ctx, transferID, nil, models.TransferInitiationStatusProcessing, "", previousTransferInitiation.Attempts, time.Now())
+	adjustment := &models.TransferInitiationAdjustments{
+		ID:                   uuid.New(),
+		TransferInitiationID: transferID,
+		CreatedAt:            time.Now(),
+		Status:               models.TransferInitiationStatusRetried,
+		Error:                "",
+		Metadata:             map[string]string{},
+	}
+
+	err = s.store.UpdateTransferInitiationPaymentsStatus(ctx, transferID, nil, adjustment)
 	if err != nil {
 		return newStorageError(err, "updating transfer initiation payments status")
 	}
@@ -323,7 +350,8 @@ func (s *Service) DeleteTransferInitiation(ctx context.Context, id string) error
 		return newStorageError(err, "reading transfer initiation")
 	}
 
-	if tf.Status != models.TransferInitiationStatusWaitingForValidation {
+	if len(tf.RelatedAdjustments) == 0 ||
+		tf.RelatedAdjustments[0].Status != models.TransferInitiationStatusWaitingForValidation {
 		return errors.Wrap(ErrValidation, "only waiting for validation transfer initiation can be deleted")
 	}
 

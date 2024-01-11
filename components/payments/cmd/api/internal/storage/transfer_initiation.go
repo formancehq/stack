@@ -8,21 +8,23 @@ import (
 
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/query"
-	"github.com/pkg/errors"
 )
 
 func (s *Storage) GetTransferInitiation(ctx context.Context, id models.TransferInitiationID) (*models.TransferInitiation, error) {
 	var transferInitiation models.TransferInitiation
 
 	query := s.db.NewSelect().
-		Column("id", "connector_id", "created_at", "scheduled_at", "updated_at", "description", "type", "source_account_id", "destination_account_id", "provider", "amount", "asset", "status", "error", "metadata").
+		Column("id", "connector_id", "created_at", "scheduled_at", "description", "type", "source_account_id", "destination_account_id", "provider", "amount", "asset", "metadata").
 		Model(&transferInitiation).
+		Relation("RelatedAdjustments").
 		Where("id = ?", id)
 
 	err := query.Scan(ctx)
 	if err != nil {
 		return nil, e("failed to get transfer initiation", err)
 	}
+
+	transferInitiation.SortRelatedAdjustments()
 
 	transferInitiation.RelatedPayments, err = s.ReadTransferInitiationPayments(ctx, id)
 	if err != nil {
@@ -53,8 +55,9 @@ func (s *Storage) ListTransferInitiations(ctx context.Context, pagination Pagina
 	var tfs []*models.TransferInitiation
 
 	query := s.db.NewSelect().
-		Column("id", "connector_id", "created_at", "scheduled_at", "updated_at", "description", "type", "source_account_id", "destination_account_id", "provider", "amount", "asset", "status", "error", "metadata").
-		Model(&tfs)
+		Column("id", "connector_id", "created_at", "scheduled_at", "description", "type", "source_account_id", "destination_account_id", "provider", "amount", "asset", "metadata").
+		Model(&tfs).
+		Relation("RelatedAdjustments")
 
 	if pagination.queryBuilder != nil {
 		where, args, err := s.transferInitiationQueryContext(pagination.queryBuilder)
@@ -95,8 +98,9 @@ func (s *Storage) ListTransferInitiations(ctx context.Context, pagination Pagina
 		lastReference = tfs[len(tfs)-1].CreatedAt.Format(time.RFC3339Nano)
 
 		query = s.db.NewSelect().
-			Column("id", "connector_id", "created_at", "updated_at", "description", "type", "source_account_id", "destination_account_id", "provider", "amount", "asset", "status", "error").
-			Model(&tfs)
+			Column("id", "connector_id", "created_at", "description", "type", "source_account_id", "destination_account_id", "provider", "amount", "asset", "metadata").
+			Model(&tfs).
+			Relation("RelatedAdjustments")
 
 		hasPrevious, err = pagination.hasPrevious(ctx, query, "transfer_initiation.created_at", firstReference)
 		if err != nil {
@@ -110,100 +114,6 @@ func (s *Storage) ListTransferInitiations(ctx context.Context, pagination Pagina
 	}
 
 	return tfs, paginationDetails, nil
-}
-
-func (s *Storage) AddTransferInitiationPaymentID(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, createdAt time.Time) error {
-	if paymentID == nil {
-		return errors.New("payment id is nil")
-	}
-
-	_, err := s.db.NewInsert().
-		Column("transfer_initiation_id", "payment_id", "created_at", "status").
-		Model(&models.TransferInitiationPayments{
-			TransferInitiationID: id,
-			PaymentID:            *paymentID,
-			CreatedAt:            createdAt,
-			Status:               models.TransferInitiationStatusProcessing,
-		}).
-		Exec(ctx)
-	if err != nil {
-		return e("failed to add transfer initiation payment id", err)
-	}
-
-	return nil
-}
-
-func (s *Storage) updateTransferInitiationStatus(
-	ctx context.Context,
-	id models.TransferInitiationID,
-	status models.TransferInitiationStatus,
-	errorMessage string,
-	attempts int,
-	updatedAt time.Time,
-) error {
-	query := s.db.NewUpdate().
-		Model((*models.TransferInitiation)(nil)).
-		Set("status = ?", status).
-		Set("updated_at = ?", updatedAt).
-		Set("error = ?", errorMessage)
-
-	if attempts > 0 {
-		query = query.Set("attempts = ?", attempts)
-	}
-
-	_, err := query.Where("id = ?", id).
-		Exec(ctx)
-	if err != nil {
-		return e("failed to update transfer initiation status", err)
-	}
-
-	return nil
-}
-
-func (s *Storage) UpdateTransferInitiationPaymentsStatus(
-	ctx context.Context,
-	id models.TransferInitiationID,
-	paymentID *models.PaymentID,
-	status models.TransferInitiationStatus,
-	errorMessage string,
-	attempts int,
-	updatedAt time.Time,
-) error {
-	if paymentID != nil {
-		query := s.db.NewUpdate().
-			Model((*models.TransferInitiationPayments)(nil)).
-			Set("status = ?", status)
-
-		if errorMessage != "" {
-			query = query.Set("error = ?", errorMessage)
-		}
-
-		if attempts > 0 {
-			query = query.Set("attempts = ?", attempts)
-		}
-
-		_, err := query.
-			Where("transfer_initiation_id = ?", id).
-			Where("payment_id = ?", paymentID).
-			Exec(ctx)
-		if err != nil {
-			return e("failed to update transfer initiation status", err)
-		}
-	}
-
-	return s.updateTransferInitiationStatus(ctx, id, status, errorMessage, attempts, updatedAt)
-}
-
-func (s *Storage) DeleteTransferInitiation(ctx context.Context, id models.TransferInitiationID) error {
-	_, err := s.db.NewDelete().
-		Model((*models.TransferInitiation)(nil)).
-		Where("id = ?", id).
-		Exec(ctx)
-	if err != nil {
-		return e("failed to delete transfer initiation", err)
-	}
-
-	return nil
 }
 
 func (s *Storage) transferInitiationQueryContext(qb query.Builder) (string, []any, error) {

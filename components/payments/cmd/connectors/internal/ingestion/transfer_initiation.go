@@ -8,15 +8,19 @@ import (
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
 	"github.com/formancehq/stack/libs/go-libs/publish"
+	"github.com/google/uuid"
 )
 
-func (i *DefaultIngester) UpdateTransferInitiationPaymentsStatus(ctx context.Context, tf *models.TransferInitiation, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, attempts int, updatedAt time.Time) error {
-	tf.Status = status
-	tf.Error = errorMessage
-	tf.Attempts = attempts
-	tf.UpdatedAt = updatedAt
+func (i *DefaultIngester) UpdateTransferInitiationPaymentsStatus(ctx context.Context, tf *models.TransferInitiation, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, updatedAt time.Time) error {
+	adjustment := &models.TransferInitiationAdjustments{
+		ID:                   uuid.New(),
+		TransferInitiationID: tf.ID,
+		CreatedAt:            updatedAt,
+		Status:               status,
+		Error:                errorMessage,
+	}
 
-	if err := i.store.UpdateTransferInitiationPaymentsStatus(ctx, tf.ID, paymentID, tf.Status, tf.Error, tf.Attempts, tf.UpdatedAt); err != nil {
+	if err := i.store.UpdateTransferInitiationPaymentsStatus(ctx, tf.ID, paymentID, adjustment); err != nil {
 		return err
 	}
 

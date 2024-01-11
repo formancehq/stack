@@ -42,13 +42,13 @@ func InitiatePaymentTask(config Config, client *client.Client, transferID string
 			if err != nil {
 				ctx, cancel := contextutil.Detached(ctx)
 				defer cancel()
-				if err := ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusFailed, err.Error(), transfer.Attempts, time.Now()); err != nil {
+				if err := ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusFailed, err.Error(), time.Now()); err != nil {
 					logger.Error("failed to update transfer initiation status: %v", err)
 				}
 			}
 		}()
 
-		err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessing, "", transfer.Attempts, time.Now())
+		err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessing, "", time.Now())
 		if err != nil {
 			return err
 		}
@@ -87,7 +87,7 @@ func InitiatePaymentTask(config Config, client *client.Client, transferID string
 			DestinationExternalAccountID: &transfer.DestinationAccount.Reference,
 			Amount:                       &amount,
 			Date:                         &dateString,
-			ExternalID:                   serializeAtlarPaymentExternalID(transfer.ID.Reference, transfer.Attempts),
+			ExternalID:                   serializeAtlarPaymentExternalID(transfer.ID.Reference, len(transfer.RelatedAdjustments)),
 			PaymentSchemeType:            &paymentSchemeType,
 			RemittanceInformation: &atlar_models.RemittanceInformation{
 				Type:  &remittanceInformationType,
@@ -174,7 +174,7 @@ func UpdatePaymentStatusTask(
 		defer cancel()
 		getCreditTransferResponse, err := client.GetV1CreditTransfersGetByExternalIDExternalID(
 			requestCtx,
-			serializeAtlarPaymentExternalID(transfer.ID.Reference, transfer.Attempts),
+			serializeAtlarPaymentExternalID(transfer.ID.Reference, len(transfer.RelatedAdjustments)),
 		)
 		if err != nil {
 			return err
@@ -207,7 +207,7 @@ func UpdatePaymentStatusTask(
 
 		case "RECONCILED":
 			// this is done
-			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessed, "", transfer.Attempts, time.Now())
+			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessed, "", time.Now())
 			if err != nil {
 				return err
 			}
@@ -218,7 +218,7 @@ func UpdatePaymentStatusTask(
 			// this has failed
 			err = ingester.UpdateTransferInitiationPaymentsStatus(
 				ctx, transfer, paymentID, models.TransferInitiationStatusFailed,
-				fmt.Sprintf("paymant initiation status is \"%s\"", status), transfer.Attempts, time.Now(),
+				fmt.Sprintf("paymant initiation status is \"%s\"", status), time.Now(),
 			)
 			if err != nil {
 				return err

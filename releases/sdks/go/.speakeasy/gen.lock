@@ -1,7 +1,7 @@
 lockVersion: 2.0.0
-id: af4b522e-8363-42f4-83db-eb0dba0e17ee
+id: 4d933070-6eba-430a-997b-ffa92b95fcb0
 management:
-  docChecksum: 5e2e20d4ba38e000acae9e4f1fd6175b
+  docChecksum: fa04a2237003760f6075c16fe5dd82ea
   docVersion: INTERNAL
   speakeasyVersion: internal
   generationVersion: 2.230.1
@@ -455,6 +455,7 @@ generatedFiles:
   - /pkg/models/shared/transferinitiation.go
   - /pkg/models/shared/transferinitiationstatus.go
   - /pkg/models/shared/transferinitiationpayments.go
+  - /pkg/models/shared/transferinitiationadjusments.go
   - /pkg/models/shared/transferinitiationrequest.go
   - /pkg/models/shared/balancescursor.go
   - /pkg/models/shared/accountbalance.go
@@ -1127,6 +1128,7 @@ generatedFiles:
   - docs/pkg/models/shared/transferinitiation.md
   - docs/pkg/models/shared/transferinitiationstatus.md
   - docs/pkg/models/shared/transferinitiationpayments.md
+  - docs/pkg/models/shared/transferinitiationadjusments.md
   - docs/pkg/models/shared/transferinitiationrequesttype.md
   - docs/pkg/models/shared/transferinitiationrequest.md
   - docs/pkg/models/shared/balancescursorcursor.md

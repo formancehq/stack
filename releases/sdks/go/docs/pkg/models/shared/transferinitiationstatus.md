@@ -11,3 +11,4 @@
 | `TransferInitiationStatusFailed`               | FAILED                                         |
 | `TransferInitiationStatusRejected`             | REJECTED                                       |
 | `TransferInitiationStatusValidated`            | VALIDATED                                      |
+| `TransferInitiationStatusRetried`              | RETRIED                                        |

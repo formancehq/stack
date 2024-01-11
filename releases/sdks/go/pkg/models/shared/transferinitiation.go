@@ -38,22 +38,22 @@ func (e *TransferInitiationType) UnmarshalJSON(data []byte) error {
 }
 
 type TransferInitiation struct {
-	Amount               *big.Int                     `json:"amount"`
-	Asset                string                       `json:"asset"`
-	ConnectorID          string                       `json:"connectorID"`
-	CreatedAt            time.Time                    `json:"createdAt"`
-	Description          string                       `json:"description"`
-	DestinationAccountID string                       `json:"destinationAccountID"`
-	Error                string                       `json:"error"`
-	ID                   string                       `json:"id"`
-	Metadata             map[string]string            `json:"metadata,omitempty"`
-	Reference            string                       `json:"reference"`
-	RelatedPayments      []TransferInitiationPayments `json:"relatedPayments,omitempty"`
-	ScheduledAt          time.Time                    `json:"scheduledAt"`
-	SourceAccountID      string                       `json:"sourceAccountID"`
-	Status               TransferInitiationStatus     `json:"status"`
-	Type                 TransferInitiationType       `json:"type"`
-	UpdatedAt            time.Time                    `json:"updatedAt"`
+	Amount               *big.Int                       `json:"amount"`
+	Asset                string                         `json:"asset"`
+	ConnectorID          string                         `json:"connectorID"`
+	CreatedAt            time.Time                      `json:"createdAt"`
+	Description          string                         `json:"description"`
+	DestinationAccountID string                         `json:"destinationAccountID"`
+	Error                string                         `json:"error"`
+	ID                   string                         `json:"id"`
+	Metadata             map[string]string              `json:"metadata,omitempty"`
+	Reference            string                         `json:"reference"`
+	RelatedAdjustments   []TransferInitiationAdjusments `json:"relatedAdjustments,omitempty"`
+	RelatedPayments      []TransferInitiationPayments   `json:"relatedPayments,omitempty"`
+	ScheduledAt          time.Time                      `json:"scheduledAt"`
+	SourceAccountID      string                         `json:"sourceAccountID"`
+	Status               TransferInitiationStatus       `json:"status"`
+	Type                 TransferInitiationType         `json:"type"`
 }
 
 func (t TransferInitiation) MarshalJSON() ([]byte, error) {
@@ -137,6 +137,13 @@ func (o *TransferInitiation) GetReference() string {
 	return o.Reference
 }
 
+func (o *TransferInitiation) GetRelatedAdjustments() []TransferInitiationAdjusments {
+	if o == nil {
+		return nil
+	}
+	return o.RelatedAdjustments
+}
+
 func (o *TransferInitiation) GetRelatedPayments() []TransferInitiationPayments {
 	if o == nil {
 		return nil
@@ -170,11 +177,4 @@ func (o *TransferInitiation) GetType() TransferInitiationType {
 		return TransferInitiationType("")
 	}
 	return o.Type
-}
-
-func (o *TransferInitiation) GetUpdatedAt() time.Time {
-	if o == nil {
-		return time.Time{}
-	}
-	return o.UpdatedAt
 }

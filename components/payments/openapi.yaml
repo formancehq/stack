@@ -1179,6 +1179,7 @@ components:
         - FAILED
         - REJECTED
         - VALIDATED
+        - RETRIED
     ConnectorConfig:
       anyOf:
         - $ref: '#/components/schemas/StripeConfig'
@@ -1480,7 +1481,6 @@ components:
         - id
         - reference
         - createdAt
-        - updatedAt
         - scheduledAt
         - description
         - sourceAccountID
@@ -1498,9 +1498,6 @@ components:
         reference:
           type: string
         createdAt:
-          type: string
-          format: date-time
-        updatedAt:
           type: string
           format: date-time
         scheduledAt:
@@ -1538,6 +1535,32 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TransferInitiationPayments'
+        relatedAdjustments:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransferInitiationAdjusments'
+    TransferInitiationAdjusments:
+      type: object
+      required:
+        - adjustmentID
+        - createdAt
+        - status
+        - error
+      properties:
+        adjustmentID:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/TransferInitiationStatus'
+        error:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          nullable: true
     TransferInitiationPayments:
       type: object
       required:
