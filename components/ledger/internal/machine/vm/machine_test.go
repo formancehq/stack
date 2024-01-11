@@ -1297,6 +1297,14 @@ func TestVariablesParsing(t *testing.T) {
 		}))
 
 		require.NoError(t, m.SetVarsFromJSON(map[string]string{
+			"acc": "account:valid-acc",
+		}))
+
+		require.Error(t, m.SetVarsFromJSON(map[string]string{
+			"acc": "account:invalid--acc",
+		}))
+
+		require.NoError(t, m.SetVarsFromJSON(map[string]string{
 			"acc": "valid:acc",
 		}))
 
