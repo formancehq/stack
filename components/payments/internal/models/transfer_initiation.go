@@ -210,9 +210,9 @@ type TransferInitiationPayments struct {
 type TransferInitiationAdjustments struct {
 	bun.BaseModel `bun:"transfers.transfer_initiation_adjustments"`
 
-	ID                   uuid.UUID            `bun:",pk"`
-	TransferInitiationID TransferInitiationID `bun:",pk"`
-	CreatedAt            time.Time            `bun:",nullzero"`
+	ID                   uuid.UUID `bun:",pk"`
+	TransferInitiationID TransferInitiationID
+	CreatedAt            time.Time `bun:",nullzero"`
 	Status               TransferInitiationStatus
 	Error                string
 	Metadata             map[string]string

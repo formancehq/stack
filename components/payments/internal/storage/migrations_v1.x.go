@@ -192,7 +192,7 @@ func registerMigrationsV1(ctx context.Context, migrator *migrations.Migrator) {
 						status int NOT NULL,
 						error text,
 						metadata jsonb,
-						CONSTRAINT transfer_initiation_adjustments_pk PRIMARY KEY (id, transfer_initiation_id)
+						CONSTRAINT transfer_initiation_adjustments_pk PRIMARY KEY (id)
 					);
 
 					ALTER TABLE transfers.transfer_initiation_adjustments ADD CONSTRAINT adjusmtents_transfer_initiation_id_constraint
