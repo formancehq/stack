@@ -11,7 +11,7 @@ import (
 
 func Watch[T client.Object](mgr core.Manager, service string) func(ctx context.Context, object client.Object) []reconcile.Request {
 	return func(ctx context.Context, object client.Object) []reconcile.Request {
-		topic := object.(*v1beta1.Topic)
+		topic := object.(*v1beta1.BrokerTopic)
 		if topic.Spec.Service != service {
 			return []reconcile.Request{}
 		}

@@ -194,6 +194,32 @@ rules:
 - apiGroups:
   - formance.com
   resources:
+  - brokertopics
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - brokertopics/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - brokertopics/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
   - databaseconfigurations
   verbs:
   - create
@@ -629,32 +655,6 @@ rules:
   - formance.com
   resources:
   - topicqueries/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - formance.com
-  resources:
-  - topics
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - formance.com
-  resources:
-  - topics/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - formance.com
-  resources:
-  - topics/status
   verbs:
   - get
   - patch

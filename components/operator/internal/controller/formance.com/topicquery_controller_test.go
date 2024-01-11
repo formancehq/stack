@@ -46,16 +46,16 @@ var _ = Describe("TopicQueryController", func() {
 			}
 			Expect(Create(topicQuery)).To(Succeed())
 		})
-		It("Should create a Topic", func() {
-			t := &v1beta1.Topic{}
-			Eventually(func(g Gomega) *v1beta1.Topic {
+		It("Should create a BrokerTopic", func() {
+			t := &v1beta1.BrokerTopic{}
+			Eventually(func(g Gomega) *v1beta1.BrokerTopic {
 				g.Expect(Get(core.GetResourceName(
 					core.GetObjectName(stack.Name, topicQuery.Spec.Service)), t)).To(Succeed())
 				return t
 			}).Should(BeOwnedBy(topicQuery))
 		})
-		Context("Then when the Topic is ready", func() {
-			t := &v1beta1.Topic{}
+		Context("Then when the BrokerTopic is ready", func() {
+			t := &v1beta1.BrokerTopic{}
 			BeforeEach(func() {
 				Eventually(func(g Gomega) bool {
 					g.Expect(Get(core.GetResourceName(
@@ -97,8 +97,8 @@ var _ = Describe("TopicQueryController", func() {
 						Expect(Delete(topicQuery)).To(Succeed())
 					})
 					It("Should remove the service from the queries of the topic", func() {
-						Eventually(func(g Gomega) *v1beta1.Topic {
-							topic := &v1beta1.Topic{}
+						Eventually(func(g Gomega) *v1beta1.BrokerTopic {
+							topic := &v1beta1.BrokerTopic{}
 							g.Expect(Get(core.GetResourceName(core.GetObjectName(stack.Name, topicQuery.Spec.Service)), topic)).To(Succeed())
 							return topic
 						}).ShouldNot(BeControlledBy(topicQuery))
@@ -107,9 +107,9 @@ var _ = Describe("TopicQueryController", func() {
 						BeforeEach(func() {
 							Expect(Delete(topicQuery2)).To(Succeed())
 						})
-						It("Should completely remove the Topic object", func() {
+						It("Should completely remove the BrokerTopic object", func() {
 							Eventually(func(g Gomega) bool {
-								t := &v1beta1.Topic{}
+								t := &v1beta1.BrokerTopic{}
 								err := Get(core.GetResourceName(core.GetObjectName(stack.Name, topicQuery.Spec.Service)), t)
 
 								return errors.IsNotFound(err)

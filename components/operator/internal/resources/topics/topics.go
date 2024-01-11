@@ -8,8 +8,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func Find(ctx core.Context, stack *v1beta1.Stack, name string) (*v1beta1.Topic, error) {
-	topicList := &v1beta1.TopicList{}
+func Find(ctx core.Context, stack *v1beta1.Stack, name string) (*v1beta1.BrokerTopic, error) {
+	topicList := &v1beta1.BrokerTopicList{}
 	if err := ctx.GetClient().List(ctx, topicList, client.MatchingFields{
 		".spec.service": name,
 		"stack":         stack.Name,
@@ -24,15 +24,15 @@ func Find(ctx core.Context, stack *v1beta1.Stack, name string) (*v1beta1.Topic, 
 	return &topicList.Items[0], nil
 }
 
-func CreateOrUpdate(ctx core.Context, stack *v1beta1.Stack, owner client.Object, service, name string) (*v1beta1.Topic, error) {
-	ret, _, err := core.CreateOrUpdate[*v1beta1.Topic](ctx, types.NamespacedName{
+func CreateOrUpdate(ctx core.Context, stack *v1beta1.Stack, owner client.Object, service, name string) (*v1beta1.BrokerTopic, error) {
+	ret, _, err := core.CreateOrUpdate[*v1beta1.BrokerTopic](ctx, types.NamespacedName{
 		Name: fmt.Sprintf("%s-%s", stack.Name, name),
 	},
-		func(t *v1beta1.Topic) {
+		func(t *v1beta1.BrokerTopic) {
 			t.Spec.Service = service
 			t.Spec.Stack = stack.GetName()
 		},
-		core.WithController[*v1beta1.Topic](ctx.GetScheme(), owner),
+		core.WithController[*v1beta1.BrokerTopic](ctx.GetScheme(), owner),
 	)
 	if err != nil {
 		return nil, err

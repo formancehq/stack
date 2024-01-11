@@ -47,7 +47,7 @@ type TopicQueryController struct{}
 func (r *TopicQueryController) Reconcile(ctx Context, topicQuery *v1beta1.TopicQuery) error {
 
 	if !topicQuery.DeletionTimestamp.IsZero() {
-		topic := &v1beta1.Topic{}
+		topic := &v1beta1.BrokerTopic{}
 		if err := ctx.GetClient().Get(ctx, types.NamespacedName{
 			Name: GetObjectName(topicQuery.Spec.Stack, topicQuery.Spec.Service),
 		}, topic); err != nil {
@@ -77,18 +77,18 @@ func (r *TopicQueryController) Reconcile(ctx Context, topicQuery *v1beta1.TopicQ
 		}
 	}
 
-	topic := &v1beta1.Topic{}
+	topic := &v1beta1.BrokerTopic{}
 	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
 		Name: GetObjectName(topicQuery.Spec.Stack, topicQuery.Spec.Service),
 	}, topic); err != nil {
 		if !errors.IsNotFound(err) {
 			return err
 		}
-		topic = &v1beta1.Topic{
+		topic = &v1beta1.BrokerTopic{
 			ObjectMeta: ctrl.ObjectMeta{
 				Name: GetObjectName(topicQuery.Spec.Stack, topicQuery.Spec.Service),
 			},
-			Spec: v1beta1.TopicSpec{
+			Spec: v1beta1.BrokerTopicSpec{
 				StackDependency: v1beta1.StackDependency{
 					Stack: topicQuery.Spec.Stack,
 				},
@@ -132,13 +132,13 @@ func (r *TopicQueryController) SetupWithManager(mgr Manager) (*builder.Builder, 
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.TopicQuery{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Watches(
-			&v1beta1.Topic{},
-			// WatchUsingLabels update of Topic to be able to set Ready flag on TopicQuery
+			&v1beta1.BrokerTopic{},
+			// WatchUsingLabels update of BrokerTopic to be able to set Ready flag on TopicQuery
 			handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, object client.Object) []reconcile.Request {
 				list := v1beta1.TopicQueryList{}
 				if err := mgr.GetClient().List(ctx, &list, client.MatchingFields{
-					".spec.service": object.(*v1beta1.Topic).Spec.Service,
-					"stack":         object.(*v1beta1.Topic).Spec.Stack,
+					".spec.service": object.(*v1beta1.BrokerTopic).Spec.Service,
+					"stack":         object.(*v1beta1.BrokerTopic).Spec.Stack,
 				}); err != nil {
 					log.FromContext(ctx).Error(err, "listing topic queries")
 					return []reconcile.Request{}

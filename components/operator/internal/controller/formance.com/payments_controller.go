@@ -294,7 +294,7 @@ func (r *PaymentsController) SetupWithManager(mgr Manager) (*builder.Builder, er
 				databases.Watch[*v1beta1.Payments](mgr, "payments")),
 		).
 		Watches(
-			&v1beta1.Topic{},
+			&v1beta1.BrokerTopic{},
 			handler.EnqueueRequestsFromMapFunc(
 				topics.Watch[*v1beta1.Payments](mgr, "payments")),
 		).

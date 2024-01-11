@@ -32,14 +32,14 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 )
 
-// TopicController reconciles a Topic object
+// TopicController reconciles a BrokerTopic object
 type TopicController struct{}
 
-//+kubebuilder:rbac:groups=formance.com,resources=topics,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=formance.com,resources=topics/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=formance.com,resources=topics/finalizers,verbs=update
+//+kubebuilder:rbac:groups=formance.com,resources=brokertopics,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=formance.com,resources=brokertopics/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=formance.com,resources=brokertopics/finalizers,verbs=update
 
-func (r *TopicController) Reconcile(ctx Context, topic *v1beta1.Topic) error {
+func (r *TopicController) Reconcile(ctx Context, topic *v1beta1.BrokerTopic) error {
 
 	if len(topic.GetOwnerReferences()) == 0 {
 		if topic.Status.Ready && topic.Status.Configuration != nil {
@@ -89,7 +89,7 @@ func (r *TopicController) Reconcile(ctx Context, topic *v1beta1.Topic) error {
 }
 
 func (r *TopicController) createJob(ctx Context,
-	topic *v1beta1.Topic, configuration v1beta1.BrokerConfiguration) (*batchv1.Job, error) {
+	topic *v1beta1.BrokerTopic, configuration v1beta1.BrokerConfiguration) (*batchv1.Job, error) {
 
 	job, _, err := CreateOrUpdate[*batchv1.Job](ctx, types.NamespacedName{
 		Namespace: topic.Spec.Stack,
@@ -121,7 +121,7 @@ func (r *TopicController) createJob(ctx Context,
 	return job, err
 }
 
-func (r *TopicController) createDeleteJob(ctx Context, topic *v1beta1.Topic) (*batchv1.Job, error) {
+func (r *TopicController) createDeleteJob(ctx Context, topic *v1beta1.BrokerTopic) (*batchv1.Job, error) {
 	job, _, err := CreateOrUpdate[*batchv1.Job](ctx, types.NamespacedName{
 		Namespace: topic.Spec.Stack,
 		Name:      fmt.Sprintf("%s-delete-topic", topic.Spec.Service),
@@ -146,17 +146,17 @@ func (r *TopicController) createDeleteJob(ctx Context, topic *v1beta1.Topic) (*b
 func (r *TopicController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 
 	indexer := mgr.GetFieldIndexer()
-	if err := indexer.IndexField(context.Background(), &v1beta1.Topic{}, ".spec.service", func(rawObj client.Object) []string {
-		return []string{rawObj.(*v1beta1.Topic).Spec.Service}
+	if err := indexer.IndexField(context.Background(), &v1beta1.BrokerTopic{}, ".spec.service", func(rawObj client.Object) []string {
+		return []string{rawObj.(*v1beta1.BrokerTopic).Spec.Service}
 	}); err != nil {
 		return nil, err
 	}
 
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&v1beta1.Topic{}).
+		For(&v1beta1.BrokerTopic{}).
 		Watches(
 			&v1beta1.BrokerConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Topic](mgr)),
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.BrokerTopic](mgr)),
 		).
 		Owns(&batchv1.Job{}), nil
 }

@@ -355,7 +355,7 @@ func (r *LedgerController) SetupWithManager(mgr Manager) (*builder.Builder, erro
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Ledger{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Watches(
-			&v1beta1.Topic{},
+			&v1beta1.BrokerTopic{},
 			handler.EnqueueRequestsFromMapFunc(
 				topics.Watch[*v1beta1.Ledger](mgr, "ledger")),
 		).

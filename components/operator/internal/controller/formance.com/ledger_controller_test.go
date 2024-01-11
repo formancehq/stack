@@ -111,7 +111,7 @@ var _ = Describe("LedgerController", func() {
 				))
 			})
 		})
-		Context("with a Topic object existing on the ledger service", func() {
+		Context("with a BrokerTopic object existing on the ledger service", func() {
 			deploymentShouldBeConfigured := func() {
 				deployment := &appsv1.Deployment{}
 				Eventually(func(g Gomega) bool {
@@ -123,7 +123,7 @@ var _ = Describe("LedgerController", func() {
 			}
 			var (
 				brokerConfiguration *v1beta1.BrokerConfiguration
-				topic               *v1beta1.Topic
+				topic               *v1beta1.BrokerTopic
 			)
 			JustBeforeEach(func() {
 				brokerConfiguration = &v1beta1.BrokerConfiguration{
@@ -141,9 +141,9 @@ var _ = Describe("LedgerController", func() {
 					},
 				}
 				Expect(Create(brokerConfiguration)).To(Succeed())
-				topic = &v1beta1.Topic{
+				topic = &v1beta1.BrokerTopic{
 					ObjectMeta: RandObjectMeta(),
-					Spec: v1beta1.TopicSpec{
+					Spec: v1beta1.BrokerTopicSpec{
 						StackDependency: v1beta1.StackDependency{
 							Stack: stack.Name,
 						},
@@ -154,7 +154,7 @@ var _ = Describe("LedgerController", func() {
 				Expect(Create(topic)).To(Succeed())
 			})
 			It("Should start the deployment with env var defined for publishing in the event bus", deploymentShouldBeConfigured)
-			Context("Then removing the Topic", func() {
+			Context("Then removing the BrokerTopic", func() {
 				JustBeforeEach(func() {
 					deploymentShouldBeConfigured()
 					Expect(Delete(topic)).To(Succeed())

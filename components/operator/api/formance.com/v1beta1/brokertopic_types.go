@@ -20,15 +20,15 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// TopicSpec defines the desired state of Topic
-type TopicSpec struct {
+// BrokerTopicSpec defines the desired state of BrokerTopic
+type BrokerTopicSpec struct {
 	StackDependency `json:",inline"`
 	//+required
 	Service string `json:"service"`
 }
 
-// TopicStatus defines the observed state of Topic
-type TopicStatus struct {
+// BrokerTopicStatus defines the observed state of BrokerTopic
+type BrokerTopicStatus struct {
 	CommonStatus `json:",inline"`
 	//+optional
 	Configuration *BrokerConfigurationSpec `json:"configuration,omitempty"`
@@ -40,28 +40,28 @@ type TopicStatus struct {
 //+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Ready"
 //+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
 
-// Topic is the Schema for the topics API
-type Topic struct {
+// BrokerTopic is the Schema for the topics API
+type BrokerTopic struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   TopicSpec   `json:"spec,omitempty"`
-	Status TopicStatus `json:"status,omitempty"`
+	Spec   BrokerTopicSpec   `json:"spec,omitempty"`
+	Status BrokerTopicStatus `json:"status,omitempty"`
 }
 
-func (a Topic) GetStack() string {
+func (a BrokerTopic) GetStack() string {
 	return a.Spec.Stack
 }
 
 //+kubebuilder:object:root=true
 
-// TopicList contains a list of Topic
-type TopicList struct {
+// BrokerTopicList contains a list of BrokerTopic
+type BrokerTopicList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []Topic `json:"items"`
+	Items           []BrokerTopic `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&Topic{}, &TopicList{})
+	SchemeBuilder.Register(&BrokerTopic{}, &BrokerTopicList{})
 }

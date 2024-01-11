@@ -14,11 +14,11 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
 
-var _ = Describe("TopicController", func() {
-	Context("When creating a Topic", func() {
+var _ = Describe("BrokerTopicController", func() {
+	Context("When creating a BrokerTopic", func() {
 		var (
 			stack               *v1beta1.Stack
-			topic               *v1beta1.Topic
+			topic               *v1beta1.BrokerTopic
 			brokerConfiguration *v1beta1.BrokerConfiguration
 		)
 		BeforeEach(func() {
@@ -41,11 +41,11 @@ var _ = Describe("TopicController", func() {
 				},
 			}
 			Expect(Create(brokerConfiguration)).To(Succeed())
-			topic = &v1beta1.Topic{
+			topic = &v1beta1.BrokerTopic{
 				ObjectMeta: v1.ObjectMeta{
 					Name: uuid.NewString(),
 				},
-				Spec: v1beta1.TopicSpec{
+				Spec: v1beta1.BrokerTopicSpec{
 					StackDependency: v1beta1.StackDependency{
 						Stack: stack.Name,
 					},
@@ -56,7 +56,7 @@ var _ = Describe("TopicController", func() {
 			Expect(Create(topic)).To(Succeed())
 		})
 		It("Should be set to ready status", func() {
-			t := &v1beta1.Topic{}
+			t := &v1beta1.BrokerTopic{}
 			Eventually(func(g Gomega) bool {
 				g.Expect(Get(core.GetResourceName(topic.Name), t)).To(Succeed())
 				return t.Status.Ready
@@ -70,7 +70,7 @@ var _ = Describe("TopicController", func() {
 		Context("Then updating removing all owner references", func() {
 			BeforeEach(func() {
 				Eventually(func(g Gomega) bool {
-					t := &v1beta1.Topic{}
+					t := &v1beta1.BrokerTopic{}
 					g.Expect(Get(core.GetResourceName(topic.Name), t)).To(Succeed())
 					return t.Status.Ready
 				}).Should(BeTrue())

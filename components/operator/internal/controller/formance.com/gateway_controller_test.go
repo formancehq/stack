@@ -208,7 +208,7 @@ var _ = Describe("GatewayController", func() {
 			})
 			It("Should create a topic", func() {
 				Eventually(func() error {
-					topic := &v1beta1.Topic{}
+					topic := &v1beta1.BrokerTopic{}
 					return LoadResource("", fmt.Sprintf("%s-audit", stack.GetName()), topic)
 				}).Should(Succeed())
 			})

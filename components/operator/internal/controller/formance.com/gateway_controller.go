@@ -96,7 +96,7 @@ func (r *GatewayController) Reconcile(ctx Context, gateway *v1beta1.Gateway) err
 }
 
 func (r *GatewayController) createConfigMap(ctx Context, stack *v1beta1.Stack,
-	gateway *v1beta1.Gateway, httpAPIs []*v1beta1.HTTPAPI, auth *v1beta1.Auth, auditTopic *v1beta1.Topic) (*corev1.ConfigMap, error) {
+	gateway *v1beta1.Gateway, httpAPIs []*v1beta1.HTTPAPI, auth *v1beta1.Auth, auditTopic *v1beta1.BrokerTopic) (*corev1.ConfigMap, error) {
 
 	caddyfile, err := r.createCaddyfile(ctx, stack, gateway, httpAPIs, auth, auditTopic)
 	if err != nil {
@@ -118,7 +118,7 @@ func (r *GatewayController) createConfigMap(ctx Context, stack *v1beta1.Stack,
 	return caddyfileConfigMap, err
 }
 
-func (r *GatewayController) createAuditTopic(ctx Context, stack *v1beta1.Stack, gateway *v1beta1.Gateway) (*v1beta1.Topic, error) {
+func (r *GatewayController) createAuditTopic(ctx Context, stack *v1beta1.Stack, gateway *v1beta1.Gateway) (*v1beta1.BrokerTopic, error) {
 	if stack.Spec.EnableAudit {
 		topic, err := topics.CreateOrUpdate(ctx, stack, gateway, "gateway", "audit")
 		if err != nil {
@@ -133,7 +133,7 @@ func (r *GatewayController) createAuditTopic(ctx Context, stack *v1beta1.Stack, 
 }
 
 func (r *GatewayController) createDeployment(ctx Context, stack *v1beta1.Stack,
-	gateway *v1beta1.Gateway, caddyfileConfigMap *corev1.ConfigMap, auditTopic *v1beta1.Topic) error {
+	gateway *v1beta1.Gateway, caddyfileConfigMap *corev1.ConfigMap, auditTopic *v1beta1.BrokerTopic) error {
 
 	env, err := GetCommonServicesEnvVars(ctx, stack, "gateway", gateway.Spec)
 	if err != nil {
@@ -236,7 +236,7 @@ func (r *GatewayController) handleIngress(ctx Context, stack *v1beta1.Stack,
 }
 
 func (r *GatewayController) createCaddyfile(ctx Context, stack *v1beta1.Stack,
-	gateway *v1beta1.Gateway, httpAPIs []*v1beta1.HTTPAPI, auth *v1beta1.Auth, auditTopic *v1beta1.Topic) (string, error) {
+	gateway *v1beta1.Gateway, httpAPIs []*v1beta1.HTTPAPI, auth *v1beta1.Auth, auditTopic *v1beta1.BrokerTopic) (string, error) {
 
 	sort.Slice(httpAPIs, func(i, j int) bool {
 		return httpAPIs[i].Spec.Name < httpAPIs[j].Spec.Name
@@ -289,7 +289,7 @@ func (r *GatewayController) SetupWithManager(mgr Manager) (*builder.Builder, err
 			handler.EnqueueRequestsFromMapFunc(stacks.Watch[*v1beta1.Gateway](mgr)),
 		).
 		Watches(
-			&v1beta1.Topic{},
+			&v1beta1.BrokerTopic{},
 			handler.EnqueueRequestsFromMapFunc(
 				topics.Watch[*v1beta1.Gateway](mgr, "gateway")),
 		).
