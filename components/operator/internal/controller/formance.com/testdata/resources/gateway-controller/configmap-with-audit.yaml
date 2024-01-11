@@ -33,7 +33,7 @@
 		output stdout
 	}
 	import audit
-	handle /api/ledger/* {
+	handle /api/ledger* {
 		uri strip_prefix /api/ledger
         import cors
 		reverse_proxy ledger:8080

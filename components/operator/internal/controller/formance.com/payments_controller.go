@@ -110,15 +110,12 @@ func (r *PaymentsController) createReadDeployment(ctx Context, stack *v1beta1.St
 	if err != nil {
 		return err
 	}
-<<<<<<< HEAD
 
 	authEnvVars, err := auths.EnvVars(ctx, stack, "payments", payments.Spec.Auth)
 	if err != nil {
 		return err
 	}
 	env = append(env, authEnvVars...)
-=======
->>>>>>> 605cd650c (fix: various things)
 
 	image, err := GetImage(ctx, stack, "payments", payments.Spec.Version)
 	if err != nil {

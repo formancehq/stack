@@ -8,6 +8,8 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"math/rand"
 )
 
 var _ = Describe("StackController (legacy)", func() {
@@ -52,7 +54,9 @@ var _ = Describe("StackController (legacy)", func() {
 			}
 			Expect(Create(versions)).To(Succeed())
 			stack = &v1beta3.Stack{
-				ObjectMeta: RandObjectMeta(),
+				ObjectMeta: metav1.ObjectMeta{
+					Name: fmt.Sprintf("%d-%d", rand.Int31(), rand.Int31()),
+				},
 				Spec: v1beta3.StackSpec{
 					Seed:     configuration.Name,
 					Versions: versions.Name,
@@ -62,6 +66,7 @@ var _ = Describe("StackController (legacy)", func() {
 							Secret: "client0",
 						}},
 					},
+					Stargate: &v1beta3.StackStargateConfig{},
 				},
 			}
 			Expect(Create(stack)).To(Succeed())

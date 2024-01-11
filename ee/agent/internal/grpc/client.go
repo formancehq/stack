@@ -4,12 +4,13 @@ package grpc
 import (
 	"context"
 	"fmt"
-	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"io"
 	"net/http"
 	"net/url"
 	"reflect"
 	"strings"
+
+	"github.com/formancehq/operator/api/formance.com/v1beta1"
 
 	clientv1beta3 "github.com/formancehq/operator/pkg/client/stack.formance.com/v1beta3"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
@@ -140,7 +141,7 @@ func (client *client) createStack(stack *generated.Stack) *v1beta3.Stack {
 			},
 			Seed: stack.Seed,
 			Auth: v1beta3.StackAuthSpec{
-				DelegatedOIDCServer: v1beta3.DelegatedOIDCServerConfiguration{
+				DelegatedOIDCServer: v1beta1.DelegatedOIDCServerConfiguration{
 					Issuer:       stack.AuthConfig.Issuer,
 					ClientID:     stack.AuthConfig.ClientId,
 					ClientSecret: stack.AuthConfig.ClientSecret,

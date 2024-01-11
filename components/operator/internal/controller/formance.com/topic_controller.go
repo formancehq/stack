@@ -23,19 +23,13 @@ import (
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/stacks"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
-	"github.com/pkg/errors"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
-)
-
-const (
-	topicFinalizer = "finalize.topics.formance.com"
 )
 
 // TopicController reconciles a Topic object
@@ -47,33 +41,21 @@ type TopicController struct{}
 
 func (r *TopicController) Reconcile(ctx Context, topic *v1beta1.Topic) error {
 
-	if !topic.DeletionTimestamp.IsZero() {
-		if controllerutil.ContainsFinalizer(topic, topicFinalizer) {
-			patch := client.MergeFrom(topic.DeepCopy())
-			if topic.Status.Ready && topic.Status.Configuration != nil {
-				switch {
-				case topic.Status.Configuration.Nats != nil:
-					job, err := r.createDeleteJob(ctx, topic)
-					if err != nil {
-						return err
-					}
-
-					if job.Status.Succeeded == 0 {
-						return ErrDeleted
-					}
+	if len(topic.GetOwnerReferences()) == 0 {
+		if topic.Status.Ready && topic.Status.Configuration != nil {
+			switch {
+			case topic.Status.Configuration.Nats != nil:
+				job, err := r.createDeleteJob(ctx, topic)
+				if err != nil {
+					return err
 				}
-			}
 
-			if updated := controllerutil.RemoveFinalizer(topic, topicFinalizer); updated {
-				if err := ctx.GetClient().Patch(ctx, topic, patch); err != nil {
-					return errors.Wrap(err, "removing finalizer")
+				if job.Status.Succeeded == 0 {
+					return ErrPending
 				}
 			}
 		}
-		return nil
-	}
 
-	if len(topic.GetOwnerReferences()) == 0 {
 		if err := ctx.GetClient().Delete(ctx, topic); err != nil {
 			return nil
 		}
@@ -87,13 +69,6 @@ func (r *TopicController) Reconcile(ctx Context, topic *v1beta1.Topic) error {
 	brokerConfiguration, err := stacks.Require[*v1beta1.BrokerConfiguration](ctx, topic.Spec.Stack)
 	if err != nil {
 		return err
-	}
-
-	patch := client.MergeFrom(topic.DeepCopy())
-	if controllerutil.AddFinalizer(topic, topicFinalizer) {
-		if err := ctx.GetClient().Patch(ctx, topic, patch); err != nil {
-			return err
-		}
 	}
 
 	topic.Status.Configuration = &brokerConfiguration.Spec

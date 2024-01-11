@@ -411,7 +411,7 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}
 	}
 
-	if !isDisabled(stack, configuration, false, "stargate") {
+	if !isDisabled(stack, configuration, false, "stargate") && stack.Spec.Stargate != nil {
 		parts := strings.Split(stack.Name, "-")
 		if len(parts) == 2 {
 			organizationID := parts[0]
