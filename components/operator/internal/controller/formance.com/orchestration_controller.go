@@ -33,10 +33,8 @@ import (
 	"github.com/formancehq/operator/internal/resources/topicqueries"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
-	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
@@ -73,8 +71,10 @@ func (r *OrchestrationController) Reconcile(ctx Context, orchestration *v1beta1.
 		return err
 	}
 
-	if err := r.createDeployment(ctx, stack, orchestration, database, authClient); err != nil {
-		return err
+	if database.Status.Ready {
+		if err := r.createDeployment(ctx, stack, orchestration, database, authClient); err != nil {
+			return err
+		}
 	}
 
 	if err := httpapis.Create(ctx, stack, orchestration, "orchestration",
@@ -171,11 +171,7 @@ func (r *OrchestrationController) createDeployment(ctx Context, stack *v1beta1.S
 		return err
 	}
 
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
-		Namespace: orchestration.Spec.Stack,
-		Name:      "orchestration",
-	},
-		WithController[*appsv1.Deployment](ctx.GetScheme(), orchestration),
+	_, err = deployments.Create(ctx, orchestration, "orchestration",
 		deployments.WithMatchingLabels("orchestration"),
 		deployments.WithContainers(corev1.Container{
 			Name:          "api",

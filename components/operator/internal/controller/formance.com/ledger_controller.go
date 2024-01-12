@@ -68,9 +68,11 @@ func (r *LedgerController) Reconcile(ctx Context, ledger *v1beta1.Ledger) error 
 		return err
 	}
 
-	err = r.installLedger(ctx, stack, ledger, database, image)
-	if err != nil {
-		return err
+	if database.Status.Ready {
+		err = r.installLedger(ctx, stack, ledger, database, image)
+		if err != nil {
+			return err
+		}
 	}
 
 	if err := httpapis.Create(ctx, stack, ledger, "ledger",
@@ -131,7 +133,7 @@ func (r *LedgerController) installLedgerV2SingleInstance(ctx Context, stack *v1b
 		return err
 	}
 
-	if err := r.createDeployment(ctx, stack, ledger, "ledger", *container,
+	if err := r.createDeployment(ctx, ledger, "ledger", *container,
 		deployments.WithReplicas(1),
 		r.setInitContainer(database, version),
 	); err != nil {
@@ -168,7 +170,7 @@ func (r *LedgerController) installLedgerV2MonoWriterMultipleReader(ctx Context, 
 			return err
 		}
 
-		if err := r.createDeployment(ctx, stack, ledger, name, container, mutators...); err != nil {
+		if err := r.createDeployment(ctx, ledger, name, container, mutators...); err != nil {
 			return err
 		}
 
@@ -241,17 +243,14 @@ func (r *LedgerController) createK8SService(ctx Context, stack *v1beta1.Stack, o
 	return err
 }
 
-func (r *LedgerController) createDeployment(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger,
+func (r *LedgerController) createDeployment(ctx Context, ledger *v1beta1.Ledger,
 	name string, container corev1.Container, mutators ...ObjectMutator[*appsv1.Deployment]) error {
 	mutators = append([]ObjectMutator[*appsv1.Deployment]{
 		deployments.WithContainers(container),
 		deployments.WithMatchingLabels(name),
-		WithController[*appsv1.Deployment](ctx.GetScheme(), ledger),
 	}, mutators...)
-	_, _, err := CreateOrUpdate[*appsv1.Deployment](ctx,
-		GetNamespacedResourceName(stack.Name, name),
-		mutators...,
-	)
+
+	_, err := deployments.Create(ctx, ledger, name, mutators...)
 	return err
 }
 
@@ -344,10 +343,7 @@ func (r *LedgerController) createGatewayDeployment(ctx Context, stack *v1beta1.S
 		deployments.WithMatchingLabels("ledger"),
 	)
 
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
-		Namespace: stack.Name,
-		Name:      "ledger-gateway",
-	}, mutators...)
+	_, err = deployments.Create(ctx, ledger, "ledger-gateway", mutators...)
 	return err
 }
 

@@ -48,12 +48,12 @@ type Wallets struct {
 	Status WalletsStatus `json:"status,omitempty"`
 }
 
-func (c *Wallets) SetStatus(status bool, error string) {
-	c.Status.SetStatus(status, error)
-}
-
 func (a Wallets) GetStack() string {
 	return a.Spec.Stack
+}
+
+func (a *Wallets) SetCondition(condition Condition) {
+	a.Status.SetCondition(condition)
 }
 
 //+kubebuilder:object:root=true

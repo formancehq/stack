@@ -28,6 +28,11 @@
 	log {
 		output stdout
 	}
+	handle /api/auth* {
+		uri strip_prefix /api/auth
+        import cors
+		reverse_proxy auth:8080
+    }
 	handle /api/ledger* {
 		uri strip_prefix /api/ledger
         import cors
@@ -40,6 +45,9 @@
 			region "us-west-1"
 			env "staging"
 			endpoints {
+                auth {
+                    http://auth:8080/_info http://auth:8080/_healthcheck
+                }
                 ledger {
                     http://ledger:8080/_info http://ledger:8080/_healthcheck
                 }

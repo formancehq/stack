@@ -112,11 +112,7 @@ func (r *SearchController) Reconcile(ctx Context, search *v1beta1.Search) error 
 		return err
 	}
 
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
-		Namespace: stack.Name,
-		Name:      "search",
-	},
-		WithController[*appsv1.Deployment](ctx.GetScheme(), search),
+	_, err = deployments.Create(ctx, search, "search",
 		deployments.WithMatchingLabels("search"),
 		deployments.WithContainers(corev1.Container{
 			Name:            "search",

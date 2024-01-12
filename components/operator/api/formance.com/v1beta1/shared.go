@@ -82,6 +82,15 @@ type Condition struct {
 	// +kubebuilder:validation:Required
 	// +kubebuilder:validation:MaxLength=32768
 	Message string `json:"message" protobuf:"bytes,6,opt,name=message"`
+	// reason contains a programmatic identifier indicating the reason for the condition's last transition.
+	// Producers of specific condition types may define expected values and meanings for this field,
+	// and whether the values are considered a guaranteed API.
+	// The value should be a CamelCase string.
+	// This field may not be empty.
+	// +optional
+	// +kubebuilder:validation:MaxLength=1024
+	// +kubebuilder:validation:Pattern=`^([A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?)?$`
+	Reason string `json:"reason" protobuf:"bytes,5,opt,name=reason"`
 }
 
 type CommonStatus struct {
@@ -93,9 +102,33 @@ type CommonStatus struct {
 	Error string `json:"error,omitempty"`
 }
 
-func (c *CommonStatus) SetStatus(status bool, error string) {
-	c.Ready = status
-	c.Error = error
+func (c *CommonStatus) SetReady(ready bool) {
+	c.Ready = ready
+}
+
+func (c *CommonStatus) SetError(err string) {
+	c.Error = err
+}
+
+func (c *CommonStatus) EvalReadiness(generation int64) {
+	conditionsMet := true
+	for _, condition := range c.Conditions {
+		if condition.ObservedGeneration != generation {
+			continue
+		}
+
+		if condition.Status != metav1.ConditionTrue {
+			conditionsMet = false
+			break
+		}
+	}
+	if !conditionsMet {
+		c.SetError("Conditions not all marked as ok")
+		c.SetReady(false)
+	} else {
+		c.SetError("")
+		c.SetReady(true)
+	}
 }
 
 func (c *CommonStatus) DeleteCondition(t string) {

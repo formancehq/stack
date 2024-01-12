@@ -58,6 +58,14 @@ type Stargate struct {
 	Status StargateStatus `json:"status,omitempty"`
 }
 
+func (s Stargate) GetStack() string {
+	return s.Spec.Stack
+}
+
+func (s *Stargate) SetCondition(condition Condition) {
+	s.Status.SetCondition(condition)
+}
+
 //+kubebuilder:object:root=true
 
 // StargateList contains a list of Stargate

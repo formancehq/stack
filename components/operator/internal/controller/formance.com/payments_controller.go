@@ -64,12 +64,14 @@ func (r *PaymentsController) Reconcile(ctx Context, payments *v1beta1.Payments) 
 		return err
 	}
 
-	if err := r.createReadDeployment(ctx, stack, payments, database); err != nil {
-		return err
-	}
+	if database.Status.Ready {
+		if err := r.createReadDeployment(ctx, stack, payments, database); err != nil {
+			return err
+		}
 
-	if err := r.createConnectorsDeployment(ctx, stack, payments, database); err != nil {
-		return err
+		if err := r.createConnectorsDeployment(ctx, stack, payments, database); err != nil {
+			return err
+		}
 	}
 
 	if err := r.createGateway(ctx, stack, payments); err != nil {
@@ -123,11 +125,7 @@ func (r *PaymentsController) createReadDeployment(ctx Context, stack *v1beta1.St
 		return err
 	}
 
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
-		Namespace: payments.Spec.Stack,
-		Name:      "payments-read",
-	},
-		WithController[*appsv1.Deployment](ctx.GetScheme(), payments),
+	_, err = deployments.Create(ctx, payments, "payments-read",
 		deployments.WithMatchingLabels("payments-read"),
 		deployments.WithContainers(corev1.Container{
 			Name:          "api",
@@ -204,11 +202,7 @@ func (r *PaymentsController) createConnectorsDeployment(ctx Context, stack *v1be
 		return err
 	}
 
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
-		Namespace: payments.Spec.Stack,
-		Name:      "payments-connectors",
-	},
-		WithController[*appsv1.Deployment](ctx.GetScheme(), payments),
+	_, err = deployments.Create(ctx, payments, "payments-connectors",
 		deployments.WithMatchingLabels("payments-connectors"),
 		deployments.WithContainers(corev1.Container{
 			Name:      "connectors",
@@ -257,15 +251,9 @@ func (r *PaymentsController) createGateway(ctx Context, stack *v1beta1.Stack, p 
 	containerEnv = append(containerEnv, env...)
 
 	mutators := ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", containerEnv, nil)
-	mutators = append(mutators,
-		WithController[*appsv1.Deployment](ctx.GetScheme(), p),
-		deployments.WithMatchingLabels("payments"),
-	)
+	mutators = append(mutators, deployments.WithMatchingLabels("payments"))
 
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
-		Namespace: stack.Name,
-		Name:      "payments",
-	}, mutators...)
+	_, err = deployments.Create(ctx, p, "payments", mutators...)
 	return err
 }
 

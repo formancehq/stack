@@ -153,16 +153,9 @@ func (r *GatewayController) createDeployment(ctx Context, stack *v1beta1.Stack,
 	}
 
 	mutators := ConfigureCaddy(caddyfileConfigMap, image, env, gateway.Spec.ResourceRequirements)
-	mutators = append(mutators,
-		WithController[*appsv1.Deployment](ctx.GetScheme(), gateway),
-		deployments.WithMatchingLabels("gateway"),
-	)
+	mutators = append(mutators, deployments.WithMatchingLabels("gateway"))
 
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
-		Namespace: stack.Name,
-		Name:      "gateway",
-	}, mutators...)
-
+	_, err = deployments.Create(ctx, gateway, "gateway", mutators...)
 	return err
 }
 

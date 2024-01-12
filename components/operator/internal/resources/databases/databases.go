@@ -17,7 +17,7 @@ func Create(ctx core.Context, owner interface {
 	GetStack() string
 }) (*v1beta1.Database, error) {
 	condition := v1beta1.Condition{
-		Type:               "DatabaseCreated",
+		Type:               "DatabaseReady",
 		ObservedGeneration: owner.GetGeneration(),
 		LastTransitionTime: metav1.Now(),
 	}
@@ -42,10 +42,10 @@ func Create(ctx core.Context, owner interface {
 	if !database.Status.Ready {
 		condition.Message = "database creation pending"
 		condition.Status = metav1.ConditionFalse
-		return nil, core.ErrPending
+	} else {
+		condition.Message = "database is ok"
+		condition.Status = metav1.ConditionTrue
 	}
-	condition.Message = "database is ok"
-	condition.Status = metav1.ConditionTrue
 
 	return database, err
 }

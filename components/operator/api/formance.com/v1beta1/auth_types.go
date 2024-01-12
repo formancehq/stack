@@ -74,10 +74,6 @@ func (a *Auth) SetCondition(condition Condition) {
 	a.Status.SetCondition(condition)
 }
 
-func (a *Auth) SetStatus(ready bool, error string) {
-	a.Status.SetStatus(ready, error)
-}
-
 //+kubebuilder:object:root=true
 
 // AuthList contains a list of Auth

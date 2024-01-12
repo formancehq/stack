@@ -72,20 +72,16 @@ func (r *StargateController) createDeployment(ctx Context, stack *v1beta1.Stack,
 		return err
 	}
 
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx,
-		GetNamespacedResourceName(stack.Name, "stargate"),
-		func(t *appsv1.Deployment) {
-			t.Spec.Template.Spec.Containers = []corev1.Container{{
-				Name:          "stargate",
-				Env:           env,
-				Image:         image,
-				Resources:     GetResourcesRequirementsWithDefault(stargate.Spec.ResourceRequirements, ResourceSizeSmall()),
-				Ports:         []corev1.ContainerPort{deployments.StandardHTTPPort()},
-				LivenessProbe: deployments.DefaultLiveness("http"),
-			}}
-		},
+	_, err = deployments.Create(ctx, stargate, "stargate",
+		deployments.WithContainers(corev1.Container{
+			Name:          "stargate",
+			Env:           env,
+			Image:         image,
+			Resources:     GetResourcesRequirementsWithDefault(stargate.Spec.ResourceRequirements, ResourceSizeSmall()),
+			Ports:         []corev1.ContainerPort{deployments.StandardHTTPPort()},
+			LivenessProbe: deployments.DefaultLiveness("http"),
+		}),
 		deployments.WithMatchingLabels("stargate"),
-		WithController[*appsv1.Deployment](ctx.GetScheme(), stargate),
 	)
 	return err
 }

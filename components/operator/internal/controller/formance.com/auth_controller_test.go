@@ -69,6 +69,12 @@ var _ = Describe("AuthController", func() {
 				return LoadResource("", core.GetObjectName(stack.Name, "auth"), httpService)
 			}).Should(Succeed())
 		})
+		It("Should set the status to ready", func() {
+			Eventually(func(g Gomega) bool {
+				g.Expect(LoadResource("", auth.Name, auth)).To(Succeed())
+				return auth.Status.Ready
+			}).Should(BeTrue())
+		})
 		Context("Then when create an AuthClient object", func() {
 			var (
 				authClient *v1beta1.AuthClient

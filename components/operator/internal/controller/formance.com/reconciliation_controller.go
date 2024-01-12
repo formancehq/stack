@@ -59,8 +59,10 @@ func (r *ReconciliationController) Reconcile(ctx Context, reconciliation *v1beta
 		return err
 	}
 
-	if err := r.createDeployment(ctx, stack, reconciliation, database, authClient); err != nil {
-		return err
+	if database.Status.Ready {
+		if err := r.createDeployment(ctx, stack, reconciliation, database, authClient); err != nil {
+			return err
+		}
 	}
 
 	if err := httpapis.Create(ctx, stack, reconciliation, "reconciliation",
@@ -98,8 +100,7 @@ func (r *ReconciliationController) createDeployment(ctx Context, stack *v1beta1.
 		return err
 	}
 
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx,
-		GetNamespacedResourceName(stack.Name, "reconciliation"),
+	_, err = deployments.Create(ctx, reconciliation, "reconciliation",
 		func(t *appsv1.Deployment) {
 			t.Spec.Template.Spec.Containers = []corev1.Container{{
 				Name:          "reconciliation",
@@ -111,7 +112,6 @@ func (r *ReconciliationController) createDeployment(ctx Context, stack *v1beta1.
 			}}
 		},
 		deployments.WithMatchingLabels("reconciliation"),
-		WithController[*appsv1.Deployment](ctx.GetScheme(), reconciliation),
 	)
 	return err
 }

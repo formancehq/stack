@@ -17,6 +17,9 @@ limitations under the License.
 package formance_com
 
 import (
+	"fmt"
+	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"strings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -31,7 +34,6 @@ import (
 	"github.com/formancehq/operator/internal/resources/topicqueries"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -61,8 +63,10 @@ func (r *WebhooksController) Reconcile(ctx Context, webhooks *v1beta1.Webhooks) 
 		return err
 	}
 
-	if err := r.createDeployment(ctx, stack, webhooks, database); err != nil {
-		return err
+	if database.Status.Ready {
+		if err := r.createDeployment(ctx, stack, webhooks, database); err != nil {
+			return err
+		}
 	}
 
 	if err := httpapis.Create(ctx, stack, webhooks, "webhooks",
@@ -107,15 +111,17 @@ func (r *WebhooksController) createDeployment(ctx Context, stack *v1beta1.Stack,
 	env = append(env, brokerconfigurations.BrokerEnvVars(brokerConfiguration.Spec, stack.Name, "webhooks")...)
 	env = append(env, Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"))
 	env = append(env, Env("WORKER", "true"))
-	env = append(env, Env("KAFKA_TOPICS", strings.Join([]string{
-		GetObjectName(stack.Name, "ledger"),
-		GetObjectName(stack.Name, "payments"),
-	}, " ")))
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
-		Namespace: webhooks.Spec.Stack,
-		Name:      "webhooks",
-	},
-		WithController[*appsv1.Deployment](ctx.GetScheme(), webhooks),
+
+	eventPublishers, err := ListEventPublishers(ctx, stack.Name)
+	if err != nil {
+		return err
+	}
+
+	env = append(env, Env("KAFKA_TOPICS", strings.Join(Map(eventPublishers, func(from unstructured.Unstructured) string {
+		return fmt.Sprintf("%s-%s", stack.Name, strings.ToLower(from.GetKind()))
+	}), " ")))
+
+	_, err = deployments.Create(ctx, webhooks, "webhooks",
 		deployments.WithMatchingLabels("webhooks"),
 		deployments.WithContainers(corev1.Container{
 			Name:          "api",

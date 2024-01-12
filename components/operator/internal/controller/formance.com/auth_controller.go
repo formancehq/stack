@@ -53,11 +53,6 @@ func (r *AuthController) Reconcile(ctx Context, auth *v1beta1.Auth) error {
 		return err
 	}
 
-	database, err := databases.Create(ctx, auth)
-	if err != nil {
-		return err
-	}
-
 	authClientsList, err := stacks.GetAllDependents[*v1beta1.AuthClient](ctx, auth.Spec.Stack)
 	if err != nil {
 		return err
@@ -68,8 +63,23 @@ func (r *AuthController) Reconcile(ctx Context, auth *v1beta1.Auth) error {
 		return err
 	}
 
-	if err := r.createDeployment(ctx, stack, auth, database, configMap); err != nil {
+	database, err := databases.Create(ctx, auth)
+	if err != nil {
 		return err
+	}
+
+	if database.Status.Ready {
+		deploymentMutator, err := r.createDeployment(ctx, stack, auth, database, configMap)
+		if err != nil {
+			return err
+		}
+
+		if _, err := deployments.Create(ctx, auth, "auth",
+			deploymentMutator,
+			deployments.WithMatchingLabels("auth"),
+		); err != nil {
+			return err
+		}
 	}
 
 	if err := httpapis.Create(ctx, stack, auth, "auth",
@@ -114,11 +124,12 @@ func (r *AuthController) createConfiguration(ctx Context, stack *v1beta1.Stack, 
 	return cm, nil
 }
 
-func (r *AuthController) createDeployment(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, database *v1beta1.Database, configMap *corev1.ConfigMap) error {
+func (r *AuthController) createDeployment(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, database *v1beta1.Database,
+	configMap *corev1.ConfigMap) (func(deployment *appsv1.Deployment), error) {
 
 	env, err := GetCommonServicesEnvVars(ctx, stack, "auth", auth.Spec)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	env = append(env,
@@ -131,12 +142,12 @@ func (r *AuthController) createDeployment(ctx Context, stack *v1beta1.Stack, aut
 
 	authUrl, err := auths.URL(ctx, stack.Name)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	env = append(env, Env("BASE_URL", authUrl))
 
 	if auth.Spec.SigningKey != "" && auth.Spec.SigningKeyFromSecret != nil {
-		return fmt.Errorf("cannot specify signing key using both .spec.signingKey and .spec.signingKeyFromSecret fields")
+		return nil, fmt.Errorf("cannot specify signing key using both .spec.signingKey and .spec.signingKeyFromSecret fields")
 	}
 	if auth.Spec.SigningKey != "" {
 		env = append(env, Env("SIGNING_KEY", auth.Spec.SigningKey))
@@ -162,45 +173,38 @@ func (r *AuthController) createDeployment(ctx Context, stack *v1beta1.Stack, aut
 
 	image, err := GetImage(ctx, stack, "auth", auth.Spec.Version)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	_, _, err = CreateOrUpdate[*appsv1.Deployment](ctx,
-		GetNamespacedResourceName(stack.Name, "auth"),
-		func(t *appsv1.Deployment) {
-
-			t.Spec.Template.Annotations = MergeMaps(t.Spec.Template.Annotations, map[string]string{
-				"config-hash": HashFromConfigMaps(configMap),
-			})
-			t.Spec.Template.Spec.Containers = []corev1.Container{{
-				Name:      "auth",
-				Args:      []string{"serve"},
-				Env:       env,
-				Image:     image,
-				Resources: GetResourcesRequirementsWithDefault(auth.Spec.ResourceRequirements, ResourceSizeSmall()),
-				VolumeMounts: []corev1.VolumeMount{{
-					Name:      "config",
-					ReadOnly:  true,
-					MountPath: "/config",
-				}},
-				Ports:         []corev1.ContainerPort{deployments.StandardHTTPPort()},
-				LivenessProbe: deployments.DefaultLiveness("http"),
-			}}
-			t.Spec.Template.Spec.Volumes = []corev1.Volume{{
-				Name: "config",
-				VolumeSource: corev1.VolumeSource{
-					ConfigMap: &corev1.ConfigMapVolumeSource{
-						LocalObjectReference: corev1.LocalObjectReference{
-							Name: configMap.Name,
-						},
+	return func(t *appsv1.Deployment) {
+		t.Spec.Template.Annotations = MergeMaps(t.Spec.Template.Annotations, map[string]string{
+			"config-hash": HashFromConfigMaps(configMap),
+		})
+		t.Spec.Template.Spec.Containers = []corev1.Container{{
+			Name:      "auth",
+			Args:      []string{"serve"},
+			Env:       env,
+			Image:     image,
+			Resources: GetResourcesRequirementsWithDefault(auth.Spec.ResourceRequirements, ResourceSizeSmall()),
+			VolumeMounts: []corev1.VolumeMount{{
+				Name:      "config",
+				ReadOnly:  true,
+				MountPath: "/config",
+			}},
+			Ports:         []corev1.ContainerPort{deployments.StandardHTTPPort()},
+			LivenessProbe: deployments.DefaultLiveness("http"),
+		}}
+		t.Spec.Template.Spec.Volumes = []corev1.Volume{{
+			Name: "config",
+			VolumeSource: corev1.VolumeSource{
+				ConfigMap: &corev1.ConfigMapVolumeSource{
+					LocalObjectReference: corev1.LocalObjectReference{
+						Name: configMap.Name,
 					},
 				},
-			}}
-		},
-		deployments.WithMatchingLabels("auth"),
-		WithController[*appsv1.Deployment](ctx.GetScheme(), auth),
-	)
-	return err
+			},
+		}}
+	}, nil
 }
 
 // SetupWithManager sets up the controller with the Manager.

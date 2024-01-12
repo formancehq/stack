@@ -7,7 +7,6 @@ import (
 
 	"github.com/formancehq/operator/internal/core"
 	pkgError "github.com/pkg/errors"
-	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -43,12 +42,15 @@ func (r *Reconciler[T]) Reconcile(ctx context.Context, req reconcile.Request) (r
 			FieldByName("Status").
 			Addr().
 			Interface().(interface {
-			SetStatus(status bool, error string)
+			SetReady(bool)
+			SetError(string)
+			EvalReadiness(generation int64)
 		}); ok {
-			if err == nil {
-				s.SetStatus(true, "")
+			if err != nil {
+				s.SetReady(false)
+				s.SetError(err.Error())
 			} else {
-				s.SetStatus(false, err.Error())
+				s.EvalReadiness(object.GetGeneration())
 			}
 		}
 	}
@@ -67,11 +69,9 @@ func (r *Reconciler[T]) Reconcile(ctx context.Context, req reconcile.Request) (r
 		setStatus(nil)
 	}
 
-	if !equality.Semantic.DeepEqual(cp, object) {
-		patch := client.MergeFrom(cp)
-		if err := r.Manager.GetClient().Status().Patch(ctx, object, patch); err != nil {
-			return ctrl.Result{}, err
-		}
+	patch := client.MergeFrom(cp)
+	if err := r.Manager.GetClient().Status().Patch(ctx, object, patch); err != nil {
+		return ctrl.Result{}, err
 	}
 
 	if !pkgError.Is(reconciliationError, core.ErrPending) &&
