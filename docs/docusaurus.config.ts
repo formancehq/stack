@@ -1,87 +1,112 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-const lightCodeTheme = require('prism-react-renderer/themes/github');
-const darkCodeTheme = require('prism-react-renderer/themes/palenight');
-const math = require('remark-math');
-const katex = require('rehype-katex');
-const  path = require('path');
 
+import math from 'remark-math';
+import katex from 'rehype-katex';
+import  path from 'node:path';
 
-/** @type {import('@docusaurus/types').Config} */
-const config = {
-  title: 'Formance Developer Docs',
-  tagline: 'The open source foundation you need to build and scale money-movements within your app',
-  url: 'https://docs.formance.com/',
-  baseUrl: '/',
-  onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'throw',
-  favicon: 'img/f-shape.ico',
-  organizationName: 'formancehq', // Usually your GitHub org/user name.
-  projectName: 'docs', // Usually your repo name.
+import prismLight from './src/theme/prism/prismLight';
+import prismDark from './src/theme/prism/prismDark';
 
-  presets: [
-    [
-      '@docusaurus/preset-classic',
-      /** @type {import('@docusaurus/preset-classic').Options} */
-      ({
-        sitemap: {
-          filename: 'sitemap.xml',
-        },
-        docs: {
-          path: './docs',
-          routeBasePath: '/',
-          sidebarPath: require.resolve('./sidebars.js'),
-          remarkPlugins: [math],
-          rehypePlugins: [katex],
-          disableVersioning: false,
-          lastVersion: 'current',
-          versions: {
-            current: {
-              label: 'v1.x',
-            }
-          }
-        },
-        theme: {
-          customCss: require.resolve('./src/css/custom.css'),
-        },
-        blog: false,
-        pages: false,
-      }),
-    ],
-    [
-      'redocusaurus',
-      {
-        debug: Boolean(process.env.DEBUG || process.env.CI),
-        config: path.join(__dirname, 'redocly.yaml'),
-        specs: [
-          {
-            spec: './openapi/v1.json',
-            route: '/api/v1.x',
-            id: 'api-v1',
+import type {Config} from '@docusaurus/types';
+
+export default async function createConfig() {
+
+  const config = {
+    title: 'Formance Developer Docs',
+    tagline: 'The open source foundation you need to build and scale money-movements within your app',
+    url: 'https://docs.formance.com/',
+    baseUrl: '/',
+    onBrokenLinks: 'throw',
+    onBrokenMarkdownLinks: 'throw',
+    favicon: 'img/f-shape.ico',
+    organizationName: 'formancehq', // Usually your GitHub org/user name.
+    projectName: 'docs', // Usually your repo name.
+    webpack: {
+      jsLoader: (isServer) => ({
+        loader: require.resolve('swc-loader'),
+        options: {
+          jsc: {
+            parser: {
+              syntax: 'typescript',
+              tsx: true,
+            },
+            transform: {
+              react: {
+                runtime: 'automatic',
+              },
+            },
+            target: 'es2017',
           },
-          {
-            spec: './openapi/v2.json',
-            route: '/api/v2.x',
-            id: 'api-v2',
-          }
-        ],
-      }
-    ],
-  ],
-
-  stylesheets: [
-    {
-      href: 'https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css',
-      type: 'text/css',
-      integrity:
-        'sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM',
-      crossorigin: 'anonymous',
+          module: {
+            type: isServer ? 'commonjs' : 'es6',
+          },
+        },
+      }),
     },
-  ],
+    presets: [
+      [
+        '@docusaurus/preset-classic',
+        /** @type {import('@docusaurus/preset-classic').Options} */
+        ({
+          sitemap: {
+            filename: 'sitemap.xml',
+          },
+          docs: {
+            path: './docs',
+            routeBasePath: '/',
+            sidebarPath: require.resolve('./sidebars.js'),
+            remarkPlugins: [math],
+            rehypePlugins: [katex],
+            disableVersioning: false,
+            lastVersion: 'current',
+            versions: {
+              current: {
+                label: 'v1.x',
+              }
+            }
+          },
+          theme: {
+            customCss: require.resolve('./src/css/custom.css'),
+          },
+          blog: false,
+          pages: false,
+        }),
+      ],
+      [
+        'redocusaurus',
+        {
+          debug: Boolean(process.env.DEBUG || process.env.CI),
+          config: path.join(__dirname, 'redocly.yaml'),
+          specs: [
+            {
+              spec: './openapi/v1.json',
+              route: '/api/v1.x',
+              id: 'api-v1',
+            },
+            {
+              spec: './openapi/v2.json',
+              route: '/api/v2.x',
+              id: 'api-v2',
+            }
+          ],
+        }
+      ]
+    ],
 
-  themeConfig:
-  /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
+    stylesheets: [
+      {
+        href: 'https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css',
+        type: 'text/css',
+        integrity:
+          'sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM',
+        crossorigin: 'anonymous',
+      },
+    ],
+
+    themeConfig:
+      /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
       ({
         docs: {
           sidebar: {
@@ -90,7 +115,8 @@ const config = {
         },
         colorMode: {
           defaultMode: 'light',
-          disableSwitch: true,
+          disableSwitch: false,
+          respectPrefersColorScheme: true,
         },
         navbar: {
           // style: 'light',
@@ -98,6 +124,7 @@ const config = {
             alt: 'Formance Logo',
             src: 'img/logo.svg',
             href: '/',
+            srcDark: 'img/logo-dark.svg'
           },
           items: [
             // {
@@ -175,7 +202,9 @@ const config = {
           copyright: `Copyright © 2021-2023 Formance, Inc`,
         },
         prism: {
-          theme: darkCodeTheme,
+          additionalLanguages: ['bash', 'javascript', 'typescript'],
+          theme: prismLight,
+          darkTheme: prismDark,
         },
         posthog: {
           apiKey: 'phc_hRDv01yOHJNUM7l5SmXPUtSQUuNw4r5am9FtV83Z9om',
@@ -202,6 +231,7 @@ const config = {
           //... other Algolia params
         },
       })
-};
+  } satisfies Config;
 
-module.exports = config;
+  return config;
+}

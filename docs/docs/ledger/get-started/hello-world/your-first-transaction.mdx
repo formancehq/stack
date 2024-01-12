@@ -1,7 +1,6 @@
 ---
 title: Your First Transaction
 ---
-import { NumscriptBlock } from 'react-numscript-codeblock';
 
 # Your first transaction.
 
@@ -13,10 +12,12 @@ Just like before, we're going to use a bit of Numscript to describe the transfer
 
 Create a file called `first.num` with the following Numscript:
 
-<NumscriptBlock script={`send [COIN 100] (
+```numscript
+send [COIN 100] (
   source = @centralbank
   destination = @player:benwyatt
-)`}></NumscriptBlock>
+)
+```
 
 This transaction looks a lot like the one we created earlier:
 

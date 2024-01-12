@@ -3,11 +3,9 @@ title: Making requests over HTTP
 description: You can also execute Numscript with the Formance API.
 ---
 
-import { NumscriptBlock } from 'react-numscript-codeblock';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import Prerequisites from '@site/docs/ledger/partials/numscript/_prerequisites.mdx';
-import Prereqwarn from '@site/docs/ledger/partials/numscript/_prereq_warning.mdx';
 import CloudToken from '@site/docs/partials/_cloud_token.mdx';
 
 
@@ -43,10 +41,12 @@ If you see something else, such as an error message, make sure you have a sandbo
 
 If you recall from the [Getting Started](/ledger/get-started/hello-world/) section, we learned how to run this Numscript from the command line. In a file called `first.num` we had:
 
-<NumscriptBlock script={`send [COIN 100] (
+```numscript
+send [COIN 100] (
   source = @centralbank
   destination = @player:benwyatt
-)`}></NumscriptBlock>
+)
+```
 
 In the introduction, we ran this Numscript using the command line. This time, however, we're going to execute the script via Formance Ledger's built-in HTTP API.
 

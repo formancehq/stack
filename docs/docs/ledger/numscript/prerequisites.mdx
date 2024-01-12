@@ -3,8 +3,6 @@ title: Prerequisites
 description: Everything you need to get started with these guides.
 ---
 
-import { NumscriptBlock } from 'react-numscript-codeblock';
-
 # Do this first: Prerequisites for using the guides
 
 The guides in this section all involve the movement of money to and from various accounts. In the real world, money should only enter your ledger from the `@world` account when real money moves into real accounts that you are tracking. However, to run the demonstrations in the guides, we need to seed the example accounts with funds.
@@ -13,7 +11,8 @@ The guides in this section all involve the movement of money to and from various
 
 First, create a file called `seed.num` with the following contents:
 
-<NumscriptBlock script={`send [COIN 6000] (
+```numscript
+send [COIN 6000] (
   source = @world
   destination = {
     1/6 to @centralbank
@@ -29,7 +28,8 @@ First, create a file called `seed.num` with the following contents:
     }
     remaining to @player:annperkins
   }
-)`}></NumscriptBlock>
+)
+```
 
 
 

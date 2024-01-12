@@ -1,17 +1,18 @@
 ---
 title: Destinations
 ---
-import { NumscriptBlock } from 'react-numscript-codeblock';
 
 # Destinations
 As with sources, there are several options when it comes to deciding where should the money come from. The send statement provides the following ways of defining destinations:
 
 ## Single destination
 
-<NumscriptBlock script={`send [COIN 100] (
+```numscript
+send [COIN 100] (
   source = @world
   destination = @users:001
-)`}></NumscriptBlock>
+)
+```
 
 ## Allocation destinations
 
@@ -19,29 +20,34 @@ Similar to portioned sources, destination can be defined as a sequence of fracti
 
 In any case, the summed total of fractions in a block needs to be equal to 1 and the remaining keyword can be used to reach that total:
 
-<NumscriptBlock script={`send [COIN 100] (
+```numscript
+send [COIN 100] (
   source = @world
   destination = {
     90/100 to @users:001
     remaining to @fees
   }
-)`}></NumscriptBlock>
+)
+```
 
 Out of convenience, percentage notation is also available:
 
-<NumscriptBlock script={`send [COIN 100] (
+```numscript
+send [COIN 100] (
   source = @world
   destination = {
     90% to @users:001
     remaining to @fees
   }
-)`}></NumscriptBlock>
+)
+```
 
 ## Nested destinations
 
 Finally, as with sources, destination blocks can be nested:
 
-<NumscriptBlock script={`send [COIN 100] (
+```numscript
+send [COIN 100] (
   source = @world
   destination = {
     80% to @users:001
@@ -51,4 +57,5 @@ Finally, as with sources, destination blocks can be nested:
       remaining to @charity
     }
   }
-)`}></NumscriptBlock>
+)
+```

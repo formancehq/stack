@@ -3,9 +3,7 @@ title: Making partial transfers with kept
 description: Sometimes you need to transfer only a portion of a full transaction, for example when calculating additional fees.
 ---
 
-import { NumscriptBlock } from 'react-numscript-codeblock';
 import Prerequisites from '@site/docs/ledger/partials/numscript/_prerequisites.mdx';
-import Prereqwarn from '@site/docs/ledger/partials/numscript/_prereq_warning.mdx';
 
 Sometimes you have a transfer that requires processing, but you want to move only a portion of the specified amount. For example:
 
@@ -19,20 +17,24 @@ Sometimes you have a transfer that requires processing, but you want to move onl
 
 The `kept` keyword allows you to specify a transaction that only moves a portion of the transaction amount. As a very basic example of the functionality, imagine that we need to send 15% of a 100 coin transaction from the `centralbank` to `leslieknope`. We could hard-code the 15% fee into our Numscript like this:
 
-<NumscriptBlock script={`send [COIN 15] (
+```numscript
+send [COIN 15] (
   source = @centralbank
   destination = @player:leslieknope
-)`}></NumscriptBlock>
+)
+```
 
 But doing so is error-prone; better to let Formance Ledger do the math for us! Here's how to use the `kept` keyword to achieve the same thing in a less error-prone way:
 
-<NumscriptBlock script={`send [COIN 100] (
+```numscript
+send [COIN 100] (
   source = @centralbank
   destination = {
     15% to @player:leslieknope
     remaining kept
 	}
-)`}></NumscriptBlock>
+)
+```
 
 The user `leslieknope` will receive 15 coins in total, and the rest is held back in the `centralbank` account, while letting Formance Ledger handle the math.
 
@@ -44,10 +46,11 @@ So, imageine that `leslieknope` has sold an interest in a cone to `annperkins` f
 
 We can structure the refund with penalty fee as a Numscript template like this:
 
-<NumscriptBlock script={`vars {
+```numscript
+vars {
   monetary $refund
 }
-\n
+
 send $refund (
   source = @player:leslieknope
   destination = {
@@ -55,11 +58,12 @@ send $refund (
     remaining kept
   }
 )
-\n
+
 send $refund (
   source = @player:leslieknope
   destination = @player:annperkins
-)`}></NumscriptBlock>
+)
+```
 
 :::tip Using Numscript Templates
 

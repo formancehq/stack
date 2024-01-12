@@ -41,6 +41,21 @@ _Appears in:_
 | `service` _object (keys:string, values:string)_ |  |
 
 
+#### AuthConfig
+
+
+
+
+
+_Appears in:_
+- [ConfigurationSpec](#configurationspec)
+
+| Field | Description |
+| --- | --- |
+| `readKeySetMaxRetries` _integer_ |  |
+| `checkScopes` _boolean_ |  |
+
+
 #### AuthSpec
 
 
@@ -223,6 +238,7 @@ _Appears in:_
 | `services` _[ConfigurationServicesSpec](#configurationservicesspec)_ |  |
 | `broker` _[Broker](#broker)_ |  |
 | `monitoring` _[MonitoringSpec](#monitoringspec)_ |  |
+| `auth` _[AuthConfig](#authconfig)_ |  |
 | `ingress` _[IngressGlobalConfig](#ingressglobalconfig)_ |  |
 | `temporal` _[TemporalConfig](#temporalconfig)_ |  |
 | `light` _boolean_ | LightMode is experimental and indicate we want monopods |
