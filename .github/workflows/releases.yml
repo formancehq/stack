@@ -112,7 +112,6 @@ jobs:
       - name: Generate SDK
         run: >
           earthly
-          --no-output
           --allow-privileged
           --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY
           --secret GITHUB_TOKEN=$GITHUB_TOKEN
@@ -123,7 +122,6 @@ jobs:
       - name: Publish SDK
         run: >
           earthly
-          --no-output
           --allow-privileged
           --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY
           --secret GITHUB_TOKEN=$GITHUB_TOKEN
