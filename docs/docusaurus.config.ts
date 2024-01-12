@@ -9,9 +9,10 @@ import  path from 'node:path';
 import prismLight from './src/theme/prism/prismLight';
 import prismDark from './src/theme/prism/prismDark';
 
+import type {Config} from '@docusaurus/types';
+
 export default async function createConfig() {
 
-  /** @type {import('@docusaurus/types').Config} */
   const config = {
     title: 'Formance Developer Docs',
     tagline: 'The open source foundation you need to build and scale money-movements within your app',
@@ -22,7 +23,28 @@ export default async function createConfig() {
     favicon: 'img/f-shape.ico',
     organizationName: 'formancehq', // Usually your GitHub org/user name.
     projectName: 'docs', // Usually your repo name.
-
+    webpack: {
+      jsLoader: (isServer) => ({
+        loader: require.resolve('swc-loader'),
+        options: {
+          jsc: {
+            parser: {
+              syntax: 'typescript',
+              tsx: true,
+            },
+            transform: {
+              react: {
+                runtime: 'automatic',
+              },
+            },
+            target: 'es2017',
+          },
+          module: {
+            type: isServer ? 'commonjs' : 'es6',
+          },
+        },
+      }),
+    },
     presets: [
       [
         '@docusaurus/preset-classic',
@@ -209,7 +231,7 @@ export default async function createConfig() {
           //... other Algolia params
         },
       })
-  };
+  } satisfies Config;
 
   return config;
 }
