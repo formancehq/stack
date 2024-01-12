@@ -1,31 +1,15 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-import {themes as prismThemes} from 'prism-react-renderer';
+
 import math from 'remark-math';
 import katex from 'rehype-katex';
 import  path from 'node:path';
-import shiki from 'shiki';
-import withShiki from '@stefanprobst/rehype-shiki';
-import fs from 'node:fs';
 
-// const numscriptLangDefinition = fs.readFileSync('./lib/numscript.tmLanguage.json', 'utf8');
+import prismLight from './src/theme/prism/prismLight';
+import prismDark from './src/theme/prism/prismDark';
 
 export default async function createConfig() {
-
-  // const highlighter = await shiki.getHighlighter({
-  //   theme: 'one-dark-pro'
-  // });
-
-  // // Load numscript synthax highlighting
-  // highlighter.loadLanguage({
-  //   id: 'numscript',
-  //   scopeName: 'source.numscript',
-  //   grammar: JSON.parse(numscriptLangDefinition),
-  //   path: '',
-  //   aliases: ['num', 'numscript', 'Numscript', 'numscript-lang'],
-  //   displayName: 'Numscript',
-  // })
 
   /** @type {import('@docusaurus/types').Config} */
   const config = {
@@ -52,10 +36,7 @@ export default async function createConfig() {
             routeBasePath: '/',
             sidebarPath: require.resolve('./sidebars.js'),
             remarkPlugins: [math],
-            rehypePlugins: [
-              katex, 
-              //[withShiki, { highlighter: highlighter }]
-            ],
+            rehypePlugins: [katex],
             disableVersioning: false,
             lastVersion: 'current',
             versions: {
@@ -112,7 +93,8 @@ export default async function createConfig() {
         },
         colorMode: {
           defaultMode: 'light',
-          disableSwitch: true,
+          disableSwitch: false,
+          respectPrefersColorScheme: true,
         },
         navbar: {
           // style: 'light',
@@ -120,6 +102,7 @@ export default async function createConfig() {
             alt: 'Formance Logo',
             src: 'img/logo.svg',
             href: '/',
+            srcDark: 'img/logo-dark.svg'
           },
           items: [
             // {
@@ -198,7 +181,8 @@ export default async function createConfig() {
         },
         prism: {
           additionalLanguages: ['bash', 'javascript', 'typescript'],
-          theme: prismThemes.vsDark,
+          theme: prismLight,
+          darkTheme: prismDark,
         },
         posthog: {
           apiKey: 'phc_hRDv01yOHJNUM7l5SmXPUtSQUuNw4r5am9FtV83Z9om',

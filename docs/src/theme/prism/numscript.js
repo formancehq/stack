@@ -4,19 +4,19 @@ Prism.languages.numscript = {
         /\/\*[\s\S]*?\*\//
     ],
     keyword: [
-        /send|vars|source|destination|remaining|to|kept|allowing|unbounded|overdraft|up|max|from/
+        /send|vars|remaining|to|kept|allowing|unbounded|overdraft|up|max|from/
     ],
+    property: /source|destination/,
     builtin: /set_tx_meta|set_account_meta/,
-    symbol: /account|monetary|asset|number|string|portion/,
+    symbol: [
+        /account|monetary|asset|number|string|portion/,
+        /\@world/
+    ],
     string: [
         /"[^"]*"/,
-        /\[[A-Z0-9]+(\/\d+)? \d+\]/,
-        {
-            pattern: /@[A-Za-z0-9:]+/,
-            greedy: true
-        }
+        /\[[A-Z0-9]+(\/\d+)? (\d+|\*)\]/
     ],
-    punctuation: /\(\{\[\]\}\)=/,
+    punctuation: /\(|\{|\[|\]|\}|\)|=/,
     variable: /\$[a-zA-Z][A-Za-z0-9]*/,
     number: [
         {
@@ -27,6 +27,10 @@ Prism.languages.numscript = {
             pattern: /\d+%/,
             greedy: true
         },
-        /\d+/
-    ]
+        /^\d+$/
+    ],
+    // constant: {
+    //     pattern: /@[A-Za-z0-9:]+/,
+    //     greedy: true
+    // }
 }

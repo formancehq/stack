@@ -21,9 +21,8 @@ Since we're in the game land of Cones Dunshire, let's consider that last case. A
 
 We can describe the transaction using Numscript. Create a file called `split.num` with:
 
-```numscript title="test.num"
+```numscript
 send [COIN 75] (
-  // highlight-next-line
   source = @centralbank
   destination = {
     50% to @player:leslieknope
