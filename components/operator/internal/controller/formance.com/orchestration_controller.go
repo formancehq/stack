@@ -92,7 +92,7 @@ func (r *OrchestrationController) handleAuthClient(ctx Context, stack *v1beta1.S
 		return nil, err
 	}
 	if auth == nil {
-		return nil, errors.New("requires auth service")
+		return nil, nil
 	}
 
 	return authclients.Create(ctx, stack, orchestration, "orchestration",
@@ -144,7 +144,9 @@ func (r *OrchestrationController) createDeployment(ctx Context, stack *v1beta1.S
 	}
 	env = append(env, authEnvVars...)
 
-	env = append(env, authclients.GetEnvVars(client)...)
+	if client != nil {
+		env = append(env, authclients.GetEnvVars(client)...)
+	}
 
 	if orchestration.Spec.Temporal.TLS.SecretName == "" {
 		env = append(env,
@@ -201,6 +203,11 @@ func (r *OrchestrationController) SetupWithManager(mgr Manager) (*builder.Builde
 		).
 		Watches(
 			&v1beta1.Ledger{},
+			handler.EnqueueRequestsFromMapFunc(
+				stacks.WatchDependents[*v1beta1.Orchestration](mgr)),
+		).
+		Watches(
+			&v1beta1.Auth{},
 			handler.EnqueueRequestsFromMapFunc(
 				stacks.WatchDependents[*v1beta1.Orchestration](mgr)),
 		).

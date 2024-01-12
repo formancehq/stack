@@ -19,6 +19,7 @@ var _ = Describe("WalletsController", func() {
 			ledger                *v1beta1.Ledger
 			databaseConfiguration *v1beta1.DatabaseConfiguration
 			wallets               *v1beta1.Wallets
+			auth                  *v1beta1.Auth
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -60,15 +61,25 @@ var _ = Describe("WalletsController", func() {
 					},
 				},
 			}
+			auth = &v1beta1.Auth{
+				ObjectMeta: RandObjectMeta(),
+				Spec: v1beta1.AuthSpec{
+					StackDependency: v1beta1.StackDependency{
+						Stack: stack.Name,
+					},
+				},
+			}
 		})
 		JustBeforeEach(func() {
 			Expect(Create(stack)).To(Succeed())
+			Expect(Create(auth)).To(Succeed())
 			Expect(Create(gateway)).To(Succeed())
 			Expect(Create(databaseConfiguration)).To(Succeed())
 			Expect(Create(ledger)).To(Succeed())
 			Expect(Create(wallets)).To(Succeed())
 		})
 		AfterEach(func() {
+			Expect(Delete(auth)).To(Succeed())
 			Expect(Delete(wallets)).To(Succeed())
 			Expect(Delete(ledger)).To(Succeed())
 			Expect(Delete(gateway)).To(Succeed())

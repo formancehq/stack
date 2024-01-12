@@ -48,11 +48,18 @@ func (r *WalletsController) Reconcile(ctx Context, wallets *v1beta1.Wallets) err
 		return err
 	}
 
-	authClient, err := authclients.Create(ctx, stack, wallets, "wallets", func(spec *v1beta1.AuthClientSpec) {
-		spec.Scopes = []string{"ledger:read", "ledger:write"}
-	})
+	hasAuth, err := stacks.HasDependency[*v1beta1.Auth](ctx, wallets.Spec.Stack)
 	if err != nil {
 		return err
+	}
+	var authClient *v1beta1.AuthClient
+	if hasAuth {
+		authClient, err = authclients.Create(ctx, stack, wallets, "wallets", func(spec *v1beta1.AuthClientSpec) {
+			spec.Scopes = []string{"ledger:read", "ledger:write"}
+		})
+		if err != nil {
+			return err
+		}
 	}
 
 	if err := r.createDeployment(ctx, stack, wallets, authClient); err != nil {
@@ -72,7 +79,9 @@ func (r *WalletsController) createDeployment(ctx Context, stack *v1beta1.Stack, 
 	if err != nil {
 		return err
 	}
-	env = append(env, authclients.GetEnvVars(authClient)...)
+	if authClient != nil {
+		env = append(env, authclients.GetEnvVars(authClient)...)
+	}
 
 	authEnvVars, err := auths.EnvVars(ctx, stack, "wallets", wallets.Spec.Auth)
 	if err != nil {
@@ -114,6 +123,10 @@ func (r *WalletsController) SetupWithManager(mgr Manager) (*builder.Builder, err
 		Watches(
 			&v1beta1.RegistriesConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Wallets](mgr)),
+		).
+		Watches(
+			&v1beta1.Auth{},
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependents[*v1beta1.Wallets](mgr)),
 		).
 		Owns(&v1beta1.AuthClient{}).
 		Owns(&appsv1.Deployment{}).

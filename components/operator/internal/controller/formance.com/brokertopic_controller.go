@@ -33,14 +33,14 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 )
 
-// TopicController reconciles a BrokerTopic object
-type TopicController struct{}
+// BrokerTopicController reconciles a BrokerTopic object
+type BrokerTopicController struct{}
 
 //+kubebuilder:rbac:groups=formance.com,resources=brokertopics,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=formance.com,resources=brokertopics/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=brokertopics/finalizers,verbs=update
 
-func (r *TopicController) Reconcile(ctx Context, topic *v1beta1.BrokerTopic) error {
+func (r *BrokerTopicController) Reconcile(ctx Context, topic *v1beta1.BrokerTopic) error {
 
 	if len(topic.GetOwnerReferences()) == 0 {
 		if topic.Status.Ready && topic.Status.Configuration != nil {
@@ -89,7 +89,7 @@ func (r *TopicController) Reconcile(ctx Context, topic *v1beta1.BrokerTopic) err
 	return nil
 }
 
-func (r *TopicController) createJob(ctx Context,
+func (r *BrokerTopicController) createJob(ctx Context,
 	topic *v1beta1.BrokerTopic, configuration v1beta1.BrokerConfiguration) (*batchv1.Job, error) {
 
 	job, _, err := CreateOrUpdate[*batchv1.Job](ctx, types.NamespacedName{
@@ -122,7 +122,7 @@ func (r *TopicController) createJob(ctx Context,
 	return job, err
 }
 
-func (r *TopicController) createDeleteJob(ctx Context, topic *v1beta1.BrokerTopic) (*batchv1.Job, error) {
+func (r *BrokerTopicController) createDeleteJob(ctx Context, topic *v1beta1.BrokerTopic) (*batchv1.Job, error) {
 	job, _, err := CreateOrUpdate[*batchv1.Job](ctx, types.NamespacedName{
 		Namespace: topic.Spec.Stack,
 		Name:      fmt.Sprintf("%s-delete-topic", topic.Spec.Service),
@@ -144,7 +144,7 @@ func (r *TopicController) createDeleteJob(ctx Context, topic *v1beta1.BrokerTopi
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *TopicController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
+func (r *BrokerTopicController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 
 	indexer := mgr.GetFieldIndexer()
 	if err := indexer.IndexField(context.Background(), &v1beta1.BrokerTopic{}, ".spec.service", func(rawObj client.Object) []string {
@@ -162,6 +162,6 @@ func (r *TopicController) SetupWithManager(mgr Manager) (*builder.Builder, error
 		Owns(&batchv1.Job{}), nil
 }
 
-func ForTopic() *TopicController {
-	return &TopicController{}
+func ForBrokerTopic() *BrokerTopicController {
+	return &BrokerTopicController{}
 }

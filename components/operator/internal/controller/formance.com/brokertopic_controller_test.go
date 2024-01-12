@@ -19,7 +19,7 @@ var _ = Describe("BrokerTopicController", func() {
 	Context("When creating a BrokerTopic", func() {
 		var (
 			stack               *v1beta1.Stack
-			topic               *v1beta1.BrokerTopic
+			brokerTopic         *v1beta1.BrokerTopic
 			brokerConfiguration *v1beta1.BrokerConfiguration
 		)
 		BeforeEach(func() {
@@ -42,7 +42,7 @@ var _ = Describe("BrokerTopicController", func() {
 				},
 			}
 			Expect(Create(brokerConfiguration)).To(Succeed())
-			topic = &v1beta1.BrokerTopic{
+			brokerTopic = &v1beta1.BrokerTopic{
 				ObjectMeta: v1.ObjectMeta{
 					Name: uuid.NewString(),
 				},
@@ -53,41 +53,41 @@ var _ = Describe("BrokerTopicController", func() {
 					Service: "ledger",
 				},
 			}
-			Expect(controllerutil.SetOwnerReference(stack, topic, GetScheme())).To(Succeed())
-			Expect(Create(topic)).To(Succeed())
+			Expect(controllerutil.SetOwnerReference(stack, brokerTopic, GetScheme())).To(Succeed())
+			Expect(Create(brokerTopic)).To(Succeed())
 		})
 		It("Should be set to ready status", func() {
 			t := &v1beta1.BrokerTopic{}
 			Eventually(func(g Gomega) bool {
-				g.Expect(Get(core.GetResourceName(topic.Name), t)).To(Succeed())
+				g.Expect(Get(core.GetResourceName(brokerTopic.Name), t)).To(Succeed())
 				return t.Status.Ready
 			}).Should(BeTrue())
 		})
-		It("Should create a topic creation job", func() {
+		It("Should create a broker topic creation job", func() {
 			Eventually(func() error {
-				return LoadResource(stack.Name, fmt.Sprintf("%s-create-topic", topic.Spec.Service), &batchv1.Job{})
+				return LoadResource(stack.Name, fmt.Sprintf("%s-create-topic", brokerTopic.Spec.Service), &batchv1.Job{})
 			}).Should(Succeed())
 		})
 		Context("Then updating removing all owner references", func() {
 			BeforeEach(func() {
 				Eventually(func(g Gomega) bool {
 					t := &v1beta1.BrokerTopic{}
-					g.Expect(Get(core.GetResourceName(topic.Name), t)).To(Succeed())
+					g.Expect(Get(core.GetResourceName(brokerTopic.Name), t)).To(Succeed())
 					return t.Status.Ready
 				}).Should(BeTrue())
 
-				patch := client.MergeFrom(topic.DeepCopy())
-				Expect(controllerutil.RemoveOwnerReference(stack, topic, GetScheme())).To(Succeed())
-				Expect(Patch(topic, patch)).To(Succeed())
+				patch := client.MergeFrom(brokerTopic.DeepCopy())
+				Expect(controllerutil.RemoveOwnerReference(stack, brokerTopic, GetScheme())).To(Succeed())
+				Expect(Patch(brokerTopic, patch)).To(Succeed())
 			})
-			It("Should trigger the deletion of the topic object", func() {
+			It("Should trigger the deletion of the brokerTopic object", func() {
 				Eventually(func(g Gomega) error {
-					return LoadResource("", topic.Name, topic)
+					return LoadResource("", brokerTopic.Name, brokerTopic)
 				}).Should(BeNotFound())
 			})
-			It("Should create a topic deletion job", func() {
+			It("Should create a brokerTopic deletion job", func() {
 				Eventually(func() error {
-					return LoadResource(stack.Name, fmt.Sprintf("%s-delete-topic", topic.Spec.Service), &batchv1.Job{})
+					return LoadResource(stack.Name, fmt.Sprintf("%s-delete-topic", brokerTopic.Spec.Service), &batchv1.Job{})
 				}).Should(Succeed())
 			})
 		})

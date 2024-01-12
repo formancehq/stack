@@ -38,14 +38,14 @@ const (
 	gcFinalizer = "gc"
 )
 
-// TopicQueryController reconciles a BrokerTopicConsumer object
-type TopicQueryController struct{}
+// BrokerTopicConsumer reconciles a BrokerTopicConsumer object
+type BrokerTopicConsumer struct{}
 
 //+kubebuilder:rbac:groups=formance.com,resources=topicqueries,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=formance.com,resources=topicqueries/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=topicqueries/finalizers,verbs=update
 
-func (r *TopicQueryController) Reconcile(ctx Context, topicQuery *v1beta1.BrokerTopicConsumer) error {
+func (r *BrokerTopicConsumer) Reconcile(ctx Context, topicQuery *v1beta1.BrokerTopicConsumer) error {
 
 	if !topicQuery.DeletionTimestamp.IsZero() {
 		topic := &v1beta1.BrokerTopic{}
@@ -121,7 +121,7 @@ func (r *TopicQueryController) Reconcile(ctx Context, topicQuery *v1beta1.Broker
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *TopicQueryController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
+func (r *BrokerTopicConsumer) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 
 	indexer := mgr.GetFieldIndexer()
 	if err := indexer.IndexField(context.Background(), &v1beta1.BrokerTopicConsumer{}, ".spec.service", func(rawObj client.Object) []string {
@@ -152,6 +152,6 @@ func (r *TopicQueryController) SetupWithManager(mgr Manager) (*builder.Builder, 
 		), nil
 }
 
-func ForTopicQuery() *TopicQueryController {
-	return &TopicQueryController{}
+func ForBrokerTopicConsumer() *BrokerTopicConsumer {
+	return &BrokerTopicConsumer{}
 }
