@@ -17,6 +17,7 @@ limitations under the License.
 package v1beta3
 
 import (
+	v1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	"reflect"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -124,6 +125,8 @@ type ControlAuthentication struct {
 
 type StackStatus struct {
 	Status `json:",inline"`
+
+	Conditions []*v1.JSON `json:"conditions,omitempty"`
 
 	//+optional
 	Ready bool `json:"ready"`

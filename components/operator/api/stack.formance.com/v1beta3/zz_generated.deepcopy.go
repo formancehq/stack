@@ -974,6 +974,17 @@ func (in *StackStargateConfig) DeepCopy() *StackStargateConfig {
 func (in *StackStatus) DeepCopyInto(out *StackStatus) {
 	*out = *in
 	out.Status = in.Status
+	if in.Conditions != nil {
+		in, out := &in.Conditions, &out.Conditions
+		*out = make([]*v1.JSON, len(*in))
+		for i := range *in {
+			if (*in)[i] != nil {
+				in, out := &(*in)[i], &(*out)[i]
+				*out = new(v1.JSON)
+				(*in).DeepCopyInto(*out)
+			}
+		}
+	}
 	if in.Ports != nil {
 		in, out := &in.Ports, &out.Ports
 		*out = make(map[string]map[string]int32, len(*in))

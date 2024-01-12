@@ -158,6 +158,10 @@ spec:
             type: object
           status:
             properties:
+              conditions:
+                items:
+                  x-kubernetes-preserve-unknown-fields: true
+                type: array
               light:
                 type: boolean
               ports:

@@ -18,6 +18,7 @@ package formance_com
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 	"reflect"
 
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -25,7 +26,6 @@ import (
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/stacks"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
-	"github.com/pkg/errors"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -65,19 +65,24 @@ func (r *DatabaseController) Reconcile(ctx Context, database *v1beta1.Database) 
 	selector := labels.NewSelector().Add(*serviceSelectorRequirement, *stackSelectorRequirement)
 
 	if !database.DeletionTimestamp.IsZero() {
-		job, err := r.createDeleteJob(ctx, database)
-		if err != nil {
-			return err
-		}
+		if database.Status.Configuration != nil {
+			job, err := r.createDeleteJob(ctx, database)
+			if err != nil {
+				return err
+			}
 
-		if job.Status.Succeeded > 0 {
-			patch := client.MergeFrom(database.DeepCopy())
-			if updated := controllerutil.RemoveFinalizer(database, databaseFinalizer); updated {
-				if err := ctx.GetClient().Patch(ctx, database, patch); err != nil {
-					return errors.Wrap(err, "removing finalizer")
-				}
+			if job.Status.Succeeded == 0 {
+				return ErrPending
 			}
 		}
+
+		patch := client.MergeFrom(database.DeepCopy())
+		if updated := controllerutil.RemoveFinalizer(database, databaseFinalizer); updated {
+			if err := ctx.GetClient().Patch(ctx, database, patch); err != nil {
+				return errors.Wrap(err, "removing finalizer")
+			}
+		}
+
 		return ErrDeleted
 	}
 
