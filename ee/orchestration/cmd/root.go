@@ -103,17 +103,21 @@ func commonOptions(output io.Writer) fx.Option {
 		workflow.NewModule(viper.GetString(temporalTaskQueueFlag)),
 		triggers.NewModule(viper.GetString(temporalTaskQueueFlag)),
 		fx.Provide(func() *http.Client {
+			httpClient := &http.Client{
+				Transport: otlp.NewRoundTripper(http.DefaultTransport, viper.GetBool(service.DebugFlag)),
+			}
+
+			if viper.GetString(stackClientIDFlag) == "" {
+				return httpClient
+			}
 			oauthConfig := clientcredentials.Config{
 				ClientID:     viper.GetString(stackClientIDFlag),
 				ClientSecret: viper.GetString(stackClientSecretFlag),
 				TokenURL:     fmt.Sprintf("%s/api/auth/oauth/token", viper.GetString(stackURLFlag)),
 				Scopes:       []string{"openid", "ledger:read", "ledger:write", "wallets:read", "wallets:write", "payments:read", "payments:write"},
 			}
-			underlyingHTTPClient := &http.Client{
-				Transport: otlp.NewRoundTripper(http.DefaultTransport, viper.GetBool(service.DebugFlag)),
-			}
 			return oauthConfig.Client(context.WithValue(context.Background(),
-				oauth2.HTTPClient, underlyingHTTPClient))
+				oauth2.HTTPClient, httpClient))
 		}),
 	)
 }
