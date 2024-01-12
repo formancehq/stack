@@ -36,6 +36,22 @@ const sidebars = {
           type: 'doc',
           id: 'guides/newSandbox',
         },
+        {
+          type: 'category',
+          label: 'Setup the SDK',
+          link: {
+            type: 'doc',
+            id: 'getting-started/sdk/index'
+          },
+          items: [{
+            type: 'doc',
+            id: 'getting-started/sdk/setup-ts-js'
+          }]
+        },
+        {
+          type: 'doc',
+          id: 'getting-started/cleanup',
+        }
       ],
     },
     {
