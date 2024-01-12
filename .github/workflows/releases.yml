@@ -94,3 +94,40 @@ jobs:
           FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
           SEGMENT_WRITE_KEY: ${{ secrets.SEGMENT_WRITE_KEY_OSS }}
           GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
+
+  Sdks:
+    runs-on: "ubuntu-latest"
+    needs:
+      - GoReleaser
+    steps:
+      - uses: earthly/actions-setup@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          version: "latest"
+      - uses: 'actions/checkout@v4'
+        with:
+          fetch-depth: 0
+      - name: Setup Env
+        uses: ./.github/actions/env
+      - name: Generate SDK
+        run: >
+          earthly
+          --no-output
+          --allow-privileged
+          --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY
+          --secret GITHUB_TOKEN=$GITHUB_TOKEN
+          ./releases+sdk-generate-all --version=${{github.ref_name}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+          SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
+      - name: Publish SDK
+        run: >
+          earthly
+          --no-output
+          --allow-privileged
+          --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY
+          --secret GITHUB_TOKEN=$GITHUB_TOKEN
+          ./releases+sdk-publish-all --version=${{github.ref_name}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+          SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}

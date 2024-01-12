@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
-id: 3a5fa01d-2f6e-4fbd-ae7d-16933f0369fe
+id: 3dcaf2e2-523d-4c0f-baef-27cd4e920d1b
 management:
   docChecksum: fa04a2237003760f6075c16fe5dd82ea
   docVersion: INTERNAL
   speakeasyVersion: internal
   generationVersion: 2.230.1
-  releaseVersion: 0.0.1
-  configChecksum: 868f3fd5b4c0bc56963d952b3a6b254b
+  releaseVersion: INTERNAL
+  configChecksum: 460adf02c413d99504670324e6dfda45
 features:
   go:
     constsAndDefaults: 0.1.2
