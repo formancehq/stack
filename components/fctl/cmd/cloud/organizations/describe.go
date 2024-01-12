@@ -8,7 +8,7 @@ import (
 )
 
 type DescribeStore struct {
-	Organization *membershipclient.Organization `json:"organization"`
+	Organization *membershipclient.OrganizationExpanded `json:"organization"`
 }
 type DescribeController struct {
 	store *DescribeStore
@@ -52,7 +52,7 @@ func (c *DescribeController) Run(cmd *cobra.Command, args []string) (fctl.Render
 	}
 
 	response, _, err := apiClient.DefaultApi.
-		ReadOrganization(cmd.Context(), args[0]).Execute()
+		ReadOrganizationExpanded(cmd.Context(), args[0]).Execute()
 	if err != nil {
 		return nil, err
 	}
@@ -63,5 +63,5 @@ func (c *DescribeController) Run(cmd *cobra.Command, args []string) (fctl.Render
 }
 
 func (c *DescribeController) Render(cmd *cobra.Command, args []string) error {
-	return internal.PrintOrganization(c.store.Organization)
+	return internal.PrintOrganizationExpanded(c.store.Organization)
 }

@@ -1,4 +1,4 @@
-# ListOrganizationExpandedResponseDataInnerAllOf
+# OrganizationExpandedAllOf
 
 ## Properties
 
@@ -10,95 +10,95 @@ Name | Type | Description | Notes
 
 ## Methods
 
-### NewListOrganizationExpandedResponseDataInnerAllOf
+### NewOrganizationExpandedAllOf
 
-`func NewListOrganizationExpandedResponseDataInnerAllOf() *ListOrganizationExpandedResponseDataInnerAllOf`
+`func NewOrganizationExpandedAllOf() *OrganizationExpandedAllOf`
 
-NewListOrganizationExpandedResponseDataInnerAllOf instantiates a new ListOrganizationExpandedResponseDataInnerAllOf object
+NewOrganizationExpandedAllOf instantiates a new OrganizationExpandedAllOf object
 This constructor will assign default values to properties that have it defined,
 and makes sure properties required by API are set, but the set of arguments
 will change when the set of required properties is changed
 
-### NewListOrganizationExpandedResponseDataInnerAllOfWithDefaults
+### NewOrganizationExpandedAllOfWithDefaults
 
-`func NewListOrganizationExpandedResponseDataInnerAllOfWithDefaults() *ListOrganizationExpandedResponseDataInnerAllOf`
+`func NewOrganizationExpandedAllOfWithDefaults() *OrganizationExpandedAllOf`
 
-NewListOrganizationExpandedResponseDataInnerAllOfWithDefaults instantiates a new ListOrganizationExpandedResponseDataInnerAllOf object
+NewOrganizationExpandedAllOfWithDefaults instantiates a new OrganizationExpandedAllOf object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
 ### GetTotalStacks
 
-`func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetTotalStacks() int32`
+`func (o *OrganizationExpandedAllOf) GetTotalStacks() int32`
 
 GetTotalStacks returns the TotalStacks field if non-nil, zero value otherwise.
 
 ### GetTotalStacksOk
 
-`func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetTotalStacksOk() (*int32, bool)`
+`func (o *OrganizationExpandedAllOf) GetTotalStacksOk() (*int32, bool)`
 
 GetTotalStacksOk returns a tuple with the TotalStacks field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetTotalStacks
 
-`func (o *ListOrganizationExpandedResponseDataInnerAllOf) SetTotalStacks(v int32)`
+`func (o *OrganizationExpandedAllOf) SetTotalStacks(v int32)`
 
 SetTotalStacks sets TotalStacks field to given value.
 
 ### HasTotalStacks
 
-`func (o *ListOrganizationExpandedResponseDataInnerAllOf) HasTotalStacks() bool`
+`func (o *OrganizationExpandedAllOf) HasTotalStacks() bool`
 
 HasTotalStacks returns a boolean if a field has been set.
 
 ### GetTotalUsers
 
-`func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetTotalUsers() int32`
+`func (o *OrganizationExpandedAllOf) GetTotalUsers() int32`
 
 GetTotalUsers returns the TotalUsers field if non-nil, zero value otherwise.
 
 ### GetTotalUsersOk
 
-`func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetTotalUsersOk() (*int32, bool)`
+`func (o *OrganizationExpandedAllOf) GetTotalUsersOk() (*int32, bool)`
 
 GetTotalUsersOk returns a tuple with the TotalUsers field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetTotalUsers
 
-`func (o *ListOrganizationExpandedResponseDataInnerAllOf) SetTotalUsers(v int32)`
+`func (o *OrganizationExpandedAllOf) SetTotalUsers(v int32)`
 
 SetTotalUsers sets TotalUsers field to given value.
 
 ### HasTotalUsers
 
-`func (o *ListOrganizationExpandedResponseDataInnerAllOf) HasTotalUsers() bool`
+`func (o *OrganizationExpandedAllOf) HasTotalUsers() bool`
 
 HasTotalUsers returns a boolean if a field has been set.
 
 ### GetOwner
 
-`func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetOwner() User`
+`func (o *OrganizationExpandedAllOf) GetOwner() User`
 
 GetOwner returns the Owner field if non-nil, zero value otherwise.
 
 ### GetOwnerOk
 
-`func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetOwnerOk() (*User, bool)`
+`func (o *OrganizationExpandedAllOf) GetOwnerOk() (*User, bool)`
 
 GetOwnerOk returns a tuple with the Owner field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetOwner
 
-`func (o *ListOrganizationExpandedResponseDataInnerAllOf) SetOwner(v User)`
+`func (o *OrganizationExpandedAllOf) SetOwner(v User)`
 
 SetOwner sets Owner field to given value.
 
 ### HasOwner
 
-`func (o *ListOrganizationExpandedResponseDataInnerAllOf) HasOwner() bool`
+`func (o *OrganizationExpandedAllOf) HasOwner() bool`
 
 HasOwner returns a boolean if a field has been set.
 

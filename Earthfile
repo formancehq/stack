@@ -61,7 +61,6 @@ openapi:
     FOR component IN $(cd ./ee && ls -d */)
         COPY (./ee/$component+openapi/src/ee/$component) /src/ee/$component
     END
-    RUN toto
     SAVE ARTIFACT /src
 
 goreleaser:
@@ -83,14 +82,14 @@ goreleaser:
         END
     END
     WITH DOCKER
-       RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
-           --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
-           --secret GORELEASER_KEY \
-           --secret GITHUB_TOKEN \
-           --secret SPEAKEASY_API_KEY \
-           --secret FURY_TOKEN \
-           --secret SEGMENT_WRITE_KEY \
-           goreleaser release -f .goreleaser.yml $buildArgs
+        RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
+            --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
+            --secret GORELEASER_KEY \
+            --secret GITHUB_TOKEN \
+            --secret SPEAKEASY_API_KEY \
+            --secret FURY_TOKEN \
+            --secret SEGMENT_WRITE_KEY \
+            goreleaser release -f .goreleaser.yml $buildArgs
     END
 
 all-ci-goreleaser:

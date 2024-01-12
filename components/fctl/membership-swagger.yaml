@@ -132,6 +132,23 @@ paths:
                 $ref: '#/components/schemas/Error'
         204:
           description: Organization deleted
+  /organizations/{organizationId}/expanded:
+    get:
+      summary: Read organization with expanded data
+      operationId: readOrganizationExpanded
+      parameters:
+        - name: organizationId
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadOrganizationExpandedResponse'
   /organizations/{organizationId}/users:
     get:
       summary: List users of organization
@@ -1312,6 +1329,11 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/Organization'
+    ReadOrganizationExpandedResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OrganizationExpanded'
     ReadOrganizationResponse:
       $ref: '#/components/schemas/CreateOrganizationResponse'
     ListStacksResponse:
@@ -1456,15 +1478,18 @@ components:
           type: array
           items:
             allOf:
-              - $ref: '#/components/schemas/Organization'
-              - type: object
-                properties:
-                  totalStacks:
-                    type: integer
-                  totalUsers:
-                    type: integer
-                  owner:
-                    $ref: '#/components/schemas/User'
+              - $ref: '#/components/schemas/OrganizationExpanded'
+    OrganizationExpanded:
+      allOf:
+        - $ref: '#/components/schemas/Organization'
+        - type: object
+          properties:
+            totalStacks:
+              type: integer
+            totalUsers:
+              type: integer
+            owner:
+              $ref: '#/components/schemas/User'
     ListRegionsResponse:
       type: object
       properties:

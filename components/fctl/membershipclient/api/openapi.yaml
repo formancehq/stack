@@ -137,6 +137,25 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: Error
       summary: Update organization
+  /organizations/{organizationId}/expanded:
+    get:
+      operationId: readOrganizationExpanded
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadOrganizationExpandedResponse'
+          description: OK
+      summary: Read organization with expanded data
   /organizations/{organizationId}/users:
     get:
       operationId: listUsersOfOrganization
@@ -1353,6 +1372,13 @@ components:
         data:
           $ref: '#/components/schemas/Organization'
       type: object
+    ReadOrganizationExpandedResponse:
+      example:
+        data: null
+      properties:
+        data:
+          $ref: '#/components/schemas/OrganizationExpanded'
+      type: object
     ReadOrganizationResponse:
       $ref: '#/components/schemas/CreateOrganizationResponse'
     ListStacksResponse:
@@ -1587,6 +1613,10 @@ components:
             $ref: '#/components/schemas/ListOrganizationExpandedResponse_data_inner'
           type: array
       type: object
+    OrganizationExpanded:
+      allOf:
+      - $ref: '#/components/schemas/Organization'
+      - $ref: '#/components/schemas/OrganizationExpanded_allOf'
     ListRegionsResponse:
       example:
         data:
@@ -1804,7 +1834,10 @@ components:
       - regionID
       type: object
       example: null
-    ListOrganizationExpandedResponse_data_inner_allOf:
+    ListOrganizationExpandedResponse_data_inner:
+      allOf:
+      - $ref: '#/components/schemas/OrganizationExpanded'
+    OrganizationExpanded_allOf:
       properties:
         totalStacks:
           type: integer
@@ -1813,10 +1846,7 @@ components:
         owner:
           $ref: '#/components/schemas/User'
       type: object
-    ListOrganizationExpandedResponse_data_inner:
-      allOf:
-      - $ref: '#/components/schemas/Organization'
-      - $ref: '#/components/schemas/ListOrganizationExpandedResponse_data_inner_allOf'
+      example: null
   securitySchemes:
     oauth2:
       flows:
