@@ -2,6 +2,7 @@ package formance_com
 
 import (
 	"bytes"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"strings"
 	"text/template"
 
@@ -15,6 +16,8 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 )
 
+// TODO: The stack reconciler can create a config map container env var for dev and debug
+// This way, we avoid the need to fetch the stack object at each reconciliation loop
 func GetDevEnvVars(stack *v1beta1.Stack, service interface {
 	IsDebug() bool
 	IsDev() bool
@@ -26,12 +29,13 @@ func GetDevEnvVars(stack *v1beta1.Stack, service interface {
 	}
 }
 
-func GetCommonServicesEnvVars(ctx Context, stack *v1beta1.Stack, serviceName string, service interface {
+func GetCommonServicesEnvVars(ctx Context, stack *v1beta1.Stack, service interface {
+	client.Object
 	IsDebug() bool
 	IsDev() bool
 }) ([]v1.EnvVar, error) {
 	ret := make([]v1.EnvVar, 0)
-	env, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, serviceName)
+	env, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, strings.ToLower(service.GetObjectKind().GroupVersionKind().Kind))
 	if err != nil {
 		return nil, err
 	}

@@ -131,9 +131,9 @@ func (c *CommonStatus) EvalReadiness(generation int64) {
 	}
 }
 
-func (c *CommonStatus) DeleteCondition(t string) {
+func (c *CommonStatus) DeleteCondition(t, reason string) {
 	for i, existingCondition := range c.Conditions {
-		if existingCondition.Type == t {
+		if existingCondition.Type == t && existingCondition.Reason == reason {
 			if i < len(c.Conditions)-1 {
 				c.Conditions = append(c.Conditions[:i], c.Conditions[i+1:]...)
 			} else {
@@ -145,7 +145,7 @@ func (c *CommonStatus) DeleteCondition(t string) {
 }
 
 func (c *CommonStatus) SetCondition(condition Condition) {
-	c.DeleteCondition(condition.Type)
+	c.DeleteCondition(condition.Type, condition.Reason)
 	c.Conditions = append(c.Conditions, condition)
 }
 

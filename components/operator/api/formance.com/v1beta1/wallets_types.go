@@ -56,6 +56,14 @@ func (a *Wallets) SetCondition(condition Condition) {
 	a.Status.SetCondition(condition)
 }
 
+func (a Wallets) IsDebug() bool {
+	return a.Spec.Debug
+}
+
+func (a Wallets) IsDev() bool {
+	return a.Spec.Dev
+}
+
 //+kubebuilder:object:root=true
 
 // WalletsList contains a list of Wallets

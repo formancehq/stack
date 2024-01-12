@@ -22,6 +22,7 @@ var _ = Describe("OrchestrationController", func() {
 			ledger                *v1beta1.Ledger
 			databaseConfiguration *v1beta1.DatabaseConfiguration
 			orchestration         *v1beta1.Orchestration
+			brokerConfiguration   *v1beta1.BrokerConfiguration
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -71,6 +72,17 @@ var _ = Describe("OrchestrationController", func() {
 					},
 				},
 			}
+			brokerConfiguration = &v1beta1.BrokerConfiguration{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: uuid.NewString(),
+					Labels: map[string]string{
+						core.StackLabel: "any",
+					},
+				},
+				Spec: v1beta1.BrokerConfigurationSpec{
+					Nats: &v1beta1.NatsConfig{},
+				},
+			}
 		})
 		JustBeforeEach(func() {
 			Expect(Create(stack)).To(Succeed())
@@ -79,6 +91,7 @@ var _ = Describe("OrchestrationController", func() {
 			Expect(Create(auth)).To(Succeed())
 			Expect(Create(ledger)).To(Succeed())
 			Expect(Create(orchestration)).To(Succeed())
+			Expect(Create(brokerConfiguration)).To(Succeed())
 		})
 		AfterEach(func() {
 			Expect(Delete(auth)).To(Succeed())
@@ -87,6 +100,7 @@ var _ = Describe("OrchestrationController", func() {
 			Expect(Delete(stack)).To(Succeed())
 			Expect(Delete(ledger)).To(Succeed())
 			Expect(Delete(orchestration)).To(Succeed())
+			Expect(Delete(brokerConfiguration)).To(Succeed())
 		})
 		It("Should create a deployment", func() {
 			deployment := &appsv1.Deployment{}

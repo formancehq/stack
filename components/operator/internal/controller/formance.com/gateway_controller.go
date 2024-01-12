@@ -24,12 +24,12 @@ import (
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/brokerconfigurations"
+	"github.com/formancehq/operator/internal/resources/brokertopics"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
 	. "github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/services"
 	"github.com/formancehq/operator/internal/resources/stacks"
-	"github.com/formancehq/operator/internal/resources/topics"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -121,7 +121,7 @@ func (r *GatewayController) createConfigMap(ctx Context, stack *v1beta1.Stack,
 
 func (r *GatewayController) createAuditTopic(ctx Context, stack *v1beta1.Stack, gateway *v1beta1.Gateway) (*v1beta1.BrokerTopic, error) {
 	if stack.Spec.EnableAudit {
-		topic, err := topics.CreateOrUpdate(ctx, stack, gateway, "gateway", "audit")
+		topic, err := brokertopics.CreateOrUpdate(ctx, stack, gateway, "gateway", "audit")
 		if err != nil {
 			return nil, err
 		}
@@ -136,7 +136,7 @@ func (r *GatewayController) createAuditTopic(ctx Context, stack *v1beta1.Stack, 
 func (r *GatewayController) createDeployment(ctx Context, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway, caddyfileConfigMap *corev1.ConfigMap, auditTopic *v1beta1.BrokerTopic) error {
 
-	env, err := GetCommonServicesEnvVars(ctx, stack, "gateway", gateway.Spec)
+	env, err := GetCommonServicesEnvVars(ctx, stack, gateway)
 	if err != nil {
 		return err
 	}
@@ -155,7 +155,7 @@ func (r *GatewayController) createDeployment(ctx Context, stack *v1beta1.Stack,
 	mutators := ConfigureCaddy(caddyfileConfigMap, image, env, gateway.Spec.ResourceRequirements)
 	mutators = append(mutators, deployments.WithMatchingLabels("gateway"))
 
-	_, err = deployments.Create(ctx, gateway, "gateway", mutators...)
+	_, err = deployments.CreateOrUpdate(ctx, gateway, "gateway", mutators...)
 	return err
 }
 
@@ -245,9 +245,6 @@ func (r *GatewayController) createCaddyfile(ctx Context, stack *v1beta1.Stack,
 		"Port":     8080,
 	}
 	if auth != nil {
-		if gateway.Spec.Ingress == nil {
-			return "", fmt.Errorf("missing ingress configuration when using Auth component")
-		}
 		data["Auth"] = map[string]any{
 			"Issuer":       fmt.Sprintf("%s/api/auth", gateways.URL(gateway)),
 			"EnableScopes": auth.Spec.EnableScopes,
@@ -285,7 +282,7 @@ func (r *GatewayController) SetupWithManager(mgr Manager) (*builder.Builder, err
 		Watches(
 			&v1beta1.BrokerTopic{},
 			handler.EnqueueRequestsFromMapFunc(
-				topics.Watch[*v1beta1.Gateway](mgr, "gateway")),
+				brokertopics.Watch[*v1beta1.Gateway](mgr, "gateway")),
 		).
 		Watches(
 			&v1beta1.RegistriesConfiguration{},

@@ -18,6 +18,7 @@ package formance_com
 
 import (
 	"fmt"
+	appsv1 "k8s.io/api/apps/v1"
 	"strings"
 
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -25,18 +26,16 @@ import (
 	"github.com/formancehq/operator/internal/resources/authclients"
 	"github.com/formancehq/operator/internal/resources/auths"
 	"github.com/formancehq/operator/internal/resources/brokerconfigurations"
+	"github.com/formancehq/operator/internal/resources/brokertopicconsumers"
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/httpapis"
 	. "github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/stacks"
-	"github.com/formancehq/operator/internal/resources/topicqueries"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
@@ -67,19 +66,20 @@ func (r *OrchestrationController) Reconcile(ctx Context, orchestration *v1beta1.
 		return err
 	}
 
-	if err := r.handleTopics(ctx, stack, orchestration); err != nil {
+	consumers, err := brokertopicconsumers.CreateOrUpdateOnAllServices(ctx, orchestration)
+	if err != nil {
 		return err
 	}
 
-	if database.Status.Ready {
-		if err := r.createDeployment(ctx, stack, orchestration, database, authClient); err != nil {
-			return err
-		}
-	}
-
-	if err := httpapis.Create(ctx, stack, orchestration, "orchestration",
+	if err := httpapis.Create(ctx, orchestration,
 		httpapis.WithServiceConfiguration(orchestration.Spec.Service)); err != nil {
 		return err
+	}
+
+	if database.Status.Ready && consumers.Ready() {
+		if err := r.createDeployment(ctx, stack, orchestration, database, authClient, consumers); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -87,11 +87,11 @@ func (r *OrchestrationController) Reconcile(ctx Context, orchestration *v1beta1.
 
 func (r *OrchestrationController) handleAuthClient(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.Orchestration) (*v1beta1.AuthClient, error) {
 
-	auth, err := stacks.GetIfEnabled[*v1beta1.Auth](ctx, stack.Name)
+	hasAuth, err := stacks.HasDependency[*v1beta1.Auth](ctx, stack.Name)
 	if err != nil {
 		return nil, err
 	}
-	if auth == nil {
+	if !hasAuth {
 		return nil, nil
 	}
 
@@ -108,24 +108,12 @@ func (r *OrchestrationController) handleAuthClient(ctx Context, stack *v1beta1.S
 		})
 }
 
-func (r *OrchestrationController) handleTopics(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.Orchestration) error {
-	return ForEachEventPublisher(ctx, stack.Name, func(object client.Object) error {
-		return topicqueries.Create(ctx, stack, strings.ToLower(object.GetObjectKind().GroupVersionKind().Kind), orchestration)
-	})
-}
-
-func (r *OrchestrationController) createDeployment(ctx Context, stack *v1beta1.Stack,
-	orchestration *v1beta1.Orchestration, database *v1beta1.Database, client *v1beta1.AuthClient) error {
-	env, err := GetCommonServicesEnvVars(ctx, stack, "orchestration", orchestration.Spec)
+func (r *OrchestrationController) createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.Orchestration, database *v1beta1.Database, client *v1beta1.AuthClient, consumers []*v1beta1.BrokerTopicConsumer) error {
+	env, err := GetCommonServicesEnvVars(ctx, stack, orchestration)
 	if err != nil {
 		return err
 	}
 	env = append(env, databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)...)
-
-	eventPublishers, err := ListEventPublishers(ctx, stack.Name)
-	if err != nil {
-		return err
-	}
 
 	env = append(env,
 		Env("POSTGRES_DSN", "$(POSTGRES_URI)"),
@@ -133,8 +121,8 @@ func (r *OrchestrationController) createDeployment(ctx Context, stack *v1beta1.S
 		Env("TEMPORAL_ADDRESS", orchestration.Spec.Temporal.Address),
 		Env("TEMPORAL_NAMESPACE", orchestration.Spec.Temporal.Namespace),
 		Env("WORKER", "true"),
-		Env("TOPICS", strings.Join(Map(eventPublishers, func(from unstructured.Unstructured) string {
-			return fmt.Sprintf("%s-%s", stack.Name, strings.ToLower(from.GetKind()))
+		Env("TOPICS", strings.Join(Map(consumers, func(from *v1beta1.BrokerTopicConsumer) string {
+			return fmt.Sprintf("%s-%s", stack.Name, from.Spec.Service)
 		}), " ")),
 	)
 
@@ -171,7 +159,7 @@ func (r *OrchestrationController) createDeployment(ctx Context, stack *v1beta1.S
 		return err
 	}
 
-	_, err = deployments.Create(ctx, orchestration, "orchestration",
+	_, err = deployments.CreateOrUpdate(ctx, orchestration, "orchestration",
 		deployments.WithMatchingLabels("orchestration"),
 		deployments.WithContainers(corev1.Container{
 			Name:          "api",
@@ -223,6 +211,8 @@ func (r *OrchestrationController) SetupWithManager(mgr Manager) (*builder.Builde
 		).
 		Owns(&v1beta1.BrokerTopicConsumer{}).
 		Owns(&v1beta1.AuthClient{}).
+		Owns(&appsv1.Deployment{}).
+		Owns(&v1beta1.HTTPAPI{}).
 		For(&v1beta1.Orchestration{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }
 

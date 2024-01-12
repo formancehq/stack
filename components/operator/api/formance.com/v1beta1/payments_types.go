@@ -57,6 +57,14 @@ func (a Payments) GetStack() string {
 	return a.Spec.Stack
 }
 
+func (a Payments) IsDebug() bool {
+	return a.Spec.Debug
+}
+
+func (a Payments) IsDev() bool {
+	return a.Spec.Dev
+}
+
 func (a *Payments) SetCondition(condition Condition) {
 	a.Status.SetCondition(condition)
 }

@@ -78,6 +78,14 @@ func (a *Gateway) SetCondition(condition Condition) {
 	a.Status.SetCondition(condition)
 }
 
+func (a Gateway) IsDebug() bool {
+	return a.Spec.Debug
+}
+
+func (a Gateway) IsDev() bool {
+	return a.Spec.Dev
+}
+
 //+kubebuilder:object:root=true
 
 // GatewayList contains a list of Gateway

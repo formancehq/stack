@@ -19,21 +19,21 @@ package formance_com
 import (
 	_ "embed"
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/payments"
 	"net/http"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/auths"
 	"github.com/formancehq/operator/internal/resources/brokerconfigurations"
+	"github.com/formancehq/operator/internal/resources/brokertopics"
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/httpapis"
-	"github.com/formancehq/operator/internal/resources/payments"
 	. "github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/services"
 	"github.com/formancehq/operator/internal/resources/stacks"
 	"github.com/formancehq/operator/internal/resources/streams"
-	"github.com/formancehq/operator/internal/resources/topics"
 	"github.com/formancehq/search/benthos"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -78,7 +78,7 @@ func (r *PaymentsController) Reconcile(ctx Context, payments *v1beta1.Payments) 
 		return err
 	}
 
-	if err := httpapis.Create(ctx, stack, payments, "payments",
+	if err := httpapis.Create(ctx, payments,
 		httpapis.WithRules(
 			v1beta1.HTTPAPIRule{
 				Path:    "/connectors/webhooks",
@@ -94,7 +94,7 @@ func (r *PaymentsController) Reconcile(ctx Context, payments *v1beta1.Payments) 
 }
 
 func (r *PaymentsController) commonEnvVars(ctx Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) ([]corev1.EnvVar, error) {
-	env, err := GetCommonServicesEnvVars(ctx, stack, "payments", payments.Spec)
+	env, err := GetCommonServicesEnvVars(ctx, stack, payments)
 	if err != nil {
 		return nil, err
 	}
@@ -125,7 +125,7 @@ func (r *PaymentsController) createReadDeployment(ctx Context, stack *v1beta1.St
 		return err
 	}
 
-	_, err = deployments.Create(ctx, payments, "payments-read",
+	_, err = deployments.CreateOrUpdate(ctx, payments, "payments-read",
 		deployments.WithMatchingLabels("payments-read"),
 		deployments.WithContainers(corev1.Container{
 			Name:          "api",
@@ -183,7 +183,7 @@ func (r *PaymentsController) createConnectorsDeployment(ctx Context, stack *v1be
 		return err
 	}
 
-	topic, err := topics.Find(ctx, stack, "payments")
+	topic, err := brokertopics.Find(ctx, stack, "payments")
 	if err != nil {
 		return err
 	}
@@ -202,7 +202,7 @@ func (r *PaymentsController) createConnectorsDeployment(ctx Context, stack *v1be
 		return err
 	}
 
-	_, err = deployments.Create(ctx, payments, "payments-connectors",
+	_, err = deployments.CreateOrUpdate(ctx, payments, "payments-connectors",
 		deployments.WithMatchingLabels("payments-connectors"),
 		deployments.WithContainers(corev1.Container{
 			Name:      "connectors",
@@ -242,7 +242,7 @@ func (r *PaymentsController) createGateway(ctx Context, stack *v1beta1.Stack, p 
 		return err
 	}
 
-	env, err := GetCommonServicesEnvVars(ctx, stack, "payments", p.Spec)
+	env, err := GetCommonServicesEnvVars(ctx, stack, p)
 	if err != nil {
 		return err
 	}
@@ -253,7 +253,7 @@ func (r *PaymentsController) createGateway(ctx Context, stack *v1beta1.Stack, p 
 	mutators := ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", containerEnv, nil)
 	mutators = append(mutators, deployments.WithMatchingLabels("payments"))
 
-	_, err = deployments.Create(ctx, p, "payments", mutators...)
+	_, err = deployments.CreateOrUpdate(ctx, p, "payments", mutators...)
 	return err
 }
 
@@ -285,7 +285,7 @@ func (r *PaymentsController) SetupWithManager(mgr Manager) (*builder.Builder, er
 		Watches(
 			&v1beta1.BrokerTopic{},
 			handler.EnqueueRequestsFromMapFunc(
-				topics.Watch[*v1beta1.Payments](mgr, "payments")),
+				brokertopics.Watch[*v1beta1.Payments](mgr, "payments")),
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},

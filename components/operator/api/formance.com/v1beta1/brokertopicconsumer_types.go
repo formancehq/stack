@@ -38,7 +38,7 @@ type BrokerTopicConsumerStatus struct {
 //+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Ready"
 //+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
 
-// BrokerTopicConsumer is the Schema for the topicqueries API
+// BrokerTopicConsumer is the Schema for the brokertopicconsumers API
 type BrokerTopicConsumer struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`

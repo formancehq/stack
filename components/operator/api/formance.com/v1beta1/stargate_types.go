@@ -58,6 +58,14 @@ type Stargate struct {
 	Status StargateStatus `json:"status,omitempty"`
 }
 
+func (a Stargate) IsDebug() bool {
+	return a.Spec.Debug
+}
+
+func (a Stargate) IsDev() bool {
+	return a.Spec.Dev
+}
+
 func (s Stargate) GetStack() string {
 	return s.Spec.Stack
 }

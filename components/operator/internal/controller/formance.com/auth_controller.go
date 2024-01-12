@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"sort"
 
-	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
+	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/auths"
 	"github.com/formancehq/operator/internal/resources/databases"
@@ -48,7 +48,7 @@ type AuthController struct{}
 
 func (r *AuthController) Reconcile(ctx Context, auth *v1beta1.Auth) error {
 
-	stack, err := stacks.GetStack(ctx, auth.Spec)
+	stack, err := stacks.GetStack(ctx, auth)
 	if err != nil {
 		return err
 	}
@@ -74,7 +74,7 @@ func (r *AuthController) Reconcile(ctx Context, auth *v1beta1.Auth) error {
 			return err
 		}
 
-		if _, err := deployments.Create(ctx, auth, "auth",
+		if _, err := deployments.CreateOrUpdate(ctx, auth, "auth",
 			deploymentMutator,
 			deployments.WithMatchingLabels("auth"),
 		); err != nil {
@@ -82,7 +82,7 @@ func (r *AuthController) Reconcile(ctx Context, auth *v1beta1.Auth) error {
 		}
 	}
 
-	if err := httpapis.Create(ctx, stack, auth, "auth",
+	if err := httpapis.Create(ctx, auth,
 		httpapis.WithRules(httpapis.RuleUnsecured()),
 		httpapis.WithServiceConfiguration(auth.Spec.Service)); err != nil {
 		return err
@@ -127,7 +127,7 @@ func (r *AuthController) createConfiguration(ctx Context, stack *v1beta1.Stack, 
 func (r *AuthController) createDeployment(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, database *v1beta1.Database,
 	configMap *corev1.ConfigMap) (func(deployment *appsv1.Deployment), error) {
 
-	env, err := GetCommonServicesEnvVars(ctx, stack, "auth", auth.Spec)
+	env, err := GetCommonServicesEnvVars(ctx, stack, auth)
 	if err != nil {
 		return nil, err
 	}

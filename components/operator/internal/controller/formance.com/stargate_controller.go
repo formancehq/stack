@@ -53,7 +53,7 @@ func (r *StargateController) Reconcile(ctx Context, stargate *v1beta1.Stargate) 
 
 func (r *StargateController) createDeployment(ctx Context, stack *v1beta1.Stack, stargate *v1beta1.Stargate) error {
 
-	env, err := GetCommonServicesEnvVars(ctx, stack, "wallets", stargate.Spec)
+	env, err := GetCommonServicesEnvVars(ctx, stack, stargate)
 	if err != nil {
 		return err
 	}
@@ -72,7 +72,7 @@ func (r *StargateController) createDeployment(ctx Context, stack *v1beta1.Stack,
 		return err
 	}
 
-	_, err = deployments.Create(ctx, stargate, "stargate",
+	_, err = deployments.CreateOrUpdate(ctx, stargate, "stargate",
 		deployments.WithContainers(corev1.Container{
 			Name:          "stargate",
 			Env:           env,

@@ -66,7 +66,7 @@ func (r *WalletsController) Reconcile(ctx Context, wallets *v1beta1.Wallets) err
 		return err
 	}
 
-	if err := httpapis.Create(ctx, stack, wallets, "wallets",
+	if err := httpapis.Create(ctx, wallets,
 		httpapis.WithServiceConfiguration(wallets.Spec.Service)); err != nil {
 		return err
 	}
@@ -75,7 +75,7 @@ func (r *WalletsController) Reconcile(ctx Context, wallets *v1beta1.Wallets) err
 }
 
 func (r *WalletsController) createDeployment(ctx Context, stack *v1beta1.Stack, wallets *v1beta1.Wallets, authClient *v1beta1.AuthClient) error {
-	env, err := GetCommonServicesEnvVars(ctx, stack, "wallets", wallets.Spec)
+	env, err := GetCommonServicesEnvVars(ctx, stack, wallets)
 	if err != nil {
 		return err
 	}
@@ -94,7 +94,7 @@ func (r *WalletsController) createDeployment(ctx Context, stack *v1beta1.Stack, 
 		return err
 	}
 
-	_, err = deployments.Create(ctx, wallets, "wallets",
+	_, err = deployments.CreateOrUpdate(ctx, wallets, "wallets",
 		deployments.WithContainers(corev1.Container{
 			Name:          "wallets",
 			Args:          []string{"serve"},

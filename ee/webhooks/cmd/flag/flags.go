@@ -44,7 +44,7 @@ func Init(flagSet *pflag.FlagSet) {
 	flagSet.Duration(RetryPeriod, DefaultRetryPeriod, "worker retry period")
 	flagSet.Bool(Worker, false, "Enable worker on server")
 
-	flagSet.StringSlice(KafkaTopics, []string{DefaultKafkaTopic}, "Kafka topics")
+	flagSet.StringSlice(KafkaTopics, []string{DefaultKafkaTopic}, "Kafka brokertopics")
 
 	flagSet.Duration(AbortAfter, 30*24*time.Hour, "consider a webhook as failed after retrying it for this duration.")
 	flagSet.Duration(MinBackoffDelay, time.Minute, "minimum backoff delay")

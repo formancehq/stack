@@ -19,24 +19,22 @@ package formance_com
 import (
 	"fmt"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"strings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/auths"
 	"github.com/formancehq/operator/internal/resources/brokerconfigurations"
+	"github.com/formancehq/operator/internal/resources/brokertopicconsumers"
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/httpapis"
 	. "github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/stacks"
-	"github.com/formancehq/operator/internal/resources/topicqueries"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
@@ -59,32 +57,26 @@ func (r *WebhooksController) Reconcile(ctx Context, webhooks *v1beta1.Webhooks) 
 		return err
 	}
 
-	if err := r.handleTopics(ctx, stack, webhooks); err != nil {
+	consumers, err := brokertopicconsumers.CreateOrUpdateOnAllServices(ctx, webhooks)
+	if err != nil {
 		return err
 	}
 
-	if database.Status.Ready {
-		if err := r.createDeployment(ctx, stack, webhooks, database); err != nil {
-			return err
-		}
-	}
-
-	if err := httpapis.Create(ctx, stack, webhooks, "webhooks",
+	if err := httpapis.Create(ctx, webhooks,
 		httpapis.WithServiceConfiguration(webhooks.Spec.Service)); err != nil {
 		return err
+	}
+
+	if database.Status.Ready && consumers.Ready() {
+		if err := r.createDeployment(ctx, stack, webhooks, database, consumers); err != nil {
+			return err
+		}
 	}
 
 	return nil
 }
 
-func (r *WebhooksController) handleTopics(ctx Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks) error {
-	return ForEachEventPublisher(ctx, stack.Name, func(object client.Object) error {
-		return topicqueries.Create(ctx, stack, strings.ToLower(object.GetObjectKind().GroupVersionKind().Kind), webhooks)
-	})
-}
-
-func (r *WebhooksController) createDeployment(ctx Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks,
-	database *v1beta1.Database) error {
+func (r *WebhooksController) createDeployment(ctx Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumers brokertopicconsumers.Consumers) error {
 
 	brokerConfiguration, err := stacks.Require[*v1beta1.BrokerConfiguration](ctx, stack.Name)
 	if err != nil {
@@ -96,7 +88,7 @@ func (r *WebhooksController) createDeployment(ctx Context, stack *v1beta1.Stack,
 		return err
 	}
 
-	env, err := GetCommonServicesEnvVars(ctx, stack, "webhooks", webhooks.Spec)
+	env, err := GetCommonServicesEnvVars(ctx, stack, webhooks)
 	if err != nil {
 		return err
 	}
@@ -105,23 +97,17 @@ func (r *WebhooksController) createDeployment(ctx Context, stack *v1beta1.Stack,
 	if err != nil {
 		return err
 	}
-	env = append(env, authEnvVars...)
 
+	env = append(env, authEnvVars...)
 	env = append(env, databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)...)
 	env = append(env, brokerconfigurations.BrokerEnvVars(brokerConfiguration.Spec, stack.Name, "webhooks")...)
 	env = append(env, Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"))
 	env = append(env, Env("WORKER", "true"))
-
-	eventPublishers, err := ListEventPublishers(ctx, stack.Name)
-	if err != nil {
-		return err
-	}
-
-	env = append(env, Env("KAFKA_TOPICS", strings.Join(Map(eventPublishers, func(from unstructured.Unstructured) string {
-		return fmt.Sprintf("%s-%s", stack.Name, strings.ToLower(from.GetKind()))
+	env = append(env, Env("KAFKA_TOPICS", strings.Join(Map(consumers, func(from *v1beta1.BrokerTopicConsumer) string {
+		return fmt.Sprintf("%s-%s", stack.Name, from.Spec.Service)
 	}), " ")))
 
-	_, err = deployments.Create(ctx, webhooks, "webhooks",
+	_, err = deployments.CreateOrUpdate(ctx, webhooks, "webhooks",
 		deployments.WithMatchingLabels("webhooks"),
 		deployments.WithContainers(corev1.Container{
 			Name:          "api",

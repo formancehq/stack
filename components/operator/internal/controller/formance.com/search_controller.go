@@ -54,7 +54,7 @@ func (r *SearchController) Reconcile(ctx Context, search *v1beta1.Search) error 
 		return err
 	}
 
-	env, err := GetCommonServicesEnvVars(ctx, stack, "search", search.Spec)
+	env, err := GetCommonServicesEnvVars(ctx, stack, search)
 	if err != nil {
 		return err
 	}
@@ -112,7 +112,7 @@ func (r *SearchController) Reconcile(ctx Context, search *v1beta1.Search) error 
 		return err
 	}
 
-	_, err = deployments.Create(ctx, search, "search",
+	_, err = deployments.CreateOrUpdate(ctx, search, "search",
 		deployments.WithMatchingLabels("search"),
 		deployments.WithContainers(corev1.Container{
 			Name:            "search",
@@ -125,7 +125,7 @@ func (r *SearchController) Reconcile(ctx Context, search *v1beta1.Search) error 
 		}),
 	)
 
-	if err := httpapis.Create(ctx, stack, search, "search",
+	if err := httpapis.Create(ctx, search,
 		httpapis.WithServiceConfiguration(search.Spec.Service)); err != nil {
 		return err
 	}

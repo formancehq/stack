@@ -68,6 +68,14 @@ func (a *Search) SetCondition(condition Condition) {
 	a.Status.SetCondition(condition)
 }
 
+func (a Search) IsDebug() bool {
+	return a.Spec.Debug
+}
+
+func (a Search) IsDev() bool {
+	return a.Spec.Dev
+}
+
 //+kubebuilder:object:root=true
 
 // SearchList contains a list of Search

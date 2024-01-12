@@ -26,7 +26,8 @@ spec:
     name: v1beta1
     schema:
       openAPIV3Schema:
-        description: BrokerTopicConsumer is the Schema for the topicqueries API
+        description: BrokerTopicConsumer is the Schema for the brokertopicconsumers
+          API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation

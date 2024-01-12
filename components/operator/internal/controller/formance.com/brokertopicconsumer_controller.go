@@ -41,9 +41,9 @@ const (
 // BrokerTopicConsumer reconciles a BrokerTopicConsumer object
 type BrokerTopicConsumer struct{}
 
-//+kubebuilder:rbac:groups=formance.com,resources=topicqueries,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=formance.com,resources=topicqueries/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=formance.com,resources=topicqueries/finalizers,verbs=update
+//+kubebuilder:rbac:groups=formance.com,resources=brokertopicconsumers,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=formance.com,resources=brokertopicconsumers/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=formance.com,resources=brokertopicconsumers/finalizers,verbs=update
 
 func (r *BrokerTopicConsumer) Reconcile(ctx Context, topicQuery *v1beta1.BrokerTopicConsumer) error {
 

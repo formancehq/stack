@@ -74,6 +74,14 @@ func (a *Auth) SetCondition(condition Condition) {
 	a.Status.SetCondition(condition)
 }
 
+func (a Auth) IsDebug() bool {
+	return a.Spec.Debug
+}
+
+func (a Auth) IsDev() bool {
+	return a.Spec.Dev
+}
+
 //+kubebuilder:object:root=true
 
 // AuthList contains a list of Auth

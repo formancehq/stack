@@ -5,6 +5,7 @@ import (
 	"github.com/formancehq/operator/internal/core"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"strings"
 )
 
 type option func(spec *v1beta1.HTTPAPI)
@@ -13,14 +14,18 @@ var defaultOptions = []option{
 	WithRules(RuleSecured()),
 }
 
-func Create(ctx core.Context, stack *v1beta1.Stack, owner client.Object, objectName string, options ...option) error {
+func Create(ctx core.Context, owner interface {
+	client.Object
+	GetStack() string
+}, options ...option) error {
+	objectName := strings.ToLower(owner.GetObjectKind().GroupVersionKind().Kind)
 	_, _, err := core.CreateOrUpdate[*v1beta1.HTTPAPI](ctx, types.NamespacedName{
-		Name: core.GetObjectName(stack.Name, objectName),
+		Name: core.GetObjectName(owner.GetStack(), objectName),
 	},
 		func(t *v1beta1.HTTPAPI) {
 			t.Spec = v1beta1.HTTPAPISpec{
 				StackDependency: v1beta1.StackDependency{
-					Stack: stack.Name,
+					Stack: owner.GetStack(),
 				},
 				Name: objectName,
 			}

@@ -50,7 +50,7 @@ func WithVolumes(volumes ...v13.Volume) func(t *v1.Deployment) {
 	}
 }
 
-func Create(ctx core.Context, owner interface {
+func CreateOrUpdate(ctx core.Context, owner interface {
 	client.Object
 	GetStack() string
 	SetCondition(condition v1beta1.Condition)

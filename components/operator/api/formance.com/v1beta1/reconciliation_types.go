@@ -50,6 +50,14 @@ type Reconciliation struct {
 	Status ReconciliationStatus `json:"status,omitempty"`
 }
 
+func (a Reconciliation) IsDebug() bool {
+	return a.Spec.Debug
+}
+
+func (a Reconciliation) IsDev() bool {
+	return a.Spec.Dev
+}
+
 func (a Reconciliation) GetStack() string {
 	return a.Spec.Stack
 }

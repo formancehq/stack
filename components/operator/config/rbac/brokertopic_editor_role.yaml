@@ -1,4 +1,4 @@
-# permissions for end users to edit topics.
+# permissions for end users to edit brokertopics.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -14,7 +14,7 @@ rules:
 - apiGroups:
   - formance.com
   resources:
-  - topics
+  - brokertopics
   verbs:
   - create
   - delete
@@ -26,6 +26,6 @@ rules:
 - apiGroups:
   - formance.com
   resources:
-  - topics/status
+  - brokertopics/status
   verbs:
   - get

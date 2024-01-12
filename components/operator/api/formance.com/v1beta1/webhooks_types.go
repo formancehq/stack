@@ -54,6 +54,14 @@ func (a Webhooks) GetStack() string {
 	return a.Spec.Stack
 }
 
+func (a Webhooks) IsDebug() bool {
+	return a.Spec.Debug
+}
+
+func (a Webhooks) IsDev() bool {
+	return a.Spec.Dev
+}
+
 func (a *Webhooks) SetCondition(condition Condition) {
 	a.Status.SetCondition(condition)
 }

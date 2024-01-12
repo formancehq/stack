@@ -24,6 +24,7 @@ import (
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/auths"
 	"github.com/formancehq/operator/internal/resources/brokerconfigurations"
+	"github.com/formancehq/operator/internal/resources/brokertopics"
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/httpapis"
@@ -32,7 +33,6 @@ import (
 	"github.com/formancehq/operator/internal/resources/services"
 	"github.com/formancehq/operator/internal/resources/stacks"
 	"github.com/formancehq/operator/internal/resources/streams"
-	"github.com/formancehq/operator/internal/resources/topics"
 	"github.com/formancehq/search/benthos"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -75,7 +75,7 @@ func (r *LedgerController) Reconcile(ctx Context, ledger *v1beta1.Ledger) error 
 		}
 	}
 
-	if err := httpapis.Create(ctx, stack, ledger, "ledger",
+	if err := httpapis.Create(ctx, ledger,
 		httpapis.WithServiceConfiguration(ledger.Spec.Service)); err != nil {
 		return err
 	}
@@ -250,14 +250,14 @@ func (r *LedgerController) createDeployment(ctx Context, ledger *v1beta1.Ledger,
 		deployments.WithMatchingLabels(name),
 	}, mutators...)
 
-	_, err := deployments.Create(ctx, ledger, name, mutators...)
+	_, err := deployments.CreateOrUpdate(ctx, ledger, name, mutators...)
 	return err
 }
 
 func (r *LedgerController) setCommonContainerConfiguration(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger,
 	image string, database *v1beta1.Database, container *corev1.Container) error {
 
-	env, err := GetCommonServicesEnvVars(ctx, stack, "ledger", ledger.Spec)
+	env, err := GetCommonServicesEnvVars(ctx, stack, ledger)
 	if err != nil {
 		return err
 	}
@@ -293,7 +293,7 @@ func (r *LedgerController) createBaseLedgerContainerV2() *corev1.Container {
 
 func (r *LedgerController) createLedgerContainerV2Full(ctx Context, stack *v1beta1.Stack) (*corev1.Container, error) {
 	container := r.createBaseLedgerContainerV2()
-	topic, err := topics.Find(ctx, stack, "ledger")
+	topic, err := brokertopics.Find(ctx, stack, "ledger")
 	if err != nil {
 		return nil, err
 	}
@@ -329,7 +329,7 @@ func (r *LedgerController) createGatewayDeployment(ctx Context, stack *v1beta1.S
 		return err
 	}
 
-	env, err := GetCommonServicesEnvVars(ctx, stack, "ledger", ledger.Spec)
+	env, err := GetCommonServicesEnvVars(ctx, stack, ledger)
 	if err != nil {
 		return err
 	}
@@ -343,7 +343,7 @@ func (r *LedgerController) createGatewayDeployment(ctx Context, stack *v1beta1.S
 		deployments.WithMatchingLabels("ledger"),
 	)
 
-	_, err = deployments.Create(ctx, ledger, "ledger-gateway", mutators...)
+	_, err = deployments.CreateOrUpdate(ctx, ledger, "ledger-gateway", mutators...)
 	return err
 }
 
@@ -354,7 +354,7 @@ func (r *LedgerController) SetupWithManager(mgr Manager) (*builder.Builder, erro
 		Watches(
 			&v1beta1.BrokerTopic{},
 			handler.EnqueueRequestsFromMapFunc(
-				topics.Watch[*v1beta1.Ledger](mgr, "ledger")),
+				brokertopics.Watch[*v1beta1.Ledger](mgr, "ledger")),
 		).
 		Watches(
 			&v1beta1.Database{},

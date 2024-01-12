@@ -65,6 +65,14 @@ func (a Ledger) GetStack() string {
 	return a.Spec.Stack
 }
 
+func (a Ledger) IsDebug() bool {
+	return a.Spec.Debug
+}
+
+func (a Ledger) IsDev() bool {
+	return a.Spec.Dev
+}
+
 func (a *Ledger) SetCondition(condition Condition) {
 	a.Status.SetCondition(condition)
 }

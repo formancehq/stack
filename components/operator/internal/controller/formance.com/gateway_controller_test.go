@@ -173,7 +173,7 @@ var _ = Describe("GatewayController", func() {
 			It("Should redeploy the gateway with auth configuration", func() {
 				Eventually(func(g Gomega) bool {
 					g.Expect(LoadResource("", gateway.Name, gateway))
-
+					g.Expect(gateway.Status.SyncHTTPAPIs).To(ContainElements("ledger", "auth"))
 					return gateway.Status.AuthEnabled
 				}).Should(BeTrue())
 				cm := &corev1.ConfigMap{}

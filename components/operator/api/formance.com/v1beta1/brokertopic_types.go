@@ -40,7 +40,7 @@ type BrokerTopicStatus struct {
 //+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Ready"
 //+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
 
-// BrokerTopic is the Schema for the topics API
+// BrokerTopic is the Schema for the brokertopics API
 type BrokerTopic struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`

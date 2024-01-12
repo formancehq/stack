@@ -65,7 +65,7 @@ func (r *ReconciliationController) Reconcile(ctx Context, reconciliation *v1beta
 		}
 	}
 
-	if err := httpapis.Create(ctx, stack, reconciliation, "reconciliation",
+	if err := httpapis.Create(ctx, reconciliation,
 		httpapis.WithServiceConfiguration(reconciliation.Spec.Service)); err != nil {
 		return err
 	}
@@ -75,7 +75,7 @@ func (r *ReconciliationController) Reconcile(ctx Context, reconciliation *v1beta
 
 func (r *ReconciliationController) createDeployment(ctx Context, stack *v1beta1.Stack,
 	reconciliation *v1beta1.Reconciliation, database *v1beta1.Database, authClient *v1beta1.AuthClient) error {
-	env, err := GetCommonServicesEnvVars(ctx, stack, "reconciliation", reconciliation.Spec)
+	env, err := GetCommonServicesEnvVars(ctx, stack, reconciliation)
 	if err != nil {
 		return err
 	}
@@ -100,7 +100,7 @@ func (r *ReconciliationController) createDeployment(ctx Context, stack *v1beta1.
 		return err
 	}
 
-	_, err = deployments.Create(ctx, reconciliation, "reconciliation",
+	_, err = deployments.CreateOrUpdate(ctx, reconciliation, "reconciliation",
 		func(t *appsv1.Deployment) {
 			t.Spec.Template.Spec.Containers = []corev1.Container{{
 				Name:          "reconciliation",

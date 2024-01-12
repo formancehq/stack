@@ -74,6 +74,14 @@ func (a *Orchestration) SetCondition(condition Condition) {
 	a.Status.SetCondition(condition)
 }
 
+func (a Orchestration) IsDebug() bool {
+	return a.Spec.Debug
+}
+
+func (a Orchestration) IsDev() bool {
+	return a.Spec.Dev
+}
+
 //+kubebuilder:object:root=true
 
 // OrchestrationList contains a list of Orchestration
