@@ -3,7 +3,7 @@ package v1beta3
 import "github.com/formancehq/operator/api/formance.com/v1beta1"
 
 type AuthSpec struct {
-	Postgres v1beta1.DatabaseConfigurationSpec `json:"postgres"`
+	Postgres DatabaseConfigurationSpec `json:"postgres"`
 	// +optional
 	StaticClients []StaticClient `json:"staticClients,omitempty"`
 

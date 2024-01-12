@@ -97,6 +97,23 @@ func (r *DatabaseController) Reconcile(ctx Context, database *v1beta1.Database) 
 		case database.Status.BoundTo == "" || !database.Status.Ready:
 			databaseConfiguration := databaseConfigurationList.Items[0]
 
+			// Some job fields are immutable (env vars for example)
+			// So, if the configuration has changed, wee need to delete the job,
+			// Then recreate a new one
+			if database.Status.Configuration != nil {
+				if !reflect.DeepEqual(
+					database.Status.Configuration.DatabaseConfigurationSpec,
+					databaseConfiguration.Spec,
+				) {
+					object := &batchv1.Job{}
+					object.SetNamespace(database.Spec.Stack)
+					object.SetName(fmt.Sprintf("%s-create-database", database.Spec.Service))
+					if err := ctx.GetClient().Delete(ctx, object); client.IgnoreNotFound(err) != nil {
+						return err
+					}
+				}
+			}
+
 			dbName := GetObjectName(database.Spec.Stack, database.Spec.Service)
 			job, err := r.createJob(ctx, databaseConfiguration, database, dbName)
 			if err != nil {

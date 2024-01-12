@@ -18,6 +18,7 @@ package v1beta3
 
 import (
 	"fmt"
+	v1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	"reflect"
 	"strings"
 
@@ -73,6 +74,9 @@ type ConfigurationServicesSpec struct {
 	Orchestration  OrchestrationSpec  `json:"orchestration,omitempty"`
 	Search         SearchSpec         `json:"search,omitempty"`
 	Auth           AuthSpec           `json:"auth,omitempty"`
+	// +kubebuilder:pruning:PreserveUnknownFields
+	// +kubebuilder:validation:Schemaless
+	Control *v1.JSON `json:"control,omitempty"`
 
 	// +optional
 	Gateway  GatewaySpec  `json:"gateway,omitempty"`

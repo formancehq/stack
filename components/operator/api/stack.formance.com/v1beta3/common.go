@@ -7,3 +7,9 @@ type CommonServiceProperties struct {
 	// +optional
 	Disabled *bool `json:"disabled,omitempty"`
 }
+
+type DatabaseConfigurationSpec struct {
+	v1beta1.DatabaseConfigurationSpec `json:",inline"`
+	//+optional
+	Debug bool `json:"debug,omitempty"`
+}

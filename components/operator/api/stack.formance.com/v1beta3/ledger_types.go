@@ -31,7 +31,7 @@ type LockingStrategy struct {
 // +kubebuilder:object:generate=true
 type LedgerSpec struct {
 	CommonServiceProperties `json:",inline"`
-	Postgres                v1beta1.DatabaseConfigurationSpec `json:"postgres"`
+	Postgres                DatabaseConfigurationSpec `json:"postgres"`
 	// +optional
 	Locking LockingStrategy `json:"locking"`
 	// +optional

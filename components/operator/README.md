@@ -10,9 +10,98 @@
 - go version v1.20.0+
 - docker version 17.03+.
 - kubectl version v1.11.3+.
-- Access to a Kubernetes v1.11.3+ cluster.
+- k3d
 
 ### To Deploy on the cluster
+
+**Create a dev cluster**
+
+```sh
+k3d cluster create testing
+```
+
+**Install CRDs**
+
+```sh
+make install
+```
+
+**Run operator**
+
+```sh
+make run
+```
+
+**Install a PostgresServer**
+
+```sh
+helm install postgres oci://registry-1.docker.io/bitnamicharts/postgresql \
+  --set auth.username=formance \
+  --set auth.password=formance \
+  --set auth.database=formance
+```
+
+**Create a DatabaseConfiguration object**
+
+```sh
+cat <<EOF | kubectl create -f -
+apiVersion: formance.com/v1beta1
+kind: DatabaseConfiguration
+metadata:
+  labels:
+    formance.com/stack: any
+    formance.com/service: any
+  name: databaseconfiguration0
+spec:
+  username: formance
+  password: formance
+  host: postgres-postgresql.default
+  port: 5432
+  disableSSLMode: true
+EOF
+```
+
+**Create a stack**
+
+```sh
+cat <<EOF | kubectl create -f -
+apiVersion: formance.com/v1beta1
+kind: Stack
+metadata:
+  name: stack0
+spec: {}
+EOF
+```
+
+**Create a ledger**
+
+```sh
+cat <<EOF | kubectl create -f -
+apiVersion: formance.com/v1beta1
+kind: Ledger
+metadata:
+  name: stack0-ledger
+spec:
+  stack: stack0
+EOF
+```
+
+**Create a Gateway**
+
+```sh
+cat <<EOF | kubectl create -f -
+apiVersion: formance.com/v1beta1
+kind: Gateway
+metadata:
+  name: gateway0
+spec:
+  stack: stack0
+#  ingress:
+#    host: testing.formance.dev
+#    scheme: https
+EOF
+```
+
 **Build and push your image to the location specified by `IMG`:**
 
 ```sh

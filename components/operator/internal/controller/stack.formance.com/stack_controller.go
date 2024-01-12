@@ -111,23 +111,23 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 
 	for _, cfg := range []databaseDescriptor{
 		{
-			config: configuration.Spec.Services.Ledger.Postgres,
+			config: configuration.Spec.Services.Ledger.Postgres.DatabaseConfigurationSpec,
 			name:   "ledger",
 		},
 		{
-			config: configuration.Spec.Services.Payments.Postgres,
+			config: configuration.Spec.Services.Payments.Postgres.DatabaseConfigurationSpec,
 			name:   "payments",
 		},
 		{
-			config: configuration.Spec.Services.Orchestration.Postgres,
+			config: configuration.Spec.Services.Orchestration.Postgres.DatabaseConfigurationSpec,
 			name:   "orchestration",
 		},
 		{
-			config: configuration.Spec.Services.Auth.Postgres,
+			config: configuration.Spec.Services.Auth.Postgres.DatabaseConfigurationSpec,
 			name:   "auth",
 		},
 		{
-			config: configuration.Spec.Services.Webhooks.Postgres,
+			config: configuration.Spec.Services.Webhooks.Postgres.DatabaseConfigurationSpec,
 			name:   "webhooks",
 		},
 	} {
@@ -200,7 +200,7 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 	_, _, err = CreateOrUpdate[*v1beta1.ElasticSearchConfiguration](ctx, types.NamespacedName{
 		Name: stack.Name,
 	}, func(t *v1beta1.ElasticSearchConfiguration) {
-		t.Spec = configuration.Spec.Services.Search.ElasticSearchConfig
+		t.Spec = configuration.Spec.Services.Search.ElasticSearchConfig.ElasticSearchConfigurationSpec
 		t.Labels = map[string]string{
 			StackLabel: stack.Name,
 		}

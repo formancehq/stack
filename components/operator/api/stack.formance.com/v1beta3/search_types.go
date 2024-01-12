@@ -43,10 +43,15 @@ func (in *ElasticSearchConfig) Endpoint() string {
 	return fmt.Sprintf("%s://%s:%d%s", in.Scheme, in.Host, in.Port, in.PathPrefix)
 }
 
+type ElasticSearchConfigurationSpec struct {
+	v1beta1.ElasticSearchConfigurationSpec `json:",inline"`
+	PathPrefix                             string `json:"pathPrefix"`
+}
+
 // +kubebuilder:object:generate=true
 type SearchSpec struct {
 	CommonServiceProperties `json:",inline"`
-	ElasticSearchConfig     v1beta1.ElasticSearchConfigurationSpec `json:"elasticSearch"`
+	ElasticSearchConfig     ElasticSearchConfigurationSpec `json:"elasticSearch"`
 
 	// +optional
 	Batching v1beta1.Batching `json:"batching"`
