@@ -3,15 +3,19 @@ package stack_formance_com
 import (
 	"context"
 	"fmt"
+	"github.com/pkg/errors"
+	appsv1 "k8s.io/api/apps/v1"
+	batchv1 "k8s.io/api/batch/v1"
+	networkingv1 "k8s.io/api/networking/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"strings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/api/stack.formance.com/v1beta3"
 	. "github.com/formancehq/operator/internal/core"
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
-	"github.com/pkg/errors"
+	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	corev1 "k8s.io/api/core/v1"
-	controllererrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/resource"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
@@ -44,23 +48,23 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}))
 	}
 
-	ns := &corev1.Namespace{}
-	err := ctx.GetClient().Get(ctx, types.NamespacedName{
-		Name: stack.Name,
-	}, ns)
-	switch {
-	case controllererrors.IsNotFound(err):
-	case err == nil: // Namespace found
-		if ns.Annotations[OperatorVersionKey] != OperatorVersion {
-			return ctx.GetClient().Delete(ctx, &corev1.Namespace{
-				ObjectMeta: v1.ObjectMeta{
-					Name: stack.Name,
-				},
-			})
-		}
-	default:
-		return err
-	}
+	//ns := &corev1.Namespace{}
+	//err := ctx.GetClient().Get(ctx, types.NamespacedName{
+	//	Name: stack.Name,
+	//}, ns)
+	//switch {
+	//case controllererrors.IsNotFound(err):
+	//case err == nil: // Namespace found
+	//	if ns.Annotations[OperatorVersionKey] != OperatorVersion {
+	//		return ctx.GetClient().Delete(ctx, &corev1.Namespace{
+	//			ObjectMeta: v1.ObjectMeta{
+	//				Name: stack.Name,
+	//			},
+	//		})
+	//	}
+	//default:
+	//	return err
+	//}
 
 	if stack.Spec.Versions == "" {
 		patch := client.MergeFrom(stack.DeepCopy())
@@ -90,10 +94,84 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		return err
 	}
 
-	_, _, err = CreateOrUpdate[*v1beta1.Stack](ctx, types.NamespacedName{
+	for _, object := range []client.Object{
+		&corev1.ConfigMap{},
+		&corev1.Secret{},
+		&corev1.Service{},
+		&appsv1.Deployment{},
+		&networkingv1.Ingress{},
+		&batchv1.Job{},
+		&batchv1.CronJob{},
+	} {
+		kinds, _, err := ctx.GetScheme().ObjectKinds(object)
+		if err != nil {
+			return err
+		}
+
+		list := &unstructured.UnstructuredList{}
+		list.SetGroupVersionKind(kinds[0])
+		if err := ctx.GetClient().List(ctx, list, client.InNamespace(stack.Name)); err != nil {
+			return err
+		}
+
+	l:
+		for _, item := range list.Items {
+			ownerReferences := item.GetOwnerReferences()
+			for i, reference := range ownerReferences {
+				if reference.APIVersion != "stack.formance.com/v1beta3" {
+					continue
+				}
+
+				patch := client.MergeFrom(item.DeepCopy())
+				if i < len(ownerReferences)-1 {
+					ownerReferences = append(ownerReferences[:i], ownerReferences[i+1:]...)
+				} else {
+					ownerReferences = ownerReferences[:i]
+				}
+				item.SetOwnerReferences(ownerReferences)
+
+				labels := item.GetLabels()
+				labels["formance.com/migrate"] = "true"
+				item.SetLabels(labels)
+
+				if err := ctx.GetClient().Patch(ctx, &item, patch); err != nil {
+					return err
+				}
+
+				continue l
+			}
+		}
+	}
+
+	ns := &corev1.Namespace{}
+	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
+		Name: stack.Name,
+	}, ns); client.IgnoreNotFound(err) != nil {
+		return err
+	} else if err == nil {
+		ownerReferences := ns.GetOwnerReferences()
+		for i, reference := range ownerReferences {
+			if reference.APIVersion != "stack.formance.com/v1beta3" {
+				continue
+			}
+
+			patch := client.MergeFrom(ns.DeepCopy())
+			if i < len(ownerReferences)-1 {
+				ownerReferences = append(ownerReferences[:i], ownerReferences[i+1:]...)
+			} else {
+				ownerReferences = ownerReferences[:i]
+			}
+			ns.SetOwnerReferences(ownerReferences)
+
+			if err := ctx.GetClient().Patch(ctx, ns, patch); err != nil {
+				return err
+			}
+		}
+	}
+
+	_, _, err := CreateOrUpdate[*v1beta1.Stack](ctx, types.NamespacedName{
 		Name: stack.Name,
 	}, func(t *v1beta1.Stack) {
-	}, WithController[*v1beta1.Stack](ctx.GetScheme(), stack), func(t *v1beta1.Stack) {
 		t.Spec.Dev = stack.Spec.Dev
 		t.Spec.Debug = stack.Spec.Debug
 		if configuration.Spec.Services.Gateway.EnableAuditPlugin != nil {
@@ -146,7 +224,7 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 				StackLabel:   stack.Name,
 				ServiceLabel: cfg.name,
 			}
-		}, WithController[*v1beta1.DatabaseConfiguration](ctx.GetScheme(), stack))
+		})
 		if err != nil {
 			return errors.Wrapf(err, "creating database configuration for service %s", cfg.name)
 		}
@@ -179,7 +257,7 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			t.Labels = map[string]string{
 				StackLabel: stack.Name,
 			}
-		}, WithController[*v1beta1.OpenTelemetryConfiguration](ctx.GetScheme(), stack))
+		})
 		if err != nil {
 			return errors.Wrap(err, "creating opentelemetry configuration for service")
 		}
@@ -192,9 +270,21 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		t.Labels = map[string]string{
 			StackLabel: stack.Name,
 		}
-	}, WithController[*v1beta1.BrokerConfiguration](ctx.GetScheme(), stack))
+	})
 	if err != nil {
 		return errors.Wrap(err, "creating broker configuration for service")
+	}
+
+	_, _, err = CreateOrUpdate[*v1beta1.TemporalConfiguration](ctx, types.NamespacedName{
+		Name: stack.Name,
+	}, func(t *v1beta1.TemporalConfiguration) {
+		t.Spec = configuration.Spec.Temporal
+		t.Labels = map[string]string{
+			StackLabel: stack.Name,
+		}
+	})
+	if err != nil {
+		return errors.Wrap(err, "creating temporal configuration for service")
 	}
 
 	_, _, err = CreateOrUpdate[*v1beta1.ElasticSearchConfiguration](ctx, types.NamespacedName{
@@ -204,7 +294,7 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		t.Labels = map[string]string{
 			StackLabel: stack.Name,
 		}
-	}, WithController[*v1beta1.ElasticSearchConfiguration](ctx.GetScheme(), stack))
+	})
 	if err != nil {
 		return errors.Wrap(err, "creating elasticsearch configuration for service")
 	}
@@ -217,17 +307,18 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			t.Labels = map[string]string{
 				StackLabel: stack.Name,
 			}
-		}, WithController[*v1beta1.RegistriesConfiguration](ctx.GetScheme(), stack))
+		})
 		if err != nil {
 			return errors.Wrap(err, "creating registries configuration")
 		}
 	}
 
+	ready := true
+
 	if !isDisabled(stack, configuration, false, "ledger") {
-		_, _, err = CreateOrUpdate[*v1beta1.Ledger](ctx, types.NamespacedName{
+		ledger, _, err := CreateOrUpdate[*v1beta1.Ledger](ctx, types.NamespacedName{
 			Name: stack.Name,
 		}, func(t *v1beta1.Ledger) {
-		}, WithController[*v1beta1.Ledger](ctx.GetScheme(), stack), func(t *v1beta1.Ledger) {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Ledger
 			t.Spec.DeploymentStrategy = configuration.Spec.Services.Ledger.DeploymentStrategy
@@ -241,13 +332,13 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		if err != nil {
 			return errors.Wrap(err, "creating ledger service")
 		}
+		ready = ready && ledger.Status.Ready
 	}
 
 	if !isDisabled(stack, configuration, false, "payments") {
-		_, _, err = CreateOrUpdate[*v1beta1.Payments](ctx, types.NamespacedName{
+		payments, _, err := CreateOrUpdate[*v1beta1.Payments](ctx, types.NamespacedName{
 			Name: stack.Name,
 		}, func(t *v1beta1.Payments) {
-		}, WithController[*v1beta1.Payments](ctx.GetScheme(), stack), func(t *v1beta1.Payments) {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Payments
 			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Payments.ResourceProperties)
@@ -261,13 +352,13 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		if err != nil {
 			return errors.Wrap(err, "creating payments service")
 		}
+		ready = ready && payments.Status.Ready
 	}
 
 	if !isDisabled(stack, configuration, false, "wallets") {
-		_, _, err = CreateOrUpdate[*v1beta1.Wallets](ctx, types.NamespacedName{
+		wallets, _, err := CreateOrUpdate[*v1beta1.Wallets](ctx, types.NamespacedName{
 			Name: stack.Name,
 		}, func(t *v1beta1.Wallets) {
-		}, WithController[*v1beta1.Wallets](ctx.GetScheme(), stack), func(t *v1beta1.Wallets) {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Wallets
 			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Wallets.ResourceProperties)
@@ -280,13 +371,13 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		if err != nil {
 			return errors.Wrap(err, "creating wallets service")
 		}
+		ready = ready && wallets.Status.Ready
 	}
 
 	if !isDisabled(stack, configuration, false, "orchestration") {
-		_, _, err = CreateOrUpdate[*v1beta1.Orchestration](ctx, types.NamespacedName{
+		orchestration, _, err := CreateOrUpdate[*v1beta1.Orchestration](ctx, types.NamespacedName{
 			Name: stack.Name,
 		}, func(t *v1beta1.Orchestration) {
-		}, WithController[*v1beta1.Orchestration](ctx.GetScheme(), stack), func(t *v1beta1.Orchestration) {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Orchestration
 			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Orchestration.ResourceProperties)
@@ -295,18 +386,17 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 					Annotations: annotations,
 				}
 			}
-			t.Spec.Temporal = configuration.Spec.Temporal
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating orchestration service")
 		}
+		ready = ready && orchestration.Status.Ready
 	}
 
 	if !isDisabled(stack, configuration, false, "webhooks") {
-		_, _, err = CreateOrUpdate[*v1beta1.Webhooks](ctx, types.NamespacedName{
+		webhooks, _, err := CreateOrUpdate[*v1beta1.Webhooks](ctx, types.NamespacedName{
 			Name: stack.Name,
 		}, func(t *v1beta1.Webhooks) {
-		}, WithController[*v1beta1.Webhooks](ctx.GetScheme(), stack), func(t *v1beta1.Webhooks) {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Webhooks
 			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Webhooks.ResourceProperties)
@@ -319,16 +409,16 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		if err != nil {
 			return errors.Wrap(err, "creating webhooks service")
 		}
+		ready = ready && webhooks.Status.Ready
 	}
 
 	// note(gfyrag): reconciliation declared as EE.
 	// We should also declare some other services EE but to keep compatibility, today, we just configuration
 	// reconciliation as EE
 	if !isDisabled(stack, configuration, true, "reconciliation") {
-		_, _, err = CreateOrUpdate[*v1beta1.Reconciliation](ctx, types.NamespacedName{
+		reconciliation, _, err := CreateOrUpdate[*v1beta1.Reconciliation](ctx, types.NamespacedName{
 			Name: stack.Name,
 		}, func(t *v1beta1.Reconciliation) {
-		}, WithController[*v1beta1.Reconciliation](ctx.GetScheme(), stack), func(t *v1beta1.Reconciliation) {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Reconciliation
 			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Reconciliation.ResourceProperties)
@@ -341,13 +431,13 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		if err != nil {
 			return errors.Wrap(err, "creating reconciliation service")
 		}
+		ready = ready && reconciliation.Status.Ready
 	}
 
 	if !isDisabled(stack, configuration, false, "search") {
-		_, _, err = CreateOrUpdate[*v1beta1.Search](ctx, types.NamespacedName{
+		search, _, err := CreateOrUpdate[*v1beta1.Search](ctx, types.NamespacedName{
 			Name: stack.Name,
 		}, func(t *v1beta1.Search) {
-		}, WithController[*v1beta1.Search](ctx.GetScheme(), stack), func(t *v1beta1.Search) {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Search
 			t.Spec.Batching = &configuration.Spec.Services.Search.Batching
@@ -365,13 +455,13 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		if err != nil {
 			return errors.Wrap(err, "creating search service")
 		}
+		ready = ready && search.Status.Ready
 	}
 
 	if !isDisabled(stack, configuration, false, "auth") {
-		_, _, err = CreateOrUpdate[*v1beta1.Auth](ctx, types.NamespacedName{
+		auth, _, err := CreateOrUpdate[*v1beta1.Auth](ctx, types.NamespacedName{
 			Name: stack.Name,
 		}, func(t *v1beta1.Auth) {
-		}, WithController[*v1beta1.Auth](ctx.GetScheme(), stack), func(t *v1beta1.Auth) {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Auth
 			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Auth.ResourceProperties)
@@ -385,13 +475,13 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		if err != nil {
 			return errors.Wrap(err, "creating auth service")
 		}
+		ready = ready && auth.Status.Ready
 	}
 
 	if !isDisabled(stack, configuration, false, "gateway") {
-		_, _, err = CreateOrUpdate[*v1beta1.Gateway](ctx, types.NamespacedName{
+		gateway, _, err := CreateOrUpdate[*v1beta1.Gateway](ctx, types.NamespacedName{
 			Name: stack.Name,
 		}, func(t *v1beta1.Gateway) {
-		}, WithController[*v1beta1.Gateway](ctx.GetScheme(), stack), func(t *v1beta1.Gateway) {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Gateway
 			t.Spec.Ingress = &v1beta1.GatewayIngress{
@@ -410,6 +500,7 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		if err != nil {
 			return errors.Wrap(err, "creating gateway service")
 		}
+		ready = ready && gateway.Status.Ready
 	}
 
 	if !isDisabled(stack, configuration, false, "stargate") && stack.Spec.Stargate != nil {
@@ -418,10 +509,9 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			organizationID := parts[0]
 			stackID := parts[1]
 
-			_, _, err = CreateOrUpdate[*v1beta1.Stargate](ctx, types.NamespacedName{
+			stargate, _, err := CreateOrUpdate[*v1beta1.Stargate](ctx, types.NamespacedName{
 				Name: stack.Name,
 			}, func(t *v1beta1.Stargate) {
-			}, WithController[*v1beta1.Stargate](ctx.GetScheme(), stack), func(t *v1beta1.Stargate) {
 				t.Spec.Stack = stack.Name
 				t.Spec.Version = versions.Spec.Stargate
 				t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Stargate.ResourceProperties)
@@ -435,6 +525,7 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			if err != nil {
 				return errors.Wrap(err, "creating stargate service")
 			}
+			ready = ready && stargate.Status.Ready
 		}
 	}
 
@@ -442,7 +533,6 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		_, _, err = CreateOrUpdate[*v1beta1.AuthClient](ctx, types.NamespacedName{
 			Name: fmt.Sprintf("%s-%s", stack.Name, client.ID),
 		}, func(t *v1beta1.AuthClient) {
-		}, WithController[*v1beta1.AuthClient](ctx.GetScheme(), stack), func(t *v1beta1.AuthClient) {
 			t.Spec = *client
 			t.Spec.Stack = stack.Name
 		})
@@ -451,7 +541,59 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}
 	}
 
-	stack.Status.Ready = true
+	if ready {
+		for _, object := range []client.Object{
+			&corev1.ConfigMap{},
+			&corev1.Secret{},
+			&corev1.Service{},
+			&appsv1.Deployment{},
+			&networkingv1.Ingress{},
+			&batchv1.Job{},
+			&batchv1.CronJob{},
+		} {
+			kinds, _, err := ctx.GetScheme().ObjectKinds(object)
+			if err != nil {
+				return err
+			}
+
+			list := &unstructured.UnstructuredList{}
+			list.SetGroupVersionKind(kinds[0])
+			if err := ctx.GetClient().List(ctx, list, client.InNamespace(stack.Name)); err != nil {
+				return err
+			}
+
+		l2:
+			for _, item := range list.Items {
+				ownerReferences := item.GetOwnerReferences()
+				for _, reference := range ownerReferences {
+					if reference.APIVersion == "formance.com/v1beta1" {
+						continue l2
+					}
+				}
+				if item.GetLabels()["formance.com/migrate"] == "true" {
+					if err := ctx.GetClient().Delete(ctx, &item); err != nil {
+						return err
+					}
+				}
+			}
+		}
+
+		list := &unstructured.UnstructuredList{}
+		list.SetGroupVersionKind(schema.GroupVersionKind{
+			Group:   "stack.formance.com",
+			Version: "v1beta3",
+			Kind:    "Migration",
+		})
+		if err := ctx.GetClient().List(ctx, list, client.InNamespace(stack.Name)); err != nil {
+			return err
+		}
+
+		for _, item := range list.Items {
+			if err := ctx.GetClient().Delete(ctx, &item); err != nil {
+				return err
+			}
+		}
+	}
 
 	return nil
 }
@@ -579,7 +721,7 @@ func listStacksAndReconcile(mgr ctrl.Manager, opts ...client.ListOption) []recon
 		panic(err)
 	}
 
-	return collectionutils.Map(stacks.Items, func(s v1beta3.Stack) reconcile.Request {
+	return Map(stacks.Items, func(s v1beta3.Stack) reconcile.Request {
 		return reconcile.Request{
 			NamespacedName: types.NamespacedName{
 				Name:      s.GetName(),

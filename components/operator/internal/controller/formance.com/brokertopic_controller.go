@@ -67,7 +67,7 @@ func (r *BrokerTopicController) Reconcile(ctx Context, topic *v1beta1.BrokerTopi
 		return nil
 	}
 
-	brokerConfiguration, err := stacks.Require[*v1beta1.BrokerConfiguration](ctx, topic.Spec.Stack)
+	brokerConfiguration, err := stacks.RequireLabelledConfig[*v1beta1.BrokerConfiguration](ctx, topic.Spec.Stack)
 	if err != nil {
 		return err
 	}

@@ -21,7 +21,10 @@ const (
 	MaxBackoffDelay = "max-backoff-delay"
 
 	KafkaTopics = "kafka-topics"
+<<<<<<< HEAD
 	AutoMigrate = "auto-migrate"
+=======
+>>>>>>> db44bd8a3 (feat: rework migration process)
 )
 
 const (
@@ -44,7 +47,7 @@ func Init(flagSet *pflag.FlagSet) {
 	flagSet.Duration(RetryPeriod, DefaultRetryPeriod, "worker retry period")
 	flagSet.Bool(Worker, false, "Enable worker on server")
 
-	flagSet.StringSlice(KafkaTopics, []string{DefaultKafkaTopic}, "Kafka brokertopics")
+	flagSet.StringSlice(KafkaTopics, []string{DefaultKafkaTopic}, "Kafka topics")
 
 	flagSet.Duration(AbortAfter, 30*24*time.Hour, "consider a webhook as failed after retrying it for this duration.")
 	flagSet.Duration(MinBackoffDelay, time.Minute, "minimum backoff delay")

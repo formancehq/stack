@@ -115,11 +115,16 @@ func (r *OrchestrationController) createDeployment(ctx Context, stack *v1beta1.S
 	}
 	env = append(env, databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)...)
 
+	temporalConfiguration, err := stacks.RequireLabelledConfig[*v1beta1.TemporalConfiguration](ctx, stack.Name)
+	if err != nil {
+		return err
+	}
+
 	env = append(env,
 		Env("POSTGRES_DSN", "$(POSTGRES_URI)"),
 		Env("TEMPORAL_TASK_QUEUE", stack.Name),
-		Env("TEMPORAL_ADDRESS", orchestration.Spec.Temporal.Address),
-		Env("TEMPORAL_NAMESPACE", orchestration.Spec.Temporal.Namespace),
+		Env("TEMPORAL_ADDRESS", temporalConfiguration.Spec.Address),
+		Env("TEMPORAL_NAMESPACE", temporalConfiguration.Spec.Namespace),
 		Env("WORKER", "true"),
 		Env("TOPICS", strings.Join(Map(consumers, func(from *v1beta1.BrokerTopicConsumer) string {
 			return fmt.Sprintf("%s-%s", stack.Name, from.Spec.Service)
@@ -136,15 +141,15 @@ func (r *OrchestrationController) createDeployment(ctx Context, stack *v1beta1.S
 		env = append(env, authclients.GetEnvVars(client)...)
 	}
 
-	if orchestration.Spec.Temporal.TLS.SecretName == "" {
+	if temporalConfiguration.Spec.TLS.SecretName == "" {
 		env = append(env,
-			Env("TEMPORAL_SSL_CLIENT_KEY", orchestration.Spec.Temporal.TLS.Key),
-			Env("TEMPORAL_SSL_CLIENT_CERT", orchestration.Spec.Temporal.TLS.CRT),
+			Env("TEMPORAL_SSL_CLIENT_KEY", temporalConfiguration.Spec.TLS.Key),
+			Env("TEMPORAL_SSL_CLIENT_CERT", temporalConfiguration.Spec.TLS.CRT),
 		)
 	} else {
 		env = append(env,
-			EnvFromSecret("TEMPORAL_SSL_CLIENT_KEY", orchestration.Spec.Temporal.TLS.SecretName, "tls.key"),
-			EnvFromSecret("TEMPORAL_SSL_CLIENT_CERT", orchestration.Spec.Temporal.TLS.SecretName, "tls.crt"),
+			EnvFromSecret("TEMPORAL_SSL_CLIENT_KEY", temporalConfiguration.Spec.TLS.SecretName, "tls.key"),
+			EnvFromSecret("TEMPORAL_SSL_CLIENT_CERT", temporalConfiguration.Spec.TLS.SecretName, "tls.crt"),
 		)
 	}
 
@@ -183,6 +188,10 @@ func (r *OrchestrationController) SetupWithManager(mgr Manager) (*builder.Builde
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
+			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Orchestration](mgr)),
+		).
+		Watches(
+			&v1beta1.TemporalConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Orchestration](mgr)),
 		).
 		Watches(

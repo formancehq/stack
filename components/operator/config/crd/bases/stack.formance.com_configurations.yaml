@@ -739,6 +739,8 @@ spec:
                     type: object
                 type: object
               temporal:
+                description: TemporalConfigurationSpec defines the desired state of
+                  TemporalConfiguration
                 properties:
                   address:
                     type: string
@@ -756,6 +758,7 @@ spec:
                 required:
                 - address
                 - namespace
+                - tls
                 type: object
             required:
             - broker

@@ -662,6 +662,32 @@ rules:
 - apiGroups:
   - formance.com
   resources:
+  - temporalconfigurations
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - temporalconfigurations/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - temporalconfigurations/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
   - wallets
   verbs:
   - create

@@ -20,26 +20,10 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type TemporalTLSConfig struct {
-	// +optional
-	CRT string `json:"crt"`
-	// +optional
-	Key string `json:"key"`
-	// +optional
-	SecretName string `json:"secretName"`
-}
-
-type TemporalConfig struct {
-	Address   string            `json:"address"`
-	Namespace string            `json:"namespace"`
-	TLS       TemporalTLSConfig `json:"tls,omitempty"`
-}
-
 // OrchestrationSpec defines the desired state of Orchestration
 type OrchestrationSpec struct {
 	StackDependency         `json:",inline"`
 	CommonServiceProperties `json:",inline"`
-	Temporal                TemporalConfig `json:"temporal"`
 	//+optional
 	Service *ServiceConfiguration `json:"service,omitempty"`
 	// +optional

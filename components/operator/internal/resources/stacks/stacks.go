@@ -184,11 +184,11 @@ func GetByLabel[T client.Object](ctx core.Context, stackName string) (T, error) 
 		}
 		return t, nil
 	default:
-		return zeroValue, errors.New("found multiple broker config")
+		return zeroValue, errors.New("found multiple configuration")
 	}
 }
 
-func Require[T client.Object](ctx core.Context, stackName string) (T, error) {
+func RequireLabelledConfig[T client.Object](ctx core.Context, stackName string) (T, error) {
 	t, err := GetByLabel[T](ctx, stackName)
 	if err != nil {
 		return t, err

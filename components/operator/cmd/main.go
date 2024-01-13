@@ -43,6 +43,8 @@ import (
 	stackformancecomv1beta3 "github.com/formancehq/operator/api/stack.formance.com/v1beta3"
 	_ "github.com/formancehq/operator/internal/controller/formance.com"
 	_ "github.com/formancehq/operator/internal/controller/stack.formance.com"
+
+	formancecomv1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -55,6 +57,7 @@ func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 	utilruntime.Must(formancev1beta1.AddToScheme(scheme))
 	utilruntime.Must(stackformancecomv1beta3.AddToScheme(scheme))
+	utilruntime.Must(formancecomv1beta1.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme
 }
 

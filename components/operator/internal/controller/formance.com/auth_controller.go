@@ -186,24 +186,15 @@ func (r *AuthController) createDeployment(ctx Context, stack *v1beta1.Stack, aut
 			Env:       env,
 			Image:     image,
 			Resources: GetResourcesRequirementsWithDefault(auth.Spec.ResourceRequirements, ResourceSizeSmall()),
-			VolumeMounts: []corev1.VolumeMount{{
-				Name:      "config",
-				ReadOnly:  true,
-				MountPath: "/config",
-			}},
+			VolumeMounts: []corev1.VolumeMount{
+				NewVolumeMount("config", "/config"),
+			},
 			Ports:         []corev1.ContainerPort{deployments.StandardHTTPPort()},
 			LivenessProbe: deployments.DefaultLiveness("http"),
 		}}
-		t.Spec.Template.Spec.Volumes = []corev1.Volume{{
-			Name: "config",
-			VolumeSource: corev1.VolumeSource{
-				ConfigMap: &corev1.ConfigMapVolumeSource{
-					LocalObjectReference: corev1.LocalObjectReference{
-						Name: configMap.Name,
-					},
-				},
-			},
-		}}
+		t.Spec.Template.Spec.Volumes = []corev1.Volume{
+			NewVolumeFromConfigMap("config", configMap),
+		}
 	}, nil
 }
 

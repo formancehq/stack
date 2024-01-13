@@ -49,7 +49,7 @@ func (r *SearchController) Reconcile(ctx Context, search *v1beta1.Search) error 
 		return err
 	}
 
-	elasticSearchConfiguration, err := stacks.Require[*v1beta1.ElasticSearchConfiguration](ctx, search.Spec.Stack)
+	elasticSearchConfiguration, err := stacks.RequireLabelledConfig[*v1beta1.ElasticSearchConfiguration](ctx, search.Spec.Stack)
 	if err != nil {
 		return err
 	}

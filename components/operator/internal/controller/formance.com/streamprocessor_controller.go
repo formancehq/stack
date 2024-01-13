@@ -52,12 +52,12 @@ type StreamProcessorController struct{}
 
 func (r *StreamProcessorController) Reconcile(ctx Context, streamProcessor *v1beta1.StreamProcessor) error {
 
-	brokerConfiguration, err := stacks.Require[*v1beta1.BrokerConfiguration](ctx, streamProcessor.Spec.Stack)
+	brokerConfiguration, err := stacks.RequireLabelledConfig[*v1beta1.BrokerConfiguration](ctx, streamProcessor.Spec.Stack)
 	if err != nil {
 		return errors.Wrap(err, "searching broker configuration")
 	}
 
-	elasticSearchConfiguration, err := stacks.Require[*v1beta1.ElasticSearchConfiguration](ctx, streamProcessor.Spec.Stack)
+	elasticSearchConfiguration, err := stacks.RequireLabelledConfig[*v1beta1.ElasticSearchConfiguration](ctx, streamProcessor.Spec.Stack)
 	if err != nil {
 		return errors.Wrap(err, "searching elasticsearch configuration")
 	}

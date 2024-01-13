@@ -261,11 +261,10 @@ var _ = Describe("GatewayController", func() {
 			})
 			It("Should adapt the Caddyfile", func() {
 				cm := &corev1.ConfigMap{}
-				Eventually(func(g Gomega) error {
-					return LoadResource(stack.Name, "gateway", cm)
-				}).Should(Succeed())
-				Expect(cm.Data["Caddyfile"]).To(
-					MatchGoldenFile("gateway-controller", "configmap-with-opentelemetry.yaml"))
+				Eventually(func(g Gomega) string {
+					g.Expect(LoadResource(stack.Name, "gateway", cm)).To(Succeed())
+					return cm.Data["Caddyfile"]
+				}).Should(MatchGoldenFile("gateway-controller", "configmap-with-opentelemetry.yaml"))
 			})
 			It("Should add env vars to the deployment", func() {
 				Eventually(func(g Gomega) []corev1.EnvVar {

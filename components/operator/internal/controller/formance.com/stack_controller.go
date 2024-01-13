@@ -55,6 +55,9 @@ const (
 // +kubebuilder:rbac:groups=formance.com,resources=registriesconfigurations,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=formance.com,resources=registriesconfigurations/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=formance.com,resources=registriesconfigurations/finalizers,verbs=update
+// +kubebuilder:rbac:groups=formance.com,resources=temporalconfigurations,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=formance.com,resources=temporalconfigurations/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=formance.com,resources=temporalconfigurations/finalizers,verbs=update
 
 // Reconciler reconciles a Stack object
 type StackController struct{}
@@ -65,9 +68,6 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta1.Stack) error {
 		Name: stack.Name,
 	},
 		WithController[*corev1.Namespace](ctx.GetScheme(), stack),
-		WithAnnotations[*corev1.Namespace](map[string]string{
-			OperatorVersionKey: OperatorVersion,
-		}),
 	)
 	if err != nil {
 		return err

@@ -78,7 +78,7 @@ func (r *WebhooksController) Reconcile(ctx Context, webhooks *v1beta1.Webhooks) 
 
 func (r *WebhooksController) createDeployment(ctx Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumers brokertopicconsumers.Consumers) error {
 
-	brokerConfiguration, err := stacks.Require[*v1beta1.BrokerConfiguration](ctx, stack.Name)
+	brokerConfiguration, err := stacks.RequireLabelledConfig[*v1beta1.BrokerConfiguration](ctx, stack.Name)
 	if err != nil {
 		return err
 	}

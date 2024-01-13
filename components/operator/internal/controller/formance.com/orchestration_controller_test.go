@@ -23,6 +23,7 @@ var _ = Describe("OrchestrationController", func() {
 			databaseConfiguration *v1beta1.DatabaseConfiguration
 			orchestration         *v1beta1.Orchestration
 			brokerConfiguration   *v1beta1.BrokerConfiguration
+			temporalConfiguration *v1beta1.TemporalConfiguration
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -47,6 +48,16 @@ var _ = Describe("OrchestrationController", func() {
 					},
 				},
 				Spec: v1beta1.DatabaseConfigurationSpec{},
+			}
+			temporalConfiguration = &v1beta1.TemporalConfiguration{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: uuid.NewString(),
+					Labels: map[string]string{
+						core.StackLabel:   stack.Name,
+						core.ServiceLabel: "any",
+					},
+				},
+				Spec: v1beta1.TemporalConfigurationSpec{},
 			}
 			auth = &v1beta1.Auth{
 				ObjectMeta: RandObjectMeta(),
@@ -92,6 +103,7 @@ var _ = Describe("OrchestrationController", func() {
 			Expect(Create(ledger)).To(Succeed())
 			Expect(Create(orchestration)).To(Succeed())
 			Expect(Create(brokerConfiguration)).To(Succeed())
+			Expect(Create(temporalConfiguration)).To(Succeed())
 		})
 		AfterEach(func() {
 			Expect(Delete(auth)).To(Succeed())
@@ -101,6 +113,7 @@ var _ = Describe("OrchestrationController", func() {
 			Expect(Delete(ledger)).To(Succeed())
 			Expect(Delete(orchestration)).To(Succeed())
 			Expect(Delete(brokerConfiguration)).To(Succeed())
+			Expect(Delete(temporalConfiguration)).To(Succeed())
 		})
 		It("Should create a deployment", func() {
 			deployment := &appsv1.Deployment{}

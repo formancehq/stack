@@ -68,13 +68,6 @@ func (r *LedgerController) Reconcile(ctx Context, ledger *v1beta1.Ledger) error 
 		return err
 	}
 
-	if database.Status.Ready {
-		err = r.installLedger(ctx, stack, ledger, database, image)
-		if err != nil {
-			return err
-		}
-	}
-
 	if err := httpapis.Create(ctx, ledger,
 		httpapis.WithServiceConfiguration(ledger.Spec.Service)); err != nil {
 		return err
@@ -101,6 +94,13 @@ func (r *LedgerController) Reconcile(ctx Context, ledger *v1beta1.Ledger) error 
 		}
 	}
 
+	if database.Status.Ready {
+		err = r.installLedger(ctx, stack, ledger, database, image)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -112,18 +112,18 @@ func (r *LedgerController) installLedger(ctx Context, stack *v1beta1.Stack,
 		if err := DeleteIfExists[*appsv1.Deployment](ctx, GetNamespacedResourceName(stack.Name, "ledger")); err != nil {
 			return err
 		}
-		return r.installLedgerV2MonoWriterMultipleReader(ctx, stack, ledger, database, image)
+		return r.installLedgerMonoWriterMultipleReader(ctx, stack, ledger, database, image)
 	default:
-		if err := r.uninstallLedgerV2MonoWriterMultipleReader(ctx, stack); err != nil {
+		if err := r.uninstallLedgerMonoWriterMultipleReader(ctx, stack); err != nil {
 			return err
 		}
-		return r.installLedgerV2SingleInstance(ctx, stack, ledger, database, image)
+		return r.installLedgerSingleInstance(ctx, stack, ledger, database, image)
 	}
 }
 
-func (r *LedgerController) installLedgerV2SingleInstance(ctx Context, stack *v1beta1.Stack,
+func (r *LedgerController) installLedgerSingleInstance(ctx Context, stack *v1beta1.Stack,
 	ledger *v1beta1.Ledger, database *v1beta1.Database, version string) error {
-	container, err := r.createLedgerContainerV2Full(ctx, stack)
+	container, err := r.createLedgerContainerFull(ctx, stack)
 	if err != nil {
 		return err
 	}
@@ -161,7 +161,7 @@ func (r *LedgerController) setInitContainer(database *v1beta1.Database, image st
 	}
 }
 
-func (r *LedgerController) installLedgerV2MonoWriterMultipleReader(ctx Context, stack *v1beta1.Stack,
+func (r *LedgerController) installLedgerMonoWriterMultipleReader(ctx Context, stack *v1beta1.Stack,
 	ledger *v1beta1.Ledger, database *v1beta1.Database, image string) error {
 
 	createDeployment := func(name string, container corev1.Container, mutators ...ObjectMutator[*appsv1.Deployment]) error {
@@ -181,7 +181,7 @@ func (r *LedgerController) installLedgerV2MonoWriterMultipleReader(ctx Context, 
 		return nil
 	}
 
-	container, err := r.createLedgerContainerV2WriteOnly(ctx, stack)
+	container, err := r.createLedgerContainerWriteOnly(ctx, stack)
 	if err != nil {
 		return err
 	}
@@ -192,7 +192,7 @@ func (r *LedgerController) installLedgerV2MonoWriterMultipleReader(ctx Context, 
 		return err
 	}
 
-	container = r.createLedgerContainerV2ReadOnly()
+	container = r.createLedgerContainerReadOnly()
 	if err := createDeployment("ledger-read", *container); err != nil {
 		return err
 	}
@@ -204,7 +204,7 @@ func (r *LedgerController) installLedgerV2MonoWriterMultipleReader(ctx Context, 
 	return nil
 }
 
-func (r *LedgerController) uninstallLedgerV2MonoWriterMultipleReader(ctx Context, stack *v1beta1.Stack) error {
+func (r *LedgerController) uninstallLedgerMonoWriterMultipleReader(ctx Context, stack *v1beta1.Stack) error {
 
 	remove := func(name string) error {
 		if err := DeleteIfExists[*appsv1.Deployment](ctx, GetNamespacedResourceName(stack.Name, name)); err != nil {
@@ -282,7 +282,7 @@ func (r *LedgerController) setCommonContainerConfiguration(ctx Context, stack *v
 	return nil
 }
 
-func (r *LedgerController) createBaseLedgerContainerV2() *corev1.Container {
+func (r *LedgerController) createBaseLedgerContainer() *corev1.Container {
 	return &corev1.Container{
 		Env: []corev1.EnvVar{
 			Env("BIND", ":8080"),
@@ -291,8 +291,8 @@ func (r *LedgerController) createBaseLedgerContainerV2() *corev1.Container {
 	}
 }
 
-func (r *LedgerController) createLedgerContainerV2Full(ctx Context, stack *v1beta1.Stack) (*corev1.Container, error) {
-	container := r.createBaseLedgerContainerV2()
+func (r *LedgerController) createLedgerContainerFull(ctx Context, stack *v1beta1.Stack) (*corev1.Container, error) {
+	container := r.createBaseLedgerContainer()
 	topic, err := brokertopics.Find(ctx, stack, "ledger")
 	if err != nil {
 		return nil, err
@@ -310,12 +310,12 @@ func (r *LedgerController) createLedgerContainerV2Full(ctx Context, stack *v1bet
 	return container, nil
 }
 
-func (r *LedgerController) createLedgerContainerV2WriteOnly(ctx Context, stack *v1beta1.Stack) (*corev1.Container, error) {
-	return r.createLedgerContainerV2Full(ctx, stack)
+func (r *LedgerController) createLedgerContainerWriteOnly(ctx Context, stack *v1beta1.Stack) (*corev1.Container, error) {
+	return r.createLedgerContainerFull(ctx, stack)
 }
 
-func (r *LedgerController) createLedgerContainerV2ReadOnly() *corev1.Container {
-	container := r.createBaseLedgerContainerV2()
+func (r *LedgerController) createLedgerContainerReadOnly() *corev1.Container {
+	container := r.createBaseLedgerContainer()
 	container.Env = append(container.Env, Env("READ_ONLY", "true"))
 	return container
 }

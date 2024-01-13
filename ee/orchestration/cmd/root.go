@@ -46,7 +46,7 @@ const (
 	temporalSSLClientKeyFlag  = "temporal-ssl-client-key"
 	temporalSSLClientCertFlag = "temporal-ssl-client-cert"
 	temporalTaskQueueFlag     = "temporal-task-queue"
-	topicsFlag                = "brokertopics"
+	topicsFlag                = "topics"
 	listenFlag                = "listen"
 	workerFlag                = "worker"
 )

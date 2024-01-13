@@ -111,29 +111,8 @@ spec:
                 type: object
               stack:
                 type: string
-              temporal:
-                properties:
-                  address:
-                    type: string
-                  namespace:
-                    type: string
-                  tls:
-                    properties:
-                      crt:
-                        type: string
-                      key:
-                        type: string
-                      secretName:
-                        type: string
-                    type: object
-                required:
-                - address
-                - namespace
-                type: object
               version:
                 type: string
-            required:
-            - temporal
             type: object
           status:
             description: OrchestrationStatus defines the observed state of Orchestration

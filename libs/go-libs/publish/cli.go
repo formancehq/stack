@@ -38,7 +38,7 @@ const (
 func InitCLIFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().Bool(PublisherKafkaEnabledFlag, false, "Publish write events to kafka")
 	cmd.PersistentFlags().StringSlice(PublisherKafkaBrokerFlag, []string{"localhost:9092"}, "Kafka address is kafka enabled")
-	cmd.PersistentFlags().StringSlice(PublisherTopicMappingFlag, []string{}, "Define mapping between internal event types and brokertopics")
+	cmd.PersistentFlags().StringSlice(PublisherTopicMappingFlag, []string{}, "Define mapping between internal event types and topics")
 	cmd.PersistentFlags().Bool(PublisherHttpEnabledFlag, false, "Sent write event to http endpoint")
 	cmd.PersistentFlags().Bool(PublisherKafkaSASLEnabled, false, "Enable SASL authentication on kafka publisher")
 	cmd.PersistentFlags().String(PublisherKafkaSASLUsername, "", "SASL username")
