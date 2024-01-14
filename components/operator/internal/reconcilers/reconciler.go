@@ -3,10 +3,12 @@ package reconcilers
 import (
 	"context"
 	"fmt"
+	"github.com/formancehq/operator/api/formance.com/v1beta1"
+	"github.com/formancehq/operator/internal/resources/stacks"
+	pkgError "github.com/pkg/errors"
 	"reflect"
 
 	"github.com/formancehq/operator/internal/core"
-	pkgError "github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -56,30 +58,53 @@ func (r *Reconciler[T]) Reconcile(ctx context.Context, req reconcile.Request) (r
 	}
 
 	cp := object.DeepCopyObject().(T)
-	reconciliationError := r.Controller.Reconcile(struct {
-		context.Context
-		core.Manager
-	}{
-		Context: ctx,
-		Manager: r.Manager,
-	}, object)
-	if reconciliationError != nil {
-		setStatus(reconciliationError)
-	} else {
-		setStatus(nil)
+	patch := client.MergeFrom(cp)
+
+	reconcile := true
+	if d, ok := any(object).(stacks.Dependent); ok {
+		stack := &v1beta1.Stack{}
+		if err := r.Manager.GetClient().Get(ctx, types.NamespacedName{
+			Name: d.GetStack(),
+		}, stack); err != nil {
+			reconcile = false
+			if errors.IsNotFound(err) {
+				setStatus(fmt.Errorf("stack not found"))
+			} else {
+				setStatus(err)
+			}
+		} else {
+			if stack.Spec.Disabled {
+				setStatus(fmt.Errorf("stack disabled"))
+				reconcile = false
+			}
+		}
 	}
 
-	patch := client.MergeFrom(cp)
+	var returnErr error
+	if reconcile {
+		err := r.Controller.Reconcile(struct {
+			context.Context
+			core.Manager
+		}{
+			Context: ctx,
+			Manager: r.Manager,
+		}, object)
+		if err != nil {
+			setStatus(err)
+			if !pkgError.Is(err, core.ErrPending) &&
+				!pkgError.Is(err, core.ErrDeleted) {
+				returnErr = err
+			}
+		} else {
+			setStatus(nil)
+		}
+	}
+
 	if err := r.Manager.GetClient().Status().Patch(ctx, object, patch); err != nil {
 		return ctrl.Result{}, err
 	}
 
-	if !pkgError.Is(reconciliationError, core.ErrPending) &&
-		!pkgError.Is(reconciliationError, core.ErrDeleted) {
-		return ctrl.Result{}, reconciliationError
-	}
-
-	return ctrl.Result{}, nil
+	return ctrl.Result{}, returnErr
 }
 
 func (r *Reconciler[T]) SetupWithManager(mgr core.Manager) error {

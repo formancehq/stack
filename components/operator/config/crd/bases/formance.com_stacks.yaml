@@ -38,6 +38,8 @@ spec:
                 type: boolean
               dev:
                 type: boolean
+              disabled:
+                type: boolean
               enableAudit:
                 type: boolean
               version:

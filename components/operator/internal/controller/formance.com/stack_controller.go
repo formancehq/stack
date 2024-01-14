@@ -1,11 +1,17 @@
 package formance_com
 
 import (
+	"context"
+	"fmt"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
+	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	pkgError "github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/selection"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
@@ -17,10 +23,9 @@ import (
 )
 
 const (
-	ApplyToStacksLabel = "formance.com/apply-to-stacks"
-	CopiedSecretLabel  = "formance.com/copied-secret"
-	AnyValue           = "any"
-	TrueValue          = "true"
+	CopiedSecretLabel = "formance.com/copied-secret"
+	AnyValue          = "any"
+	TrueValue         = "true"
 
 	RewrittenSecretName               = "formance.com/referenced-by-name"
 	OriginalSecretNamespaceAnnotation = "formance.com/original-secret-namespace"
@@ -64,6 +69,14 @@ type StackController struct{}
 
 func (r *StackController) Reconcile(ctx Context, stack *v1beta1.Stack) error {
 
+	fmt.Println("reconcile stack")
+	if stack.Spec.Disabled {
+		fmt.Println("disabled")
+		ns := &corev1.Namespace{}
+		ns.SetName(stack.Name)
+		return client.IgnoreNotFound(ctx.GetClient().Delete(ctx, ns))
+	}
+
 	_, _, err := CreateOrUpdate(ctx, types.NamespacedName{
 		Name: stack.Name,
 	},
@@ -91,7 +104,7 @@ func (r *StackController) handleSecrets(ctx Context, stack *v1beta1.Stack) error
 
 func (r *StackController) copySecrets(ctx Context, stack *v1beta1.Stack) ([]corev1.Secret, error) {
 
-	requirement, err := labels.NewRequirement(ApplyToStacksLabel, selection.In, []string{stack.Name, AnyValue})
+	requirement, err := labels.NewRequirement(StackLabel, selection.In, []string{stack.Name, AnyValue})
 	if err != nil {
 		return nil, err
 	}
@@ -102,6 +115,8 @@ func (r *StackController) copySecrets(ctx Context, stack *v1beta1.Stack) ([]core
 	}); err != nil {
 		return nil, err
 	}
+
+	spew.Dump(secretsToCopy)
 
 	for _, secret := range secretsToCopy.Items {
 		secretName, ok := secret.Annotations[RewrittenSecretName]
@@ -167,6 +182,25 @@ l:
 func (r *StackController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Stack{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		Watches(&corev1.Secret{}, handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, object client.Object) []reconcile.Request {
+			if object.GetLabels()[StackLabel] == "any" {
+				list := &v1beta1.StackList{}
+				if err := mgr.GetClient().List(ctx, list); err != nil {
+					return []reconcile.Request{}
+				}
+
+				return MapObjectToReconcileRequests(Map(list.Items, ToPointer[v1beta1.Stack])...)
+			}
+			if object.GetLabels()[StackLabel] != "" {
+				return []reconcile.Request{{
+					NamespacedName: types.NamespacedName{
+						Name: object.GetLabels()[StackLabel],
+					},
+				}}
+			}
+
+			return []reconcile.Request{}
+		})).
 		Owns(&corev1.Secret{}).
 		Owns(&corev1.Namespace{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }

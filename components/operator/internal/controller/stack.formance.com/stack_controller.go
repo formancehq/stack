@@ -17,7 +17,6 @@ import (
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -39,14 +38,6 @@ import (
 type StackController struct{}
 
 func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
-
-	if stack.Spec.Disabled {
-		return client.IgnoreNotFound(ctx.GetClient().Delete(ctx, &corev1.Namespace{
-			ObjectMeta: v1.ObjectMeta{
-				Name: stack.Name,
-			},
-		}))
-	}
 
 	//ns := &corev1.Namespace{}
 	//err := ctx.GetClient().Get(ctx, types.NamespacedName{
@@ -143,6 +134,24 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}
 	}
 
+	_, _, err := CreateOrUpdate[*v1beta1.Stack](ctx, types.NamespacedName{
+		Name: stack.Name,
+	}, func(t *v1beta1.Stack) {
+		t.Spec.Dev = stack.Spec.Dev
+		t.Spec.Debug = stack.Spec.Debug
+		if configuration.Spec.Services.Gateway.EnableAuditPlugin != nil {
+			t.Spec.EnableAudit = *configuration.Spec.Services.Gateway.EnableAuditPlugin
+		}
+		t.Spec.Disabled = stack.Spec.Disabled
+	})
+	if err != nil {
+		return errors.Wrap(err, "creating stack")
+	}
+
+	if stack.Spec.Disabled {
+		return nil
+	}
+
 	ns := &corev1.Namespace{}
 	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
 		Name: stack.Name,
@@ -167,19 +176,6 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 				return err
 			}
 		}
-	}
-
-	_, _, err := CreateOrUpdate[*v1beta1.Stack](ctx, types.NamespacedName{
-		Name: stack.Name,
-	}, func(t *v1beta1.Stack) {
-		t.Spec.Dev = stack.Spec.Dev
-		t.Spec.Debug = stack.Spec.Debug
-		if configuration.Spec.Services.Gateway.EnableAuditPlugin != nil {
-			t.Spec.EnableAudit = *configuration.Spec.Services.Gateway.EnableAuditPlugin
-		}
-	})
-	if err != nil {
-		return errors.Wrap(err, "creating stack")
 	}
 
 	type databaseDescriptor struct {

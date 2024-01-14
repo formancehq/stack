@@ -8,11 +8,11 @@ import (
 )
 
 func MapObjectToReconcileRequests[T client.Object](items ...T) []reconcile.Request {
-	return collectionutils.Map(items, func(gateway T) reconcile.Request {
+	return collectionutils.Map(items, func(object T) reconcile.Request {
 		return reconcile.Request{
 			NamespacedName: types.NamespacedName{
-				Name:      gateway.GetName(),
-				Namespace: gateway.GetNamespace(),
+				Name:      object.GetName(),
+				Namespace: object.GetNamespace(),
 			},
 		}
 	})

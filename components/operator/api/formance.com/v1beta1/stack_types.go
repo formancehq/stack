@@ -27,6 +27,8 @@ type StackSpec struct {
 	Version string `json:"version"`
 	//+optional
 	EnableAudit bool `json:"enableAudit,omitempty"`
+	//+optional
+	Disabled bool `json:"disabled"`
 }
 
 // StackStatus defines the observed state of Stack
