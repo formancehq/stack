@@ -89,6 +89,7 @@ func (r *StargateController) createDeployment(ctx Context, stack *v1beta1.Stack,
 // SetupWithManager sets up the controller with the Manager.
 func (r *StargateController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
+		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(stacks.Watch[*v1beta1.Stargate](mgr))).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Stargate](mgr)),

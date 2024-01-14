@@ -22,8 +22,8 @@ import (
 
 // OrchestrationSpec defines the desired state of Orchestration
 type OrchestrationSpec struct {
-	StackDependency         `json:",inline"`
-	CommonServiceProperties `json:",inline"`
+	StackDependency  `json:",inline"`
+	ModuleProperties `json:",inline"`
 	//+optional
 	Service *ServiceConfiguration `json:"service,omitempty"`
 	// +optional

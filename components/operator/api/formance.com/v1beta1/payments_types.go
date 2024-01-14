@@ -22,9 +22,9 @@ import (
 
 // PaymentsSpec defines the desired state of Payments
 type PaymentsSpec struct {
-	StackDependency         `json:",inline"`
-	CommonServiceProperties `json:",inline"`
-	EncryptionKey           string `json:"encryptionKey"`
+	StackDependency  `json:",inline"`
+	ModuleProperties `json:",inline"`
+	EncryptionKey    string `json:"encryptionKey"`
 	//+optional
 	Service *ServiceConfiguration `json:"service,omitempty"`
 	// +optional

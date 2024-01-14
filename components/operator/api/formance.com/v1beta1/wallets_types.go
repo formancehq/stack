@@ -22,8 +22,8 @@ import (
 
 // WalletsSpec defines the desired state of Wallets
 type WalletsSpec struct {
-	CommonServiceProperties `json:",inline"`
-	StackDependency         `json:",inline"`
+	ModuleProperties `json:",inline"`
+	StackDependency  `json:",inline"`
 	//+optional
 	Service *ServiceConfiguration `json:"service,omitempty"`
 	// +optional

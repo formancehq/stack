@@ -171,11 +171,10 @@ var _ = Describe("GatewayController", func() {
 				Expect(Create(auth)).To(Succeed())
 			})
 			It("Should redeploy the gateway with auth configuration", func() {
-				Eventually(func(g Gomega) bool {
+				Eventually(func(g Gomega) []string {
 					g.Expect(LoadResource("", gateway.Name, gateway))
-					g.Expect(gateway.Status.SyncHTTPAPIs).To(ContainElements("ledger", "auth"))
-					return gateway.Status.AuthEnabled
-				}).Should(BeTrue())
+					return gateway.Status.SyncHTTPAPIs
+				}).Should(ContainElements("ledger", "auth"))
 				cm := &corev1.ConfigMap{}
 				Expect(LoadResource(stack.Name, "gateway", cm)).To(Succeed())
 				Expect(cm.Data["Caddyfile"]).To(

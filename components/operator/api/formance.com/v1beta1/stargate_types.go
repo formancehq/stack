@@ -28,12 +28,12 @@ type StargateAuthSpec struct {
 
 // StargateSpec defines the desired state of Stargate
 type StargateSpec struct {
-	CommonServiceProperties `json:",inline"`
-	StackDependency         `json:",inline"`
-	ServerURL               string           `json:"serverURL"`
-	OrganizationID          string           `json:"organizationID"`
-	StackID                 string           `json:"stackID"`
-	Auth                    StargateAuthSpec `json:"auth"`
+	ModuleProperties `json:",inline"`
+	StackDependency  `json:",inline"`
+	ServerURL        string           `json:"serverURL"`
+	OrganizationID   string           `json:"organizationID"`
+	StackID          string           `json:"stackID"`
+	Auth             StargateAuthSpec `json:"auth"`
 	//+optional
 	Service *ServiceConfiguration `json:"service,omitempty"`
 }

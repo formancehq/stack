@@ -137,6 +137,7 @@ func (r *SearchController) Reconcile(ctx Context, search *v1beta1.Search) error 
 func (r *SearchController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Search{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(stacks.Watch[*v1beta1.Search](mgr))).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Search](mgr)),

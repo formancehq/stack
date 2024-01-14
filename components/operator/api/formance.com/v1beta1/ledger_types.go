@@ -29,8 +29,8 @@ const (
 
 // LedgerSpec defines the desired state of Ledger
 type LedgerSpec struct {
-	CommonServiceProperties `json:",inline"`
-	StackDependency         `json:",inline"`
+	ModuleProperties `json:",inline"`
+	StackDependency  `json:",inline"`
 	// +optional
 	Auth *AuthConfig `json:"auth,omitempty"`
 	//+optional

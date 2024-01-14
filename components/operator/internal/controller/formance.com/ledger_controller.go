@@ -351,6 +351,7 @@ func (r *LedgerController) createGatewayDeployment(ctx Context, stack *v1beta1.S
 func (r *LedgerController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Ledger{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(stacks.Watch[*v1beta1.Ledger](mgr))).
 		Watches(
 			&v1beta1.BrokerTopic{},
 			handler.EnqueueRequestsFromMapFunc(

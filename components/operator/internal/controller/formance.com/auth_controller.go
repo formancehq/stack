@@ -48,6 +48,14 @@ type AuthController struct{}
 
 func (r *AuthController) Reconcile(ctx Context, auth *v1beta1.Auth) error {
 
+	fmt.Println("RECONCILE AUTH")
+	fmt.Println("RECONCILE AUTH")
+	fmt.Println("RECONCILE AUTH")
+	fmt.Println("RECONCILE AUTH")
+	fmt.Println("RECONCILE AUTH")
+	fmt.Println("RECONCILE AUTH")
+	fmt.Println("RECONCILE AUTH")
+
 	stack, err := stacks.GetStack(ctx, auth)
 	if err != nil {
 		return err
@@ -82,6 +90,13 @@ func (r *AuthController) Reconcile(ctx Context, auth *v1beta1.Auth) error {
 		}
 	}
 
+	fmt.Println("create httpapi for auth")
+	fmt.Println("create httpapi for auth")
+	fmt.Println("create httpapi for auth")
+	fmt.Println("create httpapi for auth")
+	fmt.Println("create httpapi for auth")
+	fmt.Println("create httpapi for auth")
+	fmt.Println("create httpapi for auth")
 	if err := httpapis.Create(ctx, auth,
 		httpapis.WithRules(httpapis.RuleUnsecured()),
 		httpapis.WithServiceConfiguration(auth.Spec.Service)); err != nil {
@@ -206,6 +221,7 @@ func (r *AuthController) SetupWithManager(mgr Manager) (*builder.Builder, error)
 		Owns(&v1beta1.HTTPAPI{}).
 		Owns(&v1beta1.Database{}).
 		Owns(&corev1.ConfigMap{}).
+		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(stacks.Watch[*v1beta1.Auth](mgr))).
 		Watches(
 			&v1beta1.RegistriesConfiguration{},
 			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Auth](mgr)),

@@ -2,8 +2,6 @@ package formance_com
 
 import (
 	"context"
-	"fmt"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
@@ -69,9 +67,7 @@ type StackController struct{}
 
 func (r *StackController) Reconcile(ctx Context, stack *v1beta1.Stack) error {
 
-	fmt.Println("reconcile stack")
 	if stack.Spec.Disabled {
-		fmt.Println("disabled")
 		ns := &corev1.Namespace{}
 		ns.SetName(stack.Name)
 		return client.IgnoreNotFound(ctx.GetClient().Delete(ctx, ns))
@@ -115,8 +111,6 @@ func (r *StackController) copySecrets(ctx Context, stack *v1beta1.Stack) ([]core
 	}); err != nil {
 		return nil, err
 	}
-
-	spew.Dump(secretsToCopy)
 
 	for _, secret := range secretsToCopy.Items {
 		secretName, ok := secret.Annotations[RewrittenSecretName]

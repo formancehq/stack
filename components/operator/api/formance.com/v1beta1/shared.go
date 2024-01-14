@@ -25,7 +25,7 @@ func (p DevProperties) IsDev() bool {
 	return p.Dev
 }
 
-type CommonServiceProperties struct {
+type ModuleProperties struct {
 	DevProperties `json:",inline"`
 	//+optional
 	Version string `json:"version,omitempty"`

@@ -68,12 +68,14 @@ func (r *Reconciler[T]) Reconcile(ctx context.Context, req reconcile.Request) (r
 		}, stack); err != nil {
 			reconcile = false
 			if errors.IsNotFound(err) {
+				log.Info("stack not found")
 				setStatus(fmt.Errorf("stack not found"))
 			} else {
 				setStatus(err)
 			}
 		} else {
 			if stack.Spec.Disabled {
+				log.Info("stack disabled")
 				setStatus(fmt.Errorf("stack disabled"))
 				reconcile = false
 			}

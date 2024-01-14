@@ -28,8 +28,8 @@ type SearchStreamProcessorSpec struct {
 
 // SearchSpec defines the desired state of Search
 type SearchSpec struct {
-	StackDependency         `json:",inline"`
-	CommonServiceProperties `json:",inline"`
+	StackDependency  `json:",inline"`
+	ModuleProperties `json:",inline"`
 	//+optional
 	Batching *Batching `json:"batching,omitempty"`
 	// +optional

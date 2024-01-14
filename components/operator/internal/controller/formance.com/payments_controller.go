@@ -277,6 +277,7 @@ func (r *PaymentsController) setInitContainer(payments *v1beta1.Payments, databa
 // SetupWithManager sets up the controller with the Manager.
 func (r *PaymentsController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
+		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(stacks.Watch[*v1beta1.Payments](mgr))).
 		Watches(
 			&v1beta1.Database{},
 			handler.EnqueueRequestsFromMapFunc(

@@ -126,6 +126,7 @@ func (r *WebhooksController) SetupWithManager(mgr Manager) (*builder.Builder, er
 	return ctrl.NewControllerManagedBy(mgr).
 		Owns(&appsv1.Deployment{}).
 		Owns(&v1beta1.HTTPAPI{}).
+		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(stacks.Watch[*v1beta1.Webhooks](mgr))).
 		Watches(
 			&v1beta1.Ledger{},
 			handler.EnqueueRequestsFromMapFunc(

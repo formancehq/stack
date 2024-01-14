@@ -275,6 +275,7 @@ func (r *GatewayController) SetupWithManager(mgr Manager) (*builder.Builder, err
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).
 		Owns(&networkingv1.Ingress{}).
+		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(stacks.Watch[*v1beta1.Gateway](mgr))).
 		Watches(
 			&v1beta1.Stack{},
 			handler.EnqueueRequestsFromMapFunc(stacks.Watch[*v1beta1.Gateway](mgr)),

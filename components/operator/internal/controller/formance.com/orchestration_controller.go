@@ -181,6 +181,7 @@ func (r *OrchestrationController) createDeployment(ctx Context, stack *v1beta1.S
 // SetupWithManager sets up the controller with the Manager.
 func (r *OrchestrationController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
+		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(stacks.Watch[*v1beta1.Orchestration](mgr))).
 		Watches(
 			&v1beta1.Database{},
 			handler.EnqueueRequestsFromMapFunc(
