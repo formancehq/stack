@@ -1,6 +1,7 @@
 package v1beta1
 
 import (
+	"golang.org/x/mod/semver"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -31,6 +32,17 @@ type ModuleProperties struct {
 	Version string `json:"version,omitempty"`
 	//+optional
 	ResourceRequirements *v1.ResourceRequirements `json:"resourceRequirements,omitempty"`
+}
+
+func (in *ModuleProperties) CompareVersion(stack *Stack, version string) int {
+	actualVersion := in.Version
+	if actualVersion == "" {
+		actualVersion = stack.Spec.Version
+	}
+	if !semver.IsValid(actualVersion) {
+		return 1
+	}
+	return semver.Compare(actualVersion, version)
 }
 
 // Condition contains details for one aspect of the current state of this API Resource.

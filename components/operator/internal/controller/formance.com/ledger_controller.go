@@ -270,7 +270,6 @@ func (r *LedgerController) setCommonContainerConfiguration(ctx Context, stack *v
 
 	container.Resources = GetResourcesRequirementsWithDefault(ledger.Spec.ResourceRequirements, ResourceSizeSmall())
 	container.Image = image
-	container.ImagePullPolicy = registries.GetPullPolicy(container.Image)
 	container.Env = append(container.Env, env...)
 	container.Env = append(container.Env, databases.PostgresEnvVars(
 		database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)...)
@@ -334,12 +333,8 @@ func (r *LedgerController) createGatewayDeployment(ctx Context, stack *v1beta1.S
 		return err
 	}
 
-	containerEnv := make([]corev1.EnvVar, 0)
-	containerEnv = append(containerEnv, env...)
-
-	mutators := ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", containerEnv, nil)
+	mutators := ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", env, nil)
 	mutators = append(mutators,
-		WithController[*appsv1.Deployment](ctx.GetScheme(), ledger),
 		deployments.WithMatchingLabels("ledger"),
 	)
 

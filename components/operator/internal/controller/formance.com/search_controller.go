@@ -115,13 +115,12 @@ func (r *SearchController) Reconcile(ctx Context, search *v1beta1.Search) error 
 	_, err = deployments.CreateOrUpdate(ctx, search, "search",
 		deployments.WithMatchingLabels("search"),
 		deployments.WithContainers(corev1.Container{
-			Name:            "search",
-			Image:           image,
-			Ports:           []corev1.ContainerPort{deployments.StandardHTTPPort()},
-			Env:             env,
-			Resources:       GetResourcesRequirementsWithDefault(search.Spec.ResourceRequirements, ResourceSizeSmall()),
-			ImagePullPolicy: GetPullPolicy(image),
-			LivenessProbe:   deployments.DefaultLiveness("http"),
+			Name:          "search",
+			Image:         image,
+			Ports:         []corev1.ContainerPort{deployments.StandardHTTPPort()},
+			Env:           env,
+			Resources:     GetResourcesRequirementsWithDefault(search.Spec.ResourceRequirements, ResourceSizeSmall()),
+			LivenessProbe: deployments.DefaultLiveness("http"),
 		}),
 	)
 

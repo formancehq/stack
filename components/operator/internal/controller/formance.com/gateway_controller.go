@@ -120,7 +120,7 @@ func (r *GatewayController) createConfigMap(ctx Context, stack *v1beta1.Stack,
 }
 
 func (r *GatewayController) createAuditTopic(ctx Context, stack *v1beta1.Stack, gateway *v1beta1.Gateway) (*v1beta1.BrokerTopic, error) {
-	if stack.Spec.EnableAudit {
+	if stack.Spec.EnableAudit && gateway.Spec.CompareVersion(stack, "v0.2.0") > 0 {
 		topic, err := brokertopics.CreateOrUpdate(ctx, stack, gateway, "gateway", "audit")
 		if err != nil {
 			return nil, err
@@ -141,7 +141,7 @@ func (r *GatewayController) createDeployment(ctx Context, stack *v1beta1.Stack,
 		return err
 	}
 
-	if stack.Spec.EnableAudit {
+	if stack.Spec.EnableAudit && auditTopic != nil {
 		env = append(env,
 			brokerconfigurations.BrokerEnvVars(*auditTopic.Status.Configuration, stack.Name, "gateway")...,
 		)
@@ -251,7 +251,7 @@ func (r *GatewayController) createCaddyfile(ctx Context, stack *v1beta1.Stack,
 		}
 	}
 
-	if stack.Spec.EnableAudit {
+	if stack.Spec.EnableAudit && auditTopic != nil {
 		data["EnableAudit"] = true
 		data["Broker"] = func() string {
 			if auditTopic.Status.Configuration.Kafka != nil {
