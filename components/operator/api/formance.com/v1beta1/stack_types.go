@@ -49,6 +49,14 @@ type Stack struct {
 	Status StackStatus `json:"status,omitempty"`
 }
 
+func (in *Stack) SetReady(b bool) {
+	in.Status.SetReady(b)
+}
+
+func (in *Stack) SetError(s string) {
+	in.Status.SetError(s)
+}
+
 func (in *Stack) GetVersion() string {
 	if in.Spec.Version == "" {
 		return "latest"

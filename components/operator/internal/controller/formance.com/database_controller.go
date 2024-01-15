@@ -95,8 +95,7 @@ func (r *DatabaseController) Reconcile(ctx Context, database *v1beta1.Database) 
 
 	switch len(databaseConfigurationList.Items) {
 	case 0:
-		database.Status.Error = "unable to find a database configuration"
-		database.Status.OutOfSync = true
+		return fmt.Errorf("unable to find a database configuration")
 	case 1:
 		switch {
 		case database.Status.BoundTo == "" || !database.Status.Ready:
@@ -125,27 +124,29 @@ func (r *DatabaseController) Reconcile(ctx Context, database *v1beta1.Database) 
 				return err
 			}
 
-			database.Status.Ready = job.Status.Succeeded > 0
-			database.Status.Error = ""
-			database.Status.Configuration = &v1beta1.CreatedDatabase{
-				DatabaseConfigurationSpec: databaseConfiguration.Spec,
-				Database:                  dbName,
-			}
-			database.Status.BoundTo = databaseConfiguration.Name
-
 			patch := client.MergeFrom(database.DeepCopy())
 			if updated := controllerutil.AddFinalizer(database, databaseFinalizer); updated {
 				if err := ctx.GetClient().Patch(ctx, database, patch); err != nil {
 					return err
 				}
 			}
+
+			database.Status.Configuration = &v1beta1.CreatedDatabase{
+				DatabaseConfigurationSpec: databaseConfiguration.Spec,
+				Database:                  dbName,
+			}
+			database.Status.BoundTo = databaseConfiguration.Name
+
+			if job.Status.Succeeded == 0 {
+				return ErrPending
+			}
 		case !reflect.DeepEqual(database.Status.Configuration.DatabaseConfigurationSpec,
 			databaseConfigurationList.Items[0].Spec):
 			database.Status.OutOfSync = true
 		}
 	default:
-		database.Status.Error = "multiple database configuration object found"
 		database.Status.OutOfSync = true
+		return fmt.Errorf("multiple database configuration object found")
 	}
 
 	return nil

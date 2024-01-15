@@ -32,7 +32,7 @@ type ReconciliationSpec struct {
 
 // ReconciliationStatus defines the observed state of Reconciliation
 type ReconciliationStatus struct {
-	CommonStatus `json:",inline"`
+	ModuleStatus `json:",inline"`
 }
 
 //+kubebuilder:object:root=true
@@ -48,6 +48,22 @@ type Reconciliation struct {
 
 	Spec   ReconciliationSpec   `json:"spec,omitempty"`
 	Status ReconciliationStatus `json:"status,omitempty"`
+}
+
+func (in *Reconciliation) SetReady(b bool) {
+	in.Status.Ready = b
+}
+
+func (in *Reconciliation) SetError(s string) {
+	in.Status.Error = s
+}
+
+func (in *Reconciliation) GetConditions() []Condition {
+	return in.Status.Conditions
+}
+
+func (in *Reconciliation) GetVersion() string {
+	return in.Spec.Version
 }
 
 func (a Reconciliation) IsDebug() bool {

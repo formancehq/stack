@@ -33,7 +33,7 @@ type PaymentsSpec struct {
 
 // PaymentsStatus defines the observed state of Payments
 type PaymentsStatus struct {
-	CommonStatus `json:",inline"`
+	ModuleStatus `json:",inline"`
 }
 
 //+kubebuilder:object:root=true
@@ -49,6 +49,22 @@ type Payments struct {
 
 	Spec   PaymentsSpec   `json:"spec,omitempty"`
 	Status PaymentsStatus `json:"status,omitempty"`
+}
+
+func (in *Payments) SetReady(b bool) {
+	in.Status.Ready = b
+}
+
+func (in *Payments) SetError(s string) {
+	in.Status.Error = s
+}
+
+func (in *Payments) GetConditions() []Condition {
+	return in.Status.Conditions
+}
+
+func (in *Payments) GetVersion() string {
+	return in.Spec.Version
 }
 
 func (a Payments) isEventPublisher() {}

@@ -45,7 +45,7 @@ type AuthSpec struct {
 
 // AuthStatus defines the observed state of Auth
 type AuthStatus struct {
-	CommonStatus `json:",inline"`
+	ModuleStatus `json:",inline"`
 	//+optional
 	Clients []string `json:"clients"`
 }
@@ -64,6 +64,22 @@ type Auth struct {
 
 	Spec   AuthSpec   `json:"spec,omitempty"`
 	Status AuthStatus `json:"status,omitempty"`
+}
+
+func (in *Auth) SetReady(b bool) {
+	in.Status.Ready = b
+}
+
+func (in *Auth) SetError(s string) {
+	in.Status.Error = s
+}
+
+func (in *Auth) GetConditions() []Condition {
+	return in.Status.Conditions
+}
+
+func (in *Auth) GetVersion() string {
+	return in.Spec.Version
 }
 
 func (a Auth) GetStack() string {

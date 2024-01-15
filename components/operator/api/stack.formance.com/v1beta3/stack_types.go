@@ -124,7 +124,7 @@ type ControlAuthentication struct {
 }
 
 type StackStatus struct {
-	Status `json:",inline"`
+	v1beta1.CommonStatus `json:",inline"`
 
 	Conditions []*v1.JSON `json:"conditions,omitempty"`
 
@@ -156,6 +156,14 @@ type Stack struct {
 
 	Spec   StackSpec   `json:"spec,omitempty"`
 	Status StackStatus `json:"status,omitempty"`
+}
+
+func (in *Stack) SetReady(b bool) {
+	in.Status.Ready = b
+}
+
+func (in *Stack) SetError(s string) {
+	in.Status.Error = s
 }
 
 func (*Stack) Hub() {}

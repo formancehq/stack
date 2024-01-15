@@ -66,6 +66,14 @@ type HTTPAPI struct {
 	Status HTTPAPIStatus `json:"status,omitempty"`
 }
 
+func (in *HTTPAPI) SetReady(b bool) {
+	in.Status.Ready = b
+}
+
+func (in *HTTPAPI) SetError(s string) {
+	in.Status.Error = s
+}
+
 func (a HTTPAPI) GetStack() string {
 	return a.Spec.Stack
 }

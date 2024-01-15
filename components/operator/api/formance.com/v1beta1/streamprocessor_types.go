@@ -58,12 +58,16 @@ type StreamProcessor struct {
 	Status StreamProcessorStatus `json:"status,omitempty"`
 }
 
-func (a StreamProcessor) GetStack() string {
-	return a.Spec.Stack
+func (in *StreamProcessor) SetReady(b bool) {
+	in.Status.Ready = b
 }
 
-func (a *StreamProcessor) SetCondition(condition Condition) {
-	a.Status.SetCondition(condition)
+func (in *StreamProcessor) SetError(s string) {
+	in.Status.Error = s
+}
+
+func (a StreamProcessor) GetStack() string {
+	return a.Spec.Stack
 }
 
 //+kubebuilder:object:root=true

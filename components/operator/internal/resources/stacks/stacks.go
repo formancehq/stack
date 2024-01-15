@@ -28,9 +28,21 @@ func GetStack(ctx core.Context, spec Dependent) (*v1beta1.Stack, error) {
 	return stack, nil
 }
 
-type Dependent interface {
+type Object interface {
 	client.Object
+	SetReady(bool)
+	SetError(string)
+}
+
+type Dependent interface {
+	Object
 	GetStack() string
+}
+
+type Module interface {
+	Dependent
+	GetVersion() string
+	GetConditions() []v1beta1.Condition
 }
 
 var (

@@ -32,7 +32,7 @@ type OrchestrationSpec struct {
 
 // OrchestrationStatus defines the observed state of Orchestration
 type OrchestrationStatus struct {
-	CommonStatus `json:",inline"`
+	ModuleStatus `json:",inline"`
 }
 
 //+kubebuilder:object:root=true
@@ -48,6 +48,22 @@ type Orchestration struct {
 
 	Spec   OrchestrationSpec   `json:"spec,omitempty"`
 	Status OrchestrationStatus `json:"status,omitempty"`
+}
+
+func (in *Orchestration) SetReady(b bool) {
+	in.Status.Ready = b
+}
+
+func (in *Orchestration) SetError(s string) {
+	in.Status.Error = s
+}
+
+func (in *Orchestration) GetConditions() []Condition {
+	return in.Status.Conditions
+}
+
+func (in *Orchestration) GetVersion() string {
+	return in.Spec.Version
 }
 
 func (a Orchestration) GetStack() string {

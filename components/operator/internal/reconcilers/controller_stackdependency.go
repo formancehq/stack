@@ -31,7 +31,7 @@ func (r *StackDependency[T]) Reconcile(ctx core.Context, t T) error {
 	return r.Controller.Reconcile(ctx, t)
 }
 
-func NewStackDependency[T stacks.Dependent](ctrl core.Controller[T]) *Reconciler[T] {
+func ForStackDependency[T stacks.Dependent](ctrl core.Controller[T]) *Reconciler[T] {
 	return New[T](&StackDependency[T]{
 		Controller: ctrl,
 	})

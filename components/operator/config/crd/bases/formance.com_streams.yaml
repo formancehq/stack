@@ -43,6 +43,11 @@ spec:
             type: object
           status:
             description: StreamStatus defines the observed state of Stream
+            properties:
+              error:
+                type: string
+              ready:
+                type: boolean
             type: object
         type: object
     served: true

@@ -3,6 +3,7 @@ package reconcilers
 import (
 	"context"
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/stacks"
 	pkgError "github.com/pkg/errors"
 	"reflect"
 
@@ -15,7 +16,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-type Reconciler[T client.Object] struct {
+type Reconciler[T stacks.Object] struct {
 	Controller core.Controller[T]
 	Manager    core.Manager
 }
@@ -37,21 +38,11 @@ func (r *Reconciler[T]) Reconcile(ctx context.Context, req reconcile.Request) (r
 	}
 
 	setStatus := func(err error) {
-		if s, ok := reflect.ValueOf(object).
-			Elem().
-			FieldByName("Status").
-			Addr().
-			Interface().(interface {
-			SetReady(bool)
-			SetError(string)
-			EvalReadiness(generation int64)
-		}); ok {
-			if err != nil {
-				s.SetReady(false)
-				s.SetError(err.Error())
-			} else {
-				s.EvalReadiness(object.GetGeneration())
-			}
+		if err != nil {
+			object.SetReady(false)
+			object.SetError(err.Error())
+		} else {
+			object.SetReady(true)
 		}
 	}
 
@@ -92,7 +83,7 @@ func (r *Reconciler[T]) SetupWithManager(mgr core.Manager) error {
 	return builder.Complete(r)
 }
 
-func New[T client.Object](ctrl core.Controller[T]) *Reconciler[T] {
+func New[T stacks.Object](ctrl core.Controller[T]) *Reconciler[T] {
 	return &Reconciler[T]{
 		Controller: ctrl,
 	}

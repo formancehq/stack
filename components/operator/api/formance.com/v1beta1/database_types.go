@@ -62,6 +62,14 @@ type Database struct {
 	Status DatabaseStatus `json:"status,omitempty"`
 }
 
+func (in *Database) SetReady(b bool) {
+	in.Status.Ready = b
+}
+
+func (in *Database) SetError(s string) {
+	in.Status.Error = s
+}
+
 func (a Database) GetStack() string {
 	return a.Spec.Stack
 }

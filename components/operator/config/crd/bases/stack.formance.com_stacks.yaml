@@ -162,6 +162,8 @@ spec:
                 items:
                   x-kubernetes-preserve-unknown-fields: true
                 type: array
+              error:
+                type: string
               light:
                 type: boolean
               ports:

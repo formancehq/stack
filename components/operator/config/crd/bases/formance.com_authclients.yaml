@@ -61,6 +61,11 @@ spec:
             type: object
           status:
             description: AuthClientStatus defines the observed state of AuthClient
+            properties:
+              error:
+                type: string
+              ready:
+                type: boolean
             type: object
         type: object
     served: true

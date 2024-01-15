@@ -107,8 +107,6 @@ type Condition struct {
 
 type CommonStatus struct {
 	//+optional
-	Conditions []Condition `json:"conditions,omitempty"`
-	//+optional
 	Ready bool `json:"ready"`
 	//+optional
 	Error string `json:"error,omitempty"`
@@ -122,28 +120,13 @@ func (c *CommonStatus) SetError(err string) {
 	c.Error = err
 }
 
-func (c *CommonStatus) EvalReadiness(generation int64) {
-	conditionsMet := true
-	for _, condition := range c.Conditions {
-		if condition.ObservedGeneration != generation {
-			continue
-		}
-
-		if condition.Status != metav1.ConditionTrue {
-			conditionsMet = false
-			break
-		}
-	}
-	if !conditionsMet {
-		c.SetError("Conditions not all marked as ok")
-		c.SetReady(false)
-	} else {
-		c.SetError("")
-		c.SetReady(true)
-	}
+type ModuleStatus struct {
+	CommonStatus `json:",inline"`
+	//+optional
+	Conditions []Condition `json:"conditions,omitempty"`
 }
 
-func (c *CommonStatus) DeleteCondition(t, reason string) {
+func (c *ModuleStatus) DeleteCondition(t, reason string) {
 	for i, existingCondition := range c.Conditions {
 		if existingCondition.Type == t && existingCondition.Reason == reason {
 			if i < len(c.Conditions)-1 {
@@ -156,7 +139,7 @@ func (c *CommonStatus) DeleteCondition(t, reason string) {
 	}
 }
 
-func (c *CommonStatus) SetCondition(condition Condition) {
+func (c *ModuleStatus) SetCondition(condition Condition) {
 	c.DeleteCondition(condition.Type, condition.Reason)
 	c.Conditions = append(c.Conditions, condition)
 }

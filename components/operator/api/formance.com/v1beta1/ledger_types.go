@@ -41,7 +41,7 @@ type LedgerSpec struct {
 
 // LedgerStatus defines the observed state of Ledger
 type LedgerStatus struct {
-	CommonStatus `json:",inline"`
+	ModuleStatus `json:",inline"`
 }
 
 //+kubebuilder:object:root=true
@@ -57,6 +57,22 @@ type Ledger struct {
 
 	Spec   LedgerSpec   `json:"spec,omitempty"`
 	Status LedgerStatus `json:"status,omitempty"`
+}
+
+func (in *Ledger) SetReady(b bool) {
+	in.Status.Ready = b
+}
+
+func (in *Ledger) SetError(s string) {
+	in.Status.Error = s
+}
+
+func (in *Ledger) GetConditions() []Condition {
+	return in.Status.Conditions
+}
+
+func (in *Ledger) GetVersion() string {
+	return in.Spec.Version
 }
 
 func (a Ledger) isEventPublisher() {}

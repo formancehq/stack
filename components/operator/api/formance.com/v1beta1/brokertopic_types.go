@@ -49,6 +49,14 @@ type BrokerTopic struct {
 	Status BrokerTopicStatus `json:"status,omitempty"`
 }
 
+func (in *BrokerTopic) SetReady(b bool) {
+	in.Status.Ready = b
+}
+
+func (in *BrokerTopic) SetError(s string) {
+	in.Status.Error = s
+}
+
 func (a BrokerTopic) GetStack() string {
 	return a.Spec.Stack
 }

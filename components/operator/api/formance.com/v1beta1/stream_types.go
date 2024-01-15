@@ -28,6 +28,7 @@ type StreamSpec struct {
 
 // StreamStatus defines the observed state of Stream
 type StreamStatus struct {
+	CommonStatus `json:",inline"`
 }
 
 //+kubebuilder:object:root=true
@@ -41,6 +42,14 @@ type Stream struct {
 
 	Spec   StreamSpec   `json:"spec,omitempty"`
 	Status StreamStatus `json:"status,omitempty"`
+}
+
+func (in *Stream) SetReady(b bool) {
+	in.Status.Ready = b
+}
+
+func (in *Stream) SetError(s string) {
+	in.Status.Error = s
 }
 
 func (a Stream) GetStack() string {

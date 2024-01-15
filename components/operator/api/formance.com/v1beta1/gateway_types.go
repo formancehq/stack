@@ -46,7 +46,7 @@ type GatewaySpec struct {
 
 // GatewayStatus defines the observed state of Gateway
 type GatewayStatus struct {
-	CommonStatus `json:",inline"`
+	ModuleStatus `json:",inline"`
 	//+optional
 	SyncHTTPAPIs []string `json:"syncHTTPAPIs"`
 	// +kubebuilder:default:=false
@@ -68,6 +68,14 @@ type Gateway struct {
 
 	Spec   GatewaySpec   `json:"spec,omitempty"`
 	Status GatewayStatus `json:"status,omitempty"`
+}
+
+func (in *Gateway) SetReady(b bool) {
+	in.Status.Ready = b
+}
+
+func (in *Gateway) SetError(s string) {
+	in.Status.Error = s
 }
 
 func (a Gateway) GetStack() string {

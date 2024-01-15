@@ -20,13 +20,11 @@ import (
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/utils/pointer"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
-	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
 
@@ -38,7 +36,7 @@ type HTTPAPI struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=httpapis/finalizers,verbs=update
 
 func (r *HTTPAPI) Reconcile(ctx Context, httpAPI *v1beta1.HTTPAPI) error {
-	_, operationResult, err := CreateOrUpdate[*corev1.Service](ctx, types.NamespacedName{
+	_, _, err := CreateOrUpdate[*corev1.Service](ctx, types.NamespacedName{
 		Namespace: httpAPI.Spec.Stack,
 		Name:      httpAPI.Spec.Name,
 	},
@@ -66,34 +64,7 @@ func (r *HTTPAPI) Reconcile(ctx Context, httpAPI *v1beta1.HTTPAPI) error {
 		WithController[*corev1.Service](ctx.GetScheme(), httpAPI),
 	)
 	if err != nil {
-		httpAPI.Status.SetCondition(v1beta1.Condition{
-			Type:               "ServiceExists",
-			Status:             metav1.ConditionFalse,
-			ObservedGeneration: httpAPI.Generation,
-			LastTransitionTime: metav1.Now(),
-			Message:            err.Error(),
-		})
-		httpAPI.Status.Ready = false
-		return nil
-	}
-	httpAPI.Status.Ready = true
-
-	switch operationResult {
-	case controllerutil.OperationResultNone:
-	case controllerutil.OperationResultCreated:
-		httpAPI.Status.SetCondition(v1beta1.Condition{
-			Type:               "ServiceExists",
-			Status:             metav1.ConditionTrue,
-			ObservedGeneration: httpAPI.Generation,
-			LastTransitionTime: metav1.Now(),
-		})
-	case controllerutil.OperationResultUpdated:
-		httpAPI.Status.SetCondition(v1beta1.Condition{
-			Type:               "ServiceExists",
-			Status:             metav1.ConditionTrue,
-			ObservedGeneration: httpAPI.Generation,
-			LastTransitionTime: metav1.Now(),
-		})
+		return err
 	}
 
 	return nil

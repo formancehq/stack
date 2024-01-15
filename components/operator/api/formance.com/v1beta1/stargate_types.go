@@ -40,7 +40,7 @@ type StargateSpec struct {
 
 // StargateStatus defines the observed state of Stargate
 type StargateStatus struct {
-	CommonStatus `json:",inline"`
+	ModuleStatus `json:",inline"`
 }
 
 //+kubebuilder:object:root=true
@@ -56,6 +56,14 @@ type Stargate struct {
 
 	Spec   StargateSpec   `json:"spec,omitempty"`
 	Status StargateStatus `json:"status,omitempty"`
+}
+
+func (in *Stargate) SetReady(b bool) {
+	in.Status.Ready = b
+}
+
+func (in *Stargate) SetError(s string) {
+	in.Status.Error = s
 }
 
 func (a Stargate) IsDebug() bool {

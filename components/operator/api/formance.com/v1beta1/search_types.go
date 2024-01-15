@@ -42,7 +42,7 @@ type SearchSpec struct {
 
 // SearchStatus defines the observed state of Search
 type SearchStatus struct {
-	CommonStatus `json:",inline"`
+	ModuleStatus `json:",inline"`
 }
 
 //+kubebuilder:object:root=true
@@ -58,6 +58,22 @@ type Search struct {
 
 	Spec   SearchSpec   `json:"spec,omitempty"`
 	Status SearchStatus `json:"status,omitempty"`
+}
+
+func (in *Search) SetReady(b bool) {
+	in.Status.Ready = b
+}
+
+func (in *Search) SetError(s string) {
+	in.Status.Error = s
+}
+
+func (in *Search) GetConditions() []Condition {
+	return in.Status.Conditions
+}
+
+func (in *Search) GetVersion() string {
+	return in.Spec.Version
 }
 
 func (a Search) GetStack() string {
