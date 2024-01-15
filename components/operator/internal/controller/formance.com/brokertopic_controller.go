@@ -22,7 +22,6 @@ import (
 
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
-	"github.com/formancehq/operator/internal/resources/stacks"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -67,7 +66,7 @@ func (r *BrokerTopicController) Reconcile(ctx Context, topic *v1beta1.BrokerTopi
 		return nil
 	}
 
-	brokerConfiguration, err := stacks.RequireLabelledConfig[*v1beta1.BrokerConfiguration](ctx, topic.Spec.Stack)
+	brokerConfiguration, err := RequireLabelledConfig[*v1beta1.BrokerConfiguration](ctx, topic.Spec.Stack)
 	if err != nil {
 		return err
 	}
@@ -157,7 +156,7 @@ func (r *BrokerTopicController) SetupWithManager(mgr Manager) (*builder.Builder,
 		For(&v1beta1.BrokerTopic{}).
 		Watches(
 			&v1beta1.BrokerConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.BrokerTopic](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.BrokerTopic](mgr)),
 		).
 		Owns(&batchv1.Job{}), nil
 }

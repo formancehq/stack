@@ -4,11 +4,10 @@ import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/gateways"
-	"github.com/formancehq/operator/internal/resources/stacks"
 )
 
 func URL(ctx core.Context, stackName string) (string, error) {
-	gateway, err := stacks.GetIfEnabled[*v1beta1.Gateway](ctx, stackName)
+	gateway, err := core.GetIfEnabled[*v1beta1.Gateway](ctx, stackName)
 	if err != nil {
 		return "", err
 	}

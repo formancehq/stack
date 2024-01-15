@@ -42,6 +42,7 @@ func (in *ModuleProperties) CompareVersion(stack *Stack, version string) int {
 	if !semver.IsValid(actualVersion) {
 		return 1
 	}
+
 	return semver.Compare(actualVersion, version)
 }
 

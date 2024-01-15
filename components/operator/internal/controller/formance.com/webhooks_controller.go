@@ -30,7 +30,6 @@ import (
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/httpapis"
 	. "github.com/formancehq/operator/internal/resources/registries"
-	"github.com/formancehq/operator/internal/resources/stacks"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -47,7 +46,7 @@ type WebhooksController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=webhooks/finalizers,verbs=update
 
 func (r *WebhooksController) Reconcile(ctx Context, webhooks *v1beta1.Webhooks) error {
-	stack, err := stacks.GetStack(ctx, webhooks)
+	stack, err := GetStack(ctx, webhooks)
 	if err != nil {
 		return err
 	}
@@ -78,7 +77,7 @@ func (r *WebhooksController) Reconcile(ctx Context, webhooks *v1beta1.Webhooks) 
 
 func (r *WebhooksController) createDeployment(ctx Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumers brokertopicconsumers.Consumers) error {
 
-	brokerConfiguration, err := stacks.RequireLabelledConfig[*v1beta1.BrokerConfiguration](ctx, stack.Name)
+	brokerConfiguration, err := RequireLabelledConfig[*v1beta1.BrokerConfiguration](ctx, stack.Name)
 	if err != nil {
 		return err
 	}
@@ -88,7 +87,7 @@ func (r *WebhooksController) createDeployment(ctx Context, stack *v1beta1.Stack,
 		return err
 	}
 
-	env, err := GetCommonServicesEnvVars(ctx, stack, webhooks)
+	env, err := GetCommonModuleEnvVars(ctx, stack, webhooks)
 	if err != nil {
 		return err
 	}
@@ -126,16 +125,16 @@ func (r *WebhooksController) SetupWithManager(mgr Manager) (*builder.Builder, er
 	return ctrl.NewControllerManagedBy(mgr).
 		Owns(&appsv1.Deployment{}).
 		Owns(&v1beta1.HTTPAPI{}).
-		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(stacks.Watch[*v1beta1.Webhooks](mgr))).
+		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(Watch[*v1beta1.Webhooks](mgr))).
 		Watches(
 			&v1beta1.Ledger{},
 			handler.EnqueueRequestsFromMapFunc(
-				stacks.WatchDependents[*v1beta1.Webhooks](mgr)),
+				WatchDependents[*v1beta1.Webhooks](mgr)),
 		).
 		Watches(
 			&v1beta1.Payments{},
 			handler.EnqueueRequestsFromMapFunc(
-				stacks.WatchDependents[*v1beta1.Webhooks](mgr)),
+				WatchDependents[*v1beta1.Webhooks](mgr)),
 		).
 		Watches(
 			&v1beta1.Database{},
@@ -144,11 +143,11 @@ func (r *WebhooksController) SetupWithManager(mgr Manager) (*builder.Builder, er
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Webhooks](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.Webhooks](mgr)),
 		).
 		Watches(
 			&v1beta1.RegistriesConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Webhooks](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.Webhooks](mgr)),
 		).
 		For(&v1beta1.Webhooks{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil
 }

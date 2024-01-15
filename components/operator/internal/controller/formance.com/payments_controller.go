@@ -32,7 +32,6 @@ import (
 	"github.com/formancehq/operator/internal/resources/httpapis"
 	. "github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/services"
-	"github.com/formancehq/operator/internal/resources/stacks"
 	"github.com/formancehq/operator/internal/resources/streams"
 	"github.com/formancehq/search/benthos"
 	appsv1 "k8s.io/api/apps/v1"
@@ -54,7 +53,7 @@ type PaymentsController struct{}
 
 func (r *PaymentsController) Reconcile(ctx Context, payments *v1beta1.Payments) error {
 
-	stack, err := stacks.GetStack(ctx, payments)
+	stack, err := GetStack(ctx, payments)
 	if err != nil {
 		return err
 	}
@@ -94,7 +93,7 @@ func (r *PaymentsController) Reconcile(ctx Context, payments *v1beta1.Payments) 
 }
 
 func (r *PaymentsController) commonEnvVars(ctx Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) ([]corev1.EnvVar, error) {
-	env, err := GetCommonServicesEnvVars(ctx, stack, payments)
+	env, err := GetCommonModuleEnvVars(ctx, stack, payments)
 	if err != nil {
 		return nil, err
 	}
@@ -152,7 +151,7 @@ func (r *PaymentsController) createReadDeployment(ctx Context, stack *v1beta1.St
 		return err
 	}
 
-	hasSearch, err := stacks.HasDependency[*v1beta1.Search](ctx, stack.Name)
+	hasSearch, err := HasDependency[*v1beta1.Search](ctx, stack.Name)
 	if err != nil {
 		return err
 	}
@@ -242,18 +241,15 @@ func (r *PaymentsController) createGateway(ctx Context, stack *v1beta1.Stack, p 
 		return err
 	}
 
-	env, err := GetCommonServicesEnvVars(ctx, stack, p)
+	env, err := GetCommonModuleEnvVars(ctx, stack, p)
 	if err != nil {
 		return err
 	}
 
-	containerEnv := make([]corev1.EnvVar, 0)
-	containerEnv = append(containerEnv, env...)
-
-	mutators := ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", containerEnv, nil)
-	mutators = append(mutators, deployments.WithMatchingLabels("payments"))
-
-	_, err = deployments.CreateOrUpdate(ctx, p, "payments", mutators...)
+	_, err = deployments.CreateOrUpdate(ctx, p, "payments",
+		ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", env, nil),
+		deployments.WithMatchingLabels("payments"),
+	)
 	return err
 }
 
@@ -277,7 +273,7 @@ func (r *PaymentsController) setInitContainer(payments *v1beta1.Payments, databa
 // SetupWithManager sets up the controller with the Manager.
 func (r *PaymentsController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
-		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(stacks.Watch[*v1beta1.Payments](mgr))).
+		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(Watch[*v1beta1.Payments](mgr))).
 		Watches(
 			&v1beta1.Database{},
 			handler.EnqueueRequestsFromMapFunc(
@@ -290,15 +286,15 @@ func (r *PaymentsController) SetupWithManager(mgr Manager) (*builder.Builder, er
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Payments](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.Payments](mgr)),
 		).
 		Watches(
 			&v1beta1.RegistriesConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Payments](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.Payments](mgr)),
 		).
 		Watches(
 			&v1beta1.Search{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependents[*v1beta1.Ledger](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchDependents[*v1beta1.Ledger](mgr)),
 		).
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).

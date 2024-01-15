@@ -21,7 +21,6 @@ import (
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
-	"github.com/formancehq/operator/internal/resources/stacks"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -38,7 +37,7 @@ type AuthClientController struct{}
 
 func (r *AuthClientController) Reconcile(ctx core.Context, authClient *v1beta1.AuthClient) error {
 
-	stack, err := stacks.GetStack(ctx, authClient)
+	stack, err := core.GetStack(ctx, authClient)
 	if err != nil {
 		return err
 	}

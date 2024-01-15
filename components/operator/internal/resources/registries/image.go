@@ -15,5 +15,5 @@ func NormalizeVersion(version string) string {
 
 func GetImage(ctx core.Context, stack *v1beta1.Stack, component, version string) (string, error) {
 	return TranslateImage(ctx, stack.Name,
-		fmt.Sprintf("ghcr.io/formancehq/%s:%s", component, NormalizeVersion(core.GetVersion(stack, version))))
+		fmt.Sprintf("ghcr.io/formancehq/%s:%s", component, NormalizeVersion(core.GetModuleVersion(stack, version))))
 }

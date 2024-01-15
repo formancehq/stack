@@ -5,7 +5,6 @@ import (
 	"reflect"
 
 	"github.com/formancehq/operator/internal/core"
-	"github.com/formancehq/operator/internal/resources/stacks"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -36,7 +35,7 @@ func Setup(mgr ctrl.Manager, platform core.Platform) error {
 			continue
 		}
 
-		_, ok = object.(stacks.Dependent)
+		_, ok = object.(core.Dependent)
 		if !ok {
 			continue
 		}
@@ -44,7 +43,7 @@ func Setup(mgr ctrl.Manager, platform core.Platform) error {
 		mgr.GetLogger().Info("Detect stack dependency object, automatically index field", "type", rtype)
 		if err := mgr.GetFieldIndexer().
 			IndexField(context.Background(), object, "stack", func(object client.Object) []string {
-				return []string{object.(stacks.Dependent).GetStack()}
+				return []string{object.(core.Dependent).GetStack()}
 			}); err != nil {
 			mgr.GetLogger().Error(err, "indexing stack field", "type", rtype)
 			return err

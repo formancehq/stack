@@ -21,7 +21,6 @@ import (
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/registries"
-	"github.com/formancehq/operator/internal/resources/stacks"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -39,7 +38,7 @@ type StargateController struct{}
 
 func (r *StargateController) Reconcile(ctx Context, stargate *v1beta1.Stargate) error {
 
-	stack, err := stacks.GetStack(ctx, stargate)
+	stack, err := GetStack(ctx, stargate)
 	if err != nil {
 		return err
 	}
@@ -53,7 +52,7 @@ func (r *StargateController) Reconcile(ctx Context, stargate *v1beta1.Stargate) 
 
 func (r *StargateController) createDeployment(ctx Context, stack *v1beta1.Stack, stargate *v1beta1.Stargate) error {
 
-	env, err := GetCommonServicesEnvVars(ctx, stack, stargate)
+	env, err := GetCommonModuleEnvVars(ctx, stack, stargate)
 	if err != nil {
 		return err
 	}
@@ -89,14 +88,14 @@ func (r *StargateController) createDeployment(ctx Context, stack *v1beta1.Stack,
 // SetupWithManager sets up the controller with the Manager.
 func (r *StargateController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
-		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(stacks.Watch[*v1beta1.Stargate](mgr))).
+		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(Watch[*v1beta1.Stargate](mgr))).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Stargate](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.Stargate](mgr)),
 		).
 		Watches(
 			&v1beta1.RegistriesConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Stargate](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.Stargate](mgr)),
 		).
 		Owns(&appsv1.Deployment{}).
 		For(&v1beta1.Stargate{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})), nil

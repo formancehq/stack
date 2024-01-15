@@ -2,8 +2,8 @@ package formance_com
 
 import (
 	"bytes"
+	"fmt"
 	"golang.org/x/mod/semver"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	"strings"
 	"text/template"
 
@@ -11,7 +11,6 @@ import (
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/gateways"
 	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
-	"github.com/formancehq/operator/internal/resources/stacks"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -23,31 +22,39 @@ func GetDevEnvVars(stack *v1beta1.Stack, service interface {
 	IsDebug() bool
 	IsDev() bool
 }) []v1.EnvVar {
+	return GetDevEnvVarsWithPrefix(stack, service, "")
+}
+
+func GetDevEnvVarsWithPrefix(stack *v1beta1.Stack, service interface {
+	IsDebug() bool
+	IsDev() bool
+}, prefix string) []v1.EnvVar {
 	return []v1.EnvVar{
-		EnvFromBool("DEBUG", stack.Spec.Debug || service.IsDebug()),
-		EnvFromBool("DEV", stack.Spec.Dev || service.IsDev()),
-		Env("STACK", stack.Name),
+		EnvFromBool(fmt.Sprintf("%sDEBUG", prefix), stack.Spec.Debug || service.IsDebug()),
+		EnvFromBool(fmt.Sprintf("%sDEV", prefix), stack.Spec.Dev || service.IsDev()),
+		Env(fmt.Sprintf("%sSTACK", prefix), stack.Name),
 	}
 }
 
-func GetCommonServicesEnvVars(ctx Context, stack *v1beta1.Stack, service interface {
-	client.Object
-	IsDebug() bool
-	IsDev() bool
-}) ([]v1.EnvVar, error) {
+func GetCommonModuleEnvVars(ctx Context, stack *v1beta1.Stack, service Module) ([]v1.EnvVar, error) {
+	return GetCommonModuleEnvVarsWithPrefix(ctx, stack, service, "")
+}
+
+func GetCommonModuleEnvVarsWithPrefix(ctx Context, stack *v1beta1.Stack, service Module, prefix string) ([]v1.EnvVar, error) {
 	ret := make([]v1.EnvVar, 0)
-	env, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, strings.ToLower(service.GetObjectKind().GroupVersionKind().Kind))
+	env, err := opentelemetryconfigurations.EnvVarsIfEnabledWithPrefix(ctx, stack.Name,
+		strings.ToLower(service.GetObjectKind().GroupVersionKind().Kind), prefix)
 	if err != nil {
 		return nil, err
 	}
 	ret = append(ret, env...)
 
-	env, err = gateways.EnvVarsIfEnabled(ctx, stack.Name)
+	env, err = gateways.EnvVarsIfEnabledWithPrefix(ctx, stack.Name, prefix)
 	if err != nil {
 		return nil, err
 	}
 	ret = append(ret, env...)
-	ret = append(ret, GetDevEnvVars(stack, service)...)
+	ret = append(ret, GetDevEnvVarsWithPrefix(stack, service, prefix)...)
 
 	return ret, nil
 }
@@ -60,7 +67,7 @@ func ComputeCaddyfile(ctx Context, stack *v1beta1.Stack, _tpl string, additional
 	}).Parse(_tpl))
 	buf := bytes.NewBufferString("")
 
-	openTelemetryEnabled, err := stacks.IsEnabledByLabel[*v1beta1.OpenTelemetryConfiguration](ctx, stack.Name)
+	openTelemetryEnabled, err := IsEnabledByLabel[*v1beta1.OpenTelemetryConfiguration](ctx, stack.Name)
 	if err != nil {
 		return "", err
 	}

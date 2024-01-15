@@ -31,7 +31,6 @@ import (
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/httpapis"
 	. "github.com/formancehq/operator/internal/resources/registries"
-	"github.com/formancehq/operator/internal/resources/stacks"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
@@ -51,7 +50,7 @@ type OrchestrationController struct{}
 
 func (r *OrchestrationController) Reconcile(ctx Context, orchestration *v1beta1.Orchestration) error {
 
-	stack, err := stacks.GetStack(ctx, orchestration)
+	stack, err := GetStack(ctx, orchestration)
 	if err != nil {
 		return err
 	}
@@ -87,7 +86,7 @@ func (r *OrchestrationController) Reconcile(ctx Context, orchestration *v1beta1.
 
 func (r *OrchestrationController) handleAuthClient(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.Orchestration) (*v1beta1.AuthClient, error) {
 
-	hasAuth, err := stacks.HasDependency[*v1beta1.Auth](ctx, stack.Name)
+	hasAuth, err := HasDependency[*v1beta1.Auth](ctx, stack.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -109,13 +108,13 @@ func (r *OrchestrationController) handleAuthClient(ctx Context, stack *v1beta1.S
 }
 
 func (r *OrchestrationController) createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.Orchestration, database *v1beta1.Database, client *v1beta1.AuthClient, consumers []*v1beta1.BrokerTopicConsumer) error {
-	env, err := GetCommonServicesEnvVars(ctx, stack, orchestration)
+	env, err := GetCommonModuleEnvVars(ctx, stack, orchestration)
 	if err != nil {
 		return err
 	}
 	env = append(env, databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)...)
 
-	temporalConfiguration, err := stacks.RequireLabelledConfig[*v1beta1.TemporalConfiguration](ctx, stack.Name)
+	temporalConfiguration, err := RequireLabelledConfig[*v1beta1.TemporalConfiguration](ctx, stack.Name)
 	if err != nil {
 		return err
 	}
@@ -154,7 +153,7 @@ func (r *OrchestrationController) createDeployment(ctx Context, stack *v1beta1.S
 	}
 
 	brokerEnvVars, err := brokerconfigurations.GetEnvVars(ctx, stack.Name, "orchestration")
-	if err != nil && !errors.Is(err, stacks.ErrNotFound) {
+	if err != nil && !errors.Is(err, ErrNotFound) {
 		return err
 	}
 	env = append(env, brokerEnvVars...)
@@ -181,7 +180,7 @@ func (r *OrchestrationController) createDeployment(ctx Context, stack *v1beta1.S
 // SetupWithManager sets up the controller with the Manager.
 func (r *OrchestrationController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
-		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(stacks.Watch[*v1beta1.Orchestration](mgr))).
+		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(Watch[*v1beta1.Orchestration](mgr))).
 		Watches(
 			&v1beta1.Database{},
 			handler.EnqueueRequestsFromMapFunc(
@@ -189,35 +188,35 @@ func (r *OrchestrationController) SetupWithManager(mgr Manager) (*builder.Builde
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Orchestration](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.Orchestration](mgr)),
 		).
 		Watches(
 			&v1beta1.TemporalConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Orchestration](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.Orchestration](mgr)),
 		).
 		Watches(
 			&v1beta1.Ledger{},
 			handler.EnqueueRequestsFromMapFunc(
-				stacks.WatchDependents[*v1beta1.Orchestration](mgr)),
+				WatchDependents[*v1beta1.Orchestration](mgr)),
 		).
 		Watches(
 			&v1beta1.Auth{},
 			handler.EnqueueRequestsFromMapFunc(
-				stacks.WatchDependents[*v1beta1.Orchestration](mgr)),
+				WatchDependents[*v1beta1.Orchestration](mgr)),
 		).
 		Watches(
 			&v1beta1.Payments{},
 			handler.EnqueueRequestsFromMapFunc(
-				stacks.WatchDependents[*v1beta1.Orchestration](mgr)),
+				WatchDependents[*v1beta1.Orchestration](mgr)),
 		).
 		Watches(
 			&v1beta1.Wallets{},
 			handler.EnqueueRequestsFromMapFunc(
-				stacks.WatchDependents[*v1beta1.Orchestration](mgr)),
+				WatchDependents[*v1beta1.Orchestration](mgr)),
 		).
 		Watches(
 			&v1beta1.RegistriesConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Orchestration](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.Orchestration](mgr)),
 		).
 		Owns(&v1beta1.BrokerTopicConsumer{}).
 		Owns(&v1beta1.AuthClient{}).

@@ -3,7 +3,6 @@ package reconcilers
 import (
 	"context"
 	"fmt"
-	"github.com/formancehq/operator/internal/resources/stacks"
 	pkgError "github.com/pkg/errors"
 	"reflect"
 
@@ -16,7 +15,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-type Reconciler[T stacks.Object] struct {
+type Reconciler[T core.Object] struct {
 	Controller core.Controller[T]
 	Manager    core.Manager
 }
@@ -83,7 +82,7 @@ func (r *Reconciler[T]) SetupWithManager(mgr core.Manager) error {
 	return builder.Complete(r)
 }
 
-func New[T stacks.Object](ctrl core.Controller[T]) *Reconciler[T] {
+func New[T core.Object](ctrl core.Controller[T]) *Reconciler[T] {
 	return &Reconciler[T]{
 		Controller: ctrl,
 	}

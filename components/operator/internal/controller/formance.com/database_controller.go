@@ -24,7 +24,6 @@ import (
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/databases"
-	"github.com/formancehq/operator/internal/resources/stacks"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -220,11 +219,11 @@ func (r *DatabaseController) SetupWithManager(mgr Manager) (*builder.Builder, er
 		For(&v1beta1.Database{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Watches(
 			&v1beta1.DatabaseConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Database](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.Database](mgr)),
 		).
 		Watches(
 			&v1beta1.RegistriesConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Database](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.Database](mgr)),
 		).
 		Owns(&batchv1.Job{}), nil
 }

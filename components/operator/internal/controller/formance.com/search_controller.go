@@ -25,7 +25,6 @@ import (
 	deployments "github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/httpapis"
 	. "github.com/formancehq/operator/internal/resources/registries"
-	"github.com/formancehq/operator/internal/resources/stacks"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -44,17 +43,17 @@ type SearchController struct{}
 
 func (r *SearchController) Reconcile(ctx Context, search *v1beta1.Search) error {
 
-	stack, err := stacks.GetStack(ctx, search)
+	stack, err := GetStack(ctx, search)
 	if err != nil {
 		return err
 	}
 
-	elasticSearchConfiguration, err := stacks.RequireLabelledConfig[*v1beta1.ElasticSearchConfiguration](ctx, search.Spec.Stack)
+	elasticSearchConfiguration, err := RequireLabelledConfig[*v1beta1.ElasticSearchConfiguration](ctx, search.Spec.Stack)
 	if err != nil {
 		return err
 	}
 
-	env, err := GetCommonServicesEnvVars(ctx, stack, search)
+	env, err := GetCommonModuleEnvVars(ctx, stack, search)
 	if err != nil {
 		return err
 	}
@@ -136,18 +135,18 @@ func (r *SearchController) Reconcile(ctx Context, search *v1beta1.Search) error 
 func (r *SearchController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Search{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
-		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(stacks.Watch[*v1beta1.Search](mgr))).
+		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(Watch[*v1beta1.Search](mgr))).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Search](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.Search](mgr)),
 		).
 		Watches(
 			&v1beta1.ElasticSearchConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Search](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.Search](mgr)),
 		).
 		Watches(
 			&v1beta1.RegistriesConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Search](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.Search](mgr)),
 		).
 		Owns(&v1beta1.StreamProcessor{}).
 		Owns(&v1beta1.HTTPAPI{}).

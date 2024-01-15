@@ -1,11 +1,10 @@
-package stacks
+package core
 
 import (
 	"context"
 	"reflect"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
-	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -17,7 +16,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-func GetStack(ctx core.Context, spec Dependent) (*v1beta1.Stack, error) {
+func GetStack(ctx Context, spec Dependent) (*v1beta1.Stack, error) {
 	stack := &v1beta1.Stack{}
 	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
 		Name: spec.GetStack(),
@@ -43,6 +42,8 @@ type Module interface {
 	Dependent
 	GetVersion() string
 	GetConditions() []v1beta1.Condition
+	IsDebug() bool
+	IsDev() bool
 }
 
 var (
@@ -50,7 +51,7 @@ var (
 	ErrMultipleInstancesFound = errors.New("multiple resources found")
 )
 
-func GetAllDependents[T client.Object](ctx core.Context, stackName string) ([]T, error) {
+func GetAllDependents[T client.Object](ctx Context, stackName string) ([]T, error) {
 	var t T
 	t = reflect.New(reflect.TypeOf(t).Elem()).Interface().(T)
 
@@ -79,7 +80,7 @@ func GetAllDependents[T client.Object](ctx core.Context, stackName string) ([]T,
 	}), nil
 }
 
-func GetSingleDependency[T client.Object](ctx core.Context, stackName string) (T, error) {
+func GetSingleDependency[T client.Object](ctx Context, stackName string) (T, error) {
 	var zeroValue T
 
 	items, err := GetAllDependents[T](ctx, stackName)
@@ -97,7 +98,7 @@ func GetSingleDependency[T client.Object](ctx core.Context, stackName string) (T
 	}
 }
 
-func HasDependency[T client.Object](ctx core.Context, stackName string) (bool, error) {
+func HasDependency[T client.Object](ctx Context, stackName string) (bool, error) {
 	ret, err := GetSingleDependency[T](ctx, stackName)
 	if err != nil && !errors.Is(err, ErrMultipleInstancesFound) {
 		return false, err
@@ -108,7 +109,7 @@ func HasDependency[T client.Object](ctx core.Context, stackName string) (bool, e
 	return true, nil
 }
 
-func GetIfEnabled[T client.Object](ctx core.Context, stackName string) (T, error) {
+func GetIfEnabled[T client.Object](ctx Context, stackName string) (T, error) {
 	var t T
 	ret, err := GetSingleDependency[T](ctx, stackName)
 	if err != nil {
@@ -121,7 +122,7 @@ func GetIfEnabled[T client.Object](ctx core.Context, stackName string) (T, error
 	return ret, nil
 }
 
-func IsEnabledByLabel[T client.Object](ctx core.Context, stackName string) (bool, error) {
+func IsEnabledByLabel[T client.Object](ctx Context, stackName string) (bool, error) {
 	ret, err := GetByLabel[T](ctx, stackName)
 	if err != nil {
 		return false, err
@@ -133,12 +134,12 @@ func IsEnabledByLabel[T client.Object](ctx core.Context, stackName string) (bool
 	return true, nil
 }
 
-func WatchUsingLabels[T client.Object](mgr core.Manager) func(ctx context.Context, object client.Object) []reconcile.Request {
+func WatchUsingLabels[T client.Object](mgr Manager) func(ctx context.Context, object client.Object) []reconcile.Request {
 	return func(ctx context.Context, object client.Object) []reconcile.Request {
 		options := make([]client.ListOption, 0)
-		if object.GetLabels()[core.StackLabel] != "any" {
+		if object.GetLabels()[StackLabel] != "any" {
 			options = append(options, client.MatchingFields{
-				"stack": object.GetLabels()[core.StackLabel],
+				"stack": object.GetLabels()[StackLabel],
 			})
 		}
 
@@ -155,18 +156,18 @@ func WatchUsingLabels[T client.Object](mgr core.Manager) func(ctx context.Contex
 			return []reconcile.Request{}
 		}
 
-		return core.MapObjectToReconcileRequests(
+		return MapObjectToReconcileRequests(
 			collectionutils.Map(us.Items, collectionutils.ToPointer[unstructured.Unstructured])...,
 		)
 	}
 }
 
-func GetByLabel[T client.Object](ctx core.Context, stackName string) (T, error) {
+func GetByLabel[T client.Object](ctx Context, stackName string) (T, error) {
 
 	var (
 		zeroValue T
 	)
-	stackSelectorRequirement, err := labels.NewRequirement(core.StackLabel, selection.In, []string{"any", stackName})
+	stackSelectorRequirement, err := labels.NewRequirement(StackLabel, selection.In, []string{"any", stackName})
 	if err != nil {
 		return zeroValue, err
 	}
@@ -201,7 +202,7 @@ func GetByLabel[T client.Object](ctx core.Context, stackName string) (T, error) 
 	}
 }
 
-func RequireLabelledConfig[T client.Object](ctx core.Context, stackName string) (T, error) {
+func RequireLabelledConfig[T client.Object](ctx Context, stackName string) (T, error) {
 	t, err := GetByLabel[T](ctx, stackName)
 	if err != nil {
 		return t, err

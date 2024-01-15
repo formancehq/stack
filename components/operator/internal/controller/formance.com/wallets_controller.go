@@ -24,7 +24,6 @@ import (
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/httpapis"
 	"github.com/formancehq/operator/internal/resources/registries"
-	"github.com/formancehq/operator/internal/resources/stacks"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -43,12 +42,12 @@ type WalletsController struct{}
 
 func (r *WalletsController) Reconcile(ctx Context, wallets *v1beta1.Wallets) error {
 
-	stack, err := stacks.GetStack(ctx, wallets)
+	stack, err := GetStack(ctx, wallets)
 	if err != nil {
 		return err
 	}
 
-	hasAuth, err := stacks.HasDependency[*v1beta1.Auth](ctx, wallets.Spec.Stack)
+	hasAuth, err := HasDependency[*v1beta1.Auth](ctx, wallets.Spec.Stack)
 	if err != nil {
 		return err
 	}
@@ -75,7 +74,7 @@ func (r *WalletsController) Reconcile(ctx Context, wallets *v1beta1.Wallets) err
 }
 
 func (r *WalletsController) createDeployment(ctx Context, stack *v1beta1.Stack, wallets *v1beta1.Wallets, authClient *v1beta1.AuthClient) error {
-	env, err := GetCommonServicesEnvVars(ctx, stack, wallets)
+	env, err := GetCommonModuleEnvVars(ctx, stack, wallets)
 	if err != nil {
 		return err
 	}
@@ -112,18 +111,18 @@ func (r *WalletsController) createDeployment(ctx Context, stack *v1beta1.Stack, 
 // SetupWithManager sets up the controller with the Manager.
 func (r *WalletsController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
-		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(stacks.Watch[*v1beta1.Wallets](mgr))).
+		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(Watch[*v1beta1.Wallets](mgr))).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Wallets](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.Wallets](mgr)),
 		).
 		Watches(
 			&v1beta1.RegistriesConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Wallets](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.Wallets](mgr)),
 		).
 		Watches(
 			&v1beta1.Auth{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependents[*v1beta1.Wallets](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchDependents[*v1beta1.Wallets](mgr)),
 		).
 		Owns(&v1beta1.AuthClient{}).
 		Owns(&appsv1.Deployment{}).

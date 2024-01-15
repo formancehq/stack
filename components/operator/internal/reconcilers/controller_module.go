@@ -2,11 +2,10 @@ package reconcilers
 
 import (
 	"github.com/formancehq/operator/internal/core"
-	"github.com/formancehq/operator/internal/resources/stacks"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type Module[T stacks.Module] struct {
+type Module[T core.Module] struct {
 	core.Controller[T]
 }
 
@@ -37,7 +36,7 @@ func (r *Module[T]) Reconcile(ctx core.Context, t T) error {
 	return nil
 }
 
-func ForModule[T stacks.Module](ctrl core.Controller[T]) *Reconciler[T] {
+func ForModule[T core.Module](ctrl core.Controller[T]) *Reconciler[T] {
 	return New[T](&StackDependency[T]{
 		Controller: &Module[T]{
 			Controller: ctrl,

@@ -29,7 +29,6 @@ import (
 	"github.com/formancehq/operator/internal/resources/gateways"
 	. "github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/services"
-	"github.com/formancehq/operator/internal/resources/stacks"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -51,17 +50,17 @@ type GatewayController struct{}
 
 func (r *GatewayController) Reconcile(ctx Context, gateway *v1beta1.Gateway) error {
 
-	stack, err := stacks.GetStack(ctx, gateway)
+	stack, err := GetStack(ctx, gateway)
 	if err != nil {
 		return err
 	}
 
-	httpAPIs, err := stacks.GetAllDependents[*v1beta1.HTTPAPI](ctx, gateway.Spec.Stack)
+	httpAPIs, err := GetAllDependents[*v1beta1.HTTPAPI](ctx, gateway.Spec.Stack)
 	if err != nil {
 		return err
 	}
 
-	auth, err := stacks.GetIfEnabled[*v1beta1.Auth](ctx, stack.Name)
+	auth, err := GetIfEnabled[*v1beta1.Auth](ctx, stack.Name)
 	if err != nil {
 		return err
 	}
@@ -136,7 +135,7 @@ func (r *GatewayController) createAuditTopic(ctx Context, stack *v1beta1.Stack, 
 func (r *GatewayController) createDeployment(ctx Context, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway, caddyfileConfigMap *corev1.ConfigMap, auditTopic *v1beta1.BrokerTopic) error {
 
-	env, err := GetCommonServicesEnvVars(ctx, stack, gateway)
+	env, err := GetCommonModuleEnvVars(ctx, stack, gateway)
 	if err != nil {
 		return err
 	}
@@ -152,10 +151,10 @@ func (r *GatewayController) createDeployment(ctx Context, stack *v1beta1.Stack,
 		return err
 	}
 
-	mutators := ConfigureCaddy(caddyfileConfigMap, image, env, gateway.Spec.ResourceRequirements)
-	mutators = append(mutators, deployments.WithMatchingLabels("gateway"))
-
-	_, err = deployments.CreateOrUpdate(ctx, gateway, "gateway", mutators...)
+	_, err = deployments.CreateOrUpdate(ctx, gateway, "gateway",
+		ConfigureCaddy(caddyfileConfigMap, image, env, gateway.Spec.ResourceRequirements),
+		deployments.WithMatchingLabels("gateway"),
+	)
 	return err
 }
 
@@ -278,10 +277,10 @@ func (r *GatewayController) SetupWithManager(mgr Manager) (*builder.Builder, err
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).
 		Owns(&networkingv1.Ingress{}).
-		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(stacks.Watch[*v1beta1.Gateway](mgr))).
+		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(Watch[*v1beta1.Gateway](mgr))).
 		Watches(
 			&v1beta1.Stack{},
-			handler.EnqueueRequestsFromMapFunc(stacks.Watch[*v1beta1.Gateway](mgr)),
+			handler.EnqueueRequestsFromMapFunc(Watch[*v1beta1.Gateway](mgr)),
 		).
 		Watches(
 			&v1beta1.BrokerTopic{},
@@ -290,21 +289,21 @@ func (r *GatewayController) SetupWithManager(mgr Manager) (*builder.Builder, err
 		).
 		Watches(
 			&v1beta1.RegistriesConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Gateway](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.Gateway](mgr)),
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Gateway](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.Gateway](mgr)),
 		).
 		Watches(
 			&v1beta1.HTTPAPI{},
 			handler.EnqueueRequestsFromMapFunc(
-				stacks.WatchDependents[*v1beta1.Gateway](mgr)),
+				WatchDependents[*v1beta1.Gateway](mgr)),
 		).
 		Watches(
 			&v1beta1.Auth{},
 			handler.EnqueueRequestsFromMapFunc(
-				stacks.WatchDependents[*v1beta1.Gateway](mgr)),
+				WatchDependents[*v1beta1.Gateway](mgr)),
 		), nil
 }
 

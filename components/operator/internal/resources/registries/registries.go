@@ -6,11 +6,10 @@ import (
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
-	"github.com/formancehq/operator/internal/resources/stacks"
 )
 
 func TranslateImage(ctx core.Context, stackName, image string) (string, error) {
-	registries, err := stacks.GetByLabel[*v1beta1.RegistriesConfiguration](ctx, stackName)
+	registries, err := core.GetByLabel[*v1beta1.RegistriesConfiguration](ctx, stackName)
 	if err != nil {
 		return "", err
 	}

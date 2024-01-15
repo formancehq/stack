@@ -25,7 +25,6 @@ import (
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/httpapis"
 	. "github.com/formancehq/operator/internal/resources/registries"
-	"github.com/formancehq/operator/internal/resources/stacks"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -43,7 +42,7 @@ type ReconciliationController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=reconciliations/finalizers,verbs=update
 
 func (r *ReconciliationController) Reconcile(ctx Context, reconciliation *v1beta1.Reconciliation) error {
-	stack, err := stacks.GetStack(ctx, reconciliation)
+	stack, err := GetStack(ctx, reconciliation)
 	if err != nil {
 		return err
 	}
@@ -75,7 +74,7 @@ func (r *ReconciliationController) Reconcile(ctx Context, reconciliation *v1beta
 
 func (r *ReconciliationController) createDeployment(ctx Context, stack *v1beta1.Stack,
 	reconciliation *v1beta1.Reconciliation, database *v1beta1.Database, authClient *v1beta1.AuthClient) error {
-	env, err := GetCommonServicesEnvVars(ctx, stack, reconciliation)
+	env, err := GetCommonModuleEnvVars(ctx, stack, reconciliation)
 	if err != nil {
 		return err
 	}
@@ -121,19 +120,19 @@ func (r *ReconciliationController) SetupWithManager(mgr Manager) (*builder.Build
 	return ctrl.NewControllerManagedBy(mgr).
 		Watches(
 			&v1beta1.Ledger{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependents[*v1beta1.Reconciliation](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchDependents[*v1beta1.Reconciliation](mgr)),
 		).
 		Watches(
 			&v1beta1.Payments{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependents[*v1beta1.Reconciliation](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchDependents[*v1beta1.Reconciliation](mgr)),
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Reconciliation](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.Reconciliation](mgr)),
 		).
 		Watches(
 			&v1beta1.RegistriesConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Reconciliation](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.Reconciliation](mgr)),
 		).
 		Owns(&v1beta1.Database{}).
 		Owns(&appsv1.Deployment{}).

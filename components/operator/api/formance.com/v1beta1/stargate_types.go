@@ -58,6 +58,14 @@ type Stargate struct {
 	Status StargateStatus `json:"status,omitempty"`
 }
 
+func (in *Stargate) GetVersion() string {
+	return in.Spec.Version
+}
+
+func (in *Stargate) GetConditions() []Condition {
+	return in.Status.Conditions
+}
+
 func (in *Stargate) SetReady(b bool) {
 	in.Status.Ready = b
 }

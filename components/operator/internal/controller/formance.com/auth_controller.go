@@ -27,7 +27,6 @@ import (
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/httpapis"
 	. "github.com/formancehq/operator/internal/resources/registries"
-	"github.com/formancehq/operator/internal/resources/stacks"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"gopkg.in/yaml.v3"
 	appsv1 "k8s.io/api/apps/v1"
@@ -48,12 +47,12 @@ type AuthController struct{}
 
 func (r *AuthController) Reconcile(ctx Context, auth *v1beta1.Auth) error {
 
-	stack, err := stacks.GetStack(ctx, auth)
+	stack, err := GetStack(ctx, auth)
 	if err != nil {
 		return err
 	}
 
-	authClientsList, err := stacks.GetAllDependents[*v1beta1.AuthClient](ctx, auth.Spec.Stack)
+	authClientsList, err := GetAllDependents[*v1beta1.AuthClient](ctx, auth.Spec.Stack)
 	if err != nil {
 		return err
 	}
@@ -82,13 +81,6 @@ func (r *AuthController) Reconcile(ctx Context, auth *v1beta1.Auth) error {
 		}
 	}
 
-	fmt.Println("create httpapi for auth")
-	fmt.Println("create httpapi for auth")
-	fmt.Println("create httpapi for auth")
-	fmt.Println("create httpapi for auth")
-	fmt.Println("create httpapi for auth")
-	fmt.Println("create httpapi for auth")
-	fmt.Println("create httpapi for auth")
 	if err := httpapis.Create(ctx, auth,
 		httpapis.WithRules(httpapis.RuleUnsecured()),
 		httpapis.WithServiceConfiguration(auth.Spec.Service)); err != nil {
@@ -134,7 +126,7 @@ func (r *AuthController) createConfiguration(ctx Context, stack *v1beta1.Stack, 
 func (r *AuthController) createDeployment(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, database *v1beta1.Database,
 	configMap *corev1.ConfigMap) (func(deployment *appsv1.Deployment), error) {
 
-	env, err := GetCommonServicesEnvVars(ctx, stack, auth)
+	env, err := GetCommonModuleEnvVars(ctx, stack, auth)
 	if err != nil {
 		return nil, err
 	}
@@ -213,14 +205,14 @@ func (r *AuthController) SetupWithManager(mgr Manager) (*builder.Builder, error)
 		Owns(&v1beta1.HTTPAPI{}).
 		Owns(&v1beta1.Database{}).
 		Owns(&corev1.ConfigMap{}).
-		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(stacks.Watch[*v1beta1.Auth](mgr))).
+		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(Watch[*v1beta1.Auth](mgr))).
 		Watches(
 			&v1beta1.RegistriesConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Auth](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.Auth](mgr)),
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Auth](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.Auth](mgr)),
 		).
 		Watches(
 			&v1beta1.Database{},
@@ -230,7 +222,7 @@ func (r *AuthController) SetupWithManager(mgr Manager) (*builder.Builder, error)
 		Watches(
 			&v1beta1.AuthClient{},
 			handler.EnqueueRequestsFromMapFunc(
-				stacks.WatchDependents[*v1beta1.Auth](mgr)),
+				WatchDependents[*v1beta1.Auth](mgr)),
 		), nil
 }
 

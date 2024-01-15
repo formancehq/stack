@@ -18,7 +18,30 @@ package v1beta1
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"time"
 )
+
+type LockingStrategyRedisConfig struct {
+	// +optional
+	Uri string `json:"uri,omitempty"`
+	// +optional
+	TLS bool `json:"tls"`
+	// +optional
+	InsecureTLS bool `json:"insecure,omitempty"`
+	// +optional
+	Duration time.Duration `json:"duration,omitempty"`
+	// +optional
+	Retry time.Duration `json:"retry,omitempty"`
+}
+
+type LockingStrategy struct {
+	// +kubebuilder:Enum:={memory,redis}
+	// +kubebuilder:default:=memory
+	// +optional
+	Strategy string `json:"strategy,omitempty"`
+	// +optional
+	Redis LockingStrategyRedisConfig `json:"redis"`
+}
 
 type DeploymentStrategy string
 
@@ -37,6 +60,9 @@ type LedgerSpec struct {
 	DeploymentStrategy DeploymentStrategy `json:"deploymentStrategy,omitempty"`
 	//+optional
 	Service *ServiceConfiguration `json:"service,omitempty"`
+	// LockingStrategy is intended for ledger v1 only
+	//+optional
+	LockingStrategy LockingStrategy `json:"lockingStrategy,omitempty"`
 }
 
 // LedgerStatus defines the observed state of Ledger

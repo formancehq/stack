@@ -7,37 +7,35 @@ import (
 )
 
 func ConfigureCaddy(caddyfile *v1.ConfigMap, image string, env []v1.EnvVar,
-	resourceRequirements *v1.ResourceRequirements) []ObjectMutator[*appsv1.Deployment] {
-	return []ObjectMutator[*appsv1.Deployment]{
-		func(t *appsv1.Deployment) {
-			t.Spec.Template.Annotations = collectionutils.MergeMaps(t.Spec.Template.Annotations, map[string]string{
-				"caddyfile-hash": HashFromConfigMaps(caddyfile),
-			})
-			t.Spec.Template.Spec.Volumes = []v1.Volume{
-				volumeFromConfigMap("caddyfile", caddyfile),
-			}
-			t.Spec.Template.Spec.Containers = []v1.Container{
-				{
-					Name:    "gateway",
-					Command: []string{"/usr/bin/caddy"},
-					Args: []string{
-						"run",
-						"--config", "/gateway/Caddyfile",
-						"--adapter", "caddyfile",
-					},
-					Image:     image,
-					Env:       env,
-					Resources: GetResourcesRequirementsWithDefault(resourceRequirements, ResourceSizeSmall()),
-					VolumeMounts: []v1.VolumeMount{
-						volumeMount("caddyfile", "/gateway"),
-					},
-					Ports: []v1.ContainerPort{{
-						Name:          "http",
-						ContainerPort: 8080,
-					}},
+	resourceRequirements *v1.ResourceRequirements) ObjectMutator[*appsv1.Deployment] {
+	return func(t *appsv1.Deployment) {
+		t.Spec.Template.Annotations = collectionutils.MergeMaps(t.Spec.Template.Annotations, map[string]string{
+			"caddyfile-hash": HashFromConfigMaps(caddyfile),
+		})
+		t.Spec.Template.Spec.Volumes = []v1.Volume{
+			volumeFromConfigMap("caddyfile", caddyfile),
+		}
+		t.Spec.Template.Spec.Containers = []v1.Container{
+			{
+				Name:    "gateway",
+				Command: []string{"/usr/bin/caddy"},
+				Args: []string{
+					"run",
+					"--config", "/gateway/Caddyfile",
+					"--adapter", "caddyfile",
 				},
-			}
-		},
+				Image:     image,
+				Env:       env,
+				Resources: GetResourcesRequirementsWithDefault(resourceRequirements, ResourceSizeSmall()),
+				VolumeMounts: []v1.VolumeMount{
+					volumeMount("caddyfile", "/gateway"),
+				},
+				Ports: []v1.ContainerPort{{
+					Name:          "http",
+					ContainerPort: 8080,
+				}},
+			},
+		}
 	}
 }
 

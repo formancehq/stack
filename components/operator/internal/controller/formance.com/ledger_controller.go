@@ -19,6 +19,8 @@ package formance_com
 import (
 	_ "embed"
 	"fmt"
+	"golang.org/x/mod/semver"
+	"strconv"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
@@ -31,7 +33,6 @@ import (
 	"github.com/formancehq/operator/internal/resources/ledgers"
 	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/services"
-	"github.com/formancehq/operator/internal/resources/stacks"
 	"github.com/formancehq/operator/internal/resources/streams"
 	"github.com/formancehq/search/benthos"
 	appsv1 "k8s.io/api/apps/v1"
@@ -53,7 +54,7 @@ type LedgerController struct{}
 
 func (r *LedgerController) Reconcile(ctx Context, ledger *v1beta1.Ledger) error {
 
-	stack, err := stacks.GetStack(ctx, ledger)
+	stack, err := GetStack(ctx, ledger)
 	if err != nil {
 		return err
 	}
@@ -73,12 +74,22 @@ func (r *LedgerController) Reconcile(ctx Context, ledger *v1beta1.Ledger) error 
 		return err
 	}
 
-	hasSearch, err := stacks.HasDependency[*v1beta1.Search](ctx, stack.Name)
+	isV2 := false
+	moduleVersion := GetModuleVersion(stack, ledger.Spec.Version)
+	if !semver.IsValid(moduleVersion) || semver.Compare(moduleVersion, "v2.0.0-alpha") > 0 {
+		isV2 = true
+	}
+
+	hasSearch, err := HasDependency[*v1beta1.Search](ctx, stack.Name)
 	if err != nil {
 		return err
 	}
 	if hasSearch {
-		if err := streams.LoadFromFileSystem(ctx, benthos.Streams, ledger.Spec.Stack, "streams/ledger/v2.0.0",
+		streamsVersion := "v1.0.0"
+		if isV2 {
+			streamsVersion = "v2.0.0"
+		}
+		if err := streams.LoadFromFileSystem(ctx, benthos.Streams, ledger.Spec.Stack, "streams/ledger/"+streamsVersion,
 			WithController[*v1beta1.Stream](ctx.GetScheme(), ledger),
 			WithLabels[*v1beta1.Stream](map[string]string{
 				"service": "ledger",
@@ -95,7 +106,7 @@ func (r *LedgerController) Reconcile(ctx Context, ledger *v1beta1.Ledger) error 
 	}
 
 	if database.Status.Ready {
-		err = r.installLedger(ctx, stack, ledger, database, image)
+		err = r.installLedger(ctx, stack, ledger, database, image, isV2)
 		if err != nil {
 			return err
 		}
@@ -105,37 +116,54 @@ func (r *LedgerController) Reconcile(ctx Context, ledger *v1beta1.Ledger) error 
 }
 
 func (r *LedgerController) installLedger(ctx Context, stack *v1beta1.Stack,
-	ledger *v1beta1.Ledger, database *v1beta1.Database, image string) error {
+	ledger *v1beta1.Ledger, database *v1beta1.Database, image string, isV2 bool) error {
 
 	switch ledger.Spec.DeploymentStrategy {
 	case v1beta1.DeploymentStrategyMonoWriterMultipleReader:
 		if err := DeleteIfExists[*appsv1.Deployment](ctx, GetNamespacedResourceName(stack.Name, "ledger")); err != nil {
 			return err
 		}
-		return r.installLedgerMonoWriterMultipleReader(ctx, stack, ledger, database, image)
+		return r.installLedgerMonoWriterMultipleReader(ctx, stack, ledger, database, image, isV2)
 	default:
 		if err := r.uninstallLedgerMonoWriterMultipleReader(ctx, stack); err != nil {
 			return err
 		}
-		return r.installLedgerSingleInstance(ctx, stack, ledger, database, image)
+		return r.installLedgerSingleInstance(ctx, stack, ledger, database, image, isV2)
 	}
 }
 
 func (r *LedgerController) installLedgerSingleInstance(ctx Context, stack *v1beta1.Stack,
-	ledger *v1beta1.Ledger, database *v1beta1.Database, version string) error {
-	container, err := r.createLedgerContainerFull(ctx, stack)
+	ledger *v1beta1.Ledger, database *v1beta1.Database, version string, v2 bool) error {
+	container, err := r.createLedgerContainerFull(ctx, stack, v2)
 	if err != nil {
 		return err
 	}
 
-	err = r.setCommonContainerConfiguration(ctx, stack, ledger, version, database, container)
+	err = r.setCommonContainerConfiguration(ctx, stack, ledger, version, database, container, v2)
 	if err != nil {
 		return err
+	}
+
+	if !v2 && ledger.Spec.LockingStrategy.Strategy == "redis" {
+		container.Env = append(container.Env,
+			Env("NUMARY_LOCK_STRATEGY", "redis"),
+			Env("NUMARY_LOCK_STRATEGY_REDIS_URL", ledger.Spec.LockingStrategy.Redis.Uri),
+			Env("NUMARY_LOCK_STRATEGY_REDIS_TLS_ENABLED", strconv.FormatBool(ledger.Spec.LockingStrategy.Redis.TLS)),
+			Env("NUMARY_LOCK_STRATEGY_REDIS_TLS_INSECURE", strconv.FormatBool(ledger.Spec.LockingStrategy.Redis.InsecureTLS)),
+		)
+
+		if ledger.Spec.LockingStrategy.Redis.Duration != 0 {
+			container.Env = append(container.Env, Env("NUMARY_LOCK_STRATEGY_REDIS_DURATION", ledger.Spec.LockingStrategy.Redis.Duration.String()))
+		}
+
+		if ledger.Spec.LockingStrategy.Redis.Retry != 0 {
+			container.Env = append(container.Env, Env("NUMARY_LOCK_STRATEGY_REDIS_RETRY", ledger.Spec.LockingStrategy.Redis.Retry.String()))
+		}
 	}
 
 	if err := r.createDeployment(ctx, ledger, "ledger", *container,
 		deployments.WithReplicas(1),
-		r.setInitContainer(database, version),
+		r.setInitContainer(database, version, v2),
 	); err != nil {
 		return err
 	}
@@ -143,8 +171,12 @@ func (r *LedgerController) installLedgerSingleInstance(ctx Context, stack *v1bet
 	return nil
 }
 
-func (r *LedgerController) setInitContainer(database *v1beta1.Database, image string) func(t *appsv1.Deployment) {
+func (r *LedgerController) setInitContainer(database *v1beta1.Database, image string, v2 bool) func(t *appsv1.Deployment) {
 	return func(t *appsv1.Deployment) {
+		if !v2 {
+			t.Spec.Template.Spec.InitContainers = []corev1.Container{}
+			return
+		}
 		t.Spec.Template.Spec.InitContainers = []corev1.Container{
 			databases.MigrateDatabaseContainer(
 				image,
@@ -161,11 +193,10 @@ func (r *LedgerController) setInitContainer(database *v1beta1.Database, image st
 	}
 }
 
-func (r *LedgerController) installLedgerMonoWriterMultipleReader(ctx Context, stack *v1beta1.Stack,
-	ledger *v1beta1.Ledger, database *v1beta1.Database, image string) error {
+func (r *LedgerController) installLedgerMonoWriterMultipleReader(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, database *v1beta1.Database, image string, v2 bool) error {
 
 	createDeployment := func(name string, container corev1.Container, mutators ...ObjectMutator[*appsv1.Deployment]) error {
-		err := r.setCommonContainerConfiguration(ctx, stack, ledger, image, database, &container)
+		err := r.setCommonContainerConfiguration(ctx, stack, ledger, image, database, &container, v2)
 		if err != nil {
 			return err
 		}
@@ -181,18 +212,18 @@ func (r *LedgerController) installLedgerMonoWriterMultipleReader(ctx Context, st
 		return nil
 	}
 
-	container, err := r.createLedgerContainerWriteOnly(ctx, stack)
+	container, err := r.createLedgerContainerWriteOnly(ctx, stack, v2)
 	if err != nil {
 		return err
 	}
 	if err := createDeployment("ledger-write", *container,
 		deployments.WithReplicas(1),
-		r.setInitContainer(database, image),
+		r.setInitContainer(database, image, v2),
 	); err != nil {
 		return err
 	}
 
-	container = r.createLedgerContainerReadOnly()
+	container = r.createLedgerContainerReadOnly(v2)
 	if err := createDeployment("ledger-read", *container); err != nil {
 		return err
 	}
@@ -254,15 +285,18 @@ func (r *LedgerController) createDeployment(ctx Context, ledger *v1beta1.Ledger,
 	return err
 }
 
-func (r *LedgerController) setCommonContainerConfiguration(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger,
-	image string, database *v1beta1.Database, container *corev1.Container) error {
+func (r *LedgerController) setCommonContainerConfiguration(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, image string, database *v1beta1.Database, container *corev1.Container, v2 bool) error {
 
-	env, err := GetCommonServicesEnvVars(ctx, stack, ledger)
+	prefix := ""
+	if !v2 {
+		prefix = "NUMARY_"
+	}
+	env, err := GetCommonModuleEnvVarsWithPrefix(ctx, stack, ledger, prefix)
 	if err != nil {
 		return err
 	}
 
-	authEnvVars, err := auths.EnvVars(ctx, stack, "ledger", ledger.Spec.Auth)
+	authEnvVars, err := auths.EnvVarsWithPrefix(ctx, stack, "ledger", ledger.Spec.Auth, prefix)
 	if err != nil {
 		return err
 	}
@@ -271,27 +305,31 @@ func (r *LedgerController) setCommonContainerConfiguration(ctx Context, stack *v
 	container.Resources = GetResourcesRequirementsWithDefault(ledger.Spec.ResourceRequirements, ResourceSizeSmall())
 	container.Image = image
 	container.Env = append(container.Env, env...)
-	container.Env = append(container.Env, databases.PostgresEnvVars(
-		database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)...)
-	container.Env = append(container.Env, Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"))
-	container.Env = append(container.Env, Env("STORAGE_DRIVER", "postgres"))
+	container.Env = append(container.Env, databases.PostgresEnvVarsWithPrefix(
+		database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database, prefix)...)
+	container.Env = append(container.Env, Env(fmt.Sprintf("%sSTORAGE_POSTGRES_CONN_STRING", prefix), fmt.Sprintf("$(%sPOSTGRES_URI)", prefix)))
+	container.Env = append(container.Env, Env(fmt.Sprintf("%sSTORAGE_DRIVER", prefix), "postgres"))
 	container.Ports = []corev1.ContainerPort{deployments.StandardHTTPPort()}
 	container.LivenessProbe = deployments.DefaultLiveness("http")
 
 	return nil
 }
 
-func (r *LedgerController) createBaseLedgerContainer() *corev1.Container {
-	return &corev1.Container{
-		Env: []corev1.EnvVar{
-			Env("BIND", ":8080"),
-		},
+func (r *LedgerController) createBaseLedgerContainer(v2 bool) *corev1.Container {
+	ret := &corev1.Container{
 		Name: "ledger",
 	}
+	var bindFlag = "BIND"
+	if !v2 {
+		bindFlag = "NUMARY_SERVER_HTTP_BIND_ADDRESS"
+	}
+	ret.Env = append(ret.Env, Env(bindFlag, ":8080"))
+
+	return ret
 }
 
-func (r *LedgerController) createLedgerContainerFull(ctx Context, stack *v1beta1.Stack) (*corev1.Container, error) {
-	container := r.createBaseLedgerContainer()
+func (r *LedgerController) createLedgerContainerFull(ctx Context, stack *v1beta1.Stack, v2 bool) (*corev1.Container, error) {
+	container := r.createBaseLedgerContainer(v2)
 	topic, err := brokertopics.Find(ctx, stack, "ledger")
 	if err != nil {
 		return nil, err
@@ -302,19 +340,24 @@ func (r *LedgerController) createLedgerContainerFull(ctx Context, stack *v1beta1
 			return nil, fmt.Errorf("topic %s is not yet ready", topic.Name)
 		}
 
-		container.Env = append(container.Env, brokerconfigurations.BrokerEnvVars(*topic.Status.Configuration, stack.Name, "ledger")...)
-		container.Env = append(container.Env, Env("PUBLISHER_TOPIC_MAPPING", "*:"+GetObjectName(stack.Name, "ledger")))
+		prefix := ""
+		if !v2 {
+			prefix = "NUMARY_"
+		}
+
+		container.Env = append(container.Env, brokerconfigurations.BrokerEnvVarsWithPrefix(*topic.Status.Configuration, stack.Name, "ledger", prefix)...)
+		container.Env = append(container.Env, Env(fmt.Sprintf("%sPUBLISHER_TOPIC_MAPPING", prefix), "*:"+GetObjectName(stack.Name, "ledger")))
 	}
 
 	return container, nil
 }
 
-func (r *LedgerController) createLedgerContainerWriteOnly(ctx Context, stack *v1beta1.Stack) (*corev1.Container, error) {
-	return r.createLedgerContainerFull(ctx, stack)
+func (r *LedgerController) createLedgerContainerWriteOnly(ctx Context, stack *v1beta1.Stack, v2 bool) (*corev1.Container, error) {
+	return r.createLedgerContainerFull(ctx, stack, v2)
 }
 
-func (r *LedgerController) createLedgerContainerReadOnly() *corev1.Container {
-	container := r.createBaseLedgerContainer()
+func (r *LedgerController) createLedgerContainerReadOnly(v2 bool) *corev1.Container {
+	container := r.createBaseLedgerContainer(v2)
 	container.Env = append(container.Env, Env("READ_ONLY", "true"))
 	return container
 }
@@ -328,17 +371,15 @@ func (r *LedgerController) createGatewayDeployment(ctx Context, stack *v1beta1.S
 		return err
 	}
 
-	env, err := GetCommonServicesEnvVars(ctx, stack, ledger)
+	env, err := GetCommonModuleEnvVars(ctx, stack, ledger)
 	if err != nil {
 		return err
 	}
 
-	mutators := ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", env, nil)
-	mutators = append(mutators,
+	_, err = deployments.CreateOrUpdate(ctx, ledger, "ledger-gateway",
+		ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", env, nil),
 		deployments.WithMatchingLabels("ledger"),
 	)
-
-	_, err = deployments.CreateOrUpdate(ctx, ledger, "ledger-gateway", mutators...)
 	return err
 }
 
@@ -346,7 +387,7 @@ func (r *LedgerController) createGatewayDeployment(ctx Context, stack *v1beta1.S
 func (r *LedgerController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Ledger{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
-		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(stacks.Watch[*v1beta1.Ledger](mgr))).
+		Watches(&v1beta1.Stack{}, handler.EnqueueRequestsFromMapFunc(Watch[*v1beta1.Ledger](mgr))).
 		Watches(
 			&v1beta1.BrokerTopic{},
 			handler.EnqueueRequestsFromMapFunc(
@@ -359,15 +400,15 @@ func (r *LedgerController) SetupWithManager(mgr Manager) (*builder.Builder, erro
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Ledger](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.Ledger](mgr)),
 		).
 		Watches(
 			&v1beta1.RegistriesConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.Ledger](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.Ledger](mgr)),
 		).
 		Watches(
 			&v1beta1.Search{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependents[*v1beta1.Ledger](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchDependents[*v1beta1.Ledger](mgr)),
 		).
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).

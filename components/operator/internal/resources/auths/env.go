@@ -6,14 +6,17 @@ import (
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
-	"github.com/formancehq/operator/internal/resources/stacks"
 	v1 "k8s.io/api/core/v1"
 )
 
 func EnvVars(ctx Context, stack *v1beta1.Stack, moduleName string, auth *v1beta1.AuthConfig) ([]v1.EnvVar, error) {
+	return EnvVarsWithPrefix(ctx, stack, moduleName, auth, "")
+}
+
+func EnvVarsWithPrefix(ctx Context, stack *v1beta1.Stack, moduleName string, auth *v1beta1.AuthConfig, prefix string) ([]v1.EnvVar, error) {
 	ret := make([]v1.EnvVar, 0)
 
-	hasAuth, err := stacks.HasDependency[*v1beta1.Auth](ctx, stack.Name)
+	hasAuth, err := HasDependency[*v1beta1.Auth](ctx, stack.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -27,21 +30,21 @@ func EnvVars(ctx Context, stack *v1beta1.Stack, moduleName string, auth *v1beta1
 	}
 
 	ret = append(ret,
-		Env("AUTH_ENABLED", "true"),
-		Env("AUTH_ISSUER", fmt.Sprintf("%s/api/auth", url)),
+		Env(fmt.Sprintf("%sAUTH_ENABLED", prefix), "true"),
+		Env(fmt.Sprintf("%sAUTH_ISSUER", prefix), fmt.Sprintf(fmt.Sprintf("%s/api/auth", url))),
 	)
 
 	if auth != nil {
 		if auth.ReadKeySetMaxRetries != 0 {
 			ret = append(ret,
-				Env("AUTH_READ_KEY_SET_MAX_RETRIES", strconv.Itoa(auth.ReadKeySetMaxRetries)),
+				Env(fmt.Sprintf("%sAUTH_READ_KEY_SET_MAX_RETRIES", prefix), strconv.Itoa(auth.ReadKeySetMaxRetries)),
 			)
 		}
 
 		if auth.CheckScopes {
 			ret = append(ret,
-				Env("AUTH_CHECK_SCOPES", "true"),
-				Env("AUTH_SERVICE", moduleName),
+				Env(fmt.Sprintf("%sAUTH_CHECK_SCOPES", prefix), "true"),
+				Env(fmt.Sprintf("%sAUTH_SERVICE", prefix), moduleName),
 			)
 		}
 	}

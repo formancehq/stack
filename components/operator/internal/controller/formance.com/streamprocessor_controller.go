@@ -27,7 +27,6 @@ import (
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	benthosOperator "github.com/formancehq/operator/internal/resources/searches/benthos"
-	"github.com/formancehq/operator/internal/resources/stacks"
 	"github.com/formancehq/search/benthos"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
@@ -52,17 +51,17 @@ type StreamProcessorController struct{}
 
 func (r *StreamProcessorController) Reconcile(ctx Context, streamProcessor *v1beta1.StreamProcessor) error {
 
-	brokerConfiguration, err := stacks.RequireLabelledConfig[*v1beta1.BrokerConfiguration](ctx, streamProcessor.Spec.Stack)
+	brokerConfiguration, err := RequireLabelledConfig[*v1beta1.BrokerConfiguration](ctx, streamProcessor.Spec.Stack)
 	if err != nil {
 		return errors.Wrap(err, "searching broker configuration")
 	}
 
-	elasticSearchConfiguration, err := stacks.RequireLabelledConfig[*v1beta1.ElasticSearchConfiguration](ctx, streamProcessor.Spec.Stack)
+	elasticSearchConfiguration, err := RequireLabelledConfig[*v1beta1.ElasticSearchConfiguration](ctx, streamProcessor.Spec.Stack)
 	if err != nil {
 		return errors.Wrap(err, "searching elasticsearch configuration")
 	}
 
-	stack, err := stacks.GetStack(ctx, streamProcessor)
+	stack, err := GetStack(ctx, streamProcessor)
 	if err != nil {
 		return err
 	}
@@ -79,7 +78,7 @@ func (r *StreamProcessorController) Reconcile(ctx Context, streamProcessor *v1be
 			Env("OPENSEARCH_BATCHING_PERIOD", streamProcessor.Spec.Batching.Period),
 		)
 	}
-	configuration, err := stacks.GetByLabel[*v1beta1.OpenTelemetryConfiguration](ctx, streamProcessor.Spec.Stack)
+	configuration, err := GetByLabel[*v1beta1.OpenTelemetryConfiguration](ctx, streamProcessor.Spec.Stack)
 	if err != nil {
 		return err
 	}
@@ -130,7 +129,7 @@ func (r *StreamProcessorController) Reconcile(ctx Context, streamProcessor *v1be
 		"-r", "/resources/*.yaml",
 		"-t", "/templates/*.yaml",
 	}
-	isOpenTelemetryEnabled, err := stacks.IsEnabledByLabel[*v1beta1.OpenTelemetryConfiguration](ctx, streamProcessor.Spec.Stack)
+	isOpenTelemetryEnabled, err := IsEnabledByLabel[*v1beta1.OpenTelemetryConfiguration](ctx, streamProcessor.Spec.Stack)
 	if err != nil {
 		return err
 	}
@@ -293,27 +292,27 @@ func (r *StreamProcessorController) SetupWithManager(mgr Manager) (*builder.Buil
 		For(&v1beta1.StreamProcessor{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Watches(
 			&v1beta1.BrokerConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.StreamProcessor](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.StreamProcessor](mgr)),
 		).
 		Watches(
 			&v1beta1.ElasticSearchConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.StreamProcessor](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.StreamProcessor](mgr)),
 		).
 		Watches(
 			&v1beta1.OpenTelemetryConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.StreamProcessor](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.StreamProcessor](mgr)),
 		).
 		Watches(
 			&v1beta1.Stack{},
-			handler.EnqueueRequestsFromMapFunc(stacks.Watch[*v1beta1.StreamProcessor](mgr)),
+			handler.EnqueueRequestsFromMapFunc(Watch[*v1beta1.StreamProcessor](mgr)),
 		).
 		Watches(
 			&v1beta1.Stream{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchDependents[*v1beta1.StreamProcessor](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchDependents[*v1beta1.StreamProcessor](mgr)),
 		).
 		Watches(
 			&v1beta1.RegistriesConfiguration{},
-			handler.EnqueueRequestsFromMapFunc(stacks.WatchUsingLabels[*v1beta1.StreamProcessor](mgr)),
+			handler.EnqueueRequestsFromMapFunc(WatchUsingLabels[*v1beta1.StreamProcessor](mgr)),
 		).
 		Owns(&corev1.ConfigMap{}).
 		Owns(&appsv1.Deployment{}), nil

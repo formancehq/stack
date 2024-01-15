@@ -70,6 +70,14 @@ type Gateway struct {
 	Status GatewayStatus `json:"status,omitempty"`
 }
 
+func (in *Gateway) GetVersion() string {
+	return in.Spec.Version
+}
+
+func (in *Gateway) GetConditions() []Condition {
+	return in.Status.Conditions
+}
+
 func (in *Gateway) SetReady(b bool) {
 	in.Status.Ready = b
 }
