@@ -96,15 +96,15 @@ func ResolveOrganizationID(cmd *cobra.Command, cfg *Config) (string, error) {
 		return "", errors.Wrap(err, "listing organizations")
 	}
 
-	if len(organizations.Data) == 0 {
+	if len(organizations.ListOrganizationResponse.Data) == 0 {
 		return "", errors.New("no organizations found")
 	}
 
-	if len(organizations.Data) > 1 {
+	if len(organizations.ListOrganizationResponse.Data) > 1 {
 		return "", ErrMultipleOrganizationsFound
 	}
 
-	return organizations.Data[0].Id, nil
+	return organizations.ListOrganizationResponse.Data[0].Id, nil
 }
 
 func GetSelectedStackID(cmd *cobra.Command) string {

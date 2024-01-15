@@ -1,7 +1,6 @@
 package organizations
 
 import (
-	"github.com/formancehq/fctl/cmd/cloud/organizations/internal"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
@@ -70,28 +69,28 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 			if cmd.Flags().Changed("name") {
 				return cmd.Flag("name").Value.String()
 			}
-			return org.Data.Name
+			return org.Data.Organization.Name
 		}(),
 		DefaultOrganizationAccess: func() *membershipclient.Role {
 			if cmd.Flags().Changed("default-organization-role") {
 				s := fctl.GetString(cmd, "default-organization-role")
 				return membershipclient.Role(s).Ptr()
 			}
-			return org.Data.DefaultOrganizationAccess
+			return org.Data.Organization.DefaultOrganizationAccess
 		}(),
 		DefaultStackAccess: func() *membershipclient.Role {
 			if cmd.Flags().Changed("default-stack-role") {
 				s := fctl.GetString(cmd, "default-stack-role")
 				return membershipclient.Role(s).Ptr()
 			}
-			return org.Data.DefaultStackAccess
+			return org.Data.Organization.DefaultStackAccess
 		}(),
 		Domain: func() *string {
 			str := fctl.GetString(cmd, "domain")
 			if str != "" {
 				return &str
 			}
-			return org.Data.Domain
+			return org.Data.Organization.Domain
 		}(),
 	}
 
@@ -102,11 +101,13 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
-	c.store.Organization = response.Data
+	c.store.Organization = response.Data.Organization
 
 	return c, nil
 }
 
 func (c *UpdateController) Render(cmd *cobra.Command, args []string) error {
-	return internal.PrintOrganization(c.store.Organization)
+	return PrintOrganization(&DescribeStore{
+		Organization: c.store.Organization,
+	})
 }

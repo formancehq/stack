@@ -1,7 +1,6 @@
 package organizations
 
 import (
-	"github.com/formancehq/fctl/cmd/cloud/organizations/internal"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
@@ -85,5 +84,7 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 }
 
 func (c *CreateController) Render(cmd *cobra.Command, args []string) error {
-	return internal.PrintOrganization(c.store.Organization)
+	return PrintOrganization(&DescribeStore{
+		Organization: c.store.Organization,
+	})
 }

@@ -1,14 +1,14 @@
 package organizations
 
 import (
-	"github.com/formancehq/fctl/cmd/cloud/organizations/internal"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
 )
 
 type DescribeStore struct {
-	Organization *membershipclient.OrganizationExpanded `json:"organization"`
+	Organization *membershipclient.Organization `json:"organization"`
+	*membershipclient.OrganizationExpandedAllOf
 }
 type DescribeController struct {
 	store *DescribeStore
@@ -31,6 +31,7 @@ func NewDescribeCommand() *cobra.Command {
 		fctl.WithShortDescription("Describe organization"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithConfirmFlag(),
+		fctl.WithBoolFlag("expand", true, "Expand the organization"),
 		fctl.WithController[*DescribeStore](NewDescribeController()),
 	)
 }
@@ -51,17 +52,26 @@ func (c *DescribeController) Run(cmd *cobra.Command, args []string) (fctl.Render
 		return nil, err
 	}
 
+	expand := fctl.GetBool(cmd, "expand")
 	response, _, err := apiClient.DefaultApi.
-		ReadOrganizationExpanded(cmd.Context(), args[0]).Execute()
+		ReadOrganization(cmd.Context(), args[0]).Expand(expand).Execute()
 	if err != nil {
 		return nil, err
 	}
 
-	c.store.Organization = response.Data
+	c.store.Organization = response.Data.Organization
+
+	if expand {
+		c.store.OrganizationExpandedAllOf = &membershipclient.OrganizationExpandedAllOf{
+			Owner:       response.Data.OrganizationExpanded.Owner,
+			TotalStacks: response.Data.OrganizationExpanded.TotalStacks,
+			TotalUsers:  response.Data.OrganizationExpanded.TotalUsers,
+		}
+	}
 
 	return c, nil
 }
 
 func (c *DescribeController) Render(cmd *cobra.Command, args []string) error {
-	return internal.PrintOrganizationExpanded(c.store.Organization)
+	return PrintOrganization(c.store)
 }
