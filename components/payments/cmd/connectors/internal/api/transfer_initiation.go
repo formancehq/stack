@@ -9,6 +9,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/api/backend"
 	"github.com/formancehq/payments/cmd/connectors/internal/api/service"
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 )
@@ -31,6 +32,8 @@ type transferInitiationResponse struct {
 
 func createTransferInitiationHandler(b backend.ServiceBackend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		logger := logging.FromContext(r.Context())
+
 		w.Header().Set("Content-Type", "application/json")
 
 		payload := &service.CreateTransferInitiationRequest{}
@@ -46,6 +49,7 @@ func createTransferInitiationHandler(b backend.ServiceBackend) http.HandlerFunc 
 
 		tf, err := b.GetService().CreateTransferInitiation(r.Context(), payload)
 		if err != nil {
+			logger.Errorf("failed to create transfer initiation: %v", err)
 			handleServiceErrors(w, r, err)
 			return
 		}
@@ -74,6 +78,7 @@ func createTransferInitiationHandler(b backend.ServiceBackend) http.HandlerFunc 
 			Data: data,
 		})
 		if err != nil {
+			logger.Errorf("failed to encode response: %v", err)
 			api.InternalServerError(w, r, err)
 			return
 		}
