@@ -160,29 +160,29 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 	}
 
 	type databaseDescriptor struct {
-		config v1beta1.DatabaseConfigurationSpec
+		config v1beta3.PostgresConfig
 		name   string
 	}
 
 	for _, cfg := range []databaseDescriptor{
 		{
-			config: configuration.Spec.Services.Ledger.Postgres.DatabaseConfigurationSpec,
+			config: configuration.Spec.Services.Ledger.Postgres,
 			name:   "ledger",
 		},
 		{
-			config: configuration.Spec.Services.Payments.Postgres.DatabaseConfigurationSpec,
+			config: configuration.Spec.Services.Payments.Postgres,
 			name:   "payments",
 		},
 		{
-			config: configuration.Spec.Services.Orchestration.Postgres.DatabaseConfigurationSpec,
+			config: configuration.Spec.Services.Orchestration.Postgres,
 			name:   "orchestration",
 		},
 		{
-			config: configuration.Spec.Services.Auth.Postgres.DatabaseConfigurationSpec,
+			config: configuration.Spec.Services.Auth.Postgres,
 			name:   "auth",
 		},
 		{
-			config: configuration.Spec.Services.Webhooks.Postgres.DatabaseConfigurationSpec,
+			config: configuration.Spec.Services.Webhooks.Postgres,
 			name:   "webhooks",
 		},
 	} {
@@ -243,7 +243,37 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 	_, _, err = CreateOrUpdate[*v1beta1.BrokerConfiguration](ctx, types.NamespacedName{
 		Name: stack.Name,
 	}, func(t *v1beta1.BrokerConfiguration) {
-		t.Spec = configuration.Spec.Broker
+		t.Spec = v1beta1.BrokerConfigurationSpec{
+			Kafka: func() *v1beta1.BrokerKafkaConfig {
+				if configuration.Spec.Broker.Kafka == nil {
+					return nil
+				}
+				return &v1beta1.BrokerKafkaConfig{
+					Brokers: configuration.Spec.Broker.Kafka.Brokers,
+					TLS:     configuration.Spec.Broker.Kafka.TLS,
+					SASL: func() *v1beta1.BrokerKafkaSASLConfig {
+						if configuration.Spec.Broker.Kafka.SASL == nil {
+							return nil
+						}
+						return &v1beta1.BrokerKafkaSASLConfig{
+							Username:     configuration.Spec.Broker.Kafka.SASL.Username,
+							Password:     configuration.Spec.Broker.Kafka.SASL.Password,
+							Mechanism:    configuration.Spec.Broker.Kafka.SASL.Mechanism,
+							ScramSHASize: configuration.Spec.Broker.Kafka.SASL.ScramSHASize,
+						}
+					}(),
+				}
+			}(),
+			Nats: func() *v1beta1.BrokerNatsConfig {
+				if configuration.Spec.Broker.Nats == nil {
+					return nil
+				}
+				return &v1beta1.BrokerNatsConfig{
+					URL:      configuration.Spec.Broker.Nats.URL,
+					Replicas: configuration.Spec.Broker.Nats.Replicas,
+				}
+			}(),
+		}
 		t.Labels = map[string]string{
 			StackLabel: stack.Name,
 		}
@@ -255,7 +285,15 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 	_, _, err = CreateOrUpdate[*v1beta1.TemporalConfiguration](ctx, types.NamespacedName{
 		Name: stack.Name,
 	}, func(t *v1beta1.TemporalConfiguration) {
-		t.Spec = configuration.Spec.Temporal
+		t.Spec = v1beta1.TemporalConfigurationSpec{
+			Address:   configuration.Spec.Temporal.Address,
+			Namespace: configuration.Spec.Temporal.Namespace,
+			TLS: v1beta1.TemporalTLSConfig{
+				CRT:        configuration.Spec.Temporal.TLS.CRT,
+				Key:        configuration.Spec.Temporal.TLS.Key,
+				SecretName: configuration.Spec.Temporal.TLS.SecretName,
+			},
+		}
 		t.Labels = map[string]string{
 			StackLabel: stack.Name,
 		}
@@ -267,7 +305,25 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 	_, _, err = CreateOrUpdate[*v1beta1.ElasticSearchConfiguration](ctx, types.NamespacedName{
 		Name: stack.Name,
 	}, func(t *v1beta1.ElasticSearchConfiguration) {
-		t.Spec = configuration.Spec.Services.Search.ElasticSearchConfig.ElasticSearchConfigurationSpec
+		t.Spec = v1beta1.ElasticSearchConfigurationSpec{
+			Scheme: configuration.Spec.Services.Search.ElasticSearchConfig.Scheme,
+			Host:   configuration.Spec.Services.Search.ElasticSearchConfig.Host,
+			Port:   configuration.Spec.Services.Search.ElasticSearchConfig.Port,
+			TLS: v1beta1.ElasticSearchTLSConfig{
+				Enabled:        configuration.Spec.Services.Search.ElasticSearchConfig.TLS.Enabled,
+				SkipCertVerify: configuration.Spec.Services.Search.ElasticSearchConfig.TLS.SkipCertVerify,
+			},
+			BasicAuth: func() *v1beta1.ElasticSearchBasicAuthConfig {
+				if configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth == nil {
+					return nil
+				}
+				return &v1beta1.ElasticSearchBasicAuthConfig{
+					Username:   configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.Username,
+					Password:   configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.Password,
+					SecretName: configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.SecretName,
+				}
+			}(),
+		}
 		t.Labels = map[string]string{
 			StackLabel: stack.Name,
 		}
@@ -280,7 +336,15 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		_, _, err = CreateOrUpdate[*v1beta1.RegistriesConfiguration](ctx, types.NamespacedName{
 			Name: stack.Name,
 		}, func(t *v1beta1.RegistriesConfiguration) {
-			t.Spec.Registries = configuration.Spec.Registries
+			registries := make(map[string]v1beta1.RegistryConfigurationSpec)
+			for k, config := range configuration.Spec.Registries {
+				registries[k] = v1beta1.RegistryConfigurationSpec{
+					Endpoint: config.Endpoint,
+				}
+			}
+			t.Spec = v1beta1.RegistriesConfigurationSpec{
+				Registries: registries,
+			}
 			t.Labels = map[string]string{
 				StackLabel: stack.Name,
 			}
@@ -298,7 +362,7 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}, func(t *v1beta1.Ledger) {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Ledger
-			t.Spec.DeploymentStrategy = configuration.Spec.Services.Ledger.DeploymentStrategy
+			t.Spec.DeploymentStrategy = v1beta1.DeploymentStrategy(configuration.Spec.Services.Ledger.DeploymentStrategy)
 			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Ledger.ResourceProperties)
 			if annotations := configuration.Spec.Services.Ledger.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
@@ -433,7 +497,10 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}, func(t *v1beta1.Search) {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Search
-			t.Spec.Batching = &configuration.Spec.Services.Search.Batching
+			t.Spec.Batching = &v1beta1.Batching{
+				Count:  configuration.Spec.Services.Search.Batching.Count,
+				Period: configuration.Spec.Services.Search.Batching.Period,
+			}
 			if resourceProperties := configuration.Spec.Services.Search.BenthosResourceProperties; resourceProperties != nil {
 				t.Spec.StreamProcessor = &v1beta1.SearchStreamProcessorSpec{
 					ResourceRequirements: resourceRequirements(resourceProperties),
@@ -463,7 +530,11 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 					Annotations: annotations,
 				}
 			}
-			t.Spec.DelegatedOIDCServer = &stack.Spec.Auth.DelegatedOIDCServer
+			t.Spec.DelegatedOIDCServer = &v1beta1.DelegatedOIDCServerConfiguration{
+				Issuer:       stack.Spec.Auth.DelegatedOIDCServer.Issuer,
+				ClientID:     stack.Spec.Auth.DelegatedOIDCServer.ClientID,
+				ClientSecret: stack.Spec.Auth.DelegatedOIDCServer.ClientSecret,
+			}
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating auth service")
@@ -478,9 +549,16 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			t.Spec.Stack = stack.Name
 			t.Spec.Version = versions.Spec.Gateway
 			t.Spec.Ingress = &v1beta1.GatewayIngress{
-				Host:        stack.Spec.Host,
-				Scheme:      stack.Spec.Scheme,
-				TLS:         configuration.Spec.Ingress.TLS,
+				Host:   stack.Spec.Host,
+				Scheme: stack.Spec.Scheme,
+				TLS: func() *v1beta1.GatewayIngressTLS {
+					if configuration.Spec.Ingress.TLS == nil {
+						return nil
+					}
+					return &v1beta1.GatewayIngressTLS{
+						SecretName: configuration.Spec.Ingress.TLS.SecretName,
+					}
+				}(),
 				Annotations: configuration.Spec.Ingress.Annotations,
 			}
 			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Gateway.ResourceProperties)
@@ -526,7 +604,20 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		_, _, err = CreateOrUpdate[*v1beta1.AuthClient](ctx, types.NamespacedName{
 			Name: fmt.Sprintf("%s-%s", stack.Name, client.ID),
 		}, func(t *v1beta1.AuthClient) {
-			t.Spec = *client
+			t.Spec = v1beta1.AuthClientSpec{
+				ID:     client.ID,
+				Public: client.Public,
+				Description: func() string {
+					if client.Description == nil {
+						return ""
+					}
+					return *client.Description
+				}(),
+				RedirectUris:           client.RedirectUris,
+				PostLogoutRedirectUris: client.PostLogoutRedirectUris,
+				Scopes:                 client.Scopes,
+				Secret:                 client.Secrets[0],
+			}
 			t.Spec.Stack = stack.Name
 		})
 		if err != nil {

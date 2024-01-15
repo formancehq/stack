@@ -17,35 +17,21 @@ limitations under the License.
 package v1beta3
 
 import (
-	v1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
-	"reflect"
-
-	"github.com/formancehq/operator/api/formance.com/v1beta1"
-	"github.com/stoewer/go-strcase"
+	"github.com/iancoleman/strcase"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"reflect"
 )
-
-type IngressConfig struct {
-	// +optional
-	Annotations map[string]string `json:"annotations,omitempty"`
-}
-
-type resource struct {
-	Cpu    string `json:"cpu,omitempty"`
-	Memory string `json:"memory,omitempty"`
-}
-
-type ResourceProperties struct {
-	// +optional
-	Request *resource `json:"request,omitempty"`
-	// +optional
-	Limits *resource `json:"limits,omitempty"`
-}
 
 type IngressGlobalConfig struct {
 	IngressConfig `json:",inline"`
 	// +optional
-	TLS *v1beta1.GatewayIngressTLS `json:"tls,omitempty"`
+	TLS *IngressTLS `json:"tls,omitempty"`
+}
+
+type DelegatedOIDCServerConfiguration struct {
+	Issuer       string `json:"issuer,omitempty"`
+	ClientID     string `json:"clientID,omitempty"`
+	ClientSecret string `json:"clientSecret,omitempty"`
 }
 
 type ClientConfiguration struct {
@@ -69,9 +55,9 @@ type StaticClient struct {
 }
 
 type StackAuthSpec struct {
-	DelegatedOIDCServer v1beta1.DelegatedOIDCServerConfiguration `json:"delegatedOIDCServer"`
+	DelegatedOIDCServer DelegatedOIDCServerConfiguration `json:"delegatedOIDCServer"`
 	// +optional
-	StaticClients []*v1beta1.AuthClientSpec `json:"staticClients,omitempty"`
+	StaticClients []StaticClient `json:"staticClients,omitempty"`
 }
 
 type StackStargateConfig struct {
@@ -96,8 +82,8 @@ type StackServicePropertiesSpec struct {
 
 // StackSpec defines the desired state of Stack
 type StackSpec struct {
-	v1beta1.DevProperties `json:",inline"`
-	Seed                  string `json:"seed"`
+	DevProperties `json:",inline"`
+	Seed          string `json:"seed"`
 	// +kubebuilder:validation:Required
 	Host string        `json:"host"`
 	Auth StackAuthSpec `json:"auth"`
@@ -119,26 +105,47 @@ type StackSpec struct {
 	Services StackServicesSpec `json:"services,omitempty"`
 }
 
+func (in *StackServicesSpec) getDisabledProperty(service string) *bool {
+	valueOf := reflect.ValueOf(in).Elem().FieldByName(strcase.ToCamel(service))
+	if valueOf.IsValid() {
+		properties := valueOf.Interface().(StackServicePropertiesSpec)
+		return properties.Disabled
+	}
+	return nil
+}
+
+func (in *StackServicesSpec) IsExplicitlyDisabled(service string) bool {
+	disabled := in.getDisabledProperty(service)
+	return disabled != nil && *disabled
+}
+
+func (in *StackServicesSpec) IsExplicitlyEnabled(service string) bool {
+	disabled := in.getDisabledProperty(service)
+	return disabled != nil && !*disabled
+}
+
 type ControlAuthentication struct {
 	ClientID string
 }
 
+/* todo: group statuses by module */
+
 type StackStatus struct {
-	v1beta1.CommonStatus `json:",inline"`
+	Status `json:",inline"`
 
-	Conditions []*v1.JSON `json:"conditions,omitempty"`
-
-	//+optional
-	Ready bool `json:"ready"`
-
-	//+optional
+	// +optional
 	Ports map[string]map[string]int32 `json:"ports,omitempty"`
 
-	//+optional
+	// +optional
 	StaticAuthClients map[string]StaticClient `json:"staticAuthClients,omitempty"`
 
-	//+optional
+	// +optional
 	LightMode bool `json:"light"`
+
+	// +optional
+	Ready bool `json:"ready,omitempty"`
+	// +optional
+	Error string `json:"error,omitempty"`
 }
 
 //+kubebuilder:object:root=true
@@ -159,7 +166,7 @@ type Stack struct {
 }
 
 func (in *Stack) SetReady(b bool) {
-	in.Status.Ready = b
+	in.Status.Ready = true
 }
 
 func (in *Stack) SetError(s string) {
@@ -167,25 +174,6 @@ func (in *Stack) SetError(s string) {
 }
 
 func (*Stack) Hub() {}
-
-func (in *StackServicesSpec) getDisabledProperty(service string) *bool {
-	valueOf := reflect.ValueOf(in).Elem().FieldByName(strcase.UpperCamelCase(service))
-	if valueOf.IsValid() {
-		properties := valueOf.Interface().(StackServicePropertiesSpec)
-		return properties.Disabled
-	}
-	return nil
-}
-
-func (in *StackServicesSpec) IsExplicitlyDisabled(service string) bool {
-	disabled := in.getDisabledProperty(service)
-	return disabled != nil && *disabled
-}
-
-func (in *StackServicesSpec) IsExplicitlyEnabled(service string) bool {
-	disabled := in.getDisabledProperty(service)
-	return disabled != nil && !*disabled
-}
 
 //+kubebuilder:object:root=true
 

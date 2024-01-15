@@ -2,9 +2,12 @@ package v1beta3
 
 import (
 	"fmt"
-
-	"github.com/formancehq/operator/api/formance.com/v1beta1"
 )
+
+type Batching struct {
+	Count  int    `json:"count"`
+	Period string `json:"period"`
+}
 
 type ElasticSearchTLSConfig struct {
 	// +optional
@@ -43,18 +46,13 @@ func (in *ElasticSearchConfig) Endpoint() string {
 	return fmt.Sprintf("%s://%s:%d%s", in.Scheme, in.Host, in.Port, in.PathPrefix)
 }
 
-type ElasticSearchConfigurationSpec struct {
-	v1beta1.ElasticSearchConfigurationSpec `json:",inline"`
-	PathPrefix                             string `json:"pathPrefix"`
-}
-
 // +kubebuilder:object:generate=true
 type SearchSpec struct {
 	CommonServiceProperties `json:",inline"`
-	ElasticSearchConfig     ElasticSearchConfigurationSpec `json:"elasticSearch"`
+	ElasticSearchConfig     ElasticSearchConfig `json:"elasticSearch"`
 
 	// +optional
-	Batching v1beta1.Batching `json:"batching"`
+	Batching Batching `json:"batching"`
 
 	// +optional
 	SearchResourceProperties *ResourceProperties `json:"searchResourceProperties,omitempty"`
@@ -62,3 +60,5 @@ type SearchSpec struct {
 	BenthosResourceProperties *ResourceProperties     `json:"benthosResourceProperties,omitempty"`
 	Annotations               AnnotationsServicesSpec `json:"annotations,omitempty"`
 }
+
+const DefaultESIndex = "stacks"

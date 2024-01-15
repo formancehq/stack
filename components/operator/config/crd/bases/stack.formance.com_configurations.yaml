@@ -33,9 +33,14 @@ spec:
             type: object
           spec:
             properties:
+              auth:
+                properties:
+                  checkScopes:
+                    type: boolean
+                  readKeySetMaxRetries:
+                    type: integer
+                type: object
               broker:
-                description: BrokerConfigurationSpec defines the desired state of
-                  BrokerConfig
                 properties:
                   kafka:
                     properties:
@@ -65,7 +70,7 @@ spec:
                   nats:
                     properties:
                       replicas:
-                        default: 1
+                        default: 3
                         type: integer
                       url:
                         type: string
@@ -82,16 +87,19 @@ spec:
                   tls:
                     properties:
                       secretName:
+                        description: SecretName is the name of the secret used to
+                          terminate TLS traffic on port 443. Field is left optional
+                          to allow TLS routing based on SNI hostname alone. If the
+                          SNI host in a listener conflicts with the "Host" header
+                          field used by an IngressRule, the SNI host is used for termination
+                          and value of the Host header is used for routing.
                         type: string
-                    required:
-                    - secretName
                     type: object
                 type: object
               light:
                 description: LightMode is experimental and indicate we want monopods
                 type: boolean
               monitoring:
-                description: MonitoringSpec defines the desired state of OpenTelemetryConfiguration
                 properties:
                   metrics:
                     properties:
@@ -232,7 +240,38 @@ spec:
                     - postgres
                     type: object
                   control:
-                    x-kubernetes-preserve-unknown-fields: true
+                    properties:
+                      annotations:
+                        properties:
+                          service:
+                            additionalProperties:
+                              type: string
+                            type: object
+                        type: object
+                      debug:
+                        type: boolean
+                      dev:
+                        type: boolean
+                      disabled:
+                        type: boolean
+                      resourceProperties:
+                        properties:
+                          limits:
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+                            type: object
+                          request:
+                            properties:
+                              cpu:
+                                type: string
+                              memory:
+                                type: string
+                            type: object
+                        type: object
+                    type: object
                   gateway:
                     properties:
                       annotations:
@@ -595,8 +634,8 @@ spec:
                               skipCertVerify:
                                 type: boolean
                             type: object
-                        required:
-                        - pathPrefix
+                          useZinc:
+                            type: boolean
                         type: object
                       searchResourceProperties:
                         properties:
@@ -739,14 +778,13 @@ spec:
                     type: object
                 type: object
               temporal:
-                description: TemporalConfigurationSpec defines the desired state of
-                  TemporalConfiguration
                 properties:
                   address:
                     type: string
                   namespace:
                     type: string
                   tls:
+                    description: 'TODO: Handle validation'
                     properties:
                       crt:
                         type: string
@@ -758,7 +796,6 @@ spec:
                 required:
                 - address
                 - namespace
-                - tls
                 type: object
             required:
             - broker
@@ -766,6 +803,53 @@ spec:
             - temporal
             type: object
           status:
+            properties:
+              conditions:
+                items:
+                  properties:
+                    lastTransitionTime:
+                      description: lastTransitionTime is the last time the condition
+                        transitioned from one status to another. This should be when
+                        the underlying condition changed.  If that is not known, then
+                        using the time when the API field changed is acceptable.
+                      format: date-time
+                      type: string
+                    message:
+                      description: message is a human readable message indicating
+                        details about the transition. This may be an empty string.
+                      maxLength: 32768
+                      type: string
+                    observedGeneration:
+                      description: observedGeneration represents the .metadata.generation
+                        that the condition was set based upon. For instance, if .metadata.generation
+                        is currently 12, but the .status.conditions[x].observedGeneration
+                        is 9, the condition is out of date with respect to the current
+                        state of the instance.
+                      format: int64
+                      minimum: 0
+                      type: integer
+                    status:
+                      description: status of the condition, one of True, False, Unknown.
+                      enum:
+                      - "True"
+                      - "False"
+                      - Unknown
+                      type: string
+                    type:
+                      description: type of condition in CamelCase or in foo.example.com/CamelCase.
+                        --- Many .condition.type values are consistent across resources
+                        like Available, but because arbitrary conditions can be useful
+                        (see .node.status.conditions), the ability to deconflict is
+                        important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)
+                      maxLength: 316
+                      pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - status
+                  - type
+                  type: object
+                type: array
             type: object
         type: object
     served: true

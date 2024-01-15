@@ -66,7 +66,7 @@ func (r *PaymentsController) Reconcile(ctx Context, payments *v1beta1.Payments) 
 
 	if database.Status.Ready {
 		moduleVersion := GetModuleVersion(stack, payments.Spec.Version)
-		if semver.Compare(moduleVersion, "v1.0.0-alpha") < 0 {
+		if semver.IsValid(moduleVersion) && semver.Compare(moduleVersion, "v1.0.0-alpha") < 0 {
 			if err := r.createFullDeployment(ctx, stack, payments, database); err != nil {
 				return err
 			}

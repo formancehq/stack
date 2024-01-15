@@ -2,8 +2,6 @@ package v1beta3
 
 import (
 	"time"
-
-	"github.com/formancehq/operator/api/formance.com/v1beta1"
 )
 
 type LockingStrategyRedisConfig struct {
@@ -28,10 +26,17 @@ type LockingStrategy struct {
 	Redis LockingStrategyRedisConfig `json:"redis"`
 }
 
+type DeploymentStrategy string
+
+const (
+	DeploymentStrategySingle                   = "single"
+	DeploymentStrategyMonoWriterMultipleReader = "single-writer"
+)
+
 // +kubebuilder:object:generate=true
 type LedgerSpec struct {
 	CommonServiceProperties `json:",inline"`
-	Postgres                DatabaseConfigurationSpec `json:"postgres"`
+	Postgres                PostgresConfig `json:"postgres"`
 	// +optional
 	Locking LockingStrategy `json:"locking"`
 	// +optional
@@ -40,7 +45,7 @@ type LedgerSpec struct {
 	ResourceProperties *ResourceProperties     `json:"resourceProperties,omitempty"`
 	Annotations        AnnotationsServicesSpec `json:"annotations,omitempty"`
 	// +optional
-	DeploymentStrategy v1beta1.DeploymentStrategy `json:"deploymentStrategy,omitempty"`
+	DeploymentStrategy DeploymentStrategy `json:"deploymentStrategy,omitempty"`
 	// +optional
 	Disabled *bool `json:"disabled,omitempty"`
 }

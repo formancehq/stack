@@ -2,7 +2,7 @@ package v1beta3
 
 type ReconciliationSpec struct {
 	CommonServiceProperties `json:",inline"`
-	Postgres                DatabaseConfigurationSpec `json:"postgres"`
+	Postgres                PostgresConfig `json:"postgres"`
 
 	// +optional
 	ResourceProperties *ResourceProperties     `json:"resourceProperties,omitempty"`

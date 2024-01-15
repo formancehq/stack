@@ -38,7 +38,7 @@ var _ = Describe("BrokerTopicController", func() {
 					},
 				},
 				Spec: v1beta1.BrokerConfigurationSpec{
-					Nats: &v1beta1.NatsConfig{},
+					Nats: &v1beta1.BrokerNatsConfig{},
 				},
 			}
 			Expect(Create(brokerConfiguration)).To(Succeed())

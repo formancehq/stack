@@ -20,22 +20,22 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type KafkaSASLConfig struct {
+type BrokerKafkaSASLConfig struct {
 	Username     string `json:"username,omitempty"`
 	Password     string `json:"password,omitempty"`
 	Mechanism    string `json:"mechanism"`
 	ScramSHASize string `json:"scramSHASize"`
 }
 
-type KafkaConfig struct {
+type BrokerKafkaConfig struct {
 	Brokers []string `json:"brokers"`
 	// +optional
 	TLS bool `json:"tls"`
 	// +optional
-	SASL *KafkaSASLConfig `json:"sasl,omitempty"`
+	SASL *BrokerKafkaSASLConfig `json:"sasl,omitempty"`
 }
 
-type NatsConfig struct {
+type BrokerNatsConfig struct {
 	URL string `json:"url"`
 	// +kubebuilder:default:=1
 	// +optional
@@ -45,9 +45,9 @@ type NatsConfig struct {
 // BrokerConfigurationSpec defines the desired state of BrokerConfig
 type BrokerConfigurationSpec struct {
 	// +optional
-	Kafka *KafkaConfig `json:"kafka,omitempty"`
+	Kafka *BrokerKafkaConfig `json:"kafka,omitempty"`
 	// +optional
-	Nats *NatsConfig `json:"nats,omitempty"`
+	Nats *BrokerNatsConfig `json:"nats,omitempty"`
 }
 
 // BrokerConfigurationStatus defines the observed state of BrokerConfig

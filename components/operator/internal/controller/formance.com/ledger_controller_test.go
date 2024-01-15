@@ -135,7 +135,7 @@ var _ = Describe("LedgerController", func() {
 						},
 					},
 					Spec: v1beta1.BrokerConfigurationSpec{
-						Nats: &v1beta1.NatsConfig{
+						Nats: &v1beta1.BrokerNatsConfig{
 							URL: "nats://localhost:1234",
 						},
 					},

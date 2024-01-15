@@ -1,15 +1,26 @@
 package v1beta3
 
-import "github.com/formancehq/operator/api/formance.com/v1beta1"
-
-type CommonServiceProperties struct {
-	*v1beta1.DevProperties `json:",inline"`
+type DevProperties struct {
 	// +optional
-	Disabled *bool `json:"disabled,omitempty"`
+	Debug bool `json:"debug"`
+	// +optional
+	Dev bool `json:"dev"`
 }
 
-type DatabaseConfigurationSpec struct {
-	v1beta1.DatabaseConfigurationSpec `json:",inline"`
-	//+optional
-	Debug bool `json:"debug,omitempty"`
+type resource struct {
+	Cpu    string `json:"cpu,omitempty"`
+	Memory string `json:"memory,omitempty"`
+}
+
+type ResourceProperties struct {
+	// +optional
+	Request *resource `json:"request,omitempty"`
+	// +optional
+	Limits *resource `json:"limits,omitempty"`
+}
+
+type CommonServiceProperties struct {
+	DevProperties `json:",inline"`
+	// +optional
+	Disabled *bool `json:"disabled,omitempty"`
 }

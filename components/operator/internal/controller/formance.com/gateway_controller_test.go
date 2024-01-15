@@ -193,7 +193,7 @@ var _ = Describe("GatewayController", func() {
 						},
 					},
 					Spec: v1beta1.BrokerConfigurationSpec{
-						Nats: &v1beta1.NatsConfig{
+						Nats: &v1beta1.BrokerNatsConfig{
 							URL:      "nats://localhost:4321",
 							Replicas: 10,
 						},
