@@ -38,25 +38,6 @@ import (
 type StackController struct{}
 
 func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
-
-	//ns := &corev1.Namespace{}
-	//err := ctx.GetClient().Get(ctx, types.NamespacedName{
-	//	Name: stack.Name,
-	//}, ns)
-	//switch {
-	//case controllererrors.IsNotFound(err):
-	//case err == nil: // Namespace found
-	//	if ns.Annotations[OperatorVersionKey] != OperatorVersion {
-	//		return ctx.GetClient().Delete(ctx, &corev1.Namespace{
-	//			ObjectMeta: v1.ObjectMeta{
-	//				Name: stack.Name,
-	//			},
-	//		})
-	//	}
-	//default:
-	//	return err
-	//}
-
 	if stack.Spec.Versions == "" {
 		patch := client.MergeFrom(stack.DeepCopy())
 		stack.Spec.Versions = "default"
@@ -323,6 +304,22 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
 					Annotations: annotations,
 				}
+			}
+			t.Spec.Locking = v1beta1.LockingStrategy{
+				Strategy: configuration.Spec.Services.Ledger.Locking.Strategy,
+				Redis: func() *v1beta1.LockingStrategyRedisConfig {
+					if configuration.Spec.Services.Ledger.Locking.Strategy != "redis" {
+						return nil
+					}
+
+					return &v1beta1.LockingStrategyRedisConfig{
+						Uri:         configuration.Spec.Services.Ledger.Locking.Redis.Uri,
+						TLS:         configuration.Spec.Services.Ledger.Locking.Redis.TLS,
+						InsecureTLS: configuration.Spec.Services.Ledger.Locking.Redis.InsecureTLS,
+						Duration:    configuration.Spec.Services.Ledger.Locking.Redis.Duration,
+						Retry:       configuration.Spec.Services.Ledger.Locking.Redis.Retry,
+					}
+				}(),
 			}
 		})
 		if err != nil {

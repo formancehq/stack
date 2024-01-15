@@ -20,7 +20,11 @@ import (
 	_ "embed"
 	"fmt"
 	"github.com/formancehq/operator/internal/resources/payments"
+	"github.com/formancehq/operator/internal/resources/streams"
+	"github.com/formancehq/search/benthos"
+	"golang.org/x/mod/semver"
 	"net/http"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
@@ -32,14 +36,11 @@ import (
 	"github.com/formancehq/operator/internal/resources/httpapis"
 	. "github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/services"
-	"github.com/formancehq/operator/internal/resources/streams"
-	"github.com/formancehq/search/benthos"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
@@ -64,17 +65,44 @@ func (r *PaymentsController) Reconcile(ctx Context, payments *v1beta1.Payments) 
 	}
 
 	if database.Status.Ready {
-		if err := r.createReadDeployment(ctx, stack, payments, database); err != nil {
-			return err
-		}
+		moduleVersion := GetModuleVersion(stack, payments.Spec.Version)
+		if semver.Compare(moduleVersion, "v1.0.0-alpha") < 0 {
+			if err := r.createFullDeployment(ctx, stack, payments, database); err != nil {
+				return err
+			}
+		} else {
+			if err := r.createReadDeployment(ctx, stack, payments, database); err != nil {
+				return err
+			}
 
-		if err := r.createConnectorsDeployment(ctx, stack, payments, database); err != nil {
-			return err
+			if err := r.createConnectorsDeployment(ctx, stack, payments, database); err != nil {
+				return err
+			}
+			if err := r.createGateway(ctx, stack, payments); err != nil {
+				return err
+			}
 		}
 	}
 
-	if err := r.createGateway(ctx, stack, payments); err != nil {
+	hasSearch, err := HasDependency[*v1beta1.Search](ctx, stack.Name)
+	if err != nil {
 		return err
+	}
+	if hasSearch {
+		if err := streams.LoadFromFileSystem(ctx, benthos.Streams, payments.Spec.Stack, "streams/payments/v0.0.0",
+			WithController[*v1beta1.Stream](ctx.GetScheme(), payments),
+			WithLabels[*v1beta1.Stream](map[string]string{
+				"service": "payments",
+			}),
+		); err != nil {
+			return err
+		}
+	} else {
+		if err := ctx.GetClient().DeleteAllOf(ctx, &v1beta1.Stream{}, client.MatchingLabels{
+			"service": "payments",
+		}); err != nil {
+			return err
+		}
 	}
 
 	if err := httpapis.Create(ctx, payments,
@@ -104,6 +132,57 @@ func (r *PaymentsController) commonEnvVars(ctx Context, stack *v1beta1.Stack, pa
 	)
 
 	return env, nil
+}
+
+func (r *PaymentsController) createFullDeployment(ctx Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) error {
+
+	env, err := r.commonEnvVars(ctx, stack, payments, database)
+	if err != nil {
+		return err
+	}
+
+	authEnvVars, err := auths.EnvVars(ctx, stack, "payments", payments.Spec.Auth)
+	if err != nil {
+		return err
+	}
+	env = append(env, authEnvVars...)
+
+	image, err := GetImage(ctx, stack, "payments", payments.Spec.Version)
+	if err != nil {
+		return err
+	}
+
+	topic, err := brokertopics.Find(ctx, stack, "payments")
+	if err != nil {
+		return err
+	}
+
+	if topic != nil {
+		if !topic.Status.Ready {
+			return fmt.Errorf("topic %s is not yet ready", topic.Name)
+		}
+
+		env = append(env, brokerconfigurations.BrokerEnvVars(*topic.Status.Configuration, stack.Name, "payments")...)
+		env = append(env, Env("PUBLISHER_TOPIC_MAPPING", "*:"+GetObjectName(stack.Name, "payments")))
+	}
+
+	_, err = deployments.CreateOrUpdate(ctx, payments, "payments",
+		deployments.WithMatchingLabels("payments"),
+		deployments.WithContainers(corev1.Container{
+			Name:          "api",
+			Args:          []string{"serve"},
+			Env:           env,
+			Image:         image,
+			Resources:     GetResourcesRequirementsWithDefault(payments.Spec.ResourceRequirements, ResourceSizeSmall()),
+			LivenessProbe: deployments.DefaultLiveness("http", deployments.WithProbePath("/_health")),
+			Ports:         []corev1.ContainerPort{deployments.StandardHTTPPort()},
+		}),
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *PaymentsController) createReadDeployment(ctx Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) error {
@@ -149,27 +228,6 @@ func (r *PaymentsController) createReadDeployment(ctx Context, stack *v1beta1.St
 	)
 	if err != nil {
 		return err
-	}
-
-	hasSearch, err := HasDependency[*v1beta1.Search](ctx, stack.Name)
-	if err != nil {
-		return err
-	}
-	if hasSearch {
-		if err := streams.LoadFromFileSystem(ctx, benthos.Streams, payments.Spec.Stack, "streams/payments/v0.0.0",
-			WithController[*v1beta1.Stream](ctx.GetScheme(), payments),
-			WithLabels[*v1beta1.Stream](map[string]string{
-				"service": "payments",
-			}),
-		); err != nil {
-			return err
-		}
-	} else {
-		if err := ctx.GetClient().DeleteAllOf(ctx, &v1beta1.Stream{}, client.MatchingLabels{
-			"service": "payments",
-		}); err != nil {
-			return err
-		}
 	}
 
 	return nil

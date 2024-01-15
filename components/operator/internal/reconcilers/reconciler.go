@@ -58,8 +58,8 @@ func (r *Reconciler[T]) Reconcile(ctx context.Context, req reconcile.Request) (r
 	}, object)
 	if err != nil {
 		setStatus(err)
-		if !pkgError.Is(reconcilerError, core.ErrPending) &&
-			!pkgError.Is(reconcilerError, core.ErrDeleted) {
+		if !pkgError.Is(err, core.ErrPending) &&
+			!pkgError.Is(err, core.ErrDeleted) {
 			reconcilerError = err
 		}
 	} else {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/stoewer/go-strcase"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sort"
 	"strings"
 
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -84,6 +85,10 @@ func CreateOrUpdateOnAllServices(ctx core.Context, consumer interface {
 		}
 		ret = append(ret, brokerTopicConsumer)
 	}
+
+	sort.Slice(ret, func(i, j int) bool {
+		return ret[i].Name < ret[j].Name
+	})
 
 	return ret, nil
 }

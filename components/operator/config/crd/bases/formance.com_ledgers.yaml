@@ -56,8 +56,8 @@ spec:
                 type: string
               dev:
                 type: boolean
-              lockingStrategy:
-                description: LockingStrategy is intended for ledger v1 only
+              locking:
+                description: Locking is intended for ledger v1 only
                 properties:
                   redis:
                     properties:

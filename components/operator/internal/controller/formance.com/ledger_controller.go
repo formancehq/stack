@@ -144,20 +144,20 @@ func (r *LedgerController) installLedgerSingleInstance(ctx Context, stack *v1bet
 		return err
 	}
 
-	if !v2 && ledger.Spec.LockingStrategy.Strategy == "redis" {
+	if !v2 && ledger.Spec.Locking.Strategy == "redis" {
 		container.Env = append(container.Env,
 			Env("NUMARY_LOCK_STRATEGY", "redis"),
-			Env("NUMARY_LOCK_STRATEGY_REDIS_URL", ledger.Spec.LockingStrategy.Redis.Uri),
-			Env("NUMARY_LOCK_STRATEGY_REDIS_TLS_ENABLED", strconv.FormatBool(ledger.Spec.LockingStrategy.Redis.TLS)),
-			Env("NUMARY_LOCK_STRATEGY_REDIS_TLS_INSECURE", strconv.FormatBool(ledger.Spec.LockingStrategy.Redis.InsecureTLS)),
+			Env("NUMARY_LOCK_STRATEGY_REDIS_URL", ledger.Spec.Locking.Redis.Uri),
+			Env("NUMARY_LOCK_STRATEGY_REDIS_TLS_ENABLED", strconv.FormatBool(ledger.Spec.Locking.Redis.TLS)),
+			Env("NUMARY_LOCK_STRATEGY_REDIS_TLS_INSECURE", strconv.FormatBool(ledger.Spec.Locking.Redis.InsecureTLS)),
 		)
 
-		if ledger.Spec.LockingStrategy.Redis.Duration != 0 {
-			container.Env = append(container.Env, Env("NUMARY_LOCK_STRATEGY_REDIS_DURATION", ledger.Spec.LockingStrategy.Redis.Duration.String()))
+		if ledger.Spec.Locking.Redis.Duration != 0 {
+			container.Env = append(container.Env, Env("NUMARY_LOCK_STRATEGY_REDIS_DURATION", ledger.Spec.Locking.Redis.Duration.String()))
 		}
 
-		if ledger.Spec.LockingStrategy.Redis.Retry != 0 {
-			container.Env = append(container.Env, Env("NUMARY_LOCK_STRATEGY_REDIS_RETRY", ledger.Spec.LockingStrategy.Redis.Retry.String()))
+		if ledger.Spec.Locking.Redis.Retry != 0 {
+			container.Env = append(container.Env, Env("NUMARY_LOCK_STRATEGY_REDIS_RETRY", ledger.Spec.Locking.Redis.Retry.String()))
 		}
 	}
 

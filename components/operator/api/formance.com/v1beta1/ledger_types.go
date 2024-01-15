@@ -40,7 +40,7 @@ type LockingStrategy struct {
 	// +optional
 	Strategy string `json:"strategy,omitempty"`
 	// +optional
-	Redis LockingStrategyRedisConfig `json:"redis"`
+	Redis *LockingStrategyRedisConfig `json:"redis"`
 }
 
 type DeploymentStrategy string
@@ -60,9 +60,9 @@ type LedgerSpec struct {
 	DeploymentStrategy DeploymentStrategy `json:"deploymentStrategy,omitempty"`
 	//+optional
 	Service *ServiceConfiguration `json:"service,omitempty"`
-	// LockingStrategy is intended for ledger v1 only
+	// Locking is intended for ledger v1 only
 	//+optional
-	LockingStrategy LockingStrategy `json:"lockingStrategy,omitempty"`
+	Locking LockingStrategy `json:"locking,omitempty"`
 }
 
 // LedgerStatus defines the observed state of Ledger
