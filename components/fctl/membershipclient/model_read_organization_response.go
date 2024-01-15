@@ -14,33 +14,33 @@ import (
 	"encoding/json"
 )
 
-// checks if the CreateOrganizationResponse type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &CreateOrganizationResponse{}
+// checks if the ReadOrganizationResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ReadOrganizationResponse{}
 
-// CreateOrganizationResponse struct for CreateOrganizationResponse
-type CreateOrganizationResponse struct {
+// ReadOrganizationResponse struct for ReadOrganizationResponse
+type ReadOrganizationResponse struct {
 	Data *OrganizationExpanded `json:"data,omitempty"`
 }
 
-// NewCreateOrganizationResponse instantiates a new CreateOrganizationResponse object
+// NewReadOrganizationResponse instantiates a new ReadOrganizationResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreateOrganizationResponse() *CreateOrganizationResponse {
-	this := CreateOrganizationResponse{}
+func NewReadOrganizationResponse() *ReadOrganizationResponse {
+	this := ReadOrganizationResponse{}
 	return &this
 }
 
-// NewCreateOrganizationResponseWithDefaults instantiates a new CreateOrganizationResponse object
+// NewReadOrganizationResponseWithDefaults instantiates a new ReadOrganizationResponse object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewCreateOrganizationResponseWithDefaults() *CreateOrganizationResponse {
-	this := CreateOrganizationResponse{}
+func NewReadOrganizationResponseWithDefaults() *ReadOrganizationResponse {
+	this := ReadOrganizationResponse{}
 	return &this
 }
 
 // GetData returns the Data field value if set, zero value otherwise.
-func (o *CreateOrganizationResponse) GetData() OrganizationExpanded {
+func (o *ReadOrganizationResponse) GetData() OrganizationExpanded {
 	if o == nil || IsNil(o.Data) {
 		var ret OrganizationExpanded
 		return ret
@@ -50,7 +50,7 @@ func (o *CreateOrganizationResponse) GetData() OrganizationExpanded {
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CreateOrganizationResponse) GetDataOk() (*OrganizationExpanded, bool) {
+func (o *ReadOrganizationResponse) GetDataOk() (*OrganizationExpanded, bool) {
 	if o == nil || IsNil(o.Data) {
 		return nil, false
 	}
@@ -58,7 +58,7 @@ func (o *CreateOrganizationResponse) GetDataOk() (*OrganizationExpanded, bool) {
 }
 
 // HasData returns a boolean if a field has been set.
-func (o *CreateOrganizationResponse) HasData() bool {
+func (o *ReadOrganizationResponse) HasData() bool {
 	if o != nil && !IsNil(o.Data) {
 		return true
 	}
@@ -67,11 +67,11 @@ func (o *CreateOrganizationResponse) HasData() bool {
 }
 
 // SetData gets a reference to the given OrganizationExpanded and assigns it to the Data field.
-func (o *CreateOrganizationResponse) SetData(v OrganizationExpanded) {
+func (o *ReadOrganizationResponse) SetData(v OrganizationExpanded) {
 	o.Data = &v
 }
 
-func (o CreateOrganizationResponse) MarshalJSON() ([]byte, error) {
+func (o ReadOrganizationResponse) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -79,7 +79,7 @@ func (o CreateOrganizationResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o CreateOrganizationResponse) ToMap() (map[string]interface{}, error) {
+func (o ReadOrganizationResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Data) {
 		toSerialize["data"] = o.Data
@@ -87,38 +87,38 @@ func (o CreateOrganizationResponse) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-type NullableCreateOrganizationResponse struct {
-	value *CreateOrganizationResponse
+type NullableReadOrganizationResponse struct {
+	value *ReadOrganizationResponse
 	isSet bool
 }
 
-func (v NullableCreateOrganizationResponse) Get() *CreateOrganizationResponse {
+func (v NullableReadOrganizationResponse) Get() *ReadOrganizationResponse {
 	return v.value
 }
 
-func (v *NullableCreateOrganizationResponse) Set(val *CreateOrganizationResponse) {
+func (v *NullableReadOrganizationResponse) Set(val *ReadOrganizationResponse) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableCreateOrganizationResponse) IsSet() bool {
+func (v NullableReadOrganizationResponse) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableCreateOrganizationResponse) Unset() {
+func (v *NullableReadOrganizationResponse) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableCreateOrganizationResponse(val *CreateOrganizationResponse) *NullableCreateOrganizationResponse {
-	return &NullableCreateOrganizationResponse{value: val, isSet: true}
+func NewNullableReadOrganizationResponse(val *ReadOrganizationResponse) *NullableReadOrganizationResponse {
+	return &NullableReadOrganizationResponse{value: val, isSet: true}
 }
 
-func (v NullableCreateOrganizationResponse) MarshalJSON() ([]byte, error) {
+func (v NullableReadOrganizationResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableCreateOrganizationResponse) UnmarshalJSON(src []byte) error {
+func (v *NullableReadOrganizationResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

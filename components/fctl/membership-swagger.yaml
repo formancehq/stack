@@ -24,13 +24,19 @@ paths:
     get:
       summary: List organizations of the connected user
       operationId: listOrganizations
+      parameters:
+        - name: expand
+          in: query
+          schema:
+            type: bool
+          required: false
       responses:
         200:
           description: List of organizations
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOrganizationResponse'
+                $ref: '#/components/schemas/ListOrganizationExpandedResponse'
     post:
       summary: Create organization
       operationId: createOrganization
@@ -57,6 +63,7 @@ paths:
     get:
       summary: List organizations of the connected user with expanded data
       operationId: listOrganizationsExpanded
+      deprecated: true
       responses:
         200:
           description: List of organizations with expanded data
@@ -74,6 +81,11 @@ paths:
           schema:
             type: string
           required: true
+        - name: expand
+          in: query
+          schema:
+            type: bool
+          required: false
       responses:
         200:
           description: OK
@@ -81,6 +93,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReadOrganizationResponse'
+
     put:
       summary: Update organization
       operationId: updateOrganization
@@ -1126,6 +1139,12 @@ components:
             availableSandboxes:
               type: integer
               description: Number of available sandboxes
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
     StackData:
       type: object
       required:
@@ -1311,9 +1330,12 @@ components:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/Organization'
+          $ref: '#/components/schemas/OrganizationExpanded'
     ReadOrganizationResponse:
-      $ref: '#/components/schemas/CreateOrganizationResponse'
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OrganizationExpanded'
     ListStacksResponse:
       type: object
       properties:
@@ -1456,15 +1478,18 @@ components:
           type: array
           items:
             allOf:
-              - $ref: '#/components/schemas/Organization'
-              - type: object
-                properties:
-                  totalStacks:
-                    type: integer
-                  totalUsers:
-                    type: integer
-                  owner:
-                    $ref: '#/components/schemas/User'
+              - $ref: '#/components/schemas/OrganizationExpanded'
+    OrganizationExpanded:
+      allOf:
+        - $ref: '#/components/schemas/Organization'
+        - type: object
+          properties:
+            totalStacks:
+              type: integer
+            totalUsers:
+              type: integer
+            owner:
+              $ref: '#/components/schemas/User'
     ListRegionsResponse:
       type: object
       properties:

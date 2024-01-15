@@ -12,6 +12,7 @@ package membershipclient
 
 import (
 	"encoding/json"
+	"time"
 )
 
 // checks if the ListOrganizationExpandedResponseDataInner type satisfies the MappedNullable interface at compile time
@@ -33,6 +34,8 @@ type ListOrganizationExpandedResponseDataInner struct {
 	AvailableStacks *int32 `json:"availableStacks,omitempty"`
 	// Number of available sandboxes
 	AvailableSandboxes *int32 `json:"availableSandboxes,omitempty"`
+	CreatedAt *time.Time `json:"createdAt,omitempty"`
+	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
 	TotalStacks *int32 `json:"totalStacks,omitempty"`
 	TotalUsers *int32 `json:"totalUsers,omitempty"`
 	Owner *User `json:"owner,omitempty"`
@@ -298,6 +301,70 @@ func (o *ListOrganizationExpandedResponseDataInner) SetAvailableSandboxes(v int3
 	o.AvailableSandboxes = &v
 }
 
+// GetCreatedAt returns the CreatedAt field value if set, zero value otherwise.
+func (o *ListOrganizationExpandedResponseDataInner) GetCreatedAt() time.Time {
+	if o == nil || IsNil(o.CreatedAt) {
+		var ret time.Time
+		return ret
+	}
+	return *o.CreatedAt
+}
+
+// GetCreatedAtOk returns a tuple with the CreatedAt field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ListOrganizationExpandedResponseDataInner) GetCreatedAtOk() (*time.Time, bool) {
+	if o == nil || IsNil(o.CreatedAt) {
+		return nil, false
+	}
+	return o.CreatedAt, true
+}
+
+// HasCreatedAt returns a boolean if a field has been set.
+func (o *ListOrganizationExpandedResponseDataInner) HasCreatedAt() bool {
+	if o != nil && !IsNil(o.CreatedAt) {
+		return true
+	}
+
+	return false
+}
+
+// SetCreatedAt gets a reference to the given time.Time and assigns it to the CreatedAt field.
+func (o *ListOrganizationExpandedResponseDataInner) SetCreatedAt(v time.Time) {
+	o.CreatedAt = &v
+}
+
+// GetUpdatedAt returns the UpdatedAt field value if set, zero value otherwise.
+func (o *ListOrganizationExpandedResponseDataInner) GetUpdatedAt() time.Time {
+	if o == nil || IsNil(o.UpdatedAt) {
+		var ret time.Time
+		return ret
+	}
+	return *o.UpdatedAt
+}
+
+// GetUpdatedAtOk returns a tuple with the UpdatedAt field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ListOrganizationExpandedResponseDataInner) GetUpdatedAtOk() (*time.Time, bool) {
+	if o == nil || IsNil(o.UpdatedAt) {
+		return nil, false
+	}
+	return o.UpdatedAt, true
+}
+
+// HasUpdatedAt returns a boolean if a field has been set.
+func (o *ListOrganizationExpandedResponseDataInner) HasUpdatedAt() bool {
+	if o != nil && !IsNil(o.UpdatedAt) {
+		return true
+	}
+
+	return false
+}
+
+// SetUpdatedAt gets a reference to the given time.Time and assigns it to the UpdatedAt field.
+func (o *ListOrganizationExpandedResponseDataInner) SetUpdatedAt(v time.Time) {
+	o.UpdatedAt = &v
+}
+
 // GetTotalStacks returns the TotalStacks field value if set, zero value otherwise.
 func (o *ListOrganizationExpandedResponseDataInner) GetTotalStacks() int32 {
 	if o == nil || IsNil(o.TotalStacks) {
@@ -421,6 +488,12 @@ func (o ListOrganizationExpandedResponseDataInner) ToMap() (map[string]interface
 	}
 	if !IsNil(o.AvailableSandboxes) {
 		toSerialize["availableSandboxes"] = o.AvailableSandboxes
+	}
+	if !IsNil(o.CreatedAt) {
+		toSerialize["createdAt"] = o.CreatedAt
+	}
+	if !IsNil(o.UpdatedAt) {
+		toSerialize["updatedAt"] = o.UpdatedAt
 	}
 	if !IsNil(o.TotalStacks) {
 		toSerialize["totalStacks"] = o.TotalStacks

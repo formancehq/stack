@@ -2722,9 +2722,15 @@ func (a *DefaultApiService) ListOrganizationInvitationsExecute(r ApiListOrganiza
 type ApiListOrganizationsRequest struct {
 	ctx context.Context
 	ApiService *DefaultApiService
+	expand *bool
 }
 
-func (r ApiListOrganizationsRequest) Execute() (*ListOrganizationResponse, *http.Response, error) {
+func (r ApiListOrganizationsRequest) Expand(expand bool) ApiListOrganizationsRequest {
+	r.expand = &expand
+	return r
+}
+
+func (r ApiListOrganizationsRequest) Execute() (*ListOrganizationExpandedResponse, *http.Response, error) {
 	return r.ApiService.ListOrganizationsExecute(r)
 }
 
@@ -2742,13 +2748,13 @@ func (a *DefaultApiService) ListOrganizations(ctx context.Context) ApiListOrgani
 }
 
 // Execute executes the request
-//  @return ListOrganizationResponse
-func (a *DefaultApiService) ListOrganizationsExecute(r ApiListOrganizationsRequest) (*ListOrganizationResponse, *http.Response, error) {
+//  @return ListOrganizationExpandedResponse
+func (a *DefaultApiService) ListOrganizationsExecute(r ApiListOrganizationsRequest) (*ListOrganizationExpandedResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ListOrganizationResponse
+		localVarReturnValue  *ListOrganizationExpandedResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.ListOrganizations")
@@ -2762,6 +2768,9 @@ func (a *DefaultApiService) ListOrganizationsExecute(r ApiListOrganizationsReque
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 
+	if r.expand != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "expand", r.expand, "")
+	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -2830,6 +2839,8 @@ ListOrganizationsExpanded List organizations of the connected user with expanded
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiListOrganizationsExpandedRequest
+
+Deprecated
 */
 func (a *DefaultApiService) ListOrganizationsExpanded(ctx context.Context) ApiListOrganizationsExpandedRequest {
 	return ApiListOrganizationsExpandedRequest{
@@ -2840,6 +2851,7 @@ func (a *DefaultApiService) ListOrganizationsExpanded(ctx context.Context) ApiLi
 
 // Execute executes the request
 //  @return ListOrganizationExpandedResponse
+// Deprecated
 func (a *DefaultApiService) ListOrganizationsExpandedExecute(r ApiListOrganizationsExpandedRequest) (*ListOrganizationExpandedResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
@@ -3496,9 +3508,15 @@ type ApiReadOrganizationRequest struct {
 	ctx context.Context
 	ApiService *DefaultApiService
 	organizationId string
+	expand *bool
 }
 
-func (r ApiReadOrganizationRequest) Execute() (*CreateOrganizationResponse, *http.Response, error) {
+func (r ApiReadOrganizationRequest) Expand(expand bool) ApiReadOrganizationRequest {
+	r.expand = &expand
+	return r
+}
+
+func (r ApiReadOrganizationRequest) Execute() (*ReadOrganizationResponse, *http.Response, error) {
 	return r.ApiService.ReadOrganizationExecute(r)
 }
 
@@ -3518,13 +3536,13 @@ func (a *DefaultApiService) ReadOrganization(ctx context.Context, organizationId
 }
 
 // Execute executes the request
-//  @return CreateOrganizationResponse
-func (a *DefaultApiService) ReadOrganizationExecute(r ApiReadOrganizationRequest) (*CreateOrganizationResponse, *http.Response, error) {
+//  @return ReadOrganizationResponse
+func (a *DefaultApiService) ReadOrganizationExecute(r ApiReadOrganizationRequest) (*ReadOrganizationResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *CreateOrganizationResponse
+		localVarReturnValue  *ReadOrganizationResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.ReadOrganization")
@@ -3539,6 +3557,9 @@ func (a *DefaultApiService) ReadOrganizationExecute(r ApiReadOrganizationRequest
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 
+	if r.expand != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "expand", r.expand, "")
+	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -3869,7 +3890,7 @@ func (r ApiUpdateOrganizationRequest) OrganizationData(organizationData Organiza
 	return r
 }
 
-func (r ApiUpdateOrganizationRequest) Execute() (*CreateOrganizationResponse, *http.Response, error) {
+func (r ApiUpdateOrganizationRequest) Execute() (*ReadOrganizationResponse, *http.Response, error) {
 	return r.ApiService.UpdateOrganizationExecute(r)
 }
 
@@ -3889,13 +3910,13 @@ func (a *DefaultApiService) UpdateOrganization(ctx context.Context, organization
 }
 
 // Execute executes the request
-//  @return CreateOrganizationResponse
-func (a *DefaultApiService) UpdateOrganizationExecute(r ApiUpdateOrganizationRequest) (*CreateOrganizationResponse, *http.Response, error) {
+//  @return ReadOrganizationResponse
+func (a *DefaultApiService) UpdateOrganizationExecute(r ApiUpdateOrganizationRequest) (*ReadOrganizationResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPut
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *CreateOrganizationResponse
+		localVarReturnValue  *ReadOrganizationResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.UpdateOrganization")

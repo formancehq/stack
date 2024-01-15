@@ -1,14 +1,13 @@
 package organizations
 
 import (
-	"github.com/formancehq/fctl/cmd/cloud/organizations/internal"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
 )
 
 type CreateStore struct {
-	Organization *membershipclient.Organization `json:"organization"`
+	Organization *membershipclient.OrganizationExpanded `json:"organization"`
 }
 type CreateController struct {
 	store *CreateStore
@@ -85,5 +84,5 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 }
 
 func (c *CreateController) Render(cmd *cobra.Command, args []string) error {
-	return internal.PrintOrganization(c.store.Organization)
+	return PrintOrganization(c.store.Organization)
 }

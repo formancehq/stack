@@ -1,23 +1,19 @@
 package organizations
 
 import (
-	"github.com/formancehq/fctl/cmd/cloud/organizations/internal"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
 )
 
-type UpdateStore struct {
-	Organization *membershipclient.Organization `json:"organization"`
-}
 type UpdateController struct {
-	store *UpdateStore
+	store *DescribeStore
 }
 
-var _ fctl.Controller[*UpdateStore] = (*UpdateController)(nil)
+var _ fctl.Controller[*DescribeStore] = (*UpdateController)(nil)
 
-func NewDefaultUpdateStore() *UpdateStore {
-	return &UpdateStore{}
+func NewDefaultUpdateStore() *DescribeStore {
+	return &DescribeStore{}
 }
 
 func NewUpdateController() *UpdateController {
@@ -36,11 +32,11 @@ func NewUpdateCommand() *cobra.Command {
 		fctl.WithStringSliceFlag("default-stack-role", []string{}, "Default Stack Role"),
 		fctl.WithStringFlag("domain", "", "Organization Domain"),
 		fctl.WithStringSliceFlag("default-organization-role", []string{}, "Default Organization Role"),
-		fctl.WithController[*UpdateStore](NewUpdateController()),
+		fctl.WithController[*DescribeStore](NewUpdateController()),
 	)
 }
 
-func (c *UpdateController) GetStore() *UpdateStore {
+func (c *UpdateController) GetStore() *DescribeStore {
 	return c.store
 }
 
@@ -102,11 +98,11 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
-	c.store.Organization = response.Data
+	c.store.OrganizationExpanded = response.Data
 
 	return c, nil
 }
 
 func (c *UpdateController) Render(cmd *cobra.Command, args []string) error {
-	return internal.PrintOrganization(c.store.Organization)
+	return PrintOrganization(c.store.OrganizationExpanded)
 }

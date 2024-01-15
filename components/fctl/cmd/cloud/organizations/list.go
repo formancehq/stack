@@ -39,6 +39,7 @@ func NewListCommand() *cobra.Command {
 	return fctl.NewCommand("list",
 		fctl.WithAliases("ls", "l"),
 		fctl.WithShortDescription("List organizations"),
+		fctl.WithBoolFlag("expand", true, "Expand the organization"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
 		fctl.WithController[*ListStore](NewListController()),
 	)
@@ -59,7 +60,9 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	organizations, _, err := apiClient.DefaultApi.ListOrganizationsExpanded(cmd.Context()).Execute()
+	expand := fctl.GetBool(cmd, "expand")
+
+	organizations, _, err := apiClient.DefaultApi.ListOrganizations(cmd.Context()).Expand(expand).Execute()
 	if err != nil {
 		return nil, err
 	}
@@ -73,10 +76,15 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	c.store.Organizations = fctl.Map(organizations.Data, func(o membershipclient.ListOrganizationExpandedResponseDataInner) *OrgRow {
 		isMine := fctl.BoolToString(o.OwnerId == claims["sub"].(string))
 		return &OrgRow{
-			ID:         o.Id,
-			Name:       o.Name,
-			OwnerID:    o.OwnerId,
-			OwnerEmail: o.Owner.Email,
+			ID:      o.Id,
+			Name:    o.Name,
+			OwnerID: o.OwnerId,
+			OwnerEmail: func() string {
+				if o.Owner == nil {
+					return ""
+				}
+				return o.Owner.Email
+			}(),
 			Domain: func() string {
 				if o.Domain == nil {
 					return ""

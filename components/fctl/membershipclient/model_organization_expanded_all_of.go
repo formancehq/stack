@@ -14,35 +14,35 @@ import (
 	"encoding/json"
 )
 
-// checks if the ListOrganizationExpandedResponseDataInnerAllOf type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &ListOrganizationExpandedResponseDataInnerAllOf{}
+// checks if the OrganizationExpandedAllOf type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &OrganizationExpandedAllOf{}
 
-// ListOrganizationExpandedResponseDataInnerAllOf struct for ListOrganizationExpandedResponseDataInnerAllOf
-type ListOrganizationExpandedResponseDataInnerAllOf struct {
+// OrganizationExpandedAllOf struct for OrganizationExpandedAllOf
+type OrganizationExpandedAllOf struct {
 	TotalStacks *int32 `json:"totalStacks,omitempty"`
 	TotalUsers *int32 `json:"totalUsers,omitempty"`
 	Owner *User `json:"owner,omitempty"`
 }
 
-// NewListOrganizationExpandedResponseDataInnerAllOf instantiates a new ListOrganizationExpandedResponseDataInnerAllOf object
+// NewOrganizationExpandedAllOf instantiates a new OrganizationExpandedAllOf object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewListOrganizationExpandedResponseDataInnerAllOf() *ListOrganizationExpandedResponseDataInnerAllOf {
-	this := ListOrganizationExpandedResponseDataInnerAllOf{}
+func NewOrganizationExpandedAllOf() *OrganizationExpandedAllOf {
+	this := OrganizationExpandedAllOf{}
 	return &this
 }
 
-// NewListOrganizationExpandedResponseDataInnerAllOfWithDefaults instantiates a new ListOrganizationExpandedResponseDataInnerAllOf object
+// NewOrganizationExpandedAllOfWithDefaults instantiates a new OrganizationExpandedAllOf object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewListOrganizationExpandedResponseDataInnerAllOfWithDefaults() *ListOrganizationExpandedResponseDataInnerAllOf {
-	this := ListOrganizationExpandedResponseDataInnerAllOf{}
+func NewOrganizationExpandedAllOfWithDefaults() *OrganizationExpandedAllOf {
+	this := OrganizationExpandedAllOf{}
 	return &this
 }
 
 // GetTotalStacks returns the TotalStacks field value if set, zero value otherwise.
-func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetTotalStacks() int32 {
+func (o *OrganizationExpandedAllOf) GetTotalStacks() int32 {
 	if o == nil || IsNil(o.TotalStacks) {
 		var ret int32
 		return ret
@@ -52,7 +52,7 @@ func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetTotalStacks() int32 
 
 // GetTotalStacksOk returns a tuple with the TotalStacks field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetTotalStacksOk() (*int32, bool) {
+func (o *OrganizationExpandedAllOf) GetTotalStacksOk() (*int32, bool) {
 	if o == nil || IsNil(o.TotalStacks) {
 		return nil, false
 	}
@@ -60,7 +60,7 @@ func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetTotalStacksOk() (*in
 }
 
 // HasTotalStacks returns a boolean if a field has been set.
-func (o *ListOrganizationExpandedResponseDataInnerAllOf) HasTotalStacks() bool {
+func (o *OrganizationExpandedAllOf) HasTotalStacks() bool {
 	if o != nil && !IsNil(o.TotalStacks) {
 		return true
 	}
@@ -69,12 +69,12 @@ func (o *ListOrganizationExpandedResponseDataInnerAllOf) HasTotalStacks() bool {
 }
 
 // SetTotalStacks gets a reference to the given int32 and assigns it to the TotalStacks field.
-func (o *ListOrganizationExpandedResponseDataInnerAllOf) SetTotalStacks(v int32) {
+func (o *OrganizationExpandedAllOf) SetTotalStacks(v int32) {
 	o.TotalStacks = &v
 }
 
 // GetTotalUsers returns the TotalUsers field value if set, zero value otherwise.
-func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetTotalUsers() int32 {
+func (o *OrganizationExpandedAllOf) GetTotalUsers() int32 {
 	if o == nil || IsNil(o.TotalUsers) {
 		var ret int32
 		return ret
@@ -84,7 +84,7 @@ func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetTotalUsers() int32 {
 
 // GetTotalUsersOk returns a tuple with the TotalUsers field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetTotalUsersOk() (*int32, bool) {
+func (o *OrganizationExpandedAllOf) GetTotalUsersOk() (*int32, bool) {
 	if o == nil || IsNil(o.TotalUsers) {
 		return nil, false
 	}
@@ -92,7 +92,7 @@ func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetTotalUsersOk() (*int
 }
 
 // HasTotalUsers returns a boolean if a field has been set.
-func (o *ListOrganizationExpandedResponseDataInnerAllOf) HasTotalUsers() bool {
+func (o *OrganizationExpandedAllOf) HasTotalUsers() bool {
 	if o != nil && !IsNil(o.TotalUsers) {
 		return true
 	}
@@ -101,12 +101,12 @@ func (o *ListOrganizationExpandedResponseDataInnerAllOf) HasTotalUsers() bool {
 }
 
 // SetTotalUsers gets a reference to the given int32 and assigns it to the TotalUsers field.
-func (o *ListOrganizationExpandedResponseDataInnerAllOf) SetTotalUsers(v int32) {
+func (o *OrganizationExpandedAllOf) SetTotalUsers(v int32) {
 	o.TotalUsers = &v
 }
 
 // GetOwner returns the Owner field value if set, zero value otherwise.
-func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetOwner() User {
+func (o *OrganizationExpandedAllOf) GetOwner() User {
 	if o == nil || IsNil(o.Owner) {
 		var ret User
 		return ret
@@ -116,7 +116,7 @@ func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetOwner() User {
 
 // GetOwnerOk returns a tuple with the Owner field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetOwnerOk() (*User, bool) {
+func (o *OrganizationExpandedAllOf) GetOwnerOk() (*User, bool) {
 	if o == nil || IsNil(o.Owner) {
 		return nil, false
 	}
@@ -124,7 +124,7 @@ func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetOwnerOk() (*User, bo
 }
 
 // HasOwner returns a boolean if a field has been set.
-func (o *ListOrganizationExpandedResponseDataInnerAllOf) HasOwner() bool {
+func (o *OrganizationExpandedAllOf) HasOwner() bool {
 	if o != nil && !IsNil(o.Owner) {
 		return true
 	}
@@ -133,11 +133,11 @@ func (o *ListOrganizationExpandedResponseDataInnerAllOf) HasOwner() bool {
 }
 
 // SetOwner gets a reference to the given User and assigns it to the Owner field.
-func (o *ListOrganizationExpandedResponseDataInnerAllOf) SetOwner(v User) {
+func (o *OrganizationExpandedAllOf) SetOwner(v User) {
 	o.Owner = &v
 }
 
-func (o ListOrganizationExpandedResponseDataInnerAllOf) MarshalJSON() ([]byte, error) {
+func (o OrganizationExpandedAllOf) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -145,7 +145,7 @@ func (o ListOrganizationExpandedResponseDataInnerAllOf) MarshalJSON() ([]byte, e
 	return json.Marshal(toSerialize)
 }
 
-func (o ListOrganizationExpandedResponseDataInnerAllOf) ToMap() (map[string]interface{}, error) {
+func (o OrganizationExpandedAllOf) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.TotalStacks) {
 		toSerialize["totalStacks"] = o.TotalStacks
@@ -159,38 +159,38 @@ func (o ListOrganizationExpandedResponseDataInnerAllOf) ToMap() (map[string]inte
 	return toSerialize, nil
 }
 
-type NullableListOrganizationExpandedResponseDataInnerAllOf struct {
-	value *ListOrganizationExpandedResponseDataInnerAllOf
+type NullableOrganizationExpandedAllOf struct {
+	value *OrganizationExpandedAllOf
 	isSet bool
 }
 
-func (v NullableListOrganizationExpandedResponseDataInnerAllOf) Get() *ListOrganizationExpandedResponseDataInnerAllOf {
+func (v NullableOrganizationExpandedAllOf) Get() *OrganizationExpandedAllOf {
 	return v.value
 }
 
-func (v *NullableListOrganizationExpandedResponseDataInnerAllOf) Set(val *ListOrganizationExpandedResponseDataInnerAllOf) {
+func (v *NullableOrganizationExpandedAllOf) Set(val *OrganizationExpandedAllOf) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableListOrganizationExpandedResponseDataInnerAllOf) IsSet() bool {
+func (v NullableOrganizationExpandedAllOf) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableListOrganizationExpandedResponseDataInnerAllOf) Unset() {
+func (v *NullableOrganizationExpandedAllOf) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableListOrganizationExpandedResponseDataInnerAllOf(val *ListOrganizationExpandedResponseDataInnerAllOf) *NullableListOrganizationExpandedResponseDataInnerAllOf {
-	return &NullableListOrganizationExpandedResponseDataInnerAllOf{value: val, isSet: true}
+func NewNullableOrganizationExpandedAllOf(val *OrganizationExpandedAllOf) *NullableOrganizationExpandedAllOf {
+	return &NullableOrganizationExpandedAllOf{value: val, isSet: true}
 }
 
-func (v NullableListOrganizationExpandedResponseDataInnerAllOf) MarshalJSON() ([]byte, error) {
+func (v NullableOrganizationExpandedAllOf) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableListOrganizationExpandedResponseDataInnerAllOf) UnmarshalJSON(src []byte) error {
+func (v *NullableOrganizationExpandedAllOf) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
