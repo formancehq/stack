@@ -135,7 +135,6 @@ Class | Method | HTTP request | Description
  - [ListOrganizationExpandedResponse](docs/ListOrganizationExpandedResponse.md)
  - [ListOrganizationExpandedResponseDataInner](docs/ListOrganizationExpandedResponseDataInner.md)
  - [ListOrganizationResponse](docs/ListOrganizationResponse.md)
- - [ListOrganizations200Response](docs/ListOrganizations200Response.md)
  - [ListRegionsResponse](docs/ListRegionsResponse.md)
  - [ListStacksResponse](docs/ListStacksResponse.md)
  - [ListUsersResponse](docs/ListUsersResponse.md)

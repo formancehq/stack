@@ -36,7 +36,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/listOrganizations_200_response'
+                $ref: '#/components/schemas/ListOrganizationExpandedResponse'
           description: List of organizations
       summary: List organizations of the connected user
     post:
@@ -1672,10 +1672,6 @@ components:
       required:
       - data
       type: object
-    listOrganizations_200_response:
-      oneOf:
-      - $ref: '#/components/schemas/ListOrganizationResponse'
-      - $ref: '#/components/schemas/ListOrganizationExpandedResponse'
     PrivateRegion_allOf_secret:
       properties:
         lastDigits:

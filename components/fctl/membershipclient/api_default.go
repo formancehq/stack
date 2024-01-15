@@ -2730,7 +2730,7 @@ func (r ApiListOrganizationsRequest) Expand(expand bool) ApiListOrganizationsReq
 	return r
 }
 
-func (r ApiListOrganizationsRequest) Execute() (*ListOrganizations200Response, *http.Response, error) {
+func (r ApiListOrganizationsRequest) Execute() (*ListOrganizationExpandedResponse, *http.Response, error) {
 	return r.ApiService.ListOrganizationsExecute(r)
 }
 
@@ -2748,13 +2748,13 @@ func (a *DefaultApiService) ListOrganizations(ctx context.Context) ApiListOrgani
 }
 
 // Execute executes the request
-//  @return ListOrganizations200Response
-func (a *DefaultApiService) ListOrganizationsExecute(r ApiListOrganizationsRequest) (*ListOrganizations200Response, *http.Response, error) {
+//  @return ListOrganizationExpandedResponse
+func (a *DefaultApiService) ListOrganizationsExecute(r ApiListOrganizationsRequest) (*ListOrganizationExpandedResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ListOrganizations200Response
+		localVarReturnValue  *ListOrganizationExpandedResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.ListOrganizations")

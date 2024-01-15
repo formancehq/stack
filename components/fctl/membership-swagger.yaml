@@ -36,9 +36,7 @@ paths:
           content:
             application/json:
               schema:
-                oneOf:
-                - $ref: '#/components/schemas/ListOrganizationResponse'
-                - $ref: '#/components/schemas/ListOrganizationExpandedResponse'
+                $ref: '#/components/schemas/ListOrganizationExpandedResponse'
     post:
       summary: Create organization
       operationId: createOrganization

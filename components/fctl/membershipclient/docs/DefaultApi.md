@@ -1552,7 +1552,7 @@ Name | Type | Description  | Notes
 
 ## ListOrganizations
 
-> ListOrganizations200Response ListOrganizations(ctx).Expand(expand).Execute()
+> ListOrganizationExpandedResponse ListOrganizations(ctx).Expand(expand).Execute()
 
 List organizations of the connected user
 
@@ -1578,7 +1578,7 @@ func main() {
         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ListOrganizations``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `ListOrganizations`: ListOrganizations200Response
+    // response from `ListOrganizations`: ListOrganizationExpandedResponse
     fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ListOrganizations`: %v\n", resp)
 }
 ```
@@ -1598,7 +1598,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ListOrganizations200Response**](ListOrganizations200Response.md)
+[**ListOrganizationExpandedResponse**](ListOrganizationExpandedResponse.md)
 
 ### Authorization
 
