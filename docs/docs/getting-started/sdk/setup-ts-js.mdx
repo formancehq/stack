@@ -71,28 +71,29 @@ If you're integrating Formance into a web application, you should use an OAuth f
     import { SDK as Formance } from '@formance/formance-sdk';
     import { createAuthorizationProvider } from '@formance/formance-sdk-oauth';
 
-    // highlight-next-line
     const ENDPOINT = "https://xxxxxxxxxx-xxxx.sandbox.formance.cloud";
 
     const formance = new Formance({
-        serverUrl: ENDPOINT,
-        security: createAuthorizationProvider({
-            endpoint: ENDPOINT,
-            // highlight-start
+        serverURL: ENDPOINT,
+        authorization: createAuthorizationProvider({
+            endpointUrl: ENDPOINT,
             // These are sensitive credentials that should not be exposed to the public.
             clientId: "6a936dfe-xxxx-yyyy-zzzz-9019a1e9b9e3",
             clientSecret: "20bd58c4-xxxx-yyyy-zzzz-dc05258bc959",
-            // highlight-end
         }),
     });
 
     async function main() {
         const ledgerInfo = await formance.ledger.getInfo();
-        console.log(ledgerInfo.data);
+        console.log(ledgerInfo.configInfoResponse!.data);
     }
 
     main();
     ```
+
+:::info
+You'll need the API endpoint and the credentials created during the [SDK's Getting Started](/getting-started/sdk) guide. If you don't have them, you can create them by following the guide.
+:::
 
     Next, run the file using `ts-node`.
 
@@ -108,28 +109,29 @@ If you're integrating Formance into a web application, you should use an OAuth f
     import { SDK as Formance } from '@formance/formance-sdk';
     import { createAuthorizationProvider } from '@formance/formance-sdk-oauth';
 
-    // highlight-next-line
     const ENDPOINT = "https://xxxxxxxxxx-xxxx.sandbox.formance.cloud";
 
     const formance = new Formance({
-        serverUrl: ENDPOINT,
-        security: createAuthorizationProvider({
-            endpoint: ENDPOINT,
-            // highlight-start
+        serverURL: ENDPOINT,
+        authorization: createAuthorizationProvider({
+            endpointUrl: ENDPOINT,
             // These are sensitive credentials that should not be exposed to the public.
             clientId: "6a936dfe-xxxx-yyyy-zzzz-9019a1e9b9e3",
             clientSecret: "20bd58c4-xxxx-yyyy-zzzz-dc05258bc959",
-            // highlight-end
         }),
     });
 
     async function main() {
         const ledgerInfo = await formance.ledger.getInfo();
-        console.log(ledgerInfo.data);
+        console.log(ledgerInfo.configInfoResponse.data);
     }
 
     main();
     ```
+
+:::info
+You'll need the API endpoint and the credentials created during the [SDK's Getting Started](/getting-started/sdk) guide. If you don't have them, you can create them by following the guide.
+:::
 
     Next, run the file using `node`.
 
@@ -142,5 +144,13 @@ If you're integrating Formance into a web application, you should use an OAuth f
 You should see a similar output.
 
 ```bash
-# TODO Add once SDK published
+{
+  config: { storage: { driver: 'postgres', ledgers: [Array] } },
+  server: 'numary-ledger',
+  version: 'v1.10.13'
+}
 ```
+
+:::tip
+Numary is the Formance's former name.
+:::
