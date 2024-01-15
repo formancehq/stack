@@ -98,11 +98,11 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
-	c.store.ReadOrganizationResponseData = *response.Data
+	c.store.OrganizationExpanded = response.Data
 
 	return c, nil
 }
 
 func (c *UpdateController) Render(cmd *cobra.Command, args []string) error {
-	return PrintOrganizationFromStore(c.store)
+	return PrintOrganization(c.store.OrganizationExpanded)
 }

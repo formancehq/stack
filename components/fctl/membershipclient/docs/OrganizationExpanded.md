@@ -14,15 +14,15 @@ Name | Type | Description | Notes
 **AvailableSandboxes** | Pointer to **int32** | Number of available sandboxes | [optional] 
 **CreatedAt** | Pointer to **time.Time** |  | [optional] 
 **UpdatedAt** | Pointer to **time.Time** |  | [optional] 
-**TotalStacks** | **int32** |  | 
-**TotalUsers** | **int32** |  | 
-**Owner** | [**User**](User.md) |  | 
+**TotalStacks** | Pointer to **int32** |  | [optional] 
+**TotalUsers** | Pointer to **int32** |  | [optional] 
+**Owner** | Pointer to [**User**](User.md) |  | [optional] 
 
 ## Methods
 
 ### NewOrganizationExpanded
 
-`func NewOrganizationExpanded(name string, id string, ownerId string, totalStacks int32, totalUsers int32, owner User, ) *OrganizationExpanded`
+`func NewOrganizationExpanded(name string, id string, ownerId string, ) *OrganizationExpanded`
 
 NewOrganizationExpanded instantiates a new OrganizationExpanded object
 This constructor will assign default values to properties that have it defined,
@@ -291,6 +291,11 @@ and a boolean to check if the value has been set.
 
 SetTotalStacks sets TotalStacks field to given value.
 
+### HasTotalStacks
+
+`func (o *OrganizationExpanded) HasTotalStacks() bool`
+
+HasTotalStacks returns a boolean if a field has been set.
 
 ### GetTotalUsers
 
@@ -311,6 +316,11 @@ and a boolean to check if the value has been set.
 
 SetTotalUsers sets TotalUsers field to given value.
 
+### HasTotalUsers
+
+`func (o *OrganizationExpanded) HasTotalUsers() bool`
+
+HasTotalUsers returns a boolean if a field has been set.
 
 ### GetOwner
 
@@ -331,6 +341,11 @@ and a boolean to check if the value has been set.
 
 SetOwner sets Owner field to given value.
 
+### HasOwner
+
+`func (o *OrganizationExpanded) HasOwner() bool`
+
+HasOwner returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

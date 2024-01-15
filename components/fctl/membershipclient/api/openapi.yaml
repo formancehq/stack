@@ -1363,14 +1363,14 @@ components:
         data: null
       properties:
         data:
-          $ref: '#/components/schemas/Organization'
+          $ref: '#/components/schemas/OrganizationExpanded'
       type: object
     ReadOrganizationResponse:
       example:
         data: null
       properties:
         data:
-          $ref: '#/components/schemas/ReadOrganizationResponse_data'
+          $ref: '#/components/schemas/OrganizationExpanded'
       type: object
     ListStacksResponse:
       example:
@@ -1827,10 +1827,6 @@ components:
       - userId
       type: object
       example: null
-    ReadOrganizationResponse_data:
-      allOf:
-      - $ref: '#/components/schemas/Organization'
-      - $ref: '#/components/schemas/OrganizationExpanded'
     CreateStackRequest_allOf:
       properties:
         regionID:
@@ -1850,10 +1846,6 @@ components:
           type: integer
         owner:
           $ref: '#/components/schemas/User'
-      required:
-      - owner
-      - totalStacks
-      - totalUsers
       type: object
       example: null
   securitySchemes:

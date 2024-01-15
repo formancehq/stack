@@ -4,15 +4,15 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**TotalStacks** | **int32** |  | 
-**TotalUsers** | **int32** |  | 
-**Owner** | [**User**](User.md) |  | 
+**TotalStacks** | Pointer to **int32** |  | [optional] 
+**TotalUsers** | Pointer to **int32** |  | [optional] 
+**Owner** | Pointer to [**User**](User.md) |  | [optional] 
 
 ## Methods
 
 ### NewOrganizationExpandedAllOf
 
-`func NewOrganizationExpandedAllOf(totalStacks int32, totalUsers int32, owner User, ) *OrganizationExpandedAllOf`
+`func NewOrganizationExpandedAllOf() *OrganizationExpandedAllOf`
 
 NewOrganizationExpandedAllOf instantiates a new OrganizationExpandedAllOf object
 This constructor will assign default values to properties that have it defined,
@@ -46,6 +46,11 @@ and a boolean to check if the value has been set.
 
 SetTotalStacks sets TotalStacks field to given value.
 
+### HasTotalStacks
+
+`func (o *OrganizationExpandedAllOf) HasTotalStacks() bool`
+
+HasTotalStacks returns a boolean if a field has been set.
 
 ### GetTotalUsers
 
@@ -66,6 +71,11 @@ and a boolean to check if the value has been set.
 
 SetTotalUsers sets TotalUsers field to given value.
 
+### HasTotalUsers
+
+`func (o *OrganizationExpandedAllOf) HasTotalUsers() bool`
+
+HasTotalUsers returns a boolean if a field has been set.
 
 ### GetOwner
 
@@ -86,6 +96,11 @@ and a boolean to check if the value has been set.
 
 SetOwner sets Owner field to given value.
 
+### HasOwner
+
+`func (o *OrganizationExpandedAllOf) HasOwner() bool`
+
+HasOwner returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

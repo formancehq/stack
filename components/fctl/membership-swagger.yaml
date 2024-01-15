@@ -1332,14 +1332,12 @@ components:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/Organization'
+          $ref: '#/components/schemas/OrganizationExpanded'
     ReadOrganizationResponse:
       type: object
       properties:
         data:
-          allOf:
-            - $ref: '#/components/schemas/Organization'
-            - $ref: '#/components/schemas/OrganizationExpanded'
+          $ref: '#/components/schemas/OrganizationExpanded'
     ListStacksResponse:
       type: object
       properties:
@@ -1487,10 +1485,6 @@ components:
       allOf:
         - $ref: '#/components/schemas/Organization'
         - type: object
-          required:
-            - totalStacks
-            - totalUsers
-            - owner
           properties:
             totalStacks:
               type: integer

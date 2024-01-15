@@ -19,7 +19,7 @@ var _ MappedNullable = &CreateOrganizationResponse{}
 
 // CreateOrganizationResponse struct for CreateOrganizationResponse
 type CreateOrganizationResponse struct {
-	Data *Organization `json:"data,omitempty"`
+	Data *OrganizationExpanded `json:"data,omitempty"`
 }
 
 // NewCreateOrganizationResponse instantiates a new CreateOrganizationResponse object
@@ -40,9 +40,9 @@ func NewCreateOrganizationResponseWithDefaults() *CreateOrganizationResponse {
 }
 
 // GetData returns the Data field value if set, zero value otherwise.
-func (o *CreateOrganizationResponse) GetData() Organization {
+func (o *CreateOrganizationResponse) GetData() OrganizationExpanded {
 	if o == nil || IsNil(o.Data) {
-		var ret Organization
+		var ret OrganizationExpanded
 		return ret
 	}
 	return *o.Data
@@ -50,7 +50,7 @@ func (o *CreateOrganizationResponse) GetData() Organization {
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CreateOrganizationResponse) GetDataOk() (*Organization, bool) {
+func (o *CreateOrganizationResponse) GetDataOk() (*OrganizationExpanded, bool) {
 	if o == nil || IsNil(o.Data) {
 		return nil, false
 	}
@@ -66,8 +66,8 @@ func (o *CreateOrganizationResponse) HasData() bool {
 	return false
 }
 
-// SetData gets a reference to the given Organization and assigns it to the Data field.
-func (o *CreateOrganizationResponse) SetData(v Organization) {
+// SetData gets a reference to the given OrganizationExpanded and assigns it to the Data field.
+func (o *CreateOrganizationResponse) SetData(v OrganizationExpanded) {
 	o.Data = &v
 }
 

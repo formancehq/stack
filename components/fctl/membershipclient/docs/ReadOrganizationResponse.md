@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Data** | Pointer to [**ReadOrganizationResponseData**](ReadOrganizationResponseData.md) |  | [optional] 
+**Data** | Pointer to [**OrganizationExpanded**](OrganizationExpanded.md) |  | [optional] 
 
 ## Methods
 
@@ -27,20 +27,20 @@ but it doesn't guarantee that properties required by API are set
 
 ### GetData
 
-`func (o *ReadOrganizationResponse) GetData() ReadOrganizationResponseData`
+`func (o *ReadOrganizationResponse) GetData() OrganizationExpanded`
 
 GetData returns the Data field if non-nil, zero value otherwise.
 
 ### GetDataOk
 
-`func (o *ReadOrganizationResponse) GetDataOk() (*ReadOrganizationResponseData, bool)`
+`func (o *ReadOrganizationResponse) GetDataOk() (*OrganizationExpanded, bool)`
 
 GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetData
 
-`func (o *ReadOrganizationResponse) SetData(v ReadOrganizationResponseData)`
+`func (o *ReadOrganizationResponse) SetData(v OrganizationExpanded)`
 
 SetData sets Data field to given value.
 

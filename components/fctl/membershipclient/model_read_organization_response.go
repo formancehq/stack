@@ -19,7 +19,7 @@ var _ MappedNullable = &ReadOrganizationResponse{}
 
 // ReadOrganizationResponse struct for ReadOrganizationResponse
 type ReadOrganizationResponse struct {
-	Data *ReadOrganizationResponseData `json:"data,omitempty"`
+	Data *OrganizationExpanded `json:"data,omitempty"`
 }
 
 // NewReadOrganizationResponse instantiates a new ReadOrganizationResponse object
@@ -40,9 +40,9 @@ func NewReadOrganizationResponseWithDefaults() *ReadOrganizationResponse {
 }
 
 // GetData returns the Data field value if set, zero value otherwise.
-func (o *ReadOrganizationResponse) GetData() ReadOrganizationResponseData {
+func (o *ReadOrganizationResponse) GetData() OrganizationExpanded {
 	if o == nil || IsNil(o.Data) {
-		var ret ReadOrganizationResponseData
+		var ret OrganizationExpanded
 		return ret
 	}
 	return *o.Data
@@ -50,7 +50,7 @@ func (o *ReadOrganizationResponse) GetData() ReadOrganizationResponseData {
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ReadOrganizationResponse) GetDataOk() (*ReadOrganizationResponseData, bool) {
+func (o *ReadOrganizationResponse) GetDataOk() (*OrganizationExpanded, bool) {
 	if o == nil || IsNil(o.Data) {
 		return nil, false
 	}
@@ -66,8 +66,8 @@ func (o *ReadOrganizationResponse) HasData() bool {
 	return false
 }
 
-// SetData gets a reference to the given ReadOrganizationResponseData and assigns it to the Data field.
-func (o *ReadOrganizationResponse) SetData(v ReadOrganizationResponseData) {
+// SetData gets a reference to the given OrganizationExpanded and assigns it to the Data field.
+func (o *ReadOrganizationResponse) SetData(v OrganizationExpanded) {
 	o.Data = &v
 }
 

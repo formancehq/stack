@@ -7,8 +7,7 @@ import (
 )
 
 type DescribeStore struct {
-	expanded bool
-	membershipclient.ReadOrganizationResponseData
+	*membershipclient.OrganizationExpanded
 }
 type DescribeController struct {
 	store *DescribeStore
@@ -59,11 +58,10 @@ func (c *DescribeController) Run(cmd *cobra.Command, args []string) (fctl.Render
 		return nil, err
 	}
 
-	c.store.ReadOrganizationResponseData = *response.Data
-	c.store.expanded = expand
+	c.store.OrganizationExpanded = response.Data
 	return c, nil
 }
 
 func (c *DescribeController) Render(cmd *cobra.Command, args []string) error {
-	return PrintOrganizationFromStore(c.store)
+	return PrintOrganization(c.store.OrganizationExpanded)
 }

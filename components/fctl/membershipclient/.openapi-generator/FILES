@@ -43,7 +43,6 @@ docs/PrivateRegionAllOfSecret.md
 docs/PublicRegion.md
 docs/PublicRegionAllOf.md
 docs/ReadOrganizationResponse.md
-docs/ReadOrganizationResponseData.md
 docs/ReadOrganizationUserResponse.md
 docs/ReadUserResponse.md
 docs/Region.md
@@ -101,7 +100,6 @@ model_private_region_all_of_secret.go
 model_public_region.go
 model_public_region_all_of.go
 model_read_organization_response.go
-model_read_organization_response_data.go
 model_read_organization_user_response.go
 model_read_user_response.go
 model_region.go

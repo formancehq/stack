@@ -7,7 +7,7 @@ import (
 )
 
 type CreateStore struct {
-	Organization *membershipclient.Organization `json:"organization"`
+	Organization *membershipclient.OrganizationExpanded `json:"organization"`
 }
 type CreateController struct {
 	store *CreateStore

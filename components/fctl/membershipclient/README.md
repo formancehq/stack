@@ -153,7 +153,6 @@ Class | Method | HTTP request | Description
  - [PublicRegion](docs/PublicRegion.md)
  - [PublicRegionAllOf](docs/PublicRegionAllOf.md)
  - [ReadOrganizationResponse](docs/ReadOrganizationResponse.md)
- - [ReadOrganizationResponseData](docs/ReadOrganizationResponseData.md)
  - [ReadOrganizationUserResponse](docs/ReadOrganizationUserResponse.md)
  - [ReadUserResponse](docs/ReadUserResponse.md)
  - [Region](docs/Region.md)
