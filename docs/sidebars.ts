@@ -9,11 +9,9 @@
  Create as many sidebars as you want.
  */
 
-const { Collapse } = require('@material-ui/core');
+//import { Collapse } from "@mui/material"
+import type { SidebarsConfig } from "@docusaurus/plugin-content-docs"
 
-// @ts-check
-
-/** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
 const sidebars = {
   main: [
     {
@@ -38,6 +36,22 @@ const sidebars = {
           type: 'doc',
           id: 'guides/newSandbox',
         },
+        {
+          type: 'category',
+          label: 'Setup the SDK',
+          link: {
+            type: 'doc',
+            id: 'getting-started/sdk/index'
+          },
+          items: [{
+            type: 'doc',
+            id: 'getting-started/sdk/setup-ts-js'
+          }]
+        },
+        {
+          type: 'doc',
+          id: 'getting-started/cleanup',
+        }
       ],
     },
     {
@@ -601,6 +615,6 @@ const sidebars = {
       label: 'API Reference',
     },
   ],
-};
+} satisfies SidebarsConfig;
 
 module.exports = sidebars;

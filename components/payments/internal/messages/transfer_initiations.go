@@ -42,7 +42,6 @@ func (m *Messages) NewEventSavedTransferInitiations(tf *models.TransferInitiatio
 		ID:                   tf.ID.String(),
 		CreatedAt:            tf.CreatedAt,
 		ScheduleAt:           tf.ScheduledAt,
-		UpdatedAt:            tf.UpdatedAt,
 		ConnectorID:          tf.ConnectorID.String(),
 		Provider:             tf.Provider.String(),
 		Description:          tf.Description,
@@ -51,9 +50,13 @@ func (m *Messages) NewEventSavedTransferInitiations(tf *models.TransferInitiatio
 		DestinationAccountID: tf.DestinationAccountID.String(),
 		Amount:               tf.Amount,
 		Asset:                tf.Asset,
-		Attempts:             tf.Attempts,
-		Status:               tf.Status.String(),
-		Error:                tf.Error,
+		Attempts:             len(tf.RelatedAdjustments),
+	}
+
+	if len(tf.RelatedAdjustments) > 0 {
+		// Take the status and error from the last adjustment
+		payload.Status = tf.RelatedAdjustments[0].Status.String()
+		payload.Error = tf.RelatedAdjustments[0].Error
 	}
 
 	payload.RelatedPayments = make([]*transferInitiationsPaymentsMessagePayload, len(tf.RelatedPayments))

@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"time"
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/payments/internal/messages"
@@ -31,7 +30,7 @@ type Store interface {
 
 	CreateTransferInitiation(ctx context.Context, transferInitiation *models.TransferInitiation) error
 	ReadTransferInitiation(ctx context.Context, id models.TransferInitiationID) (*models.TransferInitiation, error)
-	UpdateTransferInitiationPaymentsStatus(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, attempts int, updatedAt time.Time) error
+	UpdateTransferInitiationPaymentsStatus(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, adjustment *models.TransferInitiationAdjustments) error
 	DeleteTransferInitiation(ctx context.Context, id models.TransferInitiationID) error
 }
 

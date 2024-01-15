@@ -39,13 +39,13 @@ func taskInitiatePayment(logger logging.Logger, currencyCloudClient *client.Clie
 			if err != nil {
 				ctx, cancel := contextutil.Detached(ctx)
 				defer cancel()
-				if err := ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusFailed, err.Error(), transfer.Attempts, time.Now()); err != nil {
+				if err := ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusFailed, err.Error(), time.Now()); err != nil {
 					logger.Error("failed to update transfer initiation status: %v", err)
 				}
 			}
 		}()
 
-		err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessing, "", transfer.Attempts, time.Now())
+		err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessing, "", time.Now())
 		if err != nil {
 			return err
 		}
@@ -90,7 +90,7 @@ func taskInitiatePayment(logger logging.Logger, currencyCloudClient *client.Clie
 				Currency:             curr,
 				Amount:               amount,
 				Reason:               transfer.Description,
-				UniqueRequestID:      fmt.Sprintf("%s_%d", transfer.ID.Reference, transfer.Attempts),
+				UniqueRequestID:      fmt.Sprintf("%s_%d", transfer.ID.Reference, len(transfer.RelatedAdjustments)),
 			})
 			if err != nil {
 				return err
@@ -112,7 +112,7 @@ func taskInitiatePayment(logger logging.Logger, currencyCloudClient *client.Clie
 				Currency:        curr,
 				Amount:          transferAmount.String(),
 				Reference:       transfer.Description,
-				UniqueRequestID: fmt.Sprintf("%s_%d", transfer.ID.Reference, transfer.Attempts),
+				UniqueRequestID: fmt.Sprintf("%s_%d", transfer.ID.Reference, len(transfer.RelatedAdjustments)),
 			})
 			if err != nil {
 				return err
@@ -223,14 +223,14 @@ func taskUpdatePaymentStatus(
 				return err
 			}
 		case "completed":
-			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessed, "", transfer.Attempts, time.Now())
+			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessed, "", time.Now())
 			if err != nil {
 				return err
 			}
 
 			return nil
 		case "cancelled":
-			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusFailed, resultMessage, transfer.Attempts, time.Now())
+			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusFailed, resultMessage, time.Now())
 			if err != nil {
 				return err
 			}

@@ -1,0 +1,107 @@
+# Setup the SDK
+
+import {DocCardList} from '@site/src/components/DocCard';
+import {useCurrentSidebarCategory} from '@docusaurus/theme-common';
+
+For the rest of this tutorial, we will setup the Formance SDK in your favourite language.
+
+The SDK will help you to interact with the Formance API and integrate it with your application.
+
+## Create OAuth client credentials
+
+To use the Formance API, you need to create an OAuth client credentials. This is done using `fctl`.
+
+```bash
+fctl auth client create getting-started-client
+```
+
+This will create a new OAuth client credentials with the name `getting-started-client`. You can use any name you want.
+
+This outputs something similar to the following:
+
+```bash
+You are about to create a new OAuth2 client.
+Do you want to continue [Y/n]: y
+# highlight-next-line
+ID                        | 6a936dfe-xxxx-yyyy-zzzz-9019a1e9b9e3
+Name                      | getting-started-client
+Description               |
+Public                    | No
+Redirect URIs             |
+Post logout redirect URIs |
+Scopes                    |
+```
+
+The `ID` is the OAuth client ID. You will need this to authenticate with the Formance API.
+
+Then create a new OAuth client secret:
+
+```bash
+fctl auth client secrets create 6a936dfe-xxxx-yyyy-zzzz-9019a1e9b9e3 getting-started-secret
+```
+
+This outputs something similar to the following:
+
+```bash
+You are about to create a new client secret.
+Do you want to continue [Y/n]: y
+ID    | 3bddd5f6-xxxx-yyyy-zzzz-e8cd839c9d79
+Name  | getting-started-secret
+# highlight-next-line
+Clear | 20bd58c4-xxxx-yyyy-zzzz-dc05258bc959
+```
+
+The `Clear` is the OAuth client secret. You will need this to authenticate with the Formance API.
+
+:::warning[Save the client secret]
+
+The client secret is only shown once. Make sure to save it somewhere safe.
+
+If you lose it, you will need to create a new one.
+
+:::
+
+## Retrieve the API endpoint
+
+Every Formance stack has a unique API endpoint. You can retrieve yours using `fctl`.
+
+```bash
+fctl stack show --name=playground
+```
+
+:::note
+
+Replace `playground` with the name of your stack if it is different.
+
+:::
+
+This outputs something similar to the following:
+
+```
+# Information
+ID               | wxyz                  |
+Name             | playgreound           |
+Region           | aws-eu-west-1-sandbox |
+Status           | ACTIVE                |
+Effective status | READY                 |
+
+
+# Versions
+Webhooks      | 0.7.1    | https://gywzymfjlvli-wxyz.sandbox.formance.cloud/api/webhooks
+Orchestration | 0.1.7    | https://gywzymfjlvli-wxyz.sandbox.formance.cloud/api/orchestration
+Auth          | 0.4.4    | https://gywzymfjlvli-wxyz.sandbox.formance.cloud/api/auth
+Wallets       | 0.4.6    | https://gywzymfjlvli-wxyz.sandbox.formance.cloud/api/wallets
+Ledger        | v1.10.13 | https://gywzymfjlvli-wxyz.sandbox.formance.cloud/api/ledger
+Payments      | 0.9.7    | https://gywzymfjlvli-wxyz.sandbox.formance.cloud/api/payments
+Search        | 0.10.0   | https://gywzymfjlvli-wxyz.sandbox.formance.cloud/api/search
+
+
+# Metadata
+github.com/formancehq/fctl/protected | Yes
+```
+
+The API endpoint is the host section of the URL. In this case, it is `https://gywzymfjlvli-wxyz.sandbox.formance.cloud`.
+
+## Pick a language
+
+<DocCardList items={useCurrentSidebarCategory().items}/>

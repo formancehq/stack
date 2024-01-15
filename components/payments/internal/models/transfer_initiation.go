@@ -6,9 +6,11 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"sort"
 	"time"
 
 	"github.com/gibson042/canonicaljson-go"
+	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
 
@@ -83,6 +85,7 @@ const (
 	TransferInitiationStatusFailed
 	TransferInitiationStatusRejected
 	TransferInitiationStatusValidated
+	TransferInitiationStatusRetried
 )
 
 func (s TransferInitiationStatus) String() string {
@@ -93,6 +96,7 @@ func (s TransferInitiationStatus) String() string {
 		"FAILED",
 		"REJECTED",
 		"VALIDATED",
+		"RETRIED",
 	}[s]
 }
 
@@ -110,6 +114,8 @@ func TransferInitiationStatusFromString(s string) (TransferInitiationStatus, err
 		return TransferInitiationStatusRejected, nil
 	case "VALIDATED":
 		return TransferInitiationStatusValidated, nil
+	case "RETRIED":
+		return TransferInitiationStatusRetried, nil
 	default:
 		return TransferInitiationStatusWaitingForValidation, errors.New("invalid status")
 	}
@@ -156,7 +162,7 @@ type TransferInitiation struct {
 
 	CreatedAt   time.Time `bun:",nullzero"`
 	ScheduledAt time.Time `bun:",nullzero"`
-	UpdatedAt   time.Time `bun:",nullzero"`
+	// UpdatedAt   time.Time `bun:",nullzero"`
 	Description string
 
 	Type TransferInitiationType
@@ -169,19 +175,25 @@ type TransferInitiation struct {
 	Amount *big.Int `bun:"type:numeric"`
 	Asset  Asset
 
-	Attempts int
+	// Attempts int
 
-	// We still have to keep the status and error here in case the transfer
-	// failed before creating a payment (i.e. the transfer was rejected)
-	Status TransferInitiationStatus
-	Error  string
+	// Status TransferInitiationStatus
+	// Error  string
 
 	Metadata map[string]string
 
 	SourceAccount      *Account `bun:"-"`
 	DestinationAccount *Account `bun:"-"`
 
-	RelatedPayments []*TransferInitiationPayments `bun:"-"`
+	RelatedAdjustments []*TransferInitiationAdjustments `bun:"rel:has-many,join:id=transfer_initiation_id"`
+	RelatedPayments    []*TransferInitiationPayments    `bun:"-"`
+}
+
+func (t *TransferInitiation) SortRelatedAdjustments() {
+	// Sort adjustments by created_at
+	sort.Slice(t.RelatedAdjustments, func(i, j int) bool {
+		return t.RelatedAdjustments[i].CreatedAt.After(t.RelatedAdjustments[j].CreatedAt)
+	})
 }
 
 type TransferInitiationPayments struct {
@@ -193,4 +205,15 @@ type TransferInitiationPayments struct {
 	CreatedAt time.Time `bun:",nullzero"`
 	Status    TransferInitiationStatus
 	Error     string
+}
+
+type TransferInitiationAdjustments struct {
+	bun.BaseModel `bun:"transfers.transfer_initiation_adjustments"`
+
+	ID                   uuid.UUID `bun:",pk"`
+	TransferInitiationID TransferInitiationID
+	CreatedAt            time.Time `bun:",nullzero"`
+	Status               TransferInitiationStatus
+	Error                string
+	Metadata             map[string]string
 }

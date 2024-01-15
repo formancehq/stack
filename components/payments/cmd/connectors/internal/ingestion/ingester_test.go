@@ -50,7 +50,7 @@ func (m *MockStore) UpdateTaskState(ctx context.Context, connectorID models.Conn
 	return nil
 }
 
-func (m *MockStore) UpdateTransferInitiationPaymentsStatus(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, attempts int, updatedAt time.Time) error {
+func (m *MockStore) UpdateTransferInitiationPaymentsStatus(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, adjustment *models.TransferInitiationAdjustments) error {
 	return nil
 }
 

@@ -182,6 +182,41 @@ func registerMigrationsV1(ctx context.Context, migrator *migrations.Migrator) {
 				return nil
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				_, err := tx.Exec(`
+					CREATE TABLE IF NOT EXISTS transfers.transfer_initiation_adjustments (
+						id uuid NOT NULL,
+						transfer_initiation_id CHARACTER VARYING NOT NULL,
+						created_at timestamp with time zone  NOT NULL DEFAULT NOW() CHECK (created_at<=NOW()),
+						status int NOT NULL,
+						error text,
+						metadata jsonb,
+						CONSTRAINT transfer_initiation_adjustments_pk PRIMARY KEY (id)
+					);
+
+					ALTER TABLE transfers.transfer_initiation_adjustments ADD CONSTRAINT adjusmtents_transfer_initiation_id_constraint
+					FOREIGN KEY (transfer_initiation_id)
+					REFERENCES transfers.transfer_initiation (id)
+					ON DELETE CASCADE
+					NOT DEFERRABLE
+					INITIALLY IMMEDIATE
+					;
+
+					INSERT INTO transfers.transfer_initiation_adjustments (id, transfer_initiation_id, created_at, status, error, metadata)
+					SELECT gen_random_uuid(), id, updated_at, status, error, '{}'::jsonb FROM transfers.transfer_initiation;
+
+					ALTER TABLE transfers.transfer_initiation DROP COLUMN IF EXISTS status;
+					ALTER TABLE transfers.transfer_initiation DROP COLUMN IF EXISTS error;
+					ALTER TABLE transfers.transfer_initiation DROP COLUMN IF EXISTS updated_at;
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
 	)
 }
 

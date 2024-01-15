@@ -325,7 +325,6 @@ func TestCreateTransferInitiations(t *testing.T) {
 				},
 				CreatedAt:            time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
 				ScheduledAt:          time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
-				UpdatedAt:            time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
 				Description:          "test_nominal",
 				Type:                 models.TransferInitiationTypeTransfer,
 				SourceAccountID:      &sourceAccountID,
@@ -334,10 +333,19 @@ func TestCreateTransferInitiations(t *testing.T) {
 				ConnectorID:          connectorID,
 				Amount:               big.NewInt(100),
 				Asset:                "EUR/2",
-				Attempts:             0,
-				Status:               models.TransferInitiationStatusProcessing,
 				Metadata: map[string]string{
 					"foo": "bar",
+				},
+				RelatedAdjustments: []*models.TransferInitiationAdjustments{
+					{
+						ID: uuid.New(),
+						TransferInitiationID: models.TransferInitiationID{
+							Reference:   "ref1",
+							ConnectorID: connectorID,
+						},
+						CreatedAt: time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+						Status:    models.TransferInitiationStatusProcessing,
+					},
 				},
 			}
 
@@ -347,7 +355,6 @@ func TestCreateTransferInitiations(t *testing.T) {
 					ConnectorID: connectorID,
 				}.String(),
 				CreatedAt:            time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
-				UpdatedAt:            time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
 				ScheduledAt:          time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
 				Description:          createTransferInitiationResponse.Description,
 				SourceAccountID:      createTransferInitiationResponse.SourceAccountID.String(),
@@ -356,8 +363,7 @@ func TestCreateTransferInitiations(t *testing.T) {
 				Type:                 createTransferInitiationResponse.Type.String(),
 				Amount:               createTransferInitiationResponse.Amount,
 				Asset:                createTransferInitiationResponse.Asset.String(),
-				Status:               createTransferInitiationResponse.Status.String(),
-				Error:                createTransferInitiationResponse.Error,
+				Status:               models.TransferInitiationStatusProcessing.String(),
 				Metadata:             createTransferInitiationResponse.Metadata,
 			}
 

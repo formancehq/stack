@@ -31,6 +31,8 @@
 	--pink-bright: #f8e2ff;
 	--pink-light: #fdf4ff;
 
+	--docusaurus-highlighted-code-line-bg: rgb(0 0 0 / 10%);
+
 	--ifm-box-border-color: var(--ifm-color-gray-300);
 
 	--ifm-button-font-weight: 400;
@@ -45,6 +47,11 @@
   --ifm-color-primary-lightest: rgb(146, 224, 208); */
 	--ifm-code-font-size: 95%;
 	--ifm-h1-font-size: 1rem;
+}
+
+html[data-theme='dark'] {
+	--docusaurus-highlighted-code-line-bg: rgb(66 66 66 / 35%);
+	--ifm-font-color-base: hsla(0, 0%, 100%, 0.88);
 }
 
 * {

@@ -16,7 +16,6 @@ type transferInitiationResponse struct {
 	ID                   string            `json:"id"`
 	Reference            string            `json:"reference"`
 	CreatedAt            time.Time         `json:"createdAt"`
-	UpdatedAt            time.Time         `json:"updatedAt"`
 	ScheduledAt          time.Time         `json:"scheduledAt"`
 	Description          string            `json:"description"`
 	SourceAccountID      string            `json:"sourceAccountID"`
@@ -38,9 +37,18 @@ type transferInitiationPaymentsResponse struct {
 	Error     string    `json:"error"`
 }
 
+type transferInitiationAdjustmentsResponse struct {
+	AdjustmentID string            `json:"adjustmentID"`
+	CreatedAt    time.Time         `json:"createdAt"`
+	Status       string            `json:"status"`
+	Error        string            `json:"error"`
+	Metadata     map[string]string `json:"metadata"`
+}
+
 type readTransferInitiationResponse struct {
 	transferInitiationResponse
-	RelatedPayments []*transferInitiationPaymentsResponse `json:"relatedPayments"`
+	RelatedPayments    []*transferInitiationPaymentsResponse    `json:"relatedPayments"`
+	RelatedAdjustments []*transferInitiationAdjustmentsResponse `json:"relatedAdjustments"`
 }
 
 func readTransferInitiationHandler(b backend.Backend) http.HandlerFunc {
@@ -64,7 +72,6 @@ func readTransferInitiationHandler(b backend.Backend) http.HandlerFunc {
 				ID:                   ret.ID.String(),
 				Reference:            ret.ID.Reference,
 				CreatedAt:            ret.CreatedAt,
-				UpdatedAt:            ret.UpdatedAt,
 				ScheduledAt:          ret.ScheduledAt,
 				Description:          ret.Description,
 				SourceAccountID:      ret.SourceAccountID.String(),
@@ -74,10 +81,24 @@ func readTransferInitiationHandler(b backend.Backend) http.HandlerFunc {
 				Type:                 ret.Type.String(),
 				Amount:               ret.Amount,
 				Asset:                ret.Asset.String(),
-				Status:               ret.Status.String(),
-				Error:                ret.Error,
 				Metadata:             ret.Metadata,
 			},
+		}
+
+		if len(ret.RelatedAdjustments) > 0 {
+			// Take the status and error from the last adjustment
+			data.Status = ret.RelatedAdjustments[0].Status.String()
+			data.Error = ret.RelatedAdjustments[0].Error
+		}
+
+		for _, adjustments := range ret.RelatedAdjustments {
+			data.RelatedAdjustments = append(data.RelatedAdjustments, &transferInitiationAdjustmentsResponse{
+				AdjustmentID: adjustments.ID.String(),
+				CreatedAt:    adjustments.CreatedAt,
+				Status:       adjustments.Status.String(),
+				Error:        adjustments.Error,
+				Metadata:     adjustments.Metadata,
+			})
 		}
 
 		for _, payments := range ret.RelatedPayments {
@@ -117,11 +138,11 @@ func listTransferInitiationsHandler(b backend.Backend) http.HandlerFunc {
 
 		data := make([]*transferInitiationResponse, len(ret))
 		for i := range ret {
+			ret[i].SortRelatedAdjustments()
 			data[i] = &transferInitiationResponse{
 				ID:                   ret[i].ID.String(),
 				Reference:            ret[i].ID.Reference,
 				CreatedAt:            ret[i].CreatedAt,
-				UpdatedAt:            ret[i].UpdatedAt,
 				ScheduledAt:          ret[i].ScheduledAt,
 				Description:          ret[i].Description,
 				SourceAccountID:      ret[i].SourceAccountID.String(),
@@ -131,9 +152,13 @@ func listTransferInitiationsHandler(b backend.Backend) http.HandlerFunc {
 				Type:                 ret[i].Type.String(),
 				Amount:               ret[i].Amount,
 				Asset:                ret[i].Asset.String(),
-				Status:               ret[i].Status.String(),
-				Error:                ret[i].Error,
 				Metadata:             ret[i].Metadata,
+			}
+
+			if len(ret[i].RelatedAdjustments) > 0 {
+				// Take the status and error from the last adjustment
+				data[i].Status = ret[i].RelatedAdjustments[0].Status.String()
+				data[i].Error = ret[i].RelatedAdjustments[0].Error
 			}
 		}
 

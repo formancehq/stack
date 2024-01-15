@@ -3,7 +3,6 @@ title: Adding metadata to transactions
 description: You can add custom metadata to transactions in Numscript, which can be made available to external services.
 ---
 
-import { NumscriptBlock } from 'react-numscript-codeblock';
 import Prerequisites from '@site/docs/ledger/partials/numscript/_prerequisites.mdx';
 import Prereqwarn from '@site/docs/ledger/partials/numscript/_prereq_warning.mdx';
 
@@ -22,13 +21,14 @@ In the game land of Cones Dunshire, building cones is a central part of playing 
 
 Player `leslieknope` just spent 100 coin to build a minor cone. Let's create that transaction, and flag it with metadata. Create a file called `metadata.num`:
 
-<NumscriptBlock script={`send [COIN 100] (
+```numscript
+send [COIN 100] (
   source = @player:leslieknope
   destination = @centrabank
 )
 set_tx_meta("for_cone", "true")
 set_tx_meta("cone_size", 15)
-`}></NumscriptBlock>
+```
 
 And run it with
 
@@ -71,14 +71,15 @@ Metadata is arbitrary data that you can attach to a transaction or an account. T
 
 You can also add metadata to an account during a transaction, like this:
 
-<NumscriptBlock script={`send [COIN 100] (
+```numscript
+send [COIN 100] (
   source = @player:leslieknope
   destination = @centrabank
 )
 set_tx_meta("for_cone", "true")
 set_tx_meta("cone_size", 15)
 set_account_meta(@player:leslieknope, "overdraft", "false")
-`}></NumscriptBlock>
+```
 
 
 ## Going further

@@ -39,13 +39,13 @@ func initiatePaymentTask(transferID string, stripeClient *client.DefaultClient) 
 			if err != nil {
 				ctx, cancel := contextutil.Detached(ctx)
 				defer cancel()
-				if err := ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusFailed, err.Error(), transfer.Attempts, time.Now()); err != nil {
+				if err := ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusFailed, err.Error(), time.Now()); err != nil {
 					logger.Error("failed to update transfer initiation status: %v", err)
 				}
 			}
 		}()
 
-		err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessing, "", transfer.Attempts, time.Now())
+		err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessing, "", time.Now())
 		if err != nil {
 			return err
 		}
@@ -82,7 +82,7 @@ func initiatePaymentTask(transferID string, stripeClient *client.DefaultClient) 
 			// Transfer between internal accounts
 			var resp *stripe.Transfer
 			resp, err = stripeClient.CreateTransfer(ctx, &client.CreateTransferRequest{
-				IdempotencyKey: fmt.Sprintf("%s_%d", transfer.ID.Reference, transfer.Attempts),
+				IdempotencyKey: fmt.Sprintf("%s_%d", transfer.ID.Reference, len(transfer.RelatedAdjustments)),
 				Amount:         transfer.Amount.Int64(),
 				Currency:       curr,
 				Destination:    transfer.DestinationAccountID.Reference,
@@ -98,7 +98,7 @@ func initiatePaymentTask(transferID string, stripeClient *client.DefaultClient) 
 			// Payout to an external account
 			var resp *stripe.Payout
 			resp, err = stripeClient.CreatePayout(ctx, &client.CreatePayoutRequest{
-				IdempotencyKey: fmt.Sprintf("%s_%d", transfer.ID.Reference, transfer.Attempts),
+				IdempotencyKey: fmt.Sprintf("%s_%d", transfer.ID.Reference, len(transfer.RelatedAdjustments)),
 				Amount:         transfer.Amount.Int64(),
 				Currency:       curr,
 				Destination:    transfer.DestinationAccountID.Reference,
@@ -174,7 +174,7 @@ func updatePaymentStatusTask(
 		switch transfer.Type {
 		case models.TransferInitiationTypeTransfer:
 			// Nothing to do
-			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessed, "", transfer.Attempts, time.Now())
+			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessed, "", time.Now())
 			if err != nil {
 				return err
 			}
@@ -193,7 +193,7 @@ func updatePaymentStatusTask(
 		}
 
 		if status == "" {
-			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessed, "", transfer.Attempts, time.Now())
+			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessed, "", time.Now())
 			if err != nil {
 				return err
 			}
@@ -201,7 +201,7 @@ func updatePaymentStatusTask(
 			return nil
 		}
 
-		err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusFailed, resultMessage, transfer.Attempts, time.Now())
+		err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusFailed, resultMessage, time.Now())
 		if err != nil {
 			return err
 		}

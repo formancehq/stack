@@ -15,7 +15,7 @@ type Ingester interface {
 	IngestAccounts(ctx context.Context, batch AccountBatch) error
 	IngestPayments(ctx context.Context, connectorID models.ConnectorID, batch PaymentBatch, commitState any) error
 	IngestBalances(ctx context.Context, batch BalanceBatch, checkIfAccountExists bool) error
-	UpdateTransferInitiationPaymentsStatus(ctx context.Context, tf *models.TransferInitiation, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, attempts int, updatedAt time.Time) error
+	UpdateTransferInitiationPaymentsStatus(ctx context.Context, tf *models.TransferInitiation, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, updatedAt time.Time) error
 	AddTransferInitiationPaymentID(ctx context.Context, tf *models.TransferInitiation, paymentID *models.PaymentID, updatedAt time.Time) error
 	LinkBankAccountWithAccount(ctx context.Context, bankAccount *models.BankAccount, accountID *models.AccountID) error
 }
@@ -33,7 +33,7 @@ type Store interface {
 	UpsertPayments(ctx context.Context, payments []*models.Payment) ([]*models.PaymentID, error)
 	InsertBalances(ctx context.Context, balances []*models.Balance, checkIfAccountExists bool) error
 	UpdateTaskState(ctx context.Context, connectorID models.ConnectorID, descriptor models.TaskDescriptor, state json.RawMessage) error
-	UpdateTransferInitiationPaymentsStatus(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, attempts int, updatedAt time.Time) error
+	UpdateTransferInitiationPaymentsStatus(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, adjustment *models.TransferInitiationAdjustments) error
 	AddTransferInitiationPaymentID(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, updatedAt time.Time) error
 	LinkBankAccountWithAccount(ctx context.Context, id uuid.UUID, accountID *models.AccountID) error
 }

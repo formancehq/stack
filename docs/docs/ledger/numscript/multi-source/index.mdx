@@ -3,7 +3,6 @@ title: Transactions with multiple sources
 description: Sometimes you need to split a payment across multiple sources. Learn how to do this with Numscript.
 ---
 
-import { NumscriptBlock } from 'react-numscript-codeblock';
 import Prerequisites from '@site/docs/ledger/partials/numscript/_prerequisites.mdx';
 import Prereqwarn from '@site/docs/ledger/partials/numscript/_prereq_warning.mdx';
 
@@ -21,13 +20,15 @@ Since we're in the game land of Cones of Dunshire, let's consider that last case
 
 We can describe the transaction using Numscript. Create a file called `treat.num` with:
 
-<NumscriptBlock script={`send [COIN 75] (
+```numscript
+send [COIN 75] (
   source = {
     50% from @player:donnameagle
     remaining from @player:tomhaverford
   }
   destination = @centralbank
-)`}></NumscriptBlock>
+)
+```
 
 And run it with
 
@@ -62,13 +63,15 @@ Suppose that `andydwyer` owes `aprilludgate` 100 coins for medical services afte
 
 Create a file called `bills.num` with:
 
-<NumscriptBlock script={`send [COIN 100] (
+```numscript
+send [COIN 100] (
   source = {
     @player:andydwyer
     @player:andydwyer:chest
   }
   destination = @player:aprilludgate
-)`}></NumscriptBlock>
+)
+```
 
 and run it with
 ```shell
@@ -97,14 +100,16 @@ So, since there were only 50 coins in the first account, Formance Ledger looked 
 
 We could specify this new transaction as such.
 
-<NumscriptBlock script={`send [COIN 75] (
+```numscript
+send [COIN 75] (
   source = {
     max [COIN 10] from @player:donnameagle
     37% from @player:donnameagle:chest
     remaining from @player:tomhaverford
   }
   destination = @centralbank
-)`}></NumscriptBlock>
+)
+```
 
 We use the keyword `max` to indicate that no more than the specified amount should be taken from `donnameagle`'s regular account.
 
@@ -112,7 +117,8 @@ But the remainder of the Numscript is annoyingly tedious: We had to compute that
 
 There is a better way: Nested sources. Create a file called `pony2.num` with the following:
 
-<NumscriptBlock script={`send [COIN 75] (
+```numscript
+send [COIN 75] (
   source = {
     50% from {
       max [COIN 10] from @player:donnameagle
@@ -121,7 +127,8 @@ There is a better way: Nested sources. Create a file called `pony2.num` with the
     remaining from @player:tomhaverford
   }
   destination = @centralbank
-)`}></NumscriptBlock>
+)
+```
 
 and run it with
 ```shell

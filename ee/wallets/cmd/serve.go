@@ -11,7 +11,6 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/service"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/formancehq/wallets/pkg/api"
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/fx"
@@ -38,7 +37,7 @@ func newServeCommand() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			options := []fx.Option{
 				fx.Provide(func() (*http.Client, error) {
-					return GetAuthenticatedClient(cmd.Context(), viper.GetString(stackClientIDFlag), viper.GetString(stackClientSecretFlag),
+					return GetHTTPClient(cmd.Context(), viper.GetString(stackClientIDFlag), viper.GetString(stackClientSecretFlag),
 						viper.GetString(stackURLFlag), viper.GetBool(service.DebugFlag))
 				}),
 				wallet.Module(
@@ -65,9 +64,13 @@ func newServeCommand() *cobra.Command {
 	return cmd
 }
 
-func GetAuthenticatedClient(ctx context.Context, clientID, clientSecret, stackURL string, debug bool) (*http.Client, error) {
-	if clientID == "" || clientSecret == "" {
-		return nil, errors.New("STACK_CLIENT_ID and STACK_CLIENT_SECRET must be set")
+func GetHTTPClient(ctx context.Context, clientID, clientSecret, stackURL string, debug bool) (*http.Client, error) {
+	httpClient := &http.Client{
+		Transport: otlp.NewRoundTripper(http.DefaultTransport, debug),
+	}
+
+	if clientID == "" {
+		return httpClient, nil
 	}
 
 	clientCredentialsConfig := clientcredentials.Config{
@@ -76,9 +79,6 @@ func GetAuthenticatedClient(ctx context.Context, clientID, clientSecret, stackUR
 		TokenURL:     stackURL + "/api/auth/oauth/token",
 		Scopes:       []string{"openid ledger:read ledger:write"},
 	}
-	underlyingHTTPClient := &http.Client{
-		Transport: otlp.NewRoundTripper(http.DefaultTransport, debug),
-	}
 
-	return clientCredentialsConfig.Client(context.WithValue(ctx, oauth2.HTTPClient, underlyingHTTPClient)), nil
+	return clientCredentialsConfig.Client(context.WithValue(ctx, oauth2.HTTPClient, httpClient)), nil
 }

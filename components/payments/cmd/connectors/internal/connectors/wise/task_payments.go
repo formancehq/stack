@@ -45,14 +45,13 @@ func taskInitiatePayment(
 			if err != nil {
 				ctx, cancel := contextutil.Detached(ctx)
 				defer cancel()
-				transfer.Status = models.TransferInitiationStatusFailed
-				if err := ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusFailed, err.Error(), transfer.Attempts, time.Now()); err != nil {
+				if err := ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusFailed, err.Error(), time.Now()); err != nil {
 					logger.Error("failed to update transfer initiation status: %v", err)
 				}
 			}
 		}()
 
-		err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessing, "", transfer.Attempts, time.Now())
+		err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessing, "", time.Now())
 		if err != nil {
 			return err
 		}
@@ -103,7 +102,7 @@ func taskInitiatePayment(
 			}
 
 			var resp *client.Transfer
-			resp, err = wiseClient.CreateTransfer(ctx, quote, destinationAccount, fmt.Sprintf("%s_%d", transfer.ID.Reference, transfer.Attempts))
+			resp, err = wiseClient.CreateTransfer(ctx, quote, destinationAccount, fmt.Sprintf("%s_%d", transfer.ID.Reference, len(transfer.RelatedAdjustments)))
 			if err != nil {
 				return err
 			}
@@ -119,7 +118,7 @@ func taskInitiatePayment(
 			}
 
 			var resp *client.Payout
-			resp, err = wiseClient.CreatePayout(ctx, quote, destinationAccount, fmt.Sprintf("%s_%d", transfer.ID.Reference, transfer.Attempts))
+			resp, err = wiseClient.CreatePayout(ctx, quote, destinationAccount, fmt.Sprintf("%s_%d", transfer.ID.Reference, len(transfer.RelatedAdjustments)))
 			if err != nil {
 				return err
 			}
@@ -231,14 +230,14 @@ func taskUpdatePaymentStatus(
 				return err
 			}
 		case "outgoing_payment_sent", "funds_refunded":
-			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessed, "", transfer.Attempts, time.Now())
+			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessed, "", time.Now())
 			if err != nil {
 				return err
 			}
 
 			return nil
 		case "charged_back", "cancelled":
-			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusFailed, "", transfer.Attempts, time.Now())
+			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusFailed, "", time.Now())
 			if err != nil {
 				return err
 			}
