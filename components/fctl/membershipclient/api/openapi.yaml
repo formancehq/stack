@@ -1739,6 +1739,12 @@ components:
         availableSandboxes:
           description: Number of available sandboxes
           type: integer
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
       required:
       - id
       - ownerId
@@ -1822,7 +1828,7 @@ components:
       type: object
       example: null
     ReadOrganizationResponse_data:
-      anyOf:
+      allOf:
       - $ref: '#/components/schemas/Organization'
       - $ref: '#/components/schemas/OrganizationExpanded'
     CreateStackRequest_allOf:
@@ -1844,6 +1850,10 @@ components:
           type: integer
         owner:
           $ref: '#/components/schemas/User'
+      required:
+      - owner
+      - totalStacks
+      - totalUsers
       type: object
       example: null
   securitySchemes:

@@ -6,17 +6,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type UpdateStore struct {
-	Organization *membershipclient.Organization `json:"organization"`
-}
 type UpdateController struct {
-	store *UpdateStore
+	store *DescribeStore
 }
 
-var _ fctl.Controller[*UpdateStore] = (*UpdateController)(nil)
+var _ fctl.Controller[*DescribeStore] = (*UpdateController)(nil)
 
-func NewDefaultUpdateStore() *UpdateStore {
-	return &UpdateStore{}
+func NewDefaultUpdateStore() *DescribeStore {
+	return &DescribeStore{}
 }
 
 func NewUpdateController() *UpdateController {
@@ -35,11 +32,11 @@ func NewUpdateCommand() *cobra.Command {
 		fctl.WithStringSliceFlag("default-stack-role", []string{}, "Default Stack Role"),
 		fctl.WithStringFlag("domain", "", "Organization Domain"),
 		fctl.WithStringSliceFlag("default-organization-role", []string{}, "Default Organization Role"),
-		fctl.WithController[*UpdateStore](NewUpdateController()),
+		fctl.WithController[*DescribeStore](NewUpdateController()),
 	)
 }
 
-func (c *UpdateController) GetStore() *UpdateStore {
+func (c *UpdateController) GetStore() *DescribeStore {
 	return c.store
 }
 
@@ -69,28 +66,28 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 			if cmd.Flags().Changed("name") {
 				return cmd.Flag("name").Value.String()
 			}
-			return org.Data.Organization.Name
+			return org.Data.Name
 		}(),
 		DefaultOrganizationAccess: func() *membershipclient.Role {
 			if cmd.Flags().Changed("default-organization-role") {
 				s := fctl.GetString(cmd, "default-organization-role")
 				return membershipclient.Role(s).Ptr()
 			}
-			return org.Data.Organization.DefaultOrganizationAccess
+			return org.Data.DefaultOrganizationAccess
 		}(),
 		DefaultStackAccess: func() *membershipclient.Role {
 			if cmd.Flags().Changed("default-stack-role") {
 				s := fctl.GetString(cmd, "default-stack-role")
 				return membershipclient.Role(s).Ptr()
 			}
-			return org.Data.Organization.DefaultStackAccess
+			return org.Data.DefaultStackAccess
 		}(),
 		Domain: func() *string {
 			str := fctl.GetString(cmd, "domain")
 			if str != "" {
 				return &str
 			}
-			return org.Data.Organization.Domain
+			return org.Data.Domain
 		}(),
 	}
 
@@ -101,13 +98,11 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
-	c.store.Organization = response.Data.Organization
+	c.store.ReadOrganizationResponseData = *response.Data
 
 	return c, nil
 }
 
 func (c *UpdateController) Render(cmd *cobra.Command, args []string) error {
-	return PrintOrganization(&DescribeStore{
-		Organization: c.store.Organization,
-	})
+	return PrintOrganizationFromStore(c.store)
 }

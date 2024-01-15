@@ -7,8 +7,8 @@ import (
 )
 
 type DescribeStore struct {
-	Organization *membershipclient.Organization `json:"organization"`
-	*membershipclient.OrganizationExpandedAllOf
+	expanded bool
+	membershipclient.ReadOrganizationResponseData
 }
 type DescribeController struct {
 	store *DescribeStore
@@ -59,19 +59,11 @@ func (c *DescribeController) Run(cmd *cobra.Command, args []string) (fctl.Render
 		return nil, err
 	}
 
-	c.store.Organization = response.Data.Organization
-
-	if expand {
-		c.store.OrganizationExpandedAllOf = &membershipclient.OrganizationExpandedAllOf{
-			Owner:       response.Data.OrganizationExpanded.Owner,
-			TotalStacks: response.Data.OrganizationExpanded.TotalStacks,
-			TotalUsers:  response.Data.OrganizationExpanded.TotalUsers,
-		}
-	}
-
+	c.store.ReadOrganizationResponseData = *response.Data
+	c.store.expanded = expand
 	return c, nil
 }
 
 func (c *DescribeController) Render(cmd *cobra.Command, args []string) error {
-	return PrintOrganization(c.store)
+	return PrintOrganizationFromStore(c.store)
 }

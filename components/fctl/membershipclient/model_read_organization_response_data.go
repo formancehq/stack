@@ -12,58 +12,472 @@ package membershipclient
 
 import (
 	"encoding/json"
-	"fmt"
+	"time"
 )
+
+// checks if the ReadOrganizationResponseData type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ReadOrganizationResponseData{}
 
 // ReadOrganizationResponseData struct for ReadOrganizationResponseData
 type ReadOrganizationResponseData struct {
-	Organization *Organization
-	OrganizationExpanded *OrganizationExpanded
+	// Organization name
+	Name string `json:"name"`
+	DefaultOrganizationAccess *Role `json:"defaultOrganizationAccess,omitempty"`
+	DefaultStackAccess *Role `json:"defaultStackAccess,omitempty"`
+	// Organization domain
+	Domain *string `json:"domain,omitempty"`
+	// Organization ID
+	Id string `json:"id"`
+	// Owner ID
+	OwnerId string `json:"ownerId"`
+	// Number of available stacks
+	AvailableStacks *int32 `json:"availableStacks,omitempty"`
+	// Number of available sandboxes
+	AvailableSandboxes *int32 `json:"availableSandboxes,omitempty"`
+	CreatedAt *time.Time `json:"createdAt,omitempty"`
+	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
+	TotalStacks int32 `json:"totalStacks"`
+	TotalUsers int32 `json:"totalUsers"`
+	Owner User `json:"owner"`
 }
 
-// Unmarshal JSON data into any of the pointers in the struct
-func (dst *ReadOrganizationResponseData) UnmarshalJSON(data []byte) error {
-	var err error
-	// try to unmarshal JSON data into Organization
-	err = json.Unmarshal(data, &dst.Organization);
-	if err == nil {
-		jsonOrganization, _ := json.Marshal(dst.Organization)
-		if string(jsonOrganization) == "{}" { // empty struct
-			dst.Organization = nil
-		} else {
-			return nil // data stored in dst.Organization, return on the first match
-		}
-	} else {
-		dst.Organization = nil
-	}
-
-	// try to unmarshal JSON data into OrganizationExpanded
-	err = json.Unmarshal(data, &dst.OrganizationExpanded);
-	if err == nil {
-		jsonOrganizationExpanded, _ := json.Marshal(dst.OrganizationExpanded)
-		if string(jsonOrganizationExpanded) == "{}" { // empty struct
-			dst.OrganizationExpanded = nil
-		} else {
-			return nil // data stored in dst.OrganizationExpanded, return on the first match
-		}
-	} else {
-		dst.OrganizationExpanded = nil
-	}
-
-	return fmt.Errorf("data failed to match schemas in anyOf(ReadOrganizationResponseData)")
+// NewReadOrganizationResponseData instantiates a new ReadOrganizationResponseData object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewReadOrganizationResponseData(name string, id string, ownerId string, totalStacks int32, totalUsers int32, owner User) *ReadOrganizationResponseData {
+	this := ReadOrganizationResponseData{}
+	this.Name = name
+	var defaultOrganizationAccess Role = EMPTY
+	this.DefaultOrganizationAccess = &defaultOrganizationAccess
+	var defaultStackAccess Role = EMPTY
+	this.DefaultStackAccess = &defaultStackAccess
+	this.Id = id
+	this.OwnerId = ownerId
+	this.TotalStacks = totalStacks
+	this.TotalUsers = totalUsers
+	this.Owner = owner
+	return &this
 }
 
-// Marshal data from the first non-nil pointers in the struct to JSON
-func (src *ReadOrganizationResponseData) MarshalJSON() ([]byte, error) {
-	if src.Organization != nil {
-		return json.Marshal(&src.Organization)
+// NewReadOrganizationResponseDataWithDefaults instantiates a new ReadOrganizationResponseData object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewReadOrganizationResponseDataWithDefaults() *ReadOrganizationResponseData {
+	this := ReadOrganizationResponseData{}
+	var defaultOrganizationAccess Role = EMPTY
+	this.DefaultOrganizationAccess = &defaultOrganizationAccess
+	var defaultStackAccess Role = EMPTY
+	this.DefaultStackAccess = &defaultStackAccess
+	return &this
+}
+
+// GetName returns the Name field value
+func (o *ReadOrganizationResponseData) GetName() string {
+	if o == nil {
+		var ret string
+		return ret
 	}
 
-	if src.OrganizationExpanded != nil {
-		return json.Marshal(&src.OrganizationExpanded)
+	return o.Name
+}
+
+// GetNameOk returns a tuple with the Name field value
+// and a boolean to check if the value has been set.
+func (o *ReadOrganizationResponseData) GetNameOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Name, true
+}
+
+// SetName sets field value
+func (o *ReadOrganizationResponseData) SetName(v string) {
+	o.Name = v
+}
+
+// GetDefaultOrganizationAccess returns the DefaultOrganizationAccess field value if set, zero value otherwise.
+func (o *ReadOrganizationResponseData) GetDefaultOrganizationAccess() Role {
+	if o == nil || IsNil(o.DefaultOrganizationAccess) {
+		var ret Role
+		return ret
+	}
+	return *o.DefaultOrganizationAccess
+}
+
+// GetDefaultOrganizationAccessOk returns a tuple with the DefaultOrganizationAccess field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ReadOrganizationResponseData) GetDefaultOrganizationAccessOk() (*Role, bool) {
+	if o == nil || IsNil(o.DefaultOrganizationAccess) {
+		return nil, false
+	}
+	return o.DefaultOrganizationAccess, true
+}
+
+// HasDefaultOrganizationAccess returns a boolean if a field has been set.
+func (o *ReadOrganizationResponseData) HasDefaultOrganizationAccess() bool {
+	if o != nil && !IsNil(o.DefaultOrganizationAccess) {
+		return true
 	}
 
-	return nil, nil // no data in anyOf schemas
+	return false
+}
+
+// SetDefaultOrganizationAccess gets a reference to the given Role and assigns it to the DefaultOrganizationAccess field.
+func (o *ReadOrganizationResponseData) SetDefaultOrganizationAccess(v Role) {
+	o.DefaultOrganizationAccess = &v
+}
+
+// GetDefaultStackAccess returns the DefaultStackAccess field value if set, zero value otherwise.
+func (o *ReadOrganizationResponseData) GetDefaultStackAccess() Role {
+	if o == nil || IsNil(o.DefaultStackAccess) {
+		var ret Role
+		return ret
+	}
+	return *o.DefaultStackAccess
+}
+
+// GetDefaultStackAccessOk returns a tuple with the DefaultStackAccess field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ReadOrganizationResponseData) GetDefaultStackAccessOk() (*Role, bool) {
+	if o == nil || IsNil(o.DefaultStackAccess) {
+		return nil, false
+	}
+	return o.DefaultStackAccess, true
+}
+
+// HasDefaultStackAccess returns a boolean if a field has been set.
+func (o *ReadOrganizationResponseData) HasDefaultStackAccess() bool {
+	if o != nil && !IsNil(o.DefaultStackAccess) {
+		return true
+	}
+
+	return false
+}
+
+// SetDefaultStackAccess gets a reference to the given Role and assigns it to the DefaultStackAccess field.
+func (o *ReadOrganizationResponseData) SetDefaultStackAccess(v Role) {
+	o.DefaultStackAccess = &v
+}
+
+// GetDomain returns the Domain field value if set, zero value otherwise.
+func (o *ReadOrganizationResponseData) GetDomain() string {
+	if o == nil || IsNil(o.Domain) {
+		var ret string
+		return ret
+	}
+	return *o.Domain
+}
+
+// GetDomainOk returns a tuple with the Domain field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ReadOrganizationResponseData) GetDomainOk() (*string, bool) {
+	if o == nil || IsNil(o.Domain) {
+		return nil, false
+	}
+	return o.Domain, true
+}
+
+// HasDomain returns a boolean if a field has been set.
+func (o *ReadOrganizationResponseData) HasDomain() bool {
+	if o != nil && !IsNil(o.Domain) {
+		return true
+	}
+
+	return false
+}
+
+// SetDomain gets a reference to the given string and assigns it to the Domain field.
+func (o *ReadOrganizationResponseData) SetDomain(v string) {
+	o.Domain = &v
+}
+
+// GetId returns the Id field value
+func (o *ReadOrganizationResponseData) GetId() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Id
+}
+
+// GetIdOk returns a tuple with the Id field value
+// and a boolean to check if the value has been set.
+func (o *ReadOrganizationResponseData) GetIdOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Id, true
+}
+
+// SetId sets field value
+func (o *ReadOrganizationResponseData) SetId(v string) {
+	o.Id = v
+}
+
+// GetOwnerId returns the OwnerId field value
+func (o *ReadOrganizationResponseData) GetOwnerId() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.OwnerId
+}
+
+// GetOwnerIdOk returns a tuple with the OwnerId field value
+// and a boolean to check if the value has been set.
+func (o *ReadOrganizationResponseData) GetOwnerIdOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.OwnerId, true
+}
+
+// SetOwnerId sets field value
+func (o *ReadOrganizationResponseData) SetOwnerId(v string) {
+	o.OwnerId = v
+}
+
+// GetAvailableStacks returns the AvailableStacks field value if set, zero value otherwise.
+func (o *ReadOrganizationResponseData) GetAvailableStacks() int32 {
+	if o == nil || IsNil(o.AvailableStacks) {
+		var ret int32
+		return ret
+	}
+	return *o.AvailableStacks
+}
+
+// GetAvailableStacksOk returns a tuple with the AvailableStacks field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ReadOrganizationResponseData) GetAvailableStacksOk() (*int32, bool) {
+	if o == nil || IsNil(o.AvailableStacks) {
+		return nil, false
+	}
+	return o.AvailableStacks, true
+}
+
+// HasAvailableStacks returns a boolean if a field has been set.
+func (o *ReadOrganizationResponseData) HasAvailableStacks() bool {
+	if o != nil && !IsNil(o.AvailableStacks) {
+		return true
+	}
+
+	return false
+}
+
+// SetAvailableStacks gets a reference to the given int32 and assigns it to the AvailableStacks field.
+func (o *ReadOrganizationResponseData) SetAvailableStacks(v int32) {
+	o.AvailableStacks = &v
+}
+
+// GetAvailableSandboxes returns the AvailableSandboxes field value if set, zero value otherwise.
+func (o *ReadOrganizationResponseData) GetAvailableSandboxes() int32 {
+	if o == nil || IsNil(o.AvailableSandboxes) {
+		var ret int32
+		return ret
+	}
+	return *o.AvailableSandboxes
+}
+
+// GetAvailableSandboxesOk returns a tuple with the AvailableSandboxes field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ReadOrganizationResponseData) GetAvailableSandboxesOk() (*int32, bool) {
+	if o == nil || IsNil(o.AvailableSandboxes) {
+		return nil, false
+	}
+	return o.AvailableSandboxes, true
+}
+
+// HasAvailableSandboxes returns a boolean if a field has been set.
+func (o *ReadOrganizationResponseData) HasAvailableSandboxes() bool {
+	if o != nil && !IsNil(o.AvailableSandboxes) {
+		return true
+	}
+
+	return false
+}
+
+// SetAvailableSandboxes gets a reference to the given int32 and assigns it to the AvailableSandboxes field.
+func (o *ReadOrganizationResponseData) SetAvailableSandboxes(v int32) {
+	o.AvailableSandboxes = &v
+}
+
+// GetCreatedAt returns the CreatedAt field value if set, zero value otherwise.
+func (o *ReadOrganizationResponseData) GetCreatedAt() time.Time {
+	if o == nil || IsNil(o.CreatedAt) {
+		var ret time.Time
+		return ret
+	}
+	return *o.CreatedAt
+}
+
+// GetCreatedAtOk returns a tuple with the CreatedAt field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ReadOrganizationResponseData) GetCreatedAtOk() (*time.Time, bool) {
+	if o == nil || IsNil(o.CreatedAt) {
+		return nil, false
+	}
+	return o.CreatedAt, true
+}
+
+// HasCreatedAt returns a boolean if a field has been set.
+func (o *ReadOrganizationResponseData) HasCreatedAt() bool {
+	if o != nil && !IsNil(o.CreatedAt) {
+		return true
+	}
+
+	return false
+}
+
+// SetCreatedAt gets a reference to the given time.Time and assigns it to the CreatedAt field.
+func (o *ReadOrganizationResponseData) SetCreatedAt(v time.Time) {
+	o.CreatedAt = &v
+}
+
+// GetUpdatedAt returns the UpdatedAt field value if set, zero value otherwise.
+func (o *ReadOrganizationResponseData) GetUpdatedAt() time.Time {
+	if o == nil || IsNil(o.UpdatedAt) {
+		var ret time.Time
+		return ret
+	}
+	return *o.UpdatedAt
+}
+
+// GetUpdatedAtOk returns a tuple with the UpdatedAt field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ReadOrganizationResponseData) GetUpdatedAtOk() (*time.Time, bool) {
+	if o == nil || IsNil(o.UpdatedAt) {
+		return nil, false
+	}
+	return o.UpdatedAt, true
+}
+
+// HasUpdatedAt returns a boolean if a field has been set.
+func (o *ReadOrganizationResponseData) HasUpdatedAt() bool {
+	if o != nil && !IsNil(o.UpdatedAt) {
+		return true
+	}
+
+	return false
+}
+
+// SetUpdatedAt gets a reference to the given time.Time and assigns it to the UpdatedAt field.
+func (o *ReadOrganizationResponseData) SetUpdatedAt(v time.Time) {
+	o.UpdatedAt = &v
+}
+
+// GetTotalStacks returns the TotalStacks field value
+func (o *ReadOrganizationResponseData) GetTotalStacks() int32 {
+	if o == nil {
+		var ret int32
+		return ret
+	}
+
+	return o.TotalStacks
+}
+
+// GetTotalStacksOk returns a tuple with the TotalStacks field value
+// and a boolean to check if the value has been set.
+func (o *ReadOrganizationResponseData) GetTotalStacksOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.TotalStacks, true
+}
+
+// SetTotalStacks sets field value
+func (o *ReadOrganizationResponseData) SetTotalStacks(v int32) {
+	o.TotalStacks = v
+}
+
+// GetTotalUsers returns the TotalUsers field value
+func (o *ReadOrganizationResponseData) GetTotalUsers() int32 {
+	if o == nil {
+		var ret int32
+		return ret
+	}
+
+	return o.TotalUsers
+}
+
+// GetTotalUsersOk returns a tuple with the TotalUsers field value
+// and a boolean to check if the value has been set.
+func (o *ReadOrganizationResponseData) GetTotalUsersOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.TotalUsers, true
+}
+
+// SetTotalUsers sets field value
+func (o *ReadOrganizationResponseData) SetTotalUsers(v int32) {
+	o.TotalUsers = v
+}
+
+// GetOwner returns the Owner field value
+func (o *ReadOrganizationResponseData) GetOwner() User {
+	if o == nil {
+		var ret User
+		return ret
+	}
+
+	return o.Owner
+}
+
+// GetOwnerOk returns a tuple with the Owner field value
+// and a boolean to check if the value has been set.
+func (o *ReadOrganizationResponseData) GetOwnerOk() (*User, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Owner, true
+}
+
+// SetOwner sets field value
+func (o *ReadOrganizationResponseData) SetOwner(v User) {
+	o.Owner = v
+}
+
+func (o ReadOrganizationResponseData) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o ReadOrganizationResponseData) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["name"] = o.Name
+	if !IsNil(o.DefaultOrganizationAccess) {
+		toSerialize["defaultOrganizationAccess"] = o.DefaultOrganizationAccess
+	}
+	if !IsNil(o.DefaultStackAccess) {
+		toSerialize["defaultStackAccess"] = o.DefaultStackAccess
+	}
+	if !IsNil(o.Domain) {
+		toSerialize["domain"] = o.Domain
+	}
+	toSerialize["id"] = o.Id
+	toSerialize["ownerId"] = o.OwnerId
+	if !IsNil(o.AvailableStacks) {
+		toSerialize["availableStacks"] = o.AvailableStacks
+	}
+	if !IsNil(o.AvailableSandboxes) {
+		toSerialize["availableSandboxes"] = o.AvailableSandboxes
+	}
+	if !IsNil(o.CreatedAt) {
+		toSerialize["createdAt"] = o.CreatedAt
+	}
+	if !IsNil(o.UpdatedAt) {
+		toSerialize["updatedAt"] = o.UpdatedAt
+	}
+	toSerialize["totalStacks"] = o.TotalStacks
+	toSerialize["totalUsers"] = o.TotalUsers
+	toSerialize["owner"] = o.Owner
+	return toSerialize, nil
 }
 
 type NullableReadOrganizationResponseData struct {

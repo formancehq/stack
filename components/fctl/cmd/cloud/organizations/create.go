@@ -84,7 +84,5 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 }
 
 func (c *CreateController) Render(cmd *cobra.Command, args []string) error {
-	return PrintOrganization(&DescribeStore{
-		Organization: c.store.Organization,
-	})
+	return PrintOrganization(c.store.Organization)
 }

@@ -59,7 +59,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	organizations, _, err := apiClient.DefaultApi.ListOrganizationsExpanded(cmd.Context()).Execute()
+	organizations, _, err := apiClient.DefaultApi.ListOrganizations(cmd.Context()).Expand(true).Execute()
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +70,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	c.store.Organizations = fctl.Map(organizations.Data, func(o membershipclient.ListOrganizationExpandedResponseDataInner) *OrgRow {
+	c.store.Organizations = fctl.Map(organizations.ListOrganizationExpandedResponse.Data, func(o membershipclient.ListOrganizationExpandedResponseDataInner) *OrgRow {
 		isMine := fctl.BoolToString(o.OwnerId == claims["sub"].(string))
 		return &OrgRow{
 			ID:         o.Id,

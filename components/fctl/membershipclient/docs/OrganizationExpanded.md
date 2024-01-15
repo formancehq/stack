@@ -12,15 +12,17 @@ Name | Type | Description | Notes
 **OwnerId** | **string** | Owner ID | 
 **AvailableStacks** | Pointer to **int32** | Number of available stacks | [optional] 
 **AvailableSandboxes** | Pointer to **int32** | Number of available sandboxes | [optional] 
-**TotalStacks** | Pointer to **int32** |  | [optional] 
-**TotalUsers** | Pointer to **int32** |  | [optional] 
-**Owner** | Pointer to [**User**](User.md) |  | [optional] 
+**CreatedAt** | Pointer to **time.Time** |  | [optional] 
+**UpdatedAt** | Pointer to **time.Time** |  | [optional] 
+**TotalStacks** | **int32** |  | 
+**TotalUsers** | **int32** |  | 
+**Owner** | [**User**](User.md) |  | 
 
 ## Methods
 
 ### NewOrganizationExpanded
 
-`func NewOrganizationExpanded(name string, id string, ownerId string, ) *OrganizationExpanded`
+`func NewOrganizationExpanded(name string, id string, ownerId string, totalStacks int32, totalUsers int32, owner User, ) *OrganizationExpanded`
 
 NewOrganizationExpanded instantiates a new OrganizationExpanded object
 This constructor will assign default values to properties that have it defined,
@@ -220,6 +222,56 @@ SetAvailableSandboxes sets AvailableSandboxes field to given value.
 
 HasAvailableSandboxes returns a boolean if a field has been set.
 
+### GetCreatedAt
+
+`func (o *OrganizationExpanded) GetCreatedAt() time.Time`
+
+GetCreatedAt returns the CreatedAt field if non-nil, zero value otherwise.
+
+### GetCreatedAtOk
+
+`func (o *OrganizationExpanded) GetCreatedAtOk() (*time.Time, bool)`
+
+GetCreatedAtOk returns a tuple with the CreatedAt field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetCreatedAt
+
+`func (o *OrganizationExpanded) SetCreatedAt(v time.Time)`
+
+SetCreatedAt sets CreatedAt field to given value.
+
+### HasCreatedAt
+
+`func (o *OrganizationExpanded) HasCreatedAt() bool`
+
+HasCreatedAt returns a boolean if a field has been set.
+
+### GetUpdatedAt
+
+`func (o *OrganizationExpanded) GetUpdatedAt() time.Time`
+
+GetUpdatedAt returns the UpdatedAt field if non-nil, zero value otherwise.
+
+### GetUpdatedAtOk
+
+`func (o *OrganizationExpanded) GetUpdatedAtOk() (*time.Time, bool)`
+
+GetUpdatedAtOk returns a tuple with the UpdatedAt field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetUpdatedAt
+
+`func (o *OrganizationExpanded) SetUpdatedAt(v time.Time)`
+
+SetUpdatedAt sets UpdatedAt field to given value.
+
+### HasUpdatedAt
+
+`func (o *OrganizationExpanded) HasUpdatedAt() bool`
+
+HasUpdatedAt returns a boolean if a field has been set.
+
 ### GetTotalStacks
 
 `func (o *OrganizationExpanded) GetTotalStacks() int32`
@@ -239,11 +291,6 @@ and a boolean to check if the value has been set.
 
 SetTotalStacks sets TotalStacks field to given value.
 
-### HasTotalStacks
-
-`func (o *OrganizationExpanded) HasTotalStacks() bool`
-
-HasTotalStacks returns a boolean if a field has been set.
 
 ### GetTotalUsers
 
@@ -264,11 +311,6 @@ and a boolean to check if the value has been set.
 
 SetTotalUsers sets TotalUsers field to given value.
 
-### HasTotalUsers
-
-`func (o *OrganizationExpanded) HasTotalUsers() bool`
-
-HasTotalUsers returns a boolean if a field has been set.
 
 ### GetOwner
 
@@ -289,11 +331,6 @@ and a boolean to check if the value has been set.
 
 SetOwner sets Owner field to given value.
 
-### HasOwner
-
-`func (o *OrganizationExpanded) HasOwner() bool`
-
-HasOwner returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

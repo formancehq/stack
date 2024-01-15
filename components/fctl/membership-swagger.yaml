@@ -1141,6 +1141,12 @@ components:
             availableSandboxes:
               type: integer
               description: Number of available sandboxes
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
     StackData:
       type: object
       required:
@@ -1331,7 +1337,7 @@ components:
       type: object
       properties:
         data:
-          anyOf:
+          allOf:
             - $ref: '#/components/schemas/Organization'
             - $ref: '#/components/schemas/OrganizationExpanded'
     ListStacksResponse:
@@ -1481,6 +1487,10 @@ components:
       allOf:
         - $ref: '#/components/schemas/Organization'
         - type: object
+          required:
+            - totalStacks
+            - totalUsers
+            - owner
           properties:
             totalStacks:
               type: integer

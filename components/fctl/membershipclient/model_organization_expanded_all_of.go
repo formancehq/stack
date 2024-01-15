@@ -19,17 +19,20 @@ var _ MappedNullable = &OrganizationExpandedAllOf{}
 
 // OrganizationExpandedAllOf struct for OrganizationExpandedAllOf
 type OrganizationExpandedAllOf struct {
-	TotalStacks *int32 `json:"totalStacks,omitempty"`
-	TotalUsers *int32 `json:"totalUsers,omitempty"`
-	Owner *User `json:"owner,omitempty"`
+	TotalStacks int32 `json:"totalStacks"`
+	TotalUsers int32 `json:"totalUsers"`
+	Owner User `json:"owner"`
 }
 
 // NewOrganizationExpandedAllOf instantiates a new OrganizationExpandedAllOf object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewOrganizationExpandedAllOf() *OrganizationExpandedAllOf {
+func NewOrganizationExpandedAllOf(totalStacks int32, totalUsers int32, owner User) *OrganizationExpandedAllOf {
 	this := OrganizationExpandedAllOf{}
+	this.TotalStacks = totalStacks
+	this.TotalUsers = totalUsers
+	this.Owner = owner
 	return &this
 }
 
@@ -41,100 +44,76 @@ func NewOrganizationExpandedAllOfWithDefaults() *OrganizationExpandedAllOf {
 	return &this
 }
 
-// GetTotalStacks returns the TotalStacks field value if set, zero value otherwise.
+// GetTotalStacks returns the TotalStacks field value
 func (o *OrganizationExpandedAllOf) GetTotalStacks() int32 {
-	if o == nil || IsNil(o.TotalStacks) {
+	if o == nil {
 		var ret int32
 		return ret
 	}
-	return *o.TotalStacks
+
+	return o.TotalStacks
 }
 
-// GetTotalStacksOk returns a tuple with the TotalStacks field value if set, nil otherwise
+// GetTotalStacksOk returns a tuple with the TotalStacks field value
 // and a boolean to check if the value has been set.
 func (o *OrganizationExpandedAllOf) GetTotalStacksOk() (*int32, bool) {
-	if o == nil || IsNil(o.TotalStacks) {
+	if o == nil {
 		return nil, false
 	}
-	return o.TotalStacks, true
+	return &o.TotalStacks, true
 }
 
-// HasTotalStacks returns a boolean if a field has been set.
-func (o *OrganizationExpandedAllOf) HasTotalStacks() bool {
-	if o != nil && !IsNil(o.TotalStacks) {
-		return true
-	}
-
-	return false
-}
-
-// SetTotalStacks gets a reference to the given int32 and assigns it to the TotalStacks field.
+// SetTotalStacks sets field value
 func (o *OrganizationExpandedAllOf) SetTotalStacks(v int32) {
-	o.TotalStacks = &v
+	o.TotalStacks = v
 }
 
-// GetTotalUsers returns the TotalUsers field value if set, zero value otherwise.
+// GetTotalUsers returns the TotalUsers field value
 func (o *OrganizationExpandedAllOf) GetTotalUsers() int32 {
-	if o == nil || IsNil(o.TotalUsers) {
+	if o == nil {
 		var ret int32
 		return ret
 	}
-	return *o.TotalUsers
+
+	return o.TotalUsers
 }
 
-// GetTotalUsersOk returns a tuple with the TotalUsers field value if set, nil otherwise
+// GetTotalUsersOk returns a tuple with the TotalUsers field value
 // and a boolean to check if the value has been set.
 func (o *OrganizationExpandedAllOf) GetTotalUsersOk() (*int32, bool) {
-	if o == nil || IsNil(o.TotalUsers) {
+	if o == nil {
 		return nil, false
 	}
-	return o.TotalUsers, true
+	return &o.TotalUsers, true
 }
 
-// HasTotalUsers returns a boolean if a field has been set.
-func (o *OrganizationExpandedAllOf) HasTotalUsers() bool {
-	if o != nil && !IsNil(o.TotalUsers) {
-		return true
-	}
-
-	return false
-}
-
-// SetTotalUsers gets a reference to the given int32 and assigns it to the TotalUsers field.
+// SetTotalUsers sets field value
 func (o *OrganizationExpandedAllOf) SetTotalUsers(v int32) {
-	o.TotalUsers = &v
+	o.TotalUsers = v
 }
 
-// GetOwner returns the Owner field value if set, zero value otherwise.
+// GetOwner returns the Owner field value
 func (o *OrganizationExpandedAllOf) GetOwner() User {
-	if o == nil || IsNil(o.Owner) {
+	if o == nil {
 		var ret User
 		return ret
 	}
-	return *o.Owner
+
+	return o.Owner
 }
 
-// GetOwnerOk returns a tuple with the Owner field value if set, nil otherwise
+// GetOwnerOk returns a tuple with the Owner field value
 // and a boolean to check if the value has been set.
 func (o *OrganizationExpandedAllOf) GetOwnerOk() (*User, bool) {
-	if o == nil || IsNil(o.Owner) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Owner, true
+	return &o.Owner, true
 }
 
-// HasOwner returns a boolean if a field has been set.
-func (o *OrganizationExpandedAllOf) HasOwner() bool {
-	if o != nil && !IsNil(o.Owner) {
-		return true
-	}
-
-	return false
-}
-
-// SetOwner gets a reference to the given User and assigns it to the Owner field.
+// SetOwner sets field value
 func (o *OrganizationExpandedAllOf) SetOwner(v User) {
-	o.Owner = &v
+	o.Owner = v
 }
 
 func (o OrganizationExpandedAllOf) MarshalJSON() ([]byte, error) {
@@ -147,15 +126,9 @@ func (o OrganizationExpandedAllOf) MarshalJSON() ([]byte, error) {
 
 func (o OrganizationExpandedAllOf) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.TotalStacks) {
-		toSerialize["totalStacks"] = o.TotalStacks
-	}
-	if !IsNil(o.TotalUsers) {
-		toSerialize["totalUsers"] = o.TotalUsers
-	}
-	if !IsNil(o.Owner) {
-		toSerialize["owner"] = o.Owner
-	}
+	toSerialize["totalStacks"] = o.TotalStacks
+	toSerialize["totalUsers"] = o.TotalUsers
+	toSerialize["owner"] = o.Owner
 	return toSerialize, nil
 }
 
