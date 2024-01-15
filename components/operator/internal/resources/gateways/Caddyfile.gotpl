@@ -101,10 +101,15 @@
 			env "{{ .Platform.Environment }}"
 			endpoints {
 				{{- range $i, $service := .Services }}
-                {{ $service.Name }} {
+				{{- if or (not (semver_is_valid $values.Gateway.Version)) (gt (semver_compare $values.Gateway.Version "v0.1.7") 0) }}
+				{{ $service.Name }} {
                     http://{{ $service.Name }}:8080/_info http://{{ $service.Name }}:8080/_healthcheck
                 }
+				{{- else }}
+					{{ $service.Name }} http://{{ $service.Name }}:8080/_info http://{{ $service.Name }}:8080/_healthcheck
 				{{- end }}
+				{{- end }}
+
 			}
 		}
 	}

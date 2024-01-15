@@ -2,6 +2,7 @@ package formance_com
 
 import (
 	"bytes"
+	"golang.org/x/mod/semver"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"strings"
 	"text/template"
@@ -53,7 +54,9 @@ func GetCommonServicesEnvVars(ctx Context, stack *v1beta1.Stack, service interfa
 
 func ComputeCaddyfile(ctx Context, stack *v1beta1.Stack, _tpl string, additionalData map[string]any) (string, error) {
 	tpl := template.Must(template.New("main").Funcs(map[string]any{
-		"join": strings.Join,
+		"join":            strings.Join,
+		"semver_compare":  semver.Compare,
+		"semver_is_valid": semver.IsValid,
 	}).Parse(_tpl))
 	buf := bytes.NewBufferString("")
 

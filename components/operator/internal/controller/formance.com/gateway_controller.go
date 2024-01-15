@@ -243,6 +243,9 @@ func (r *GatewayController) createCaddyfile(ctx Context, stack *v1beta1.Stack,
 		"Platform": ctx.GetPlatform(),
 		"Debug":    stack.Spec.Debug,
 		"Port":     8080,
+		"Gateway": map[string]any{
+			"Version": gateway.Spec.Version,
+		},
 	}
 	if auth != nil {
 		data["Auth"] = map[string]any{
