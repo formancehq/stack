@@ -1,52 +1,52 @@
-# ReadOrganizationExpandedResponse
+# ReadOrganizationResponse
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Data** | Pointer to [**OrganizationExpanded**](OrganizationExpanded.md) |  | [optional] 
+**Data** | Pointer to [**ReadOrganizationResponseData**](ReadOrganizationResponseData.md) |  | [optional] 
 
 ## Methods
 
-### NewReadOrganizationExpandedResponse
+### NewReadOrganizationResponse
 
-`func NewReadOrganizationExpandedResponse() *ReadOrganizationExpandedResponse`
+`func NewReadOrganizationResponse() *ReadOrganizationResponse`
 
-NewReadOrganizationExpandedResponse instantiates a new ReadOrganizationExpandedResponse object
+NewReadOrganizationResponse instantiates a new ReadOrganizationResponse object
 This constructor will assign default values to properties that have it defined,
 and makes sure properties required by API are set, but the set of arguments
 will change when the set of required properties is changed
 
-### NewReadOrganizationExpandedResponseWithDefaults
+### NewReadOrganizationResponseWithDefaults
 
-`func NewReadOrganizationExpandedResponseWithDefaults() *ReadOrganizationExpandedResponse`
+`func NewReadOrganizationResponseWithDefaults() *ReadOrganizationResponse`
 
-NewReadOrganizationExpandedResponseWithDefaults instantiates a new ReadOrganizationExpandedResponse object
+NewReadOrganizationResponseWithDefaults instantiates a new ReadOrganizationResponse object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
 ### GetData
 
-`func (o *ReadOrganizationExpandedResponse) GetData() OrganizationExpanded`
+`func (o *ReadOrganizationResponse) GetData() ReadOrganizationResponseData`
 
 GetData returns the Data field if non-nil, zero value otherwise.
 
 ### GetDataOk
 
-`func (o *ReadOrganizationExpandedResponse) GetDataOk() (*OrganizationExpanded, bool)`
+`func (o *ReadOrganizationResponse) GetDataOk() (*ReadOrganizationResponseData, bool)`
 
 GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetData
 
-`func (o *ReadOrganizationExpandedResponse) SetData(v OrganizationExpanded)`
+`func (o *ReadOrganizationResponse) SetData(v ReadOrganizationResponseData)`
 
 SetData sets Data field to given value.
 
 ### HasData
 
-`func (o *ReadOrganizationExpandedResponse) HasData() bool`
+`func (o *ReadOrganizationResponse) HasData() bool`
 
 HasData returns a boolean if a field has been set.
 

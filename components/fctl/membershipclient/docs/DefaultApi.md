@@ -34,7 +34,6 @@ Method | HTTP request | Description
 [**ListUsersOfOrganization**](DefaultApi.md#ListUsersOfOrganization) | **Get** /organizations/{organizationId}/users | List users of organization
 [**ReadConnectedUser**](DefaultApi.md#ReadConnectedUser) | **Get** /me | Read user
 [**ReadOrganization**](DefaultApi.md#ReadOrganization) | **Get** /organizations/{organizationId} | Read organization
-[**ReadOrganizationExpanded**](DefaultApi.md#ReadOrganizationExpanded) | **Get** /organizations/{organizationId}/expanded | Read organization with expanded data
 [**ReadUserOfOrganization**](DefaultApi.md#ReadUserOfOrganization) | **Get** /organizations/{organizationId}/users/{userId} | Read user of organization
 [**RestoreStack**](DefaultApi.md#RestoreStack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
 [**UpdateOrganization**](DefaultApi.md#UpdateOrganization) | **Put** /organizations/{organizationId} | Update organization
@@ -1553,7 +1552,7 @@ Name | Type | Description  | Notes
 
 ## ListOrganizations
 
-> ListOrganizationResponse ListOrganizations(ctx).Execute()
+> ListOrganizations200Response ListOrganizations(ctx).Expand(expand).Execute()
 
 List organizations of the connected user
 
@@ -1570,31 +1569,36 @@ import (
 )
 
 func main() {
+    expand := TODO // bool |  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.ListOrganizations(context.Background()).Execute()
+    resp, r, err := apiClient.DefaultApi.ListOrganizations(context.Background()).Expand(expand).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ListOrganizations``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `ListOrganizations`: ListOrganizationResponse
+    // response from `ListOrganizations`: ListOrganizations200Response
     fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ListOrganizations`: %v\n", resp)
 }
 ```
 
 ### Path Parameters
 
-This endpoint does not need any parameter.
+
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiListOrganizationsRequest struct via the builder pattern
 
 
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **expand** | [**bool**](bool.md) |  | 
+
 ### Return type
 
-[**ListOrganizationResponse**](ListOrganizationResponse.md)
+[**ListOrganizations200Response**](ListOrganizations200Response.md)
 
 ### Authorization
 
@@ -2009,7 +2013,7 @@ Other parameters are passed through a pointer to a apiReadConnectedUserRequest s
 
 ## ReadOrganization
 
-> CreateOrganizationResponse ReadOrganization(ctx, organizationId).Execute()
+> ReadOrganizationResponse ReadOrganization(ctx, organizationId).Expand(expand).Execute()
 
 Read organization
 
@@ -2027,15 +2031,16 @@ import (
 
 func main() {
     organizationId := "organizationId_example" // string | 
+    expand := TODO // bool |  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.ReadOrganization(context.Background(), organizationId).Execute()
+    resp, r, err := apiClient.DefaultApi.ReadOrganization(context.Background(), organizationId).Expand(expand).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ReadOrganization``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `ReadOrganization`: CreateOrganizationResponse
+    // response from `ReadOrganization`: ReadOrganizationResponse
     fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ReadOrganization`: %v\n", resp)
 }
 ```
@@ -2056,78 +2061,11 @@ Other parameters are passed through a pointer to a apiReadOrganizationRequest st
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
+ **expand** | [**bool**](bool.md) |  | 
 
 ### Return type
 
-[**CreateOrganizationResponse**](CreateOrganizationResponse.md)
-
-### Authorization
-
-[oauth2](../README.md#oauth2)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
-[[Back to Model list]](../README.md#documentation-for-models)
-[[Back to README]](../README.md)
-
-
-## ReadOrganizationExpanded
-
-> ReadOrganizationExpandedResponse ReadOrganizationExpanded(ctx, organizationId).Execute()
-
-Read organization with expanded data
-
-### Example
-
-```go
-package main
-
-import (
-    "context"
-    "fmt"
-    "os"
-    openapiclient "github.com/formancehq/fctl/membershipclient"
-)
-
-func main() {
-    organizationId := "organizationId_example" // string | 
-
-    configuration := openapiclient.NewConfiguration()
-    apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.ReadOrganizationExpanded(context.Background(), organizationId).Execute()
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ReadOrganizationExpanded``: %v\n", err)
-        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-    }
-    // response from `ReadOrganizationExpanded`: ReadOrganizationExpandedResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ReadOrganizationExpanded`: %v\n", resp)
-}
-```
-
-### Path Parameters
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  | 
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiReadOrganizationExpandedRequest struct via the builder pattern
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
-
-### Return type
-
-[**ReadOrganizationExpandedResponse**](ReadOrganizationExpandedResponse.md)
+[**ReadOrganizationResponse**](ReadOrganizationResponse.md)
 
 ### Authorization
 
@@ -2287,7 +2225,7 @@ Name | Type | Description  | Notes
 
 ## UpdateOrganization
 
-> CreateOrganizationResponse UpdateOrganization(ctx, organizationId).OrganizationData(organizationData).Execute()
+> ReadOrganizationResponse UpdateOrganization(ctx, organizationId).OrganizationData(organizationData).Execute()
 
 Update organization
 
@@ -2314,7 +2252,7 @@ func main() {
         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.UpdateOrganization``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `UpdateOrganization`: CreateOrganizationResponse
+    // response from `UpdateOrganization`: ReadOrganizationResponse
     fmt.Fprintf(os.Stdout, "Response from `DefaultApi.UpdateOrganization`: %v\n", resp)
 }
 ```
@@ -2339,7 +2277,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**CreateOrganizationResponse**](CreateOrganizationResponse.md)
+[**ReadOrganizationResponse**](ReadOrganizationResponse.md)
 
 ### Authorization
 

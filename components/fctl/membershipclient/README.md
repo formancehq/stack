@@ -108,7 +108,6 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**ListUsersOfOrganization**](docs/DefaultApi.md#listusersoforganization) | **Get** /organizations/{organizationId}/users | List users of organization
 *DefaultApi* | [**ReadConnectedUser**](docs/DefaultApi.md#readconnecteduser) | **Get** /me | Read user
 *DefaultApi* | [**ReadOrganization**](docs/DefaultApi.md#readorganization) | **Get** /organizations/{organizationId} | Read organization
-*DefaultApi* | [**ReadOrganizationExpanded**](docs/DefaultApi.md#readorganizationexpanded) | **Get** /organizations/{organizationId}/expanded | Read organization with expanded data
 *DefaultApi* | [**ReadUserOfOrganization**](docs/DefaultApi.md#readuseroforganization) | **Get** /organizations/{organizationId}/users/{userId} | Read user of organization
 *DefaultApi* | [**RestoreStack**](docs/DefaultApi.md#restorestack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
 *DefaultApi* | [**UpdateOrganization**](docs/DefaultApi.md#updateorganization) | **Put** /organizations/{organizationId} | Update organization
@@ -136,6 +135,7 @@ Class | Method | HTTP request | Description
  - [ListOrganizationExpandedResponse](docs/ListOrganizationExpandedResponse.md)
  - [ListOrganizationExpandedResponseDataInner](docs/ListOrganizationExpandedResponseDataInner.md)
  - [ListOrganizationResponse](docs/ListOrganizationResponse.md)
+ - [ListOrganizations200Response](docs/ListOrganizations200Response.md)
  - [ListRegionsResponse](docs/ListRegionsResponse.md)
  - [ListStacksResponse](docs/ListStacksResponse.md)
  - [ListUsersResponse](docs/ListUsersResponse.md)
@@ -152,7 +152,8 @@ Class | Method | HTTP request | Description
  - [PrivateRegionAllOfSecret](docs/PrivateRegionAllOfSecret.md)
  - [PublicRegion](docs/PublicRegion.md)
  - [PublicRegionAllOf](docs/PublicRegionAllOf.md)
- - [ReadOrganizationExpandedResponse](docs/ReadOrganizationExpandedResponse.md)
+ - [ReadOrganizationResponse](docs/ReadOrganizationResponse.md)
+ - [ReadOrganizationResponseData](docs/ReadOrganizationResponseData.md)
  - [ReadOrganizationUserResponse](docs/ReadOrganizationUserResponse.md)
  - [ReadUserResponse](docs/ReadUserResponse.md)
  - [Region](docs/Region.md)

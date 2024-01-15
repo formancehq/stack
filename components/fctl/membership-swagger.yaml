@@ -24,13 +24,21 @@ paths:
     get:
       summary: List organizations of the connected user
       operationId: listOrganizations
+      parameters:
+        - name: expand
+          in: query
+          schema:
+            type: bool
+          required: false
       responses:
         200:
           description: List of organizations
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOrganizationResponse'
+                oneOf:
+                - $ref: '#/components/schemas/ListOrganizationResponse'
+                - $ref: '#/components/schemas/ListOrganizationExpandedResponse'
     post:
       summary: Create organization
       operationId: createOrganization
@@ -57,6 +65,7 @@ paths:
     get:
       summary: List organizations of the connected user with expanded data
       operationId: listOrganizationsExpanded
+      deprecated: true
       responses:
         200:
           description: List of organizations with expanded data
@@ -74,6 +83,11 @@ paths:
           schema:
             type: string
           required: true
+        - name: expand
+          in: query
+          schema:
+            type: bool
+          required: false
       responses:
         200:
           description: OK
@@ -81,6 +95,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReadOrganizationResponse'
+
     put:
       summary: Update organization
       operationId: updateOrganization
@@ -132,23 +147,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         204:
           description: Organization deleted
-  /organizations/{organizationId}/expanded:
-    get:
-      summary: Read organization with expanded data
-      operationId: readOrganizationExpanded
-      parameters:
-        - name: organizationId
-          in: path
-          schema:
-            type: string
-          required: true
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ReadOrganizationExpandedResponse'
   /organizations/{organizationId}/users:
     get:
       summary: List users of organization
@@ -1329,13 +1327,13 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/Organization'
-    ReadOrganizationExpandedResponse:
+    ReadOrganizationResponse:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/OrganizationExpanded'
-    ReadOrganizationResponse:
-      $ref: '#/components/schemas/CreateOrganizationResponse'
+          anyOf:
+            - $ref: '#/components/schemas/Organization'
+            - $ref: '#/components/schemas/OrganizationExpanded'
     ListStacksResponse:
       type: object
       properties:
