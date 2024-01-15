@@ -1,0 +1,156 @@
+---
+title: TypeScript / JavaScript
+description: Setup the Formance SDK in your TypeScript / JavaScript project.
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+## Create a new project
+
+Create a new directory and initialize a new npm package.
+
+```bash
+mkdir formance-js-example
+cd formance-js-example
+npm init -y
+```
+
+Depending on the language you want to use, setup TypeScript.
+
+<Tabs groupId="node-language">
+    <TabItem value="ts" label="TypeScript">
+    Install TypeScript and the Node.js type definitions.
+
+    ```bash
+    npm install --save-dev typescript @types/node ts-node
+    npx tsc --init
+    ```
+    </TabItem>
+
+    <TabItem value="js" label="JavaScript">
+    </TabItem>
+</Tabs>
+
+## Install the Formance SDK
+
+Next install the Formance SDK as well as the Formance OAuth helper.
+
+```bash
+npm install --save @formance/formance-sdk @formance/formance-sdk-oauth
+```
+
+:::info
+
+The Formance API relies on OAuth 2.0 for authentication.
+
+The Formance OAuth helper simplifies the OAuth flow and provides a simple interface to obtain an access token using the `client_credentials` grant type.
+
+For more information, see [OAuth 2.0](https://oauth.net/2/).
+
+:::
+
+:::danger
+
+The Formance OAuth helper uses the `client_credentials` grant type, which requires a client ID and client secret. These are sensitive credentials that should not be exposed to the public.
+
+If you're integrating Formance into a web application, you should use an OAuth flow that does not require a client secret, such as the [authorization code grant](https://oauth.net/2/grant-types/authorization-code/).
+
+{/* TODO : Add a documentation page explaining how to use the OAuth authorization code grant */}
+
+:::
+
+## Hello World from the Formance Ledger
+
+<Tabs groupId="node-language">
+
+<TabItem value="ts" label="TypeScript">
+    Create a new file `index.ts` and add the following code. Replace the endpoint, client ID and client secret with your own values.
+
+    ```typescript title="index.ts"
+    import { SDK as Formance } from '@formance/formance-sdk';
+    import { createAuthorizationProvider } from '@formance/formance-sdk-oauth';
+
+    const ENDPOINT = "https://xxxxxxxxxx-xxxx.sandbox.formance.cloud";
+
+    const formance = new Formance({
+        serverURL: ENDPOINT,
+        authorization: createAuthorizationProvider({
+            endpointUrl: ENDPOINT,
+            // These are sensitive credentials that should not be exposed to the public.
+            clientId: "6a936dfe-xxxx-yyyy-zzzz-9019a1e9b9e3",
+            clientSecret: "20bd58c4-xxxx-yyyy-zzzz-dc05258bc959",
+        }),
+    });
+
+    async function main() {
+        const ledgerInfo = await formance.ledger.getInfo();
+        console.log(ledgerInfo.configInfoResponse!.data);
+    }
+
+    main();
+    ```
+
+:::info
+You'll need the API endpoint and the credentials created during the [SDK's Getting Started](/getting-started/sdk) guide. If you don't have them, you can create them by following the guide.
+:::
+
+    Next, run the file using `ts-node`.
+
+    ```bash
+    npx ts-node index.ts
+    ```
+</TabItem>
+
+<TabItem value="js" label="JavaScript">
+    Create a new file `index.js` and add the following code. Replace the endpoint, client ID and client secret with your own values.
+
+    ```javascript title="index.js"
+    import { SDK as Formance } from '@formance/formance-sdk';
+    import { createAuthorizationProvider } from '@formance/formance-sdk-oauth';
+
+    const ENDPOINT = "https://xxxxxxxxxx-xxxx.sandbox.formance.cloud";
+
+    const formance = new Formance({
+        serverURL: ENDPOINT,
+        authorization: createAuthorizationProvider({
+            endpointUrl: ENDPOINT,
+            // These are sensitive credentials that should not be exposed to the public.
+            clientId: "6a936dfe-xxxx-yyyy-zzzz-9019a1e9b9e3",
+            clientSecret: "20bd58c4-xxxx-yyyy-zzzz-dc05258bc959",
+        }),
+    });
+
+    async function main() {
+        const ledgerInfo = await formance.ledger.getInfo();
+        console.log(ledgerInfo.configInfoResponse.data);
+    }
+
+    main();
+    ```
+
+:::info
+You'll need the API endpoint and the credentials created during the [SDK's Getting Started](/getting-started/sdk) guide. If you don't have them, you can create them by following the guide.
+:::
+
+    Next, run the file using `node`.
+
+    ```bash
+    node index.js
+    ```
+</TabItem>
+</Tabs>
+
+You should see a similar output.
+
+```bash
+{
+  config: { storage: { driver: 'postgres', ledgers: [Array] } },
+  server: 'numary-ledger',
+  version: 'v1.10.13'
+}
+```
+
+:::tip
+Numary is the Formance's former name.
+:::
