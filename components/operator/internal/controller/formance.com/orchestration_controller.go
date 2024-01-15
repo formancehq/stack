@@ -51,7 +51,7 @@ type OrchestrationController struct{}
 
 func (r *OrchestrationController) Reconcile(ctx Context, orchestration *v1beta1.Orchestration) error {
 
-	stack, err := stacks.GetStack(ctx, orchestration.Spec)
+	stack, err := stacks.GetStack(ctx, orchestration)
 	if err != nil {
 		return err
 	}

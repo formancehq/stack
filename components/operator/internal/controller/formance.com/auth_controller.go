@@ -48,14 +48,6 @@ type AuthController struct{}
 
 func (r *AuthController) Reconcile(ctx Context, auth *v1beta1.Auth) error {
 
-	fmt.Println("RECONCILE AUTH")
-	fmt.Println("RECONCILE AUTH")
-	fmt.Println("RECONCILE AUTH")
-	fmt.Println("RECONCILE AUTH")
-	fmt.Println("RECONCILE AUTH")
-	fmt.Println("RECONCILE AUTH")
-	fmt.Println("RECONCILE AUTH")
-
 	stack, err := stacks.GetStack(ctx, auth)
 	if err != nil {
 		return err

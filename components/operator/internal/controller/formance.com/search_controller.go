@@ -44,7 +44,7 @@ type SearchController struct{}
 
 func (r *SearchController) Reconcile(ctx Context, search *v1beta1.Search) error {
 
-	stack, err := stacks.GetStack(ctx, search.Spec)
+	stack, err := stacks.GetStack(ctx, search)
 	if err != nil {
 		return err
 	}

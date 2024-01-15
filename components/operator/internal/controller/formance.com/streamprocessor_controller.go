@@ -62,7 +62,7 @@ func (r *StreamProcessorController) Reconcile(ctx Context, streamProcessor *v1be
 		return errors.Wrap(err, "searching elasticsearch configuration")
 	}
 
-	stack, err := stacks.GetStack(ctx, streamProcessor.Spec)
+	stack, err := stacks.GetStack(ctx, streamProcessor)
 	if err != nil {
 		return err
 	}

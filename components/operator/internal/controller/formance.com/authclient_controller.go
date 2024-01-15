@@ -38,7 +38,7 @@ type AuthClientController struct{}
 
 func (r *AuthClientController) Reconcile(ctx core.Context, authClient *v1beta1.AuthClient) error {
 
-	stack, err := stacks.GetStack(ctx, authClient.Spec)
+	stack, err := stacks.GetStack(ctx, authClient)
 	if err != nil {
 		return err
 	}

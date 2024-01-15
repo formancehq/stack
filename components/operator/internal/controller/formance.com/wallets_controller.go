@@ -43,7 +43,7 @@ type WalletsController struct{}
 
 func (r *WalletsController) Reconcile(ctx Context, wallets *v1beta1.Wallets) error {
 
-	stack, err := stacks.GetStack(ctx, wallets.Spec)
+	stack, err := stacks.GetStack(ctx, wallets)
 	if err != nil {
 		return err
 	}

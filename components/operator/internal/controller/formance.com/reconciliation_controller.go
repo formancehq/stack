@@ -43,7 +43,7 @@ type ReconciliationController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=reconciliations/finalizers,verbs=update
 
 func (r *ReconciliationController) Reconcile(ctx Context, reconciliation *v1beta1.Reconciliation) error {
-	stack, err := stacks.GetStack(ctx, reconciliation.Spec)
+	stack, err := stacks.GetStack(ctx, reconciliation)
 	if err != nil {
 		return err
 	}

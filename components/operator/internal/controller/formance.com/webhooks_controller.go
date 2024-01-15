@@ -47,7 +47,7 @@ type WebhooksController struct{}
 //+kubebuilder:rbac:groups=formance.com,resources=webhooks/finalizers,verbs=update
 
 func (r *WebhooksController) Reconcile(ctx Context, webhooks *v1beta1.Webhooks) error {
-	stack, err := stacks.GetStack(ctx, webhooks.Spec)
+	stack, err := stacks.GetStack(ctx, webhooks)
 	if err != nil {
 		return err
 	}

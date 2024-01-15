@@ -17,9 +17,6 @@
 }
 
 :8080 {
-	tracing {
-		span gateway
-	}
 	log {
 		output stdout
 	}
@@ -34,9 +31,10 @@
 			region "us-west-1"
 			env "staging"
 			endpoints {
-                ledger {
+				ledger {
                     http://ledger:8080/_info http://ledger:8080/_healthcheck
                 }
+
 			}
 		}
 	}

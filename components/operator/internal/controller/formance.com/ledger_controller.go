@@ -53,7 +53,7 @@ type LedgerController struct{}
 
 func (r *LedgerController) Reconcile(ctx Context, ledger *v1beta1.Ledger) error {
 
-	stack, err := stacks.GetStack(ctx, ledger.Spec)
+	stack, err := stacks.GetStack(ctx, ledger)
 	if err != nil {
 		return err
 	}

@@ -39,7 +39,7 @@ type StargateController struct{}
 
 func (r *StargateController) Reconcile(ctx Context, stargate *v1beta1.Stargate) error {
 
-	stack, err := stacks.GetStack(ctx, stargate.Spec)
+	stack, err := stacks.GetStack(ctx, stargate)
 	if err != nil {
 		return err
 	}

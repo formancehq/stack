@@ -3,8 +3,6 @@ package reconcilers
 import (
 	"context"
 	"fmt"
-	"github.com/formancehq/operator/api/formance.com/v1beta1"
-	"github.com/formancehq/operator/internal/resources/stacks"
 	pkgError "github.com/pkg/errors"
 	"reflect"
 
@@ -60,53 +58,29 @@ func (r *Reconciler[T]) Reconcile(ctx context.Context, req reconcile.Request) (r
 	cp := object.DeepCopyObject().(T)
 	patch := client.MergeFrom(cp)
 
-	reconcile := true
-	if d, ok := any(object).(stacks.Dependent); ok {
-		stack := &v1beta1.Stack{}
-		if err := r.Manager.GetClient().Get(ctx, types.NamespacedName{
-			Name: d.GetStack(),
-		}, stack); err != nil {
-			reconcile = false
-			if errors.IsNotFound(err) {
-				log.Info("stack not found")
-				setStatus(fmt.Errorf("stack not found"))
-			} else {
-				setStatus(err)
-			}
-		} else {
-			if stack.Spec.Disabled {
-				log.Info("stack disabled")
-				setStatus(fmt.Errorf("stack disabled"))
-				reconcile = false
-			}
+	var reconcilerError error
+	err := r.Controller.Reconcile(struct {
+		context.Context
+		core.Manager
+	}{
+		Context: ctx,
+		Manager: r.Manager,
+	}, object)
+	if err != nil {
+		setStatus(err)
+		if !pkgError.Is(reconcilerError, core.ErrPending) &&
+			!pkgError.Is(reconcilerError, core.ErrDeleted) {
+			reconcilerError = err
 		}
-	}
-
-	var returnErr error
-	if reconcile {
-		err := r.Controller.Reconcile(struct {
-			context.Context
-			core.Manager
-		}{
-			Context: ctx,
-			Manager: r.Manager,
-		}, object)
-		if err != nil {
-			setStatus(err)
-			if !pkgError.Is(err, core.ErrPending) &&
-				!pkgError.Is(err, core.ErrDeleted) {
-				returnErr = err
-			}
-		} else {
-			setStatus(nil)
-		}
+	} else {
+		setStatus(nil)
 	}
 
 	if err := r.Manager.GetClient().Status().Patch(ctx, object, patch); err != nil {
 		return ctrl.Result{}, err
 	}
 
-	return ctrl.Result{}, returnErr
+	return ctrl.Result{}, reconcilerError
 }
 
 func (r *Reconciler[T]) SetupWithManager(mgr core.Manager) error {

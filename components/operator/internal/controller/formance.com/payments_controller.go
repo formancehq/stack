@@ -54,7 +54,7 @@ type PaymentsController struct{}
 
 func (r *PaymentsController) Reconcile(ctx Context, payments *v1beta1.Payments) error {
 
-	stack, err := stacks.GetStack(ctx, payments.Spec)
+	stack, err := stacks.GetStack(ctx, payments)
 	if err != nil {
 		return err
 	}

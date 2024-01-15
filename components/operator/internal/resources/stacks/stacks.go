@@ -29,6 +29,7 @@ func GetStack(ctx core.Context, spec Dependent) (*v1beta1.Stack, error) {
 }
 
 type Dependent interface {
+	client.Object
 	GetStack() string
 }
 

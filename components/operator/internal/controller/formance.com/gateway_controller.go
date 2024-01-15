@@ -51,7 +51,7 @@ type GatewayController struct{}
 
 func (r *GatewayController) Reconcile(ctx Context, gateway *v1beta1.Gateway) error {
 
-	stack, err := stacks.GetStack(ctx, gateway.Spec)
+	stack, err := stacks.GetStack(ctx, gateway)
 	if err != nil {
 		return err
 	}
