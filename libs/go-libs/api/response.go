@@ -40,6 +40,14 @@ type ErrorResponse struct {
 	Details      string `json:"details,omitempty"`
 }
 
+type ErrorResponseOpt func(*ErrorResponse)
+
+func WithErrorMessages(message string) ErrorResponseOpt {
+	return func(e *ErrorResponse) {
+		e.ErrorMessage = message
+	}
+}
+
 func FetchAllPaginated[T any](ctx context.Context, client *http.Client, _url string, queryParams url.Values) ([]T, error) {
 	ret := make([]T, 0)
 
