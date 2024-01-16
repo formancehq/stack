@@ -24,11 +24,6 @@ jobs:
     permissions:
       statuses: write
     steps:
-      - uses: aslafy-z/conventional-pr-title-action@v3.1.1
-        with:
-          success-state: Title follows the specification.
-          failure-state: Title does not follow the specification.
-          context-name: conventional-pr-title
-          preset: conventional-changelog-angular@latest
+      - uses: amannn/action-semantic-pull-request@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
