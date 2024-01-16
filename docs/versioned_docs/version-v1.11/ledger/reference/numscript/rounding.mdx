@@ -1,0 +1,84 @@
+---
+title: Rounding
+---
+
+# Rounding
+There is no support for floating or decimal numbers on The Formance Platform and Numscript will always make sure non integer values resulting from monetary computations are balanced.
+
+In practical, this means appropriately distributing the non integer allocation remainder to accounts. Numscript works by flooring any computed amount and subsequently spreading the remaining amount as fairly as possible starting from top to bottom.
+
+In the example below:
+
+```numscript
+send [COIN 99] (
+  source = @world
+  destination = {
+    50% to @rider
+    50% to @taxes
+  }
+)
+```
+
+The `@rider` account will receive `COIN 50` and the `@taxes` account `COIN 49`. The opposite can be achieved by reversing the order of destinations:
+
+```numscript
+send [COIN 99] (
+  source = @world
+  destination = {
+    50% to @taxes
+    50% to @rider
+  }
+)
+```
+
+In a more complex example below, we are splitting 99 into 5 which would result in 19.8 allocated to each account. Numscript will first allocate 19 to every account, then attempt to distribute the remaining 4 evenly starting from `@a`
+
+```numscript
+send [COIN 99] (
+  source = @world
+  destination = {
+    1/5 to @a
+    1/5 to @b
+    1/5 to @c
+    1/5 to @d
+    1/5 to @e
+  }
+)
+```
+
+Which will resolve into the following postings:
+
+```json
+[
+	{
+		source: "world",
+		destination: "a",
+		amount: 20,
+		asset: "COIN"
+	},
+	{
+		source: "world",
+		destination: "b",
+		amount: 20,
+		asset: "COIN"
+	},
+	{
+		source: "world",
+		destination: "c",
+		amount: 20,
+		asset: "COIN"
+	},
+	{
+		source: "world",
+		destination: "d",
+		amount: 20,
+		asset: "COIN"
+	},
+	{
+		source: "world",
+		destination: "e",
+		amount: 19,
+		asset: "COIN"
+	}
+]
+```

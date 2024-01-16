@@ -1,0 +1,34 @@
+---
+title: Postings
+---
+
+In Numscript, a [posting](/ledger/reference/transactions#postings) models the movement of an amount of an asset from one account to another. Postings are wrapped in a [transaction](/ledger/reference/transactions#transactions-1) to ensure that they are applied atomically.
+
+## Defining a posting
+
+A posting is defined as followed:
+
+```numscript
+send [COIN 100] (
+  source = @world
+  destination = @users:001
+)
+```
+
+Square brackets describe the asset being moved using the Formance's [Unambiguous Monetary Notation (UMN)](/stack/unambiguous-monetary-notation). It is composed of the asset type optionally followed by a scaling value, and the amount. In this case, the asset type is `COIN` with no scaling value, and the amount is `100`.
+
+## Postings with no amount
+
+You can omit the amount of an asset in a posting and replace it with a `*`. This is used when you want to move all of the asset from one account to another.
+
+```numscript
+send [USD/2 *] (
+  source = @order:1234
+  destination = {
+    10% to @platform:fees
+    remaining to @merchant:5678
+  }
+)
+```
+
+Here, we are moving all of the `USD/2` asset from the `@order:1234` account. 10% of the `@order:1234` balance is moved to the `@platform:fees` account, and the remaining 90% is moved to the `@merchant:5678` account.

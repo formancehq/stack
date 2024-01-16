@@ -1,0 +1,242 @@
+---
+title: Numscript templates
+description: Reuse the same transaction structure with Numscript templates.
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import Prerequisites from '@site/docs/ledger/partials/numscript/_prerequisites.mdx';
+import Prereqwarn from '@site/docs/ledger/partials/numscript/_prereq_warning.mdx';
+
+Oftentimes transactions will use the same structure over and over again, and you don't want to use hard-coded values in your Numscript. In these cases, you can use a Numscript template to describe a general kind of transaction, and then fill in the template variables at execution time.
+
+<Prerequisites />
+
+## Repetitive transactions
+
+In the game world of Cones of Dunshire, building cones is a central part of play. We want to reward players who successfully build cones with coin.
+
+![Building cones](cones.jpg)
+
+Image that `benwyatt` builds a cone and, as the ledgerman, we want to reward him with 100 coins for doing so. Here is what that looks like in Numscript:
+
+```numscript
+send [COIN 100] (
+  source = @centralbank
+  destination = @player:benwyatt
+)
+```
+
+Simple enough. But consider: `benwyatt` isn't the only player building cones—ideally all players will be doing that. More, we'd like to encourage cones of varying sizes and quality of materials, so that bigger cones and cones constructed of rarer materials earn larger rewards.
+
+So now `barneyvarmn` comes along and builds a larger cone of rarer materials. We want to reward his cone building as well:
+
+```numscript
+send [COIN 150] (
+  source = @centralbank
+  destination = @player:barneyvarmn
+)
+```
+
+Notice that to reward `barneyvarmn` we had to construct a whole new transaction in Numscript. This is a tedious and error-prone process. But we can eliminate these problems by using Numscript templates!
+
+## Your first template
+
+Templates use variables to reflect aspects of a transaction that might change from time to time, in our case the size of the reward and the recipient. Here is a Numscript template that we can use to create cone-building reward transactions. Create a file called `cone.num`:
+
+```numscript
+vars {
+  monetary $amount
+  account $player
+}
+\n
+send $amount (
+  source = @centralbank
+  destination = $player
+)
+```
+
+There are two things to observe about the template.
+
+First, there is a `vars` block at the top. This block declares all the variables we are going to use, along with their types. So we have a `monetary` variable called `$amount` that can represent quantities of different currencies like `[COIN 100]` or `[USD/2 500]`. And we have an `account` variable called `$player` that can represent any account in our ledger, either for sending for receiving.
+
+Second, there is a `send` block that should look largely familiar. It will send an amount of money specified by the variable `$amount` from the `@centralbank` account to any account specified by the variable `$player`.
+
+:::info Variable types
+
+Numscript supports several variable types. Details on the different types and how they are used [are available in the Numscript reference docs](/ledger/reference/numscript/variables).
+
+:::
+
+What's great is we can save this template, and use it whenever we need to reward a player for building a cone, or for _any_ transaction from `@centralbank` to any single account.
+
+## Assigning values to variables
+
+That said, we can't run this Numscript directly, as Formance Ledger can't know what values to use for our variables. When we execute a Numscript template, we also need to specify the values for each variable in a seperate JSON snippet. Suppose that we want to use the template to send 100 coin to `benwyatt` for building a cone, we can specify the values to plug into our template by creating a file called `vars.json` with this JSON object:
+
+```json title="vars.json"
+{
+  "amount": {
+    "amount": 100,
+    "asset": "COIN"
+  },
+  "player": "player:benwyatt"
+}
+```
+
+As you can see, the names of the keys in the JSON object correspond to the variables in the Numscript template. Note that because `monetary` is a compound type, we had to specify both a currency and a quantity for the variable named `$amount`.
+
+:::info Variable Specification Syntax
+
+* the variable names do not have the `$` prefix
+* the variable values of type `account` (`player` here) do not have the `@` prefix
+
+:::
+
+## Running a Numscript template
+
+A complete transaction consists of a template in Numscript and a specification of the values in JSON. Once we have both, we can pass it to Formance Ledger for execution.
+
+:::caution
+
+**You cannot use the command line to execute Numscript templates.**
+
+At least, not at this time. That feature is coming though! In the meantime you _can_ execute Numscript templates using Formance Ledger's built-in API server. If you've never done that before, take a moment to [read up on how to use the API server to execute Numscript](/ledger/numscript/http).
+
+:::
+
+The `/{ledger}/script` API endpoint expects a request containing a JSON object with two fields: 'plain' which is a string containing the Numscript and `vars` which is the JSON object containing the values to substitute in:
+
+```json
+{
+  "plain": "NUMSCRIPT TEMPLATE HERE",
+  "vars": {
+    "variable1": "value1",
+    //… etc.
+  }
+}
+```
+
+We can use `jd` to construct this JSON request from our Numscript template (saved in `cone.num`) and our value specification (saved in `vars.json`):
+
+```shell
+jq --rawfile cone cone.num '{plain: $cone, vars: .}' vars.json
+```
+
+Running this should give the following result
+```json title="jd output"
+{
+  "plain": "vars {\nmonetary $amount\naccount $player\n}\n\nsend $amount (\nsource = @centralbank\ndestination = $player\n)",
+  "vars": {
+    "amount": {
+      "amount": 100,
+      "asset": "COIN"
+    },
+    "player": "@player:benwyatt"
+  }
+}
+```
+
+:::danger command not found: jq
+If you receive an error like
+```shell
+bash: comand not found: jq
+```
+then you do not have the `jq` command line tool installed. You'll need to [install `jq`](https://stedolan.github.io/jq/) to run the examples.
+:::
+
+We can now use the output from `jq` with HTTPie or cURL to send to the Formance Ledger API:
+
+<Tabs>
+  <TabItem value="httpie" label="HTTPie">
+
+```shell
+jq --rawfile cone cone.num '{plain: $cone, vars: .}' vars.json \
+| http POST http://localhost:3068/dunshire/script
+```
+
+:::info What is HTTPie?
+
+[HTTPie](https://httpie.io/) is an alternative to cURL for testing REST APIs, designed to have a simpler interface optimized for constructing API test calls. It's pretty cool, and we recommend it over cURL for testing things out. [Read more](https://httpie.io/) about HTTPie including how to install it.
+
+:::
+
+  </TabItem>
+  <TabItem value="curl" label="cURL">
+
+```shell
+jq --rawfile cone cone.num '{plain: $cone, vars: .}' vars.json \
+| curl -H "Content-Type: application/json" \
+-X POST --data-binary @- \
+http://localhost:3068/dunshire/script
+```
+  </TabItem>
+</Tabs>
+<hr />
+
+### The API response
+
+**On success**
+
+The Formance Ledger API will return a `200` status code on success, and an empty JSON object in the response body.
+
+**On failure**
+
+The Formance Ledger API will return a `200` status code even on failure, but the JSON object returned in the response body will have more information:
+
+```json
+{
+    "details": "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9",
+    "err": "account had insufficient funds"
+}
+```
+
+The `err` field will contain a human-readable indication of what went wrong, for example that an account had insufficient funds, or that there was an error in the provided Numscript.
+
+There is also a `details` field with a URL. When there is an error parsing Numscript, the result can be difficult to read—the provided URL will render the error in an easy-to-read format.
+
+## Templates and Metadata
+
+In addition to specifying the value of variables directly, we can pull those values from [metadata](/ledger/numscript/metadata/) associated with accounts.
+
+Let's suppose that we want to take a commission whenever one player transfers coin to another player. We can store the current commission rate as metadata on the `@centralbank` account, and then pull that rate in dynamically when we execute that kind of transaction with Numscript:
+
+```numscript
+vars {
+  portion $commission_rate = meta(@centralbank, "commission_rate")
+  monetary $amount
+  account $sender
+  account $receiver
+}
+\n
+send $amount (
+  source = $sender
+  destination = {
+    $commission_rate to @centralbank
+    remainder to $receiver
+  }
+)
+```
+
+At execution, you'll need to specify the amount to send, and the sender and receiver accounts. Then Formance Ledger will examine the metadata on the `@centralbank` account, looking for a structure like this:
+
+```json
+{
+  "commission_rate": {
+    "type": "portion",
+    "value": "5/100"
+  }
+}
+```
+
+In this case, the metadata specifies a 5% commission on user-to-user transactions.
+
+The advantage is that you can record the variables like your commission rate in a convenient, centralized place, without having to hard code the values.
+
+## Going further
+
+This guide has just been a small taste of what's possible using Numscript templates. Nearly any Numscript transaction can be templatized.
+
+:::tip Dig deeper
+Want to learn more about creating Numscript templates? [The Numscript reference docs](/ledger/reference/numscript/variables) have you covered!
+:::

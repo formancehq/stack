@@ -1,0 +1,33 @@
+---
+title: Overdrafts
+description: To better represent your flows, it can be useful to allow overdrafts on some ledger accounts. This article explains how to do that.
+---
+
+import Prerequisites from '@site/docs/ledger/partials/numscript/_prerequisites.mdx';
+import Prereqwarn from '@site/docs/ledger/partials/numscript/_prereq_warning.mdx';
+
+Sometimes we need a transaction to put an account in deficit, i.e. overdraft. For example if you have $100 in your bank account and you buy a $200 item, you will have a negative balance of $100 until you get your next paycheck. This is where overdrafts in Numscript come in.
+Another situation likely to happen is linked to refunds, penalties or even coupons. The way you can represent some of these flows is by allowing some accounts to have negative balances, to represent your loss.
+<Prerequisites />
+
+## Allow an account to go into overdraft without limits
+
+```numscript
+send [COIN 15] (
+  source = @player:leslieknope allowing unbounded overdraft
+  destination = @player:annperkins
+)
+```
+
+## Allow an account to go into overdraft up to a certain amount
+
+This is a great way to handle a simple case where we need to allow overdraft on an account. But sometimes we have business rules in place about negative balance accounts, for example the account @player:leslieknope can only allow overdraft up to 5 COIN, because if a player goes into more than 5 COIN in debt, he will loose the game.
+
+```numscript
+send [COIN 100] (
+  source = @player:leslieknope allowing overdraft up to [COIN 5]
+  destination = @player:annperkins
+)
+```
+
+The user `annperkins` will receive 5 coins in total, even if leslieknope only has 3 coins available. This would put her account balance at a negative 2 coins.

@@ -1,0 +1,63 @@
+---
+title: Architecting for scale
+---
+## Scaling for writes
+
+### Writes contention
+
+The Formance Ledger uses a multi-ledger, single-writer, sequential writes architecture to create an auditable, easy to reason about trail of transactions. The latest stable of the ledger is optimised for 1K writes per second on an underlying commodity storage instance.
+
+As a result, write heavy applications above this threshold are advised to leverage the Formance Ledger's segmentation capabilities to scale horizontally. This will allow you to create multiple ledgers and to write to them in parallel.
+
+### Transaction commit cost breakdown
+
+As outlined in the performance model [section](/ledger/reference/performance), we consider the cost of a write to be `O(N) + W`. Let's consider the following example:
+
+```numscript
+send [USD/2 9900] (
+  source = {
+    @users:1234:main
+    @users:1234:vouchers
+    @users:1234:creditcard
+    @world
+  }
+  destination = @payments:1234
+)
+```
+
+In this transaction, we are attempting to increase the balance of `@payments:1234` by $99.00, sourcing the funds from three user accounts before defaulting `@world` as the source of last resort. Let's break down the operations that will be performed:
+* Read the balance of `@users:1234:main`
+* If the balance of `@users:1234:main` was less than $99.00, read the balance of `@users:1234:vouchers`
+* If the balance of the previous account was less than $99.00, read the balance of `@users:1234:creditcard`
+* Model the transaction
+* Write the new balance of `@users:1234:main`
+
+As we can see here, the exact cost of this transaction will depend on the number of accounts that are being sourced from, but it will be at least `O(1) + W` and at most `O(3) + W`. This is because the transaction will need to read the balance of at least one account, and at most three accounts, and then commit the computed transaction to the ledger.
+
+When optimizing for write throughput, it is important to keep in mind this cost breakdown and to design your transactions accordingly.
+
+
+## Scaling for reads
+
+### Chart of accounts
+
+While usually not a concern for the scaling of writes, designing a proper chart of accounts is key to the performance of your reads. You'll especially want to make sure that the addresses of your accounts are using properly separated segments, as this will allow you to use wildcards to query your accounts.
+
+An example of an inefficient account address would be `users:1234_main`
+Implemented instead as `users:1234:main`, the latter will enable the ledger to efficiently query all accounts of a given user by using the `users:1234:*` wildcard or all accounts of all users of a given type by using the `users:*:main` wildcard.
+
+### Ledgers sizing
+
+As a consequence of their append-only nature, ledgers will only grow in size over time indefinitely. Optimal mitigation of this nature is one of the design goal of the Formance Ledger. As a result of these optimisation efforts, not all queries are negatively impacted by the size of the ledger, as per explained in the performance model [section](/ledger/reference/performance). It is however to be noted that some queries will be impacted by the size of the ledger, relative to the underlying storage database capacity.
+
+In order to equip you with primitives to mitigate this, the Formance Ledger comes with the ability to segment your ledgers, allowing you to create multiple ledgers and to query them in parallel.
+
+### Segmentation strategies
+
+Let's consider an example financial application where users can deposit funds into their account and subsequently use them for international transfers. This application is poised to grow in popularity and will need to be able to handle a large number of users.We can devise a segmentation strategy that will allow us to scale our ledgering system horizontally and allow ourselves to handle millions of users without constraining ourselves with impacts on the performance of our queries.
+
+A first approach would be to segment our ledgers by users, and club together a certain number of users into a single ledger. 
+
+Another approach would be to segment our ledgers by time, creating for example a ledger for each year and then for each month as we continue to grow the number of transactions committed per day.
+
+The proper segmentation strategy will eventually be a decision that you will have to make based on the nature of your application and the expected growth.

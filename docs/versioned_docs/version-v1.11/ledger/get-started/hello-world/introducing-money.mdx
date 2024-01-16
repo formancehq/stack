@@ -1,0 +1,100 @@
+---
+title: Introducing Money Into the Ledger
+---
+
+# Introducing money into the ledger
+
+:::info
+Before moving on, make sure you have a running instance of Formance Ledger. If you don't, go back to the [previous step](/guides/newSandbox) and follow the instructions there.
+:::
+
+Now you have Formance Ledger up and ready to accept transactions. Woohoo! Let's get started by creating our first transaction in Numscript.
+
+:::tip
+Numscript is a powerful scripting language for describing transactions. It's a great way to get started with Formance Ledger, but you can also use the transactions API to send transactions directly in plain json. We'll talk more about that in a later step.
+:::
+
+Right now, your coffers in the game world of Cones of Dunshire are entirely empty. We need to seed it with a little coin so that we can distribute it to players.
+
+Of course, in the real world, we can't just create money. Money enters our accounts from the outside world, and we need a way to track that in our ledger. We do this through a special account called `@world`. This account represents the world outside of our system. It is unique in that it can never be overdrawn (unlike other accounts). This allows us to represent movements of money into our system by transferring money from the `@world` account to the account that actually received the money.
+
+So, to introduce coin into our game world of Cones of Dunshire, we'll need to transfer money from `@world` into our administrative central account. From there, we can start circulating it throughout Dunshire in various ways—we'll get to that soon.
+
+## Introducing new coin with Numscript
+
+We begin by introducing new coin into the world, by transfering it from `@world` to `@centralbank`.
+
+Create a file called `intro.num` with the following Numscript:
+
+```numscript
+send [COIN 100] (
+  source = @world
+  destination = @centralbank
+)
+```
+
+This bit of Numscript encodes a _transaction_. A transaction is a description of a quantity of money sent from a source account to a destination account.
+
+* `[COIN 100]` means we want to send 100 coins. You can send money in whatever currency makes sense for your use case. Very often this will be `USD` or `EUR`. (We'll talk more about sending fractions of a unit of currency in a bit).
+
+* `source = @world` means the source of the money is the external world—we are introducing money into the ledger.
+
+* `destination = @centralbank` means the money should go to our `@centralbank` account. In our case, we just want a central store for Dunshire coin, but in your situation you might have multiple accounts that can receive money from. You can name these accounts however you like.
+
+:::info
+You don't have to have a `@centralbank` account, this is just an example designed to keep things simple. In your case, payments might land in a variety of accounts. This is no problem. You can transfer money from `@world` into any account.
+:::
+
+## Executing the Numscript
+
+OK, we have our transaction described with Numscript. How do we execute the transaction against our ledger? We need to feed the Numscript to our running instance of Formance Ledger.
+
+```shell
+fctl ledger transactions num intro.num
+```
+
+If all goes well, you should see:
+
+```
+ID        | 0
+Reference |
+Date      | 2022-11-17T10:20:55Z
+
+Source | Destination | Asset | Amount
+world  | centralbank | COIN  | 100
+
+Account     | Asset | Movement | Final balance
+centralbank | COIN  | +100     | 100
+world       | COIN  | -100     | -100
+
+Metadata : <empty>
+```
+
+Congratulations! You've now got money in your ledger. Let's take note of the transaction ID at the very top of the output, in this case ID `0`.
+
+## Troubleshooting
+
+Otherwise, if you see something like:
+```
+  ERROR   found more than one stack and no stack specified
+```
+
+then you have more than one sandbox, and you need to specify which one to use.
+
+:::info Formance Platform
+
+Formance Platforms are cloud-hosted instances that give you access to a full range of financial tools beyond just Ledger. A Stack can be a sandbox, or a production environment. For now, we're only talking about sandboxes, but Formance Platform makes it easy to move your sandbox into a production environment that scales as you do.
+
+:::
+
+If you have more than one sandbox, you'll need to specify which one to send the transactions to with
+
+```shell
+fctl ledger transactions --stack wxyz num intro.num
+```
+
+where you should replace `wxyz` with the ID of the sandbox you want to use.
+
+## Next steps
+
+In the next step, we're going to verify that the coin was indeed introduced into the proper account.

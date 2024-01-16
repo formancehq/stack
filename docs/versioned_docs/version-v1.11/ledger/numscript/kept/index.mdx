@@ -1,0 +1,85 @@
+---
+title: Making partial transfers with kept
+description: Sometimes you need to transfer only a portion of a full transaction, for example when calculating additional fees.
+---
+
+import Prerequisites from '@site/docs/ledger/partials/numscript/_prerequisites.mdx';
+import Prereqwarn from '@site/docs/ledger/partials/numscript/_prereq_warning.mdx';
+
+Sometimes you have a transfer that requires processing, but you want to move only a portion of the specified amount. For example:
+
+* You want to break a transaction up into multiple smaller transactions.
+
+* You want to charge a penalty fee when a vendor needs to refund a customer. You want that fee to be a percentage of the refund amount, but you don't want to take that fee from the refund itself.
+
+<Prerequisites />
+
+## Holding back part of a transaction
+
+The `kept` keyword allows you to specify a transaction that only moves a portion of the transaction amount. As a very basic example of the functionality, imagine that we need to send 15% of a 100 coin transaction from the `centralbank` to `leslieknope`. We could hard-code the 15% fee into our Numscript like this:
+
+```numscript
+send [COIN 15] (
+  source = @centralbank
+  destination = @player:leslieknope
+)
+```
+
+But doing so is error-prone; better to let Formance Ledger do the math for us! Here's how to use the `kept` keyword to achieve the same thing in a less error-prone way:
+
+```numscript
+send [COIN 100] (
+  source = @centralbank
+  destination = {
+    15% to @player:leslieknope
+    remaining kept
+	}
+)
+```
+
+The user `leslieknope` will receive 15 coins in total, and the rest is held back in the `centralbank` account, while letting Formance Ledger handle the math.
+
+## Implementing Refund Penalty Fees
+
+The game land of Cones of Dunshire has a no-take-backsies policy: While players can sell their interest in a cone to another player, we want to disincentivize refunds by charging the seller a 15% fee. Of course, the buyer should always receive the full refund for a returned cone! So, when refunds happen, 115% of the original sale price needs to be taken from the seller's account: 100% to the refunded buyer, and 15% to the central bank.
+
+So, imageine that `leslieknope` has sold an interest in a cone to `annperkins` for 85 coin. `annperkins` is, for whatever reason, dissatisfied with her cone—she wants to return it for a refund. `leslieknope` reluctantly agrees, knowing she will pay a 15% penalty for the refund.
+
+We can structure the refund with penalty fee as a Numscript template like this:
+
+```numscript
+vars {
+  monetary $refund
+}
+\n
+send $refund (
+  source = @player:leslieknope
+  destination = {
+    15% to @centralbank
+    remaining kept
+  }
+)
+\n
+send $refund (
+  source = @player:leslieknope
+  destination = @player:annperkins
+)
+```
+
+:::tip Using Numscript Templates
+
+Numscript templates are a powerful tool for creating re-usable transactions.
+
+[Learn more about how to build and run Numscript templates](/ledger/numscript/templates).
+
+:::
+
+This Numscript template takes an amount as an argument, and creates two transactions around that amount. The first transaction represents the refund penalty, and takes 15% of the amount from the seller, `leslieknope`, sending it to `centralbank`. The second transaction refunds `annperkins` the full amount of the original transaction from `leslieknope`.
+
+:::caution
+
+**You cannot use the command line to execute Numscript templates.**
+
+At least, not at this time. That feature is coming though! In the meantime you _can_ execute Numscript templates using Formance Ledger's built-in API server. If you've never done that before, take a moment to [read up on how to use the API server to execute Numscript](/ledger/numscript/http).
+
+:::

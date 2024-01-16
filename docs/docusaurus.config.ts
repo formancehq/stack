@@ -6,8 +6,8 @@ import math from 'remark-math';
 import katex from 'rehype-katex';
 import  path from 'node:path';
 
-import prismLight from './src/theme/prism/prismLight';
-import prismDark from './src/theme/prism/prismDark';
+const lightCodeTheme = require('prism-react-renderer/themes/github');
+const darkCodeTheme = require('prism-react-renderer/themes/palenight');
 
 import type {Config} from '@docusaurus/types';
 
@@ -63,7 +63,7 @@ export default async function createConfig() {
             lastVersion: 'current',
             versions: {
               current: {
-                label: 'v1.x',
+                label: 'v2.0',
               }
             }
           },
@@ -81,13 +81,13 @@ export default async function createConfig() {
           config: path.join(__dirname, 'redocly.yaml'),
           specs: [
             {
-              spec: './openapi/v1.json',
-              route: '/api/v1.x',
-              id: 'api-v1',
+              spec: './openapi/v1.11.json',
+              route: '/api/v1.11',
+              id: 'api-v1-11',
             },
             {
-              spec: './openapi/v2.json',
-              route: '/api/v2.x',
+              spec: './openapi/v2.0.json',
+              route: '/api/v2.0',
               id: 'api-v2',
             }
           ],
@@ -199,12 +199,10 @@ export default async function createConfig() {
               ],
             },
           ],
-          copyright: `Copyright © 2021-2023 Formance, Inc`,
+          copyright: `Copyright © 2021-2024 Formance, Inc`,
         },
         prism: {
-          additionalLanguages: ['bash', 'javascript', 'typescript'],
-          theme: prismLight,
-          darkTheme: prismDark,
+          theme: darkCodeTheme,
         },
         posthog: {
           apiKey: 'phc_hRDv01yOHJNUM7l5SmXPUtSQUuNw4r5am9FtV83Z9om',

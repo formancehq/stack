@@ -30,7 +30,7 @@
     "clsx": "^1.2.1",
     "graphviz-react": "^1.2.5",
     "posthog-docusaurus": "^2.0.0",
-    "prism-react-renderer": "2",
+    "prism-react-renderer": "^1.3.5",
     "react": "18",
     "react-dom": "18",
     "redocusaurus": "2",
