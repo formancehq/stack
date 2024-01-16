@@ -26,10 +26,6 @@ func writeJSON(w http.ResponseWriter, statusCode int, v any) {
 	}
 }
 
-func Accepted(w http.ResponseWriter, v any) {
-	writeJSON(w, http.StatusAccepted, v)
-}
-
 func NotFound(w http.ResponseWriter, err error) {
 	writeJSON(w, http.StatusNotFound, ErrorResponse{
 		ErrorCode:    ErrorCodeNotFound,
@@ -72,6 +68,11 @@ func InternalServerError(w http.ResponseWriter, r *http.Request, err error) {
 	})
 }
 
+func Accepted(w http.ResponseWriter, v any) {
+	writeJSON(w, http.StatusAccepted, BaseResponse[any]{
+		Data: &v,
+	})
+}
 func Created(w http.ResponseWriter, v any) {
 	writeJSON(w, http.StatusCreated, BaseResponse[any]{
 		Data: &v,
