@@ -126,6 +126,7 @@ type V2BulkElementResult struct {
 
 func CreateV2BulkElementResultAddMetadata(addMetadata Schemas) V2BulkElementResult {
 	typ := V2BulkElementResultTypeAddMetadata
+
 	typStr := string(typ)
 	addMetadata.ResponseType = typStr
 
@@ -137,6 +138,7 @@ func CreateV2BulkElementResultAddMetadata(addMetadata Schemas) V2BulkElementResu
 
 func CreateV2BulkElementResultCreateTransaction(createTransaction V2BulkElementResultCreateTransactionSchemas) V2BulkElementResult {
 	typ := V2BulkElementResultTypeCreateTransaction
+
 	typStr := string(typ)
 	createTransaction.ResponseType = typStr
 
@@ -148,6 +150,7 @@ func CreateV2BulkElementResultCreateTransaction(createTransaction V2BulkElementR
 
 func CreateV2BulkElementResultDeleteMetadata(deleteMetadata V2BulkElementResultDeleteMetadataSchemas) V2BulkElementResult {
 	typ := V2BulkElementResultTypeDeleteMetadata
+
 	typStr := string(typ)
 	deleteMetadata.ResponseType = typStr
 
@@ -159,6 +162,7 @@ func CreateV2BulkElementResultDeleteMetadata(deleteMetadata V2BulkElementResultD
 
 func CreateV2BulkElementResultError(error V2BulkElementResultErrorSchemas) V2BulkElementResult {
 	typ := V2BulkElementResultTypeError
+
 	typStr := string(typ)
 	error.ResponseType = typStr
 
@@ -170,6 +174,7 @@ func CreateV2BulkElementResultError(error V2BulkElementResultErrorSchemas) V2Bul
 
 func CreateV2BulkElementResultRevertTransaction(revertTransaction V2BulkElementResultRevertTransactionSchemas) V2BulkElementResult {
 	typ := V2BulkElementResultTypeRevertTransaction
+
 	typStr := string(typ)
 	revertTransaction.ResponseType = typStr
 

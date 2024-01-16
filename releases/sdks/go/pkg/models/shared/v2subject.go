@@ -25,6 +25,7 @@ type V2Subject struct {
 
 func CreateV2SubjectAccount(account V2LedgerAccountSubject) V2Subject {
 	typ := V2SubjectTypeAccount
+
 	typStr := string(typ)
 	account.Type = typStr
 
@@ -36,6 +37,7 @@ func CreateV2SubjectAccount(account V2LedgerAccountSubject) V2Subject {
 
 func CreateV2SubjectWallet(wallet V2WalletSubject) V2Subject {
 	typ := V2SubjectTypeWallet
+
 	typStr := string(typ)
 	wallet.Type = typStr
 
