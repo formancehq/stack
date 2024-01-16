@@ -15,6 +15,10 @@ spec:
   scope: Cluster
   versions:
   - additionalPrinterColumns:
+    - description: Stack
+      jsonPath: .spec.stack
+      name: Stack
+      type: string
     - description: Is ready
       jsonPath: .status.ready
       name: Ready

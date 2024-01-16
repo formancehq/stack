@@ -78,13 +78,22 @@ func (r *LedgerController) Reconcile(ctx Context, ledger *v1beta1.Ledger) error 
 		return err
 	}
 
-	moduleVersion := GetModuleVersion(stack, ledger.Spec.Version)
-	isV2 := false
-	if !semver.IsValid(moduleVersion) || semver.Compare(moduleVersion, "v2.0.0-alpha") > 0 {
-		isV2 = true
+	// TODO: Upgrade only if necessary
+	actualVersion, err := ActualVersion(ctx, ledger)
+	if err != nil {
+		return err
+	}
+	newVersion := GetModuleVersion(stack, ledger.Spec.Version)
+	actualVersionIsV1 := false
+	if !semver.IsValid(actualVersion) || semver.Compare(actualVersion, "v2.0.0-alpha") < 0 {
+		actualVersionIsV1 = true
+	}
+	newVersionIsV2 := false
+	if !semver.IsValid(newVersion) || semver.Compare(newVersion, "v2.0.0-alpha") > 0 {
+		newVersionIsV2 = true
 	}
 
-	if isV2 {
+	if actualVersionIsV1 && newVersionIsV2 {
 		if err := r.migrateToLedgerV2(ctx, stack, ledger, database, image); err != nil {
 			return err
 		}
@@ -96,7 +105,7 @@ func (r *LedgerController) Reconcile(ctx Context, ledger *v1beta1.Ledger) error 
 	}
 	if hasSearch {
 		streamsVersion := "v1.0.0"
-		if isV2 {
+		if newVersionIsV2 {
 			streamsVersion = "v2.0.0"
 		}
 		if err := streams.LoadFromFileSystem(ctx, benthos.Streams, ledger.Spec.Stack, "streams/ledger/"+streamsVersion,
@@ -116,7 +125,7 @@ func (r *LedgerController) Reconcile(ctx Context, ledger *v1beta1.Ledger) error 
 	}
 
 	if database.Status.Ready {
-		err = r.installLedger(ctx, stack, ledger, database, image, isV2)
+		err = r.installLedger(ctx, stack, ledger, database, image, newVersionIsV2)
 		if err != nil {
 			return err
 		}
@@ -432,8 +441,8 @@ func (r *LedgerController) migrateToLedgerV2(ctx Context, stack *v1beta1.Stack, 
 			Name:      "migrate-v2",
 		},
 		Spec: batchv1.JobSpec{
-			BackoffLimit: pointer.For(int32(10000)),
-			//TTLSecondsAfterFinished: pointer.For(int32(30)),
+			BackoffLimit:            pointer.For(int32(10000)),
+			TTLSecondsAfterFinished: pointer.For(int32(30)),
 			Template: corev1.PodTemplateSpec{
 				Spec: corev1.PodSpec{
 					RestartPolicy: corev1.RestartPolicyOnFailure,

@@ -4,14 +4,14 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.13.0
-  name: authclients.formance.com
+  name: versionshistories.formance.com
 spec:
   group: formance.com
   names:
-    kind: AuthClient
-    listKind: AuthClientList
-    plural: authclients
-    singular: authclient
+    kind: VersionsHistory
+    listKind: VersionsHistoryList
+    plural: versionshistories
+    singular: versionshistory
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -22,7 +22,7 @@ spec:
     name: v1beta1
     schema:
       openAPIV3Schema:
-        description: AuthClient is the Schema for the authclients API
+        description: VersionsHistory is the Schema for the versionshistories API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -37,40 +37,20 @@ spec:
           metadata:
             type: object
           spec:
-            description: AuthClientSpec defines the desired state of AuthClient
+            description: VersionsHistorySpec defines the desired state of VersionsHistory
             properties:
-              description:
-                type: string
-              id:
-                type: string
-              postLogoutRedirectUris:
-                items:
-                  type: string
-                type: array
-              public:
-                type: boolean
-              redirectUris:
-                items:
-                  type: string
-                type: array
-              scopes:
-                items:
-                  type: string
-                type: array
-              secret:
+              module:
                 type: string
               stack:
                 type: string
+              version:
+                type: string
             required:
-            - id
+            - module
+            - version
             type: object
           status:
-            description: AuthClientStatus defines the observed state of AuthClient
-            properties:
-              error:
-                type: string
-              ready:
-                type: boolean
+            description: VersionsHistoryStatus defines the observed state of VersionsHistory
             type: object
         type: object
     served: true

@@ -2,8 +2,8 @@ package reconcilers
 
 import (
 	"github.com/formancehq/operator/internal/core"
+	"golang.org/x/mod/semver"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 type Module[T core.Module] struct {
@@ -27,11 +27,8 @@ func (r *Module[T]) Reconcile(ctx core.Context, t T) error {
 		}
 	}
 
-	patch := client.MergeFrom(t.DeepCopyObject().(T))
-	if updated := core.ValidateInstalledVersion(t); updated {
-		if err := ctx.GetClient().Patch(ctx, t, patch); err != nil {
-			return err
-		}
+	if semver.IsValid(t.GetVersion()) {
+		return core.ValidateInstalledVersion(ctx, t)
 	}
 
 	return nil

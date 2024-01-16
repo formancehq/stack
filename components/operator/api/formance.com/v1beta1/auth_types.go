@@ -54,6 +54,7 @@ type AuthStatus struct {
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:printcolumn:name="Clients",type=string,JSONPath=".status.clients",description="Synchronized auth clients"
+//+kubebuilder:printcolumn:name="Stack",type=string,JSONPath=".spec.stack",description="Stack"
 //+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
 //+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
 

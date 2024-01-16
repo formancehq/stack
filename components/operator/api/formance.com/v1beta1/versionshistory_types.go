@@ -20,52 +20,39 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// StreamSpec defines the desired state of Stream
-type StreamSpec struct {
+// VersionsHistorySpec defines the desired state of VersionsHistory
+type VersionsHistorySpec struct {
 	StackDependency `json:",inline"`
-	Data            string `json:"data"`
+	Module          string `json:"module"`
+	Version         string `json:"version"`
 }
 
-// StreamStatus defines the observed state of Stream
-type StreamStatus struct {
-	CommonStatus `json:",inline"`
-}
+// VersionsHistoryStatus defines the observed state of VersionsHistory
+type VersionsHistoryStatus struct{}
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:printcolumn:name="Stack",type=string,JSONPath=".spec.stack",description="Stack"
 
-// Stream is the Schema for the streams API
-type Stream struct {
+// VersionsHistory is the Schema for the versionshistories API
+type VersionsHistory struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   StreamSpec   `json:"spec,omitempty"`
-	Status StreamStatus `json:"status,omitempty"`
-}
-
-func (in *Stream) SetReady(b bool) {
-	in.Status.Ready = b
-}
-
-func (in *Stream) SetError(s string) {
-	in.Status.Error = s
-}
-
-func (a Stream) GetStack() string {
-	return a.Spec.Stack
+	Spec   VersionsHistorySpec   `json:"spec,omitempty"`
+	Status VersionsHistoryStatus `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 
-// StreamList contains a list of Stream
-type StreamList struct {
+// VersionsHistoryList contains a list of VersionsHistory
+type VersionsHistoryList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []Stream `json:"items"`
+	Items           []VersionsHistory `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&Stream{}, &StreamList{})
+	SchemeBuilder.Register(&VersionsHistory{}, &VersionsHistoryList{})
 }

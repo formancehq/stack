@@ -65,6 +65,7 @@ type AuthClientStatus struct {
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
+//+kubebuilder:printcolumn:name="Stack",type=string,JSONPath=".spec.stack",description="Stack"
 
 // AuthClient is the Schema for the authclients API
 type AuthClient struct {

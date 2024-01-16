@@ -174,6 +174,13 @@ l:
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *StackController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
+	indexer := mgr.GetFieldIndexer()
+	if err := indexer.IndexField(context.Background(), &v1beta1.VersionsHistory{}, ".spec.module", func(rawObj client.Object) []string {
+		return []string{rawObj.(*v1beta1.VersionsHistory).Spec.Module}
+	}); err != nil {
+		return nil, err
+	}
+
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1beta1.Stack{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})).
 		Watches(&corev1.Secret{}, handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, object client.Object) []reconcile.Request {

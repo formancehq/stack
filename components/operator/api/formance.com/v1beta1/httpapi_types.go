@@ -55,6 +55,7 @@ type HTTPAPIStatus struct {
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
+//+kubebuilder:printcolumn:name="Stack",type=string,JSONPath=".spec.stack",description="Stack"
 //+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Ready"
 
 // HTTPAPI is the Schema for the HTTPAPIs API

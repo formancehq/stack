@@ -19,6 +19,10 @@ spec:
       jsonPath: .status.clients
       name: Clients
       type: string
+    - description: Stack
+      jsonPath: .spec.stack
+      name: Stack
+      type: string
     - description: Is ready
       jsonPath: .status.ready
       name: Ready
