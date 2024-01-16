@@ -24,7 +24,7 @@ func readStageHistory(backend api.Backend) http.HandlerFunc {
 		if err != nil {
 			switch {
 			case errors.Is(err, workflow.ErrInstanceNotFound):
-				sharedapi.NotFound(w)
+				sharedapi.NotFound(w, err)
 			default:
 				sharedapi.InternalServerError(w, r, err)
 			}

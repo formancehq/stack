@@ -118,7 +118,7 @@ func handleServiceErrors(w http.ResponseWriter, r *http.Request, err error) {
 	case errors.Is(err, storage.ErrDuplicateKeyValue):
 		api.BadRequest(w, ErrUniqueReference, err)
 	case errors.Is(err, storage.ErrNotFound):
-		api.NotFound(w)
+		api.NotFound(w, err)
 	case errors.Is(err, service.ErrValidation):
 		api.BadRequest(w, ErrValidation, err)
 	case errors.Is(err, service.ErrInvalidID):
@@ -135,7 +135,7 @@ func handleConnectorsManagerErrors(w http.ResponseWriter, r *http.Request, err e
 	case errors.Is(err, storage.ErrDuplicateKeyValue):
 		api.BadRequest(w, ErrUniqueReference, err)
 	case errors.Is(err, storage.ErrNotFound):
-		api.NotFound(w)
+		api.NotFound(w, err)
 	case errors.Is(err, manager.ErrAlreadyInstalled):
 		api.BadRequest(w, ErrValidation, err)
 	case errors.Is(err, manager.ErrNotInstalled):
@@ -143,7 +143,7 @@ func handleConnectorsManagerErrors(w http.ResponseWriter, r *http.Request, err e
 	case errors.Is(err, manager.ErrConnectorNotFound):
 		api.BadRequest(w, ErrValidation, err)
 	case errors.Is(err, manager.ErrNotFound):
-		api.NotFound(w)
+		api.NotFound(w, err)
 	case errors.Is(err, manager.ErrValidation):
 		api.BadRequest(w, ErrValidation, err)
 	default:

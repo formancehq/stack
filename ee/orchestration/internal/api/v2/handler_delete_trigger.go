@@ -16,7 +16,7 @@ func deleteTrigger(backend api.Backend) http.HandlerFunc {
 		if err := backend.DeleteTrigger(r.Context(), chi.URLParam(r, "triggerID")); err != nil {
 			switch {
 			case errors.Is(err, sql.ErrNoRows):
-				sharedapi.NotFound(w)
+				sharedapi.NotFound(w, err)
 			default:
 				sharedapi.InternalServerError(w, r, err)
 			}
