@@ -7,6 +7,7 @@ import (
 
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	webhooks "github.com/formancehq/webhooks/pkg"
+	"github.com/formancehq/webhooks/pkg/storage"
 	"github.com/formancehq/webhooks/pkg/storage/postgres"
 	"github.com/stretchr/testify/require"
 	"github.com/uptrace/bun"
@@ -24,6 +25,7 @@ func TestStore(t *testing.T) {
 	}()
 
 	require.NoError(t, db.Ping())
+	require.NoError(t, storage.Migrate(context.Background(), db))
 
 	// Cleanup tables
 	require.NoError(t, db.ResetModel(context.TODO(), (*webhooks.Config)(nil)))

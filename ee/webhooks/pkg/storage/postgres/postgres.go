@@ -22,23 +22,12 @@ type Store struct {
 var _ storage.Store = &Store{}
 
 func NewStore(dsn string) (storage.Store, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
 	logging.Debugf("postgres.NewStore: connecting to '%s'", dsn)
 	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
 	db := bun.NewDB(sqldb, pgdialect.New())
 	db.AddQueryHook(bunotel.NewQueryHook(bunotel.WithDBName("webhooks")))
 	if err := db.Ping(); err != nil {
 		return nil, errors.Wrap(err, "bun.DB.Ping")
-	}
-
-	if _, err := db.NewCreateTable().Model((*webhooks.Config)(nil)).IfNotExists().Exec(ctx); err != nil {
-		return nil, errors.Wrap(err, "create table configs")
-	}
-
-	if _, err := db.NewCreateTable().Model((*webhooks.Attempt)(nil)).IfNotExists().Exec(ctx); err != nil {
-		return nil, errors.Wrap(err, "create table attempts")
 	}
 
 	return Store{db: db}, nil

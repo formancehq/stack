@@ -35,20 +35,6 @@ type Attempt struct {
 	NextRetryAfter time.Time `json:"nextRetryAfter,omitempty" bun:"next_retry_after,nullzero"`
 }
 
-var _ bun.AfterCreateTableHook = (*Attempt)(nil)
-
-func (*Attempt) AfterCreateTable(ctx context.Context, q *bun.CreateTableQuery) error {
-	if _, err := q.DB().NewCreateIndex().IfNotExists().
-		Model((*Attempt)(nil)).
-		Index("attempts_idx").
-		Column("webhook_id", "status").
-		Exec(ctx); err != nil {
-		return errors.Wrap(err, "creating attempts index")
-	}
-
-	return nil
-}
-
 func MakeAttempt(ctx context.Context, httpClient *http.Client, retryPolicy BackoffPolicy, id, webhookID string, attemptNb int, cfg Config, payload []byte, isTest bool) (Attempt, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, cfg.Endpoint, bytes.NewBuffer(payload))
 	if err != nil {

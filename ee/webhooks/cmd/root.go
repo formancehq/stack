@@ -30,6 +30,7 @@ func NewRootCommand() *cobra.Command {
 	root.AddCommand(newServeCommand())
 	root.AddCommand(newWorkerCommand())
 	root.AddCommand(newVersionCommand())
+	root.AddCommand(newMigrateCommand())
 
 	return root
 }
