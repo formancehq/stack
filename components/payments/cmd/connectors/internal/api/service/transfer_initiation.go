@@ -118,7 +118,9 @@ func (s *Service) CreateTransferInitiation(ctx context.Context, req *CreateTrans
 		Reference:   req.Reference,
 		ConnectorID: connectorID,
 	}
-	createdAt := time.Now()
+
+	// Always insert timestamp as UTC
+	createdAt := time.Now().UTC()
 	tf := &models.TransferInitiation{
 		ID:                   id,
 		CreatedAt:            createdAt,
