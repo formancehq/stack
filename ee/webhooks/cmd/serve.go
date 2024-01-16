@@ -20,6 +20,7 @@ func newServeCommand() *cobra.Command {
 		Aliases: []string{"server"},
 		Short:   "Run webhooks server",
 		RunE:    serve,
+		PreRunE: handleAutoMigrate,
 	}
 }
 
