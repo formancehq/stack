@@ -13,7 +13,6 @@ const (
 	defaultLimit = 15
 
 	ErrorCodeNotFound = "NOT_FOUND"
-	ErrorCodeAccepted = "ACCEPTED"
 	ErrorInternal     = "INTERNAL"
 )
 
