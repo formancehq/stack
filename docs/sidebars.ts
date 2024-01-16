@@ -46,6 +46,9 @@ const sidebars = {
           items: [{
             type: 'doc',
             id: 'getting-started/sdk/setup-ts-js'
+          }, {
+            type: 'doc',
+            id: 'getting-started/sdk/setup-python'
           }]
         },
         {
