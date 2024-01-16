@@ -5,5 +5,5 @@
 
 | Name        | Value       |
 | ----------- | ----------- |
-| `StateToDo` | to do       |
-| `StateDone` | done        |
+| `StateToDo` | TO DO       |
+| `StateDone` | DONE        |

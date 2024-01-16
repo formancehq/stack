@@ -5,5 +5,5 @@
 
 | Name                       | Value                      |
 | -------------------------- | -------------------------- |
-| `V2MigrationInfoStateToDo` | to do                      |
-| `V2MigrationInfoStateDone` | done                       |
+| `V2MigrationInfoStateToDo` | TO DO                      |
+| `V2MigrationInfoStateDone` | DONE                       |

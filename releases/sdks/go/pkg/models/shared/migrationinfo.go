@@ -12,8 +12,8 @@ import (
 type State string
 
 const (
-	StateToDo State = "to do"
-	StateDone State = "done"
+	StateToDo State = "TO DO"
+	StateDone State = "DONE"
 )
 
 func (e State) ToPointer() *State {
@@ -26,9 +26,9 @@ func (e *State) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	switch v {
-	case "to do":
+	case "TO DO":
 		fallthrough
-	case "done":
+	case "DONE":
 		*e = State(v)
 		return nil
 	default:

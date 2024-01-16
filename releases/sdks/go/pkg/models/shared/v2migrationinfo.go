@@ -12,8 +12,8 @@ import (
 type V2MigrationInfoState string
 
 const (
-	V2MigrationInfoStateToDo V2MigrationInfoState = "to do"
-	V2MigrationInfoStateDone V2MigrationInfoState = "done"
+	V2MigrationInfoStateToDo V2MigrationInfoState = "TO DO"
+	V2MigrationInfoStateDone V2MigrationInfoState = "DONE"
 )
 
 func (e V2MigrationInfoState) ToPointer() *V2MigrationInfoState {
@@ -26,9 +26,9 @@ func (e *V2MigrationInfoState) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	switch v {
-	case "to do":
+	case "TO DO":
 		fallthrough
-	case "done":
+	case "DONE":
 		*e = V2MigrationInfoState(v)
 		return nil
 	default:
