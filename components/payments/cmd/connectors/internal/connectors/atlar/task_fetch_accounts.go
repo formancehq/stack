@@ -14,32 +14,41 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/contextutil"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/get-momo/atlar-v1-go-client/client/accounts"
 	"github.com/get-momo/atlar-v1-go-client/client/external_accounts"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func FetchAccountsTask(config Config, client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
-		logger logging.Logger,
 		connectorID models.ConnectorID,
 		scheduler task.Scheduler,
 		ingester ingestion.Ingester,
 	) error {
+		span := trace.SpanFromContext(ctx)
+		span.SetName("atlar.taskFetchAccounts")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+		)
+
 		// Pagination works by cursor token.
 		for token := ""; ; {
 			requestCtx, cancel := contextutil.DetachedWithTimeout(ctx, 30*time.Second)
 			defer cancel()
 			pagedAccounts, err := client.GetV1Accounts(requestCtx, token, int64(config.PageSize))
 			if err != nil {
+				otel.RecordError(span, err)
 				return err
 			}
 
 			token = pagedAccounts.Payload.NextToken
 
 			if err := ingestAccountsBatch(ctx, connectorID, ingester, pagedAccounts); err != nil {
+				otel.RecordError(span, err)
 				return err
 			}
 
@@ -54,12 +63,14 @@ func FetchAccountsTask(config Config, client *client.Client) task.Task {
 			defer cancel()
 			pagedExternalAccounts, err := client.GetV1ExternalAccounts(requestCtx, token, int64(config.PageSize))
 			if err != nil {
+				otel.RecordError(span, err)
 				return err
 			}
 
 			token = pagedExternalAccounts.Payload.NextToken
 
 			if err := ingestExternalAccountsBatch(ctx, connectorID, ingester, pagedExternalAccounts, client); err != nil {
+				otel.RecordError(span, err)
 				return err
 			}
 
@@ -74,6 +85,7 @@ func FetchAccountsTask(config Config, client *client.Client) task.Task {
 			Key:  taskNameFetchTransactions,
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			return err
 		}
 
@@ -82,6 +94,7 @@ func FetchAccountsTask(config Config, client *client.Client) task.Task {
 			RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 		})
 		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+			otel.RecordError(span, err)
 			return err
 		}
 

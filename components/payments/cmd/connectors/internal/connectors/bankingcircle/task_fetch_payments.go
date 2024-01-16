@@ -11,11 +11,12 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/payments/internal/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func taskFetchPayments(
-	logger logging.Logger,
 	client *client.Client,
 ) task.Task {
 	return func(
@@ -23,28 +24,47 @@ func taskFetchPayments(
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 	) error {
-		for page := 1; ; page++ {
-			pagedPayments, err := client.GetPayments(ctx, page)
-			if err != nil {
-				return err
-			}
+		span := trace.SpanFromContext(ctx)
+		span.SetName("bankingcircle.taskFetchPayments")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+		)
 
-			if len(pagedPayments) == 0 {
-				break
-			}
-
-			if err := ingestBatch(ctx, logger, connectorID, ingester, pagedPayments); err != nil {
-				return err
-			}
+		if err := fetchPayments(ctx, client, connectorID, ingester); err != nil {
+			otel.RecordError(span, err)
+			return err
 		}
 
 		return nil
 	}
 }
 
+func fetchPayments(
+	ctx context.Context,
+	client *client.Client,
+	connectorID models.ConnectorID,
+	ingester ingestion.Ingester,
+) error {
+	for page := 1; ; page++ {
+		pagedPayments, err := client.GetPayments(ctx, page)
+		if err != nil {
+			return err
+		}
+
+		if len(pagedPayments) == 0 {
+			break
+		}
+
+		if err := ingestBatch(ctx, connectorID, ingester, pagedPayments); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func ingestBatch(
 	ctx context.Context,
-	logger logging.Logger,
 	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	payments []*client.Payment,
@@ -61,7 +81,6 @@ func ingestBatch(
 
 		precision, ok := supportedCurrenciesWithDecimal[paymentEl.Transfer.Amount.Currency]
 		if !ok {
-			logger.Errorf("currency %s is not supported", paymentEl.Transfer.Amount.Currency)
 			continue
 		}
 

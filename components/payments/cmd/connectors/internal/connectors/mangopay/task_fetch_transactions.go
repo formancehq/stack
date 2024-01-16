@@ -12,34 +12,56 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/payments/internal/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
-func taskFetchTransactions(logger logging.Logger, client *client.Client, userID string) task.Task {
+func taskFetchTransactions(client *client.Client, userID string) task.Task {
 	return func(
 		ctx context.Context,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 	) error {
-		logger.Info("Fetching transactions for user", userID)
+		span := trace.SpanFromContext(ctx)
+		span.SetName("mangopay.taskFetchTransactions")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+			attribute.String("userID", userID),
+		)
 
-		for page := 1; ; page++ {
-			pagedPayments, err := client.GetTransactions(ctx, userID, page)
-			if err != nil {
-				return err
-			}
-
-			if len(pagedPayments) == 0 {
-				break
-			}
-
-			if err := ingestBatch(ctx, connectorID, ingester, pagedPayments); err != nil {
-				return err
-			}
+		if err := fetchTransactions(ctx, client, userID, connectorID, ingester); err != nil {
+			otel.RecordError(span, err)
+			return err
 		}
 
 		return nil
 	}
+}
+
+func fetchTransactions(
+	ctx context.Context,
+	client *client.Client,
+	userID string,
+	connectorID models.ConnectorID,
+	ingester ingestion.Ingester,
+) error {
+	for page := 1; ; page++ {
+		pagedPayments, err := client.GetTransactions(ctx, userID, page)
+		if err != nil {
+			return err
+		}
+
+		if len(pagedPayments) == 0 {
+			break
+		}
+
+		if err := ingestBatch(ctx, connectorID, ingester, pagedPayments); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func ingestBatch(

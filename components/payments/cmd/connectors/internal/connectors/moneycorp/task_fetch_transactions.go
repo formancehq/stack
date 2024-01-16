@@ -14,42 +14,64 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/payments/internal/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 const (
 	pageSize = 100
 )
 
-func taskFetchTransactions(logger logging.Logger, client *client.Client, accountID string) task.Task {
+func taskFetchTransactions(client *client.Client, accountID string) task.Task {
 	return func(
 		ctx context.Context,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 	) error {
-		logger.Info("Fetching transactions for account", accountID)
+		span := trace.SpanFromContext(ctx)
+		span.SetName("moneycorp.taskFetchTransactions")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+			attribute.String("accountID", accountID),
+		)
 
-		for page := 0; ; page++ {
-			pagedTransactions, err := client.GetTransactions(ctx, accountID, page, pageSize)
-			if err != nil {
-				return err
-			}
-
-			if len(pagedTransactions) == 0 {
-				break
-			}
-
-			if err := ingestBatch(ctx, connectorID, ingester, pagedTransactions); err != nil {
-				return err
-			}
-
-			if len(pagedTransactions) < pageSize {
-				break
-			}
+		if err := fetchTransactions(ctx, client, accountID, connectorID, ingester); err != nil {
+			otel.RecordError(span, err)
+			return err
 		}
 
 		return nil
 	}
+}
+
+func fetchTransactions(
+	ctx context.Context,
+	client *client.Client,
+	accountID string,
+	connectorID models.ConnectorID,
+	ingester ingestion.Ingester,
+) error {
+	for page := 0; ; page++ {
+		pagedTransactions, err := client.GetTransactions(ctx, accountID, page, pageSize)
+		if err != nil {
+			return err
+		}
+
+		if len(pagedTransactions) == 0 {
+			break
+		}
+
+		if err := ingestBatch(ctx, connectorID, ingester, pagedTransactions); err != nil {
+			return err
+		}
+
+		if len(pagedTransactions) < pageSize {
+			break
+		}
+	}
+
+	return nil
 }
 
 func ingestBatch(

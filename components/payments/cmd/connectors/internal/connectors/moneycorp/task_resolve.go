@@ -49,19 +49,19 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 	return func(taskDescriptor TaskDescriptor) task.Task {
 		switch taskDescriptor.Key {
 		case taskNameMain:
-			return taskMain(logger)
+			return taskMain()
 		case taskNameFetchAccounts:
-			return taskFetchAccounts(logger, moneycorpClient)
+			return taskFetchAccounts(moneycorpClient)
 		case taskNameFetchRecipients:
-			return taskFetchRecipients(logger, moneycorpClient, taskDescriptor.AccountID)
+			return taskFetchRecipients(moneycorpClient, taskDescriptor.AccountID)
 		case taskNameFetchTransactions:
-			return taskFetchTransactions(logger, moneycorpClient, taskDescriptor.AccountID)
+			return taskFetchTransactions(moneycorpClient, taskDescriptor.AccountID)
 		case taskNameFetchBalances:
-			return taskFetchBalances(logger, moneycorpClient, taskDescriptor.AccountID)
+			return taskFetchBalances(moneycorpClient, taskDescriptor.AccountID)
 		case taskNameInitiatePayment:
-			return taskInitiatePayment(logger, moneycorpClient, taskDescriptor.TransferID)
+			return taskInitiatePayment(moneycorpClient, taskDescriptor.TransferID)
 		case taskNameUpdatePaymentStatus:
-			return taskUpdatePaymentStatus(logger, moneycorpClient, taskDescriptor.TransferID, taskDescriptor.PaymentID, taskDescriptor.Attempt)
+			return taskUpdatePaymentStatus(moneycorpClient, taskDescriptor.TransferID, taskDescriptor.PaymentID, taskDescriptor.Attempt)
 		}
 
 		// This should never happen.

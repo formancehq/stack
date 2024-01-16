@@ -14,11 +14,12 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/payments/internal/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func taskFetchAccounts(
-	logger logging.Logger,
 	client *client.Client,
 ) task.Task {
 	return func(
@@ -27,41 +28,62 @@ func taskFetchAccounts(
 		scheduler task.Scheduler,
 		ingester ingestion.Ingester,
 	) error {
-		for page := 1; ; page++ {
-			pagedAccounts, err := client.GetAccounts(ctx, page)
-			if err != nil {
-				return err
-			}
+		span := trace.SpanFromContext(ctx)
+		span.SetName("bankingcircle.taskFetchAccounts")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+		)
 
-			if len(pagedAccounts) == 0 {
-				break
-			}
-
-			if err := ingestAccountsBatch(ctx, connectorID, ingester, pagedAccounts); err != nil {
-				return err
-			}
-		}
-
-		// We want to fetch payments after inserting all accounts in order to
-		// ling them correctly
-		taskPayments, err := models.EncodeTaskDescriptor(TaskDescriptor{
-			Name: "Fetch payments from client",
-			Key:  taskNameFetchPayments,
-		})
-		if err != nil {
-			return err
-		}
-
-		err = scheduler.Schedule(ctx, taskPayments, models.TaskSchedulerOptions{
-			ScheduleOption: models.OPTIONS_RUN_NOW,
-			RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
-		})
-		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+		if err := fetchAccount(ctx, client, connectorID, scheduler, ingester); err != nil {
+			otel.RecordError(span, err)
 			return err
 		}
 
 		return nil
 	}
+}
+
+func fetchAccount(
+	ctx context.Context,
+	client *client.Client,
+	connectorID models.ConnectorID,
+	scheduler task.Scheduler,
+	ingester ingestion.Ingester,
+) error {
+	for page := 1; ; page++ {
+		pagedAccounts, err := client.GetAccounts(ctx, page)
+		if err != nil {
+			return err
+		}
+
+		if len(pagedAccounts) == 0 {
+			break
+		}
+
+		if err := ingestAccountsBatch(ctx, connectorID, ingester, pagedAccounts); err != nil {
+			return err
+		}
+	}
+
+	// We want to fetch payments after inserting all accounts in order to
+	// ling them correctly
+	taskPayments, err := models.EncodeTaskDescriptor(TaskDescriptor{
+		Name: "Fetch payments from client",
+		Key:  taskNameFetchPayments,
+	})
+	if err != nil {
+		return err
+	}
+
+	err = scheduler.Schedule(ctx, taskPayments, models.TaskSchedulerOptions{
+		ScheduleOption: models.OPTIONS_RUN_NOW,
+		RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
+	})
+	if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+		return err
+	}
+
+	return nil
 }
 
 func ingestAccountsBatch(

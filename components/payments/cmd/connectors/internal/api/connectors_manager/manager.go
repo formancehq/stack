@@ -11,11 +11,15 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/payments/pkg/events"
+	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type ConnectorManager struct {
@@ -129,8 +133,12 @@ func (l *ConnectorsManager[ConnectorConfig]) UpdateConfig(
 		return newStorageError(err, "updating connector config")
 	}
 
+	// Detach the context since we're launching an async task and we're mostly
+	// coming from a HTTP request.
+	detachedCtx, span := detachedCtxWithSpan(ctx, trace.SpanFromContext(ctx), "connectorManager.UpdateConfig", connectorID)
+	defer span.End()
 	if err := connectorManager.connector.UpdateConfig(task.NewConnectorContext(logging.ContextWithLogger(
-		context.TODO(),
+		detachedCtx,
 		logging.FromContext(ctx),
 	), connectorManager.scheduler), config); err != nil {
 		switch {
@@ -215,8 +223,12 @@ func (l *ConnectorsManager[ConnectorConfig]) Install(
 		return models.ConnectorID{}, err
 	}
 
+	// Detach the context since we're launching an async task and we're mostly
+	// coming from a HTTP request.
+	detachedCtx, span := detachedCtxWithSpan(ctx, trace.SpanFromContext(ctx), "connectorManager.Install", connector.ID)
+	defer span.End()
 	err = connectorManager.connector.Install(task.NewConnectorContext(logging.ContextWithLogger(
-		context.TODO(),
+		detachedCtx,
 		logging.FromContext(ctx),
 	), connectorManager.scheduler))
 	if err != nil {
@@ -406,7 +418,9 @@ func (l *ConnectorsManager[ConnectorConfig]) InitiatePayment(ctx context.Context
 		return err
 	}
 
-	err = connectorManager.connector.InitiatePayment(task.NewConnectorContext(ctx, connectorManager.scheduler), transfer)
+	detachedCtx, span := detachedCtxWithSpan(ctx, trace.SpanFromContext(ctx), "connectorManager.InitiatePayment", transfer.ConnectorID)
+	defer span.End()
+	err = connectorManager.connector.InitiatePayment(task.NewConnectorContext(detachedCtx, connectorManager.scheduler), transfer)
 	if err != nil {
 		return fmt.Errorf("initiating transfer: %w", err)
 	}
@@ -420,7 +434,9 @@ func (l *ConnectorsManager[ConnectorConfig]) CreateExternalBankAccount(ctx conte
 		return ErrConnectorNotFound
 	}
 
-	err = connectorManager.connector.CreateExternalBankAccount(task.NewConnectorContext(ctx, connectorManager.scheduler), bankAccount)
+	detachedCtx, span := detachedCtxWithSpan(ctx, trace.SpanFromContext(ctx), "connectorManager.CreateExternalBankAccount", bankAccount.ConnectorID)
+	defer span.End()
+	err = connectorManager.connector.CreateExternalBankAccount(task.NewConnectorContext(detachedCtx, connectorManager.scheduler), bankAccount)
 	if err != nil {
 		switch {
 		case errors.Is(err, connectors.ErrNotImplemented):
@@ -474,6 +490,28 @@ func (l *ConnectorsManager[ConnectorConfig]) validateAssets(
 	}
 
 	return nil
+}
+
+func detachedCtxWithSpan(
+	ctx context.Context,
+	parentSpan trace.Span,
+	spanName string,
+	connectorID models.ConnectorID,
+) (context.Context, trace.Span) {
+	detachedCtx, _ := contextutil.Detached(ctx)
+
+	ctx, span := otel.Tracer().Start(
+		detachedCtx,
+		spanName,
+		trace.WithLinks(trace.Link{
+			SpanContext: parentSpan.SpanContext(),
+		}),
+		trace.WithAttributes(
+			attribute.String("connectorID", connectorID.String()),
+		),
+	)
+
+	return ctx, span
 }
 
 func (l *ConnectorsManager[ConnectorConfig]) Close(ctx context.Context) error {

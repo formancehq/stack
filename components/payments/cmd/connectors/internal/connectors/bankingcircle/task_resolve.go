@@ -51,17 +51,17 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 	return func(taskDescriptor TaskDescriptor) task.Task {
 		switch taskDescriptor.Key {
 		case taskNameMain:
-			return taskMain(logger)
+			return taskMain()
 		case taskNameFetchPayments:
-			return taskFetchPayments(logger, bankingCircleClient)
+			return taskFetchPayments(bankingCircleClient)
 		case taskNameFetchAccounts:
-			return taskFetchAccounts(logger, bankingCircleClient)
+			return taskFetchAccounts(bankingCircleClient)
 		case taskNameInitiatePayment:
-			return taskInitiatePayment(logger, bankingCircleClient, taskDescriptor.TransferID)
+			return taskInitiatePayment(bankingCircleClient, taskDescriptor.TransferID)
 		case taskNameUpdatePaymentStatus:
-			return taskUpdatePaymentStatus(logger, bankingCircleClient, taskDescriptor.TransferID, taskDescriptor.PaymentID, taskDescriptor.Attempt)
+			return taskUpdatePaymentStatus(bankingCircleClient, taskDescriptor.TransferID, taskDescriptor.PaymentID, taskDescriptor.Attempt)
 		case taskNameCreateExternalAccount:
-			return taskCreateExternalAccount(logger, bankingCircleClient, taskDescriptor.BankAccountID)
+			return taskCreateExternalAccount(bankingCircleClient, taskDescriptor.BankAccountID)
 		}
 
 		// This should never happen.

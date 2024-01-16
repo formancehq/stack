@@ -5,24 +5,31 @@ import (
 
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/payments/internal/otel"
 	"github.com/pkg/errors"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 // Launch accounts and payments tasks
 func (c *Connector) mainTask() task.Task {
 	return func(
 		ctx context.Context,
-		logger logging.Logger,
+		connectorID models.ConnectorID,
 		scheduler task.Scheduler,
 	) error {
-		logger.Info("main task")
+		span := trace.SpanFromContext(ctx)
+		span.SetName("stripe.mainTask")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+		)
 
 		taskAccounts, err := models.EncodeTaskDescriptor(TaskDescriptor{
 			Name: "Fetch accounts from client",
 			Key:  taskNameFetchAccounts,
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			return err
 		}
 
@@ -31,6 +38,7 @@ func (c *Connector) mainTask() task.Task {
 			RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 		})
 		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+			otel.RecordError(span, err)
 			return err
 		}
 
@@ -39,6 +47,7 @@ func (c *Connector) mainTask() task.Task {
 			Key:  taskNameFetchPayments,
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			return err
 		}
 
@@ -47,6 +56,7 @@ func (c *Connector) mainTask() task.Task {
 			RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 		})
 		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+			otel.RecordError(span, err)
 			return err
 		}
 

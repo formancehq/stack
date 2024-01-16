@@ -10,7 +10,10 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func balanceTask(account string, client *client.DefaultClient) func(ctx context.Context, logger logging.Logger, connectorID models.ConnectorID,
@@ -18,7 +21,12 @@ func balanceTask(account string, client *client.DefaultClient) func(ctx context.
 	return func(ctx context.Context, logger logging.Logger, connectorID models.ConnectorID, ingester ingestion.Ingester,
 		resolver task.StateResolver,
 	) error {
-		logger.Infof("Create new balances trigger for account %s", account)
+		span := trace.SpanFromContext(ctx)
+		span.SetName("stripe.balanceTask")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+			attribute.String("account", account),
+		)
 
 		stripeAccount := account
 		if account == rootAccountReference {
@@ -28,6 +36,7 @@ func balanceTask(account string, client *client.DefaultClient) func(ctx context.
 
 		balances, err := client.ForAccount(stripeAccount).Balance(ctx)
 		if err != nil {
+			otel.RecordError(span, err)
 			return err
 		}
 
@@ -48,6 +57,7 @@ func balanceTask(account string, client *client.DefaultClient) func(ctx context.
 		}
 
 		if err := ingester.IngestBalances(ctx, batch, false); err != nil {
+			otel.RecordError(span, err)
 			return err
 		}
 

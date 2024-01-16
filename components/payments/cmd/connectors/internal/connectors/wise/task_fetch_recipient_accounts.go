@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
@@ -11,6 +12,9 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/internal/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func taskFetchRecipientAccounts(wiseClient *client.Client, profileID uint64) task.Task {
@@ -19,12 +23,21 @@ func taskFetchRecipientAccounts(wiseClient *client.Client, profileID uint64) tas
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 	) error {
+		span := trace.SpanFromContext(ctx)
+		span.SetName("wise.taskFetchRecipientAccounts")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+			attribute.String("profileID", strconv.FormatUint(profileID, 10)),
+		)
+
 		recipientAccounts, err := wiseClient.GetRecipientAccounts(ctx, profileID)
 		if err != nil {
+			otel.RecordError(span, err)
 			return err
 		}
 
 		if err := ingestRecipientAccountsBatch(ctx, connectorID, ingester, recipientAccounts); err != nil {
+			otel.RecordError(span, err)
 			return err
 		}
 

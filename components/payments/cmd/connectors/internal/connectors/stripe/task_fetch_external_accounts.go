@@ -10,8 +10,11 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/stripe/stripe-go/v72"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func fetchExternalAccountsTask(config TimelineConfig, account string, client *client.DefaultClient) task.Task {
@@ -23,6 +26,12 @@ func fetchExternalAccountsTask(config TimelineConfig, account string, client *cl
 		scheduler task.Scheduler,
 		ingester ingestion.Ingester,
 	) error {
+		span := trace.SpanFromContext(ctx)
+		span.SetName("stripe.fetchExternalAccountsTask")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+			attribute.String("account", account),
+		)
 
 		tt := NewTimelineTrigger(
 			logger,
@@ -47,6 +56,7 @@ func fetchExternalAccountsTask(config TimelineConfig, account string, client *cl
 		)
 
 		if err := tt.Fetch(ctx); err != nil {
+			otel.RecordError(span, err)
 			return err
 		}
 

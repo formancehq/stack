@@ -17,16 +17,19 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/contextutil"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/google/uuid"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func handleStandardWebhooks() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		connectorContext := task.ConnectorContextFromContext(r.Context())
 		webhookID := connectors.WebhookIDFromContext(r.Context())
+		span := trace.SpanFromContext(r.Context())
 
 		// Detach the context since we're launching an async task and we're mostly
 		// coming from a HTTP request.
@@ -37,6 +40,7 @@ func handleStandardWebhooks() http.HandlerFunc {
 			WebhookID: webhookID,
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			api.InternalServerError(w, r, err)
 			return
 		}
@@ -46,6 +50,7 @@ func handleStandardWebhooks() http.HandlerFunc {
 			RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 		})
 		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+			otel.RecordError(span, err)
 			api.InternalServerError(w, r, err)
 			return
 		}
@@ -58,37 +63,34 @@ func handleStandardWebhooks() http.HandlerFunc {
 func taskHandleStandardWebhooks(client *client.Client, webhookID uuid.UUID) task.Task {
 	return func(
 		ctx context.Context,
-		logger logging.Logger,
 		connectorID models.ConnectorID,
 		storageReader storage.Reader,
 		ingester ingestion.Ingester,
 	) error {
-		logger.Info(taskNameMain)
+		span := trace.SpanFromContext(ctx)
+		span.SetName("adyen.taskHandleStandardWebhooks")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+			attribute.String("webhookID", webhookID.String()),
+		)
 
 		w, err := storageReader.GetWebhook(ctx, webhookID)
 		if err != nil {
+			otel.RecordError(span, err)
 			return err
 		}
 
 		webhooks, err := client.CreateWebhookForRequest(string(w.RequestBody))
 		if err != nil {
+			otel.RecordError(span, err)
 			return err
 		}
 
 		for _, item := range *webhooks.NotificationItems {
-			logger.Infof("received webhook: %s -> %v", item.NotificationRequestItem.EventCode, item)
-			logger.Infof("with signature: %s", (*item.NotificationRequestItem.AdditionalData)["hmacSignature"])
-			logger.Infof("hmac key: %s", client.HMACKey)
-
-			expectedSign, err := hmacvalidator.CalculateHmac(item.NotificationRequestItem, client.HMACKey)
-			if err != nil {
-				logger.Errorf("error calculating hmac: %v", err)
-			}
-
-			logger.Infof("expected signature: %s", expectedSign)
-
 			if !hmacvalidator.ValidateHmac(item.NotificationRequestItem, client.HMACKey) {
-				logger.Errorf("invalid hmac for webhook: %s", item.NotificationRequestItem.EventCode)
+				// Record error without setting the status to error since we
+				// continue the execution.
+				span.RecordError(err)
 				continue
 			}
 
@@ -99,6 +101,7 @@ func taskHandleStandardWebhooks(client *client.Client, webhookID uuid.UUID) task
 				ingester,
 				item.NotificationRequestItem,
 			); err != nil {
+				otel.RecordError(span, err)
 				return err
 			}
 		}

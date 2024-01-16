@@ -11,39 +11,62 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/payments/internal/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
-func taskFetchRecipients(logger logging.Logger, client *client.Client, accountID string) task.Task {
+func taskFetchRecipients(client *client.Client, accountID string) task.Task {
 	return func(
 		ctx context.Context,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 	) error {
-		logger.Info(taskNameFetchRecipients)
+		span := trace.SpanFromContext(ctx)
+		span.SetName("moneycorp.taskFetchRecipients")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+			attribute.String("accountID", accountID),
+		)
 
-		for page := 1; ; page++ {
-			pagedRecipients, err := client.GetRecipients(ctx, accountID, page, pageSize)
-			if err != nil {
-				return err
-			}
-
-			if len(pagedRecipients) == 0 {
-				break
-			}
-
-			if err := ingestRecipientsBatch(ctx, connectorID, ingester, pagedRecipients); err != nil {
-				return err
-			}
-
-			if len(pagedRecipients) < pageSize {
-				break
-			}
+		if err := fetchRecipients(ctx, client, accountID, connectorID, ingester, scheduler); err != nil {
+			otel.RecordError(span, err)
+			return err
 		}
 
 		return nil
 	}
+}
+
+func fetchRecipients(
+	ctx context.Context,
+	client *client.Client,
+	accountID string,
+	connectorID models.ConnectorID,
+	ingester ingestion.Ingester,
+	scheduler task.Scheduler,
+) error {
+	for page := 1; ; page++ {
+		pagedRecipients, err := client.GetRecipients(ctx, accountID, page, pageSize)
+		if err != nil {
+			return err
+		}
+
+		if len(pagedRecipients) == 0 {
+			break
+		}
+
+		if err := ingestRecipientsBatch(ctx, connectorID, ingester, pagedRecipients); err != nil {
+			return err
+		}
+
+		if len(pagedRecipients) < pageSize {
+			break
+		}
+	}
+
+	return nil
 }
 
 func ingestRecipientsBatch(

@@ -14,6 +14,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/internal/otel"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"go.uber.org/dig"
@@ -84,6 +85,9 @@ func addConnector[ConnectorConfig models.ConnectorConfigObject](loader manager.L
 		fx.Invoke(func(lc fx.Lifecycle, cm *manager.ConnectorsManager[ConnectorConfig]) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
+					ctx, span := otel.Tracer().Start(ctx, "connectorsManager.Restore")
+					defer span.End()
+
 					err := cm.Restore(ctx)
 					if err != nil && !errors.Is(err, manager.ErrNotInstalled) {
 						return err

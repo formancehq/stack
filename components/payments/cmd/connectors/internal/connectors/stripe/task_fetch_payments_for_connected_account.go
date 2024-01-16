@@ -7,8 +7,11 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/stripe/stripe-go/v72"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func ingestBatch(
@@ -56,7 +59,12 @@ func connectedAccountTask(config TimelineConfig, account string, client *client.
 	return func(ctx context.Context, logger logging.Logger, connectorID models.ConnectorID, ingester ingestion.Ingester,
 		resolver task.StateResolver,
 	) error {
-		logger.Infof("Create new trigger")
+		span := trace.SpanFromContext(ctx)
+		span.SetName("stripe.connectedAccountTask")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+			attribute.String("account", account),
+		)
 
 		trigger := NewTimelineTrigger(
 			logger,
@@ -81,6 +89,7 @@ func connectedAccountTask(config TimelineConfig, account string, client *client.
 		)
 
 		if err := trigger.Fetch(ctx); err != nil {
+			otel.RecordError(span, err)
 			return err
 		}
 
