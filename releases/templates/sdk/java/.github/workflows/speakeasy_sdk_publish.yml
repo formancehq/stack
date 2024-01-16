@@ -50,7 +50,7 @@ jobs:
       - name: Publish package
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
-          arguments: publish
+          arguments: -Pskip.signing=true publish
         env:
           MAVEN_USERNAME: "flemzord"
           MAVEN_PASSWORD:  ${{ secrets.GITHUB_TOKEN }}
