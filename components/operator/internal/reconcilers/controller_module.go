@@ -3,6 +3,7 @@ package reconcilers
 import (
 	"github.com/formancehq/operator/internal/core"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 type Module[T core.Module] struct {
@@ -26,12 +27,12 @@ func (r *Module[T]) Reconcile(ctx core.Context, t T) error {
 		}
 	}
 
-	labels := t.GetLabels()
-	if labels == nil {
-		labels = map[string]string{}
+	patch := client.MergeFrom(t.DeepCopyObject().(T))
+	if updated := core.ValidateInstalledVersion(t); updated {
+		if err := ctx.GetClient().Patch(ctx, t, patch); err != nil {
+			return err
+		}
 	}
-	labels["formance.com/installed-version"] = t.GetVersion()
-	t.SetLabels(labels)
 
 	return nil
 }

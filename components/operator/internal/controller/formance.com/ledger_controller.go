@@ -19,7 +19,11 @@ package formance_com
 import (
 	_ "embed"
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"golang.org/x/mod/semver"
+	batchv1 "k8s.io/api/batch/v1"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"strconv"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -74,10 +78,16 @@ func (r *LedgerController) Reconcile(ctx Context, ledger *v1beta1.Ledger) error 
 		return err
 	}
 
-	isV2 := false
 	moduleVersion := GetModuleVersion(stack, ledger.Spec.Version)
+	isV2 := false
 	if !semver.IsValid(moduleVersion) || semver.Compare(moduleVersion, "v2.0.0-alpha") > 0 {
 		isV2 = true
+	}
+
+	if isV2 {
+		if err := r.migrateToLedgerV2(ctx, stack, ledger, database, image); err != nil {
+			return err
+		}
 	}
 
 	hasSearch, err := HasDependency[*v1beta1.Search](ctx, stack.Name)
@@ -171,25 +181,27 @@ func (r *LedgerController) installLedgerSingleInstance(ctx Context, stack *v1bet
 	return nil
 }
 
+func (r *LedgerController) getUpgradeContainer(database *v1beta1.Database, image string) corev1.Container {
+	return databases.MigrateDatabaseContainer(
+		image,
+		database.Status.Configuration.DatabaseConfigurationSpec,
+		database.Status.Configuration.Database,
+		func(m *databases.MigrationConfiguration) {
+			m.Command = []string{"buckets", "upgrade-all"}
+			m.AdditionalEnv = []corev1.EnvVar{
+				Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"),
+			}
+		},
+	)
+}
+
 func (r *LedgerController) setInitContainer(database *v1beta1.Database, image string, v2 bool) func(t *appsv1.Deployment) {
 	return func(t *appsv1.Deployment) {
 		if !v2 {
 			t.Spec.Template.Spec.InitContainers = []corev1.Container{}
 			return
 		}
-		t.Spec.Template.Spec.InitContainers = []corev1.Container{
-			databases.MigrateDatabaseContainer(
-				image,
-				database.Status.Configuration.DatabaseConfigurationSpec,
-				database.Status.Configuration.Database,
-				func(m *databases.MigrationConfiguration) {
-					m.Command = []string{"buckets", "upgrade-all"}
-					m.AdditionalEnv = []corev1.EnvVar{
-						Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"),
-					}
-				},
-			),
-		}
+		t.Spec.Template.Spec.InitContainers = []corev1.Container{r.getUpgradeContainer(database, image)}
 	}
 }
 
@@ -383,6 +395,55 @@ func (r *LedgerController) createGatewayDeployment(ctx Context, stack *v1beta1.S
 	return err
 }
 
+func (r *LedgerController) migrateToLedgerV2(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, database *v1beta1.Database, image string) error {
+
+	job := &batchv1.Job{}
+	err := ctx.GetClient().Get(ctx, types.NamespacedName{
+		Namespace: stack.Name,
+		Name:      "migrate-v2",
+	}, job)
+	if client.IgnoreNotFound(err) != nil {
+		return err
+	}
+	if err == nil {
+		spew.Dump(job.Status)
+		if job.Status.Succeeded == 0 {
+			return ErrPending
+		}
+		return nil
+	}
+
+	list := &appsv1.DeploymentList{}
+	if err := ctx.GetClient().List(ctx, list, client.InNamespace(stack.Name)); err != nil {
+		return err
+	}
+
+	for _, item := range list.Items {
+		if controller := v1.GetControllerOf(&item); controller != nil && controller.UID == ledger.GetUID() {
+			if err := ctx.GetClient().Delete(ctx, &item); err != nil {
+				return err
+			}
+		}
+	}
+
+	return ctx.GetClient().Create(ctx, &batchv1.Job{
+		ObjectMeta: v1.ObjectMeta{
+			Namespace: stack.Name,
+			Name:      "migrate-v2",
+		},
+		Spec: batchv1.JobSpec{
+			BackoffLimit: pointer.For(int32(10000)),
+			//TTLSecondsAfterFinished: pointer.For(int32(30)),
+			Template: corev1.PodTemplateSpec{
+				Spec: corev1.PodSpec{
+					RestartPolicy: corev1.RestartPolicyOnFailure,
+					Containers:    []corev1.Container{r.getUpgradeContainer(database, image)},
+				},
+			},
+		},
+	})
+}
+
 // SetupWithManager sets up the controller with the Manager.
 func (r *LedgerController) SetupWithManager(mgr Manager) (*builder.Builder, error) {
 	return ctrl.NewControllerManagedBy(mgr).
@@ -411,6 +472,7 @@ func (r *LedgerController) SetupWithManager(mgr Manager) (*builder.Builder, erro
 			handler.EnqueueRequestsFromMapFunc(WatchDependents[*v1beta1.Ledger](mgr)),
 		).
 		Owns(&appsv1.Deployment{}).
+		Owns(&batchv1.Job{}).
 		Owns(&corev1.Service{}).
 		Owns(&v1beta1.HTTPAPI{}).
 		Owns(&v1beta1.Database{}), nil

@@ -30,6 +30,7 @@ Package v1beta1 contains API Schema definitions for the formance v1beta1 API gro
 - [Stargate](#stargate)
 - [Stream](#stream)
 - [StreamProcessor](#streamprocessor)
+- [TemporalConfiguration](#temporalconfiguration)
 - [Wallets](#wallets)
 - [Webhooks](#webhooks)
 
@@ -180,17 +181,65 @@ _Appears in:_
 
 | Field | Description |
 | --- | --- |
-| `kafka` _[KafkaConfig](#kafkaconfig)_ |  |
-| `nats` _[NatsConfig](#natsconfig)_ |  |
+| `kafka` _[BrokerKafkaConfig](#brokerkafkaconfig)_ |  |
+| `nats` _[BrokerNatsConfig](#brokernatsconfig)_ |  |
 
 
+
+
+#### BrokerKafkaConfig
+
+
+
+
+
+_Appears in:_
+- [BrokerConfigurationSpec](#brokerconfigurationspec)
+
+| Field | Description |
+| --- | --- |
+| `brokers` _string array_ |  |
+| `tls` _boolean_ |  |
+| `sasl` _[BrokerKafkaSASLConfig](#brokerkafkasaslconfig)_ |  |
+
+
+#### BrokerKafkaSASLConfig
+
+
+
+
+
+_Appears in:_
+- [BrokerKafkaConfig](#brokerkafkaconfig)
+
+| Field | Description |
+| --- | --- |
+| `username` _string_ |  |
+| `password` _string_ |  |
+| `mechanism` _string_ |  |
+| `scramSHASize` _string_ |  |
+
+
+#### BrokerNatsConfig
+
+
+
+
+
+_Appears in:_
+- [BrokerConfigurationSpec](#brokerconfigurationspec)
+
+| Field | Description |
+| --- | --- |
+| `url` _string_ |  |
+| `replicas` _integer_ |  |
 
 
 #### BrokerTopic
 
 
 
-BrokerTopic is the Schema for the topics API
+BrokerTopic is the Schema for the brokertopics API
 
 
 
@@ -206,7 +255,7 @@ BrokerTopic is the Schema for the topics API
 
 
 
-BrokerTopicConsumer is the Schema for the topicqueries API
+BrokerTopicConsumer is the Schema for the brokertopicconsumers API
 
 
 
@@ -253,32 +302,6 @@ _Appears in:_
 
 
 
-#### CommonServiceProperties
-
-
-
-
-
-_Appears in:_
-- [AuthSpec](#authspec)
-- [GatewaySpec](#gatewayspec)
-- [LedgerSpec](#ledgerspec)
-- [OrchestrationSpec](#orchestrationspec)
-- [PaymentsSpec](#paymentsspec)
-- [ReconciliationSpec](#reconciliationspec)
-- [SearchSpec](#searchspec)
-- [StargateSpec](#stargatespec)
-- [WalletsSpec](#walletsspec)
-- [WebhooksSpec](#webhooksspec)
-
-| Field | Description |
-| --- | --- |
-| `debug` _boolean_ |  |
-| `dev` _boolean_ |  |
-| `version` _string_ |  |
-| `resourceRequirements` _[ResourceRequirements](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#resourcerequirements-v1-core)_ |  |
-
-
 #### CommonStatus
 
 
@@ -286,12 +309,14 @@ _Appears in:_
 
 
 _Appears in:_
+- [AuthClientStatus](#authclientstatus)
 - [AuthStatus](#authstatus)
 - [BrokerTopicConsumerStatus](#brokertopicconsumerstatus)
 - [BrokerTopicStatus](#brokertopicstatus)
 - [GatewayStatus](#gatewaystatus)
 - [HTTPAPIStatus](#httpapistatus)
 - [LedgerStatus](#ledgerstatus)
+- [ModuleStatus](#modulestatus)
 - [OrchestrationStatus](#orchestrationstatus)
 - [PaymentsStatus](#paymentsstatus)
 - [ReconciliationStatus](#reconciliationstatus)
@@ -299,12 +324,12 @@ _Appears in:_
 - [StackStatus](#stackstatus)
 - [StargateStatus](#stargatestatus)
 - [StreamProcessorStatus](#streamprocessorstatus)
+- [StreamStatus](#streamstatus)
 - [WalletsStatus](#walletsstatus)
 - [WebhooksStatus](#webhooksstatus)
 
 | Field | Description |
 | --- | --- |
-| `conditions` _[Condition](#condition) array_ |  |
 | `ready` _boolean_ |  |
 | `error` _string_ |  |
 
@@ -319,19 +344,14 @@ Condition contains details for one aspect of the current state of this API Resou
 
 _Appears in:_
 - [AuthStatus](#authstatus)
-- [BrokerTopicConsumerStatus](#brokertopicconsumerstatus)
-- [BrokerTopicStatus](#brokertopicstatus)
-- [CommonStatus](#commonstatus)
 - [GatewayStatus](#gatewaystatus)
-- [HTTPAPIStatus](#httpapistatus)
 - [LedgerStatus](#ledgerstatus)
+- [ModuleStatus](#modulestatus)
 - [OrchestrationStatus](#orchestrationstatus)
 - [PaymentsStatus](#paymentsstatus)
 - [ReconciliationStatus](#reconciliationstatus)
 - [SearchStatus](#searchstatus)
-- [StackStatus](#stackstatus)
 - [StargateStatus](#stargatestatus)
-- [StreamProcessorStatus](#streamprocessorstatus)
 - [WalletsStatus](#walletsstatus)
 - [WebhooksStatus](#webhooksstatus)
 
@@ -341,6 +361,7 @@ _Appears in:_
 | `observedGeneration` _integer_ | observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance. |
 | `lastTransitionTime` _[Time](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#time-v1-meta)_ | lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable. |
 | `message` _string_ | message is a human readable message indicating details about the transition. This may be an empty string. |
+| `reason` _string_ | reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty. |
 
 
 #### CreatedDatabase
@@ -469,9 +490,9 @@ _Appears in:_
 
 _Appears in:_
 - [AuthSpec](#authspec)
-- [CommonServiceProperties](#commonserviceproperties)
 - [GatewaySpec](#gatewayspec)
 - [LedgerSpec](#ledgerspec)
+- [ModuleProperties](#moduleproperties)
 - [OrchestrationSpec](#orchestrationspec)
 - [PaymentsSpec](#paymentsspec)
 - [ReconciliationSpec](#reconciliationspec)
@@ -677,39 +698,6 @@ _Appears in:_
 
 
 
-#### KafkaConfig
-
-
-
-
-
-_Appears in:_
-- [BrokerConfigurationSpec](#brokerconfigurationspec)
-
-| Field | Description |
-| --- | --- |
-| `brokers` _string array_ |  |
-| `tls` _boolean_ |  |
-| `sasl` _[KafkaSASLConfig](#kafkasaslconfig)_ |  |
-
-
-#### KafkaSASLConfig
-
-
-
-
-
-_Appears in:_
-- [KafkaConfig](#kafkaconfig)
-
-| Field | Description |
-| --- | --- |
-| `username` _string_ |  |
-| `password` _string_ |  |
-| `mechanism` _string_ |  |
-| `scramSHASize` _string_ |  |
-
-
 #### Ledger
 
 
@@ -745,8 +733,42 @@ _Appears in:_
 | `auth` _[AuthConfig](#authconfig)_ |  |
 | `deploymentStrategy` _[DeploymentStrategy](#deploymentstrategy)_ |  |
 | `service` _[ServiceConfiguration](#serviceconfiguration)_ |  |
+| `locking` _[LockingStrategy](#lockingstrategy)_ | Locking is intended for ledger v1 only |
 
 
+
+
+#### LockingStrategy
+
+
+
+
+
+_Appears in:_
+- [LedgerSpec](#ledgerspec)
+
+| Field | Description |
+| --- | --- |
+| `strategy` _string_ |  |
+| `redis` _[LockingStrategyRedisConfig](#lockingstrategyredisconfig)_ |  |
+
+
+#### LockingStrategyRedisConfig
+
+
+
+
+
+_Appears in:_
+- [LockingStrategy](#lockingstrategy)
+
+| Field | Description |
+| --- | --- |
+| `uri` _string_ |  |
+| `tls` _boolean_ |  |
+| `insecure` _boolean_ |  |
+| `duration` _[Duration](#duration)_ |  |
+| `retry` _[Duration](#duration)_ |  |
 
 
 #### MetricsSpec
@@ -763,19 +785,55 @@ _Appears in:_
 | `otlp` _[OtlpSpec](#otlpspec)_ |  |
 
 
-#### NatsConfig
+#### ModuleProperties
 
 
 
 
 
 _Appears in:_
-- [BrokerConfigurationSpec](#brokerconfigurationspec)
+- [AuthSpec](#authspec)
+- [GatewaySpec](#gatewayspec)
+- [LedgerSpec](#ledgerspec)
+- [OrchestrationSpec](#orchestrationspec)
+- [PaymentsSpec](#paymentsspec)
+- [ReconciliationSpec](#reconciliationspec)
+- [SearchSpec](#searchspec)
+- [StargateSpec](#stargatespec)
+- [WalletsSpec](#walletsspec)
+- [WebhooksSpec](#webhooksspec)
 
 | Field | Description |
 | --- | --- |
-| `url` _string_ |  |
-| `replicas` _integer_ |  |
+| `debug` _boolean_ |  |
+| `dev` _boolean_ |  |
+| `version` _string_ |  |
+| `resourceRequirements` _[ResourceRequirements](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#resourcerequirements-v1-core)_ |  |
+
+
+#### ModuleStatus
+
+
+
+
+
+_Appears in:_
+- [AuthStatus](#authstatus)
+- [GatewayStatus](#gatewaystatus)
+- [LedgerStatus](#ledgerstatus)
+- [OrchestrationStatus](#orchestrationstatus)
+- [PaymentsStatus](#paymentsstatus)
+- [ReconciliationStatus](#reconciliationstatus)
+- [SearchStatus](#searchstatus)
+- [StargateStatus](#stargatestatus)
+- [WalletsStatus](#walletsstatus)
+- [WebhooksStatus](#webhooksstatus)
+
+| Field | Description |
+| --- | --- |
+| `ready` _boolean_ |  |
+| `error` _string_ |  |
+| `conditions` _[Condition](#condition) array_ |  |
 
 
 #### OpenTelemetryConfiguration
@@ -843,7 +901,6 @@ _Appears in:_
 | `dev` _boolean_ |  |
 | `version` _string_ |  |
 | `resourceRequirements` _[ResourceRequirements](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#resourcerequirements-v1-core)_ |  |
-| `temporal` _[TemporalConfig](#temporalconfig)_ |  |
 | `service` _[ServiceConfiguration](#serviceconfiguration)_ |  |
 | `auth` _[AuthConfig](#authconfig)_ |  |
 
@@ -1131,6 +1188,7 @@ _Appears in:_
 | `dev` _boolean_ |  |
 | `version` _string_ |  |
 | `enableAudit` _boolean_ |  |
+| `disabled` _boolean_ |  |
 
 
 
@@ -1262,20 +1320,38 @@ _Appears in:_
 
 
 
-#### TemporalConfig
+#### TemporalConfiguration
 
 
 
+TemporalConfiguration is the Schema for the temporalconfigurations API
 
+
+
+| Field | Description |
+| --- | --- |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `TemporalConfiguration`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[TemporalConfigurationSpec](#temporalconfigurationspec)_ |  |
+
+
+#### TemporalConfigurationSpec
+
+
+
+TemporalConfigurationSpec defines the desired state of TemporalConfiguration
 
 _Appears in:_
-- [OrchestrationSpec](#orchestrationspec)
+- [TemporalConfiguration](#temporalconfiguration)
 
 | Field | Description |
 | --- | --- |
 | `address` _string_ |  |
 | `namespace` _string_ |  |
 | `tls` _[TemporalTLSConfig](#temporaltlsconfig)_ |  |
+
+
 
 
 #### TemporalTLSConfig
@@ -1285,7 +1361,7 @@ _Appears in:_
 
 
 _Appears in:_
-- [TemporalConfig](#temporalconfig)
+- [TemporalConfigurationSpec](#temporalconfigurationspec)
 
 | Field | Description |
 | --- | --- |

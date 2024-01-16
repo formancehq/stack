@@ -56,6 +56,36 @@ spec:
                 type: string
               dev:
                 type: boolean
+              locking:
+                description: Locking is intended for ledger v1 only
+                properties:
+                  redis:
+                    properties:
+                      duration:
+                        description: A Duration represents the elapsed time between
+                          two instants as an int64 nanosecond count. The representation
+                          limits the largest representable duration to approximately
+                          290 years.
+                        format: int64
+                        type: integer
+                      insecure:
+                        type: boolean
+                      retry:
+                        description: A Duration represents the elapsed time between
+                          two instants as an int64 nanosecond count. The representation
+                          limits the largest representable duration to approximately
+                          290 years.
+                        format: int64
+                        type: integer
+                      tls:
+                        type: boolean
+                      uri:
+                        type: string
+                    type: object
+                  strategy:
+                    default: memory
+                    type: string
+                type: object
               resourceRequirements:
                 description: ResourceRequirements describes the compute resource requirements.
                 properties:
@@ -152,6 +182,16 @@ spec:
                       format: int64
                       minimum: 0
                       type: integer
+                    reason:
+                      description: reason contains a programmatic identifier indicating
+                        the reason for the condition's last transition. Producers
+                        of specific condition types may define expected values and
+                        meanings for this field, and whether the values are considered
+                        a guaranteed API. The value should be a CamelCase string.
+                        This field may not be empty.
+                      maxLength: 1024
+                      pattern: ^([A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?)?$
+                      type: string
                     status:
                       description: status of the condition, one of True, False, Unknown.
                       enum:

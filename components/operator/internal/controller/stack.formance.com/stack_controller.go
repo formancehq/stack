@@ -616,7 +616,12 @@ func (r *StackController) Reconcile(ctx Context, stack *v1beta3.Stack) error {
 				RedirectUris:           client.RedirectUris,
 				PostLogoutRedirectUris: client.PostLogoutRedirectUris,
 				Scopes:                 client.Scopes,
-				Secret:                 client.Secrets[0],
+				Secret: func() string {
+					if len(client.Secrets) > 0 {
+						return client.Secrets[0]
+					}
+					return ""
+				}(),
 			}
 			t.Spec.Stack = stack.Name
 		})

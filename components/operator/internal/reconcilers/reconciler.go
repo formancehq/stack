@@ -42,6 +42,7 @@ func (r *Reconciler[T]) Reconcile(ctx context.Context, req reconcile.Request) (r
 			object.SetError(err.Error())
 		} else {
 			object.SetReady(true)
+			object.SetError("")
 		}
 	}
 
