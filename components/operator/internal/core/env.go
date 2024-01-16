@@ -2,7 +2,7 @@ package core
 
 import (
 	"fmt"
-
+	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	corev1 "k8s.io/api/core/v1"
 )
@@ -60,4 +60,24 @@ func ComputeEnvVar(format string, keys ...string) string {
 			return EnvVarPlaceholder(key)
 		})...,
 	)
+}
+
+// TODO: The stack reconciler can create a config map container env var for dev and debug
+// This way, we avoid the need to fetch the stack object at each reconciliation loop
+func GetDevEnvVars(stack *v1beta1.Stack, service interface {
+	IsDebug() bool
+	IsDev() bool
+}) []corev1.EnvVar {
+	return GetDevEnvVarsWithPrefix(stack, service, "")
+}
+
+func GetDevEnvVarsWithPrefix(stack *v1beta1.Stack, service interface {
+	IsDebug() bool
+	IsDev() bool
+}, prefix string) []corev1.EnvVar {
+	return []corev1.EnvVar{
+		EnvFromBool(fmt.Sprintf("%sDEBUG", prefix), stack.Spec.Debug || service.IsDebug()),
+		EnvFromBool(fmt.Sprintf("%sDEV", prefix), stack.Spec.Dev || service.IsDev()),
+		Env(fmt.Sprintf("%sSTACK", prefix), stack.Name),
+	}
 }

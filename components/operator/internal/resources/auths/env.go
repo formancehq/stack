@@ -9,14 +9,14 @@ import (
 	v1 "k8s.io/api/core/v1"
 )
 
-func EnvVars(ctx Context, stack *v1beta1.Stack, moduleName string, auth *v1beta1.AuthConfig) ([]v1.EnvVar, error) {
-	return EnvVarsWithPrefix(ctx, stack, moduleName, auth, "")
+func ProtectedEnvVars(ctx Context, stack *v1beta1.Stack, moduleName string, auth *v1beta1.AuthConfig) ([]v1.EnvVar, error) {
+	return ProtectedAPIEnvVarsWithPrefix(ctx, stack, moduleName, auth, "")
 }
 
-func EnvVarsWithPrefix(ctx Context, stack *v1beta1.Stack, moduleName string, auth *v1beta1.AuthConfig, prefix string) ([]v1.EnvVar, error) {
+func ProtectedAPIEnvVarsWithPrefix(ctx Context, stack *v1beta1.Stack, moduleName string, auth *v1beta1.AuthConfig, prefix string) ([]v1.EnvVar, error) {
 	ret := make([]v1.EnvVar, 0)
 
-	hasAuth, err := HasDependency[*v1beta1.Auth](ctx, stack.Name)
+	hasAuth, err := HasDependency(ctx, stack.Name, &v1beta1.Auth{})
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +24,7 @@ func EnvVarsWithPrefix(ctx Context, stack *v1beta1.Stack, moduleName string, aut
 		return ret, nil
 	}
 
-	url, err := URL(ctx, stack.Name)
+	url, err := url(ctx, stack.Name)
 	if err != nil {
 		return nil, err
 	}

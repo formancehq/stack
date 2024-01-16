@@ -8,21 +8,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func ForEachEventPublisher(ctx Context, stackName string, fn func(object client.Object) error) error {
-	ret, err := ListEventPublishers(ctx, stackName)
-	if err != nil {
-		return err
-	}
-
-	for _, object := range ret {
-		if err := fn(&object); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 func ListEventPublishers(ctx Context, stackName string) ([]unstructured.Unstructured, error) {
 	ret := make([]unstructured.Unstructured, 0)
 	for gvk, rtype := range ctx.GetScheme().AllKnownTypes() {

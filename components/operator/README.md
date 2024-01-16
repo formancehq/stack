@@ -17,7 +17,7 @@
 **Create a dev cluster**
 
 ```sh
-k3d cluster create testing
+k3d cluster create internal
 ```
 
 **Install CRDs**

@@ -26,8 +26,6 @@ import (
 
 	formancev1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
-	"github.com/formancehq/operator/internal/reconcilers"
-
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
@@ -41,8 +39,7 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 
 	stackformancecomv1beta3 "github.com/formancehq/operator/api/stack.formance.com/v1beta3"
-	_ "github.com/formancehq/operator/internal/controller/formance.com"
-	_ "github.com/formancehq/operator/internal/controller/stack.formance.com"
+	_ "github.com/formancehq/operator/internal/resources"
 
 	formancecomv1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	//+kubebuilder:scaffold:imports
@@ -121,7 +118,7 @@ func main() {
 		Environment: env,
 	}
 
-	if err := reconcilers.Setup(mgr, platform); err != nil {
+	if err := core.Setup(mgr, platform); err != nil {
 		setupLog.Error(err, "unable to create controllers")
 		os.Exit(1)
 	}

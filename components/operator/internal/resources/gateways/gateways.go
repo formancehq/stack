@@ -3,7 +3,6 @@ package gateways
 import (
 	_ "embed"
 	"fmt"
-
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	v1 "k8s.io/api/core/v1"
@@ -17,11 +16,12 @@ func EnvVarsIfEnabled(ctx core.Context, stackName string) ([]v1.EnvVar, error) {
 }
 
 func EnvVarsIfEnabledWithPrefix(ctx core.Context, stackName, prefix string) ([]v1.EnvVar, error) {
-	gateway, err := core.GetIfEnabled[*v1beta1.Gateway](ctx, stackName)
+	gateway := &v1beta1.Gateway{}
+	ok, err := core.GetIfEnabled(ctx, stackName, gateway)
 	if err != nil {
 		return nil, err
 	}
-	if gateway == nil {
+	if !ok {
 		return nil, nil
 	}
 	ret := []v1.EnvVar{{

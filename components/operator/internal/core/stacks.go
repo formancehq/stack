@@ -2,8 +2,6 @@ package core
 
 import (
 	"context"
-	"reflect"
-
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
@@ -12,6 +10,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/selection"
 	"k8s.io/apimachinery/pkg/types"
+	"reflect"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
@@ -51,13 +50,13 @@ var (
 	ErrMultipleInstancesFound = errors.New("multiple resources found")
 )
 
-func GetAllDependents[T client.Object](ctx Context, stackName string) ([]T, error) {
-	var t T
-	t = reflect.New(reflect.TypeOf(t).Elem()).Interface().(T)
+func GetAllDependents(ctx Context, stackName string, to any) error {
+	slice := reflect.Indirect(reflect.ValueOf(to)).Interface()
+	objectType := reflect.TypeOf(slice).Elem()
 
-	kinds, _, err := ctx.GetScheme().ObjectKinds(t)
+	kinds, _, err := ctx.GetScheme().ObjectKinds(reflect.New(objectType.Elem()).Interface().(client.Object))
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	list := &unstructured.UnstructuredList{}
@@ -67,59 +66,64 @@ func GetAllDependents[T client.Object](ctx Context, stackName string) ([]T, erro
 		"stack": stackName,
 	})
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return collectionutils.Map(list.Items, func(from unstructured.Unstructured) T {
-		var t T
-		t = reflect.New(reflect.TypeOf(t).Elem()).Interface().(T)
-		if err := runtime.DefaultUnstructuredConverter.FromUnstructured(from.Object, t); err != nil {
+	ret := reflect.ValueOf(slice)
+	for _, item := range list.Items {
+		t := reflect.New(objectType.Elem()).Interface().(client.Object)
+		if err := runtime.DefaultUnstructuredConverter.FromUnstructured(item.Object, t); err != nil {
 			panic(err)
 		}
-		return t
-	}), nil
+		ret = reflect.Append(ret, reflect.ValueOf(t))
+	}
+
+	reflect.ValueOf(to).Elem().Set(ret)
+
+	return nil
 }
 
-func GetSingleDependency[T client.Object](ctx Context, stackName string) (T, error) {
-	var zeroValue T
+func GetSingleDependency(ctx Context, stackName string, to client.Object) error {
 
-	items, err := GetAllDependents[T](ctx, stackName)
+	slice := reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(to)), 0, 0).Interface()
+	err := GetAllDependents(ctx, stackName, &slice)
 	if err != nil {
-		return zeroValue, err
+		return err
 	}
 
-	switch len(items) {
+	switch reflect.ValueOf(slice).Len() {
 	case 0:
-		return zeroValue, nil
+		return ErrNotFound
 	case 1:
-		return items[0], nil
+		reflect.Indirect(reflect.ValueOf(to)).Set(reflect.ValueOf(slice).Index(0).Elem())
+		return nil
 	default:
-		return zeroValue, ErrMultipleInstancesFound
+		return ErrMultipleInstancesFound
 	}
 }
 
-func HasDependency[T client.Object](ctx Context, stackName string) (bool, error) {
-	ret, err := GetSingleDependency[T](ctx, stackName)
+func HasDependency(ctx Context, stackName string, to client.Object) (bool, error) {
+	err := GetSingleDependency(ctx, stackName, to)
 	if err != nil && !errors.Is(err, ErrMultipleInstancesFound) {
-		return false, err
-	}
-	if reflect.ValueOf(ret).IsZero() {
-		return false, nil
+		switch {
+		default:
+			return false, err
+		case errors.Is(err, ErrNotFound):
+			return false, nil
+		}
 	}
 	return true, nil
 }
 
-func GetIfEnabled[T client.Object](ctx Context, stackName string) (T, error) {
-	var t T
-	ret, err := GetSingleDependency[T](ctx, stackName)
-	if err != nil {
-		return t, err
+func GetIfEnabled(ctx Context, stackName string, to client.Object) (bool, error) {
+	err := GetSingleDependency(ctx, stackName, to)
+	if err != nil && !errors.Is(err, ErrNotFound) {
+		return false, err
 	}
-	if reflect.ValueOf(ret).IsZero() {
-		return t, nil
+	if errors.Is(err, ErrNotFound) {
+		return false, nil
 	}
-
-	return ret, nil
+	return true, nil
 }
 
 func IsEnabledByLabel[T client.Object](ctx Context, stackName string) (bool, error) {
@@ -134,7 +138,7 @@ func IsEnabledByLabel[T client.Object](ctx Context, stackName string) (bool, err
 	return true, nil
 }
 
-func WatchUsingLabels[T client.Object](mgr Manager) func(ctx context.Context, object client.Object) []reconcile.Request {
+func WatchUsingLabels(mgr Manager, t client.Object) func(ctx context.Context, object client.Object) []reconcile.Request {
 	return func(ctx context.Context, object client.Object) []reconcile.Request {
 		options := make([]client.ListOption, 0)
 		if object.GetLabels()[StackLabel] != "any" {
@@ -143,8 +147,6 @@ func WatchUsingLabels[T client.Object](mgr Manager) func(ctx context.Context, ob
 			})
 		}
 
-		var t T
-		t = reflect.New(reflect.TypeOf(t).Elem()).Interface().(T)
 		kinds, _, err := mgr.GetScheme().ObjectKinds(t)
 		if err != nil {
 			return []reconcile.Request{}

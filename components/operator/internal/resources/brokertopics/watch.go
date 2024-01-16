@@ -1,7 +1,7 @@
 package brokertopics
 
 import (
-	"context"
+	"reflect"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
@@ -9,16 +9,23 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-func Watch[T client.Object](mgr core.Manager, service string) func(ctx context.Context, object client.Object) []reconcile.Request {
-	return func(ctx context.Context, object client.Object) []reconcile.Request {
-		topic := object.(*v1beta1.BrokerTopic)
+func Watch[T client.Object](service string) func(ctx core.Context, object *v1beta1.BrokerTopic) []reconcile.Request {
+	return func(ctx core.Context, topic *v1beta1.BrokerTopic) []reconcile.Request {
 		if topic.Spec.Service != service {
 			return []reconcile.Request{}
 		}
 
-		objects, ret := core.GetAllDependents[T](core.NewContext(mgr, ctx), topic.Spec.Stack)
-		if ret != nil {
+		var t T
+		slice := reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(t)), 0, 0).Interface()
+
+		err := core.GetAllDependents(ctx, topic.Spec.Stack, &slice)
+		if err != nil {
 			return []reconcile.Request{}
+		}
+
+		objects := make([]client.Object, 0)
+		for i := 0; i < reflect.ValueOf(slice).Len(); i++ {
+			objects = append(objects, reflect.ValueOf(slice).Index(i).Interface().(client.Object))
 		}
 
 		return core.MapObjectToReconcileRequests(objects...)
