@@ -289,6 +289,9 @@ components:
         - endpoint
         - eventTypes
       properties:
+        name:
+          type: string
+          example: "customer_payment"
         endpoint:
           type: string
           example: "https://example.com"

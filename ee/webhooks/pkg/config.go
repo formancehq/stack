@@ -20,6 +20,7 @@ type Config struct {
 
 	ID        string    `json:"id" bun:",pk"`
 	Active    bool      `json:"active"`
+	Name      string    `json:"name" bun:"name,nullzero"`
 	CreatedAt time.Time `json:"createdAt" bun:"created_at,nullzero,notnull,default:current_timestamp"`
 	UpdatedAt time.Time `json:"updatedAt" bun:"updated_at,nullzero,notnull,default:current_timestamp"`
 }
