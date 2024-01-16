@@ -27,29 +27,15 @@ func writeJSON(w http.ResponseWriter, statusCode int, v any) {
 	}
 }
 
-func Accepted(w http.ResponseWriter, opts ...ErrorResponseOpt) {
-	er := ErrorResponse{
-		ErrorCode:    ErrorCodeAccepted,
-		ErrorMessage: "accepted",
-	}
-	for _, opt := range opts {
-		opt(&er)
-	}
-
-	writeJSON(w, http.StatusAccepted, er)
+func Accepted(w http.ResponseWriter, v any) {
+	writeJSON(w, http.StatusAccepted, v)
 }
 
-func NotFound(w http.ResponseWriter, opts ...ErrorResponseOpt) {
-	errorResponse := ErrorResponse{
+func NotFound(w http.ResponseWriter, err error) {
+	writeJSON(w, http.StatusNotFound, ErrorResponse{
 		ErrorCode:    ErrorCodeNotFound,
-		ErrorMessage: "resource not found",
-	}
-
-	for _, opt := range opts {
-		opt(&errorResponse)
-	}
-
-	writeJSON(w, http.StatusNotFound, errorResponse)
+		ErrorMessage: err.Error(),
+	})
 }
 
 func NoContent(w http.ResponseWriter) {

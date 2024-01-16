@@ -79,7 +79,7 @@ func handleServiceErrors(w http.ResponseWriter, r *http.Request, err error) {
 	case errors.Is(err, storage.ErrDuplicateKeyValue):
 		api.BadRequest(w, ErrUniqueReference, err)
 	case errors.Is(err, storage.ErrNotFound):
-		api.NotFound(w)
+		api.NotFound(w, err)
 	case errors.Is(err, service.ErrValidation):
 		api.BadRequest(w, ErrValidation, err)
 	default:

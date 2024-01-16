@@ -28,7 +28,7 @@ func createTrigger(backend api.Backend) func(writer http.ResponseWriter, request
 				triggers.IsExprCompilationError(err):
 				sharedapi.BadRequest(w, "VALIDATION", err)
 			case errors.Is(err, triggers.ErrWorkflowNotExists):
-				sharedapi.NotFound(w)
+				sharedapi.NotFound(w, err)
 			default:
 				sharedapi.InternalServerError(w, r, err)
 			}

@@ -28,7 +28,7 @@ func deleteWorkflow(backend api2.Backend) http.HandlerFunc {
 		err = backend.DeleteWorkflow(r.Context(), workflowID(r))
 
 		if errors.Is(err, workflow.ErrWorkflowNotFound) {
-			api.NotFound(w)
+			api.NotFound(w, err)
 			return
 		}
 

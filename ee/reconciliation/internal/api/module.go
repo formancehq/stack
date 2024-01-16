@@ -58,7 +58,7 @@ func handleServiceErrors(w http.ResponseWriter, r *http.Request, err error) {
 	case errors.Is(storage.ErrInvalidQuery, err):
 		api.BadRequest(w, ErrValidation, err)
 	case errors.Is(storage.ErrNotFound, err):
-		api.NotFound(w)
+		api.NotFound(w, err)
 	default:
 		api.InternalServerError(w, r, err)
 	}

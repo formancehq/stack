@@ -17,7 +17,7 @@ func getTrigger(backend api.Backend) http.HandlerFunc {
 		if err != nil {
 			switch {
 			case errors.Is(err, sql.ErrNoRows):
-				sharedapi.NotFound(w)
+				sharedapi.NotFound(w, err)
 				return
 			default:
 				sharedapi.InternalServerError(w, r, err)
