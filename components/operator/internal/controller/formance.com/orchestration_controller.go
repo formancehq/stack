@@ -18,6 +18,8 @@ package formance_com
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/gateways"
+	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	appsv1 "k8s.io/api/apps/v1"
 	"strings"
 
@@ -108,10 +110,19 @@ func (r *OrchestrationController) handleAuthClient(ctx Context, stack *v1beta1.S
 }
 
 func (r *OrchestrationController) createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.Orchestration, database *v1beta1.Database, client *v1beta1.AuthClient, consumers []*v1beta1.BrokerTopicConsumer) error {
-	env, err := GetCommonModuleEnvVars(ctx, stack, orchestration)
+	env := make([]corev1.EnvVar, 0)
+	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, GetModuleName(orchestration))
 	if err != nil {
 		return err
 	}
+	env = append(env, otlpEnv...)
+
+	gatewayEnv, err := gateways.EnvVarsIfEnabled(ctx, stack.Name)
+	if err != nil {
+		return err
+	}
+	env = append(env, gatewayEnv...)
+	env = append(env, GetDevEnvVars(stack, orchestration)...)
 	env = append(env, databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)...)
 
 	temporalConfiguration, err := RequireLabelledConfig[*v1beta1.TemporalConfiguration](ctx, stack.Name)

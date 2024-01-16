@@ -19,6 +19,8 @@ package formance_com
 import (
 	_ "embed"
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/gateways"
+	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/internal/resources/payments"
 	"github.com/formancehq/operator/internal/resources/streams"
 	"github.com/formancehq/search/benthos"
@@ -121,10 +123,19 @@ func (r *PaymentsController) Reconcile(ctx Context, payments *v1beta1.Payments) 
 }
 
 func (r *PaymentsController) commonEnvVars(ctx Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) ([]corev1.EnvVar, error) {
-	env, err := GetCommonModuleEnvVars(ctx, stack, payments)
+	env := make([]corev1.EnvVar, 0)
+	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, GetModuleName(payments))
 	if err != nil {
 		return nil, err
 	}
+	env = append(env, otlpEnv...)
+
+	gatewayEnv, err := gateways.EnvVarsIfEnabled(ctx, stack.Name)
+	if err != nil {
+		return nil, err
+	}
+	env = append(env, gatewayEnv...)
+	env = append(env, GetDevEnvVars(stack, payments)...)
 	env = append(env, databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)...)
 	env = append(env,
 		Env("POSTGRES_DATABASE_NAME", "$(POSTGRES_DATABASE)"),
@@ -299,10 +310,13 @@ func (r *PaymentsController) createGateway(ctx Context, stack *v1beta1.Stack, p 
 		return err
 	}
 
-	env, err := GetCommonModuleEnvVars(ctx, stack, p)
+	env := make([]corev1.EnvVar, 0)
+	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, GetModuleName(p))
 	if err != nil {
 		return err
 	}
+	env = append(env, otlpEnv...)
+	env = append(env, GetDevEnvVars(stack, p)...)
 
 	_, err = deployments.CreateOrUpdate(ctx, p, "payments",
 		ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", env, nil),

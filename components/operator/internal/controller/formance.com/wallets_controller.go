@@ -22,7 +22,9 @@ import (
 	"github.com/formancehq/operator/internal/resources/authclients"
 	"github.com/formancehq/operator/internal/resources/auths"
 	"github.com/formancehq/operator/internal/resources/deployments"
+	"github.com/formancehq/operator/internal/resources/gateways"
 	"github.com/formancehq/operator/internal/resources/httpapis"
+	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/internal/resources/registries"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -74,10 +76,19 @@ func (r *WalletsController) Reconcile(ctx Context, wallets *v1beta1.Wallets) err
 }
 
 func (r *WalletsController) createDeployment(ctx Context, stack *v1beta1.Stack, wallets *v1beta1.Wallets, authClient *v1beta1.AuthClient) error {
-	env, err := GetCommonModuleEnvVars(ctx, stack, wallets)
+	env := make([]corev1.EnvVar, 0)
+	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, GetModuleName(wallets))
 	if err != nil {
 		return err
 	}
+	env = append(env, otlpEnv...)
+
+	gatewayEnv, err := gateways.EnvVarsIfEnabled(ctx, stack.Name)
+	if err != nil {
+		return err
+	}
+	env = append(env, gatewayEnv...)
+	env = append(env, GetDevEnvVars(stack, wallets)...)
 	if authClient != nil {
 		env = append(env, authclients.GetEnvVars(authClient)...)
 	}

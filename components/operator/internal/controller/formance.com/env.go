@@ -9,8 +9,6 @@ import (
 
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
-	"github.com/formancehq/operator/internal/resources/gateways"
-	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -34,29 +32,6 @@ func GetDevEnvVarsWithPrefix(stack *v1beta1.Stack, service interface {
 		EnvFromBool(fmt.Sprintf("%sDEV", prefix), stack.Spec.Dev || service.IsDev()),
 		Env(fmt.Sprintf("%sSTACK", prefix), stack.Name),
 	}
-}
-
-func GetCommonModuleEnvVars(ctx Context, stack *v1beta1.Stack, service Module) ([]v1.EnvVar, error) {
-	return GetCommonModuleEnvVarsWithPrefix(ctx, stack, service, "")
-}
-
-func GetCommonModuleEnvVarsWithPrefix(ctx Context, stack *v1beta1.Stack, service Module, prefix string) ([]v1.EnvVar, error) {
-	ret := make([]v1.EnvVar, 0)
-	env, err := opentelemetryconfigurations.EnvVarsIfEnabledWithPrefix(ctx, stack.Name,
-		strings.ToLower(service.GetObjectKind().GroupVersionKind().Kind), prefix)
-	if err != nil {
-		return nil, err
-	}
-	ret = append(ret, env...)
-
-	env, err = gateways.EnvVarsIfEnabledWithPrefix(ctx, stack.Name, prefix)
-	if err != nil {
-		return nil, err
-	}
-	ret = append(ret, env...)
-	ret = append(ret, GetDevEnvVarsWithPrefix(stack, service, prefix)...)
-
-	return ret, nil
 }
 
 func ComputeCaddyfile(ctx Context, stack *v1beta1.Stack, _tpl string, additionalData map[string]any) (string, error) {

@@ -20,6 +20,8 @@ import (
 	_ "embed"
 	"fmt"
 	"github.com/davecgh/go-spew/spew"
+	"github.com/formancehq/operator/internal/resources/gateways"
+	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"golang.org/x/mod/semver"
 	batchv1 "k8s.io/api/batch/v1"
@@ -78,25 +80,10 @@ func (r *LedgerController) Reconcile(ctx Context, ledger *v1beta1.Ledger) error 
 		return err
 	}
 
-	// TODO: Upgrade only if necessary
-	actualVersion, err := ActualVersion(ctx, ledger)
-	if err != nil {
-		return err
-	}
-	newVersion := GetModuleVersion(stack, ledger.Spec.Version)
-	actualVersionIsV1 := false
-	if !semver.IsValid(actualVersion) || semver.Compare(actualVersion, "v2.0.0-alpha") < 0 {
-		actualVersionIsV1 = true
-	}
-	newVersionIsV2 := false
-	if !semver.IsValid(newVersion) || semver.Compare(newVersion, "v2.0.0-alpha") > 0 {
-		newVersionIsV2 = true
-	}
-
-	if actualVersionIsV1 && newVersionIsV2 {
-		if err := r.migrateToLedgerV2(ctx, stack, ledger, database, image); err != nil {
-			return err
-		}
+	version := GetModuleVersion(stack, ledger.Spec.Version)
+	isV2 := false
+	if !semver.IsValid(version) || semver.Compare(version, "v2.0.0-alpha") > 0 {
+		isV2 = true
 	}
 
 	hasSearch, err := HasDependency[*v1beta1.Search](ctx, stack.Name)
@@ -105,7 +92,7 @@ func (r *LedgerController) Reconcile(ctx Context, ledger *v1beta1.Ledger) error 
 	}
 	if hasSearch {
 		streamsVersion := "v1.0.0"
-		if newVersionIsV2 {
+		if isV2 {
 			streamsVersion = "v2.0.0"
 		}
 		if err := streams.LoadFromFileSystem(ctx, benthos.Streams, ledger.Spec.Stack, "streams/ledger/"+streamsVersion,
@@ -125,7 +112,24 @@ func (r *LedgerController) Reconcile(ctx Context, ledger *v1beta1.Ledger) error 
 	}
 
 	if database.Status.Ready {
-		err = r.installLedger(ctx, stack, ledger, database, image, newVersionIsV2)
+
+		actualVersion, err := ActualVersion(ctx, ledger)
+		if err != nil {
+			return err
+		}
+
+		actualVersionIsV1 := false
+		if !semver.IsValid(actualVersion) || semver.Compare(actualVersion, "v2.0.0-alpha") < 0 {
+			actualVersionIsV1 = true
+		}
+
+		if actualVersionIsV1 && isV2 {
+			if err := r.migrateToLedgerV2(ctx, stack, ledger, database, image); err != nil {
+				return err
+			}
+		}
+
+		err = r.installLedger(ctx, stack, ledger, database, image, isV2)
 		if err != nil {
 			return err
 		}
@@ -312,10 +316,19 @@ func (r *LedgerController) setCommonContainerConfiguration(ctx Context, stack *v
 	if !v2 {
 		prefix = "NUMARY_"
 	}
-	env, err := GetCommonModuleEnvVarsWithPrefix(ctx, stack, ledger, prefix)
+	env := make([]corev1.EnvVar, 0)
+	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabledWithPrefix(ctx, stack.Name, GetModuleName(ledger), prefix)
 	if err != nil {
 		return err
 	}
+	env = append(env, otlpEnv...)
+
+	gatewayEnv, err := gateways.EnvVarsIfEnabledWithPrefix(ctx, stack.Name, prefix)
+	if err != nil {
+		return err
+	}
+	env = append(env, gatewayEnv...)
+	env = append(env, GetDevEnvVarsWithPrefix(stack, ledger, prefix)...)
 
 	authEnvVars, err := auths.EnvVarsWithPrefix(ctx, stack, "ledger", ledger.Spec.Auth, prefix)
 	if err != nil {
@@ -392,10 +405,13 @@ func (r *LedgerController) createGatewayDeployment(ctx Context, stack *v1beta1.S
 		return err
 	}
 
-	env, err := GetCommonModuleEnvVars(ctx, stack, ledger)
+	env := make([]corev1.EnvVar, 0)
+	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, GetModuleName(ledger))
 	if err != nil {
 		return err
 	}
+	env = append(env, otlpEnv...)
+	env = append(env, GetDevEnvVars(stack, ledger)...)
 
 	_, err = deployments.CreateOrUpdate(ctx, ledger, "ledger-gateway",
 		ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", env, nil),

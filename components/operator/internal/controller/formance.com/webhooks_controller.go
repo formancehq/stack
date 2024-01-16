@@ -18,6 +18,8 @@ package formance_com
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/gateways"
+	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"strings"
 
@@ -87,10 +89,19 @@ func (r *WebhooksController) createDeployment(ctx Context, stack *v1beta1.Stack,
 		return err
 	}
 
-	env, err := GetCommonModuleEnvVars(ctx, stack, webhooks)
+	env := make([]corev1.EnvVar, 0)
+	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, GetModuleName(webhooks))
 	if err != nil {
 		return err
 	}
+	env = append(env, otlpEnv...)
+
+	gatewayEnv, err := gateways.EnvVarsIfEnabled(ctx, stack.Name)
+	if err != nil {
+		return err
+	}
+	env = append(env, gatewayEnv...)
+	env = append(env, GetDevEnvVars(stack, webhooks)...)
 
 	authEnvVars, err := auths.EnvVars(ctx, stack, "webhooks", webhooks.Spec.Auth)
 	if err != nil {

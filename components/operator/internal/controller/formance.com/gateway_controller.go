@@ -19,6 +19,7 @@ package formance_com
 import (
 	_ "embed"
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	"sort"
 
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -135,10 +136,13 @@ func (r *GatewayController) createAuditTopic(ctx Context, stack *v1beta1.Stack, 
 func (r *GatewayController) createDeployment(ctx Context, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway, caddyfileConfigMap *corev1.ConfigMap, auditTopic *v1beta1.BrokerTopic) error {
 
-	env, err := GetCommonModuleEnvVars(ctx, stack, gateway)
+	env := make([]corev1.EnvVar, 0)
+	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, GetModuleName(gateway))
 	if err != nil {
 		return err
 	}
+	env = append(env, otlpEnv...)
+	env = append(env, GetDevEnvVars(stack, gateway)...)
 
 	if stack.Spec.EnableAudit && auditTopic != nil {
 		env = append(env,

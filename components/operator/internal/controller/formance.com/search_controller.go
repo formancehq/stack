@@ -18,6 +18,7 @@ package formance_com
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
@@ -53,10 +54,13 @@ func (r *SearchController) Reconcile(ctx Context, search *v1beta1.Search) error 
 		return err
 	}
 
-	env, err := GetCommonModuleEnvVars(ctx, stack, search)
+	env := make([]corev1.EnvVar, 0)
+	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, GetModuleName(search))
 	if err != nil {
 		return err
 	}
+	env = append(env, otlpEnv...)
+	env = append(env, GetDevEnvVars(stack, search)...)
 
 	env = append(env,
 		Env("OPEN_SEARCH_SERVICE", fmt.Sprintf("%s:%d", elasticSearchConfiguration.Spec.Host, elasticSearchConfiguration.Spec.Port)),

@@ -20,6 +20,8 @@ import (
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/deployments"
+	"github.com/formancehq/operator/internal/resources/gateways"
+	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/internal/resources/registries"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -52,10 +54,19 @@ func (r *StargateController) Reconcile(ctx Context, stargate *v1beta1.Stargate) 
 
 func (r *StargateController) createDeployment(ctx Context, stack *v1beta1.Stack, stargate *v1beta1.Stargate) error {
 
-	env, err := GetCommonModuleEnvVars(ctx, stack, stargate)
+	env := make([]corev1.EnvVar, 0)
+	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, GetModuleName(stargate))
 	if err != nil {
 		return err
 	}
+	env = append(env, otlpEnv...)
+
+	gatewayEnv, err := gateways.EnvVarsIfEnabled(ctx, stack.Name)
+	if err != nil {
+		return err
+	}
+	env = append(env, gatewayEnv...)
+	env = append(env, GetDevEnvVars(stack, stargate)...)
 	env = append(env,
 		Env("ORGANIZATION_ID", stargate.Spec.OrganizationID),
 		Env("STACK_ID", stargate.Spec.StackID),

@@ -18,6 +18,8 @@ package formance_com
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/gateways"
+	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	"sort"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -126,10 +128,19 @@ func (r *AuthController) createConfiguration(ctx Context, stack *v1beta1.Stack, 
 func (r *AuthController) createDeployment(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, database *v1beta1.Database,
 	configMap *corev1.ConfigMap) (func(deployment *appsv1.Deployment), error) {
 
-	env, err := GetCommonModuleEnvVars(ctx, stack, auth)
+	env := make([]corev1.EnvVar, 0)
+	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, GetModuleName(auth))
 	if err != nil {
 		return nil, err
 	}
+	env = append(env, otlpEnv...)
+
+	gatewayEnv, err := gateways.EnvVarsIfEnabled(ctx, stack.Name)
+	if err != nil {
+		return nil, err
+	}
+	env = append(env, gatewayEnv...)
+	env = append(env, GetDevEnvVars(stack, auth)...)
 
 	env = append(env,
 		databases.PostgresEnvVars(
