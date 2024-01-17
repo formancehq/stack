@@ -3,24 +3,28 @@ package auth
 import (
 	"time"
 
+	"github.com/uptrace/bun"
+
 	"github.com/zitadel/oidc/v2/pkg/oidc"
 	"golang.org/x/text/language"
 )
 
 type AuthRequest struct {
-	ID            string `gorm:"primarykey"`
+	bun.BaseModel `bun:"table:auth_requests"`
+
+	ID            string `bun:",pk"`
 	CreatedAt     time.Time
 	ApplicationID string
 	CallbackURI   string
 	TransferState string
-	Prompt        Array[string]       `gorm:"type:text"`
-	UiLocales     Array[language.Tag] `gorm:"type:text"`
+	Prompt        Array[string]       `bun:"type:text"`
+	UiLocales     Array[language.Tag] `bun:"type:text"`
 	LoginHint     string
 	MaxAuthAge    *time.Duration
-	Scopes        Array[string] `gorm:"type:text"`
+	Scopes        Array[string] `bun:"type:text"`
 	ResponseType  oidc.ResponseType
 	Nonce         string
-	CodeChallenge *OIDCCodeChallenge `gorm:"embedded"`
+	CodeChallenge *OIDCCodeChallenge `bun:"embed:"`
 	UserID        string
 	AuthTime      time.Time
 	Code          string

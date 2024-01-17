@@ -15,6 +15,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/delegatedauth"
 	"github.com/formancehq/auth/pkg/oidc"
@@ -29,8 +31,6 @@ import (
 	zoidc "github.com/zitadel/oidc/v2/pkg/oidc"
 	"github.com/zitadel/oidc/v2/pkg/op"
 	"golang.org/x/oauth2/clientcredentials"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 type user struct {
@@ -77,16 +77,14 @@ func withServer(t *testing.T, fn func(m *mockoidc.MockOIDC, storage *sqlstorage.
 	require.NoError(t, err)
 
 	postgresDB := pgtesting.NewPostgresDatabase(t)
-	dialector := postgres.Open(postgresDB.ConnString())
-
-	// Construct our storage
-	db, err := sqlstorage.LoadGorm(dialector, &gorm.Config{})
+	db, err := bunconnect.OpenSQLDB(bunconnect.ConnectionOptions{
+		DatabaseSourceName: postgresDB.ConnString(),
+		Debug:              testing.Verbose(),
+	})
 	require.NoError(t, err)
-	require.NoError(t, sqlstorage.MigrateTables(context.Background(), db))
+	defer db.Close()
 
-	sqlDB, err := db.DB()
-	require.NoError(t, err)
-	defer sqlDB.Close()
+	require.NoError(t, sqlstorage.Migrate(context.TODO(), db))
 
 	storage := sqlstorage.New(db)
 
@@ -138,7 +136,7 @@ func Test3LeggedFlow(t *testing.T) {
 		client := auth.NewClient(auth.ClientOptions{})
 		client.RedirectURIs.Append(clientHttpServer.URL)          // Need to configure the redirect uri
 		_, clear := client.GenerateNewSecret(auth.SecretCreate{}) // Need to generate a secret
-		require.NoError(t, storage.SaveClient(context.TODO(), *client))
+		require.NoError(t, storage.SaveClient(context.TODO(), client))
 
 		// As our client is a relying party, we can use the library to get some helpers
 		clientRelyingParty, err := rp.NewRelyingPartyOIDC(issuer, client.Id, clear, client.RedirectURIs[0], []string{"openid", "email"})
@@ -170,7 +168,7 @@ func Test3LeggedFlow(t *testing.T) {
 				Trusted: true,
 			})
 			_, clear = secondaryClient.GenerateNewSecret(auth.SecretCreate{}) // Need to generate a secret
-			require.NoError(t, storage.SaveClient(context.TODO(), *secondaryClient))
+			require.NoError(t, storage.SaveClient(context.TODO(), secondaryClient))
 
 			resourceServer, err := rs.NewResourceServerClientCredentials(issuer, secondaryClient.Id, clear)
 			require.NoError(t, err)
@@ -222,7 +220,7 @@ func TestJWTAssertions(t *testing.T) {
 		// Create a OAuth2 client which represent our client application
 		client := auth.NewClient(auth.ClientOptions{})
 		_, clear := client.GenerateNewSecret(auth.SecretCreate{}) // Need to generate a secret
-		require.NoError(t, storage.SaveClient(context.TODO(), *client))
+		require.NoError(t, storage.SaveClient(context.TODO(), client))
 
 		// As our client is a relying party, we can use the library to get some helpers
 		clientRelyingParty, err := rp.NewRelyingPartyOIDC(m.Issuer(), client.Id, clear, "", []string{"openid", "email"})
@@ -258,7 +256,7 @@ func TestClientCredentials(t *testing.T) {
 		// Create a OAuth2 client which represent our client application
 		client := auth.NewClient(auth.ClientOptions{})
 		_, clear := client.GenerateNewSecret(auth.SecretCreate{}) // Need to generate a secret
-		require.NoError(t, storage.SaveClient(context.TODO(), *client))
+		require.NoError(t, storage.SaveClient(context.TODO(), client))
 
 		// As our client is a relying party, we can use the library to get some helpers
 		clientRelyingParty, err := rp.NewRelyingPartyOIDC(issuer, client.Id, clear, "", []string{"openid", "email"})

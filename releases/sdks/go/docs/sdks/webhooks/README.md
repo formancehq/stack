@@ -327,6 +327,7 @@ func main() {
             "TYPE1",
             "TYPE2",
         },
+        Name: formancesdkgo.String("customer_payment"),
         Secret: formancesdkgo.String("V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"),
     })
     if err != nil {

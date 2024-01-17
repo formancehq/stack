@@ -2,18 +2,22 @@ package auth
 
 import (
 	"time"
+
+	"github.com/uptrace/bun"
 )
 
 type RefreshToken struct {
-	ID            string `gorm:"primarykey"`
+	bun.BaseModel `bun:"table:refresh_tokens"`
+
+	ID            string `bun:",pk"`
 	Token         string
 	AuthTime      time.Time
-	AMR           Array[string] `gorm:"type:text"`
-	Audience      Array[string] `gorm:"type:text"`
+	AMR           Array[string] `bun:"type:text"`
+	Audience      Array[string] `bun:"type:text"`
 	UserID        string
 	ApplicationID string
 	Expiration    time.Time
-	Scopes        Array[string] `gorm:"type:text"`
+	Scopes        Array[string] `bun:"type:text"`
 }
 
 type RefreshTokenRequest struct {

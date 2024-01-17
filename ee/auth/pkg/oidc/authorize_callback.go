@@ -64,14 +64,14 @@ func authorizeCallbackHandler(
 				Subject: userInfos.Subject,
 				Email:   userInfos.Email,
 			}
-			if err := storage.SaveUser(r.Context(), *user); err != nil {
+			if err := storage.SaveUser(r.Context(), user); err != nil {
 				panic(err)
 			}
 		}
 
 		authRequest.UserID = user.ID
 
-		if err := storage.UpdateAuthRequest(r.Context(), *authRequest); err != nil {
+		if err := storage.UpdateAuthRequest(r.Context(), authRequest); err != nil {
 			panic(err)
 		}
 

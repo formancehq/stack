@@ -47,5 +47,10 @@ func (a Array[T]) Value() (driver.Value, error) {
 	if a == nil {
 		return nil, nil
 	}
-	return json.Marshal(a)
+	data, err := json.Marshal(a)
+	if err != nil {
+		return nil, err
+	}
+
+	return string(data), nil
 }

@@ -1,14 +1,17 @@
 package api
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
+	"reflect"
+
+	"github.com/uptrace/bun"
 
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/gorilla/mux"
 	"go.opentelemetry.io/otel/trace"
-	"gorm.io/gorm"
 )
 
 func validationError(w http.ResponseWriter, r *http.Request, err error) {
@@ -55,30 +58,29 @@ func readJSONObject[T any](w http.ResponseWriter, r *http.Request) *T {
 	return &t
 }
 
-func findById[T any](w http.ResponseWriter, r *http.Request, db *gorm.DB, params string) *T {
+func findById[T any](w http.ResponseWriter, r *http.Request, db *bun.DB, params string) T {
 	var t T
-	if err := db.WithContext(r.Context()).First(&t, "id = ?", mux.Vars(r)[params]).Error; err != nil {
+	t = reflect.New(reflect.TypeOf(t).Elem()).Interface().(T)
+	err := db.NewSelect().
+		Model(t).
+		Limit(1).
+		Where("id = ?", mux.Vars(r)[params]).
+		Scan(r.Context())
+	if err != nil {
 		switch err {
-		case gorm.ErrRecordNotFound:
+		case sql.ErrNoRows:
 			w.WriteHeader(http.StatusNotFound)
 		default:
 			internalServerError(w, r, err)
 		}
-		return nil
+		var zeroValue T
+		return zeroValue
 	}
-	return &t
+	return t
 }
 
-func saveObject(w http.ResponseWriter, r *http.Request, db *gorm.DB, v any) error {
-	err := db.WithContext(r.Context()).Save(v).Error
-	if err != nil {
-		internalServerError(w, r, err)
-	}
-	return err
-}
-
-func createObject(w http.ResponseWriter, r *http.Request, db *gorm.DB, v any) error {
-	err := db.WithContext(r.Context()).Create(v).Error
+func createObject(w http.ResponseWriter, r *http.Request, db *bun.DB, v any) error {
+	_, err := db.NewInsert().Model(v).Exec(r.Context())
 	if err != nil {
 		internalServerError(w, r, err)
 	}

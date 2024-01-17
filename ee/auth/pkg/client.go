@@ -5,6 +5,8 @@ import (
 	"encoding/base64"
 	"errors"
 
+	"github.com/uptrace/bun"
+
 	"github.com/google/uuid"
 )
 
@@ -21,7 +23,7 @@ type ClientSecret struct {
 	Hash       string   `json:"hash"`
 	LastDigits string   `json:"lastDigits"`
 	Name       string   `json:"name"`
-	Metadata   Metadata `json:"metadata" gorm:"type:text"`
+	Metadata   Metadata `json:"metadata" bun:"type:text"`
 }
 
 func (s ClientSecret) Check(clear string) bool {
@@ -97,8 +99,10 @@ func (c *Client) HasScope(id string) bool {
 }
 
 type Client struct {
+	bun.BaseModel `bun:"table:clients"`
+
 	ClientOptions
-	Secrets Array[ClientSecret] `gorm:"type:text" json:"secrets"`
+	Secrets Array[ClientSecret] `bun:",type:text" json:"secrets"`
 }
 
 func (c *Client) GetScopes() []string {
@@ -126,13 +130,13 @@ func (s StaticClient) GetScopes() []string {
 type ClientOptions struct {
 	Id                     string        `json:"id" yaml:"id"`
 	Public                 bool          `json:"public" yaml:"public"`
-	RedirectURIs           Array[string] `json:"redirectUris" yaml:"redirectUris" gorm:"type:text"`
+	RedirectURIs           Array[string] `json:"redirectUris" yaml:"redirectUris" bun:"redirect_uris,type:text"`
 	Description            string        `json:"description" yaml:"description"`
 	Name                   string        `json:"name" yaml:"name"`
-	PostLogoutRedirectUris Array[string] `json:"postLogoutRedirectUris" yaml:"postLogoutRedirectUris" gorm:"type:text"`
-	Metadata               Metadata      `json:"metadata" yaml:"metadata" gorm:"type:text"`
+	PostLogoutRedirectUris Array[string] `json:"postLogoutRedirectUris" yaml:"postLogoutRedirectUris" bun:"post_logout_redirect_uris,type:text"`
+	Metadata               Metadata      `json:"metadata" yaml:"metadata" bun:"type:text"`
 	Trusted                bool          `json:"trusted" yaml:"trusted"`
-	Scopes                 Array[string] `gorm:"type:text" json:"scopes" yaml:"scopes"`
+	Scopes                 Array[string] `bun:"type:text" json:"scopes" yaml:"scopes"`
 }
 
 func (s *ClientOptions) IsTrusted() bool {

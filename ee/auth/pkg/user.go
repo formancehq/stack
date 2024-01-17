@@ -1,7 +1,11 @@
 package auth
 
+import "github.com/uptrace/bun"
+
 type User struct {
-	ID      string `json:"id" gorm:"primarykey"`
-	Subject string `json:"subject" gorm:"unique"`
+	bun.BaseModel `bun:"table:users"`
+
+	ID      string `json:"id" bun:",pk"`
+	Subject string `json:"subject" bun:",unique"`
 	Email   string `json:"email"`
 }

@@ -7,4 +7,5 @@
 | -------------------------------- | -------------------------------- | -------------------------------- | -------------------------------- | -------------------------------- |
 | `Endpoint`                       | *string*                         | :heavy_check_mark:               | N/A                              | https://example.com              |
 | `EventTypes`                     | []*string*                       | :heavy_check_mark:               | N/A                              | ["TYPE1","TYPE2"]                |
+| `Name`                           | **string*                        | :heavy_minus_sign:               | N/A                              | customer_payment                 |
 | `Secret`                         | **string*                        | :heavy_minus_sign:               | N/A                              | V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3 |
