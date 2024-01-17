@@ -692,6 +692,7 @@ func TestReadTask(t *testing.T) {
 			taskID:             "invalid",
 			expectedStatusCode: http.StatusBadRequest,
 			expectedErrorCode:  ErrInvalidID,
+			installed:          ptr(true),
 		},
 	}
 
