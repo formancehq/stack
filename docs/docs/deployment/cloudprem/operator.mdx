@@ -78,8 +78,8 @@ The "Configuration" CRD defines the configuration of our application. This inclu
 :::tip
 If you wish to create all the configurations required for testing. You can run the following command:
 ```bash
-helm upgrade regions oci://ghcr.io/formancehq/helm/demo \
--- version 0.1.0 \
+helm install demo oci://ghcr.io/formancehq/helm/demo \
+--version 0.1.0 \
 --namespace formance-system \
 --create-namespace
 ```
