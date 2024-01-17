@@ -5,7 +5,6 @@ import (
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currencycloud/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
 const (
@@ -27,7 +26,7 @@ type TaskDescriptor struct {
 	Attempt    int    `json:"attempt" yaml:"attempt" bson:"attempt"`
 }
 
-func resolveTasks(logger logging.Logger, config Config) func(taskDefinition TaskDescriptor) task.Task {
+func resolveTasks(config Config) func(taskDefinition TaskDescriptor) task.Task {
 	currencyCloudClient, err := client.NewClient(config.LoginID, config.APIKey, config.Endpoint)
 	if err != nil {
 		return func(taskDefinition TaskDescriptor) task.Task {
@@ -46,19 +45,19 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 
 		switch taskDescriptor.Key {
 		case taskNameMain:
-			return taskMain(logger)
+			return taskMain()
 		case taskNameFetchAccounts:
-			return taskFetchAccounts(logger, currencyCloudClient)
+			return taskFetchAccounts(currencyCloudClient)
 		case taskNameFetchBeneficiaries:
-			return taskFetchBeneficiaries(logger, currencyCloudClient)
+			return taskFetchBeneficiaries(currencyCloudClient)
 		case taskNameFetchTransactions:
-			return taskFetchTransactions(logger, currencyCloudClient, config)
+			return taskFetchTransactions(currencyCloudClient, config)
 		case taskNameFetchBalances:
-			return taskFetchBalances(logger, currencyCloudClient)
+			return taskFetchBalances(currencyCloudClient)
 		case taskNameInitiatePayment:
-			return taskInitiatePayment(logger, currencyCloudClient, taskDescriptor.TransferID)
+			return taskInitiatePayment(currencyCloudClient, taskDescriptor.TransferID)
 		case taskNameUpdatePaymentStatus:
-			return taskUpdatePaymentStatus(logger, currencyCloudClient, taskDescriptor.TransferID, taskDescriptor.PaymentID, taskDescriptor.Attempt)
+			return taskUpdatePaymentStatus(currencyCloudClient, taskDescriptor.TransferID, taskDescriptor.PaymentID, taskDescriptor.Attempt)
 		}
 
 		// This should never happen.

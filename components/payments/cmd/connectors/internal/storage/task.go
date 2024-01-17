@@ -6,11 +6,9 @@ import (
 	"sort"
 	"time"
 
-	"github.com/google/uuid"
-
-	"github.com/pkg/errors"
-
 	"github.com/formancehq/payments/internal/models"
+	"github.com/google/uuid"
+	"github.com/pkg/errors"
 )
 
 func (s *Storage) UpdateTaskStatus(ctx context.Context, connectorID models.ConnectorID, descriptor models.TaskDescriptor, status models.TaskStatus, taskError string) error {

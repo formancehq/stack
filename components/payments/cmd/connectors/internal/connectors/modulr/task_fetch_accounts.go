@@ -9,72 +9,90 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
-	"github.com/formancehq/payments/internal/models"
-
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/modulr/client"
+	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
-
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/internal/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
-func taskFetchAccounts(logger logging.Logger, config Config, client *client.Client) task.Task {
+func taskFetchAccounts(config Config, client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 	) error {
-		logger.Info(taskNameFetchAccounts)
+		span := trace.SpanFromContext(ctx)
+		span.SetName("modulr.taskFetchAccounts")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+		)
 
-		for page := 0; ; page++ {
-			pagedAccounts, err := client.GetAccounts(ctx, page, config.PageSize)
-			if err != nil {
-				return err
-			}
-
-			if len(pagedAccounts.Content) == 0 {
-				break
-			}
-
-			if err := ingestAccountsBatch(ctx, connectorID, ingester, pagedAccounts.Content); err != nil {
-				return err
-			}
-
-			for _, account := range pagedAccounts.Content {
-				logger.Infof("scheduling fetch-transactions: %s", account.ID)
-
-				transactionsTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
-					Name:      "Fetch transactions from client by account",
-					Key:       taskNameFetchTransactions,
-					AccountID: account.ID,
-				})
-				if err != nil {
-					return err
-				}
-
-				err = scheduler.Schedule(ctx, transactionsTask, models.TaskSchedulerOptions{
-					ScheduleOption: models.OPTIONS_RUN_NOW,
-					RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
-				})
-				if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
-					return err
-				}
-			}
-
-			if len(pagedAccounts.Content) < config.PageSize {
-				break
-			}
-
-			if page+1 >= pagedAccounts.TotalPages {
-				// Modulr paging starts at 0, so the last page is TotalPages - 1.
-				break
-			}
+		if err := fetchAccounts(ctx, config, client, connectorID, ingester, scheduler); err != nil {
+			otel.RecordError(span, err)
+			return err
 		}
 
 		return nil
 	}
+}
+
+func fetchAccounts(
+	ctx context.Context,
+	config Config,
+	client *client.Client,
+	connectorID models.ConnectorID,
+	ingester ingestion.Ingester,
+	scheduler task.Scheduler,
+) error {
+	for page := 0; ; page++ {
+		pagedAccounts, err := client.GetAccounts(ctx, page, config.PageSize)
+		if err != nil {
+			return err
+		}
+
+		if len(pagedAccounts.Content) == 0 {
+			break
+		}
+
+		if err := ingestAccountsBatch(ctx, connectorID, ingester, pagedAccounts.Content); err != nil {
+			return err
+		}
+
+		for _, account := range pagedAccounts.Content {
+			transactionsTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
+				Name:      "Fetch transactions from client by account",
+				Key:       taskNameFetchTransactions,
+				AccountID: account.ID,
+			})
+			if err != nil {
+				return err
+			}
+
+			err = scheduler.Schedule(ctx, transactionsTask, models.TaskSchedulerOptions{
+				ScheduleOption: models.OPTIONS_RUN_NOW,
+				RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
+			})
+			if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+				return err
+			}
+		}
+
+		if len(pagedAccounts.Content) < config.PageSize {
+			break
+		}
+
+		if page+1 >= pagedAccounts.TotalPages {
+			// Modulr paging starts at 0, so the last page is TotalPages - 1.
+			break
+		}
+	}
+
+	return nil
 }
 
 func ingestAccountsBatch(

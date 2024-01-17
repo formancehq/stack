@@ -11,10 +11,10 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
-	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/dig"
@@ -249,7 +249,6 @@ func (s *DefaultTaskScheduler) deleteTask(ctx context.Context, holder *taskHolde
 	p := s.resolver.Resolve(oldestPendingTask.GetDescriptor())
 	if p == nil {
 		logging.FromContext(ctx).Errorf("unable to resolve task")
-
 		return
 	}
 
@@ -332,9 +331,18 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 	}
 
 	ctx, cancel := context.WithCancel(ctx)
-	ctx, span := otel.Tracer("com.formance.payments").Start(ctx, "Task", trace.WithAttributes(
-		attribute.Stringer("id", task.ID),
-		attribute.String("connectorID", s.connectorID.String())),
+	parentSpan := trace.SpanFromContext(ctx)
+	ctx, span := otel.Tracer().Start(
+		ctx,
+		"task",
+		trace.WithNewRoot(),
+		trace.WithLinks(trace.Link{
+			SpanContext: parentSpan.SpanContext(),
+		}),
+		trace.WithAttributes(
+			attribute.Stringer("id", task.ID),
+			attribute.String("connectorID", s.connectorID.String()),
+		),
 	)
 
 	holder := &taskHolder{
@@ -413,6 +421,7 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 	if err != nil {
 		errChan <- err
 		close(errChan)
+		span.End()
 		return errChan
 	}
 

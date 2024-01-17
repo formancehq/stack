@@ -7,7 +7,6 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
@@ -110,9 +109,6 @@ func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.
 		return err
 	}
 
-	// Detach the context since we're launching an async task and we're mostly
-	// coming from a HTTP request.
-	detachedCtx, _ := contextutil.Detached(ctx.Context())
 	descriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
 		Name:       "Initiate payment",
 		Key:        taskNameInitiatePayment,
@@ -128,7 +124,7 @@ func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.
 		scheduleOption = models.OPTIONS_RUN_SCHEDULED_AT
 	}
 
-	if err := ctx.Scheduler().Schedule(detachedCtx, descriptor, models.TaskSchedulerOptions{
+	if err := ctx.Scheduler().Schedule(ctx.Context(), descriptor, models.TaskSchedulerOptions{
 		ScheduleOption: scheduleOption,
 		ScheduleAt:     scheduledAt,
 		RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,

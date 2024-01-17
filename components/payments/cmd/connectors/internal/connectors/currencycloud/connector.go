@@ -6,7 +6,6 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
 )
@@ -91,7 +90,7 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 		panic(err)
 	}
 
-	return resolveTasks(c.logger, c.cfg)(taskDescriptor)
+	return resolveTasks(c.cfg)(taskDescriptor)
 }
 
 func (c *Connector) SupportedCurrenciesAndDecimals() map[string]int {
@@ -99,9 +98,6 @@ func (c *Connector) SupportedCurrenciesAndDecimals() map[string]int {
 }
 
 func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error {
-	// Detach the context since we're launching an async task and we're mostly
-	// coming from a HTTP request.
-	detachedCtx, _ := contextutil.Detached(ctx.Context())
 	taskDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
 		Name:       "Initiate payment",
 		Key:        taskNameInitiatePayment,
@@ -117,7 +113,7 @@ func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.
 		scheduleOption = models.OPTIONS_RUN_SCHEDULED_AT
 	}
 
-	err = ctx.Scheduler().Schedule(detachedCtx, taskDescriptor, models.TaskSchedulerOptions{
+	err = ctx.Scheduler().Schedule(ctx.Context(), taskDescriptor, models.TaskSchedulerOptions{
 		ScheduleOption: scheduleOption,
 		ScheduleAt:     scheduledAt,
 		RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,

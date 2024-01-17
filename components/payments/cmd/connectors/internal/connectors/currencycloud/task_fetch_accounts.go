@@ -9,11 +9,12 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/payments/internal/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func taskFetchAccounts(
-	logger logging.Logger,
 	client *client.Client,
 ) task.Task {
 	return func(
@@ -22,60 +23,79 @@ func taskFetchAccounts(
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 	) error {
-		logger.Info(taskNameFetchAccounts)
+		span := trace.SpanFromContext(ctx)
+		span.SetName("currencycloud.taskFetchAccounts")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+		)
 
-		page := 1
-		for {
-			if page < 0 {
-				break
-			}
-
-			pagedAccounts, nextPage, err := client.GetAccounts(ctx, page)
-			if err != nil {
-				return err
-			}
-
-			page = nextPage
-
-			if err := ingestAccountsBatch(ctx, connectorID, ingester, pagedAccounts); err != nil {
-				return err
-			}
-		}
-
-		taskTransactions, err := models.EncodeTaskDescriptor(TaskDescriptor{
-			Name: "Fetch transactions from client",
-			Key:  taskNameFetchTransactions,
-		})
-		if err != nil {
-			return err
-		}
-
-		err = scheduler.Schedule(ctx, taskTransactions, models.TaskSchedulerOptions{
-			ScheduleOption: models.OPTIONS_RUN_NOW,
-			RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
-		})
-		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
-			return err
-		}
-
-		taskBalances, err := models.EncodeTaskDescriptor(TaskDescriptor{
-			Name: "Fetch balances from client",
-			Key:  taskNameFetchBalances,
-		})
-		if err != nil {
-			return err
-		}
-
-		err = scheduler.Schedule(ctx, taskBalances, models.TaskSchedulerOptions{
-			ScheduleOption: models.OPTIONS_RUN_NOW,
-			RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
-		})
-		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+		if err := fetchAccount(ctx, client, connectorID, ingester, scheduler); err != nil {
+			otel.RecordError(span, err)
 			return err
 		}
 
 		return nil
 	}
+}
+
+func fetchAccount(
+	ctx context.Context,
+	client *client.Client,
+	connectorID models.ConnectorID,
+	ingester ingestion.Ingester,
+	scheduler task.Scheduler,
+) error {
+	page := 1
+	for {
+		if page < 0 {
+			break
+		}
+
+		pagedAccounts, nextPage, err := client.GetAccounts(ctx, page)
+		if err != nil {
+			return err
+		}
+
+		page = nextPage
+
+		if err := ingestAccountsBatch(ctx, connectorID, ingester, pagedAccounts); err != nil {
+			return err
+		}
+	}
+
+	taskTransactions, err := models.EncodeTaskDescriptor(TaskDescriptor{
+		Name: "Fetch transactions from client",
+		Key:  taskNameFetchTransactions,
+	})
+	if err != nil {
+		return err
+	}
+
+	err = scheduler.Schedule(ctx, taskTransactions, models.TaskSchedulerOptions{
+		ScheduleOption: models.OPTIONS_RUN_NOW,
+		RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
+	})
+	if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+		return err
+	}
+
+	taskBalances, err := models.EncodeTaskDescriptor(TaskDescriptor{
+		Name: "Fetch balances from client",
+		Key:  taskNameFetchBalances,
+	})
+	if err != nil {
+		return err
+	}
+
+	err = scheduler.Schedule(ctx, taskBalances, models.TaskSchedulerOptions{
+		ScheduleOption: models.OPTIONS_RUN_NOW,
+		RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
+	})
+	if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+		return err
+	}
+
+	return nil
 }
 
 func ingestAccountsBatch(

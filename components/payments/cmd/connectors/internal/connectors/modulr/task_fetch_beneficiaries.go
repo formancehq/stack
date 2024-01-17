@@ -7,48 +7,69 @@ import (
 
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/internal/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/modulr/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
-
-	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
-func taskFetchBeneficiaries(logger logging.Logger, config Config, client *client.Client) task.Task {
+func taskFetchBeneficiaries(config Config, client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 	) error {
-		logger.Info(taskNameFetchBeneficiaries)
+		span := trace.SpanFromContext(ctx)
+		span.SetName("modulr.taskFetchBeneficiaries")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+		)
 
-		for page := 0; ; page++ {
-			pagedBeneficiaries, err := client.GetBeneficiaries(ctx, page, config.PageSize)
-			if err != nil {
-				return err
-			}
-
-			if len(pagedBeneficiaries.Content) == 0 {
-				break
-			}
-
-			if err := ingestBeneficiariesAccountsBatch(ctx, connectorID, ingester, pagedBeneficiaries.Content); err != nil {
-				return err
-			}
-
-			if len(pagedBeneficiaries.Content) < config.PageSize {
-				break
-			}
-
-			if page+1 >= pagedBeneficiaries.TotalPages {
-				// Modulr paging starts at 0, so the last page is TotalPages - 1.
-				break
-			}
+		if err := fetchBeneficiaries(ctx, config, client, connectorID, ingester, scheduler); err != nil {
+			otel.RecordError(span, err)
+			return err
 		}
 
 		return nil
 	}
+}
+
+func fetchBeneficiaries(
+	ctx context.Context,
+	config Config,
+	client *client.Client,
+	connectorID models.ConnectorID,
+	ingester ingestion.Ingester,
+	scheduler task.Scheduler,
+) error {
+	for page := 0; ; page++ {
+		pagedBeneficiaries, err := client.GetBeneficiaries(ctx, page, config.PageSize)
+		if err != nil {
+			return err
+		}
+
+		if len(pagedBeneficiaries.Content) == 0 {
+			break
+		}
+
+		if err := ingestBeneficiariesAccountsBatch(ctx, connectorID, ingester, pagedBeneficiaries.Content); err != nil {
+			return err
+		}
+
+		if len(pagedBeneficiaries.Content) < config.PageSize {
+			break
+		}
+
+		if page+1 >= pagedBeneficiaries.TotalPages {
+			// Modulr paging starts at 0, so the last page is TotalPages - 1.
+			break
+		}
+	}
+
+	return nil
 }
 
 func ingestBeneficiariesAccountsBatch(

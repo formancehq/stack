@@ -15,7 +15,10 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func taskFetchProfiles(wiseClient *client.Client) task.Task {
@@ -26,70 +29,86 @@ func taskFetchProfiles(wiseClient *client.Client) task.Task {
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 	) error {
+		sp := trace.SpanFromContext(ctx)
+		sp.SetName("wise.taskFetchProfiles")
+		sp.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+		)
 
-		profiles, err := wiseClient.GetProfiles(ctx)
-		if err != nil {
+		if err := fetchProfiles(ctx, wiseClient, connectorID, ingester, scheduler); err != nil {
+			otel.RecordError(sp, err)
 			return err
-		}
-
-		var descriptors []models.TaskDescriptor
-		for _, profile := range profiles {
-			balances, err := wiseClient.GetBalances(ctx, profile.ID)
-			if err != nil {
-				return err
-			}
-
-			if err := ingestAccountsBatch(
-				ctx,
-				logger,
-				connectorID,
-				ingester,
-				profile.ID,
-				balances,
-			); err != nil {
-				return err
-			}
-
-			logger.Infof(fmt.Sprintf("scheduling fetch-transfers: %d", profile.ID))
-
-			transferDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
-				Name:      "Fetch transfers from client by profile",
-				Key:       taskNameFetchTransfers,
-				ProfileID: profile.ID,
-			})
-			if err != nil {
-				return err
-			}
-			descriptors = append(descriptors, transferDescriptor)
-
-			recipientAccountsDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
-				Name:      "Fetch recipient accounts from client by profile",
-				Key:       taskNameFetchRecipientAccounts,
-				ProfileID: profile.ID,
-			})
-			if err != nil {
-				return err
-			}
-			descriptors = append(descriptors, recipientAccountsDescriptor)
-		}
-
-		for _, descriptor := range descriptors {
-			err = scheduler.Schedule(ctx, descriptor, models.TaskSchedulerOptions{
-				ScheduleOption: models.OPTIONS_RUN_NOW,
-				RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
-			})
-			if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
-				return err
-			}
 		}
 
 		return nil
 	}
 }
 
+func fetchProfiles(
+	ctx context.Context,
+	wiseClient *client.Client,
+	connectorID models.ConnectorID,
+	ingester ingestion.Ingester,
+	scheduler task.Scheduler,
+) error {
+	profiles, err := wiseClient.GetProfiles(ctx)
+	if err != nil {
+		return err
+	}
+
+	var descriptors []models.TaskDescriptor
+	for _, profile := range profiles {
+		balances, err := wiseClient.GetBalances(ctx, profile.ID)
+		if err != nil {
+			return err
+		}
+
+		if err := ingestAccountsBatch(
+			ctx,
+			connectorID,
+			ingester,
+			profile.ID,
+			balances,
+		); err != nil {
+			return err
+		}
+
+		transferDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
+			Name:      "Fetch transfers from client by profile",
+			Key:       taskNameFetchTransfers,
+			ProfileID: profile.ID,
+		})
+		if err != nil {
+			return err
+		}
+		descriptors = append(descriptors, transferDescriptor)
+
+		recipientAccountsDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
+			Name:      "Fetch recipient accounts from client by profile",
+			Key:       taskNameFetchRecipientAccounts,
+			ProfileID: profile.ID,
+		})
+		if err != nil {
+			return err
+		}
+		descriptors = append(descriptors, recipientAccountsDescriptor)
+	}
+
+	for _, descriptor := range descriptors {
+		err = scheduler.Schedule(ctx, descriptor, models.TaskSchedulerOptions{
+			ScheduleOption: models.OPTIONS_RUN_NOW,
+			RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
+		})
+		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func ingestAccountsBatch(
 	ctx context.Context,
-	logger logging.Logger,
 	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	profileID uint64,
@@ -109,7 +128,6 @@ func ingestAccountsBatch(
 
 		precision, ok := supportedCurrenciesWithDecimal[balance.Amount.Currency]
 		if !ok {
-			logger.Errorf("currency %s is not supported", balance.Amount.Currency)
 			continue
 		}
 

@@ -52,19 +52,19 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 	return func(taskDescriptor TaskDescriptor) task.Task {
 		switch taskDescriptor.Key {
 		case taskNameMain:
-			return taskMain(logger)
+			return taskMain()
 		case taskNameFetchUsers:
-			return taskFetchUsers(logger, mangopayClient)
+			return taskFetchUsers(mangopayClient)
 		case taskNameFetchBankAccounts:
-			return taskFetchBankAccounts(logger, mangopayClient, taskDescriptor.UserID)
+			return taskFetchBankAccounts(mangopayClient, taskDescriptor.UserID)
 		case taskNameFetchTransactions:
-			return taskFetchTransactions(logger, mangopayClient, taskDescriptor.WalletID)
+			return taskFetchTransactions(mangopayClient, taskDescriptor.WalletID)
 		case taskNameInitiatePayment:
-			return taskInitiatePayment(logger, mangopayClient, taskDescriptor.TransferID)
+			return taskInitiatePayment(mangopayClient, taskDescriptor.TransferID)
 		case taskNameUpdatePaymentStatus:
-			return taskUpdatePaymentStatus(logger, mangopayClient, taskDescriptor.TransferID, taskDescriptor.PaymentID, taskDescriptor.Attempt)
+			return taskUpdatePaymentStatus(mangopayClient, taskDescriptor.TransferID, taskDescriptor.PaymentID, taskDescriptor.Attempt)
 		case taskNameFetchWallets:
-			return taskFetchWallets(logger, mangopayClient, taskDescriptor.UserID)
+			return taskFetchWallets(mangopayClient, taskDescriptor.UserID)
 		}
 
 		// This should never happen.

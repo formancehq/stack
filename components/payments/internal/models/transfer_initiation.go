@@ -162,7 +162,6 @@ type TransferInitiation struct {
 
 	CreatedAt   time.Time `bun:",nullzero"`
 	ScheduledAt time.Time `bun:",nullzero"`
-	// UpdatedAt   time.Time `bun:",nullzero"`
 	Description string
 
 	Type TransferInitiationType
@@ -174,11 +173,6 @@ type TransferInitiation struct {
 
 	Amount *big.Int `bun:"type:numeric"`
 	Asset  Asset
-
-	// Attempts int
-
-	// Status TransferInitiationStatus
-	// Error  string
 
 	Metadata map[string]string
 

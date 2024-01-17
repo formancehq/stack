@@ -26,6 +26,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
+	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
@@ -34,8 +35,7 @@ import (
 )
 
 const (
-	otelTracesFlag = "otel-traces"
-	serviceName    = "Payments"
+	serviceName = "Payments"
 
 	ErrUniqueReference      = "CONFLICT"
 	ErrNotFound             = "NOT_FOUND"
@@ -90,7 +90,7 @@ func connectorsHandlerMap(connectorHandlers []connectorHandler) map[models.Conne
 }
 
 func httpRecoveryFunc(ctx context.Context, e interface{}) {
-	if viper.GetBool(otelTracesFlag) {
+	if viper.GetBool(otlptraces.OtelTracesFlag) {
 		otlp.RecordAsError(ctx, e)
 	} else {
 		logrus.Errorln(e)

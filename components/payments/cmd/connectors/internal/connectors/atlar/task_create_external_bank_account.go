@@ -9,32 +9,44 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/payments/internal/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func CreateExternalBankAccountTask(config Config, client *client.Client, newExternalBankAccount *models.BankAccount) task.Task {
 	return func(
 		ctx context.Context,
-		logger logging.Logger,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 	) error {
+		span := trace.SpanFromContext(ctx)
+		span.SetName("atlar.taskCreateExternalBankAccount")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+			attribute.String("bankAccount.name", newExternalBankAccount.Name),
+			attribute.String("bankAccount.id", newExternalBankAccount.ID.String()),
+		)
+
 		err := validateExternalBankAccount(newExternalBankAccount)
 		if err != nil {
+			otel.RecordError(span, err)
 			return err
 		}
 
 		externalAccountID, err := createExternalBankAccount(ctx, client, newExternalBankAccount)
 		if err != nil {
+			otel.RecordError(span, err)
 			return err
 		}
 		if externalAccountID == nil {
-			return errors.New("no external account id returned")
+			err := errors.New("no external account id returned")
+			otel.RecordError(span, err)
+			return err
 		}
 
 		err = ingestExternalAccountFromAtlar(
 			ctx,
-			logger,
 			connectorID,
 			ingester,
 			client,
@@ -42,6 +54,7 @@ func CreateExternalBankAccountTask(config Config, client *client.Client, newExte
 			*externalAccountID,
 		)
 		if err != nil {
+			otel.RecordError(span, err)
 			return err
 		}
 
@@ -72,7 +85,6 @@ func createExternalBankAccount(ctx context.Context, client *client.Client, newEx
 
 func ingestExternalAccountFromAtlar(
 	ctx context.Context,
-	logger logging.Logger,
 	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	client *client.Client,
@@ -95,7 +107,6 @@ func ingestExternalAccountFromAtlar(
 	if err != nil {
 		return err
 	}
-	logger.WithContext(ctx).Info("Got external Account from Atlar", newAccount)
 
 	accountsBatch = append(accountsBatch, newAccount)
 

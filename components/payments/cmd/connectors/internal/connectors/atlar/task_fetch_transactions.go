@@ -13,33 +13,42 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/contextutil"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/get-momo/atlar-v1-go-client/client/transactions"
 	atlar_models "github.com/get-momo/atlar-v1-go-client/models"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func FetchTransactionsTask(config Config, client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
-		logger logging.Logger,
 		connectorID models.ConnectorID,
 		resolver task.StateResolver,
 		scheduler task.Scheduler,
 		ingester ingestion.Ingester,
 	) error {
+		span := trace.SpanFromContext(ctx)
+		span.SetName("atlar.taskFetchTransactions")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+		)
+
 		// Pagination works by cursor token.
 		for token := ""; ; {
 			requestCtx, cancel := contextutil.DetachedWithTimeout(ctx, 30*time.Second)
 			defer cancel()
 			pagedTransactions, err := client.GetV1Transactions(requestCtx, token, int64(config.PageSize))
 			if err != nil {
+				otel.RecordError(span, err)
 				return err
 			}
 
 			token = pagedTransactions.Payload.NextToken
 
 			if err := ingestPaymentsBatch(ctx, connectorID, ingester, pagedTransactions); err != nil {
+				otel.RecordError(span, err)
 				return err
 			}
 

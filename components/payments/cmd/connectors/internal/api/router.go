@@ -8,6 +8,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
@@ -36,7 +37,7 @@ func httpRouter(
 	rootMux.Path("/_health").Handler(healthHandler(b))
 
 	subRouter := rootMux.NewRoute().Subrouter()
-	if viper.GetBool(otelTracesFlag) {
+	if viper.GetBool(otlptraces.OtelTracesFlag) {
 		subRouter.Use(otelmux.Middleware(serviceName))
 		// Add a second recovery handler to ensure that the otel middleware
 		// is catching the error in the trace

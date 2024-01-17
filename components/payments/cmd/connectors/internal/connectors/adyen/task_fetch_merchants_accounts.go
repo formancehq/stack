@@ -10,7 +10,9 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/payments/internal/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 const (
@@ -20,30 +22,48 @@ const (
 func taskFetchAccounts(client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
-		logger logging.Logger,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 	) error {
-		logger.Info(taskNameFetchAccounts)
+		span := trace.SpanFromContext(ctx)
+		span.SetName("adyen.taskFetchAccounts")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+		)
 
-		for page := 1; ; page++ {
-			pagedAccounts, err := client.GetMerchantAccounts(ctx, int32(page), pageSize)
-			if err != nil {
-				return err
-			}
-
-			if err := ingestAccountsBatch(ctx, connectorID, ingester, pagedAccounts); err != nil {
-				return err
-			}
-
-			if len(pagedAccounts) < pageSize {
-				break
-			}
+		if err := fetchAccounts(ctx, client, connectorID, ingester, scheduler); err != nil {
+			otel.RecordError(span, err)
+			return err
 		}
 
 		return nil
 	}
+}
+
+func fetchAccounts(
+	ctx context.Context,
+	client *client.Client,
+	connectorID models.ConnectorID,
+	ingester ingestion.Ingester,
+	scheduler task.Scheduler,
+) error {
+	for page := 1; ; page++ {
+		pagedAccounts, err := client.GetMerchantAccounts(ctx, int32(page), pageSize)
+		if err != nil {
+			return err
+		}
+
+		if err := ingestAccountsBatch(ctx, connectorID, ingester, pagedAccounts); err != nil {
+			return err
+		}
+
+		if len(pagedAccounts) < pageSize {
+			break
+		}
+	}
+
+	return nil
 }
 
 func ingestAccountsBatch(

@@ -6,7 +6,9 @@ import (
 
 	"github.com/formancehq/payments/cmd/connectors/internal/api/backend"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"go.opentelemetry.io/otel/attribute"
 )
 
 type readConnectorsResponseElement struct {
@@ -18,11 +20,17 @@ type readConnectorsResponseElement struct {
 
 func readConnectorsHandler(b backend.ServiceBackend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		res, err := b.GetService().ListConnectors(r.Context())
+		ctx, span := otel.Tracer().Start(r.Context(), "readConnectorsHandler")
+		defer span.End()
+
+		res, err := b.GetService().ListConnectors(ctx)
 		if err != nil {
+			otel.RecordError(span, err)
 			handleServiceErrors(w, r, err)
 			return
 		}
+
+		span.SetAttributes(attribute.Int("count", len(res)))
 
 		data := make([]readConnectorsResponseElement, len(res))
 
@@ -40,7 +48,9 @@ func readConnectorsHandler(b backend.ServiceBackend) http.HandlerFunc {
 				Data: &data,
 			})
 		if err != nil {
-			panic(err)
+			otel.RecordError(span, err)
+			api.InternalServerError(w, r, err)
+			return
 		}
 	}
 }

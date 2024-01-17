@@ -12,22 +12,34 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/payments/internal/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
-func taskFetchTransactions(logger logging.Logger, client *client.Client, config Config) task.Task {
+func taskFetchTransactions(client *client.Client, config Config) task.Task {
 	return func(
 		ctx context.Context,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 	) error {
-		return ingestTransactions(ctx, logger, connectorID, client, ingester)
+		span := trace.SpanFromContext(ctx)
+		span.SetName("currencycloud.taskFetchTransactions")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+		)
+
+		if err := ingestTransactions(ctx, connectorID, client, ingester); err != nil {
+			otel.RecordError(span, err)
+			return err
+		}
+
+		return nil
 	}
 }
 
 func ingestTransactions(
 	ctx context.Context,
-	logger logging.Logger,
 	connectorID models.ConnectorID,
 	client *client.Client,
 	ingester ingestion.Ingester,
@@ -37,8 +49,6 @@ func ingestTransactions(
 		if page < 0 {
 			break
 		}
-
-		logger.Info("Fetching transactions")
 
 		transactions, nextPage, err := client.GetTransactions(ctx, page)
 		if err != nil {
@@ -50,11 +60,8 @@ func ingestTransactions(
 		batch := ingestion.PaymentBatch{}
 
 		for _, transaction := range transactions {
-			logger.Info(transaction)
-
 			precision, ok := supportedCurrenciesWithDecimal[transaction.Currency]
 			if !ok {
-				logger.Errorf("currency %s is not supported", transaction.Currency)
 				continue
 			}
 

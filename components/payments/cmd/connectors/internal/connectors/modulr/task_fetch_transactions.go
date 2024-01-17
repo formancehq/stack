@@ -13,53 +13,74 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/payments/internal/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
-func taskFetchTransactions(logger logging.Logger, config Config, client *client.Client, accountID string) task.Task {
+func taskFetchTransactions(config Config, client *client.Client, accountID string) task.Task {
 	return func(
 		ctx context.Context,
-		logger logging.Logger,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 	) error {
-		logger.Info("Fetching transactions for account", accountID)
+		span := trace.SpanFromContext(ctx)
+		span.SetName("modulr.taskFetchTransactions")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+			attribute.String("accountID", accountID),
+		)
 
-		for page := 0; ; page++ {
-			pagedTransactions, err := client.GetTransactions(ctx, accountID, page, config.PageSize)
-			if err != nil {
-				return err
-			}
-
-			if len(pagedTransactions.Content) == 0 {
-				break
-			}
-
-			batch, err := toBatch(logger, connectorID, accountID, pagedTransactions.Content)
-			if err != nil {
-				return err
-			}
-
-			if err := ingester.IngestPayments(ctx, connectorID, batch, struct{}{}); err != nil {
-				return err
-			}
-
-			if len(pagedTransactions.Content) < config.PageSize {
-				break
-			}
-
-			if page+1 >= pagedTransactions.TotalPages {
-				// Modulr paging starts at 0, so the last page is TotalPages - 1.
-				break
-			}
+		if err := fetchTransactions(ctx, config, client, accountID, connectorID, ingester); err != nil {
+			otel.RecordError(span, err)
+			return err
 		}
 
 		return nil
 	}
 }
 
+func fetchTransactions(
+	ctx context.Context,
+	config Config,
+	client *client.Client,
+	accountID string,
+	connectorID models.ConnectorID,
+	ingester ingestion.Ingester,
+) error {
+	for page := 0; ; page++ {
+		pagedTransactions, err := client.GetTransactions(ctx, accountID, page, config.PageSize)
+		if err != nil {
+			return err
+		}
+
+		if len(pagedTransactions.Content) == 0 {
+			break
+		}
+
+		batch, err := toBatch(connectorID, accountID, pagedTransactions.Content)
+		if err != nil {
+			return err
+		}
+
+		if err := ingester.IngestPayments(ctx, connectorID, batch, struct{}{}); err != nil {
+			return err
+		}
+
+		if len(pagedTransactions.Content) < config.PageSize {
+			break
+		}
+
+		if page+1 >= pagedTransactions.TotalPages {
+			// Modulr paging starts at 0, so the last page is TotalPages - 1.
+			break
+		}
+	}
+
+	return nil
+}
+
 func toBatch(
-	logger logging.Logger,
 	connectorID models.ConnectorID,
 	accountID string,
 	transactions []*client.Transaction,
@@ -67,7 +88,6 @@ func toBatch(
 	batch := ingestion.PaymentBatch{}
 
 	for _, transaction := range transactions {
-		logger.Info(transaction)
 
 		rawData, err := json.Marshal(transaction)
 		if err != nil {
@@ -78,7 +98,6 @@ func toBatch(
 
 		precision, ok := supportedCurrenciesWithDecimal[transaction.Account.Currency]
 		if !ok {
-			logger.Errorf("currency %s is not supported", transaction.Account.Currency)
 			continue
 		}
 

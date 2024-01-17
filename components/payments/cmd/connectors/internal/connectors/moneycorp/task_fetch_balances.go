@@ -12,28 +12,50 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/payments/internal/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
-func taskFetchBalances(logger logging.Logger, client *client.Client, accountID string) task.Task {
+func taskFetchBalances(client *client.Client, accountID string) task.Task {
 	return func(
 		ctx context.Context,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 	) error {
-		logger.Info("Fetching transactions for account", accountID)
+		span := trace.SpanFromContext(ctx)
+		span.SetName("moneycorp.taskFetchBalances")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+			attribute.String("accountID", accountID),
+		)
 
-		balances, err := client.GetAccountBalances(ctx, accountID)
-		if err != nil {
-			return err
-		}
-
-		if err := ingestBalancesBatch(ctx, connectorID, ingester, accountID, balances); err != nil {
+		if err := fetchBalances(ctx, client, accountID, connectorID, ingester); err != nil {
+			otel.RecordError(span, err)
 			return err
 		}
 
 		return nil
 	}
+}
+
+func fetchBalances(
+	ctx context.Context,
+	client *client.Client,
+	accountID string,
+	connectorID models.ConnectorID,
+	ingester ingestion.Ingester,
+) error {
+	balances, err := client.GetAccountBalances(ctx, accountID)
+	if err != nil {
+		return err
+	}
+
+	if err := ingestBalancesBatch(ctx, connectorID, ingester, accountID, balances); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func ingestBalancesBatch(

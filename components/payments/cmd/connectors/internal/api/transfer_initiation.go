@@ -8,9 +8,12 @@ import (
 
 	"github.com/formancehq/payments/cmd/connectors/internal/api/backend"
 	"github.com/formancehq/payments/cmd/connectors/internal/api/service"
+	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type transferInitiationResponse struct {
@@ -31,24 +34,38 @@ type transferInitiationResponse struct {
 
 func createTransferInitiationHandler(b backend.ServiceBackend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := otel.Tracer().Start(r.Context(), "createTransferInitiationHandler")
+		defer span.End()
+
 		w.Header().Set("Content-Type", "application/json")
 
 		payload := &service.CreateTransferInitiationRequest{}
 		if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+			otel.RecordError(span, err)
 			api.BadRequest(w, ErrMissingOrInvalidBody, err)
 			return
 		}
 
+		setSpanAttributesFromRequest(span, payload)
+
 		if err := payload.Validate(); err != nil {
+			otel.RecordError(span, err)
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
-		tf, err := b.GetService().CreateTransferInitiation(r.Context(), payload)
+		tf, err := b.GetService().CreateTransferInitiation(ctx, payload)
 		if err != nil {
+			otel.RecordError(span, err)
 			handleServiceErrors(w, r, err)
 			return
 		}
+
+		span.SetAttributes(
+			attribute.String("transfer.id", tf.ID.String()),
+			attribute.String("transfer.createdAt", tf.CreatedAt.String()),
+			attribute.String("connectorID", tf.ConnectorID.String()),
+		)
 
 		data := &transferInitiationResponse{
 			ID:                   tf.ID.String(),
@@ -74,6 +91,7 @@ func createTransferInitiationHandler(b backend.ServiceBackend) http.HandlerFunc 
 			Data: data,
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			api.InternalServerError(w, r, err)
 			return
 		}
@@ -82,24 +100,35 @@ func createTransferInitiationHandler(b backend.ServiceBackend) http.HandlerFunc 
 
 func updateTransferInitiationStatusHandler(b backend.ServiceBackend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := otel.Tracer().Start(r.Context(), "updateTransferInitiationStatusHandler")
+		defer span.End()
+
 		payload := &service.UpdateTransferInitiationStatusRequest{}
 		if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+			otel.RecordError(span, err)
 			api.BadRequest(w, ErrMissingOrInvalidBody, err)
 			return
 		}
 
+		span.SetAttributes(attribute.String("request.status", payload.Status))
+
 		if err := payload.Validate(); err != nil {
+			otel.RecordError(span, err)
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
 		transferID, ok := mux.Vars(r)["transferID"]
 		if !ok {
+			otel.RecordError(span, errors.New("missing transferID"))
 			api.BadRequest(w, ErrInvalidID, errors.New("missing transferID"))
 			return
 		}
 
-		if err := b.GetService().UpdateTransferInitiationStatus(r.Context(), transferID, payload); err != nil {
+		span.SetAttributes(attribute.String("transfer.id", transferID))
+
+		if err := b.GetService().UpdateTransferInitiationStatus(ctx, transferID, payload); err != nil {
+			otel.RecordError(span, err)
 			handleServiceErrors(w, r, err)
 			return
 		}
@@ -110,13 +139,20 @@ func updateTransferInitiationStatusHandler(b backend.ServiceBackend) http.Handle
 
 func retryTransferInitiationHandler(b backend.ServiceBackend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := otel.Tracer().Start(r.Context(), "retryTransferInitiationHandler")
+		defer span.End()
+
 		transferID, ok := mux.Vars(r)["transferID"]
 		if !ok {
+			otel.RecordError(span, errors.New("missing transferID"))
 			api.BadRequest(w, ErrInvalidID, errors.New("missing transferID"))
 			return
 		}
 
-		if err := b.GetService().RetryTransferInitiation(r.Context(), transferID); err != nil {
+		span.SetAttributes(attribute.String("transfer.id", transferID))
+
+		if err := b.GetService().RetryTransferInitiation(ctx, transferID); err != nil {
+			otel.RecordError(span, err)
 			handleServiceErrors(w, r, err)
 			return
 		}
@@ -127,17 +163,40 @@ func retryTransferInitiationHandler(b backend.ServiceBackend) http.HandlerFunc {
 
 func deleteTransferInitiationHandler(b backend.ServiceBackend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := otel.Tracer().Start(r.Context(), "deleteTransferInitiationHandler")
+		defer span.End()
+
 		transferID, ok := mux.Vars(r)["transferID"]
 		if !ok {
+			otel.RecordError(span, errors.New("missing transferID"))
 			api.BadRequest(w, ErrInvalidID, errors.New("missing transferID"))
 			return
 		}
 
-		if err := b.GetService().DeleteTransferInitiation(r.Context(), transferID); err != nil {
+		span.SetAttributes(attribute.String("transfer.id", transferID))
+
+		if err := b.GetService().DeleteTransferInitiation(ctx, transferID); err != nil {
+			otel.RecordError(span, err)
 			handleServiceErrors(w, r, err)
 			return
 		}
 
 		w.WriteHeader(http.StatusNoContent)
 	}
+}
+
+func setSpanAttributesFromRequest(span trace.Span, transfer *service.CreateTransferInitiationRequest) {
+	span.SetAttributes(
+		attribute.String("request.reference", transfer.Reference),
+		attribute.String("request.scheduledAt", transfer.ScheduledAt.String()),
+		attribute.String("request.description", transfer.Description),
+		attribute.String("request.sourceAccountID", transfer.SourceAccountID),
+		attribute.String("request.destinationAccountID", transfer.DestinationAccountID),
+		attribute.String("request.connectorID", transfer.ConnectorID),
+		attribute.String("request.provider", transfer.Provider),
+		attribute.String("request.type", transfer.Type),
+		attribute.String("request.amount", transfer.Amount.String()),
+		attribute.String("request.asset", transfer.Asset),
+		attribute.String("request.validated", transfer.Asset),
+	)
 }

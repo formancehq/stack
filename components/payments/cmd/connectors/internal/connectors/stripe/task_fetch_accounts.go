@@ -10,9 +10,12 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
 	"github.com/stripe/stripe-go/v72"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 const (
@@ -28,8 +31,15 @@ func fetchAccountsTask(config TimelineConfig, client *client.DefaultClient) task
 		scheduler task.Scheduler,
 		ingester ingestion.Ingester,
 	) error {
+		span := trace.SpanFromContext(ctx)
+		span.SetName("stripe.fetchAccountsTask")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+		)
+
 		// Register root account.
 		if err := registerRootAccount(ctx, connectorID, ingester, scheduler); err != nil {
+			otel.RecordError(span, err)
 			return err
 		}
 
@@ -111,6 +121,7 @@ func fetchAccountsTask(config TimelineConfig, client *client.DefaultClient) task
 		)
 
 		if err := tt.Fetch(ctx); err != nil {
+			otel.RecordError(span, err)
 			return err
 		}
 

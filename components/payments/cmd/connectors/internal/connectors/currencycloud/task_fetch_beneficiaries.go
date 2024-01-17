@@ -8,11 +8,12 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/payments/internal/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func taskFetchBeneficiaries(
-	logger logging.Logger,
 	client *client.Client,
 ) task.Task {
 	return func(
@@ -21,28 +22,47 @@ func taskFetchBeneficiaries(
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 	) error {
-		logger.Info(taskFetchBeneficiaries)
+		span := trace.SpanFromContext(ctx)
+		span.SetName("currencycloud.taskFetchBeneficiaries")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+		)
 
-		page := 1
-		for {
-			if page < 0 {
-				break
-			}
-
-			pagedBeneficiaries, nextPage, err := client.GetBeneficiaries(ctx, page)
-			if err != nil {
-				return err
-			}
-
-			page = nextPage
-
-			if err := ingestBeneficiariesAccountsBatch(ctx, connectorID, ingester, pagedBeneficiaries); err != nil {
-				return err
-			}
+		if err := fetchBeneficiaries(ctx, client, connectorID, ingester, scheduler); err != nil {
+			otel.RecordError(span, err)
+			return err
 		}
 
 		return nil
 	}
+}
+
+func fetchBeneficiaries(
+	ctx context.Context,
+	client *client.Client,
+	connectorID models.ConnectorID,
+	ingester ingestion.Ingester,
+	scheduler task.Scheduler,
+) error {
+	page := 1
+	for {
+		if page < 0 {
+			break
+		}
+
+		pagedBeneficiaries, nextPage, err := client.GetBeneficiaries(ctx, page)
+		if err != nil {
+			return err
+		}
+
+		page = nextPage
+
+		if err := ingestBeneficiariesAccountsBatch(ctx, connectorID, ingester, pagedBeneficiaries); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func ingestBeneficiariesAccountsBatch(

@@ -15,23 +15,32 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/contextutil"
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/get-momo/atlar-v1-go-client/client/credit_transfers"
 	atlar_models "github.com/get-momo/atlar-v1-go-client/models"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func InitiatePaymentTask(config Config, client *client.Client, transferID string) task.Task {
 	return func(
 		ctx context.Context,
-		logger logging.Logger,
 		connectorID models.ConnectorID,
 		scheduler task.Scheduler,
 		storageReader storage.Reader,
 		ingester ingestion.Ingester,
 	) error {
-		logger.Info("initiate payment for transfer-initiation %s", transferID)
-
 		transferInitiationID := models.MustTransferInitiationIDFromString(transferID)
+
+		span := trace.SpanFromContext(ctx)
+		span.SetName("atlar.taskInitiatePayment")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+			attribute.String("transferID", transferID),
+			attribute.String("reference", transferInitiationID.Reference),
+		)
+
 		transfer, err := getTransfer(ctx, storageReader, transferInitiationID, true)
 		if err != nil {
 			return err
@@ -40,10 +49,11 @@ func InitiatePaymentTask(config Config, client *client.Client, transferID string
 		var paymentID *models.PaymentID
 		defer func() {
 			if err != nil {
+				otel.RecordError(span, err)
 				ctx, cancel := contextutil.Detached(ctx)
 				defer cancel()
 				if err := ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusFailed, err.Error(), time.Now()); err != nil {
-					logger.Error("failed to update transfer initiation status: %v", err)
+					otel.RecordError(span, err)
 				}
 			}
 		}()
@@ -52,8 +62,6 @@ func InitiatePaymentTask(config Config, client *client.Client, transferID string
 		if err != nil {
 			return err
 		}
-
-		logger.Info("initiate payment between", transfer.SourceAccountID, " and %s", transfer.DestinationAccountID)
 
 		if transfer.SourceAccount != nil {
 			if transfer.SourceAccount.Type == models.AccountTypeExternal {
@@ -80,7 +88,6 @@ func InitiatePaymentTask(config Config, client *client.Client, transferID string
 			date = time.Now()
 		}
 		dateString := date.Format(time.DateOnly)
-		logger.WithContext(ctx).Infof("date is %s", date.Format(time.RFC3339Nano))
 
 		createPaymentRequest := atlar_models.CreatePaymentRequest{
 			SourceAccountID:              &transfer.SourceAccount.Reference,
@@ -97,7 +104,8 @@ func InitiatePaymentTask(config Config, client *client.Client, transferID string
 
 		requestCtx, cancel := contextutil.DetachedWithTimeout(ctx, 30*time.Second)
 		defer cancel()
-		postCreditTransferResponse, err := client.PostV1CreditTransfers(requestCtx, &createPaymentRequest)
+		var postCreditTransferResponse *credit_transfers.PostV1CreditTransfersCreated
+		postCreditTransferResponse, err = client.PostV1CreditTransfers(requestCtx, &createPaymentRequest)
 		if err != nil {
 			return err
 		}
@@ -114,7 +122,8 @@ func InitiatePaymentTask(config Config, client *client.Client, transferID string
 			return err
 		}
 
-		taskDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
+		var taskDescriptor models.TaskDescriptor
+		taskDescriptor, err = models.EncodeTaskDescriptor(TaskDescriptor{
 			Name:       fmt.Sprintf("Update transfer initiation status of transfer %s", transfer.ID.String()),
 			Key:        taskNameUpdatePaymentStatus,
 			TransferID: transfer.ID.String(),
@@ -156,7 +165,6 @@ func UpdatePaymentStatusTask(
 ) task.Task {
 	return func(
 		ctx context.Context,
-		logger logging.Logger,
 		connectorID models.ConnectorID,
 		scheduler task.Scheduler,
 		storageReader storage.Reader,
@@ -164,11 +172,22 @@ func UpdatePaymentStatusTask(
 	) error {
 		paymentID := models.MustPaymentIDFromString(stringPaymentID)
 		transferInitiationID := models.MustTransferInitiationIDFromString(transferID)
+
+		span := trace.SpanFromContext(ctx)
+		span.SetName("atlar.taskUpdatePaymentStatus")
+		span.SetAttributes(
+			attribute.String("connectorID", connectorID.String()),
+			attribute.String("transferID", transferID),
+			attribute.String("paymentID", stringPaymentID),
+			attribute.Int("attempt", attempt),
+			attribute.String("reference", transferInitiationID.Reference),
+		)
+
 		transfer, err := getTransfer(ctx, storageReader, transferInitiationID, true)
 		if err != nil {
+			otel.RecordError(span, err)
 			return err
 		}
-		logger.Info("attempt: ", attempt, " fetching status of ", paymentID)
 
 		requestCtx, cancel := contextutil.DetachedWithTimeout(ctx, 30*time.Second)
 		defer cancel()
@@ -177,6 +196,7 @@ func UpdatePaymentStatusTask(
 			serializeAtlarPaymentExternalID(transfer.ID.Reference, transfer.CountRetries()),
 		)
 		if err != nil {
+			otel.RecordError(span, err)
 			return err
 		}
 
@@ -192,6 +212,7 @@ func UpdatePaymentStatusTask(
 				Attempt:    attempt + 1,
 			})
 			if err != nil {
+				otel.RecordError(span, err)
 				return err
 			}
 
@@ -201,6 +222,7 @@ func UpdatePaymentStatusTask(
 				RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 			})
 			if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+				otel.RecordError(span, err)
 				return err
 			}
 			return nil
@@ -209,6 +231,7 @@ func UpdatePaymentStatusTask(
 			// this is done
 			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessed, "", time.Now())
 			if err != nil {
+				otel.RecordError(span, err)
 				return err
 			}
 
@@ -221,16 +244,19 @@ func UpdatePaymentStatusTask(
 				fmt.Sprintf("paymant initiation status is \"%s\"", status), time.Now(),
 			)
 			if err != nil {
+				otel.RecordError(span, err)
 				return err
 			}
 
 			return nil
 
 		default:
-			return fmt.Errorf(
+			err := fmt.Errorf(
 				"unknown status \"%s\" encountered while fetching payment initiation status of payment \"%s\"",
 				status, getCreditTransferResponse.Payload.ID,
 			)
+			otel.RecordError(span, err)
+			return err
 		}
 	}
 }
