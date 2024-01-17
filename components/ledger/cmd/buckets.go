@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/formancehq/ledger/internal/storage"
 	"github.com/formancehq/ledger/internal/storage/driver"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
@@ -23,7 +23,7 @@ func NewBucketUpgrade() *cobra.Command {
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			driver := driver.New(storage.ConnectionOptionsFromFlags(viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag)))
+			driver := driver.New(bunconnect.ConnectionOptionsFromFlags(viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag)))
 			if err := driver.Initialize(cmd.Context()); err != nil {
 				return err
 			}
@@ -56,7 +56,7 @@ func NewBucketUpgradeAll() *cobra.Command {
 			logger := service.GetDefaultLogger(cmd.OutOrStdout(), viper.GetBool(service.DebugFlag), false)
 			ctx := logging.ContextWithLogger(cmd.Context(), logger)
 
-			driver := driver.New(storage.ConnectionOptionsFromFlags(viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag)))
+			driver := driver.New(bunconnect.ConnectionOptionsFromFlags(viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag)))
 			defer func() {
 				_ = driver.Close()
 			}()

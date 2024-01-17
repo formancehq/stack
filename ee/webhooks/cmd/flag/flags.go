@@ -20,8 +20,6 @@ const (
 	MinBackoffDelay = "min-backoff-delay"
 	MaxBackoffDelay = "max-backoff-delay"
 
-	StoragePostgresConnString = "storage-postgres-conn-string"
-
 	KafkaTopics = "kafka-topics"
 	AutoMigrate = "auto-migrate"
 )
@@ -44,7 +42,6 @@ func Init(flagSet *pflag.FlagSet) {
 
 	flagSet.String(Listen, DefaultBindAddressServer, "server HTTP bind address")
 	flagSet.Duration(RetryPeriod, DefaultRetryPeriod, "worker retry period")
-	flagSet.String(StoragePostgresConnString, DefaultPostgresConnString, "Postgres connection string")
 	flagSet.Bool(Worker, false, "Enable worker on server")
 
 	flagSet.StringSlice(KafkaTopics, []string{DefaultKafkaTopic}, "Kafka topics")

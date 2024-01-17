@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/formancehq/stack/libs/go-libs/auth"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/formancehq/webhooks/cmd/flag"
 	"github.com/formancehq/webhooks/pkg/backoff"
@@ -32,7 +33,8 @@ func serve(cmd *cobra.Command, _ []string) error {
 			}
 		}),
 		auth.CLIAuthModule(viper.GetViper()),
-		postgres.NewModule(viper.GetString(flag.StoragePostgresConnString)),
+		postgres.NewModule(bunconnect.ConnectionOptionsFromFlags(
+			viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag))),
 		otlp.HttpClientModule(),
 		server.StartModule(viper.GetString(flag.Listen)),
 	}

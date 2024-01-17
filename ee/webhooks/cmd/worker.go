@@ -3,6 +3,8 @@ package cmd
 import (
 	"net/http"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/formancehq/webhooks/cmd/flag"
@@ -28,7 +30,8 @@ func runWorker(cmd *cobra.Command, _ []string) error {
 	return service.New(
 		cmd.OutOrStdout(),
 		otlp.HttpClientModule(),
-		postgres.NewModule(viper.GetString(flag.StoragePostgresConnString)),
+		postgres.NewModule(bunconnect.ConnectionOptionsFromFlags(
+			viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag))),
 		fx.Provide(worker.NewWorkerHandler),
 		fx.Invoke(func(lc fx.Lifecycle, h http.Handler) {
 			lc.Append(httpserver.NewHook(h, httpserver.WithAddress(viper.GetString(flag.Listen))))

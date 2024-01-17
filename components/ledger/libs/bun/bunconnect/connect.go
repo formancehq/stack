@@ -13,6 +13,17 @@ import (
 	"github.com/uptrace/bun/extra/bunotel"
 )
 
+type Opener interface {
+	Open(driverName, dataSourceName string) (*sql.DB, error)
+}
+type OpenerFn func(driverName, dataSourceName string) (*sql.DB, error)
+
+func (fn OpenerFn) Open(driverName, dataSourceName string) (*sql.DB, error) {
+	return fn(driverName, dataSourceName)
+}
+
+var DefaultOpener Opener = OpenerFn(sql.Open)
+
 type ConnectionOptions struct {
 	DatabaseSourceName string
 	Debug              bool
@@ -20,6 +31,9 @@ type ConnectionOptions struct {
 	MaxIdleConns       int
 	MaxOpenConns       int
 	ConnMaxIdleTime    time.Duration
+
+	// Opener allow to specify a custom Opener which is in charge of connection to the database
+	Opener Opener `json:"-"`
 }
 
 func (opts ConnectionOptions) String() string {
@@ -28,7 +42,11 @@ func (opts ConnectionOptions) String() string {
 }
 
 func OpenSQLDB(options ConnectionOptions, hooks ...bun.QueryHook) (*bun.DB, error) {
-	sqldb, err := sql.Open("postgres", options.DatabaseSourceName)
+	opener := DefaultOpener
+	if options.Opener != nil {
+		opener = options.Opener
+	}
+	sqldb, err := opener.Open("postgres", options.DatabaseSourceName)
 	if err != nil {
 		return nil, err
 	}

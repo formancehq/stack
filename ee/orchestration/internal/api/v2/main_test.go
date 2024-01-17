@@ -8,6 +8,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+
 	"github.com/formancehq/orchestration/internal/api"
 	"github.com/go-chi/chi/v5"
 
@@ -78,7 +80,11 @@ func test(t *testing.T, fn func(router *chi.Mux, backend api.Backend, db *bun.DB
 	t.Parallel()
 
 	database := pgtesting.NewPostgresDatabase(t)
-	db := storage.LoadDB(database.ConnString(), testing.Verbose(), os.Stdout)
+	db, err := bunconnect.OpenSQLDB(bunconnect.ConnectionOptions{
+		DatabaseSourceName: database.ConnString(),
+		Debug:              testing.Verbose(),
+	})
+	require.NoError(t, err)
 	t.Cleanup(func() {
 		_ = db.Close()
 	})

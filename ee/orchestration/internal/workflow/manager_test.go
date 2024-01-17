@@ -2,8 +2,9 @@ package workflow
 
 import (
 	"context"
-	"os"
 	"testing"
+
+	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 
 	"github.com/formancehq/orchestration/internal/storage"
 	"github.com/formancehq/orchestration/internal/workflow/stages"
@@ -28,7 +29,11 @@ func TestConfig(t *testing.T) {
 	t.Parallel()
 
 	database := pgtesting.NewPostgresDatabase(t)
-	db := storage.LoadDB(database.ConnString(), testing.Verbose(), os.Stdout)
+	db, err := bunconnect.OpenSQLDB(bunconnect.ConnectionOptions{
+		DatabaseSourceName: database.ConnString(),
+		Debug:              testing.Verbose(),
+	})
+	require.NoError(t, err)
 	t.Cleanup(func() {
 		_ = db.Close()
 	})
