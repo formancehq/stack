@@ -45,6 +45,7 @@ func taskInitiatePayment(
 
 		transfer, err := getTransfer(ctx, storageReader, transferInitiationID, true)
 		if err != nil {
+			otel.RecordError(span, err)
 			return err
 		}
 

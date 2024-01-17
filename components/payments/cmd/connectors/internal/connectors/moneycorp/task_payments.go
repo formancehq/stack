@@ -40,6 +40,7 @@ func taskInitiatePayment(moneycorpClient *client.Client, transferID string) task
 
 		transfer, err := getTransfer(ctx, storageReader, transferInitiationID, true)
 		if err != nil {
+			otel.RecordError(span, err)
 			return err
 		}
 
