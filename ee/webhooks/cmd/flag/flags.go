@@ -21,10 +21,7 @@ const (
 	MaxBackoffDelay = "max-backoff-delay"
 
 	KafkaTopics = "kafka-topics"
-<<<<<<< HEAD
 	AutoMigrate = "auto-migrate"
-=======
->>>>>>> db44bd8a3 (feat: rework migration process)
 )
 
 const (
