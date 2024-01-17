@@ -14,7 +14,12 @@ spec:
     singular: wallets
   scope: Cluster
   versions:
-  - name: v1beta1
+  - additionalPrinterColumns:
+    - description: Stack
+      jsonPath: .spec.stack
+      name: Stack
+      type: string
+    name: v1beta1
     schema:
       openAPIV3Schema:
         description: Wallets is the Schema for the wallets API

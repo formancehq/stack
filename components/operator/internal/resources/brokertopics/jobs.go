@@ -2,10 +2,11 @@ package brokertopics
 
 import (
 	"fmt"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
-	"k8s.io/api/batch/v1"
+	v1 "k8s.io/api/batch/v1"
 	v12 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 )

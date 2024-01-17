@@ -2,6 +2,7 @@ package payments
 
 import (
 	"fmt"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/auths"
@@ -13,8 +14,8 @@ import (
 	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/services"
-	v12 "k8s.io/api/apps/v1"
-	"k8s.io/api/core/v1"
+	corev1 "k8s.io/api/apps/v1"
+	v1 "k8s.io/api/core/v1"
 )
 
 func commonEnvVars(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) ([]v1.EnvVar, error) {
@@ -209,8 +210,8 @@ func createGateway(ctx core.Context, stack *v1beta1.Stack, p *v1beta1.Payments) 
 	return err
 }
 
-func setInitContainer(payments *v1beta1.Payments, database *v1beta1.Database, image string) func(t *v12.Deployment) {
-	return func(t *v12.Deployment) {
+func setInitContainer(payments *v1beta1.Payments, database *v1beta1.Database, image string) func(t *corev1.Deployment) {
+	return func(t *corev1.Deployment) {
 		t.Spec.Template.Spec.InitContainers = []v1.Container{
 			databases.MigrateDatabaseContainer(
 				image,

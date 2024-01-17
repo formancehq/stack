@@ -18,6 +18,7 @@ package streams
 
 import (
 	"fmt"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	corev1 "k8s.io/api/core/v1"

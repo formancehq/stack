@@ -18,6 +18,7 @@ package searches
 
 import (
 	"fmt"
+
 	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"

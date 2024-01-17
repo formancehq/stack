@@ -2,6 +2,11 @@ package internal
 
 import (
 	"context"
+	"os"
+	"path/filepath"
+	osRuntime "runtime"
+	"time"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/api/stack.formance.com/v1beta3"
 	"github.com/formancehq/operator/internal/core"
@@ -14,9 +19,6 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
-	"os"
-	"path/filepath"
-	osRuntime "runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	controllerruntime "sigs.k8s.io/controller-runtime/pkg/controller"
@@ -25,7 +27,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	"sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
-	"time"
 	//+kubebuilder:scaffold:imports
 )
 

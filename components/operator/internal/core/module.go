@@ -2,12 +2,13 @@ package core
 
 import (
 	"fmt"
+	"sort"
+	"strings"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"golang.org/x/mod/semver"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sort"
-	"strings"
 )
 
 func GetModuleName(module Module) string {

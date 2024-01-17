@@ -18,10 +18,11 @@ package payments
 
 import (
 	_ "embed"
+	"net/http"
+
 	"github.com/formancehq/operator/internal/resources/streams"
 	"github.com/formancehq/search/benthos"
 	"golang.org/x/mod/semver"
-	"net/http"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"

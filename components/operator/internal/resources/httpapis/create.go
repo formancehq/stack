@@ -1,10 +1,11 @@
 package httpapis
 
 import (
+	"strings"
+
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"k8s.io/apimachinery/pkg/types"
-	"strings"
 )
 
 type option func(spec *v1beta1.HTTPAPI)

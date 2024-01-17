@@ -1,13 +1,14 @@
 package auths
 
 import (
+	"sort"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"gopkg.in/yaml.v3"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
-	"sort"
 )
 
 func createConfiguration(ctx Context, stack *v1beta1.Stack, items []*v1beta1.AuthClient) (*corev1.ConfigMap, error) {

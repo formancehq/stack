@@ -7,7 +7,7 @@ import (
 	"github.com/formancehq/operator/internal/resources/gateways"
 	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/internal/resources/registries"
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 )
 
 func createDeployment(ctx core.Context, stack *v1beta1.Stack, stargate *v1beta1.Stargate) error {

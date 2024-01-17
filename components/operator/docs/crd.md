@@ -31,6 +31,7 @@ Package v1beta1 contains API Schema definitions for the formance v1beta1 API gro
 - [Stream](#stream)
 - [StreamProcessor](#streamprocessor)
 - [TemporalConfiguration](#temporalconfiguration)
+- [VersionsHistory](#versionshistory)
 - [Wallets](#wallets)
 - [Webhooks](#webhooks)
 
@@ -1165,6 +1166,7 @@ _Appears in:_
 - [StargateSpec](#stargatespec)
 - [StreamProcessorSpec](#streamprocessorspec)
 - [StreamSpec](#streamspec)
+- [VersionsHistorySpec](#versionshistoryspec)
 - [WalletsSpec](#walletsspec)
 - [WebhooksSpec](#webhooksspec)
 
@@ -1382,6 +1384,40 @@ _Appears in:_
 | Field | Description |
 | --- | --- |
 | `otlp` _[OtlpSpec](#otlpspec)_ |  |
+
+
+#### VersionsHistory
+
+
+
+VersionsHistory is the Schema for the versionshistories API
+
+
+
+| Field | Description |
+| --- | --- |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `VersionsHistory`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[VersionsHistorySpec](#versionshistoryspec)_ |  |
+
+
+#### VersionsHistorySpec
+
+
+
+VersionsHistorySpec defines the desired state of VersionsHistory
+
+_Appears in:_
+- [VersionsHistory](#versionshistory)
+
+| Field | Description |
+| --- | --- |
+| `stack` _string_ |  |
+| `module` _string_ |  |
+| `version` _string_ |  |
+
+
 
 
 #### Wallets

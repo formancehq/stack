@@ -2,14 +2,15 @@ package core
 
 import (
 	"bytes"
+	"strings"
+	"text/template"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"golang.org/x/mod/semver"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
-	"strings"
-	"text/template"
 )
 
 func ConfigureCaddy(caddyfile *v1.ConfigMap, image string, env []v1.EnvVar,

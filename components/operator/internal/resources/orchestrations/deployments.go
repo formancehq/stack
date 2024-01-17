@@ -2,6 +2,8 @@ package orchestrations
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/authclients"
@@ -14,8 +16,7 @@ import (
 	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
-	"k8s.io/api/core/v1"
-	"strings"
+	v1 "k8s.io/api/core/v1"
 )
 
 func createAuthClient(ctx core.Context, stack *v1beta1.Stack, orchestration *v1beta1.Orchestration) (*v1beta1.AuthClient, error) {

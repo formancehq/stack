@@ -2,10 +2,11 @@ package brokertopicconsumers
 
 import (
 	"fmt"
-	"github.com/stoewer/go-strcase"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sort"
 	"strings"
+
+	"github.com/stoewer/go-strcase"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"

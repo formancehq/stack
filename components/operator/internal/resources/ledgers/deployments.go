@@ -2,6 +2,8 @@ package ledgers
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/auths"
@@ -13,13 +15,12 @@ import (
 	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/internal/resources/services"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
-	"k8s.io/api/apps/v1"
+	v1 "k8s.io/api/apps/v1"
 	v13 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	v14 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"strconv"
 )
 
 func installLedger(ctx core.Context, stack *v1beta1.Stack,

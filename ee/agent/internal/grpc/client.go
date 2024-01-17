@@ -10,8 +10,6 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/formancehq/operator/api/formance.com/v1beta1"
-
 	clientv1beta3 "github.com/formancehq/operator/pkg/client/stack.formance.com/v1beta3"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 
@@ -135,20 +133,22 @@ func (client *client) createStack(stack *generated.Stack) *v1beta3.Stack {
 			Name: stack.ClusterName,
 		},
 		Spec: v1beta3.StackSpec{
-			DevProperties: v1beta1.DevProperties{
+			DevProperties: v1beta3.DevProperties{
 				Debug: false,
 				Dev:   false,
 			},
 			Seed: stack.Seed,
 			Auth: v1beta3.StackAuthSpec{
-				DelegatedOIDCServer: v1beta1.DelegatedOIDCServerConfiguration{
+				DelegatedOIDCServer: v1beta3.DelegatedOIDCServerConfiguration{
 					Issuer:       stack.AuthConfig.Issuer,
 					ClientID:     stack.AuthConfig.ClientId,
 					ClientSecret: stack.AuthConfig.ClientSecret,
 				},
-				StaticClients: []*v1beta1.AuthClientSpec{{
-					Public: true,
-					ID:     "fctl",
+				StaticClients: []v1beta3.StaticClient{{
+					ClientConfiguration: v1beta3.ClientConfiguration{
+						Public: true,
+					},
+					ID: "fctl",
 				}},
 			},
 			Host:   fmt.Sprintf("%s.%s", stack.ClusterName, client.clientInfo.BaseUrl.Host),

@@ -2,8 +2,9 @@ package tests_test
 
 import (
 	"fmt"
-	. "github.com/formancehq/operator/internal/tests/internal"
 	"math/rand"
+
+	. "github.com/formancehq/operator/internal/tests/internal"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/api/stack.formance.com/v1beta3"
