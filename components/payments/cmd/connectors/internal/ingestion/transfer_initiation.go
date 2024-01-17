@@ -15,7 +15,7 @@ func (i *DefaultIngester) UpdateTransferInitiationPaymentsStatus(ctx context.Con
 	adjustment := &models.TransferInitiationAdjustments{
 		ID:                   uuid.New(),
 		TransferInitiationID: tf.ID,
-		CreatedAt:            updatedAt,
+		CreatedAt:            updatedAt.UTC(),
 		Status:               status,
 		Error:                errorMessage,
 	}
@@ -45,7 +45,7 @@ func (i *DefaultIngester) AddTransferInitiationPaymentID(ctx context.Context, tf
 	tf.RelatedPayments = append(tf.RelatedPayments, &models.TransferInitiationPayments{
 		TransferInitiationID: tf.ID,
 		PaymentID:            *paymentID,
-		CreatedAt:            updatedAt,
+		CreatedAt:            updatedAt.UTC(),
 		Status:               models.TransferInitiationStatusProcessing,
 	})
 

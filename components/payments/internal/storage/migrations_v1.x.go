@@ -231,6 +231,20 @@ func registerMigrationsV1(ctx context.Context, migrator *migrations.Migrator) {
 				return nil
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				// Drop check constraint on created at since it's created by the code and
+				// not by the user.
+				_, err := tx.Exec(`
+					ALTER TABLE transfers.transfer_initiation_payments DROP CONSTRAINT transfer_initiation_payments_created_at_check;
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
 	)
 }
 
