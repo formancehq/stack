@@ -42,6 +42,7 @@ spec:
         credentialsFromSecret: postgres
         host: postgres-postgresql.formance.svc.cluster.local
         port: 5432
+        disableSSLMode: true
       staticClients:
         - id: foo
           public: true
