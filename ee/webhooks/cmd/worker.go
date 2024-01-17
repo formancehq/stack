@@ -17,9 +17,10 @@ import (
 
 func newWorkerCommand() *cobra.Command {
 	return &cobra.Command{
-		Use:   "worker",
-		Short: "Run webhooks worker",
-		RunE:  runWorker,
+		Use:     "worker",
+		Short:   "Run webhooks worker",
+		RunE:    runWorker,
+		PreRunE: handleAutoMigrate,
 	}
 }
 

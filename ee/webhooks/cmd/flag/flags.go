@@ -23,6 +23,7 @@ const (
 	StoragePostgresConnString = "storage-postgres-conn-string"
 
 	KafkaTopics = "kafka-topics"
+	AutoMigrate = "auto-migrate"
 )
 
 const (
@@ -51,6 +52,7 @@ func Init(flagSet *pflag.FlagSet) {
 	flagSet.Duration(AbortAfter, 30*24*time.Hour, "consider a webhook as failed after retrying it for this duration.")
 	flagSet.Duration(MinBackoffDelay, time.Minute, "minimum backoff delay")
 	flagSet.Duration(MaxBackoffDelay, time.Hour, "maximum backoff delay")
+	flagSet.Bool(AutoMigrate, false, "auto migrate database")
 }
 
 func LoadEnv(v *viper.Viper) {

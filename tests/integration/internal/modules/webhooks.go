@@ -25,6 +25,7 @@ var Webhooks = internal.NewModule("webhooks").
 					"--retry-period=1s",
 					"--min-backoff-delay=1s",
 					"--abort-after=3s",
+					"--auto-migrate=true",
 				}
 			}),
 	)

@@ -20,6 +20,10 @@ func (w module) Postgres(ctx modules.ReconciliationConfig) stackv1beta3.Postgres
 func (w module) Versions() map[string]modules.Version {
 	return map[string]modules.Version{
 		"v0.0.0": {
+			DatabaseMigration: &modules.DatabaseMigration{
+				Shutdown: true,
+				Command:  []string{"migrate"},
+			},
 			Services: func(ctx modules.ReconciliationConfig) modules.Services {
 				return modules.Services{
 					{

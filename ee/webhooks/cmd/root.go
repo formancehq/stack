@@ -14,8 +14,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-var ErrScheduleInvalid = errors.New("the retry schedule should only contain durations of at least 1 second")
-
 func NewRootCommand() *cobra.Command {
 	root := &cobra.Command{
 		Use: "webhooks",
@@ -32,6 +30,7 @@ func NewRootCommand() *cobra.Command {
 	root.AddCommand(newServeCommand())
 	root.AddCommand(newWorkerCommand())
 	root.AddCommand(newVersionCommand())
+	root.AddCommand(newMigrateCommand())
 
 	return root
 }
