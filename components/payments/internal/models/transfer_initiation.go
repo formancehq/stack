@@ -196,6 +196,17 @@ func (t *TransferInitiation) SortRelatedAdjustments() {
 	})
 }
 
+func (t *TransferInitiation) CountRetries() int {
+	res := 0
+	for _, adjustment := range t.RelatedAdjustments {
+		if adjustment.Status == TransferInitiationStatusRetried {
+			res++
+		}
+	}
+
+	return res
+}
+
 type TransferInitiationPayments struct {
 	bun.BaseModel `bun:"transfers.transfer_initiation_payments"`
 

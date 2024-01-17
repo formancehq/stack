@@ -87,7 +87,7 @@ func InitiatePaymentTask(config Config, client *client.Client, transferID string
 			DestinationExternalAccountID: &transfer.DestinationAccount.Reference,
 			Amount:                       &amount,
 			Date:                         &dateString,
-			ExternalID:                   serializeAtlarPaymentExternalID(transfer.ID.Reference, len(transfer.RelatedAdjustments)),
+			ExternalID:                   serializeAtlarPaymentExternalID(transfer.ID.Reference, transfer.CountRetries()),
 			PaymentSchemeType:            &paymentSchemeType,
 			RemittanceInformation: &atlar_models.RemittanceInformation{
 				Type:  &remittanceInformationType,
@@ -174,7 +174,7 @@ func UpdatePaymentStatusTask(
 		defer cancel()
 		getCreditTransferResponse, err := client.GetV1CreditTransfersGetByExternalIDExternalID(
 			requestCtx,
-			serializeAtlarPaymentExternalID(transfer.ID.Reference, len(transfer.RelatedAdjustments)),
+			serializeAtlarPaymentExternalID(transfer.ID.Reference, transfer.CountRetries()),
 		)
 		if err != nil {
 			return err
