@@ -29,6 +29,7 @@ type V2BulkElement struct {
 
 func CreateV2BulkElementAddMetadata(addMetadata V2BulkElementAddMetadata) V2BulkElement {
 	typ := V2BulkElementTypeAddMetadata
+
 	typStr := string(typ)
 	addMetadata.Action = typStr
 
@@ -40,6 +41,7 @@ func CreateV2BulkElementAddMetadata(addMetadata V2BulkElementAddMetadata) V2Bulk
 
 func CreateV2BulkElementCreateTransaction(createTransaction V2BulkElementCreateTransaction) V2BulkElement {
 	typ := V2BulkElementTypeCreateTransaction
+
 	typStr := string(typ)
 	createTransaction.Action = typStr
 
@@ -51,6 +53,7 @@ func CreateV2BulkElementCreateTransaction(createTransaction V2BulkElementCreateT
 
 func CreateV2BulkElementDeleteMetadata(deleteMetadata V2BulkElementDeleteMetadata) V2BulkElement {
 	typ := V2BulkElementTypeDeleteMetadata
+
 	typStr := string(typ)
 	deleteMetadata.Action = typStr
 
@@ -62,6 +65,7 @@ func CreateV2BulkElementDeleteMetadata(deleteMetadata V2BulkElementDeleteMetadat
 
 func CreateV2BulkElementRevertTransaction(revertTransaction V2BulkElementRevertTransaction) V2BulkElement {
 	typ := V2BulkElementTypeRevertTransaction
+
 	typStr := string(typ)
 	revertTransaction.Action = typStr
 

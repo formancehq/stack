@@ -25,6 +25,7 @@ type Subject struct {
 
 func CreateSubjectAccount(account LedgerAccountSubject) Subject {
 	typ := SubjectTypeAccount
+
 	typStr := string(typ)
 	account.Type = typStr
 
@@ -36,6 +37,7 @@ func CreateSubjectAccount(account LedgerAccountSubject) Subject {
 
 func CreateSubjectWallet(wallet WalletSubject) Subject {
 	typ := SubjectTypeWallet
+
 	typStr := string(typ)
 	wallet.Type = typStr
 
