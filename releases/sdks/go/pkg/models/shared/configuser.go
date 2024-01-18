@@ -5,6 +5,7 @@ package shared
 type ConfigUser struct {
 	Endpoint   string   `json:"endpoint"`
 	EventTypes []string `json:"eventTypes"`
+	Name       *string  `json:"name,omitempty"`
 	Secret     *string  `json:"secret,omitempty"`
 }
 
@@ -20,6 +21,13 @@ func (o *ConfigUser) GetEventTypes() []string {
 		return []string{}
 	}
 	return o.EventTypes
+}
+
+func (o *ConfigUser) GetName() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Name
 }
 
 func (o *ConfigUser) GetSecret() *string {

@@ -6,31 +6,29 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+	"github.com/uptrace/bun"
+
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/require"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
-func withDbAndClientRouter(t *testing.T, callback func(router *mux.Router, db *gorm.DB)) {
+func withDbAndClientRouter(t *testing.T, callback func(router *mux.Router, db *bun.DB)) {
 	t.Parallel()
 
 	pgDatabase := pgtesting.NewPostgresDatabase(t)
-	dialector := postgres.Open(pgDatabase.ConnString())
-
-	db, err := sqlstorage.LoadGorm(dialector, &gorm.Config{})
+	db, err := bunconnect.OpenSQLDB(bunconnect.ConnectionOptions{
+		DatabaseSourceName: pgDatabase.ConnString(),
+		Debug:              testing.Verbose(),
+	})
 	require.NoError(t, err)
+	defer db.Close()
 
-	sqlDB, err := db.DB()
-	require.NoError(t, err)
-	defer sqlDB.Close()
-
-	require.NoError(t, sqlstorage.MigrateTables(context.Background(), db))
-	require.NoError(t, sqlstorage.MigrateData(context.Background(), db))
+	require.NoError(t, sqlstorage.Migrate(context.Background(), db))
 
 	router := mux.NewRouter()
 	addClientRoutes(db, router)
@@ -56,13 +54,18 @@ func TestCreateClient(t *testing.T) {
 				Metadata: map[string]string{
 					"foo": "bar",
 				},
+				Scopes: []string{},
 			},
 		},
 		{
 			name: "public client",
 			options: auth.ClientOptions{
-				Name:   "public client",
-				Public: true,
+				Name:                   "public client",
+				Public:                 true,
+				RedirectURIs:           []string{},
+				PostLogoutRedirectUris: []string{},
+				Metadata:               map[string]string{},
+				Scopes:                 []string{},
 			},
 		},
 		{
@@ -82,7 +85,7 @@ func TestCreateClient(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 
-			withDbAndClientRouter(t, func(router *mux.Router, db *gorm.DB) {
+			withDbAndClientRouter(t, func(router *mux.Router, db *bun.DB) {
 				req := httptest.NewRequest(http.MethodPost, "/clients", createJSONBuffer(t, tc.options))
 				res := httptest.NewRecorder()
 
@@ -106,9 +109,14 @@ func TestCreateClient(t *testing.T) {
 				}())
 				tc.options.Id = createdClient.ID
 				clientFromDatabase := auth.Client{}
-				require.NoError(t, db.Find(&clientFromDatabase, "id = ?", createdClient.ID).Error)
+				err := db.NewSelect().
+					Model(&clientFromDatabase).
+					Where("id = ?", createdClient.ID).
+					Scan(context.Background())
+				require.NoError(t, err)
 				require.Equal(t, auth.Client{
 					ClientOptions: tc.options,
+					Secrets:       []auth.ClientSecret{},
 				}, clientFromDatabase)
 			})
 		})
@@ -134,13 +142,18 @@ func TestUpdateClient(t *testing.T) {
 				Metadata: map[string]string{
 					"foo": "bar",
 				},
+				Scopes: []string{},
 			},
 		},
 		{
 			name: "public client",
 			options: auth.ClientOptions{
-				Name:   "public client",
-				Public: true,
+				Name:                   "public client",
+				Public:                 true,
+				RedirectURIs:           []string{},
+				PostLogoutRedirectUris: []string{},
+				Metadata:               map[string]string{},
+				Scopes:                 []string{},
 			},
 		},
 		{
@@ -159,10 +172,11 @@ func TestUpdateClient(t *testing.T) {
 	} {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			withDbAndClientRouter(t, func(router *mux.Router, db *gorm.DB) {
+			withDbAndClientRouter(t, func(router *mux.Router, db *bun.DB) {
 
 				initialClient := auth.NewClient(auth.ClientOptions{})
-				require.NoError(t, db.Create(initialClient).Error)
+				_, err := db.NewInsert().Model(initialClient).Exec(context.Background())
+				require.NoError(t, err)
 
 				req := httptest.NewRequest(http.MethodPut, "/clients/"+initialClient.Id, createJSONBuffer(t, tc.options))
 				res := httptest.NewRecorder()
@@ -177,9 +191,13 @@ func TestUpdateClient(t *testing.T) {
 
 				tc.options.Id = updatedClient.ID
 				clientFromDatabase := auth.Client{}
-				require.NoError(t, db.Find(&clientFromDatabase, "id = ?", updatedClient.ID).Error)
+				err = db.NewSelect().
+					Model(&clientFromDatabase).
+					Where("id = ?", updatedClient.ID).
+					Scan(context.Background())
 				require.Equal(t, auth.Client{
 					ClientOptions: tc.options,
+					Secrets:       []auth.ClientSecret{},
 				}, clientFromDatabase)
 			})
 		})
@@ -187,16 +205,18 @@ func TestUpdateClient(t *testing.T) {
 }
 
 func TestListClients(t *testing.T) {
-	withDbAndClientRouter(t, func(router *mux.Router, db *gorm.DB) {
+	withDbAndClientRouter(t, func(router *mux.Router, db *bun.DB) {
 		client1 := auth.NewClient(auth.ClientOptions{})
-		require.NoError(t, db.Create(client1).Error)
+		_, err := db.NewInsert().Model(client1).Exec(context.Background())
+		require.NoError(t, err)
 
 		client2 := auth.NewClient(auth.ClientOptions{
 			Metadata: map[string]string{
 				"foo": "bar",
 			},
 		})
-		require.NoError(t, db.Create(client2).Error)
+		_, err = db.NewInsert().Model(client2).Exec(context.Background())
+		require.NoError(t, err)
 
 		req := httptest.NewRequest(http.MethodGet, "/clients", nil)
 		res := httptest.NewRecorder()
@@ -213,19 +233,22 @@ func TestListClients(t *testing.T) {
 }
 
 func TestReadClient(t *testing.T) {
-	withDbAndClientRouter(t, func(router *mux.Router, db *gorm.DB) {
+	withDbAndClientRouter(t, func(router *mux.Router, db *bun.DB) {
 
 		opts := auth.ClientOptions{
 			Metadata: map[string]string{
 				"foo": "bar",
 			},
-			Scopes: []string{"XXX"},
+			Scopes:                 []string{"XXX"},
+			RedirectURIs:           []string{},
+			PostLogoutRedirectUris: []string{},
 		}
 		client1 := auth.NewClient(opts)
 		secret, _ := client1.GenerateNewSecret(auth.SecretCreate{
 			Name: "testing",
 		})
-		require.NoError(t, db.Create(client1).Error)
+		_, err := db.NewInsert().Model(client1).Exec(context.Background())
+		require.NoError(t, err)
 
 		req := httptest.NewRequest(http.MethodGet, "/clients/"+client1.Id, nil)
 		res := httptest.NewRecorder()
@@ -246,7 +269,7 @@ func TestReadClient(t *testing.T) {
 }
 
 func TestDeleteClient(t *testing.T) {
-	withDbAndClientRouter(t, func(router *mux.Router, db *gorm.DB) {
+	withDbAndClientRouter(t, func(router *mux.Router, db *bun.DB) {
 
 		opts := auth.ClientOptions{
 			Metadata: map[string]string{
@@ -255,7 +278,8 @@ func TestDeleteClient(t *testing.T) {
 		}
 		client1 := auth.NewClient(opts)
 		client1.Scopes = append(client1.Scopes, "XXX")
-		require.NoError(t, db.Create(client1).Error)
+		_, err := db.NewInsert().Model(client1).Exec(context.Background())
+		require.NoError(t, err)
 
 		req := httptest.NewRequest(http.MethodDelete, "/clients/"+client1.Id, nil)
 		res := httptest.NewRecorder()
@@ -267,9 +291,10 @@ func TestDeleteClient(t *testing.T) {
 }
 
 func TestGenerateNewSecret(t *testing.T) {
-	withDbAndClientRouter(t, func(router *mux.Router, db *gorm.DB) {
+	withDbAndClientRouter(t, func(router *mux.Router, db *bun.DB) {
 		client := auth.NewClient(auth.ClientOptions{})
-		require.NoError(t, db.Create(client).Error)
+		_, err := db.NewInsert().Model(client).Exec(context.Background())
+		require.NoError(t, err)
 
 		req := httptest.NewRequest(http.MethodPost, "/clients/"+client.Id+"/secrets", createJSONBuffer(t, auth.SecretCreate{
 			Name: "secret1",
@@ -284,19 +309,26 @@ func TestGenerateNewSecret(t *testing.T) {
 		require.Equal(t, result.Name, "secret1")
 
 		require.Equal(t, http.StatusOK, res.Code)
-		require.NoError(t, db.First(client, "id = ?", client.Id).Error)
+
+		err = db.NewSelect().
+			Model(client).
+			Limit(1).
+			Where("id = ?", client.Id).
+			Scan(context.Background())
+		require.NoError(t, err)
 		require.Len(t, client.Secrets, 1)
 		require.True(t, client.Secrets[0].Check(result.Clear))
 	})
 }
 
 func TestDeleteSecret(t *testing.T) {
-	withDbAndClientRouter(t, func(router *mux.Router, db *gorm.DB) {
+	withDbAndClientRouter(t, func(router *mux.Router, db *bun.DB) {
 		client := auth.NewClient(auth.ClientOptions{})
 		secret, _ := client.GenerateNewSecret(auth.SecretCreate{
 			Name: "testing",
 		})
-		require.NoError(t, db.Create(client).Error)
+		_, err := db.NewInsert().Model(client).Exec(context.Background())
+		require.NoError(t, err)
 
 		req := httptest.NewRequest(http.MethodDelete, "/clients/"+client.Id+"/secrets/"+secret.ID, nil)
 		res := httptest.NewRecorder()
@@ -304,7 +336,12 @@ func TestDeleteSecret(t *testing.T) {
 		router.ServeHTTP(res, req)
 
 		require.Equal(t, http.StatusNoContent, res.Code)
-		require.NoError(t, db.First(client, "id = ?", client.Id).Error)
+
+		err = db.NewSelect().
+			Model(client).
+			Where("id = ?", client.Id).
+			Scan(context.Background())
+		require.NoError(t, err)
 		require.Len(t, client.Secrets, 0)
 	})
 }

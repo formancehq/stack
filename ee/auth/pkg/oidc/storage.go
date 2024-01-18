@@ -24,18 +24,18 @@ const (
 )
 
 type Storage interface {
-	SaveAuthRequest(ctx context.Context, request auth.AuthRequest) error
+	SaveAuthRequest(ctx context.Context, request *auth.AuthRequest) error
 	FindAuthRequest(ctx context.Context, id string) (*auth.AuthRequest, error)
 	FindAuthRequestByCode(ctx context.Context, id string) (*auth.AuthRequest, error)
-	UpdateAuthRequest(ctx context.Context, request auth.AuthRequest) error
+	UpdateAuthRequest(ctx context.Context, request *auth.AuthRequest) error
 	UpdateAuthRequestCode(ctx context.Context, id string, code string) error
 	DeleteAuthRequest(ctx context.Context, id string) error
 
-	SaveRefreshToken(ctx context.Context, token auth.RefreshToken) error
+	SaveRefreshToken(ctx context.Context, token *auth.RefreshToken) error
 	FindRefreshToken(ctx context.Context, token string) (*auth.RefreshToken, error)
 	DeleteRefreshToken(ctx context.Context, token string) error
 
-	SaveAccessToken(ctx context.Context, token auth.AccessToken) error
+	SaveAccessToken(ctx context.Context, token *auth.AccessToken) error
 	FindAccessToken(ctx context.Context, token string) (*auth.AccessToken, error)
 	DeleteAccessToken(ctx context.Context, token string) error
 	DeleteAccessTokensForUserAndClient(ctx context.Context, userID string, clientID string) error
@@ -43,7 +43,7 @@ type Storage interface {
 
 	FindUser(ctx context.Context, id string) (*auth.User, error)
 	FindUserBySubject(ctx context.Context, subject string) (*auth.User, error)
-	SaveUser(ctx context.Context, user auth.User) error
+	SaveUser(ctx context.Context, user *auth.User) error
 
 	FindClient(ctx context.Context, id string) (*auth.Client, error)
 }
@@ -220,7 +220,7 @@ func (s *storageFacade) CreateAuthRequest(ctx context.Context, authReq *oidc.Aut
 		ID: uuid.NewString(),
 	}
 
-	if err := s.Storage.SaveAuthRequest(ctx, request); err != nil {
+	if err := s.Storage.SaveAuthRequest(ctx, &request); err != nil {
 		return nil, err
 	}
 
@@ -412,7 +412,7 @@ func (s *storageFacade) createRefreshToken(ctx context.Context, applicationID st
 		Expiration:    time.Now().Add(5 * time.Hour),
 		Scopes:        scopes,
 	}
-	if err := s.Storage.SaveRefreshToken(ctx, token); err != nil {
+	if err := s.Storage.SaveRefreshToken(ctx, &token); err != nil {
 		return nil, err
 	}
 	return &token, nil
@@ -434,7 +434,7 @@ func (s *storageFacade) renewRefreshToken(ctx context.Context, currentRefreshTok
 	//creates a new refresh token based on the current one
 	refreshToken.ID = uuid.NewString()
 
-	if err := s.SaveRefreshToken(ctx, *refreshToken); err != nil {
+	if err := s.SaveRefreshToken(ctx, refreshToken); err != nil {
 		return nil, err
 	}
 
@@ -463,7 +463,7 @@ func (s *storageFacade) saveAccessToken(ctx context.Context, refreshToken *auth.
 			return refreshToken.ID
 		}(),
 	}
-	if err := s.Storage.SaveAccessToken(ctx, token); err != nil {
+	if err := s.Storage.SaveAccessToken(ctx, &token); err != nil {
 		return nil, err
 	}
 	return &token, nil

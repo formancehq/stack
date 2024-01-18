@@ -3,13 +3,14 @@ package api
 import (
 	"net/http"
 
+	"github.com/uptrace/bun"
+
 	auth "github.com/formancehq/auth/pkg"
 	_ "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/gorilla/mux"
-	"gorm.io/gorm"
 )
 
-func addClientRoutes(db *gorm.DB, router *mux.Router) {
+func addClientRoutes(db *bun.DB, router *mux.Router) {
 	router.Path("/clients").Methods(http.MethodPost).HandlerFunc(createClient(db))
 	router.Path("/clients").Methods(http.MethodGet).HandlerFunc(listClients(db))
 	router.Path("/clients/{clientId}").Methods(http.MethodPut).HandlerFunc(updateClient(db))
@@ -27,7 +28,7 @@ type clientSecretView struct {
 type clientView struct {
 	auth.ClientOptions
 	ID      string                       `json:"id"`
-	Secrets auth.Array[clientSecretView] `json:"secrets" gorm:"type:text"`
+	Secrets auth.Array[clientSecretView] `json:"secrets" bun:"type:text"`
 }
 
 func mapBusinessClient(c auth.Client) clientView {
@@ -57,9 +58,9 @@ type secretCreateResult struct {
 	Clear      string `json:"clear"`
 }
 
-func deleteSecret(db *gorm.DB) http.HandlerFunc {
+func deleteSecret(db *bun.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		client := findById[auth.Client](w, r, db, "clientId")
+		client := findById[*auth.Client](w, r, db, "clientId")
 		if client == nil {
 			return
 		}
@@ -69,16 +70,21 @@ func deleteSecret(db *gorm.DB) http.HandlerFunc {
 			return
 		}
 
-		if err := saveObject(w, r, db, client); err != nil {
+		_, err := db.NewUpdate().
+			Model(client).
+			Where("id = ?", client.Id).
+			Exec(r.Context())
+		if err != nil {
+			internalServerError(w, r, err)
 			return
 		}
 		w.WriteHeader(http.StatusNoContent)
 	}
 }
 
-func createSecret(db *gorm.DB) http.HandlerFunc {
+func createSecret(db *bun.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		client := findById[auth.Client](w, r, db, "clientId")
+		client := findById[*auth.Client](w, r, db, "clientId")
 		if client == nil {
 			return
 		}
@@ -90,7 +96,12 @@ func createSecret(db *gorm.DB) http.HandlerFunc {
 
 		secret, clear := client.GenerateNewSecret(*sc)
 
-		if err := saveObject(w, r, db, client); err != nil {
+		_, err := db.NewUpdate().
+			Model(client).
+			Where("id = ?", client.Id).
+			Exec(r.Context())
+		if err != nil {
+			internalServerError(w, r, err)
 			return
 		}
 
@@ -103,9 +114,9 @@ func createSecret(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
-func readClient(db *gorm.DB) http.HandlerFunc {
+func readClient(db *bun.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		client := findById[auth.Client](w, r, db, "clientId")
+		client := findById[*auth.Client](w, r, db, "clientId")
 		if client == nil {
 			return
 		}
@@ -113,12 +124,13 @@ func readClient(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
-func deleteClient(db *gorm.DB) http.HandlerFunc {
+func deleteClient(db *bun.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		err := db.
-			WithContext(r.Context()).
-			Delete(&auth.Client{}, "id = ?", mux.Vars(r)["clientId"]).
-			Error
+		_, err := db.
+			NewDelete().
+			Model(&auth.Client{}).
+			Where("id = ?", mux.Vars(r)["clientId"]).
+			Exec(r.Context())
 		if err != nil {
 			internalServerError(w, r, err)
 			return
@@ -127,12 +139,13 @@ func deleteClient(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
-func listClients(db *gorm.DB) http.HandlerFunc {
+func listClients(db *bun.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		clients := make([]auth.Client, 0)
 		if err := db.
-			WithContext(r.Context()).
-			Find(&clients).Error; err != nil {
+			NewSelect().
+			Model(&clients).
+			Scan(r.Context()); err != nil {
 			internalServerError(w, r, err)
 			return
 		}
@@ -140,11 +153,11 @@ func listClients(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
-func updateClient(db *gorm.DB) http.HandlerFunc {
+func updateClient(db *bun.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		c := findById[auth.Client](w, r, db, "clientId")
-		if c == nil {
+		client := findById[*auth.Client](w, r, db, "clientId")
+		if client == nil {
 			return
 		}
 
@@ -153,17 +166,22 @@ func updateClient(db *gorm.DB) http.HandlerFunc {
 			return
 		}
 
-		c.Update(*opts)
+		client.Update(*opts)
 
-		if err := saveObject(w, r, db, c); err != nil {
+		_, err := db.NewUpdate().
+			Model(client).
+			Where("id = ?", client.Id).
+			Exec(r.Context())
+		if err != nil {
+			internalServerError(w, r, err)
 			return
 		}
 
-		writeJSONObject(w, r, mapBusinessClient(*c))
+		writeJSONObject(w, r, mapBusinessClient(*client))
 	}
 }
 
-func createClient(db *gorm.DB) http.HandlerFunc {
+func createClient(db *bun.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		opts := readJSONObject[auth.ClientOptions](w, r)
 		if opts == nil {

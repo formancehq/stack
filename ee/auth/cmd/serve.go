@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
@@ -17,7 +19,6 @@ import (
 	"github.com/formancehq/auth/pkg/oidc"
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/pkg/errors"
@@ -25,7 +26,6 @@ import (
 	"github.com/spf13/viper"
 	zLogging "github.com/zitadel/logging"
 	"go.uber.org/fx"
-	"gorm.io/gorm"
 )
 
 const (
@@ -130,17 +130,16 @@ func newServeCommand() *cobra.Command {
 			options := []fx.Option{
 				otlpHttpClientModule(viper.GetBool(service.DebugFlag)),
 				fx.Supply(fx.Annotate(cmd.Context(), fx.As(new(context.Context)))),
-				sqlstorage.Module(sqlstorage.KindPostgres, viper.GetString(postgresUriFlag), key, o.Clients...),
+				sqlstorage.Module(bunconnect.ConnectionOptions{
+					DatabaseSourceName: viper.GetString(postgresUriFlag),
+					Debug:              viper.GetBool(service.DebugFlag),
+					Writer:             cmd.OutOrStdout(),
+				}, key, o.Clients...),
 				api.Module(viper.GetString(listenFlag), viper.GetString(baseUrlFlag), sharedapi.ServiceInfo{
 					Version: Version,
 				}),
 				oidc.Module(key, viper.GetString(baseUrlFlag), o.Clients...),
 				authorization.Module(),
-				fx.Decorate(func(logger logging.Logger) *gorm.Config {
-					return &gorm.Config{
-						Logger: sqlstorage.NewLogger(logger),
-					}
-				}),
 			}
 
 			if delegatedIssuer := viper.GetString(delegatedIssuerFlag); delegatedIssuer != "" {

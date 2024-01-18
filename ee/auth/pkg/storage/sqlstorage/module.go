@@ -3,6 +3,8 @@ package sqlstorage
 import (
 	"crypto/rsa"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/oidc"
 	"github.com/formancehq/stack/libs/go-libs/health"
@@ -10,9 +12,9 @@ import (
 	"go.uber.org/fx"
 )
 
-func Module(kind, uri string, key *rsa.PrivateKey, staticClients ...auth.StaticClient) fx.Option {
+func Module(connectionOptions bunconnect.ConnectionOptions, key *rsa.PrivateKey, staticClients ...auth.StaticClient) fx.Option {
 	return fx.Options(
-		gormModule(kind, uri),
+		bunModule(connectionOptions),
 		fx.Supply(key),
 		fx.Supply(staticClients),
 		fx.Provide(fx.Annotate(New,
