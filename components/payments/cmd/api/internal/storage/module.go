@@ -10,20 +10,7 @@ import (
 
 func Module(connectionOptions bunconnect.ConnectionOptions, configEncryptionKey string) fx.Option {
 	return fx.Options(
-		fx.Provide(func() (*bun.DB, error) {
-			return bunconnect.OpenSQLDB(connectionOptions)
-		}),
-		fx.Invoke(func(lc fx.Lifecycle, db *bun.DB) {
-			lc.Append(fx.Hook{
-				OnStop: func(ctx context.Context) error {
-					logging.FromContext(ctx).Infof("Closing database...")
-					defer func() {
-						logging.FromContext(ctx).Infof("Database closed.")
-					}()
-					return db.Close()
-				},
-			})
-		}),
+		bunconnect.Module(connectionOptions),
 		fx.Provide(func(db *bun.DB) *Storage {
 			return NewStorage(db, configEncryptionKey)
 		}),

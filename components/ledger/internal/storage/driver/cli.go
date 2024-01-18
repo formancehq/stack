@@ -18,13 +18,11 @@ type PostgresConfig struct {
 func CLIModule(v *viper.Viper, output io.Writer, debug bool) fx.Option {
 
 	options := make([]fx.Option, 0)
-	options = append(options, fx.Provide(func(logger logging.Logger) bunconnect.ConnectionOptions {
-		connectionOptions := bunconnect.ConnectionOptionsFromFlags(v, output, debug)
-		logger.WithField("config", connectionOptions).Infof("Opening connection to database...")
-		return connectionOptions
+	options = append(options, fx.Provide(func() (*bunconnect.ConnectionOptions, error) {
+		return bunconnect.ConnectionOptionsFromFlags(v, output, debug)
 	}))
-	options = append(options, fx.Provide(func(connectionOptions bunconnect.ConnectionOptions) (*Driver, error) {
-		return New(connectionOptions), nil
+	options = append(options, fx.Provide(func(connectionOptions *bunconnect.ConnectionOptions) (*Driver, error) {
+		return New(*connectionOptions), nil
 	}))
 
 	options = append(options, fx.Invoke(func(driver *Driver, lifecycle fx.Lifecycle, logger logging.Logger) error {

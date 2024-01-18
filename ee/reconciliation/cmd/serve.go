@@ -87,6 +87,10 @@ func runServer(version string) func(cmd *cobra.Command, args []string) error {
 }
 
 func prepareDatabaseOptions(output io.Writer) (fx.Option, error) {
-	return storage.Module(bunconnect.ConnectionOptionsFromFlags(
-		viper.GetViper(), output, viper.GetBool(service.DebugFlag))), nil
+	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(viper.GetViper(), output, viper.GetBool(service.DebugFlag))
+	if err != nil {
+		return nil, err
+	}
+
+	return storage.Module(*connectionOptions), nil
 }

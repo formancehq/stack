@@ -23,7 +23,12 @@ func NewBucketUpgrade() *cobra.Command {
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			driver := driver.New(bunconnect.ConnectionOptionsFromFlags(viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag)))
+			connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag))
+			if err != nil {
+				return err
+			}
+
+			driver := driver.New(*connectionOptions)
 			if err := driver.Initialize(cmd.Context()); err != nil {
 				return err
 			}
@@ -56,7 +61,12 @@ func NewBucketUpgradeAll() *cobra.Command {
 			logger := service.GetDefaultLogger(cmd.OutOrStdout(), viper.GetBool(service.DebugFlag), false)
 			ctx := logging.ContextWithLogger(cmd.Context(), logger)
 
-			driver := driver.New(bunconnect.ConnectionOptionsFromFlags(viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag)))
+			connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag))
+			if err != nil {
+				return err
+			}
+
+			driver := driver.New(*connectionOptions)
 			defer func() {
 				_ = driver.Close()
 			}()

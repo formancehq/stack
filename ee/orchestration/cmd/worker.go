@@ -43,12 +43,12 @@ func newWorkerCommand() *cobra.Command {
 			return bindFlagsToViper(cmd)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			options := []fx.Option{
-				commonOptions(cmd.OutOrStdout()),
-				workerOptions(),
+			commonOptions, err := commonOptions(cmd.OutOrStdout())
+			if err != nil {
+				return err
 			}
 
-			return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
+			return service.New(cmd.OutOrStdout(), commonOptions, workerOptions()).Run(cmd.Context())
 		},
 	}
 }

@@ -21,7 +21,6 @@ import (
 	"github.com/formancehq/orchestration/internal/temporalclient"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 
-	"github.com/formancehq/orchestration/internal/storage"
 	_ "github.com/formancehq/orchestration/internal/workflow/stages/all"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
@@ -91,7 +90,11 @@ func Execute() {
 	}
 }
 
-func commonOptions(output io.Writer) fx.Option {
+func commonOptions(output io.Writer) (fx.Option, error) {
+	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(viper.GetViper(), output, viper.GetBool(service.DebugFlag))
+	if err != nil {
+		return nil, err
+	}
 	return fx.Options(
 		otlptraces.CLITracesModule(viper.GetViper()),
 		temporalclient.NewModule(
@@ -100,8 +103,7 @@ func commonOptions(output io.Writer) fx.Option {
 			viper.GetString(temporalSSLClientCertFlag),
 			viper.GetString(temporalSSLClientKeyFlag),
 		),
-		storage.NewModule(bunconnect.ConnectionOptionsFromFlags(
-			viper.GetViper(), output, viper.GetBool(service.DebugFlag))),
+		bunconnect.Module(*connectionOptions),
 		publish.CLIPublisherModule(viper.GetViper(), "orchestration"),
 		auth.CLIAuthModule(viper.GetViper()),
 		workflow.NewModule(viper.GetString(temporalTaskQueueFlag)),
@@ -123,5 +125,5 @@ func commonOptions(output io.Writer) fx.Option {
 			return oauthConfig.Client(context.WithValue(context.Background(),
 				oauth2.HTTPClient, httpClient))
 		}),
-	)
+	), nil
 }

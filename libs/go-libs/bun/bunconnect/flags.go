@@ -1,7 +1,11 @@
 package bunconnect
 
 import (
+	"context"
+	"database/sql/driver"
+	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/formancehq/stack/libs/go-libs/aws/iam"
+	"github.com/lib/pq"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"io"
@@ -16,19 +20,34 @@ func InitFlags(flags *pflag.FlagSet) {
 	flags.Int("postgres-max-open-conns", 20, "Max opened connections")
 }
 
-func ConnectionOptionsFromFlags(v *viper.Viper, output io.Writer, debug bool) ConnectionOptions {
-	return ConnectionOptions{
+func ConnectionOptionsFromFlags(v *viper.Viper, output io.Writer, debug bool) (*ConnectionOptions, error) {
+	var connector func(string) (driver.Connector, error)
+	if v.GetBool("postgres-aws-enable-iam") {
+		cfg, err := config.LoadDefaultConfig(context.Background(), iam.LoadOptionFromViper(v))
+		if err != nil {
+			return nil, err
+		}
+
+		connector = func(s string) (driver.Connector, error) {
+			return &iamConnector{
+				dsn: s,
+				driver: &iamDriver{
+					awsConfig: cfg,
+				},
+			}, nil
+		}
+	} else {
+		connector = func(dsn string) (driver.Connector, error) {
+			return pq.NewConnector(dsn)
+		}
+	}
+	return &ConnectionOptions{
 		DatabaseSourceName: v.GetString("postgres-uri"),
 		Debug:              debug,
 		Writer:             output,
 		MaxIdleConns:       v.GetInt("postgres-max-idle-conns"),
 		ConnMaxIdleTime:    v.GetDuration("postgres-conn-max-idle-time"),
 		MaxOpenConns:       v.GetInt("postgres-max-open-conns"),
-		Opener: func() Opener {
-			if v.GetBool("postgres-aws-enable-iam") {
-				return IAMOpener(iam.LoadOptionFromViper(v))
-			}
-			return DefaultOpener
-		}(),
-	}
+		Connector:          connector,
+	}, nil
 }

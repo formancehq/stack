@@ -26,6 +26,11 @@ func newServeCommand() *cobra.Command {
 }
 
 func serve(cmd *cobra.Command, _ []string) error {
+	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag))
+	if err != nil {
+		return err
+	}
+
 	options := []fx.Option{
 		fx.Provide(func() server.ServiceInfo {
 			return server.ServiceInfo{
@@ -33,8 +38,7 @@ func serve(cmd *cobra.Command, _ []string) error {
 			}
 		}),
 		auth.CLIAuthModule(viper.GetViper()),
-		postgres.NewModule(bunconnect.ConnectionOptionsFromFlags(
-			viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag))),
+		postgres.NewModule(*connectionOptions),
 		otlp.HttpClientModule(),
 		server.StartModule(viper.GetString(flag.Listen)),
 	}

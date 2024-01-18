@@ -1,17 +1,15 @@
-package storage
+package bunconnect
 
 import (
 	"context"
-
-	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 	"github.com/uptrace/bun"
 	"go.uber.org/fx"
 )
 
-func NewModule(options bunconnect.ConnectionOptions) fx.Option {
+func Module(connectionOptions ConnectionOptions) fx.Option {
 	return fx.Options(
 		fx.Provide(func() (*bun.DB, error) {
-			return bunconnect.OpenSQLDB(options)
+			return OpenSQLDB(connectionOptions)
 		}),
 		fx.Invoke(func(lc fx.Lifecycle, db *bun.DB) {
 			lc.Append(fx.Hook{

@@ -83,8 +83,11 @@ func prepareDatabaseOptions(output io.Writer) (fx.Option, error) {
 		return nil, errors.New("missing config encryption key")
 	}
 
-	connectionOptions := bunconnect.ConnectionOptionsFromFlags(viper.GetViper(), output,
+	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(viper.GetViper(), output,
 		viper.GetBool(service.DebugFlag))
+	if err != nil {
+		return nil, err
+	}
 
-	return storage.Module(connectionOptions, configEncryptionKey), nil
+	return storage.Module(*connectionOptions, configEncryptionKey), nil
 }

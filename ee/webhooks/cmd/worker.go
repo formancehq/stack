@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/formancehq/webhooks/pkg/storage/postgres"
 	"net/http"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
@@ -10,7 +11,6 @@ import (
 	"github.com/formancehq/webhooks/cmd/flag"
 	"github.com/formancehq/webhooks/pkg/backoff"
 	"github.com/formancehq/webhooks/pkg/otlp"
-	"github.com/formancehq/webhooks/pkg/storage/postgres"
 	"github.com/formancehq/webhooks/pkg/worker"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -27,11 +27,15 @@ func newWorkerCommand() *cobra.Command {
 }
 
 func runWorker(cmd *cobra.Command, _ []string) error {
+	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag))
+	if err != nil {
+		return err
+	}
+
 	return service.New(
 		cmd.OutOrStdout(),
 		otlp.HttpClientModule(),
-		postgres.NewModule(bunconnect.ConnectionOptionsFromFlags(
-			viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag))),
+		postgres.NewModule(*connectionOptions),
 		fx.Provide(worker.NewWorkerHandler),
 		fx.Invoke(func(lc fx.Lifecycle, h http.Handler) {
 			lc.Append(httpserver.NewHook(h, httpserver.WithAddress(viper.GetString(flag.Listen))))

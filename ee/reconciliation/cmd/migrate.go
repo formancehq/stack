@@ -22,8 +22,11 @@ func newMigrate() *cobra.Command {
 }
 
 func runMigrate(cmd *cobra.Command, args []string) error {
-	connectionOptions := bunconnect.ConnectionOptionsFromFlags(viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag))
-	db, err := bunconnect.OpenSQLDB(connectionOptions)
+	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag))
+	if err != nil {
+		return err
+	}
+	db, err := bunconnect.OpenSQLDB(*connectionOptions)
 	if err != nil {
 		return err
 	}

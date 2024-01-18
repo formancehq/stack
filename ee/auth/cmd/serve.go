@@ -127,11 +127,16 @@ func newServeCommand() *cobra.Command {
 
 			zLogging.SetOutput(cmd.OutOrStdout())
 
+			connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(
+				viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag))
+			if err != nil {
+				return err
+			}
+
 			options := []fx.Option{
 				otlpHttpClientModule(viper.GetBool(service.DebugFlag)),
 				fx.Supply(fx.Annotate(cmd.Context(), fx.As(new(context.Context)))),
-				sqlstorage.Module(bunconnect.ConnectionOptionsFromFlags(
-					viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag)), key, o.Clients...),
+				sqlstorage.Module(*connectionOptions, key, o.Clients...),
 				api.Module(viper.GetString(listenFlag), viper.GetString(baseUrlFlag), sharedapi.ServiceInfo{
 					Version: Version,
 				}),
