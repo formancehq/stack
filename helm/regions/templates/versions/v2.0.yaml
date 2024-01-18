@@ -4,14 +4,14 @@ kind: Versions
 metadata:
   name: v2.0
 spec:
-  ledger: v2.0.0-beta.8
-  search: v2.0.0-beta.8
-  stargate: v2.0.0-beta.8
-  auth: v2.0.0-beta.8
-  wallets: v2.0.0-beta.8
-  webhooks: v2.0.0-beta.8
-  gateway: v2.0.0-beta.8
-  payments: v2.0.0-beta.8
-  orchestration: v2.0.0-beta.8
-  reconciliation: v2.0.0-beta.8
+  ledger: v2.0.0-beta.10
+  search: v2.0.0-beta.10
+  stargate: v2.0.0-beta.10
+  auth: v2.0.0-beta.10
+  wallets: v2.0.0-beta.10
+  webhooks: v2.0.0-beta.10
+  gateway: v2.0.0-beta.10
+  payments: v2.0.0-beta.10
+  orchestration: v2.0.0-beta.10
+  reconciliation: v2.0.0-beta.10
 {{ end }}
