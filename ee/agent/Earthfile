@@ -33,12 +33,6 @@ build-image:
     ARG tag=latest
     DO core+SAVE_IMAGE --COMPONENT=agent --REPOSITORY=${REPOSITORY} --TAG=$tag
 
-tests:
-    FROM core+builder-image
-    COPY (+sources/*) /src
-    WORKDIR /src/ee/agent
-    DO --pass-args core+GO_TESTS
-
 lint:
     FROM core+builder-image
     COPY (+sources/*) /src
@@ -92,4 +86,22 @@ grpc-generate:
     RUN mkdir generated
     COPY server.proto .
     RUN protoc --go_out=generated --go_opt=paths=source_relative --go-grpc_out=generated --go-grpc_opt=paths=source_relative server.proto
-    SAVE ARTIFACT generated AS LOCAL internal/grpc/generated
+    SAVE ARTIFACT generated AS LOCAL internal/generated
+
+tests:
+    FROM core+builder-image
+    RUN apk update && apk add bash
+    DO --pass-args core+GO_INSTALL --package=sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
+    ENV ENVTEST_VERSION 1.28.0
+    RUN setup-envtest use $ENVTEST_VERSION -p path
+    ENV KUBEBUILDER_ASSETS /root/.local/share/kubebuilder-envtest/k8s/$ENVTEST_VERSION-linux-$(go env GOHOSTARCH)
+    DO --pass-args core+GO_INSTALL --package=github.com/onsi/ginkgo/v2/ginkgo@v2.13.2
+    COPY --pass-args +sources/* /src
+    COPY --pass-args ../../components/operator+manifests/config /src/components/operator/config
+    WORKDIR /src/ee/agent
+    COPY tests tests
+    ARG GOPROXY
+    ARG focus
+    RUN --mount=type=cache,id=gomod,target=$GOPATH/pkg/mod \
+        --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
+        ginkgo --focus=$focus ./tests/...

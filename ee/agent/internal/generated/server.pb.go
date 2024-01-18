@@ -524,11 +524,11 @@ type Stack struct {
 	unknownFields protoimpl.UnknownFields
 
 	ClusterName    string                 `protobuf:"bytes,1,opt,name=clusterName,proto3" json:"clusterName,omitempty"`
-	Seed           string                 `protobuf:"bytes,2,opt,name=seed,proto3" json:"seed,omitempty"`
-	AuthConfig     *AuthConfig            `protobuf:"bytes,3,opt,name=authConfig,proto3" json:"authConfig,omitempty"`
-	StaticClients  []*AuthClient          `protobuf:"bytes,4,rep,name=staticClients,proto3" json:"staticClients,omitempty"`
-	StargateConfig *StargateConfig        `protobuf:"bytes,5,opt,name=stargateConfig,proto3" json:"stargateConfig,omitempty"`
-	Disabled       bool                   `protobuf:"varint,6,opt,name=disabled,proto3" json:"disabled,omitempty"`
+	Seed           string          `protobuf:"bytes,2,opt,name=seed,proto3" json:"seed,omitempty"`
+	AuthConfig     *AuthConfig     `protobuf:"bytes,3,opt,name=authConfig,proto3" json:"authConfig,omitempty"`
+	StaticClients  []*AuthClient   `protobuf:"bytes,4,rep,name=staticClients,proto3" json:"staticClients,omitempty"`
+	StargateConfig *StargateConfig `protobuf:"bytes,5,opt,name=stargateConfig,proto3" json:"stargateConfig,omitempty"`
+	Disabled       bool            `protobuf:"varint,6,opt,name=disabled,proto3" json:"disabled,omitempty"`
 	DeletedAt      *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=deletedAt,proto3" json:"deletedAt,omitempty"`
 	Versions       string                 `protobuf:"bytes,8,opt,name=versions,proto3" json:"versions,omitempty"`
 }

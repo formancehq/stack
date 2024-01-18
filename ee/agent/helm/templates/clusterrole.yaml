@@ -4,8 +4,8 @@ metadata:
   name: {{ .Chart.Name }}-{{ .Release.Name }}
 rules:
 - apiGroups:
-  - stack.formance.com
+  - formance.com
   resources:
-  - stacks
-  - versions
-  verbs: ["get", "watch", "list", "delete", "update", "create"]
+  - "*"
+  verbs:
+  - "*"
