@@ -1,6 +1,6 @@
 VERSION --pass-args --arg-scope-and-set 0.7
 
-ARG core=github.com/formancehq/earthly:v0.6.0
+ARG core=github.com/formancehq/earthly:v0.8.0
 IMPORT $core AS core
 IMPORT ../.. AS stack
 IMPORT ../../releases AS releases
@@ -57,8 +57,9 @@ tests:
         RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
             --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
             DOCKER_HOSTNAME=$(ip addr show docker0 | head -3 | tail -1 | cut -d / -f1 | cut -d\  -f6) \
-            $cmd ./suite/...
+            $cmd --coverprofile=cover.out ./suite/...
     END
+    DO --pass-args core+GO_COVERAGE
 
 sources:
     WORKDIR src

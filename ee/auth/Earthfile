@@ -1,6 +1,6 @@
 VERSION --pass-args --arg-scope-and-set 0.7
 
-ARG core=github.com/formancehq/earthly:v0.6.0
+ARG core=github.com/formancehq/earthly:v0.8.0
 IMPORT $core AS core
 IMPORT ../.. AS stack
 IMPORT .. AS ee
@@ -39,6 +39,7 @@ tests:
     WITH DOCKER --pull=postgres:15-alpine
         DO --pass-args core+GO_TESTS
     END
+    DO --pass-args core+GO_COVERAGE
 
 lint:
     FROM core+builder-image

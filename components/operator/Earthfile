@@ -1,6 +1,6 @@
 VERSION --pass-args --arg-scope-and-set 0.7
 
-ARG core=github.com/formancehq/earthly:v0.6.0
+ARG core=github.com/formancehq/earthly:v0.8.0
 IMPORT $core AS core
 IMPORT ../.. AS stack
 IMPORT .. AS components
@@ -136,7 +136,8 @@ tests:
     ARG focus
     RUN --mount=type=cache,id=gomod,target=$GOPATH/pkg/mod \
         --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
-        ginkgo --focus=$focus -p ./...
+        ginkgo --focus=$focus --coverprofile=cover.out -p ./...
+    DO --pass-args core+GO_COVERAGE
     IF [ "$updateTestData" = "1" ]
         SAVE ARTIFACT internal/controllers/stack/testdata AS LOCAL internal/controllers/stack/testdata
     END

@@ -25,11 +25,13 @@ jobs:
           --allow-privileged
           --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY
           --secret GITHUB_TOKEN=$GITHUB_TOKEN
+          --secret CODECOV_TOKEN=CODECOV_TOKEN
           ${{ contains(github.event.pull_request.labels.*.name, 'no-cache') && '--no-cache' || '' }}
           +pre-commit
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v40
@@ -61,6 +63,7 @@ jobs:
           --secret GITHUB_TOKEN=$GITHUB_TOKEN
           --secret FURY_TOKEN=$FURY_TOKEN
           --secret GORELEASER_KEY=$GORELEASER_KEY
+          --secret CODECOV_TOKEN=CODECOV_TOKEN
           ${{ contains(github.event.pull_request.labels.*.name, 'no-cache') && '--no-cache' || '' }}
           +pr
         env:
@@ -68,6 +71,7 @@ jobs:
           SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
           FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
           GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   Extract:
     name: Extract
