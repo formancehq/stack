@@ -1,20 +1,20 @@
 lockVersion: 2.0.0
-id: 5d553150-fbad-492c-a9f9-20844a39944f
+id: 6aae2a57-ff7e-43ff-ac0d-e975ea415930
 management:
   docChecksum: 5ecb893e1ddb7b683bdb143d145d47a0
   docVersion: INTERNAL
   speakeasyVersion: internal
-  generationVersion: 2.234.1
+  generationVersion: 2.237.2
   releaseVersion: INTERNAL
   configChecksum: 460adf02c413d99504670324e6dfda45
 features:
   go:
     constsAndDefaults: 0.1.2
-    core: 3.3.0
+    core: 3.3.1
     deprecations: 2.81.1
     errors: 2.81.8
     getRequestBodies: 2.81.1
-    globalSecurity: 2.82.3
+    globalSecurity: 2.82.4
     globalServerURLs: 2.82.1
     groups: 2.81.2
     ignores: 2.81.1
@@ -31,7 +31,6 @@ generatedFiles:
   - formance.go
   - go.mod
   - go.sum
-  - tests/helpers.go
   - pkg/models/sdkerrors/sdkerror.go
   - pkg/types/bigint.go
   - pkg/types/date.go
