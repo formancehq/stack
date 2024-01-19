@@ -4,11 +4,8 @@ import (
 	"context"
 
 	auth "github.com/formancehq/auth/pkg"
-	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/migrations"
 	"github.com/uptrace/bun"
-	"go.uber.org/fx"
 )
 
 const (
@@ -157,29 +154,4 @@ func Migrate(ctx context.Context, db *bun.DB) error {
 		},
 	)
 	return migrator.Up(ctx, db)
-}
-
-func bunModule(connectionOptions bunconnect.ConnectionOptions) fx.Option {
-	return fx.Options(
-		fx.Provide(func() (*bun.DB, error) {
-			return bunconnect.OpenSQLDB(connectionOptions)
-		}),
-		fx.Invoke(func(lc fx.Lifecycle, db *bun.DB) {
-			lc.Append(fx.Hook{
-				OnStart: func(ctx context.Context) error {
-					logging.FromContext(ctx).Info("Migrate tables")
-
-					return Migrate(ctx, db)
-				},
-				OnStop: func(ctx context.Context) error {
-					logging.FromContext(ctx).Info("Closing database...")
-					defer func() {
-						logging.FromContext(ctx).Info("Database closed.")
-					}()
-
-					return db.Close()
-				},
-			})
-		}),
-	)
 }

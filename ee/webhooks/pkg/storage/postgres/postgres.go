@@ -5,14 +5,10 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/formancehq/webhooks/pkg/storage"
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
-	"github.com/uptrace/bun/dialect/pgdialect"
-	"github.com/uptrace/bun/driver/pgdriver"
-	"github.com/uptrace/bun/extra/bunotel"
 )
 
 type Store struct {
@@ -21,15 +17,7 @@ type Store struct {
 
 var _ storage.Store = &Store{}
 
-func NewStore(dsn string) (storage.Store, error) {
-	logging.Debugf("postgres.NewStore: connecting to '%s'", dsn)
-	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
-	db := bun.NewDB(sqldb, pgdialect.New())
-	db.AddQueryHook(bunotel.NewQueryHook(bunotel.WithDBName("webhooks")))
-	if err := db.Ping(); err != nil {
-		return nil, errors.Wrap(err, "bun.DB.Ping")
-	}
-
+func NewStore(db *bun.DB) (storage.Store, error) {
 	return Store{db: db}, nil
 }
 

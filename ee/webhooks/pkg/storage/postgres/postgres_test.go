@@ -2,24 +2,24 @@ package postgres_test
 
 import (
 	"context"
-	"database/sql"
 	"testing"
+
+	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/formancehq/webhooks/pkg/storage"
 	"github.com/formancehq/webhooks/pkg/storage/postgres"
 	"github.com/stretchr/testify/require"
-	"github.com/uptrace/bun"
-	"github.com/uptrace/bun/dialect/pgdialect"
-	"github.com/uptrace/bun/driver/pgdriver"
 )
 
 func TestStore(t *testing.T) {
 	pgDB := pgtesting.NewPostgresDatabase(t)
-
-	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(pgDB.ConnString())))
-	db := bun.NewDB(sqldb, pgdialect.New())
+	db, err := bunconnect.OpenSQLDB(bunconnect.ConnectionOptions{
+		DatabaseSourceName: pgDB.ConnString(),
+		Debug:              testing.Verbose(),
+	})
+	require.NoError(t, err)
 	defer func() {
 		_ = db.Close()
 	}()
@@ -31,7 +31,7 @@ func TestStore(t *testing.T) {
 	require.NoError(t, db.ResetModel(context.TODO(), (*webhooks.Config)(nil)))
 	require.NoError(t, db.ResetModel(context.TODO(), (*webhooks.Attempt)(nil)))
 
-	store, err := postgres.NewStore(pgDB.ConnString())
+	store, err := postgres.NewStore(db)
 	require.NoError(t, err)
 	t.Cleanup(func() {
 		_ = store.Close(context.Background())

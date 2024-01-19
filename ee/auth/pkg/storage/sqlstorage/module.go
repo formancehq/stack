@@ -1,7 +1,10 @@
 package sqlstorage
 
 import (
+	"context"
 	"crypto/rsa"
+	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/uptrace/bun"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 
@@ -14,7 +17,16 @@ import (
 
 func Module(connectionOptions bunconnect.ConnectionOptions, key *rsa.PrivateKey, staticClients ...auth.StaticClient) fx.Option {
 	return fx.Options(
-		bunModule(connectionOptions),
+		bunconnect.Module(connectionOptions),
+		fx.Invoke(func(lc fx.Lifecycle, db *bun.DB) {
+			lc.Append(fx.Hook{
+				OnStart: func(ctx context.Context) error {
+					logging.FromContext(ctx).Info("Migrate tables")
+
+					return Migrate(ctx, db)
+				},
+			})
+		}),
 		fx.Supply(key),
 		fx.Supply(staticClients),
 		fx.Provide(fx.Annotate(New,

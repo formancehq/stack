@@ -19,7 +19,7 @@ var Ledger = internal.NewModule("ledger").
 					"--publisher-nats-client-id=ledger",
 					"--publisher-nats-url=" + internal.GetNatsAddress(),
 					fmt.Sprintf("--publisher-topic-mapping=*:%s-ledger", test.ID()),
-					"--storage-postgres-conn-string=" + test.GetDatabaseSourceName("ledger"),
+					"--postgres-uri=" + test.GetDatabaseSourceName("ledger"),
 					"--json-formatting-logger=false",
 					"--bind=0.0.0.0:0", // Random port
 					"--debug",

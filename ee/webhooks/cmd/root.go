@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/formancehq/stack/libs/go-libs/aws/iam"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
@@ -26,6 +29,8 @@ func NewRootCommand() *cobra.Command {
 	publish.InitCLIFlags(root)
 	auth.InitAuthFlags(root.PersistentFlags())
 	flag.Init(root.PersistentFlags())
+	bunconnect.InitFlags(root.PersistentFlags())
+	iam.InitFlags(root.PersistentFlags())
 
 	root.AddCommand(newServeCommand())
 	root.AddCommand(newWorkerCommand())

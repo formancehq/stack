@@ -36,6 +36,10 @@ func newServeCommand() *cobra.Command {
 			return bindFlagsToViper(cmd)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			commonOptions, err := commonOptions(cmd.OutOrStdout())
+			if err != nil {
+				return err
+			}
 
 			options := []fx.Option{
 				healthCheckModule(),
@@ -57,7 +61,7 @@ func newServeCommand() *cobra.Command {
 				fx.Invoke(func(lc fx.Lifecycle, router *chi.Mux) {
 					lc.Append(httpserver.NewHook(router, httpserver.WithAddress(viper.GetString(listenFlag))))
 				}),
-				commonOptions(cmd.OutOrStdout()),
+				commonOptions,
 			}
 			if viper.GetBool(workerFlag) {
 				options = append(options, workerOptions())

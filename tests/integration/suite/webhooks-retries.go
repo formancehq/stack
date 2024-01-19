@@ -12,7 +12,6 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	. "github.com/formancehq/stack/tests/integration/internal"
-	"github.com/formancehq/webhooks/cmd/flag"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -39,9 +38,10 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Webhooks}, func() {
 			defer func() {
 				httpServer.Close()
 			}()
+			//TODO: Remove viper usage
 			sqldb := sql.OpenDB(
 				pgdriver.NewConnector(
-					pgdriver.WithDSN(viper.GetString(flag.StoragePostgresConnString))))
+					pgdriver.WithDSN(viper.GetString("postgres-uri"))))
 			db := bun.NewDB(sqldb, pgdialect.New())
 			defer func() {
 				_ = db.Close()

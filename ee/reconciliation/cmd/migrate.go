@@ -2,16 +2,13 @@ package cmd
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
 
 	storage "github.com/formancehq/reconciliation/internal/storage/migrations"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/uptrace/bun"
-	"github.com/uptrace/bun/dialect/pgdialect"
-	"github.com/uptrace/bun/extra/bundebug"
 )
 
 func newMigrate() *cobra.Command {
@@ -25,17 +22,11 @@ func newMigrate() *cobra.Command {
 }
 
 func runMigrate(cmd *cobra.Command, args []string) error {
-	postgresURI := viper.GetString(postgresURIFlag)
-	if postgresURI == "" {
-		postgresURI = cmd.Flag(postgresURIFlag).Value.String()
+	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag))
+	if err != nil {
+		return err
 	}
-
-	if postgresURI == "" {
-		return fmt.Errorf("postgres uri is not set")
-	}
-
-	// TODO: Maybe use pgx everywhere instead of pq
-	db, err := sql.Open("postgres", postgresURI)
+	db, err := bunconnect.OpenSQLDB(*connectionOptions)
 	if err != nil {
 		return err
 	}
@@ -43,12 +34,7 @@ func runMigrate(cmd *cobra.Command, args []string) error {
 		_ = db.Close()
 	}()
 
-	bunDB := bun.NewDB(db, pgdialect.New())
-	if viper.GetBool(service.DebugFlag) {
-		bunDB.AddQueryHook(bundebug.NewQueryHook(bundebug.WithWriter(cmd.OutOrStdout())))
-	}
-
-	return Migrate(cmd.Context(), bunDB)
+	return Migrate(cmd.Context(), db)
 }
 
 func Migrate(ctx context.Context, db *bun.DB) error {

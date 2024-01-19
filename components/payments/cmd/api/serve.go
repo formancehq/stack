@@ -8,6 +8,7 @@ import (
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/auth"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
@@ -24,7 +25,6 @@ import (
 
 const (
 	stackURLFlag            = "stack-url"
-	postgresURIFlag         = "postgres-uri"
 	configEncryptionKeyFlag = "config-encryption-key"
 	envFlag                 = "env"
 	listenFlag              = "listen"
@@ -78,15 +78,16 @@ func setLogger() {
 }
 
 func prepareDatabaseOptions(output io.Writer) (fx.Option, error) {
-	postgresURI := viper.GetString(postgresURIFlag)
-	if postgresURI == "" {
-		return nil, errors.New("missing postgres uri")
-	}
-
 	configEncryptionKey := viper.GetString(configEncryptionKeyFlag)
 	if configEncryptionKey == "" {
 		return nil, errors.New("missing config encryption key")
 	}
 
-	return storage.Module(postgresURI, configEncryptionKey, viper.GetBool(service.DebugFlag), output), nil
+	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(viper.GetViper(), output,
+		viper.GetBool(service.DebugFlag))
+	if err != nil {
+		return nil, err
+	}
+
+	return storage.Module(*connectionOptions, configEncryptionKey), nil
 }

@@ -52,6 +52,20 @@ require (
 	github.com/ThreeDotsLabs/watermill-nats/v2 v2.0.0 // indirect
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
+	github.com/aws/aws-sdk-go-v2 v1.24.1 // indirect
+	github.com/aws/aws-sdk-go-v2/config v1.26.4 // indirect
+	github.com/aws/aws-sdk-go-v2/credentials v1.16.15 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.14.11 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/rds/auth v1.3.10 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.2.10 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.5.10 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/ini v1.7.2 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.10.4 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.10.10 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.18.6 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.21.7 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.26.7 // indirect
+	github.com/aws/smithy-go v1.19.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
 	github.com/containerd/continuity v0.3.0 // indirect
 	github.com/docker/cli v20.10.17+incompatible // indirect
@@ -77,6 +91,7 @@ require (
 	github.com/go-openapi/spec v0.20.9 // indirect
 	github.com/go-openapi/swag v0.22.4 // indirect
 	github.com/go-openapi/validate v0.22.2 // indirect
+	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
@@ -146,6 +161,7 @@ require (
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
+	github.com/xo/dburl v0.20.2 // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	github.com/zitadel/oidc/v2 v2.11.0 // indirect
 	go.mongodb.org/mongo-driver v1.12.0 // indirect

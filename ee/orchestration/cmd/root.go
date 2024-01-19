@@ -7,6 +7,9 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/formancehq/stack/libs/go-libs/aws/iam"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"golang.org/x/oauth2"
@@ -18,7 +21,6 @@ import (
 	"github.com/formancehq/orchestration/internal/temporalclient"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 
-	"github.com/formancehq/orchestration/internal/storage"
 	_ "github.com/formancehq/orchestration/internal/workflow/stages/all"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
@@ -46,7 +48,6 @@ const (
 	temporalTaskQueueFlag     = "temporal-task-queue"
 	topicsFlag                = "topics"
 	listenFlag                = "listen"
-	postgresDSNFlag           = "postgres-dsn"
 	workerFlag                = "worker"
 )
 
@@ -66,13 +67,14 @@ func NewRootCommand() *cobra.Command {
 	cmd.PersistentFlags().String(temporalSSLClientKeyFlag, "", "Temporal client key")
 	cmd.PersistentFlags().String(temporalSSLClientCertFlag, "", "Temporal client cert")
 	cmd.PersistentFlags().String(temporalTaskQueueFlag, "default", "Temporal task queue name")
-	cmd.PersistentFlags().String(postgresDSNFlag, "", "Postgres address")
 	cmd.PersistentFlags().StringSlice(topicsFlag, []string{}, "Topics to listen")
 	cmd.PersistentFlags().String(stackFlag, "", "Stack")
 	cmd.AddCommand(newServeCommand(), newVersionCommand(), newWorkerCommand())
 
 	publish.InitCLIFlags(cmd)
 	auth.InitAuthFlags(cmd.PersistentFlags())
+	bunconnect.InitFlags(cmd.PersistentFlags())
+	iam.InitFlags(cmd.PersistentFlags())
 
 	return cmd
 }
@@ -88,7 +90,11 @@ func Execute() {
 	}
 }
 
-func commonOptions(output io.Writer) fx.Option {
+func commonOptions(output io.Writer) (fx.Option, error) {
+	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(viper.GetViper(), output, viper.GetBool(service.DebugFlag))
+	if err != nil {
+		return nil, err
+	}
 	return fx.Options(
 		otlptraces.CLITracesModule(viper.GetViper()),
 		temporalclient.NewModule(
@@ -97,7 +103,7 @@ func commonOptions(output io.Writer) fx.Option {
 			viper.GetString(temporalSSLClientCertFlag),
 			viper.GetString(temporalSSLClientKeyFlag),
 		),
-		storage.NewModule(viper.GetString(postgresDSNFlag), viper.GetBool(service.DebugFlag), output),
+		bunconnect.Module(*connectionOptions),
 		publish.CLIPublisherModule(viper.GetViper(), "orchestration"),
 		auth.CLIAuthModule(viper.GetViper()),
 		workflow.NewModule(viper.GetString(temporalTaskQueueFlag)),
@@ -119,5 +125,5 @@ func commonOptions(output io.Writer) fx.Option {
 			return oauthConfig.Client(context.WithValue(context.Background(),
 				oauth2.HTTPClient, httpClient))
 		}),
-	)
+	), nil
 }

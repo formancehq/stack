@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/formancehq/stack/libs/go-libs/aws/iam"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
@@ -23,7 +26,6 @@ const (
 	stackClientIDFlag     = "stack-client-id"
 	stackClientSecretFlag = "stack-client-secret"
 	listenFlag            = "listen"
-	postgresURIFlag       = "postgres-uri"
 )
 
 func NewRootCommand() *cobra.Command {
@@ -41,6 +43,8 @@ func NewRootCommand() *cobra.Command {
 	otlpmetrics.InitOTLPMetricsFlags(cmd.PersistentFlags())
 	otlptraces.InitOTLPTracesFlags(cmd.PersistentFlags())
 	auth.InitAuthFlags(cmd.PersistentFlags())
+	bunconnect.InitFlags(cmd.PersistentFlags())
+	iam.InitFlags(cmd.PersistentFlags())
 
 	serveCmd := newServeCommand(Version)
 	cmd.AddCommand(serveCmd)

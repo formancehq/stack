@@ -1,16 +1,13 @@
 package cmd
 
 import (
-	"database/sql"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+	"github.com/formancehq/stack/libs/go-libs/service"
 
 	"github.com/formancehq/webhooks/cmd/flag"
 	"github.com/formancehq/webhooks/pkg/storage"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/uptrace/bun"
-	"github.com/uptrace/bun/dialect/pgdialect"
-	"github.com/uptrace/bun/driver/pgdriver"
-	"github.com/uptrace/bun/extra/bundebug"
 )
 
 func newMigrateCommand() *cobra.Command {
@@ -23,14 +20,20 @@ func newMigrateCommand() *cobra.Command {
 }
 
 func runMigrate(cmd *cobra.Command, args []string) error {
-	dsn := viper.GetString(flag.StoragePostgresConnString)
-	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
-	defer sqldb.Close()
-	db := bun.NewDB(sqldb, pgdialect.New())
-	defer db.Close()
-	if viper.GetBool(flag.Debug) {
-		db.AddQueryHook(bundebug.NewQueryHook(bundebug.WithWriter(cmd.OutOrStdout())))
+
+	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag))
+	if err != nil {
+		return err
 	}
+
+	db, err := bunconnect.OpenSQLDB(*connectionOptions)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		_ = db.Close()
+	}()
+
 	return storage.Migrate(cmd.Context(), db)
 }
 

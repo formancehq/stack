@@ -2,10 +2,11 @@ package cmd
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
+
+	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 
 	sdk "github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/reconciliation/internal/api"
@@ -86,10 +87,10 @@ func runServer(version string) func(cmd *cobra.Command, args []string) error {
 }
 
 func prepareDatabaseOptions(output io.Writer) (fx.Option, error) {
-	postgresURI := viper.GetString(postgresURIFlag)
-	if postgresURI == "" {
-		return nil, errors.New("missing postgres uri")
+	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(viper.GetViper(), output, viper.GetBool(service.DebugFlag))
+	if err != nil {
+		return nil, err
 	}
 
-	return storage.Module(postgresURI, viper.GetBool(service.DebugFlag), output), nil
+	return storage.Module(*connectionOptions), nil
 }

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/formancehq/stack/libs/go-libs/aws/iam"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 
 	"github.com/formancehq/stack/libs/go-libs/otlp"
@@ -29,7 +30,6 @@ import (
 )
 
 const (
-	postgresUriFlag           = "postgres-uri"
 	delegatedClientIDFlag     = "delegated-client-id"
 	delegatedClientSecretFlag = "delegated-client-secret"
 	delegatedIssuerFlag       = "delegated-issuer"
@@ -127,14 +127,16 @@ func newServeCommand() *cobra.Command {
 
 			zLogging.SetOutput(cmd.OutOrStdout())
 
+			connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(
+				viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag))
+			if err != nil {
+				return err
+			}
+
 			options := []fx.Option{
 				otlpHttpClientModule(viper.GetBool(service.DebugFlag)),
 				fx.Supply(fx.Annotate(cmd.Context(), fx.As(new(context.Context)))),
-				sqlstorage.Module(bunconnect.ConnectionOptions{
-					DatabaseSourceName: viper.GetString(postgresUriFlag),
-					Debug:              viper.GetBool(service.DebugFlag),
-					Writer:             cmd.OutOrStdout(),
-				}, key, o.Clients...),
+				sqlstorage.Module(*connectionOptions, key, o.Clients...),
 				api.Module(viper.GetString(listenFlag), viper.GetString(baseUrlFlag), sharedapi.ServiceInfo{
 					Version: Version,
 				}),
@@ -170,17 +172,17 @@ func newServeCommand() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(postgresUriFlag, "", "Postgres uri")
 	cmd.Flags().String(delegatedIssuerFlag, "", "Delegated OIDC issuer")
 	cmd.Flags().String(delegatedClientIDFlag, "", "Delegated OIDC client id")
 	cmd.Flags().String(delegatedClientSecretFlag, "", "Delegated OIDC client secret")
 	cmd.Flags().String(baseUrlFlag, "http://localhost:8080", "Base service url")
 	cmd.Flags().String(signingKeyFlag, defaultSigningKey, "Signing key")
 	cmd.Flags().String(listenFlag, ":8080", "Listening address")
-
 	cmd.Flags().String(configFlag, "", "Config file name without extension")
 
 	otlptraces.InitOTLPTracesFlags(cmd.Flags())
+	bunconnect.InitFlags(cmd.Flags())
+	iam.InitFlags(cmd.Flags())
 
 	return cmd
 }
