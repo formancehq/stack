@@ -118,6 +118,13 @@ func (m *ClientMock) CreateTransfer(ctx context.Context,
 	return nil, nil
 }
 
+func (m *ClientMock) ReverseTransfer(ctx context.Context,
+	createTransferReversalRequest *client.CreateTransferReversalRequest,
+	options ...client.ClientOption,
+) (*stripe.Reversal, error) {
+	return nil, nil
+}
+
 func (m *ClientMock) CreatePayout(ctx context.Context,
 	createPayoutRequest *client.CreatePayoutRequest,
 	options ...client.ClientOption,

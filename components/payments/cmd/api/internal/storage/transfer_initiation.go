@@ -34,8 +34,8 @@ func (s *Storage) GetTransferInitiation(ctx context.Context, id models.TransferI
 	return &transferInitiation, nil
 }
 
-func (s *Storage) ReadTransferInitiationPayments(ctx context.Context, id models.TransferInitiationID) ([]*models.TransferInitiationPayments, error) {
-	var payments []*models.TransferInitiationPayments
+func (s *Storage) ReadTransferInitiationPayments(ctx context.Context, id models.TransferInitiationID) ([]*models.TransferInitiationPayment, error) {
+	var payments []*models.TransferInitiationPayment
 
 	query := s.db.NewSelect().
 		Column("transfer_initiation_id", "payment_id", "created_at", "status", "error").

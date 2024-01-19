@@ -77,12 +77,14 @@ func connectorsHandlerMap(connectorHandlers []connectorHandler) map[models.Conne
 	m := make(map[models.ConnectorProvider]*service.ConnectorHandlers)
 	for _, h := range connectorHandlers {
 		if handlers, ok := m[h.Provider]; ok {
-			handlers.PaymentHandler = h.initiatePayment
+			handlers.InitiatePaymentHandler = h.initiatePayment
+			handlers.ReversePaymentHandler = h.reversePayment
 			handlers.BankAccountHandler = h.createExternalBankAccount
 		} else {
 			m[h.Provider] = &service.ConnectorHandlers{
-				PaymentHandler:     h.initiatePayment,
-				BankAccountHandler: h.createExternalBankAccount,
+				InitiatePaymentHandler: h.initiatePayment,
+				ReversePaymentHandler:  h.reversePayment,
+				BankAccountHandler:     h.createExternalBankAccount,
 			}
 		}
 	}

@@ -76,51 +76,6 @@ func (tid *TransferInitiationID) Scan(value interface{}) error {
 	return fmt.Errorf("failed to scan paymentid: %v", value)
 }
 
-type TransferInitiationStatus int
-
-const (
-	TransferInitiationStatusWaitingForValidation TransferInitiationStatus = iota
-	TransferInitiationStatusProcessing
-	TransferInitiationStatusProcessed
-	TransferInitiationStatusFailed
-	TransferInitiationStatusRejected
-	TransferInitiationStatusValidated
-	TransferInitiationStatusRetried
-)
-
-func (s TransferInitiationStatus) String() string {
-	return [...]string{
-		"WAITING_FOR_VALIDATION",
-		"PROCESSING",
-		"PROCESSED",
-		"FAILED",
-		"REJECTED",
-		"VALIDATED",
-		"RETRIED",
-	}[s]
-}
-
-func TransferInitiationStatusFromString(s string) (TransferInitiationStatus, error) {
-	switch s {
-	case "WAITING_FOR_VALIDATION":
-		return TransferInitiationStatusWaitingForValidation, nil
-	case "PROCESSING":
-		return TransferInitiationStatusProcessing, nil
-	case "PROCESSED":
-		return TransferInitiationStatusProcessed, nil
-	case "FAILED":
-		return TransferInitiationStatusFailed, nil
-	case "REJECTED":
-		return TransferInitiationStatusRejected, nil
-	case "VALIDATED":
-		return TransferInitiationStatusValidated, nil
-	case "RETRIED":
-		return TransferInitiationStatusRetried, nil
-	default:
-		return TransferInitiationStatusWaitingForValidation, errors.New("invalid status")
-	}
-}
-
 type TransferInitiationType int
 
 const (
@@ -171,16 +126,17 @@ type TransferInitiation struct {
 	Provider             ConnectorProvider
 	ConnectorID          ConnectorID
 
-	Amount *big.Int `bun:"type:numeric"`
-	Asset  Asset
+	Amount        *big.Int `bun:"type:numeric"`
+	InitialAmount *big.Int `bun:"type:numeric"`
+	Asset         Asset
 
 	Metadata map[string]string
 
 	SourceAccount      *Account `bun:"-"`
 	DestinationAccount *Account `bun:"-"`
 
-	RelatedAdjustments []*TransferInitiationAdjustments `bun:"rel:has-many,join:id=transfer_initiation_id"`
-	RelatedPayments    []*TransferInitiationPayments    `bun:"-"`
+	RelatedAdjustments []*TransferInitiationAdjustment `bun:"rel:has-many,join:id=transfer_initiation_id"`
+	RelatedPayments    []*TransferInitiationPayment    `bun:"-"`
 }
 
 func (t *TransferInitiation) SortRelatedAdjustments() {
@@ -193,7 +149,7 @@ func (t *TransferInitiation) SortRelatedAdjustments() {
 func (t *TransferInitiation) CountRetries() int {
 	res := 0
 	for _, adjustment := range t.RelatedAdjustments {
-		if adjustment.Status == TransferInitiationStatusRetried {
+		if adjustment.Status == TransferInitiationStatusAskRetried {
 			res++
 		}
 	}
@@ -201,7 +157,7 @@ func (t *TransferInitiation) CountRetries() int {
 	return res
 }
 
-type TransferInitiationPayments struct {
+type TransferInitiationPayment struct {
 	bun.BaseModel `bun:"transfers.transfer_initiation_payments"`
 
 	TransferInitiationID TransferInitiationID `bun:",pk"`
@@ -212,7 +168,7 @@ type TransferInitiationPayments struct {
 	Error     string
 }
 
-type TransferInitiationAdjustments struct {
+type TransferInitiationAdjustment struct {
 	bun.BaseModel `bun:"transfers.transfer_initiation_adjustments"`
 
 	ID                   uuid.UUID `bun:",pk"`

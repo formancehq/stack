@@ -68,7 +68,7 @@ func TestCreateTransferInitiation(t *testing.T) {
 				Type:                 models.TransferInitiationTypeTransfer,
 				Amount:               big.NewInt(100),
 				Asset:                models.Asset("EUR/2"),
-				RelatedAdjustments: []*models.TransferInitiationAdjustments{
+				RelatedAdjustments: []*models.TransferInitiationAdjustment{
 					{
 						TransferInitiationID: models.TransferInitiationID{
 							Reference:   "ref1",
@@ -106,7 +106,7 @@ func TestCreateTransferInitiation(t *testing.T) {
 				Type:                 models.TransferInitiationTypeTransfer,
 				Amount:               big.NewInt(100),
 				Asset:                models.Asset("EUR/2"),
-				RelatedAdjustments: []*models.TransferInitiationAdjustments{
+				RelatedAdjustments: []*models.TransferInitiationAdjustment{
 					{
 						TransferInitiationID: models.TransferInitiationID{
 							Reference:   "ref1",
@@ -146,7 +146,7 @@ func TestCreateTransferInitiation(t *testing.T) {
 				Type:                 models.TransferInitiationTypeTransfer,
 				Amount:               big.NewInt(100),
 				Asset:                models.Asset("EUR/2"),
-				RelatedAdjustments: []*models.TransferInitiationAdjustments{
+				RelatedAdjustments: []*models.TransferInitiationAdjustment{
 					{
 						TransferInitiationID: models.TransferInitiationID{
 							Reference:   "ref1",
@@ -332,7 +332,7 @@ func TestCreateTransferInitiation(t *testing.T) {
 			if !tc.noPaymentsHandler {
 				handlers = map[models.ConnectorProvider]*ConnectorHandlers{
 					models.ConnectorProviderDummyPay: {
-						PaymentHandler: func(ctx context.Context, transfer *models.TransferInitiation) error {
+						InitiatePaymentHandler: func(ctx context.Context, transfer *models.TransferInitiation) error {
 							if tc.errorPaymentHandler != nil {
 								return tc.errorPaymentHandler
 							}
@@ -511,7 +511,7 @@ func TestUpdateTransferInitiationStatus(t *testing.T) {
 			if !tc.noPaymentsHandler {
 				handlers = map[models.ConnectorProvider]*ConnectorHandlers{
 					models.ConnectorProviderDummyPay: {
-						PaymentHandler: func(ctx context.Context, transfer *models.TransferInitiation) error {
+						InitiatePaymentHandler: func(ctx context.Context, transfer *models.TransferInitiation) error {
 							if tc.errorPaymentHandler != nil {
 								return tc.errorPaymentHandler
 							}
@@ -597,7 +597,7 @@ func TestRetryTransferInitiation(t *testing.T) {
 			if !tc.noPaymentsHandler {
 				handlers = map[models.ConnectorProvider]*ConnectorHandlers{
 					models.ConnectorProviderDummyPay: {
-						PaymentHandler: func(ctx context.Context, transfer *models.TransferInitiation) error {
+						InitiatePaymentHandler: func(ctx context.Context, transfer *models.TransferInitiation) error {
 							if tc.errorPaymentHandler != nil {
 								return tc.errorPaymentHandler
 							}

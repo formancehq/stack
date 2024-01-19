@@ -27,7 +27,8 @@ type connectorHandler struct {
 	Provider       models.ConnectorProvider
 
 	// TODO(polo): refactor to remove this ugly hack to access the connector manager
-	initiatePayment           service.PaymentHandler
+	initiatePayment           service.InitiatePaymentHandler
+	reversePayment            service.ReversePaymentHandler
 	createExternalBankAccount service.BankAccountHandler
 }
 
@@ -79,6 +80,7 @@ func addConnector[ConnectorConfig models.ConnectorConfigObject](loader manager.L
 				WebhookHandler:            webhookConnectorRouter(loader.Name(), loader.Router(), b),
 				Provider:                  loader.Name(),
 				initiatePayment:           cm.InitiatePayment,
+				reversePayment:            cm.ReversePayment,
 				createExternalBankAccount: cm.CreateExternalBankAccount,
 			}
 		}, fx.ResultTags(`group:"connectorHandlers"`))),

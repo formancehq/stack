@@ -245,6 +245,57 @@ func registerMigrationsV1(ctx context.Context, migrator *migrations.Migrator) {
 				return nil
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				_, err := tx.Exec(`
+				CREATE TABLE IF NOT EXISTS transfers.transfer_reversal (
+					id character varying  NOT NULL,
+					transfer_initiation_id character varying  NOT NULL,
+					reference text,
+					created_at timestamp with time zone  NOT NULL,
+					updated_at timestamp with time zone  NOT NULL,
+					description text NOT NULL,
+					connector_id CHARACTER VARYING NOT NULL,
+					amount numeric NOT NULL,
+					asset text  NOT NULL,
+					status int NOT NULL,
+					error text,
+					metadata jsonb,
+					PRIMARY KEY (id)
+				);
+
+				-- UNIQUE constrait for processing only one reversal at a time.
+				CREATE UNIQUE INDEX transfer_reversal_processing_unique_constraint ON transfers.transfer_reversal (transfer_initiation_id) WHERE status = 1;
+
+				ALTER TABLE transfers.transfer_reversal ADD CONSTRAINT transfer_reversal_connector_id
+				FOREIGN KEY (connector_id)
+				REFERENCES connectors.connector (id)
+				ON DELETE CASCADE
+				NOT DEFERRABLE
+				INITIALLY IMMEDIATE
+				;
+
+				ALTER TABLE transfers.transfer_reversal ADD CONSTRAINT transfer_reversal_transfer_initiation_id
+				FOREIGN KEY (transfer_initiation_id)
+				REFERENCES transfers.transfer_initiation (id)
+				ON DELETE CASCADE
+				NOT DEFERRABLE
+				INITIALLY IMMEDIATE
+				;
+
+				ALTER TABLE transfers.transfer_initiation ADD COLUMN IF NOT EXISTS initial_amount numeric NOT NULL DEFAULT 0;
+				UPDATE transfers.transfer_initiation SET initial_amount = amount;
+
+				ALTER TABLE transfers.transfer_initiation ADD CONSTRAINT amount_non_negative CHECK (amount >= 0);
+				ALTER TABLE transfers.transfer_initiation ADD CONSTRAINT initial_amount_non_negative CHECK (initial_amount >= 0);
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
 	)
 }
 
@@ -863,7 +914,7 @@ func migrateTransferInitiationID(ctx context.Context, tx bun.Tx) error {
 		}
 
 		_, err = tx.NewUpdate().
-			Model((*models.TransferInitiationPayments)(nil)).
+			Model((*models.TransferInitiationPayment)(nil)).
 			Set("transfer_initiation_id = ?", migration.NewTransferInitiationID).
 			Where("transfer_initiation_id = ?", migration.PreviousTransferInitiationID).
 			Exec(ctx)

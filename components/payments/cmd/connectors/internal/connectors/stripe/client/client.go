@@ -33,6 +33,7 @@ type Client interface {
 	BalanceTransactions(ctx context.Context, options ...ClientOption) ([]*stripe.BalanceTransaction, bool, error)
 	Balance(ctx context.Context, options ...ClientOption) (*stripe.Balance, error)
 	CreateTransfer(ctx context.Context, CreateTransferRequest *CreateTransferRequest, options ...ClientOption) (*stripe.Transfer, error)
+	ReverseTransfer(ctx context.Context, createTransferReversalRequest *CreateTransferReversalRequest, options ...ClientOption) (*stripe.Reversal, error)
 	CreatePayout(ctx context.Context, createPayoutRequest *CreatePayoutRequest, options ...ClientOption) (*stripe.Payout, error)
 	GetPayout(ctx context.Context, payoutID string, options ...ClientOption) (*stripe.Payout, error)
 	ForAccount(account string) Client

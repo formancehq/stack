@@ -24,6 +24,15 @@ type Connector struct {
 	cfg    Config
 }
 
+func newConnector(logger logging.Logger, cfg Config) *Connector {
+	return &Connector{
+		logger: logger.WithFields(map[string]any{
+			"component": "connector",
+		}),
+		cfg: cfg,
+	}
+}
+
 func (c *Connector) UpdateConfig(ctx task.ConnectorContext, config models.ConnectorConfigObject) error {
 	cfg, ok := config.(Config)
 	if !ok {
@@ -84,25 +93,6 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 	return resolveTasks(c.logger, c.cfg)(taskDescriptor)
 }
 
-func (c *Connector) CreateExternalBankAccount(ctx task.ConnectorContext, bankAccount *models.BankAccount) error {
-	descriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
-		Name:        "Create external bank account",
-		Key:         taskNameCreateExternalBankAccount,
-		BankAccount: bankAccount,
-	})
-	if err != nil {
-		return err
-	}
-	if err := ctx.Scheduler().Schedule(ctx.Context(), descriptor, models.TaskSchedulerOptions{
-		ScheduleOption: models.OPTIONS_RUN_NOW_SYNC,
-	}); err != nil {
-		return err
-	}
-
-	// TODO: it might make sense to return the external account ID so the client can use it for initiating a payment
-	return nil
-}
-
 func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error {
 	err := ValidateTransferInitiation(transfer)
 	if err != nil {
@@ -135,13 +125,27 @@ func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.
 	return nil
 }
 
-var _ connectors.Connector = &Connector{}
-
-func newConnector(logger logging.Logger, cfg Config) *Connector {
-	return &Connector{
-		logger: logger.WithFields(map[string]any{
-			"component": "connector",
-		}),
-		cfg: cfg,
-	}
+func (c *Connector) ReversePayment(ctx task.ConnectorContext, transferReversal *models.TransferReversal) error {
+	return connectors.ErrNotImplemented
 }
+
+func (c *Connector) CreateExternalBankAccount(ctx task.ConnectorContext, bankAccount *models.BankAccount) error {
+	descriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
+		Name:        "Create external bank account",
+		Key:         taskNameCreateExternalBankAccount,
+		BankAccount: bankAccount,
+	})
+	if err != nil {
+		return err
+	}
+	if err := ctx.Scheduler().Schedule(ctx.Context(), descriptor, models.TaskSchedulerOptions{
+		ScheduleOption: models.OPTIONS_RUN_NOW_SYNC,
+	}); err != nil {
+		return err
+	}
+
+	// TODO: it might make sense to return the external account ID so the client can use it for initiating a payment
+	return nil
+}
+
+var _ connectors.Connector = &Connector{}

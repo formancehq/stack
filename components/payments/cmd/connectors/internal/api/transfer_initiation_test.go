@@ -336,7 +336,7 @@ func TestCreateTransferInitiations(t *testing.T) {
 				Metadata: map[string]string{
 					"foo": "bar",
 				},
-				RelatedAdjustments: []*models.TransferInitiationAdjustments{
+				RelatedAdjustments: []*models.TransferInitiationAdjustment{
 					{
 						ID: uuid.New(),
 						TransferInitiationID: models.TransferInitiationID{

@@ -9,7 +9,8 @@ import (
 	"github.com/google/uuid"
 )
 
-type PaymentHandler func(ctx context.Context, transfer *models.TransferInitiation) error
+type InitiatePaymentHandler func(ctx context.Context, transfer *models.TransferInitiation) error
+type ReversePaymentHandler func(ctx context.Context, transfer *models.TransferReversal) error
 type BankAccountHandler func(ctx context.Context, bankAccount *models.BankAccount) error
 
 type Store interface {
@@ -30,8 +31,10 @@ type Store interface {
 
 	CreateTransferInitiation(ctx context.Context, transferInitiation *models.TransferInitiation) error
 	ReadTransferInitiation(ctx context.Context, id models.TransferInitiationID) (*models.TransferInitiation, error)
-	UpdateTransferInitiationPaymentsStatus(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, adjustment *models.TransferInitiationAdjustments) error
+	UpdateTransferInitiationPaymentsStatus(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, adjustment *models.TransferInitiationAdjustment) error
 	DeleteTransferInitiation(ctx context.Context, id models.TransferInitiationID) error
+
+	CreateTransferReversal(ctx context.Context, transferReversal *models.TransferReversal) error
 }
 
 type Service struct {
@@ -42,8 +45,9 @@ type Service struct {
 }
 
 type ConnectorHandlers struct {
-	PaymentHandler     PaymentHandler
-	BankAccountHandler BankAccountHandler
+	InitiatePaymentHandler InitiatePaymentHandler
+	ReversePaymentHandler  ReversePaymentHandler
+	BankAccountHandler     BankAccountHandler
 }
 
 func New(

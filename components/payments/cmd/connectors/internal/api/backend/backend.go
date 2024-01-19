@@ -19,6 +19,7 @@ type Service interface {
 	UpdateTransferInitiationStatus(ctx context.Context, transferID string, req *service.UpdateTransferInitiationStatusRequest) error
 	RetryTransferInitiation(ctx context.Context, id string) error
 	DeleteTransferInitiation(ctx context.Context, id string) error
+	ReverseTransferInitiation(ctx context.Context, transferID string, req *service.ReverseTransferInitiationRequest) (*models.TransferReversal, error)
 }
 
 //go:generate mockgen -source backend.go -destination backend_generated.go -package backend . Manager

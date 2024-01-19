@@ -428,6 +428,24 @@ func (l *ConnectorsManager[ConnectorConfig]) InitiatePayment(ctx context.Context
 	return nil
 }
 
+func (l *ConnectorsManager[ConnectorConfig]) ReversePayment(ctx context.Context, transferReversal *models.TransferReversal) error {
+	connectorManager, err := l.getManager(transferReversal.ConnectorID)
+	if err != nil {
+		return ErrConnectorNotFound
+	}
+
+	if err := l.validateAssets(ctx, connectorManager, transferReversal.ConnectorID, transferReversal.Asset); err != nil {
+		return err
+	}
+
+	err = connectorManager.connector.ReversePayment(task.NewConnectorContext(ctx, connectorManager.scheduler), transferReversal)
+	if err != nil {
+		return fmt.Errorf("reversing transfer: %w", err)
+	}
+
+	return nil
+}
+
 func (l *ConnectorsManager[ConnectorConfig]) CreateExternalBankAccount(ctx context.Context, bankAccount *models.BankAccount) error {
 	connectorManager, err := l.getManager(bankAccount.ConnectorID)
 	if err != nil {
