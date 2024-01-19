@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/ThreeDotsLabs/watermill v1.2.0
 	github.com/expr-lang/expr v1.15.6
-	github.com/formancehq/formance-sdk-go v1.0.0-rc.1
+	github.com/formancehq/formance-sdk-go/v2 v2.0.0-00010101000000-000000000000
 	github.com/formancehq/stack/libs/go-libs v0.0.0-20230221161632-e6dc6a89a85e
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-playground/validator/v10 v10.11.2
@@ -168,4 +168,4 @@ require (
 
 replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
 
-replace github.com/formancehq/formance-sdk-go => ../../releases/sdks/go
+replace github.com/formancehq/formance-sdk-go/v2 => ../../releases/sdks/go

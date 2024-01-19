@@ -4,14 +4,14 @@ package main
 
 import (
 	"context"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"log"
 )
 
 func main() {
-	s := formancesdkgo.New(
-		formancesdkgo.WithSecurity(shared.Security{
+	s := v2.New(
+		v2.WithSecurity(shared.Security{
 			Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
 		}),
 	)

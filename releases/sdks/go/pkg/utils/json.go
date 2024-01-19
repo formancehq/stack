@@ -12,7 +12,7 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/formancehq/formance-sdk-go/pkg/types"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
 
 	"github.com/ericlagergren/decimal"
 )

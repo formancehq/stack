@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 
-	sdk "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	sdk "github.com/formancehq/formance-sdk-go/v2"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/reconciliation/internal/models"
 	"github.com/formancehq/reconciliation/internal/storage"
 	"github.com/formancehq/stack/libs/go-libs/api"

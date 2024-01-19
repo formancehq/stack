@@ -3,7 +3,7 @@
 package shared
 
 import (
-	"github.com/formancehq/formance-sdk-go/pkg/utils"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/utils"
 )
 
 type WiseConfig struct {

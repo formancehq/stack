@@ -6,7 +6,7 @@ require (
 	github.com/TylerBrock/colorjson v0.0.0-20200706003622-8a50f05110d2
 	github.com/c-bata/go-prompt v0.2.6
 	github.com/formancehq/fctl/membershipclient v0.0.0-00010101000000-000000000000
-	github.com/formancehq/formance-sdk-go v1.0.202307124
+	github.com/formancehq/formance-sdk-go/v2 v2.0.0-00010101000000-000000000000
 	github.com/formancehq/stack/libs/go-libs v0.0.0-00010101000000-000000000000
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/iancoleman/strcase v0.2.0
@@ -82,4 +82,4 @@ replace github.com/formancehq/fctl/membershipclient => ./membershipclient
 
 replace github.com/spf13/cobra v1.6.1 => github.com/formancehq/cobra v0.0.0-20221112160629-60a6d6d55ef9
 
-replace github.com/formancehq/formance-sdk-go => ../../releases/sdks/go
+replace github.com/formancehq/formance-sdk-go/v2 => ../../releases/sdks/go

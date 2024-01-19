@@ -3,7 +3,7 @@ module github.com/formancehq/reconciliation
 go 1.20
 
 require (
-	github.com/formancehq/formance-sdk-go v1.0.202307124
+	github.com/formancehq/formance-sdk-go/v2 v2.0.0-00010101000000-000000000000
 	github.com/formancehq/stack/libs/go-libs v0.0.0-00010101000000-000000000000
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/golang/mock v1.6.0
@@ -128,4 +128,4 @@ require (
 
 replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
 
-replace github.com/formancehq/formance-sdk-go => ../../releases/sdks/go
+replace github.com/formancehq/formance-sdk-go/v2 => ../../releases/sdks/go

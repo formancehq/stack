@@ -9,7 +9,7 @@ import (
 	"os"
 	"path/filepath"
 
-	formance "github.com/formancehq/formance-sdk-go"
+	formance "github.com/formancehq/formance-sdk-go/v2"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/getkin/kin-openapi/routers"

@@ -22,4 +22,4 @@ go:
   inputModelSuffix: input
   maxMethodParams: 0
   outputModelSuffix: output
-  packageName: github.com/formancehq/formance-sdk-go
+  packageName: github.com/formancehq/formance-sdk-go/v2

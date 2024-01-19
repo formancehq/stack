@@ -5,7 +5,7 @@ import (
 
 	"github.com/formancehq/orchestration/internal/triggers"
 
-	sdk "github.com/formancehq/formance-sdk-go"
+	sdk "github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/orchestration/internal/temporalworker"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"

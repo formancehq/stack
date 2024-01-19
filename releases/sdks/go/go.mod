@@ -1,4 +1,4 @@
-module github.com/formancehq/formance-sdk-go
+module github.com/formancehq/formance-sdk-go/v2
 
 go 1.20
 

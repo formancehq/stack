@@ -4,7 +4,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/orchestration/internal/workflow/activities"
 	"github.com/formancehq/orchestration/internal/workflow/stages/internal/stagestesting"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
