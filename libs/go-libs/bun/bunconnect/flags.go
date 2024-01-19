@@ -12,17 +12,25 @@ import (
 	"time"
 )
 
+const (
+	PostgresURIFlag             = "postgres-uri"
+	PostgresAWSEnableIAMFlag    = "postgres-aws-enable-iam"
+	PostgresMaxIdleConnsFlag    = "postgres-max-idle-conns"
+	PostgresMaxOpenConnsFlag    = "postgres-max-open-conns"
+	PostgresConnMaxIdleTimeFlag = "postgres-conn-max-idle-time"
+)
+
 func InitFlags(flags *pflag.FlagSet) {
-	flags.String("postgres-uri", "", "Postgres URI")
-	flags.Bool("postgres-aws-enable-iam", false, "Enable AWS IAM authentication")
-	flags.Int("postgres-max-idle-conns", 0, "Max Idle connections")
-	flags.Duration("postgres-conn-max-idle-time", time.Minute, "Max Idle time for connections")
-	flags.Int("postgres-max-open-conns", 20, "Max opened connections")
+	flags.String(PostgresURIFlag, "", "Postgres URI")
+	flags.Bool(PostgresAWSEnableIAMFlag, false, "Enable AWS IAM authentication")
+	flags.Int(PostgresMaxIdleConnsFlag, 0, "Max Idle connections")
+	flags.Duration(PostgresConnMaxIdleTimeFlag, time.Minute, "Max Idle time for connections")
+	flags.Int(PostgresMaxOpenConnsFlag, 20, "Max opened connections")
 }
 
 func ConnectionOptionsFromFlags(v *viper.Viper, output io.Writer, debug bool) (*ConnectionOptions, error) {
 	var connector func(string) (driver.Connector, error)
-	if v.GetBool("postgres-aws-enable-iam") {
+	if v.GetBool(PostgresAWSEnableIAMFlag) {
 		cfg, err := config.LoadDefaultConfig(context.Background(), iam.LoadOptionFromViper(v))
 		if err != nil {
 			return nil, err
@@ -42,12 +50,12 @@ func ConnectionOptionsFromFlags(v *viper.Viper, output io.Writer, debug bool) (*
 		}
 	}
 	return &ConnectionOptions{
-		DatabaseSourceName: v.GetString("postgres-uri"),
+		DatabaseSourceName: v.GetString(PostgresURIFlag),
 		Debug:              debug,
 		Writer:             output,
-		MaxIdleConns:       v.GetInt("postgres-max-idle-conns"),
-		ConnMaxIdleTime:    v.GetDuration("postgres-conn-max-idle-time"),
-		MaxOpenConns:       v.GetInt("postgres-max-open-conns"),
+		MaxIdleConns:       v.GetInt(PostgresMaxIdleConnsFlag),
+		ConnMaxIdleTime:    v.GetDuration(PostgresConnMaxIdleTimeFlag),
+		MaxOpenConns:       v.GetInt(PostgresMaxOpenConnsFlag),
 		Connector:          connector,
 	}, nil
 }
