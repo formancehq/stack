@@ -23,15 +23,15 @@ Create client
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -87,16 +87,16 @@ Add a secret to a client
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -146,17 +146,17 @@ Delete client
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -200,17 +200,17 @@ Delete a secret from a client
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -255,15 +255,15 @@ List clients
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -304,15 +304,15 @@ List users
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -353,16 +353,16 @@ Read client
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -406,16 +406,16 @@ Read user
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -459,16 +459,16 @@ Update client
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )

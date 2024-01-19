@@ -3,8 +3,8 @@ package ledger
 import (
 	"fmt"
 
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"

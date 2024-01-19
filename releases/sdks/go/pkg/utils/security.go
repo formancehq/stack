@@ -204,9 +204,9 @@ func parseSecuritySchemeValue(client *securityConfig, schemeTag *securityTag, se
 			panic("not supported")
 		}
 	case "openIdConnect":
-		client.headers[secTag.Name] = valToString(val)
+		client.headers[secTag.Name] = prefixBearer(valToString(val))
 	case "oauth2":
-		client.headers[secTag.Name] = valToString(val)
+		client.headers[secTag.Name] = prefixBearer(valToString(val))
 	case "http":
 		switch schemeTag.SubType {
 		case "bearer":

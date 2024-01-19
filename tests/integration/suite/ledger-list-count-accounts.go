@@ -7,12 +7,12 @@ import (
 	"sort"
 	"time"
 
-	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	. "github.com/onsi/ginkgo/v2"

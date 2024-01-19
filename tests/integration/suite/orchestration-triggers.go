@@ -1,8 +1,8 @@
 package suite
 
 import (
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	paymentsevents "github.com/formancehq/payments/pkg/events"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/publish"

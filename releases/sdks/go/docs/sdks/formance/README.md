@@ -31,15 +31,15 @@ Show stack version information
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -78,16 +78,16 @@ func main() {
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
 	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )

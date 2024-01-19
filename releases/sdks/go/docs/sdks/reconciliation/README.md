@@ -22,15 +22,15 @@ Create a policy
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -79,17 +79,17 @@ Delete a policy by its id.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -133,16 +133,16 @@ Get a policy
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -186,16 +186,16 @@ Get a reconciliation
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -239,23 +239,23 @@ List policies
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
 
     ctx := context.Background()
     res, err := s.Reconciliation.ListPolicies(ctx, operations.ListPoliciesRequest{
-        Cursor: formancesdkgo.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
+        Cursor: v2.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
     })
     if err != nil {
         log.Fatal(err)
@@ -292,23 +292,23 @@ List reconciliations
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
 
     ctx := context.Background()
     res, err := s.Reconciliation.ListReconciliations(ctx, operations.ListReconciliationsRequest{
-        Cursor: formancesdkgo.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
+        Cursor: v2.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
     })
     if err != nil {
         log.Fatal(err)
@@ -345,17 +345,17 @@ Reconcile using a policy
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/types"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -403,15 +403,15 @@ Get server info
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )

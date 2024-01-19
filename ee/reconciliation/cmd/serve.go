@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 
-	sdk "github.com/formancehq/formance-sdk-go"
+	sdk "github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/reconciliation/internal/api"
 	"github.com/formancehq/reconciliation/internal/storage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"

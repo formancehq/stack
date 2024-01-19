@@ -53,17 +53,17 @@ Add an account to a pool
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -110,17 +110,17 @@ Execute a transfer between two accounts.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"math/big"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -131,7 +131,7 @@ func main() {
             Amount: big.NewInt(100),
             Asset: "USD",
             Destination: "acct_1Gqj58KZcSIg2N2q",
-            Source: formancesdkgo.String("acct_1Gqj58KZcSIg2N2q"),
+            Source: v2.String("acct_1Gqj58KZcSIg2N2q"),
         },
         Connector: shared.ConnectorCurrencyCloud,
     })
@@ -170,15 +170,15 @@ Create a bank account in Payments and on the PSP.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -227,17 +227,17 @@ Create a payment
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"math/big"
-	"github.com/formancehq/formance-sdk-go/pkg/types"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -288,15 +288,15 @@ Create a Pool
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -343,17 +343,17 @@ Create a transfer initiation
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"math/big"
-	"github.com/formancehq/formance-sdk-go/pkg/types"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -408,17 +408,17 @@ Delete a pool by its id.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -462,17 +462,17 @@ Delete a transfer initiation by its id.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -516,16 +516,16 @@ Get account balances
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -533,7 +533,7 @@ func main() {
     ctx := context.Background()
     res, err := s.Payments.GetAccountBalances(ctx, operations.GetAccountBalancesRequest{
         AccountID: "string",
-        Cursor: formancesdkgo.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
+        Cursor: v2.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
         Sort: []string{
             "string",
         },
@@ -573,16 +573,16 @@ Get a bank account created by user on Formance
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -628,16 +628,16 @@ Get a specific task associated to the connector.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -682,16 +682,16 @@ Get a specific task associated to the connector.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -737,16 +737,16 @@ Get a payment
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -790,16 +790,16 @@ Get a Pool
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -843,17 +843,17 @@ Get pool balances
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/types"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -898,16 +898,16 @@ Get a transfer initiation
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -951,16 +951,16 @@ Install a connector by its name and config.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -971,7 +971,7 @@ func main() {
                 shared.WiseConfig{
                     APIKey: "XXX",
                     Name: "My Wise Account",
-                    PollingPeriod: formancesdkgo.String("60s"),
+                    PollingPeriod: v2.String("60s"),
                 },
         ),
         Connector: shared.ConnectorAtlar,
@@ -1011,15 +1011,15 @@ List all installed connectors.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -1060,23 +1060,23 @@ List all bank accounts created by user on Formance.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
 
     ctx := context.Background()
     res, err := s.Payments.ListBankAccounts(ctx, operations.ListBankAccountsRequest{
-        Cursor: formancesdkgo.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
+        Cursor: v2.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
         Sort: []string{
             "string",
         },
@@ -1116,15 +1116,15 @@ List the configs of each available connector.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -1167,16 +1167,16 @@ List all tasks associated with this connector.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -1184,7 +1184,7 @@ func main() {
     ctx := context.Background()
     res, err := s.Payments.ListConnectorTasks(ctx, operations.ListConnectorTasksRequest{
         Connector: shared.ConnectorWise,
-        Cursor: formancesdkgo.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
+        Cursor: v2.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
     })
     if err != nil {
         log.Fatal(err)
@@ -1221,16 +1221,16 @@ List all tasks associated with this connector.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -1239,7 +1239,7 @@ func main() {
     res, err := s.Payments.ListConnectorTasksV1(ctx, operations.ListConnectorTasksV1Request{
         Connector: shared.ConnectorBankingCircle,
         ConnectorID: "string",
-        Cursor: formancesdkgo.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
+        Cursor: v2.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
     })
     if err != nil {
         log.Fatal(err)
@@ -1276,23 +1276,23 @@ List payments
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
 
     ctx := context.Background()
     res, err := s.Payments.ListPayments(ctx, operations.ListPaymentsRequest{
-        Cursor: formancesdkgo.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
+        Cursor: v2.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
         Sort: []string{
             "string",
         },
@@ -1332,23 +1332,23 @@ List Pools
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
 
     ctx := context.Background()
     res, err := s.Payments.ListPools(ctx, operations.ListPoolsRequest{
-        Cursor: formancesdkgo.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
+        Cursor: v2.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
         Sort: []string{
             "string",
         },
@@ -1388,23 +1388,23 @@ List Transfer Initiations
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
 
     ctx := context.Background()
     res, err := s.Payments.ListTransferInitiations(ctx, operations.ListTransferInitiationsRequest{
-        Cursor: formancesdkgo.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
+        Cursor: v2.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
         Sort: []string{
             "string",
         },
@@ -1444,16 +1444,16 @@ Get an account
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -1497,15 +1497,15 @@ Get server info
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -1546,23 +1546,23 @@ List accounts
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
 
     ctx := context.Background()
     res, err := s.Payments.PaymentslistAccounts(ctx, operations.PaymentslistAccountsRequest{
-        Cursor: formancesdkgo.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
+        Cursor: v2.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
         Sort: []string{
             "string",
         },
@@ -1604,16 +1604,16 @@ Read connector config
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -1657,16 +1657,16 @@ Read connector config
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -1711,17 +1711,17 @@ Remove an account from a pool by its id.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -1770,17 +1770,17 @@ It will remove the connector and ALL PAYMENTS generated with it.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -1826,17 +1826,17 @@ It will remove the connector and ALL PAYMENTS generated with it.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -1881,17 +1881,17 @@ Retry a failed transfer initiation
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -1935,17 +1935,17 @@ Update a transfer initiation status
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -1994,17 +1994,17 @@ Uninstall a connector by its name.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -2048,17 +2048,17 @@ Uninstall a connector by its name.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -2103,17 +2103,17 @@ Update connector config
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -2124,8 +2124,8 @@ func main() {
                 shared.StripeConfig{
                     APIKey: "XXX",
                     Name: "My Stripe Account",
-                    PageSize: formancesdkgo.Int64(50),
-                    PollingPeriod: formancesdkgo.String("60s"),
+                    PageSize: v2.Int64(50),
+                    PollingPeriod: v2.String("60s"),
                 },
         ),
         Connector: shared.ConnectorStripe,
@@ -2166,17 +2166,17 @@ Update metadata
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )

@@ -1,7 +1,7 @@
 package activities
 
 import (
-	sdk "github.com/formancehq/formance-sdk-go"
+	sdk "github.com/formancehq/formance-sdk-go/v2"
 	"github.com/pkg/errors"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"

@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"

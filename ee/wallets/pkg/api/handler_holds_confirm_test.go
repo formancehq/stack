@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"

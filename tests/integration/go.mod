@@ -6,7 +6,7 @@ require (
 	github.com/docker/docker v24.0.7+incompatible
 	github.com/egymgmbh/go-prefix-writer v0.0.0-20180609083313-7326ea162eca
 	github.com/formancehq/auth v0.3.1
-	github.com/formancehq/formance-sdk-go v1.0.0-rc.1.0.20230213140938-3b8735cf0168
+	github.com/formancehq/formance-sdk-go/v2 v2.0.0-00010101000000-000000000000
 	github.com/formancehq/ledger v1.9.0
 	github.com/formancehq/orchestration v0.0.0-00010101000000-000000000000
 	github.com/formancehq/payments v0.5.0
@@ -256,7 +256,7 @@ require (
 
 replace (
 	github.com/formancehq/auth => ../../ee/auth
-	github.com/formancehq/formance-sdk-go => ../../releases/sdks/go
+	github.com/formancehq/formance-sdk-go/v2 => ../../releases/sdks/go
 	github.com/formancehq/ledger => ../../components/ledger
 	github.com/formancehq/orchestration => ../../ee/orchestration
 	github.com/formancehq/payments => ../../components/payments

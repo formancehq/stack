@@ -7,8 +7,8 @@ import (
 
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )

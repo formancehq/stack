@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	fctl "github.com/formancehq/fctl/pkg"
-	formance "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	formance "github.com/formancehq/formance-sdk-go/v2"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )

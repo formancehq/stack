@@ -5,7 +5,7 @@ package shared
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/formancehq/formance-sdk-go/pkg/utils"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/utils"
 	"math/big"
 	"time"
 )

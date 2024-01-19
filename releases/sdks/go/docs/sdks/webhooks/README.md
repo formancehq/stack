@@ -21,16 +21,16 @@ Activate a webhooks config by ID, to start receiving webhooks to its endpoint.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -78,16 +78,16 @@ The format is a random string of bytes of size 24, base64 encoded. (larger size 
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -135,16 +135,16 @@ Deactivate a webhooks config by ID, to stop receiving webhooks to its endpoint.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -189,17 +189,17 @@ Delete a webhooks config by ID.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 	"net/http"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -244,24 +244,24 @@ Sorted by updated date descending
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
 
     ctx := context.Background()
     res, err := s.Webhooks.GetManyConfigs(ctx, operations.GetManyConfigsRequest{
-        Endpoint: formancesdkgo.String("https://example.com"),
-        ID: formancesdkgo.String("4997257d-dfb6-445b-929c-cbe2ab182818"),
+        Endpoint: v2.String("https://example.com"),
+        ID: v2.String("4997257d-dfb6-445b-929c-cbe2ab182818"),
     })
     if err != nil {
         log.Fatal(err)
@@ -307,15 +307,15 @@ All eventTypes are converted to lower-case when inserted.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )
@@ -327,8 +327,8 @@ func main() {
             "TYPE1",
             "TYPE2",
         },
-        Name: formancesdkgo.String("customer_payment"),
-        Secret: formancesdkgo.String("V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"),
+        Name: v2.String("customer_payment"),
+        Secret: v2.String("V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"),
     })
     if err != nil {
         log.Fatal(err)
@@ -366,16 +366,16 @@ Test a config by sending a webhook to its endpoint.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"log"
 )
 
 func main() {
-    s := formancesdkgo.New(
-        formancesdkgo.WithSecurity(shared.Security{
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
             Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
         }),
     )

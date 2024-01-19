@@ -1,7 +1,7 @@
 package send
 
 import (
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/orchestration/internal/schema"
 	"github.com/formancehq/orchestration/internal/workflow/stages"
 	"github.com/formancehq/stack/libs/go-libs/metadata"

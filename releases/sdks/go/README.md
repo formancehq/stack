@@ -1,4 +1,4 @@
-# github.com/formancehq/formance-sdk-go
+# github.com/formancehq/formance-sdk-go/v2
 
 <div align="left">
     <a href="https://speakeasyapi.dev/"><img src="https://custom-icon-badges.demolab.com/badge/-Built%20By%20Speakeasy-212015?style=for-the-badge&logoColor=FBE331&logo=speakeasy&labelColor=545454" /></a>
@@ -20,7 +20,7 @@ It has been generated successfully based on your OpenAPI spec. However, it is no
 ## SDK Installation
 
 ```bash
-go get github.com/formancehq/formance-sdk-go
+go get github.com/formancehq/formance-sdk-go/v2
 ```
 <!-- End SDK Installation [installation] -->
 
@@ -34,14 +34,14 @@ package main
 
 import (
 	"context"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"log"
 )
 
 func main() {
-	s := formancesdkgo.New(
-		formancesdkgo.WithSecurity(shared.Security{
+	s := v2.New(
+		v2.WithSecurity(shared.Security{
 			Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
 		}),
 	)
@@ -268,16 +268,16 @@ package main
 import (
 	"context"
 	"errors"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
-	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"log"
 )
 
 func main() {
-	s := formancesdkgo.New(
-		formancesdkgo.WithSecurity(shared.Security{
+	s := v2.New(
+		v2.WithSecurity(shared.Security{
 			Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
 		}),
 	)
@@ -327,15 +327,15 @@ package main
 
 import (
 	"context"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"log"
 )
 
 func main() {
-	s := formancesdkgo.New(
-		formancesdkgo.WithServerIndex(0),
-		formancesdkgo.WithSecurity(shared.Security{
+	s := v2.New(
+		v2.WithServerIndex(0),
+		v2.WithSecurity(shared.Security{
 			Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
 		}),
 	)
@@ -362,15 +362,15 @@ package main
 
 import (
 	"context"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"log"
 )
 
 func main() {
-	s := formancesdkgo.New(
-		formancesdkgo.WithServerURL("http://localhost"),
-		formancesdkgo.WithSecurity(shared.Security{
+	s := v2.New(
+		v2.WithServerURL("http://localhost"),
+		v2.WithSecurity(shared.Security{
 			Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
 		}),
 	)
@@ -435,14 +435,14 @@ package main
 
 import (
 	"context"
-	formancesdkgo "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"log"
 )
 
 func main() {
-	s := formancesdkgo.New(
-		formancesdkgo.WithSecurity(shared.Security{
+	s := v2.New(
+		v2.WithSecurity(shared.Security{
 			Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
 		}),
 	)

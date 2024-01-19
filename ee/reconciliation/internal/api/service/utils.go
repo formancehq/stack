@@ -6,7 +6,7 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"golang.org/x/mod/semver"
 )
 

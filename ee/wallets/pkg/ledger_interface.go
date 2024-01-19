@@ -6,9 +6,9 @@ import (
 	"math/big"
 	"time"
 
-	sdk "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	sdk "github.com/formancehq/formance-sdk-go/v2"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/formancehq/stack/libs/go-libs/pointer"

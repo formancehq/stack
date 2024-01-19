@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/formancehq/formance-sdk-go/pkg/utils"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/utils"
 )
 
 type V2SubjectType string

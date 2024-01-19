@@ -25,7 +25,7 @@ import (
 	"github.com/formancehq/fctl/cmd/webhooks"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"

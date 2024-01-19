@@ -5,15 +5,15 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"github.com/nats-io/nats.go"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	ledgerevents "github.com/formancehq/ledger/pkg/events"
 	"github.com/formancehq/stack/libs/events"
 	. "github.com/formancehq/stack/tests/integration/internal"

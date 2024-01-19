@@ -3,8 +3,8 @@
 package operations
 
 import (
-	"github.com/formancehq/formance-sdk-go/pkg/models/sdkerrors"
-	"github.com/formancehq/formance-sdk-go/pkg/utils"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/utils"
 	"net/http"
 	"time"
 )

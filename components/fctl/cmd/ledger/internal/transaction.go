@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	formance "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	formance "github.com/formancehq/formance-sdk-go/v2"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 )
 
 func TransactionIDOrLastN(ctx context.Context, ledgerClient *formance.Formance, ledger, id string) (*big.Int, error) {

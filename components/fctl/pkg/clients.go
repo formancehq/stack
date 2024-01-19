@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/formancehq/fctl/membershipclient"
-	formance "github.com/formancehq/formance-sdk-go"
+	formance "github.com/formancehq/formance-sdk-go/v2"
 	"github.com/spf13/cobra"
 )
 

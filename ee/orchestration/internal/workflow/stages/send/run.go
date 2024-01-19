@@ -8,7 +8,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 
-	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/orchestration/internal/workflow/activities"
 	"github.com/formancehq/orchestration/internal/workflow/stages/internal"
 	"github.com/pkg/errors"
