@@ -67,6 +67,10 @@ func (in *Database) SetReady(b bool) {
 	in.Status.Ready = b
 }
 
+func (in *Database) IsReady() bool {
+	return in.Status.Ready
+}
+
 func (in *Database) SetError(s string) {
 	in.Status.Error = s
 }

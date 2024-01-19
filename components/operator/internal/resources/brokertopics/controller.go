@@ -26,7 +26,7 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=brokertopics/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=brokertopics/finalizers,verbs=update
 
-func Reconcile(ctx core.Context, topic *v1beta1.BrokerTopic) error {
+func Reconcile(ctx core.Context, stack *v1beta1.Stack, topic *v1beta1.BrokerTopic) error {
 
 	if len(topic.GetOwnerReferences()) == 0 {
 		if err := clear(ctx, topic); err != nil {

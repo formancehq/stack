@@ -55,6 +55,10 @@ func (in *Reconciliation) SetReady(b bool) {
 	in.Status.Ready = b
 }
 
+func (in *Reconciliation) IsReady() bool {
+	return in.Status.Ready
+}
+
 func (in *Reconciliation) SetError(s string) {
 	in.Status.Error = s
 }

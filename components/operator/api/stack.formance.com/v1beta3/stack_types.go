@@ -170,6 +170,10 @@ func (in *Stack) SetReady(b bool) {
 	in.Status.Ready = true
 }
 
+func (in *Stack) IsReady() bool {
+	return in.Status.Ready
+}
+
 func (in *Stack) SetError(s string) {
 	in.Status.Error = s
 }

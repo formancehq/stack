@@ -26,14 +26,8 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=stargates/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=stargates/finalizers,verbs=update
 
-func Reconcile(ctx Context, stargate *v1beta1.Stargate) error {
-
-	stack, err := GetStack(ctx, stargate)
-	if err != nil {
-		return err
-	}
-
-	if err := createDeployment(ctx, stack, stargate); err != nil {
+func Reconcile(ctx Context, stack *v1beta1.Stack, stargate *v1beta1.Stargate, version string) error {
+	if err := createDeployment(ctx, stack, stargate, version); err != nil {
 		return err
 	}
 

@@ -3,10 +3,12 @@ package core
 import (
 	"context"
 	"reflect"
+	"strings"
+
+	"k8s.io/client-go/util/workqueue"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
-	pkgError "github.com/pkg/errors"
+	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -21,7 +23,7 @@ import (
 )
 
 func MapObjectToReconcileRequests[T client.Object](items ...T) []reconcile.Request {
-	return collectionutils.Map(items, func(object T) reconcile.Request {
+	return Map(items, func(object T) reconcile.Request {
 		return reconcile.Request{
 			NamespacedName: types.NamespacedName{
 				Name:      object.GetName(),
@@ -129,14 +131,14 @@ func WithWatch[T client.Object](fn func(ctx Context, object T) []reconcile.Reque
 		var t T
 		t = reflect.New(reflect.TypeOf(t).Elem()).Interface().(T)
 		builder.Watches(t, handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, object client.Object) []reconcile.Request {
-			return fn(NewContext(mgr, ctx), object.(T))
+			return fn(NewContext(mgr.GetClient(), mgr.GetScheme(), mgr.GetPlatform(), ctx), object.(T))
 		}))
 
 		return nil
 	}
 }
 
-func WithReconciler[T Object](controller Controller[T], opts ...reconcilerOption) Initializer {
+func WithReconciler[T client.Object](controller Controller[T], opts ...reconcilerOption) Initializer {
 	return func(mgr Manager) error {
 
 		var t T
@@ -188,16 +190,6 @@ func WithReconciler[T Object](controller Controller[T], opts ...reconcilerOption
 				return ctrl.Result{}, err
 			}
 
-			setStatus := func(err error) {
-				if err != nil {
-					object.SetReady(false)
-					object.SetError(err.Error())
-				} else {
-					object.SetReady(true)
-					object.SetError("")
-				}
-			}
-
 			cp := object.DeepCopyObject().(T)
 			patch := client.MergeFrom(cp)
 
@@ -210,13 +202,7 @@ func WithReconciler[T Object](controller Controller[T], opts ...reconcilerOption
 				Manager: mgr,
 			}, object)
 			if err != nil {
-				setStatus(err)
-				if !pkgError.Is(err, ErrPending) &&
-					!pkgError.Is(err, ErrDeleted) {
-					reconcilerError = err
-				}
-			} else {
-				setStatus(nil)
+				reconcilerError = err
 			}
 
 			if err := mgr.GetClient().Status().Patch(ctx, object, patch); err != nil {
@@ -228,12 +214,76 @@ func WithReconciler[T Object](controller Controller[T], opts ...reconcilerOption
 	}
 }
 
-func WithStackDependencyReconciler[T Dependent](fn func(ctx Context, t T) error, opts ...reconcilerOption) Initializer {
-	return WithReconciler(ForStackDependency(fn), opts...)
+func WithStdReconciler[T Object](ctrl func(ctx Context, t T) error, opts ...reconcilerOption) Initializer {
+	return WithReconciler(ForReadier(ctrl), opts...)
 }
 
-func WithModuleReconciler[T Module](fn func(ctx Context, t T) error, opts ...reconcilerOption) Initializer {
+func WithStackDependencyReconciler[T Dependent](fn func(ctx Context, stack *v1beta1.Stack, t T) error, opts ...reconcilerOption) Initializer {
+	return WithStdReconciler(ForStackDependency(fn), opts...)
+}
+
+func WithModuleReconciler[T Module](fn func(ctx Context, stack *v1beta1.Stack, t T, version string) error, opts ...reconcilerOption) Initializer {
+	opts = append(opts, WithWatchVersions)
 	return WithStackDependencyReconciler(ForModule(fn), opts...)
+}
+
+func WithWatchVersions(mgr Manager, builder *builder.Builder, target client.Object) error {
+	reconcileModule := func(ctx context.Context, versionFileName string, limitingInterface workqueue.RateLimitingInterface) {
+		stackList := &v1beta1.StackList{}
+		if err := mgr.GetClient().List(ctx, stackList, client.MatchingFields{
+			".spec.versionsFromFile": versionFileName,
+		}); err != nil {
+			panic(err)
+		}
+
+		kinds, _, err := mgr.GetScheme().ObjectKinds(target)
+		if err != nil {
+			panic(err)
+		}
+
+		for _, stack := range stackList.Items {
+			list := &unstructured.UnstructuredList{}
+			list.SetGroupVersionKind(kinds[0])
+			if err := mgr.GetClient().List(ctx, list, client.MatchingFields{
+				"stack": stack.Name,
+			}); err != nil {
+				panic(err)
+			}
+
+			for _, item := range list.Items {
+				limitingInterface.Add(reconcile.Request{
+					NamespacedName: types.NamespacedName{
+						Name: item.GetName(),
+					},
+				})
+			}
+		}
+	}
+	builder.Watches(&v1beta1.Versions{}, handler.Funcs{
+		CreateFunc: func(ctx context.Context, createEvent event.CreateEvent, limitingInterface workqueue.RateLimitingInterface) {
+			reconcileModule(ctx, createEvent.Object.GetName(), limitingInterface)
+		},
+		UpdateFunc: func(ctx context.Context, updateEvent event.UpdateEvent, limitingInterface workqueue.RateLimitingInterface) {
+			oldObject := updateEvent.ObjectOld.(*v1beta1.Versions)
+			newObject := updateEvent.ObjectNew.(*v1beta1.Versions)
+
+			kinds, _, err := mgr.GetScheme().ObjectKinds(target)
+			if err != nil {
+				panic(err)
+			}
+			kind := strings.ToLower(kinds[0].Kind)
+			if oldObject.Spec[kind] == newObject.Spec[kind] {
+				return
+			}
+
+			reconcileModule(ctx, updateEvent.ObjectNew.GetName(), limitingInterface)
+		},
+		DeleteFunc: func(ctx context.Context, deleteEvent event.DeleteEvent, limitingInterface workqueue.RateLimitingInterface) {
+			reconcileModule(ctx, deleteEvent.Object.GetName(), limitingInterface)
+		},
+	})
+
+	return nil
 }
 
 func WithIndex[T client.Object](name string, eval func(t T) string) Initializer {

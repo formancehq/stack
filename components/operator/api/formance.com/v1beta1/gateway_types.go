@@ -83,6 +83,10 @@ func (in *Gateway) SetReady(b bool) {
 	in.Status.Ready = b
 }
 
+func (in *Gateway) IsReady() bool {
+	return in.Status.Ready
+}
+
 func (in *Gateway) SetError(s string) {
 	in.Status.Error = s
 }

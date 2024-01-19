@@ -31,15 +31,10 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=auths/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=auths/finalizers,verbs=update
 
-func Reconcile(ctx Context, auth *v1beta1.Auth) error {
-
-	stack, err := GetStack(ctx, auth)
-	if err != nil {
-		return err
-	}
+func Reconcile(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, version string) error {
 
 	authClientList := make([]*v1beta1.AuthClient, 0)
-	err = GetAllDependents(ctx, auth.Spec.Stack, &authClientList)
+	err := GetAllDependents(ctx, auth.Spec.Stack, &authClientList)
 	if err != nil {
 		return err
 	}
@@ -55,7 +50,7 @@ func Reconcile(ctx Context, auth *v1beta1.Auth) error {
 	}
 
 	if database.Status.Ready {
-		_, err := createDeployment(ctx, stack, auth, database, configMap)
+		_, err := createDeployment(ctx, stack, auth, database, configMap, version)
 		if err != nil {
 			return errors.Wrap(err, "creating deployment")
 		}

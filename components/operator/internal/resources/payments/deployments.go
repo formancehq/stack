@@ -20,7 +20,7 @@ import (
 
 func commonEnvVars(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) ([]v1.EnvVar, error) {
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, core.GetModuleName(payments))
+	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, core.GetModuleName(ctx, payments))
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,8 @@ func commonEnvVars(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Pay
 	return env, nil
 }
 
-func createFullDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) error {
+func createFullDeployment(ctx core.Context, stack *v1beta1.Stack,
+	payments *v1beta1.Payments, database *v1beta1.Database, version string) error {
 
 	env, err := commonEnvVars(ctx, stack, payments, database)
 	if err != nil {
@@ -54,7 +55,7 @@ func createFullDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1be
 	}
 	env = append(env, authEnvVars...)
 
-	image, err := registries.GetImage(ctx, stack, "payments", payments.Spec.Version)
+	image, err := registries.GetImage(ctx, stack, "payments", version)
 	if err != nil {
 		return err
 	}
@@ -92,7 +93,7 @@ func createFullDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1be
 	return nil
 }
 
-func createReadDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) error {
+func createReadDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database, version string) error {
 
 	env, err := commonEnvVars(ctx, stack, payments, database)
 	if err != nil {
@@ -105,7 +106,7 @@ func createReadDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1be
 	}
 	env = append(env, authEnvVars...)
 
-	image, err := registries.GetImage(ctx, stack, "payments", payments.Spec.Version)
+	image, err := registries.GetImage(ctx, stack, "payments", version)
 	if err != nil {
 		return err
 	}
@@ -134,7 +135,8 @@ func createReadDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1be
 	return nil
 }
 
-func createConnectorsDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) error {
+func createConnectorsDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Payments,
+	database *v1beta1.Database, version string) error {
 
 	env, err := commonEnvVars(ctx, stack, payments, database)
 	if err != nil {
@@ -155,7 +157,7 @@ func createConnectorsDeployment(ctx core.Context, stack *v1beta1.Stack, payments
 		env = append(env, core.Env("PUBLISHER_TOPIC_MAPPING", "*:"+core.GetObjectName(stack.Name, "payments")))
 	}
 
-	image, err := registries.GetImage(ctx, stack, "payments", payments.Spec.Version)
+	image, err := registries.GetImage(ctx, stack, "payments", version)
 	if err != nil {
 		return err
 	}
@@ -196,7 +198,7 @@ func createGateway(ctx core.Context, stack *v1beta1.Stack, p *v1beta1.Payments) 
 	}
 
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, core.GetModuleName(p))
+	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, core.GetModuleName(ctx, p))
 	if err != nil {
 		return err
 	}

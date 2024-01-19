@@ -38,12 +38,7 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=payments/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=payments/finalizers,verbs=update
 
-func Reconcile(ctx Context, p *v1beta1.Payments) error {
-
-	stack, err := GetStack(ctx, p)
-	if err != nil {
-		return err
-	}
+func Reconcile(ctx Context, stack *v1beta1.Stack, p *v1beta1.Payments, version string) error {
 
 	database, err := databases.Create(ctx, p)
 	if err != nil {
@@ -51,17 +46,16 @@ func Reconcile(ctx Context, p *v1beta1.Payments) error {
 	}
 
 	if database.Status.Ready {
-		moduleVersion := GetModuleVersion(stack, p.Spec.Version)
-		if semver.IsValid(moduleVersion) && semver.Compare(moduleVersion, "v1.0.0-alpha") < 0 {
-			if err := createFullDeployment(ctx, stack, p, database); err != nil {
+		if semver.IsValid(version) && semver.Compare(version, "v1.0.0-alpha") < 0 {
+			if err := createFullDeployment(ctx, stack, p, database, version); err != nil {
 				return err
 			}
 		} else {
-			if err := createReadDeployment(ctx, stack, p, database); err != nil {
+			if err := createReadDeployment(ctx, stack, p, database, version); err != nil {
 				return err
 			}
 
-			if err := createConnectorsDeployment(ctx, stack, p, database); err != nil {
+			if err := createConnectorsDeployment(ctx, stack, p, database, version); err != nil {
 				return err
 			}
 			if err := createGateway(ctx, stack, p); err != nil {

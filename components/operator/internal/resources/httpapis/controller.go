@@ -29,7 +29,7 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=httpapis/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=httpapis/finalizers,verbs=update
 
-func Reconcile(ctx Context, httpAPI *v1beta1.HTTPAPI) error {
+func Reconcile(ctx Context, stack *v1beta1.Stack, httpAPI *v1beta1.HTTPAPI) error {
 	_, _, err := CreateOrUpdate[*corev1.Service](ctx, types.NamespacedName{
 		Namespace: httpAPI.Spec.Stack,
 		Name:      httpAPI.Spec.Name,

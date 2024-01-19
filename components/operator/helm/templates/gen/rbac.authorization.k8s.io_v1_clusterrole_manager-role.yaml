@@ -788,6 +788,24 @@ rules:
   resources:
   - versions
   verbs:
+  - create
+  - delete
   - get
   - list
+  - patch
+  - update
   - watch
+- apiGroups:
+  - stack.formance.com
+  resources:
+  - versions/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - stack.formance.com
+  resources:
+  - versions/status
+  verbs:
+  - get
+  - patch
+  - update

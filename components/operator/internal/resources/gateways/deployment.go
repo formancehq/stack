@@ -11,10 +11,11 @@ import (
 )
 
 func createDeployment(ctx core.Context, stack *v1beta1.Stack,
-	gateway *v1beta1.Gateway, caddyfileConfigMap *v1.ConfigMap, auditTopic *v1beta1.BrokerTopic) error {
+	gateway *v1beta1.Gateway, caddyfileConfigMap *v1.ConfigMap,
+	auditTopic *v1beta1.BrokerTopic, version string) error {
 
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, core.GetModuleName(gateway))
+	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, core.GetModuleName(ctx, gateway))
 	if err != nil {
 		return err
 	}
@@ -27,7 +28,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack,
 		)
 	}
 
-	image, err := registries.GetImage(ctx, stack, "gateway", gateway.Spec.Version)
+	image, err := registries.GetImage(ctx, stack, "gateway", version)
 	if err != nil {
 		return err
 	}

@@ -63,6 +63,10 @@ func (in *StreamProcessor) SetReady(b bool) {
 	in.Status.Ready = b
 }
 
+func (in *StreamProcessor) IsReady() bool {
+	return in.Status.Ready
+}
+
 func (in *StreamProcessor) SetError(s string) {
 	in.Status.Error = s
 }

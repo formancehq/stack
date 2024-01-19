@@ -2,21 +2,44 @@ package core
 
 import (
 	"context"
+
+	"k8s.io/apimachinery/pkg/runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 type Context interface {
 	context.Context
-	Manager
+	GetClient() client.Client
+	GetScheme() *runtime.Scheme
+	GetPlatform() Platform
 }
 
 type defaultContext struct {
 	context.Context
-	Manager
+	client   client.Client
+	scheme   *runtime.Scheme
+	platform Platform
 }
 
-func NewContext(mgr Manager, ctx context.Context) *defaultContext {
+func (d defaultContext) GetPlatform() Platform {
+	return d.platform
+}
+
+func (d defaultContext) GetClient() client.Client {
+	return d.client
+}
+
+func (d defaultContext) GetScheme() *runtime.Scheme {
+	return d.scheme
+}
+
+var _ Context = &defaultContext{}
+
+func NewContext(client client.Client, scheme *runtime.Scheme, platform Platform, ctx context.Context) *defaultContext {
 	return &defaultContext{
-		Context: ctx,
-		Manager: mgr,
+		Context:  ctx,
+		client:   client,
+		scheme:   scheme,
+		platform: platform,
 	}
 }

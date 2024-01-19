@@ -39,7 +39,7 @@ const (
 //+kubebuilder:rbac:groups=formance.com,resources=databases/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=databases/finalizers,verbs=update
 
-func Reconcile(ctx core.Context, database *v1beta1.Database) error {
+func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Database) error {
 
 	serviceSelectorRequirement, err := labels.NewRequirement(core.ServiceLabel, selection.In, []string{"any", database.Spec.Service})
 	if err != nil {

@@ -36,20 +36,14 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=searches/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=searches/finalizers,verbs=update
 
-func Reconcile(ctx Context, search *v1beta1.Search) error {
-
-	stack, err := GetStack(ctx, search)
-	if err != nil {
-		return err
-	}
-
+func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, version string) error {
 	elasticSearchConfiguration, err := RequireLabelledConfig[*v1beta1.ElasticSearchConfiguration](ctx, search.Spec.Stack)
 	if err != nil {
 		return err
 	}
 
 	env := make([]corev1.EnvVar, 0)
-	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, GetModuleName(search))
+	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, GetModuleName(ctx, search))
 	if err != nil {
 		return err
 	}
@@ -81,7 +75,7 @@ func Reconcile(ctx Context, search *v1beta1.Search) error {
 	}
 	env = append(env, authEnvVars...)
 
-	image, err := GetImage(ctx, stack, "search", search.Spec.Version)
+	image, err := GetImage(ctx, stack, "search", version)
 	if err != nil {
 		return err
 	}

@@ -65,6 +65,10 @@ func (in *Search) SetReady(b bool) {
 	in.Status.Ready = b
 }
 
+func (in *Search) IsReady() bool {
+	return in.Status.Ready
+}
+
 func (in *Search) SetError(s string) {
 	in.Status.Error = s
 }

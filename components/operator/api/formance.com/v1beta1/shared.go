@@ -125,6 +125,8 @@ type ModuleStatus struct {
 	CommonStatus `json:",inline"`
 	//+optional
 	Conditions []Condition `json:"conditions,omitempty"`
+	//+optional
+	Version string `json:"version,omitempty"`
 }
 
 func (c *ModuleStatus) DeleteCondition(t, reason string) {

@@ -51,7 +51,8 @@ var _ = BeforeSuite(func() {
 	_, filename, _, _ := osRuntime.Caller(0)
 
 	apiServer := envtest.APIServer{}
-	apiServer.Configure().Set("service-cluster-ip-range", "10.0.0.0/20")
+	apiServer.Configure().
+		Set("service-cluster-ip-range", "10.0.0.0/20")
 
 	testEnv = &envtest.Environment{
 		CRDDirectoryPaths: []string{
@@ -194,4 +195,11 @@ func List(list client.ObjectList, opts ...client.ListOption) error {
 
 func Client() client.Client {
 	return k8sClient
+}
+
+func TestContext() core.Context {
+	return core.NewContext(k8sClient, scheme.Scheme, core.Platform{
+		Region:      "testing",
+		Environment: "testing",
+	}, ctx)
 }

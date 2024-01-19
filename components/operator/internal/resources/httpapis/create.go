@@ -17,7 +17,7 @@ var defaultOptions = []option{
 func Create(ctx core.Context, owner core.Module, options ...option) error {
 	objectName := strings.ToLower(owner.GetObjectKind().GroupVersionKind().Kind)
 	_, _, err := core.CreateOrUpdate[*v1beta1.HTTPAPI](ctx, types.NamespacedName{
-		Name: core.GetObjectName(owner.GetStack(), core.GetModuleName(owner)),
+		Name: core.GetObjectName(owner.GetStack(), core.GetModuleName(ctx, owner)),
 	},
 		func(t *v1beta1.HTTPAPI) {
 			t.Spec = v1beta1.HTTPAPISpec{

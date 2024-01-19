@@ -30,6 +30,7 @@ func GetStack(ctx Context, spec Dependent) (*v1beta1.Stack, error) {
 type Object interface {
 	client.Object
 	SetReady(bool)
+	IsReady() bool
 	SetError(string)
 }
 

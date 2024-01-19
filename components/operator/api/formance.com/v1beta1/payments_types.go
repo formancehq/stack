@@ -56,6 +56,10 @@ func (in *Payments) SetReady(b bool) {
 	in.Status.Ready = b
 }
 
+func (in *Payments) IsReady() bool {
+	return in.Status.Ready
+}
+
 func (in *Payments) SetError(s string) {
 	in.Status.Error = s
 }

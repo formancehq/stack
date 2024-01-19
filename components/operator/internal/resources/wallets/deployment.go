@@ -12,9 +12,10 @@ import (
 	v1 "k8s.io/api/core/v1"
 )
 
-func createDeployment(ctx core.Context, stack *v1beta1.Stack, wallets *v1beta1.Wallets, authClient *v1beta1.AuthClient) error {
+func createDeployment(ctx core.Context, stack *v1beta1.Stack, wallets *v1beta1.Wallets,
+	authClient *v1beta1.AuthClient, version string) error {
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, core.GetModuleName(wallets))
+	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, core.GetModuleName(ctx, wallets))
 	if err != nil {
 		return err
 	}
@@ -36,7 +37,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, wallets *v1beta1.W
 	}
 	env = append(env, authEnvVars...)
 
-	image, err := registries.GetImage(ctx, stack, "wallets", wallets.Spec.Version)
+	image, err := registries.GetImage(ctx, stack, "wallets", version)
 	if err != nil {
 		return err
 	}

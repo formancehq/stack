@@ -1,7 +1,6 @@
-package legacystacks
+package stacks
 
 import (
-	"context"
 	"fmt"
 	"strings"
 
@@ -22,15 +21,12 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
-
-	ctrl "sigs.k8s.io/controller-runtime"
 )
 
 // +kubebuilder:rbac:groups=stack.formance.com,resources=stacks,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=stack.formance.com,resources=stacks/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=stack.formance.com,resources=stacks/finalizers,verbs=update
 // +kubebuilder:rbac:groups=stack.formance.com,resources=configurations,verbs=get;list;watch
-// +kubebuilder:rbac:groups=stack.formance.com,resources=versions,verbs=get;list;watch
 
 func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 	if stack.Spec.Versions == "" {
@@ -119,6 +115,7 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			t.Spec.EnableAudit = *configuration.Spec.Services.Gateway.EnableAuditPlugin
 		}
 		t.Spec.Disabled = stack.Spec.Disabled
+		t.Spec.VersionsFromFile = versions.Name
 	})
 	if err != nil {
 		return errors.Wrap(err, "creating stack")
@@ -356,7 +353,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			Name: stack.Name,
 		}, func(t *v1beta1.Ledger) {
 			t.Spec.Stack = stack.Name
-			t.Spec.Version = versions.Spec.Ledger
 			t.Spec.DeploymentStrategy = v1beta1.DeploymentStrategy(configuration.Spec.Services.Ledger.DeploymentStrategy)
 			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Ledger.ResourceProperties)
 			if annotations := configuration.Spec.Services.Ledger.Annotations.Service; annotations != nil {
@@ -392,7 +388,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			Name: stack.Name,
 		}, func(t *v1beta1.Payments) {
 			t.Spec.Stack = stack.Name
-			t.Spec.Version = versions.Spec.Payments
 			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Payments.ResourceProperties)
 			t.Spec.EncryptionKey = configuration.Spec.Services.Payments.EncryptionKey
 			if annotations := configuration.Spec.Services.Payments.Annotations.Service; annotations != nil {
@@ -412,7 +407,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			Name: stack.Name,
 		}, func(t *v1beta1.Wallets) {
 			t.Spec.Stack = stack.Name
-			t.Spec.Version = versions.Spec.Wallets
 			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Wallets.ResourceProperties)
 			if annotations := configuration.Spec.Services.Wallets.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
@@ -431,7 +425,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			Name: stack.Name,
 		}, func(t *v1beta1.Orchestration) {
 			t.Spec.Stack = stack.Name
-			t.Spec.Version = versions.Spec.Orchestration
 			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Orchestration.ResourceProperties)
 			if annotations := configuration.Spec.Services.Orchestration.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
@@ -450,7 +443,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			Name: stack.Name,
 		}, func(t *v1beta1.Webhooks) {
 			t.Spec.Stack = stack.Name
-			t.Spec.Version = versions.Spec.Webhooks
 			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Webhooks.ResourceProperties)
 			if annotations := configuration.Spec.Services.Webhooks.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
@@ -472,7 +464,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			Name: stack.Name,
 		}, func(t *v1beta1.Reconciliation) {
 			t.Spec.Stack = stack.Name
-			t.Spec.Version = versions.Spec.Reconciliation
 			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Reconciliation.ResourceProperties)
 			if annotations := configuration.Spec.Services.Reconciliation.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
@@ -491,7 +482,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			Name: stack.Name,
 		}, func(t *v1beta1.Search) {
 			t.Spec.Stack = stack.Name
-			t.Spec.Version = versions.Spec.Search
 			t.Spec.Batching = &v1beta1.Batching{
 				Count:  configuration.Spec.Services.Search.Batching.Count,
 				Period: configuration.Spec.Services.Search.Batching.Period,
@@ -518,7 +508,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			Name: stack.Name,
 		}, func(t *v1beta1.Auth) {
 			t.Spec.Stack = stack.Name
-			t.Spec.Version = versions.Spec.Auth
 			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Auth.ResourceProperties)
 			if annotations := configuration.Spec.Services.Auth.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
@@ -542,7 +531,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			Name: stack.Name,
 		}, func(t *v1beta1.Gateway) {
 			t.Spec.Stack = stack.Name
-			t.Spec.Version = versions.Spec.Gateway
 			t.Spec.Ingress = &v1beta1.GatewayIngress{
 				Host:   stack.Spec.Host,
 				Scheme: stack.Spec.Scheme,
@@ -579,7 +567,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 				Name: stack.Name,
 			}, func(t *v1beta1.Stargate) {
 				t.Spec.Stack = stack.Name
-				t.Spec.Version = versions.Spec.Stargate
 				t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Stargate.ResourceProperties)
 				t.Spec.ServerURL = stack.Spec.Stargate.StargateServerURL
 				t.Spec.OrganizationID = organizationID
@@ -752,9 +739,9 @@ func convertOtlpSpec(otlp *v1beta3.OtlpSpec) *v1beta1.OtlpSpec {
 	}
 }
 
-func listStacksAndReconcile(mgr ctrl.Manager, opts ...client.ListOption) []reconcile.Request {
+func listStacksAndReconcile(ctx Context, opts ...client.ListOption) []reconcile.Request {
 	stacks := &v1beta3.StackList{}
-	err := mgr.GetClient().List(context.TODO(), stacks, opts...)
+	err := ctx.GetClient().List(ctx, stacks, opts...)
 	if err != nil {
 		panic(err)
 	}
@@ -780,7 +767,7 @@ func watch[T client.Object](field string) func(ctx Context, object T) []reconcil
 
 func init() {
 	Init(
-		WithReconciler(Reconcile,
+		WithStdReconciler(Reconcile,
 			WithOwn(&v1beta1.DatabaseConfiguration{}),
 			WithOwn(&v1beta1.BrokerConfiguration{}),
 			WithOwn(&v1beta1.ElasticSearchConfiguration{}),

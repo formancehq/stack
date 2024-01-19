@@ -16,10 +16,10 @@ import (
 )
 
 func createDeployment(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, database *v1beta1.Database,
-	configMap *corev1.ConfigMap) (*appsv1.Deployment, error) {
+	configMap *corev1.ConfigMap, version string) (*appsv1.Deployment, error) {
 
 	env := make([]corev1.EnvVar, 0)
-	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, GetModuleName(auth))
+	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, GetModuleName(ctx, auth))
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, dat
 		env = append(env, Env("CAOS_OIDC_DEV", "1"))
 	}
 
-	image, err := registries.GetImage(ctx, stack, "auth", auth.Spec.Version)
+	image, err := registries.GetImage(ctx, stack, "auth", version)
 	if err != nil {
 		return nil, err
 	}

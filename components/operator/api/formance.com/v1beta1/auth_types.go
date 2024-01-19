@@ -71,6 +71,10 @@ func (in *Auth) SetReady(b bool) {
 	in.Status.Ready = b
 }
 
+func (in *Auth) IsReady() bool {
+	return in.Status.Ready
+}
+
 func (in *Auth) SetError(s string) {
 	in.Status.Error = s
 }

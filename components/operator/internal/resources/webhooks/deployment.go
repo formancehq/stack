@@ -2,6 +2,7 @@ package webhooks
 
 import (
 	"fmt"
+	"golang.org/x/mod/semver"
 	"strings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -18,20 +19,20 @@ import (
 	v1 "k8s.io/api/core/v1"
 )
 
-func createDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumers brokertopicconsumers.Consumers) error {
+func createDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumers brokertopicconsumers.Consumers, version string) error {
 
 	brokerConfiguration, err := core.RequireLabelledConfig[*v1beta1.BrokerConfiguration](ctx, stack.Name)
 	if err != nil {
 		return err
 	}
 
-	image, err := registries.GetImage(ctx, stack, "webhooks", webhooks.Spec.Version)
+	image, err := registries.GetImage(ctx, stack, "webhooks", version)
 	if err != nil {
 		return err
 	}
 
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, core.GetModuleName(webhooks))
+	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, core.GetModuleName(ctx, webhooks))
 	if err != nil {
 		return err
 	}
@@ -58,13 +59,18 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.
 		return fmt.Sprintf("%s-%s", stack.Name, from.Spec.Service)
 	}), " ")))
 
+	args := []string{"serve"}
+	if !semver.IsValid(version) || semver.Compare(version, "v2.0.0-alpha") >= 0 {
+		args = append(args, "--auto-migrate")
+	}
+
 	_, err = deployments.CreateOrUpdate(ctx, webhooks, "webhooks",
 		deployments.WithMatchingLabels("webhooks"),
 		deployments.WithContainers(v1.Container{
 			Name:          "api",
 			Env:           env,
 			Image:         image,
-			Args:          []string{"serve", "--auto-migrate"},
+			Args:          args,
 			Resources:     core.GetResourcesRequirementsWithDefault(webhooks.Spec.ResourceRequirements, core.ResourceSizeSmall()),
 			Ports:         []v1.ContainerPort{deployments.StandardHTTPPort()},
 			LivenessProbe: deployments.DefaultLiveness("http"),

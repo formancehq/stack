@@ -41,7 +41,7 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=streamprocessors/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=streamprocessors/finalizers,verbs=update
 
-func Reconcile(ctx Context, streamProcessor *v1beta1.StreamProcessor) error {
+func Reconcile(ctx Context, stack *v1beta1.Stack, streamProcessor *v1beta1.StreamProcessor) error {
 
 	brokerConfiguration, err := RequireLabelledConfig[*v1beta1.BrokerConfiguration](ctx, streamProcessor.Spec.Stack)
 	if err != nil {
@@ -51,11 +51,6 @@ func Reconcile(ctx Context, streamProcessor *v1beta1.StreamProcessor) error {
 	elasticSearchConfiguration, err := RequireLabelledConfig[*v1beta1.ElasticSearchConfiguration](ctx, streamProcessor.Spec.Stack)
 	if err != nil {
 		return errors.Wrap(err, "searching elasticsearch configuration")
-	}
-
-	stack, err := GetStack(ctx, streamProcessor)
-	if err != nil {
-		return err
 	}
 
 	env := []corev1.EnvVar{

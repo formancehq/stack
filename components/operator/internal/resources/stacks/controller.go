@@ -72,7 +72,10 @@ func Reconcile(ctx Context, stack *v1beta1.Stack) error {
 
 func init() {
 	Init(
-		WithReconciler(Reconcile,
+		WithIndex[*v1beta1.Stack](".spec.versionsFromFile", func(t *v1beta1.Stack) string {
+			return t.Spec.VersionsFromFile
+		}),
+		WithStdReconciler(Reconcile,
 			WithOwn(&corev1.Secret{}),
 			WithOwn(&corev1.Namespace{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})),
 			WithWatch[*corev1.Secret](func(ctx Context, object *corev1.Secret) []reconcile.Request {
@@ -95,8 +98,5 @@ func init() {
 				return []reconcile.Request{}
 			}),
 		),
-		WithIndex[*v1beta1.VersionsHistory](".spec.module", func(t *v1beta1.VersionsHistory) string {
-			return t.Spec.Module
-		}),
 	)
 }

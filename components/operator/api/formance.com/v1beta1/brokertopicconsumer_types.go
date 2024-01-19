@@ -52,6 +52,10 @@ func (in *BrokerTopicConsumer) SetReady(b bool) {
 	in.Status.Ready = b
 }
 
+func (in *BrokerTopicConsumer) IsReady() bool {
+	return in.Status.Ready
+}
+
 func (in *BrokerTopicConsumer) SetError(s string) {
 	in.Status.Error = s
 }

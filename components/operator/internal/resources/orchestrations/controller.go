@@ -29,12 +29,7 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=orchestrations/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=orchestrations/finalizers,verbs=update
 
-func Reconcile(ctx Context, o *v1beta1.Orchestration) error {
-
-	stack, err := GetStack(ctx, o)
-	if err != nil {
-		return err
-	}
+func Reconcile(ctx Context, stack *v1beta1.Stack, o *v1beta1.Orchestration, version string) error {
 
 	database, err := databases.Create(ctx, o)
 	if err != nil {
@@ -57,7 +52,7 @@ func Reconcile(ctx Context, o *v1beta1.Orchestration) error {
 	}
 
 	if database.Status.Ready && consumers.Ready() {
-		if err := createDeployment(ctx, stack, o, database, authClient, consumers); err != nil {
+		if err := createDeployment(ctx, stack, o, database, authClient, consumers, version); err != nil {
 			return err
 		}
 	}

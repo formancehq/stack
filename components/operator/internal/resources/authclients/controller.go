@@ -29,14 +29,9 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=authclients/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=authclients/finalizers,verbs=update
 
-func Reconcile(ctx Context, authClient *v1beta1.AuthClient) error {
+func Reconcile(ctx Context, stack *v1beta1.Stack, authClient *v1beta1.AuthClient) error {
 
-	stack, err := GetStack(ctx, authClient)
-	if err != nil {
-		return err
-	}
-
-	_, _, err = CreateOrUpdate[*corev1.Secret](ctx, types.NamespacedName{
+	_, _, err := CreateOrUpdate[*corev1.Secret](ctx, types.NamespacedName{
 		Name:      fmt.Sprintf("auth-client-%s", authClient.Name),
 		Namespace: stack.Name,
 	},

@@ -38,19 +38,14 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=ledgers/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=ledgers/finalizers,verbs=update
 
-func Reconcile(ctx Context, ledger *v1beta1.Ledger) error {
-
-	stack, err := GetStack(ctx, ledger)
-	if err != nil {
-		return err
-	}
+func Reconcile(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, version string) error {
 
 	database, err := databases.Create(ctx, ledger)
 	if err != nil {
 		return err
 	}
 
-	image, err := registries.GetImage(ctx, stack, "ledger", ledger.Spec.Version)
+	image, err := registries.GetImage(ctx, stack, "ledger", version)
 	if err != nil {
 		return err
 	}
@@ -60,7 +55,6 @@ func Reconcile(ctx Context, ledger *v1beta1.Ledger) error {
 		return err
 	}
 
-	version := GetModuleVersion(stack, ledger.Spec.Version)
 	isV2 := false
 	if !semver.IsValid(version) || semver.Compare(version, "v2.0.0-alpha") > 0 {
 		isV2 = true

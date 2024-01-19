@@ -10,10 +10,10 @@ import (
 	v1 "k8s.io/api/core/v1"
 )
 
-func createDeployment(ctx core.Context, stack *v1beta1.Stack, stargate *v1beta1.Stargate) error {
+func createDeployment(ctx core.Context, stack *v1beta1.Stack, stargate *v1beta1.Stargate, version string) error {
 
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, core.GetModuleName(stargate))
+	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, core.GetModuleName(ctx, stargate))
 	if err != nil {
 		return err
 	}
@@ -35,7 +35,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, stargate *v1beta1.
 		core.Env("STARGATE_AUTH_ISSUER_URL", stargate.Spec.Auth.Issuer),
 	)
 
-	image, err := registries.GetImage(ctx, stack, "stargate", stargate.Spec.Version)
+	image, err := registries.GetImage(ctx, stack, "stargate", version)
 	if err != nil {
 		return err
 	}

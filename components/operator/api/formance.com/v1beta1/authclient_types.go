@@ -80,6 +80,10 @@ func (a *AuthClient) SetReady(b bool) {
 	a.Status.Ready = b
 }
 
+func (in *AuthClient) IsReady() bool {
+	return in.Status.Ready
+}
+
 func (a *AuthClient) SetError(s string) {
 	a.Status.Error = s
 }

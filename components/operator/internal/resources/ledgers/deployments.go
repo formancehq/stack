@@ -191,7 +191,7 @@ func setCommonContainerConfiguration(ctx core.Context, stack *v1beta1.Stack, led
 		prefix = "NUMARY_"
 	}
 	env := make([]corev1.EnvVar, 0)
-	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabledWithPrefix(ctx, stack.Name, core.GetModuleName(ledger), prefix)
+	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabledWithPrefix(ctx, stack.Name, core.GetModuleName(ctx, ledger), prefix)
 	if err != nil {
 		return err
 	}
@@ -280,7 +280,7 @@ func createGatewayDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1b
 	}
 
 	env := make([]corev1.EnvVar, 0)
-	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, core.GetModuleName(ledger))
+	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, core.GetModuleName(ctx, ledger))
 	if err != nil {
 		return err
 	}

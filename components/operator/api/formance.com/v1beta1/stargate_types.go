@@ -71,6 +71,10 @@ func (in *Stargate) SetReady(b bool) {
 	in.Status.Ready = b
 }
 
+func (in *Stargate) IsReady() bool {
+	return in.Status.Ready
+}
+
 func (in *Stargate) SetError(s string) {
 	in.Status.Error = s
 }

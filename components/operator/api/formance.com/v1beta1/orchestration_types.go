@@ -55,6 +55,10 @@ func (in *Orchestration) SetReady(b bool) {
 	in.Status.Ready = b
 }
 
+func (in *Orchestration) IsReady() bool {
+	return in.Status.Ready
+}
+
 func (in *Orchestration) SetError(s string) {
 	in.Status.Error = s
 }

@@ -37,7 +37,7 @@ const (
 //+kubebuilder:rbac:groups=formance.com,resources=brokertopicconsumers/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=brokertopicconsumers/finalizers,verbs=update
 
-func Reconcile(ctx Context, topicQuery *v1beta1.BrokerTopicConsumer) error {
+func Reconcile(ctx Context, stack *v1beta1.Stack, topicQuery *v1beta1.BrokerTopicConsumer) error {
 
 	if !topicQuery.DeletionTimestamp.IsZero() {
 		topic := &v1beta1.BrokerTopic{}

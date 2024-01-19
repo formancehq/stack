@@ -28,12 +28,7 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=wallets/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=wallets/finalizers,verbs=update
 
-func Reconcile(ctx Context, wallets *v1beta1.Wallets) error {
-
-	stack, err := GetStack(ctx, wallets)
-	if err != nil {
-		return err
-	}
+func Reconcile(ctx Context, stack *v1beta1.Stack, wallets *v1beta1.Wallets, version string) error {
 
 	hasAuth, err := HasDependency(ctx, wallets.Spec.Stack, &v1beta1.Auth{})
 	if err != nil {
@@ -49,7 +44,7 @@ func Reconcile(ctx Context, wallets *v1beta1.Wallets) error {
 		}
 	}
 
-	if err := createDeployment(ctx, stack, wallets, authClient); err != nil {
+	if err := createDeployment(ctx, stack, wallets, authClient, version); err != nil {
 		return err
 	}
 

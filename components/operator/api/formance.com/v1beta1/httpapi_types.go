@@ -71,6 +71,10 @@ func (in *HTTPAPI) SetReady(b bool) {
 	in.Status.Ready = b
 }
 
+func (in *HTTPAPI) IsReady() bool {
+	return in.Status.Ready
+}
+
 func (in *HTTPAPI) SetError(s string) {
 	in.Status.Error = s
 }

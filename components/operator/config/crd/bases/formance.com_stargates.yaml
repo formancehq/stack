@@ -209,6 +209,8 @@ spec:
                 type: string
               ready:
                 type: boolean
+              version:
+                type: string
             type: object
         type: object
     served: true

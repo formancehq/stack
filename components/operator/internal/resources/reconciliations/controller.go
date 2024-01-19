@@ -29,12 +29,7 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=reconciliations/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=reconciliations/finalizers,verbs=update
 
-func Reconcile(ctx Context, reconciliation *v1beta1.Reconciliation) error {
-	stack, err := GetStack(ctx, reconciliation)
-	if err != nil {
-		return err
-	}
-
+func Reconcile(ctx Context, stack *v1beta1.Stack, reconciliation *v1beta1.Reconciliation, version string) error {
 	database, err := databases.Create(ctx, reconciliation)
 	if err != nil {
 		return err
@@ -47,7 +42,7 @@ func Reconcile(ctx Context, reconciliation *v1beta1.Reconciliation) error {
 	}
 
 	if database.Status.Ready {
-		if err := createDeployment(ctx, stack, reconciliation, database, authClient); err != nil {
+		if err := createDeployment(ctx, stack, reconciliation, database, authClient, version); err != nil {
 			return err
 		}
 	}

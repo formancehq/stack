@@ -21,10 +21,20 @@ import (
 )
 
 // StackSpec defines the desired state of Stack
+// The version of the stack can be specified using either the field `version` or the `versionsFromFile` field.
+// The `version` field will have priority over `versionFromFile`
+// If `versions` and `versionsFromFile` are not specified, "latest" will be used.
 type StackSpec struct {
 	DevProperties `json:",inline"`
-	// +kubebuilder:default:="latest"
-	Version string `json:"version"`
+	// +optional
+	// Version allow to specify the version of the components
+	// Must be a valid docker tag
+	Version string `json:"version,omitempty"`
+	// +optional
+	// VersionsFromFile allow to specify a formance.com/Versions object which contains individual versions
+	// for each component.
+	// Must reference a valid formance.com/Versions object
+	VersionsFromFile string `json:"versionsFromFile"`
 	//+optional
 	EnableAudit bool `json:"enableAudit,omitempty"`
 	//+optional
@@ -51,6 +61,10 @@ type Stack struct {
 
 func (in *Stack) SetReady(b bool) {
 	in.Status.SetReady(b)
+}
+
+func (in *Stack) IsReady() bool {
+	return in.Status.Ready
 }
 
 func (in *Stack) SetError(s string) {

@@ -31,6 +31,7 @@ Package v1beta1 contains API Schema definitions for the formance v1beta1 API gro
 - [Stream](#stream)
 - [StreamProcessor](#streamprocessor)
 - [TemporalConfiguration](#temporalconfiguration)
+- [Versions](#versions)
 - [VersionsHistory](#versionshistory)
 - [Wallets](#wallets)
 - [Webhooks](#webhooks)
@@ -835,6 +836,7 @@ _Appears in:_
 | `ready` _boolean_ |  |
 | `error` _string_ |  |
 | `conditions` _[Condition](#condition) array_ |  |
+| `version` _string_ |  |
 
 
 #### OpenTelemetryConfiguration
@@ -1179,7 +1181,7 @@ _Appears in:_
 
 
 
-StackSpec defines the desired state of Stack
+StackSpec defines the desired state of Stack The version of the stack can be specified using either the field `version` or the `versionsFromFile` field. The `version` field will have priority over `versionFromFile` If `versions` and `versionsFromFile` are not specified, "latest" will be used.
 
 _Appears in:_
 - [Stack](#stack)
@@ -1188,7 +1190,8 @@ _Appears in:_
 | --- | --- |
 | `debug` _boolean_ |  |
 | `dev` _boolean_ |  |
-| `version` _string_ |  |
+| `version` _string_ | Version allow to specify the version of the components Must be a valid docker tag |
+| `versionsFromFile` _string_ | VersionsFromFile allow to specify a formance.com/Versions object which contains individual versions for each component. Must reference a valid formance.com/Versions object |
 | `enableAudit` _boolean_ |  |
 | `disabled` _boolean_ |  |
 
@@ -1384,6 +1387,22 @@ _Appears in:_
 | Field | Description |
 | --- | --- |
 | `otlp` _[OtlpSpec](#otlpspec)_ |  |
+
+
+#### Versions
+
+
+
+Versions is the Schema for the versions API
+
+
+
+| Field | Description |
+| --- | --- |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `Versions`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _object (keys:string, values:string)_ |  |
 
 
 #### VersionsHistory

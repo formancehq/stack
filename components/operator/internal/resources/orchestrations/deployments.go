@@ -42,9 +42,12 @@ func createAuthClient(ctx core.Context, stack *v1beta1.Stack, orchestration *v1b
 		})
 }
 
-func createDeployment(ctx core.Context, stack *v1beta1.Stack, orchestration *v1beta1.Orchestration, database *v1beta1.Database, client *v1beta1.AuthClient, consumers []*v1beta1.BrokerTopicConsumer) error {
+func createDeployment(ctx core.Context, stack *v1beta1.Stack, orchestration *v1beta1.Orchestration,
+	database *v1beta1.Database, client *v1beta1.AuthClient,
+	consumers []*v1beta1.BrokerTopicConsumer, version string) error {
+
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, core.GetModuleName(orchestration))
+	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, core.GetModuleName(ctx, orchestration))
 	if err != nil {
 		return err
 	}
@@ -102,7 +105,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, orchestration *v1b
 	}
 	env = append(env, brokerEnvVars...)
 
-	image, err := registries.GetImage(ctx, stack, "orchestration", orchestration.Spec.Version)
+	image, err := registries.GetImage(ctx, stack, "orchestration", version)
 	if err != nil {
 		return err
 	}

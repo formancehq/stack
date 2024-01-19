@@ -11,17 +11,25 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func GetModuleName(module Module) string {
-	return strings.ToLower(module.GetObjectKind().GroupVersionKind().Kind)
+func GetModuleName(ctx Context, module Module) string {
+	kinds, _, err := ctx.GetScheme().ObjectKinds(module)
+	if err != nil {
+		panic(err)
+	}
+	return strings.ToLower(kinds[0].Kind)
 }
 
-func ValidateInstalledVersion(ctx Context, module Module) error {
+func InstalledVersionName(ctx Context, module Module, version string) string {
+	return fmt.Sprintf("%s-%s-%s", module.GetStack(), GetModuleName(ctx, module), version)
+}
+
+func ValidateInstalledVersion(ctx Context, module Module, version string) error {
 	_, _, err := CreateOrUpdate[*v1beta1.VersionsHistory](ctx, types.NamespacedName{
-		Name: fmt.Sprintf("%s-%s-%s", module.GetStack(), GetModuleName(module), module.GetVersion()),
+		Name: InstalledVersionName(ctx, module, version),
 	}, func(t *v1beta1.VersionsHistory) {
 		t.Spec.Stack = module.GetStack()
-		t.Spec.Module = GetModuleName(module)
-		t.Spec.Version = module.GetVersion()
+		t.Spec.Module = GetModuleName(ctx, module)
+		t.Spec.Version = version
 	}, WithController[*v1beta1.VersionsHistory](ctx.GetScheme(), module))
 	return err
 }
@@ -29,7 +37,7 @@ func ValidateInstalledVersion(ctx Context, module Module) error {
 func ActualVersion(ctx Context, module Module) (string, error) {
 	list := &v1beta1.VersionsHistoryList{}
 	if err := ctx.GetClient().List(ctx, list, client.MatchingFields{
-		".spec.module": GetModuleName(module),
+		".spec.module": GetModuleName(ctx, module),
 	}); err != nil {
 		return "", err
 	}

@@ -87,6 +87,10 @@ type Ledger struct {
 	Status LedgerStatus `json:"status,omitempty"`
 }
 
+func (in *Ledger) IsReady() bool {
+	return in.Status.Ready
+}
+
 func (in *Ledger) SetReady(b bool) {
 	in.Status.Ready = b
 }

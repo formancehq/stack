@@ -32,7 +32,11 @@ spec:
           metadata:
             type: object
           spec:
-            description: StackSpec defines the desired state of Stack
+            description: StackSpec defines the desired state of Stack The version
+              of the stack can be specified using either the field `version` or the
+              `versionsFromFile` field. The `version` field will have priority over
+              `versionFromFile` If `versions` and `versionsFromFile` are not specified,
+              "latest" will be used.
             properties:
               debug:
                 type: boolean
@@ -43,10 +47,14 @@ spec:
               enableAudit:
                 type: boolean
               version:
-                default: latest
+                description: Version allow to specify the version of the components
+                  Must be a valid docker tag
                 type: string
-            required:
-            - version
+              versionsFromFile:
+                description: VersionsFromFile allow to specify a formance.com/Versions
+                  object which contains individual versions for each component. Must
+                  reference a valid formance.com/Versions object
+                type: string
             type: object
           status:
             description: StackStatus defines the observed state of Stack

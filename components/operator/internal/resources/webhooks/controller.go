@@ -29,12 +29,7 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=webhooks/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=webhooks/finalizers,verbs=update
 
-func Reconcile(ctx Context, webhooks *v1beta1.Webhooks) error {
-	stack, err := GetStack(ctx, webhooks)
-	if err != nil {
-		return err
-	}
-
+func Reconcile(ctx Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, version string) error {
 	database, err := databases.Create(ctx, webhooks)
 	if err != nil {
 		return err
@@ -51,7 +46,7 @@ func Reconcile(ctx Context, webhooks *v1beta1.Webhooks) error {
 	}
 
 	if database.Status.Ready && consumers.Ready() {
-		if err := createDeployment(ctx, stack, webhooks, database, consumers); err != nil {
+		if err := createDeployment(ctx, stack, webhooks, database, consumers, version); err != nil {
 			return err
 		}
 	}

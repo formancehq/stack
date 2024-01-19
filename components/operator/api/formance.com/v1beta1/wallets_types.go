@@ -53,6 +53,10 @@ func (in *Wallets) SetReady(b bool) {
 	in.Status.Ready = b
 }
 
+func (in *Wallets) IsReady() bool {
+	return in.Status.Ready
+}
+
 func (in *Wallets) SetError(s string) {
 	in.Status.Error = s
 }

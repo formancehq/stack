@@ -49,6 +49,10 @@ func (in *Stream) SetReady(b bool) {
 	in.Status.Ready = b
 }
 
+func (in *Stream) IsReady() bool {
+	return in.Status.Ready
+}
+
 func (in *Stream) SetError(s string) {
 	in.Status.Error = s
 }
