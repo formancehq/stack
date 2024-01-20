@@ -67,6 +67,10 @@ type Auth struct {
 	Status AuthStatus `json:"status,omitempty"`
 }
 
+func (in *Auth) IsEE() bool {
+	return false
+}
+
 func (in *Auth) SetReady(b bool) {
 	in.Status.Ready = b
 }

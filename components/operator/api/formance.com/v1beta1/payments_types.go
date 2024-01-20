@@ -52,6 +52,10 @@ type Payments struct {
 	Status PaymentsStatus `json:"status,omitempty"`
 }
 
+func (in *Payments) IsEE() bool {
+	return false
+}
+
 func (in *Payments) SetReady(b bool) {
 	in.Status.Ready = b
 }

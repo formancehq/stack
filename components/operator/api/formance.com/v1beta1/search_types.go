@@ -61,6 +61,10 @@ type Search struct {
 	Status SearchStatus `json:"status,omitempty"`
 }
 
+func (in *Search) IsEE() bool {
+	return false
+}
+
 func (in *Search) SetReady(b bool) {
 	in.Status.Ready = b
 }

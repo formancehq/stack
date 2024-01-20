@@ -11,6 +11,15 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+type Module interface {
+	Dependent
+	GetVersion() string
+	GetConditions() []v1beta1.Condition
+	IsDebug() bool
+	IsDev() bool
+	IsEE() bool
+}
+
 func GetModuleName(ctx Context, module Module) string {
 	kinds, _, err := ctx.GetScheme().ObjectKinds(module)
 	if err != nil {

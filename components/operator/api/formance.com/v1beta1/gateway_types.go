@@ -71,6 +71,10 @@ type Gateway struct {
 	Status GatewayStatus `json:"status,omitempty"`
 }
 
+func (in *Gateway) IsEE() bool {
+	return false
+}
+
 func (in *Gateway) GetVersion() string {
 	return in.Spec.Version
 }

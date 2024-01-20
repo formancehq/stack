@@ -51,6 +51,10 @@ type Webhooks struct {
 	Status WebhooksStatus `json:"status,omitempty"`
 }
 
+func (in *Webhooks) IsEE() bool {
+	return false
+}
+
 func (in *Webhooks) SetReady(b bool) {
 	in.Status.Ready = b
 }

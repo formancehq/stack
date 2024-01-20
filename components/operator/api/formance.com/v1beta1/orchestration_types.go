@@ -51,6 +51,10 @@ type Orchestration struct {
 	Status OrchestrationStatus `json:"status,omitempty"`
 }
 
+func (in *Orchestration) IsEE() bool {
+	return false
+}
+
 func (in *Orchestration) SetReady(b bool) {
 	in.Status.Ready = b
 }

@@ -39,14 +39,6 @@ type Dependent interface {
 	GetStack() string
 }
 
-type Module interface {
-	Dependent
-	GetVersion() string
-	GetConditions() []v1beta1.Condition
-	IsDebug() bool
-	IsDev() bool
-}
-
 var (
 	ErrNotFound               = errors.New("no configuration found")
 	ErrMultipleInstancesFound = errors.New("multiple resources found")

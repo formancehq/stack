@@ -51,6 +51,10 @@ type Reconciliation struct {
 	Status ReconciliationStatus `json:"status,omitempty"`
 }
 
+func (in *Reconciliation) IsEE() bool {
+	return true
+}
+
 func (in *Reconciliation) SetReady(b bool) {
 	in.Status.Ready = b
 }

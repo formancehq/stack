@@ -49,6 +49,10 @@ type Wallets struct {
 	Status WalletsStatus `json:"status,omitempty"`
 }
 
+func (in *Wallets) IsEE() bool {
+	return false
+}
+
 func (in *Wallets) SetReady(b bool) {
 	in.Status.Ready = b
 }

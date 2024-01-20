@@ -59,6 +59,10 @@ type Stargate struct {
 	Status StargateStatus `json:"status,omitempty"`
 }
 
+func (in *Stargate) IsEE() bool {
+	return false
+}
+
 func (in *Stargate) GetVersion() string {
 	return in.Spec.Version
 }
