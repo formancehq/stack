@@ -7,7 +7,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 )
 
-func GetModuleVersion(ctx Context, stack *v1beta1.Stack, module Module) (string, error) {
+func GetModuleVersion(ctx Context, stack *v1beta1.Stack, module v1beta1.Module) (string, error) {
 	if module.GetVersion() != "" {
 		return module.GetVersion(), nil
 	}

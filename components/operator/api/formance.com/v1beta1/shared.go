@@ -4,6 +4,7 @@ import (
 	"golang.org/x/mod/semver"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // +kubebuilder:object:generate=false
@@ -160,4 +161,28 @@ type AuthConfig struct {
 	ReadKeySetMaxRetries int `json:"readKeySetMaxRetries"`
 	// +optional
 	CheckScopes bool `json:"checkScopes"`
+}
+
+// +kubebuilder:object:generate=false
+type Module interface {
+	Dependent
+	GetVersion() string
+	GetConditions() []Condition
+	IsDebug() bool
+	IsDev() bool
+	IsEE() bool
+}
+
+// +kubebuilder:object:generate=false
+type Dependent interface {
+	Object
+	GetStack() string
+}
+
+// +kubebuilder:object:generate=false
+type Object interface {
+	client.Object
+	SetReady(bool)
+	IsReady() bool
+	SetError(string)
 }

@@ -16,7 +16,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-func GetStack(ctx Context, spec Dependent) (*v1beta1.Stack, error) {
+func GetStack(ctx Context, spec v1beta1.Dependent) (*v1beta1.Stack, error) {
 	stack := &v1beta1.Stack{}
 	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
 		Name: spec.GetStack(),
@@ -25,18 +25,6 @@ func GetStack(ctx Context, spec Dependent) (*v1beta1.Stack, error) {
 	}
 
 	return stack, nil
-}
-
-type Object interface {
-	client.Object
-	SetReady(bool)
-	IsReady() bool
-	SetError(string)
-}
-
-type Dependent interface {
-	Object
-	GetStack() string
 }
 
 var (

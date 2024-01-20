@@ -11,16 +11,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type Module interface {
-	Dependent
-	GetVersion() string
-	GetConditions() []v1beta1.Condition
-	IsDebug() bool
-	IsDev() bool
-	IsEE() bool
-}
-
-func GetModuleName(ctx Context, module Module) string {
+func GetModuleName(ctx Context, module v1beta1.Module) string {
 	kinds, _, err := ctx.GetScheme().ObjectKinds(module)
 	if err != nil {
 		panic(err)
@@ -28,11 +19,11 @@ func GetModuleName(ctx Context, module Module) string {
 	return strings.ToLower(kinds[0].Kind)
 }
 
-func InstalledVersionName(ctx Context, module Module, version string) string {
+func InstalledVersionName(ctx Context, module v1beta1.Module, version string) string {
 	return fmt.Sprintf("%s-%s-%s", module.GetStack(), GetModuleName(ctx, module), version)
 }
 
-func ValidateInstalledVersion(ctx Context, module Module, version string) error {
+func ValidateInstalledVersion(ctx Context, module v1beta1.Module, version string) error {
 	_, _, err := CreateOrUpdate[*v1beta1.VersionsHistory](ctx, types.NamespacedName{
 		Name: InstalledVersionName(ctx, module, version),
 	}, func(t *v1beta1.VersionsHistory) {
@@ -43,7 +34,7 @@ func ValidateInstalledVersion(ctx Context, module Module, version string) error 
 	return err
 }
 
-func ActualVersion(ctx Context, module Module) (string, error) {
+func ActualVersion(ctx Context, module v1beta1.Module) (string, error) {
 	list := &v1beta1.VersionsHistoryList{}
 	if err := ctx.GetClient().List(ctx, list, client.MatchingFields{
 		".spec.module": GetModuleName(ctx, module),

@@ -14,7 +14,7 @@ var defaultOptions = []option{
 	WithRules(RuleSecured()),
 }
 
-func Create(ctx core.Context, owner core.Module, options ...option) error {
+func Create(ctx core.Context, owner v1beta1.Module, options ...option) error {
 	objectName := strings.ToLower(owner.GetObjectKind().GroupVersionKind().Kind)
 	_, _, err := core.CreateOrUpdate[*v1beta1.HTTPAPI](ctx, types.NamespacedName{
 		Name: core.GetObjectName(owner.GetStack(), core.GetModuleName(ctx, owner)),

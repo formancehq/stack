@@ -41,7 +41,7 @@ func Setup(mgr ctrl.Manager, platform Platform) error {
 			continue
 		}
 
-		_, ok = object.(Dependent)
+		_, ok = object.(v1beta1.Dependent)
 		if !ok {
 			continue
 		}
@@ -49,7 +49,7 @@ func Setup(mgr ctrl.Manager, platform Platform) error {
 		mgr.GetLogger().Info("Detect stack dependency object, automatically index field", "type", rtype)
 		if err := mgr.GetFieldIndexer().
 			IndexField(context.Background(), object, "stack", func(object client.Object) []string {
-				return []string{object.(Dependent).GetStack()}
+				return []string{object.(v1beta1.Dependent).GetStack()}
 			}); err != nil {
 			mgr.GetLogger().Error(err, "indexing stack field", "type", rtype)
 			return err
@@ -110,7 +110,7 @@ func WithWatchConfigurationObject(t client.Object) reconcilerOption {
 	}
 }
 
-func WithWatchDependency(t Dependent) reconcilerOption {
+func WithWatchDependency(t v1beta1.Dependent) reconcilerOption {
 	return func(mgr Manager, builder *builder.Builder, target client.Object) error {
 		builder.Watches(t, handler.EnqueueRequestsFromMapFunc(WatchDependents(mgr, target)))
 
@@ -214,15 +214,15 @@ func WithReconciler[T client.Object](controller Controller[T], opts ...reconcile
 	}
 }
 
-func WithStdReconciler[T Object](ctrl func(ctx Context, t T) error, opts ...reconcilerOption) Initializer {
+func WithStdReconciler[T v1beta1.Object](ctrl func(ctx Context, t T) error, opts ...reconcilerOption) Initializer {
 	return WithReconciler(ForReadier(ctrl), opts...)
 }
 
-func WithStackDependencyReconciler[T Dependent](fn func(ctx Context, stack *v1beta1.Stack, t T) error, opts ...reconcilerOption) Initializer {
+func WithStackDependencyReconciler[T v1beta1.Dependent](fn func(ctx Context, stack *v1beta1.Stack, t T) error, opts ...reconcilerOption) Initializer {
 	return WithStdReconciler(ForStackDependency(fn), opts...)
 }
 
-func WithModuleReconciler[T Module](fn func(ctx Context, stack *v1beta1.Stack, t T, version string) error, opts ...reconcilerOption) Initializer {
+func WithModuleReconciler[T v1beta1.Module](fn func(ctx Context, stack *v1beta1.Stack, t T, version string) error, opts ...reconcilerOption) Initializer {
 	opts = append(opts, WithWatchVersions)
 	return WithStackDependencyReconciler(ForModule(fn), opts...)
 }

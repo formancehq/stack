@@ -1,13 +1,14 @@
 package services
 
 import (
+	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
-func Create(ctx core.Context, owner core.Module, name string, mutators ...core.ObjectMutator[*corev1.Service]) (*corev1.Service, error) {
+func Create(ctx core.Context, owner v1beta1.Module, name string, mutators ...core.ObjectMutator[*corev1.Service]) (*corev1.Service, error) {
 	mutators = append(mutators,
 		Configure(name),
 		core.WithController[*corev1.Service](ctx.GetScheme(), owner),

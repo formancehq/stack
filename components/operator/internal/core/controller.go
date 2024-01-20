@@ -14,7 +14,7 @@ import (
 
 type Controller[T client.Object] func(ctx Context, req T) error
 
-func ForModule[T Module](underlyingController func(ctx Context, stack *v1beta1.Stack, t T, version string) error) func(ctx Context, stack *v1beta1.Stack, t T) error {
+func ForModule[T v1beta1.Module](underlyingController func(ctx Context, stack *v1beta1.Stack, t T, version string) error) func(ctx Context, stack *v1beta1.Stack, t T) error {
 	return func(ctx Context, stack *v1beta1.Stack, t T) error {
 
 		moduleVersion, err := GetModuleVersion(ctx, stack, t)
@@ -58,7 +58,7 @@ func ForModule[T Module](underlyingController func(ctx Context, stack *v1beta1.S
 	}
 }
 
-func ForStackDependency[T Dependent](ctrl func(ctx Context, stack *v1beta1.Stack, t T) error) func(ctx Context, t T) error {
+func ForStackDependency[T v1beta1.Dependent](ctrl func(ctx Context, stack *v1beta1.Stack, t T) error) func(ctx Context, t T) error {
 	return func(ctx Context, t T) error {
 		stack := &v1beta1.Stack{}
 		if err := ctx.GetClient().Get(ctx, types.NamespacedName{
@@ -79,7 +79,7 @@ func ForStackDependency[T Dependent](ctrl func(ctx Context, stack *v1beta1.Stack
 	}
 }
 
-func ForReadier[T Object](controller Controller[T]) Controller[T] {
+func ForReadier[T v1beta1.Object](controller Controller[T]) Controller[T] {
 	return func(ctx Context, object T) error {
 		setStatus := func(err error) {
 			if err != nil {

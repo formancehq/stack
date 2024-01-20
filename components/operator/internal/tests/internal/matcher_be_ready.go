@@ -2,8 +2,8 @@ package internal
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/api/formance.com/v1beta1"
 
-	"github.com/formancehq/operator/internal/core"
 	gomegaTypes "github.com/onsi/gomega/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -11,7 +11,7 @@ import (
 type beReadyMatcher struct{}
 
 func (s beReadyMatcher) Match(actual interface{}) (success bool, err error) {
-	object, ok := actual.(core.Object)
+	object, ok := actual.(v1beta1.Object)
 	if !ok {
 		return false, fmt.Errorf("expect object of type core.Object")
 	}

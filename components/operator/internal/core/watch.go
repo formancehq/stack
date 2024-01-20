@@ -16,7 +16,7 @@ func WatchDependents(mgr Manager, t client.Object) func(ctx context.Context, obj
 
 		err := GetAllDependents(
 			NewContext(mgr.GetClient(), mgr.GetScheme(), mgr.GetPlatform(), ctx),
-			object.(Dependent).GetStack(), &slice)
+			object.(v1beta1.Dependent).GetStack(), &slice)
 		if err != nil {
 			return nil
 		}
