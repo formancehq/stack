@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
@@ -15,6 +16,7 @@ type StackInterface interface {
 	Create(ctx context.Context, stack *v1beta1.Stack) (*v1beta1.Stack, error)
 	Update(ctx context.Context, stack *v1beta1.Stack) (*v1beta1.Stack, error)
 	Watch(ctx context.Context, opts metav1.ListOptions) (watch.Interface, error)
+	Patch(ctx context.Context, name string, patchType types.PatchType, body any) (*v1beta1.Stack, error)
 	Delete(ctx context.Context, name string) error
 }
 
@@ -84,6 +86,19 @@ func (c *stackClient) Update(ctx context.Context, o *v1beta1.Stack) (*v1beta1.St
 		Resource("stacks").
 		Name(o.Name).
 		Body(o).
+		Do(ctx).
+		Into(&result)
+
+	return &result, err
+}
+
+func (c *stackClient) Patch(ctx context.Context, name string, patchType types.PatchType, body any) (*v1beta1.Stack, error) {
+	result := v1beta1.Stack{}
+	err := c.restClient.
+		Patch(patchType).
+		Resource("stacks").
+		Name(name).
+		Body(body).
 		Do(ctx).
 		Into(&result)
 
