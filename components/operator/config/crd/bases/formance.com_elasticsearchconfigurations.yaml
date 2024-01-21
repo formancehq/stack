@@ -36,6 +36,8 @@ spec:
             description: ElasticSearchConfigurationSpec defines the desired state
               of ElasticSearchConfiguration
             properties:
+              applyOnAllStacks:
+                type: boolean
               basicAuth:
                 properties:
                   password:
@@ -54,6 +56,10 @@ spec:
                 - http
                 - https
                 type: string
+              stacks:
+                items:
+                  type: string
+                type: array
               tls:
                 properties:
                   enabled:
@@ -61,6 +67,9 @@ spec:
                   skipCertVerify:
                     type: boolean
                 type: object
+            required:
+            - applyOnAllStacks
+            - stacks
             type: object
           status:
             description: ElasticSearchConfigurationStatus defines the observed state

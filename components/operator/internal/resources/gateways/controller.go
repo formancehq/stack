@@ -36,7 +36,7 @@ import (
 func Reconcile(ctx Context, stack *v1beta1.Stack, gateway *v1beta1.Gateway, version string) error {
 
 	httpAPIs := make([]*v1beta1.HTTPAPI, 0)
-	err := GetAllDependents(ctx, gateway.Spec.Stack, &httpAPIs)
+	err := GetAllStackDependencies(ctx, gateway.Spec.Stack, &httpAPIs)
 	if err != nil {
 		return err
 	}

@@ -4,11 +4,9 @@ import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	. "github.com/formancehq/operator/internal/tests/internal"
-	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -26,13 +24,12 @@ var _ = Describe("BrokerTopicConsumer", func() {
 			}
 			Expect(Create(stack)).To(BeNil())
 			brokerConfig = &v1beta1.BrokerConfiguration{
-				ObjectMeta: metav1.ObjectMeta{
-					Name: uuid.NewString(),
-					Labels: map[string]string{
-						core.StackLabel: stack.Name,
+				ObjectMeta: RandObjectMeta(),
+				Spec: v1beta1.BrokerConfigurationSpec{
+					ConfigurationProperties: v1beta1.ConfigurationProperties{
+						Stacks: []string{stack.Name},
 					},
 				},
-				Spec: v1beta1.BrokerConfigurationSpec{},
 			}
 			Expect(Create(brokerConfig)).To(Succeed())
 			brokerTopicConsumer = &v1beta1.BrokerTopicConsumer{

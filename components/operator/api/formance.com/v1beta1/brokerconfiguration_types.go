@@ -44,6 +44,7 @@ type BrokerNatsConfig struct {
 
 // BrokerConfigurationSpec defines the desired state of BrokerConfig
 type BrokerConfigurationSpec struct {
+	ConfigurationProperties `json:",inline"`
 	// +optional
 	Kafka *BrokerKafkaConfig `json:"kafka,omitempty"`
 	// +optional
@@ -65,6 +66,16 @@ type BrokerConfiguration struct {
 	Spec   BrokerConfigurationSpec   `json:"spec,omitempty"`
 	Status BrokerConfigurationStatus `json:"status,omitempty"`
 }
+
+func (in *BrokerConfiguration) GetStacks() []string {
+	return in.Spec.Stacks
+}
+
+func (in *BrokerConfiguration) IsWildcard() bool {
+	return in.Spec.ApplyOnAllStacks
+}
+
+var _ ConfigurationObject = &BrokerConfiguration{}
 
 //+kubebuilder:object:root=true
 

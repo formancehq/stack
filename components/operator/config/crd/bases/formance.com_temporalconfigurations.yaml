@@ -37,8 +37,14 @@ spec:
             properties:
               address:
                 type: string
+              applyOnAllStacks:
+                type: boolean
               namespace:
                 type: string
+              stacks:
+                items:
+                  type: string
+                type: array
               tls:
                 properties:
                   crt:
@@ -50,7 +56,9 @@ spec:
                 type: object
             required:
             - address
+            - applyOnAllStacks
             - namespace
+            - stacks
             - tls
             type: object
           status:

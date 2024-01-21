@@ -18,7 +18,7 @@ func Watch[T client.Object](service string) func(ctx core.Context, object *v1bet
 		var t T
 		slice := reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(t)), 0, 0).Interface()
 
-		err := core.GetAllDependents(ctx, topic.Spec.Stack, &slice)
+		err := core.GetAllStackDependencies(ctx, topic.Spec.Stack, &slice)
 		if err != nil {
 			return []reconcile.Request{}
 		}

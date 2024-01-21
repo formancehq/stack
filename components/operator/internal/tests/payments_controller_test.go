@@ -5,12 +5,10 @@ import (
 	"github.com/formancehq/operator/internal/core"
 	. "github.com/formancehq/operator/internal/tests/internal"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
-	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -35,14 +33,13 @@ var _ = Describe("PaymentsController", func() {
 				},
 			}
 			databaseConfiguration = &v1beta1.DatabaseConfiguration{
-				ObjectMeta: metav1.ObjectMeta{
-					Name: uuid.NewString(),
-					Labels: map[string]string{
-						core.StackLabel:   stack.Name,
-						core.ServiceLabel: "any",
+				ObjectMeta: RandObjectMeta(),
+				Spec: v1beta1.DatabaseConfigurationSpec{
+					ConfigurationProperties: v1beta1.ConfigurationProperties{
+						Stacks: []string{stack.Name},
 					},
+					Service: "any",
 				},
-				Spec: v1beta1.DatabaseConfigurationSpec{},
 			}
 		})
 		JustBeforeEach(func() {

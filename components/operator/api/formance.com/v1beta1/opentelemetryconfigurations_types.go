@@ -47,6 +47,7 @@ type MetricsSpec struct {
 
 // OpenTelemetryConfigurationSpec defines the desired state of OpenTelemetryConfiguration
 type OpenTelemetryConfigurationSpec struct {
+	ConfigurationProperties `json:",inline"`
 	// +optional
 	Traces *TracesSpec `json:"traces,omitempty"`
 	// +optional
@@ -69,6 +70,16 @@ type OpenTelemetryConfiguration struct {
 	Spec   OpenTelemetryConfigurationSpec   `json:"spec,omitempty"`
 	Status OpenTelemetryConfigurationStatus `json:"status,omitempty"`
 }
+
+func (in *OpenTelemetryConfiguration) GetStacks() []string {
+	return in.Spec.Stacks
+}
+
+func (in *OpenTelemetryConfiguration) IsWildcard() bool {
+	return in.Spec.ApplyOnAllStacks
+}
+
+var _ ConfigurationObject = &OpenTelemetryConfiguration{}
 
 //+kubebuilder:object:root=true
 

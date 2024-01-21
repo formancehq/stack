@@ -32,13 +32,11 @@ var _ = Describe("BrokerTopicController", func() {
 			}
 			Expect(Create(stack)).To(BeNil())
 			brokerConfiguration = &v1beta1.BrokerConfiguration{
-				ObjectMeta: v1.ObjectMeta{
-					Name: uuid.NewString(),
-					Labels: map[string]string{
-						core.StackLabel: stack.Name,
-					},
-				},
+				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.BrokerConfigurationSpec{
+					ConfigurationProperties: v1beta1.ConfigurationProperties{
+						Stacks: []string{stack.Name},
+					},
 					Nats: &v1beta1.BrokerNatsConfig{},
 				},
 			}

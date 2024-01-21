@@ -37,7 +37,7 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=searches/finalizers,verbs=update
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, version string) error {
-	elasticSearchConfiguration, err := RequireLabelledConfig[*v1beta1.ElasticSearchConfiguration](ctx, search.Spec.Stack)
+	elasticSearchConfiguration, err := RequireConfigurationObject[*v1beta1.ElasticSearchConfiguration](ctx, search.Spec.Stack)
 	if err != nil {
 		return err
 	}

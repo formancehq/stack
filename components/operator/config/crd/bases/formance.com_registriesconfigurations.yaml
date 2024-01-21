@@ -35,6 +35,8 @@ spec:
             description: RegistriesConfigurationSpec defines the desired state of
               RegistriesConfiguration
             properties:
+              applyOnAllStacks:
+                type: boolean
               registries:
                 additionalProperties:
                   properties:
@@ -44,8 +46,14 @@ spec:
                   - endpoint
                   type: object
                 type: object
+              stacks:
+                items:
+                  type: string
+                type: array
             required:
+            - applyOnAllStacks
             - registries
+            - stacks
             type: object
           status:
             description: RegistriesConfigurationStatus defines the observed state

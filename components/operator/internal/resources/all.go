@@ -9,6 +9,7 @@ import (
 	_ "github.com/formancehq/operator/internal/resources/gateways"
 	_ "github.com/formancehq/operator/internal/resources/httpapis"
 	_ "github.com/formancehq/operator/internal/resources/ledgers"
+	_ "github.com/formancehq/operator/internal/resources/legacy/configurations"
 	_ "github.com/formancehq/operator/internal/resources/legacy/stacks"
 	_ "github.com/formancehq/operator/internal/resources/legacy/versions"
 	_ "github.com/formancehq/operator/internal/resources/orchestrations"

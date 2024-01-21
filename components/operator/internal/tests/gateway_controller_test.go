@@ -6,17 +6,14 @@ import (
 	. "github.com/formancehq/operator/internal/tests/internal"
 
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
-	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/brokerconfigurations"
 	"github.com/formancehq/operator/internal/resources/httpapis"
 	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
-	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -194,13 +191,11 @@ var _ = Describe("GatewayController", func() {
 			BeforeEach(func() {
 				stack.Spec.EnableAudit = true
 				brokerConfiguration = &v1beta1.BrokerConfiguration{
-					ObjectMeta: metav1.ObjectMeta{
-						Name: uuid.NewString(),
-						Labels: map[string]string{
-							core.StackLabel: stack.Name,
-						},
-					},
+					ObjectMeta: RandObjectMeta(),
 					Spec: v1beta1.BrokerConfigurationSpec{
+						ConfigurationProperties: v1beta1.ConfigurationProperties{
+							Stacks: []string{stack.Name},
+						},
 						Nats: &v1beta1.BrokerNatsConfig{
 							URL:      "nats://localhost:4321",
 							Replicas: 10,
@@ -242,13 +237,11 @@ var _ = Describe("GatewayController", func() {
 			var openTelemetryConfiguration *v1beta1.OpenTelemetryConfiguration
 			BeforeEach(func() {
 				openTelemetryConfiguration = &v1beta1.OpenTelemetryConfiguration{
-					ObjectMeta: metav1.ObjectMeta{
-						Name: uuid.NewString(),
-						Labels: map[string]string{
-							core.StackLabel: stack.Name,
-						},
-					},
+					ObjectMeta: RandObjectMeta(),
 					Spec: v1beta1.OpenTelemetryConfigurationSpec{
+						ConfigurationProperties: v1beta1.ConfigurationProperties{
+							Stacks: []string{stack.Name},
+						},
 						Traces: &v1beta1.TracesSpec{
 							Otlp: &v1beta1.OtlpSpec{
 								Endpoint: "otlp",

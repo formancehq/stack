@@ -34,7 +34,7 @@ import (
 func Reconcile(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, version string) error {
 
 	authClientList := make([]*v1beta1.AuthClient, 0)
-	err := GetAllDependents(ctx, auth.Spec.Stack, &authClientList)
+	err := GetAllStackDependencies(ctx, auth.Spec.Stack, &authClientList)
 	if err != nil {
 		return err
 	}

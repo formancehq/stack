@@ -6,12 +6,9 @@ import (
 	. "github.com/formancehq/operator/internal/tests/internal"
 
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
-	"github.com/formancehq/operator/internal/core"
-	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	batchv1 "k8s.io/api/batch/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -29,14 +26,13 @@ var _ = Describe("DatabaseController", func() {
 			}
 			Expect(Create(stack)).To(BeNil())
 			databaseConfiguration = &v1beta1.DatabaseConfiguration{
-				ObjectMeta: metav1.ObjectMeta{
-					Name: uuid.NewString(),
-					Labels: map[string]string{
-						core.ServiceLabel: "any",
-						core.StackLabel:   stack.Name,
+				ObjectMeta: RandObjectMeta(),
+				Spec: v1beta1.DatabaseConfigurationSpec{
+					ConfigurationProperties: v1beta1.ConfigurationProperties{
+						Stacks: []string{stack.Name},
 					},
+					Service: "any",
 				},
-				Spec: v1beta1.DatabaseConfigurationSpec{},
 			}
 			Expect(Create(databaseConfiguration)).To(Succeed())
 			database = &v1beta1.Database{

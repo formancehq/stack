@@ -4,11 +4,9 @@ import (
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	. "github.com/formancehq/operator/internal/tests/internal"
-	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 var _ = Describe("WalletsController", func() {
@@ -36,14 +34,13 @@ var _ = Describe("WalletsController", func() {
 				},
 			}
 			databaseConfiguration = &v1beta1.DatabaseConfiguration{
-				ObjectMeta: metav1.ObjectMeta{
-					Name: uuid.NewString(),
-					Labels: map[string]string{
-						core.StackLabel:   stack.Name,
-						core.ServiceLabel: "any",
+				ObjectMeta: RandObjectMeta(),
+				Spec: v1beta1.DatabaseConfigurationSpec{
+					ConfigurationProperties: v1beta1.ConfigurationProperties{
+						Stacks: []string{stack.Name},
 					},
+					Service: "any",
 				},
-				Spec: v1beta1.DatabaseConfigurationSpec{},
 			}
 			wallets = &v1beta1.Wallets{
 				ObjectMeta: RandObjectMeta(),

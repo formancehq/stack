@@ -10,7 +10,7 @@ import (
 )
 
 func GetEnvVars(ctx core.Context, stackName, serviceName string) ([]v1.EnvVar, error) {
-	configuration, err := core.GetByLabel[*v1beta1.BrokerConfiguration](ctx, stackName)
+	configuration, err := core.GetConfigurationObject[*v1beta1.BrokerConfiguration](ctx, stackName)
 	if err != nil {
 		return nil, err
 	}

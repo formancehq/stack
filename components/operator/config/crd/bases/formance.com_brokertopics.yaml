@@ -61,6 +61,8 @@ spec:
                 description: BrokerConfigurationSpec defines the desired state of
                   BrokerConfig
                 properties:
+                  applyOnAllStacks:
+                    type: boolean
                   kafka:
                     properties:
                       brokers:
@@ -96,6 +98,13 @@ spec:
                     required:
                     - url
                     type: object
+                  stacks:
+                    items:
+                      type: string
+                    type: array
+                required:
+                - applyOnAllStacks
+                - stacks
                 type: object
               error:
                 type: string

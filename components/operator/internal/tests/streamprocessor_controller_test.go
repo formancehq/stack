@@ -4,12 +4,10 @@ import (
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	. "github.com/formancehq/operator/internal/tests/internal"
-	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -28,22 +26,20 @@ var _ = Describe("StreamProcessorController", func() {
 				Spec:       v1beta1.StackSpec{},
 			}
 			elasticSearchConfiguration = &v1beta1.ElasticSearchConfiguration{
-				ObjectMeta: metav1.ObjectMeta{
-					Name: uuid.NewString(),
-					Labels: map[string]string{
-						core.StackLabel: stack.Name,
+				ObjectMeta: RandObjectMeta(),
+				Spec: v1beta1.ElasticSearchConfigurationSpec{
+					ConfigurationProperties: v1beta1.ConfigurationProperties{
+						Stacks: []string{stack.Name},
 					},
 				},
-				Spec: v1beta1.ElasticSearchConfigurationSpec{},
 			}
 			brokerConfiguration = &v1beta1.BrokerConfiguration{
-				ObjectMeta: metav1.ObjectMeta{
-					Name: uuid.NewString(),
-					Labels: map[string]string{
-						core.StackLabel: stack.Name,
+				ObjectMeta: RandObjectMeta(),
+				Spec: v1beta1.BrokerConfigurationSpec{
+					ConfigurationProperties: v1beta1.ConfigurationProperties{
+						Stacks: []string{stack.Name},
 					},
 				},
-				Spec: v1beta1.BrokerConfigurationSpec{},
 			}
 			streamProcessor = &v1beta1.StreamProcessor{
 				ObjectMeta: RandObjectMeta(),

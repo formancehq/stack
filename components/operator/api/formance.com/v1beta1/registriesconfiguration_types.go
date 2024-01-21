@@ -26,7 +26,8 @@ type RegistryConfigurationSpec struct {
 
 // RegistriesConfigurationSpec defines the desired state of RegistriesConfiguration
 type RegistriesConfigurationSpec struct {
-	Registries map[string]RegistryConfigurationSpec `json:"registries"`
+	ConfigurationProperties `json:",inline"`
+	Registries              map[string]RegistryConfigurationSpec `json:"registries"`
 }
 
 // RegistriesConfigurationStatus defines the observed state of RegistriesConfiguration
@@ -45,6 +46,16 @@ type RegistriesConfiguration struct {
 	Spec   RegistriesConfigurationSpec   `json:"spec,omitempty"`
 	Status RegistriesConfigurationStatus `json:"status,omitempty"`
 }
+
+func (in *RegistriesConfiguration) GetStacks() []string {
+	return in.Spec.Stacks
+}
+
+func (in *RegistriesConfiguration) IsWildcard() bool {
+	return in.Spec.ApplyOnAllStacks
+}
+
+var _ ConfigurationObject = &RegistriesConfiguration{}
 
 //+kubebuilder:object:root=true
 

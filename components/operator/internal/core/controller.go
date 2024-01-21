@@ -1,8 +1,6 @@
 package core
 
 import (
-	"fmt"
-
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	pkgError "github.com/pkg/errors"
 	"golang.org/x/mod/semver"
@@ -21,11 +19,6 @@ func ForModule[T v1beta1.Module](underlyingController func(ctx Context, stack *v
 		if err != nil {
 			return err
 		}
-		fmt.Println("resolved version", moduleVersion)
-		fmt.Println("resolved version", moduleVersion)
-		fmt.Println("resolved version", moduleVersion)
-		fmt.Println("resolved version", moduleVersion)
-		fmt.Println("resolved version", moduleVersion)
 
 		err = underlyingController(ctx, stack, t, moduleVersion)
 		if err != nil {
@@ -42,15 +35,7 @@ func ForModule[T v1beta1.Module](underlyingController func(ctx Context, stack *v
 			}
 		}
 
-		fmt.Println("version installed", moduleVersion)
-		fmt.Println("version installed", moduleVersion)
-		fmt.Println("version installed", moduleVersion)
-		fmt.Println("version installed", moduleVersion)
-		fmt.Println("version installed", moduleVersion)
-		fmt.Println("version installed", moduleVersion)
-
 		if semver.IsValid(moduleVersion) {
-			fmt.Println("validate")
 			return ValidateInstalledVersion(ctx, t, moduleVersion)
 		}
 

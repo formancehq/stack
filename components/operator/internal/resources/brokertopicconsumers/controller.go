@@ -130,7 +130,7 @@ func init() {
 				)
 			}),
 		),
-		WithIndex[*v1beta1.BrokerTopicConsumer](".spec.service", func(t *v1beta1.BrokerTopicConsumer) string {
+		WithSimpleIndex[*v1beta1.BrokerTopicConsumer](".spec.service", func(t *v1beta1.BrokerTopicConsumer) string {
 			return t.Spec.Service
 		}),
 	)

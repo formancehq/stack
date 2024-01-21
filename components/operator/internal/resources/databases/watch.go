@@ -17,7 +17,7 @@ func Watch(service string, target any) func(ctx core.Context, object *v1beta1.Da
 
 		slice := reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(target)), 0, 0).Interface()
 
-		err := core.GetAllDependents(ctx, object.Spec.Stack, &slice)
+		err := core.GetAllStackDependencies(ctx, object.Spec.Stack, &slice)
 		if err != nil {
 			return []reconcile.Request{}
 		}

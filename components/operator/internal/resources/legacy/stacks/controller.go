@@ -151,201 +151,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}
 	}
 
-	type databaseDescriptor struct {
-		config v1beta3.PostgresConfig
-		name   string
-	}
-
-	for _, cfg := range []databaseDescriptor{
-		{
-			config: configuration.Spec.Services.Ledger.Postgres,
-			name:   "ledger",
-		},
-		{
-			config: configuration.Spec.Services.Payments.Postgres,
-			name:   "payments",
-		},
-		{
-			config: configuration.Spec.Services.Orchestration.Postgres,
-			name:   "orchestration",
-		},
-		{
-			config: configuration.Spec.Services.Auth.Postgres,
-			name:   "auth",
-		},
-		{
-			config: configuration.Spec.Services.Webhooks.Postgres,
-			name:   "webhooks",
-		},
-	} {
-		_, _, err := CreateOrUpdate[*v1beta1.DatabaseConfiguration](ctx, types.NamespacedName{
-			Name: fmt.Sprintf("%s-%s", stack.Name, cfg.name),
-		}, func(t *v1beta1.DatabaseConfiguration) {
-			t.Spec = v1beta1.DatabaseConfigurationSpec{
-				Port:                  cfg.config.Port,
-				Host:                  cfg.config.Host,
-				Username:              cfg.config.Username,
-				Password:              cfg.config.Password,
-				CredentialsFromSecret: cfg.config.CredentialsFromSecret,
-				DisableSSLMode:        cfg.config.DisableSSLMode,
-			}
-			t.Labels = map[string]string{
-				StackLabel:   stack.Name,
-				ServiceLabel: cfg.name,
-			}
-		})
-		if err != nil {
-			return errors.Wrapf(err, "creating database configuration for service %s", cfg.name)
-		}
-	}
-
-	if configuration.Spec.Monitoring != nil {
-		_, _, err := CreateOrUpdate[*v1beta1.OpenTelemetryConfiguration](ctx, types.NamespacedName{
-			Name: stack.Name,
-		}, func(t *v1beta1.OpenTelemetryConfiguration) {
-			t.Spec = v1beta1.OpenTelemetryConfigurationSpec{
-				Traces: func() *v1beta1.TracesSpec {
-					traces := configuration.Spec.Monitoring.Traces
-					if traces == nil {
-						return nil
-					}
-					return &v1beta1.TracesSpec{
-						Otlp: convertOtlpSpec(traces.Otlp),
-					}
-				}(),
-				Metrics: func() *v1beta1.MetricsSpec {
-					metrics := configuration.Spec.Monitoring.Metrics
-					if metrics == nil {
-						return nil
-					}
-					return &v1beta1.MetricsSpec{
-						Otlp: convertOtlpSpec(metrics.Otlp),
-					}
-				}(),
-			}
-			t.Labels = map[string]string{
-				StackLabel: stack.Name,
-			}
-		})
-		if err != nil {
-			return errors.Wrap(err, "creating opentelemetry configuration for service")
-		}
-	}
-
-	_, _, err = CreateOrUpdate[*v1beta1.BrokerConfiguration](ctx, types.NamespacedName{
-		Name: stack.Name,
-	}, func(t *v1beta1.BrokerConfiguration) {
-		t.Spec = v1beta1.BrokerConfigurationSpec{
-			Kafka: func() *v1beta1.BrokerKafkaConfig {
-				if configuration.Spec.Broker.Kafka == nil {
-					return nil
-				}
-				return &v1beta1.BrokerKafkaConfig{
-					Brokers: configuration.Spec.Broker.Kafka.Brokers,
-					TLS:     configuration.Spec.Broker.Kafka.TLS,
-					SASL: func() *v1beta1.BrokerKafkaSASLConfig {
-						if configuration.Spec.Broker.Kafka.SASL == nil {
-							return nil
-						}
-						return &v1beta1.BrokerKafkaSASLConfig{
-							Username:     configuration.Spec.Broker.Kafka.SASL.Username,
-							Password:     configuration.Spec.Broker.Kafka.SASL.Password,
-							Mechanism:    configuration.Spec.Broker.Kafka.SASL.Mechanism,
-							ScramSHASize: configuration.Spec.Broker.Kafka.SASL.ScramSHASize,
-						}
-					}(),
-				}
-			}(),
-			Nats: func() *v1beta1.BrokerNatsConfig {
-				if configuration.Spec.Broker.Nats == nil {
-					return nil
-				}
-				return &v1beta1.BrokerNatsConfig{
-					URL:      configuration.Spec.Broker.Nats.URL,
-					Replicas: configuration.Spec.Broker.Nats.Replicas,
-				}
-			}(),
-		}
-		t.Labels = map[string]string{
-			StackLabel: stack.Name,
-		}
-	})
-	if err != nil {
-		return errors.Wrap(err, "creating broker configuration for service")
-	}
-
-	_, _, err = CreateOrUpdate[*v1beta1.TemporalConfiguration](ctx, types.NamespacedName{
-		Name: stack.Name,
-	}, func(t *v1beta1.TemporalConfiguration) {
-		t.Spec = v1beta1.TemporalConfigurationSpec{
-			Address:   configuration.Spec.Temporal.Address,
-			Namespace: configuration.Spec.Temporal.Namespace,
-			TLS: v1beta1.TemporalTLSConfig{
-				CRT:        configuration.Spec.Temporal.TLS.CRT,
-				Key:        configuration.Spec.Temporal.TLS.Key,
-				SecretName: configuration.Spec.Temporal.TLS.SecretName,
-			},
-		}
-		t.Labels = map[string]string{
-			StackLabel: stack.Name,
-		}
-	})
-	if err != nil {
-		return errors.Wrap(err, "creating temporal configuration for service")
-	}
-
-	_, _, err = CreateOrUpdate[*v1beta1.ElasticSearchConfiguration](ctx, types.NamespacedName{
-		Name: stack.Name,
-	}, func(t *v1beta1.ElasticSearchConfiguration) {
-		t.Spec = v1beta1.ElasticSearchConfigurationSpec{
-			Scheme: configuration.Spec.Services.Search.ElasticSearchConfig.Scheme,
-			Host:   configuration.Spec.Services.Search.ElasticSearchConfig.Host,
-			Port:   configuration.Spec.Services.Search.ElasticSearchConfig.Port,
-			TLS: v1beta1.ElasticSearchTLSConfig{
-				Enabled:        configuration.Spec.Services.Search.ElasticSearchConfig.TLS.Enabled,
-				SkipCertVerify: configuration.Spec.Services.Search.ElasticSearchConfig.TLS.SkipCertVerify,
-			},
-			BasicAuth: func() *v1beta1.ElasticSearchBasicAuthConfig {
-				if configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth == nil {
-					return nil
-				}
-				return &v1beta1.ElasticSearchBasicAuthConfig{
-					Username:   configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.Username,
-					Password:   configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.Password,
-					SecretName: configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.SecretName,
-				}
-			}(),
-		}
-		t.Labels = map[string]string{
-			StackLabel: stack.Name,
-		}
-	})
-	if err != nil {
-		return errors.Wrap(err, "creating elasticsearch configuration for service")
-	}
-
-	if len(configuration.Spec.Registries) > 0 {
-		_, _, err = CreateOrUpdate[*v1beta1.RegistriesConfiguration](ctx, types.NamespacedName{
-			Name: stack.Name,
-		}, func(t *v1beta1.RegistriesConfiguration) {
-			registries := make(map[string]v1beta1.RegistryConfigurationSpec)
-			for k, config := range configuration.Spec.Registries {
-				registries[k] = v1beta1.RegistryConfigurationSpec{
-					Endpoint: config.Endpoint,
-				}
-			}
-			t.Spec = v1beta1.RegistriesConfigurationSpec{
-				Registries: registries,
-			}
-			t.Labels = map[string]string{
-				StackLabel: stack.Name,
-			}
-		})
-		if err != nil {
-			return errors.Wrap(err, "creating registries configuration")
-		}
-	}
-
 	ready := true
 
 	if !isDisabled(stack, configuration, false, "ledger") {
@@ -713,32 +518,6 @@ func resourceRequirements(resourceProperties *v1beta3.ResourceProperties) *corev
 	return resources
 }
 
-func convertOtlpSpec(otlp *v1beta3.OtlpSpec) *v1beta1.OtlpSpec {
-	if otlp == nil {
-		return nil
-	}
-
-	return &v1beta1.OtlpSpec{
-		Endpoint: otlp.Endpoint,
-		Port:     otlp.Port,
-		Insecure: otlp.Insecure,
-		Mode:     otlp.Mode,
-		ResourceAttributes: func() map[string]string {
-			if otlp.ResourceAttributes == "" {
-				return nil
-			}
-			parts := strings.Split(otlp.ResourceAttributes, " ")
-			ret := make(map[string]string)
-			for _, part := range parts {
-				parts := strings.Split(part, "=")
-				ret[parts[0]] = parts[1]
-			}
-
-			return ret
-		}(),
-	}
-}
-
 func listStacksAndReconcile(ctx Context, opts ...client.ListOption) []reconcile.Request {
 	stacks := &v1beta3.StackList{}
 	err := ctx.GetClient().List(ctx, stacks, opts...)
@@ -784,10 +563,10 @@ func init() {
 			WithWatch(watch[*v1beta3.Configuration](".spec.seed")),
 			WithWatch(watch[*v1beta3.Versions](".spec.seed")),
 		),
-		WithIndex[*v1beta3.Stack](".spec.seed", func(t *v1beta3.Stack) string {
+		WithSimpleIndex[*v1beta3.Stack](".spec.seed", func(t *v1beta3.Stack) string {
 			return t.Spec.Seed
 		}),
-		WithIndex[*v1beta3.Stack](".spec.versions", func(t *v1beta3.Stack) string {
+		WithSimpleIndex[*v1beta3.Stack](".spec.versions", func(t *v1beta3.Stack) string {
 			return t.Spec.Versions
 		}),
 	)

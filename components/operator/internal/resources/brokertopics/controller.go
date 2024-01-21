@@ -39,7 +39,7 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, topic *v1beta1.BrokerTopi
 		return nil
 	}
 
-	brokerConfiguration, err := core.RequireLabelledConfig[*v1beta1.BrokerConfiguration](ctx, topic.Spec.Stack)
+	brokerConfiguration, err := core.RequireConfigurationObject[*v1beta1.BrokerConfiguration](ctx, topic.Spec.Stack)
 	if err != nil {
 		return err
 	}
@@ -86,7 +86,7 @@ func init() {
 			core.WithWatchConfigurationObject(&v1beta1.BrokerConfiguration{}),
 			core.WithWatchStack(),
 		),
-		core.WithIndex[*v1beta1.BrokerTopic](".spec.service", func(t *v1beta1.BrokerTopic) string {
+		core.WithSimpleIndex[*v1beta1.BrokerTopic](".spec.service", func(t *v1beta1.BrokerTopic) string {
 			return t.Spec.Service
 		}),
 	)

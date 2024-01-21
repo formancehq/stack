@@ -21,7 +21,7 @@ import (
 
 func createDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumers brokertopicconsumers.Consumers, version string) error {
 
-	brokerConfiguration, err := core.RequireLabelledConfig[*v1beta1.BrokerConfiguration](ctx, stack.Name)
+	brokerConfiguration, err := core.RequireConfigurationObject[*v1beta1.BrokerConfiguration](ctx, stack.Name)
 	if err != nil {
 		return err
 	}

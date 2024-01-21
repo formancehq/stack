@@ -20,7 +20,7 @@ func EnvVarsIfEnabled(ctx core.Context, stackName, serviceName string) ([]v1.Env
 }
 
 func EnvVarsIfEnabledWithPrefix(ctx core.Context, stackName, serviceName, prefix string) ([]v1.EnvVar, error) {
-	configuration, err := core.GetByLabel[*v1beta1.OpenTelemetryConfiguration](ctx, stackName)
+	configuration, err := core.GetConfigurationObject[*v1beta1.OpenTelemetryConfiguration](ctx, stackName)
 	if err != nil {
 		return nil, err
 	}

@@ -31,9 +31,10 @@ type TemporalTLSConfig struct {
 
 // TemporalConfigurationSpec defines the desired state of TemporalConfiguration
 type TemporalConfigurationSpec struct {
-	Address   string            `json:"address"`
-	Namespace string            `json:"namespace"`
-	TLS       TemporalTLSConfig `json:"tls"`
+	ConfigurationProperties `json:",inline"`
+	Address                 string            `json:"address"`
+	Namespace               string            `json:"namespace"`
+	TLS                     TemporalTLSConfig `json:"tls"`
 }
 
 // TemporalConfigurationStatus defines the observed state of TemporalConfiguration
@@ -52,6 +53,16 @@ type TemporalConfiguration struct {
 	Spec   TemporalConfigurationSpec   `json:"spec,omitempty"`
 	Status TemporalConfigurationStatus `json:"status,omitempty"`
 }
+
+func (in *TemporalConfiguration) GetStacks() []string {
+	return in.Spec.Stacks
+}
+
+func (in *TemporalConfiguration) IsWildcard() bool {
+	return in.Spec.ApplyOnAllStacks
+}
+
+var _ ConfigurationObject = &TemporalConfiguration{}
 
 //+kubebuilder:object:root=true
 

@@ -27,26 +27,6 @@ func (p DevProperties) IsDev() bool {
 	return p.Dev
 }
 
-type ModuleProperties struct {
-	DevProperties `json:",inline"`
-	//+optional
-	Version string `json:"version,omitempty"`
-	//+optional
-	ResourceRequirements *v1.ResourceRequirements `json:"resourceRequirements,omitempty"`
-}
-
-func (in *ModuleProperties) CompareVersion(stack *Stack, version string) int {
-	actualVersion := in.Version
-	if actualVersion == "" {
-		actualVersion = stack.Spec.Version
-	}
-	if !semver.IsValid(actualVersion) {
-		return 1
-	}
-
-	return semver.Compare(actualVersion, version)
-}
-
 // Condition contains details for one aspect of the current state of this API Resource.
 // ---
 // This struct is intended for direct use as an array at the field path .status.conditions.  For example,
@@ -148,14 +128,6 @@ func (c *ModuleStatus) SetCondition(condition Condition) {
 	c.Conditions = append(c.Conditions, condition)
 }
 
-type StackDependency struct {
-	Stack string `json:"stack,omitempty" yaml:"-"`
-}
-
-func (d StackDependency) GetStack() string {
-	return d.Stack
-}
-
 type AuthConfig struct {
 	// +optional
 	ReadKeySetMaxRetries int `json:"readKeySetMaxRetries"`
@@ -173,10 +145,50 @@ type Module interface {
 	IsEE() bool
 }
 
+type ModuleProperties struct {
+	DevProperties `json:",inline"`
+	//+optional
+	Version string `json:"version,omitempty"`
+	//+optional
+	ResourceRequirements *v1.ResourceRequirements `json:"resourceRequirements,omitempty"`
+}
+
+func (in *ModuleProperties) CompareVersion(stack *Stack, version string) int {
+	actualVersion := in.Version
+	if actualVersion == "" {
+		actualVersion = stack.Spec.Version
+	}
+	if !semver.IsValid(actualVersion) {
+		return 1
+	}
+
+	return semver.Compare(actualVersion, version)
+}
+
 // +kubebuilder:object:generate=false
 type Dependent interface {
 	Object
 	GetStack() string
+}
+
+type StackDependency struct {
+	Stack string `json:"stack,omitempty" yaml:"-"`
+}
+
+func (d StackDependency) GetStack() string {
+	return d.Stack
+}
+
+// +kubebuilder:object:generate=false
+type ConfigurationObject interface {
+	client.Object
+	GetStacks() []string
+	IsWildcard() bool
+}
+
+type ConfigurationProperties struct {
+	Stacks           []string `json:"stacks"`
+	ApplyOnAllStacks bool     `json:"applyOnAllStacks"`
 }
 
 // +kubebuilder:object:generate=false

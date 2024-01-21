@@ -33,57 +33,6 @@ func MapObjectToReconcileRequests[T client.Object](items ...T) []reconcile.Reque
 	})
 }
 
-func Setup(mgr ctrl.Manager, platform Platform) error {
-	for _, rtype := range mgr.GetScheme().AllKnownTypes() {
-
-		object, ok := reflect.New(rtype).Interface().(client.Object)
-		if !ok {
-			continue
-		}
-
-		_, ok = object.(v1beta1.Dependent)
-		if !ok {
-			continue
-		}
-
-		mgr.GetLogger().Info("Detect stack dependency object, automatically index field", "type", rtype)
-		if err := mgr.GetFieldIndexer().
-			IndexField(context.Background(), object, "stack", func(object client.Object) []string {
-				return []string{object.(v1beta1.Dependent).GetStack()}
-			}); err != nil {
-			mgr.GetLogger().Error(err, "indexing stack field", "type", rtype)
-			return err
-		}
-
-		kinds, _, err := mgr.GetScheme().ObjectKinds(object)
-		if err != nil {
-			return err
-		}
-		us := &unstructured.Unstructured{}
-		us.SetGroupVersionKind(kinds[0])
-		if err := mgr.GetFieldIndexer().
-			IndexField(context.Background(), us, "stack", func(object client.Object) []string {
-				stack := object.(*unstructured.Unstructured).Object["spec"].(map[string]any)["stack"]
-				if stack == nil {
-					return []string{}
-				}
-				return []string{stack.(string)}
-			}); err != nil {
-			mgr.GetLogger().Error(err, "indexing stack field", "type", &unstructured.Unstructured{})
-			return err
-		}
-	}
-
-	wrappedMgr := NewDefaultManager(mgr, platform)
-	for _, initializer := range initializers {
-		if err := initializer(wrappedMgr); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 type Initializer func(mgr Manager) error
 
 var initializers = make([]Initializer, 0)
@@ -104,7 +53,7 @@ func WithOwn(v client.Object, opts ...builder.OwnsOption) reconcilerOption {
 
 func WithWatchConfigurationObject(t client.Object) reconcilerOption {
 	return func(mgr Manager, builder *builder.Builder, target client.Object) error {
-		builder.Watches(t, handler.EnqueueRequestsFromMapFunc(WatchUsingLabels(mgr, target)))
+		builder.Watches(t, handler.EnqueueRequestsFromMapFunc(WatchConfigurationObject(mgr, target)))
 
 		return nil
 	}
@@ -286,15 +235,19 @@ func WithWatchVersions(mgr Manager, builder *builder.Builder, target client.Obje
 	return nil
 }
 
-func WithIndex[T client.Object](name string, eval func(t T) string) Initializer {
+func WithIndex[T client.Object](name string, eval func(t T) []string) Initializer {
 	return func(mgr Manager) error {
 		var t T
 		t = reflect.New(reflect.TypeOf(t).Elem()).Interface().(T)
 		return mgr.GetFieldIndexer().
 			IndexField(context.Background(), t, name, func(rawObj client.Object) []string {
-				return []string{
-					eval(rawObj.(T)),
-				}
+				return eval(rawObj.(T))
 			})
 	}
+}
+
+func WithSimpleIndex[T client.Object](name string, eval func(t T) string) Initializer {
+	return WithIndex(name, func(t T) []string {
+		return []string{eval(t)}
+	})
 }

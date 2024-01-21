@@ -40,6 +40,7 @@ type ElasticSearchBasicAuthConfig struct {
 
 // ElasticSearchConfigurationSpec defines the desired state of ElasticSearchConfiguration
 type ElasticSearchConfigurationSpec struct {
+	ConfigurationProperties `json:",inline"`
 	// +optional
 	// +kubebuilder:validation:Enum:={http,https}
 	// +kubebuilder:validation:default:=https
@@ -71,6 +72,16 @@ type ElasticSearchConfiguration struct {
 	Spec   ElasticSearchConfigurationSpec   `json:"spec,omitempty"`
 	Status ElasticSearchConfigurationStatus `json:"status,omitempty"`
 }
+
+func (in *ElasticSearchConfiguration) GetStacks() []string {
+	return in.Spec.Stacks
+}
+
+func (in *ElasticSearchConfiguration) IsWildcard() bool {
+	return in.Spec.ApplyOnAllStacks
+}
+
+var _ ConfigurationObject = &ElasticSearchConfiguration{}
 
 //+kubebuilder:object:root=true
 

@@ -43,12 +43,12 @@ import (
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, streamProcessor *v1beta1.StreamProcessor) error {
 
-	brokerConfiguration, err := RequireLabelledConfig[*v1beta1.BrokerConfiguration](ctx, streamProcessor.Spec.Stack)
+	brokerConfiguration, err := RequireConfigurationObject[*v1beta1.BrokerConfiguration](ctx, streamProcessor.Spec.Stack)
 	if err != nil {
 		return errors.Wrap(err, "searching broker configuration")
 	}
 
-	elasticSearchConfiguration, err := RequireLabelledConfig[*v1beta1.ElasticSearchConfiguration](ctx, streamProcessor.Spec.Stack)
+	elasticSearchConfiguration, err := RequireConfigurationObject[*v1beta1.ElasticSearchConfiguration](ctx, streamProcessor.Spec.Stack)
 	if err != nil {
 		return errors.Wrap(err, "searching elasticsearch configuration")
 	}
@@ -65,7 +65,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, streamProcessor *v1beta1.Strea
 			Env("OPENSEARCH_BATCHING_PERIOD", streamProcessor.Spec.Batching.Period),
 		)
 	}
-	configuration, err := GetByLabel[*v1beta1.OpenTelemetryConfiguration](ctx, streamProcessor.Spec.Stack)
+	configuration, err := GetConfigurationObject[*v1beta1.OpenTelemetryConfiguration](ctx, streamProcessor.Spec.Stack)
 	if err != nil {
 		return err
 	}
@@ -116,7 +116,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, streamProcessor *v1beta1.Strea
 		"-r", "/resources/*.yaml",
 		"-t", "/templates/*.yaml",
 	}
-	isOpenTelemetryEnabled, err := IsEnabledByLabel[*v1beta1.OpenTelemetryConfiguration](ctx, streamProcessor.Spec.Stack)
+	isOpenTelemetryEnabled, err := HasConfigurationObject[*v1beta1.OpenTelemetryConfiguration](ctx, streamProcessor.Spec.Stack)
 	if err != nil {
 		return err
 	}

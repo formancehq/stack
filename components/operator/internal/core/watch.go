@@ -14,7 +14,7 @@ func WatchDependents(mgr Manager, t client.Object) func(ctx context.Context, obj
 
 		slice := reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(t)), 0, 0).Interface()
 
-		err := GetAllDependents(
+		err := GetAllStackDependencies(
 			NewContext(mgr.GetClient(), mgr.GetScheme(), mgr.GetPlatform(), ctx),
 			object.(v1beta1.Dependent).GetStack(), &slice)
 		if err != nil {
@@ -35,7 +35,7 @@ func Watch(mgr Manager, t client.Object) func(ctx context.Context, object client
 
 		slice := reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(t)), 0, 0).Interface()
 
-		err := GetAllDependents(
+		err := GetAllStackDependencies(
 			NewContext(mgr.GetClient(), mgr.GetScheme(), mgr.GetPlatform(), ctx),
 			object.(*v1beta1.Stack).Name, &slice)
 		if err != nil {

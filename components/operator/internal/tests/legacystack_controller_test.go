@@ -78,28 +78,6 @@ var _ = Describe("StackController (legacy)", func() {
 			Expect(Delete(configuration)).To(Succeed())
 			Expect(Delete(versions)).To(Succeed())
 		})
-		It("Should create the DatabaseConfiguration objects", func() {
-			Eventually(func(g Gomega) int {
-				list := &v1beta1.DatabaseConfigurationList{}
-				g.Expect(List(list)).To(Succeed())
-				return len(list.Items)
-			}).Should(BeNumerically("==", 5))
-		})
-		It("Should create the OpenTelemetryConfiguration object", func() {
-			Eventually(func(g Gomega) error {
-				return LoadResource("", stack.Name, &v1beta1.OpenTelemetryConfiguration{})
-			}).Should(Succeed())
-		})
-		It("Should create the BrokerConfiguration object", func() {
-			Eventually(func(g Gomega) error {
-				return LoadResource("", stack.Name, &v1beta1.BrokerConfiguration{})
-			}).Should(Succeed())
-		})
-		It("Should create the ElasticSearchConfiguration object", func() {
-			Eventually(func(g Gomega) error {
-				return LoadResource("", stack.Name, &v1beta1.ElasticSearchConfiguration{})
-			}).Should(Succeed())
-		})
 		It("Should create the Ledger object", func() {
 			Eventually(func(g Gomega) error {
 				return LoadResource("", stack.Name, &v1beta1.Ledger{})
@@ -153,11 +131,6 @@ var _ = Describe("StackController (legacy)", func() {
 		It("Should create a AuthClient object", func() {
 			Eventually(func(g Gomega) error {
 				return LoadResource("", fmt.Sprintf("%s-client0", stack.Name), &v1beta1.AuthClient{})
-			}).Should(Succeed())
-		})
-		It("Should create a RegistriesConfiguration object", func() {
-			Eventually(func(g Gomega) error {
-				return LoadResource("", stack.Name, &v1beta1.RegistriesConfiguration{})
 			}).Should(Succeed())
 		})
 	})

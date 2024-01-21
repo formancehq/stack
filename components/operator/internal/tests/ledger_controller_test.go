@@ -6,12 +6,10 @@ import (
 	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	. "github.com/formancehq/operator/internal/tests/internal"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
-	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
@@ -29,14 +27,13 @@ var _ = Describe("LedgerController", func() {
 				Spec:       v1beta1.StackSpec{},
 			}
 			databaseConfiguration = &v1beta1.DatabaseConfiguration{
-				ObjectMeta: metav1.ObjectMeta{
-					Name: uuid.NewString(),
-					Labels: map[string]string{
-						core.StackLabel:   stack.Name,
-						core.ServiceLabel: "any",
+				ObjectMeta: RandObjectMeta(),
+				Spec: v1beta1.DatabaseConfigurationSpec{
+					ConfigurationProperties: v1beta1.ConfigurationProperties{
+						Stacks: []string{stack.Name},
 					},
+					Service: "any",
 				},
-				Spec: v1beta1.DatabaseConfigurationSpec{},
 			}
 			ledger = &v1beta1.Ledger{
 				ObjectMeta: RandObjectMeta(),
@@ -80,13 +77,11 @@ var _ = Describe("LedgerController", func() {
 			var openTelemetryConfiguration *v1beta1.OpenTelemetryConfiguration
 			BeforeEach(func() {
 				openTelemetryConfiguration = &v1beta1.OpenTelemetryConfiguration{
-					ObjectMeta: metav1.ObjectMeta{
-						Name: uuid.NewString(),
-						Labels: map[string]string{
-							core.StackLabel: stack.Name,
-						},
-					},
+					ObjectMeta: RandObjectMeta(),
 					Spec: v1beta1.OpenTelemetryConfigurationSpec{
+						ConfigurationProperties: v1beta1.ConfigurationProperties{
+							Stacks: []string{stack.Name},
+						},
 						Traces: &v1beta1.TracesSpec{
 							Otlp: &v1beta1.OtlpSpec{
 								Endpoint: "otel-collector",
@@ -130,14 +125,11 @@ var _ = Describe("LedgerController", func() {
 			)
 			JustBeforeEach(func() {
 				brokerConfiguration = &v1beta1.BrokerConfiguration{
-					ObjectMeta: metav1.ObjectMeta{
-						Name: uuid.NewString(),
-						Labels: map[string]string{
-							core.StackLabel:   stack.Name,
-							core.ServiceLabel: "any",
-						},
-					},
+					ObjectMeta: RandObjectMeta(),
 					Spec: v1beta1.BrokerConfigurationSpec{
+						ConfigurationProperties: v1beta1.ConfigurationProperties{
+							Stacks: []string{stack.Name},
+						},
 						Nats: &v1beta1.BrokerNatsConfig{
 							URL: "nats://localhost:1234",
 						},

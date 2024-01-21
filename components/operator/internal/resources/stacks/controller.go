@@ -72,7 +72,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack) error {
 
 func init() {
 	Init(
-		WithIndex[*v1beta1.Stack](".spec.versionsFromFile", func(t *v1beta1.Stack) string {
+		WithSimpleIndex[*v1beta1.Stack](".spec.versionsFromFile", func(t *v1beta1.Stack) string {
 			return t.Spec.VersionsFromFile
 		}),
 		WithStdReconciler(Reconcile,

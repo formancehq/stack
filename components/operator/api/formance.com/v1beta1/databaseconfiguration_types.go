@@ -22,8 +22,10 @@ import (
 
 // DatabaseConfigurationSpec defines the desired state of DatabaseConfiguration
 type DatabaseConfigurationSpec struct {
-	Port int    `json:"port"`
-	Host string `json:"host"`
+	ConfigurationProperties `json:",inline"`
+	Service                 string `json:"service"`
+	Port                    int    `json:"port"`
+	Host                    string `json:"host"`
 	// +optional
 	Username string `json:"username"`
 	// +optional
@@ -50,6 +52,16 @@ type DatabaseConfiguration struct {
 	Spec   DatabaseConfigurationSpec   `json:"spec,omitempty"`
 	Status DatabaseConfigurationStatus `json:"status,omitempty"`
 }
+
+func (in *DatabaseConfiguration) GetStacks() []string {
+	return in.Spec.Stacks
+}
+
+func (in *DatabaseConfiguration) IsWildcard() bool {
+	return in.Spec.ApplyOnAllStacks
+}
+
+var _ ConfigurationObject = &DatabaseConfiguration{}
 
 //+kubebuilder:object:root=true
 

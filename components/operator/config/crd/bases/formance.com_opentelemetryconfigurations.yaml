@@ -36,6 +36,8 @@ spec:
             description: OpenTelemetryConfigurationSpec defines the desired state
               of OpenTelemetryConfiguration
             properties:
+              applyOnAllStacks:
+                type: boolean
               metrics:
                 properties:
                   otlp:
@@ -58,6 +60,10 @@ spec:
                         type: object
                     type: object
                 type: object
+              stacks:
+                items:
+                  type: string
+                type: array
               traces:
                 properties:
                   otlp:
@@ -80,6 +86,9 @@ spec:
                         type: object
                     type: object
                 type: object
+            required:
+            - applyOnAllStacks
+            - stacks
             type: object
           status:
             description: OpenTelemetryConfigurationStatus defines the observed state

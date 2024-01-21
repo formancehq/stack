@@ -69,6 +69,8 @@ spec:
                 type: string
               configuration:
                 properties:
+                  applyOnAllStacks:
+                    type: boolean
                   credentialsFromSecret:
                     type: string
                   database:
@@ -81,12 +83,21 @@ spec:
                     type: string
                   port:
                     type: integer
+                  service:
+                    type: string
+                  stacks:
+                    items:
+                      type: string
+                    type: array
                   username:
                     type: string
                 required:
+                - applyOnAllStacks
                 - database
                 - host
                 - port
+                - service
+                - stacks
                 type: object
               error:
                 type: string

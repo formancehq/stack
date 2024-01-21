@@ -7,7 +7,7 @@ import (
 
 func init() {
 	Init(
-		WithIndex[*v1beta1.VersionsHistory](".spec.module", func(t *v1beta1.VersionsHistory) string {
+		WithSimpleIndex[*v1beta1.VersionsHistory](".spec.module", func(t *v1beta1.VersionsHistory) string {
 			return t.Spec.Module
 		}),
 	)

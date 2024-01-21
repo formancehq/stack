@@ -9,7 +9,7 @@ import (
 )
 
 func TranslateImage(ctx core.Context, stackName, image string) (string, error) {
-	registries, err := core.GetByLabel[*v1beta1.RegistriesConfiguration](ctx, stackName)
+	registries, err := core.GetConfigurationObject[*v1beta1.RegistriesConfiguration](ctx, stackName)
 	if err != nil {
 		return "", err
 	}
