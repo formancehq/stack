@@ -102,9 +102,6 @@ spec:
                     items:
                       type: string
                     type: array
-                required:
-                - applyOnAllStacks
-                - stacks
                 type: object
               error:
                 type: string

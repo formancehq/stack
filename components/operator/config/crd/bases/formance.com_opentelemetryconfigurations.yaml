@@ -86,9 +86,6 @@ spec:
                         type: object
                     type: object
                 type: object
-            required:
-            - applyOnAllStacks
-            - stacks
             type: object
           status:
             description: OpenTelemetryConfigurationStatus defines the observed state

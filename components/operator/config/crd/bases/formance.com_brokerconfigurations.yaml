@@ -76,9 +76,6 @@ spec:
                 items:
                   type: string
                 type: array
-            required:
-            - applyOnAllStacks
-            - stacks
             type: object
           status:
             description: BrokerConfigurationStatus defines the observed state of BrokerConfig

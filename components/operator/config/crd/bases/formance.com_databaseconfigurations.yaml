@@ -56,11 +56,9 @@ spec:
               username:
                 type: string
             required:
-            - applyOnAllStacks
             - host
             - port
             - service
-            - stacks
             type: object
           status:
             description: DatabaseConfigurationStatus defines the observed state of

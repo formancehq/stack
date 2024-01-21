@@ -67,9 +67,6 @@ spec:
                   skipCertVerify:
                     type: boolean
                 type: object
-            required:
-            - applyOnAllStacks
-            - stacks
             type: object
           status:
             description: ElasticSearchConfigurationStatus defines the observed state

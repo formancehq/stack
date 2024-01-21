@@ -92,12 +92,10 @@ spec:
                   username:
                     type: string
                 required:
-                - applyOnAllStacks
                 - database
                 - host
                 - port
                 - service
-                - stacks
                 type: object
               error:
                 type: string

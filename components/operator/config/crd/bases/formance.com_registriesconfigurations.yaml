@@ -51,9 +51,7 @@ spec:
                   type: string
                 type: array
             required:
-            - applyOnAllStacks
             - registries
-            - stacks
             type: object
           status:
             description: RegistriesConfigurationStatus defines the observed state

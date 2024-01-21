@@ -216,6 +216,25 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 		return errors.Wrap(err, "creating elasticsearch configuration for service")
 	}
 
+	_, _, err = CreateOrUpdate[*v1beta1.SearchBatchingConfiguration](ctx, types.NamespacedName{
+		Name: configuration.Name,
+	}, func(t *v1beta1.SearchBatchingConfiguration) {
+		t.Spec = v1beta1.SearchBatchingConfigurationSpec{
+			ConfigurationProperties: v1beta1.ConfigurationProperties{
+				Stacks: Map(stacks.Items, func(from v1beta3.Stack) string {
+					return from.GetName()
+				}),
+			},
+			Batching: v1beta1.Batching{
+				Count:  configuration.Spec.Services.Search.Batching.Count,
+				Period: configuration.Spec.Services.Search.Batching.Period,
+			},
+		}
+	})
+	if err != nil {
+		return errors.Wrap(err, "creating registries configuration")
+	}
+
 	if len(configuration.Spec.Registries) > 0 {
 		_, _, err = CreateOrUpdate[*v1beta1.RegistriesConfiguration](ctx, types.NamespacedName{
 			Name: configuration.Name,

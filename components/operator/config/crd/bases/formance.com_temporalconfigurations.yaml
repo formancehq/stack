@@ -56,9 +56,7 @@ spec:
                 type: object
             required:
             - address
-            - applyOnAllStacks
             - namespace
-            - stacks
             - tls
             type: object
           status:

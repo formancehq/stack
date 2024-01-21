@@ -187,8 +187,10 @@ type ConfigurationObject interface {
 }
 
 type ConfigurationProperties struct {
-	Stacks           []string `json:"stacks"`
-	ApplyOnAllStacks bool     `json:"applyOnAllStacks"`
+	//+optional
+	Stacks []string `json:"stacks,omitempty"`
+	//+optional
+	ApplyOnAllStacks bool `json:"applyOnAllStacks,omitempty"`
 }
 
 // +kubebuilder:object:generate=false

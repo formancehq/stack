@@ -287,10 +287,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			Name: stack.Name,
 		}, func(t *v1beta1.Search) {
 			t.Spec.Stack = stack.Name
-			t.Spec.Batching = &v1beta1.Batching{
-				Count:  configuration.Spec.Services.Search.Batching.Count,
-				Period: configuration.Spec.Services.Search.Batching.Period,
-			}
 			if resourceProperties := configuration.Spec.Services.Search.BenthosResourceProperties; resourceProperties != nil {
 				t.Spec.StreamProcessor = &v1beta1.SearchStreamProcessorSpec{
 					ResourceRequirements: resourceRequirements(resourceProperties),

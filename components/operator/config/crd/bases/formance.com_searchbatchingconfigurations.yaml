@@ -53,9 +53,7 @@ spec:
                   type: string
                 type: array
             required:
-            - applyOnAllStacks
             - batching
-            - stacks
             type: object
           status:
             description: SearchBatchingConfigurationStatus defines the observed state
