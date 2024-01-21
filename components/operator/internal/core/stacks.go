@@ -80,7 +80,7 @@ func HasDependency(ctx Context, stackName string, to client.Object) (bool, error
 	return true, nil
 }
 
-func GetIfEnabled(ctx Context, stackName string, to client.Object) (bool, error) {
+func GetIfExists(ctx Context, stackName string, to client.Object) (bool, error) {
 	err := GetSingleDependency(ctx, stackName, to)
 	if err != nil && !errors.Is(err, ErrNotFound) {
 		return false, err

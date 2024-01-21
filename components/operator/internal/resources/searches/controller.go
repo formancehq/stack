@@ -80,13 +80,24 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 		return err
 	}
 
+	batching := search.Spec.Batching
+	if batching == nil {
+		batchingConfiguration, err := GetConfigurationObject[*v1beta1.SearchBatchingConfiguration](ctx, search.Spec.Stack)
+		if err != nil {
+			return err
+		}
+		if batchingConfiguration != nil {
+			batching = &batchingConfiguration.Spec.Batching
+		}
+	}
+
 	_, _, err = CreateOrUpdate[*v1beta1.StreamProcessor](ctx, types.NamespacedName{
 		Name: GetObjectName(stack.Name, "stream-processor"),
 	},
 		WithController[*v1beta1.StreamProcessor](ctx.GetScheme(), search),
 		func(t *v1beta1.StreamProcessor) {
 			t.Spec.Stack = stack.Name
-			t.Spec.Batching = search.Spec.Batching
+			t.Spec.Batching = batching
 			t.Spec.DevProperties = search.Spec.DevProperties
 			if streamProcessor := search.Spec.StreamProcessor; streamProcessor != nil {
 				t.Spec.ResourceProperties = search.Spec.StreamProcessor.ResourceRequirements

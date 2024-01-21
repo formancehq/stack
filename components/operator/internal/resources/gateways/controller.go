@@ -42,7 +42,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, gateway *v1beta1.Gateway, vers
 	}
 
 	auth := &v1beta1.Auth{}
-	ok, err := GetIfEnabled(ctx, stack.Name, auth)
+	ok, err := GetIfExists(ctx, stack.Name, auth)
 	if err != nil {
 		return err
 	}

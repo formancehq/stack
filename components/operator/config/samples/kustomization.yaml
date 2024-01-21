@@ -29,4 +29,5 @@ resources:
 - formance.com_v1beta1_temporalconfiguration.yaml
 - formance.com_v1beta1_versionshistory.yaml
 - formance.com_v1beta1_versions.yaml
+- formance.com_v1beta1_searchbatchingconfiguration.yaml
 #+kubebuilder:scaffold:manifestskustomizesamples

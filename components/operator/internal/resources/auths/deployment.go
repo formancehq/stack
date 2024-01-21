@@ -103,7 +103,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, dat
 
 func url(ctx Context, stackName string) (string, error) {
 	gateway := &v1beta1.Gateway{}
-	ok, err := GetIfEnabled(ctx, stackName, gateway)
+	ok, err := GetIfExists(ctx, stackName, gateway)
 	if err != nil {
 		return "", err
 	}

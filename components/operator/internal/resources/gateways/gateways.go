@@ -18,7 +18,7 @@ func EnvVarsIfEnabled(ctx core.Context, stackName string) ([]v1.EnvVar, error) {
 
 func EnvVarsIfEnabledWithPrefix(ctx core.Context, stackName, prefix string) ([]v1.EnvVar, error) {
 	gateway := &v1beta1.Gateway{}
-	ok, err := core.GetIfEnabled(ctx, stackName, gateway)
+	ok, err := core.GetIfExists(ctx, stackName, gateway)
 	if err != nil {
 		return nil, err
 	}
