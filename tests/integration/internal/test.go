@@ -8,6 +8,7 @@ import (
 	"github.com/xo/dburl"
 	"net/http"
 	"net/http/httptest"
+	"os"
 )
 
 type routing struct {
@@ -83,8 +84,11 @@ func (test *Test) createDatabase(ctx context.Context, name string) error {
 }
 
 func (test *Test) dropDatabase(ctx context.Context, name string) error {
-	_, err := test.env.sqlConn.Exec(ctx, fmt.Sprintf(`DROP DATABASE "%s-%s";`, test.id, name))
-	return err
+	if os.Getenv("NO_CLEANUP") != "true" {
+		_, err := test.env.sqlConn.Exec(ctx, fmt.Sprintf(`DROP DATABASE "%s-%s";`, test.id, name))
+		return err
+	}
+	return nil
 }
 
 func (test *Test) registerServiceToRoute(name string, routing routing) {

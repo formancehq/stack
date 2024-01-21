@@ -355,4 +355,51 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			})
 		})
 	})
+
+	When("Inserting one transaction in past and one in the future", func() {
+		now := time.Now()
+		BeforeEach(func() {
+			_, err := Client().Ledger.V2CreateTransaction(TestContext(), operations.V2CreateTransactionRequest{
+				V2PostTransaction: shared.V2PostTransaction{
+					Postings: []shared.V2Posting{{
+						Amount:      big.NewInt(100),
+						Asset:       "USD",
+						Destination: "foo",
+						Source:      "world",
+					}},
+					Timestamp: pointer.For(now.Add(-12 * time.Hour)),
+					Metadata:  map[string]string{},
+				},
+				Ledger: "default",
+			})
+			Expect(err).To(Succeed())
+
+			_, err = Client().Ledger.V2CreateTransaction(TestContext(), operations.V2CreateTransactionRequest{
+				V2PostTransaction: shared.V2PostTransaction{
+					Postings: []shared.V2Posting{{
+						Amount:      big.NewInt(100),
+						Asset:       "USD",
+						Destination: "foo",
+						Source:      "world",
+					}},
+					Timestamp: pointer.For(now.Add(12 * time.Hour)),
+					Metadata:  map[string]string{},
+				},
+				Ledger: "default",
+			})
+			Expect(err).To(Succeed())
+		})
+		When("getting account in the present", func() {
+			It("should ignore future transaction", func() {
+				accountResponse, err := Client().Ledger.V2GetAccount(TestContext(), operations.V2GetAccountRequest{
+					Address: "foo",
+					Expand:  pointer.For("volumes"),
+					Ledger:  "default",
+					Pit:     pointer.For(time.Now()),
+				})
+				Expect(err).To(Succeed())
+				Expect(accountResponse.V2AccountResponse.Data.Volumes["USD"].Balance).To(Equal(big.NewInt(100)))
+			})
+		})
+	})
 })
