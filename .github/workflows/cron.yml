@@ -1,4 +1,5 @@
 on:
+  workflow_dispatch:
   schedule:
     - cron:  '30 4 * * *'
 
@@ -18,11 +19,21 @@ jobs:
             registry: ghcr.io
             username: "NumaryBot"
             password: ${{ secrets.NUMARY_GITHUB_TOKEN }}
-        - name: Build and Push
+        - name: Build and Push Base
           uses: docker/build-push-action@v5
           with:
             platforms: linux/amd64,linux/arm64
             push: true
             context: .
             file: ./base.Dockerfile
+            target: base
             tags: ghcr.io/formancehq/base:22.04
+        - name: Build and Push Scratch
+          uses: docker/build-push-action@v5
+          with:
+            platforms: linux/amd64,linux/arm64
+            push: true
+            context: .
+            file: ./base.Dockerfile
+            target: scratch
+            tags: ghcr.io/formancehq/base:scratch
