@@ -78,6 +78,8 @@ spec:
                       value: multipod-disabled-one-service
                     - name: STACK_URL
                       value: http://example.net
+                    - name: AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
@@ -86,8 +88,6 @@ spec:
                       value: kafka:1234
                     - name: AUTH_ENABLED
                       value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
                     - name: POSTGRES_DATABASE_NAME
                       value: $(POSTGRES_DATABASE)
                     - name: CONFIG_ENCRYPTION_KEY

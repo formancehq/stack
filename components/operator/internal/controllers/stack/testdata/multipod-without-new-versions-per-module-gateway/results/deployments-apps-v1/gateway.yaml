@@ -50,6 +50,8 @@ spec:
                       value: multipod-without-new-versions-per-module-gateway
                     - name: STACK_URL
                       value: http://example.net
+                    - name: AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED

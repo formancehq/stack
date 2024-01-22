@@ -77,6 +77,8 @@ spec:
                       value: monopod-ledgerv1
                     - name: STACK_URL
                       value: http://example.net
+                    - name: AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: CONFIG
                       value: /config/config/config.yaml
                     - name: DELEGATED_CLIENT_SECRET
@@ -146,6 +148,8 @@ spec:
                       value: monopod-ledgerv1
                     - name: STACK_URL
                       value: http://example.net
+                    - name: AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: API_URL
                       value: http://gateway:8000
                     - name: ENCRYPTION_KEY
@@ -211,6 +215,8 @@ spec:
                       value: monopod-ledgerv1
                     - name: STACK_URL
                       value: http://example.net
+                    - name: AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
@@ -280,6 +286,8 @@ spec:
                       value: monopod-ledgerv1
                     - name: NUMARY_STACK_URL
                       value: http://example.net
+                    - name: NUMARY_AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: NUMARY_STORAGE_DRIVER
                       value: postgres
                     - name: NUMARY_PUBLISHER_TOPIC_MAPPING
@@ -292,8 +300,6 @@ spec:
                       value: kafka:1234
                     - name: NUMARY_AUTH_ENABLED
                       value: "true"
-                    - name: NUMARY_AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
                     - name: NUMARY_LOCK_STRATEGY
                       value: memory
                     - name: NUMARY_STORAGE_POSTGRES_CONN_STRING
@@ -365,6 +371,8 @@ spec:
                       value: monopod-ledgerv1
                     - name: STACK_URL
                       value: http://example.net
+                    - name: AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: POSTGRES_DSN
                       value: $(POSTGRES_URI)
                     - name: TEMPORAL_TASK_QUEUE
@@ -377,8 +385,6 @@ spec:
                       value: mocked-secret
                     - name: AUTH_ENABLED
                       value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
                     - name: TEMPORAL_SSL_CLIENT_KEY
                     - name: TEMPORAL_SSL_CLIENT_CERT
                   image: ghcr.io/formancehq/orchestration:latest
@@ -450,6 +456,8 @@ spec:
                       value: monopod-ledgerv1
                     - name: STACK_URL
                       value: http://example.net
+                    - name: AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: POSTGRES_DSN
                       value: $(POSTGRES_URI)
                     - name: TEMPORAL_TASK_QUEUE
@@ -462,8 +470,6 @@ spec:
                       value: mocked-secret
                     - name: AUTH_ENABLED
                       value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
                     - name: TEMPORAL_SSL_CLIENT_KEY
                     - name: TEMPORAL_SSL_CLIENT_CERT
                     - name: BROKER
@@ -532,6 +538,8 @@ spec:
                       value: monopod-ledgerv1
                     - name: STACK_URL
                       value: http://example.net
+                    - name: AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
@@ -540,8 +548,6 @@ spec:
                       value: kafka:1234
                     - name: AUTH_ENABLED
                       value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
                     - name: POSTGRES_DATABASE_NAME
                       value: $(POSTGRES_DATABASE)
                     - name: CONFIG_ENCRYPTION_KEY
@@ -619,6 +625,8 @@ spec:
                       value: monopod-ledgerv1
                     - name: STACK_URL
                       value: http://example.net
+                    - name: AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
@@ -627,8 +635,6 @@ spec:
                       value: kafka:1234
                     - name: AUTH_ENABLED
                       value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
                     - name: POSTGRES_DATABASE_NAME
                       value: $(POSTGRES_DATABASE)
                     - name: CONFIG_ENCRYPTION_KEY
@@ -689,6 +695,8 @@ spec:
                       value: monopod-ledgerv1
                     - name: STACK_URL
                       value: http://example.net
+                    - name: AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: OPENSEARCH_URL
                       value: http://elasticsearch:9200
                     - name: OPENSEARCH_BATCHING_COUNT
@@ -714,8 +722,6 @@ spec:
                       value: "true"
                     - name: AUTH_ENABLED
                       value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
                     - name: ES_INDICES
                       value: stacks
                   image: ghcr.io/formancehq/search:latest
@@ -783,6 +789,8 @@ spec:
                       value: monopod-ledgerv1
                     - name: STACK_URL
                       value: http://example.net
+                    - name: AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: OPENSEARCH_URL
                       value: http://elasticsearch:9200
                     - name: OPENSEARCH_BATCHING_COUNT
@@ -874,6 +882,8 @@ spec:
                       value: monopod-ledgerv1
                     - name: STACK_URL
                       value: http://example.net
+                    - name: AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: ORGANIZATION_ID
                       value: monopod
                     - name: STACK_ID
@@ -939,6 +949,8 @@ spec:
                       value: monopod-ledgerv1
                     - name: STACK_URL
                       value: http://example.net
+                    - name: AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
                     - name: STACK_CLIENT_ID
@@ -947,8 +959,6 @@ spec:
                       value: mocked-secret
                     - name: AUTH_ENABLED
                       value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
                   image: ghcr.io/formancehq/wallets:latest
                   imagePullPolicy: Always
                   livenessProbe:
@@ -1018,6 +1028,8 @@ spec:
                       value: monopod-ledgerv1
                     - name: STACK_URL
                       value: http://example.net
+                    - name: AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
@@ -1028,8 +1040,6 @@ spec:
                       value: $(POSTGRES_URI)
                     - name: AUTH_ENABLED
                       value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
                   image: ghcr.io/formancehq/webhooks:latest
                   imagePullPolicy: Always
                   livenessProbe:
@@ -1101,6 +1111,8 @@ spec:
                       value: monopod-ledgerv1
                     - name: STACK_URL
                       value: http://example.net
+                    - name: AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
@@ -1111,8 +1123,6 @@ spec:
                       value: $(POSTGRES_URI)
                     - name: AUTH_ENABLED
                       value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
                     - name: KAFKA_TOPICS
                       value: monopod-ledgerv1-ledger monopod-ledgerv1-payments
                   image: ghcr.io/formancehq/webhooks:latest

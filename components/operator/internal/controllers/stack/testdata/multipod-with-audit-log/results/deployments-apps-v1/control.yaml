@@ -42,6 +42,8 @@ spec:
                       value: multipod-with-audit-log
                     - name: STACK_URL
                       value: http://example.net
+                    - name: AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: API_URL
                       value: http://gateway:8000
                     - name: ENCRYPTION_KEY

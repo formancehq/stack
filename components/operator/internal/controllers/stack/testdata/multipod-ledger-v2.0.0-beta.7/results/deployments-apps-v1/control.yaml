@@ -59,6 +59,8 @@ spec:
                       value: multipod-ledger-v2-0-0-beta-7
                     - name: STACK_URL
                       value: http://gateway:8000
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: API_URL
                       value: http://gateway:8000
                     - name: ENCRYPTION_KEY

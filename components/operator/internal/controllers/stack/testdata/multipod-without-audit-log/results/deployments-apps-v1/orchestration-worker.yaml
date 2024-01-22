@@ -58,6 +58,8 @@ spec:
                       value: multipod-without-audit-log
                     - name: STACK_URL
                       value: http://example.net
+                    - name: AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: POSTGRES_DSN
                       value: $(POSTGRES_URI)
                     - name: TEMPORAL_TASK_QUEUE
@@ -70,8 +72,6 @@ spec:
                       value: mocked-secret
                     - name: AUTH_ENABLED
                       value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
                     - name: TEMPORAL_SSL_CLIENT_KEY
                     - name: TEMPORAL_SSL_CLIENT_CERT
                     - name: BROKER

@@ -61,6 +61,8 @@ spec:
                       value: multipod-ledger-v2-0-0-beta-7
                     - name: STACK_URL
                       value: http://gateway:8000
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
                     - name: STACK_CLIENT_ID
@@ -69,8 +71,6 @@ spec:
                       value: mocked-secret
                     - name: AUTH_ENABLED
                       value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
                   image: ghcr.io/formancehq/wallets:latest
                   imagePullPolicy: Always
                   livenessProbe:

@@ -562,10 +562,12 @@ func (r *serviceReconciler) createContainer(ctx ContainerResolutionConfiguration
 	case -1:
 		env = env.Append(
 			Env(fmt.Sprintf("%sSTACK_URL", r.service.EnvPrefix), r.Stack.PublicURL()),
+			Env(fmt.Sprintf("%sAUTH_ISSUER", r.service.EnvPrefix), fmt.Sprintf("%s/api/auth", r.Stack.PublicURL())),
 		)
 	default:
 		env = env.Append(
 			Env(fmt.Sprintf("%sSTACK_URL", r.service.EnvPrefix), r.Stack.URL()),
+			Env(fmt.Sprintf("%sAUTH_ISSUER", r.service.EnvPrefix), fmt.Sprintf("%s/api/auth", r.Stack.URL())),
 		)
 	}
 

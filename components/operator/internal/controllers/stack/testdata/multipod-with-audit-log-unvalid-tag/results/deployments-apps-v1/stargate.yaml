@@ -44,6 +44,8 @@ spec:
                       value: multipod-with-audit-log-unvalid-tag
                     - name: STACK_URL
                       value: http://example.net
+                    - name: AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: ORGANIZATION_ID
                       value: multipod
                     - name: STACK_ID

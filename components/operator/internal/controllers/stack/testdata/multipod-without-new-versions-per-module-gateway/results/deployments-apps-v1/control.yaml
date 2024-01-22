@@ -42,6 +42,8 @@ spec:
                       value: multipod-without-new-versions-per-module-gateway
                     - name: STACK_URL
                       value: http://example.net
+                    - name: AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: API_URL
                       value: http://gateway:8000
                     - name: ENCRYPTION_KEY

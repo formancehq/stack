@@ -77,6 +77,8 @@ spec:
                       value: multipod-latest-with-gateway-fallback
                     - name: STACK_URL
                       value: http://example.net
+                    - name: AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
@@ -87,8 +89,6 @@ spec:
                       value: $(POSTGRES_URI)
                     - name: AUTH_ENABLED
                       value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
                     - name: KAFKA_TOPICS
                       value: multipod-latest-with-gateway-fallback-ledger multipod-latest-with-gateway-fallback-payments
                   image: ghcr.io/formancehq/webhooks:latest

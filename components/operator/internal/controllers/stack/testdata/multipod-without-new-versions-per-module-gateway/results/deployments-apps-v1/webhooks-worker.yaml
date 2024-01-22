@@ -60,6 +60,8 @@ spec:
                       value: multipod-without-new-versions-per-module-gateway
                     - name: STACK_URL
                       value: http://example.net
+                    - name: AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
@@ -70,8 +72,6 @@ spec:
                       value: $(POSTGRES_URI)
                     - name: AUTH_ENABLED
                       value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
                     - name: KAFKA_TOPICS
                       value: multipod-without-new-versions-per-module-gateway-ledger multipod-without-new-versions-per-module-gateway-payments
                   image: ghcr.io/formancehq/webhooks:latest
