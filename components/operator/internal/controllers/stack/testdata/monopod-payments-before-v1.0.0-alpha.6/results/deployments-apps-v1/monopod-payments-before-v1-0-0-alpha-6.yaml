@@ -69,14 +69,14 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: auth
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
                     - name: CONFIG
                       value: /config/config/config.yaml
                     - name: DELEGATED_CLIENT_SECRET
@@ -138,14 +138,14 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: control
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
                     - name: API_URL
                       value: http://gateway:8000
                     - name: ENCRYPTION_KEY
@@ -203,14 +203,14 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: gateway
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://example.net
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
@@ -272,14 +272,14 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: ledger
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
                     - name: STORAGE_DRIVER
                       value: postgres
                     - name: PUBLISHER_TOPIC_MAPPING
@@ -355,14 +355,14 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: orchestration
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
                     - name: POSTGRES_DSN
                       value: $(POSTGRES_URI)
                     - name: TEMPORAL_TASK_QUEUE
@@ -440,14 +440,14 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: orchestration-worker
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
                     - name: POSTGRES_DSN
                       value: $(POSTGRES_URI)
                     - name: TEMPORAL_TASK_QUEUE
@@ -519,14 +519,14 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: payments
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
@@ -589,14 +589,14 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: search
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
                     - name: OPENSEARCH_URL
                       value: http://elasticsearch:9200
                     - name: OPENSEARCH_BATCHING_COUNT
@@ -683,14 +683,14 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: search-benthos
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
                     - name: OPENSEARCH_URL
                       value: http://elasticsearch:9200
                     - name: OPENSEARCH_BATCHING_COUNT
@@ -774,14 +774,14 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: stargate
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
                     - name: ORGANIZATION_ID
                       value: monopod
                     - name: STACK_ID
@@ -839,14 +839,14 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: wallets
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
                     - name: STACK_CLIENT_ID
@@ -918,14 +918,14 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: webhooks
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
@@ -1001,14 +1001,14 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: webhooks-worker
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED

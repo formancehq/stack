@@ -53,14 +53,14 @@ spec:
                       value: "true"
                     - name: DEV
                       value: "true"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: wallets
                     - name: STACK
                       value: multipod-debug
+                    - name: STACK_URL
+                      value: http://gateway:8000
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
                     - name: STACK_CLIENT_ID

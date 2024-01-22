@@ -551,10 +551,19 @@ func (r *serviceReconciler) createContainer(ctx ContainerResolutionConfiguration
 			Env(fmt.Sprintf("%sDEV", r.service.EnvPrefix), fmt.Sprintf("%v", r.Stack.Spec.Dev)),
 			// TODO: the stack url is a full url, we can target the gateway. Need to find how to generalize this
 			// as the gateway is a component like another
-			Env(fmt.Sprintf("%sSTACK_URL", r.service.EnvPrefix), r.Stack.URL()),
 			Env(fmt.Sprintf("%sSTACK_PUBLIC_URL", r.service.EnvPrefix), r.Stack.PublicURL()),
 			Env(fmt.Sprintf("%sOTEL_SERVICE_NAME", r.service.EnvPrefix), serviceName),
 			Env("STACK", r.Stack.Name),
+		)
+	}
+
+	if serviceName == "gateway" && r.Versions.Spec.Gateway < "v2.0.0-alpha" {
+		env = env.Append(
+			Env(fmt.Sprintf("%sSTACK_URL", r.service.EnvPrefix), r.Stack.PublicURL()),
+		)
+	} else {
+		env = env.Append(
+			Env(fmt.Sprintf("%sSTACK_URL", r.service.EnvPrefix), r.Stack.URL()),
 		)
 	}
 
