@@ -62,35 +62,47 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 			name:   "reconciliation",
 		},
 	} {
-		_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-host", configuration.Name, cfg.name),
+		_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-database-host", configuration.Name, cfg.name),
 			fmt.Sprintf("databases.%s.host", cfg.name), cfg.config.Host, stackNames...)
 		if err != nil {
 			return err
 		}
-		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-port", configuration.Name, cfg.name),
-			fmt.Sprintf("databases.%s.port", cfg.name), cfg.config.Port, stackNames...)
-		if err != nil {
-			return err
+
+		if cfg.config.Port != 0 && cfg.config.Port != 5432 {
+			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-database-port", configuration.Name, cfg.name),
+				fmt.Sprintf("databases.%s.port", cfg.name), cfg.config.Port, stackNames...)
+			if err != nil {
+				return err
+			}
 		}
-		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-username", configuration.Name, cfg.name),
-			fmt.Sprintf("databases.%s.username", cfg.name), cfg.config.Username, stackNames...)
-		if err != nil {
-			return err
+
+		if cfg.config.Username != "" {
+			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-database-username", configuration.Name, cfg.name),
+				fmt.Sprintf("databases.%s.username", cfg.name), cfg.config.Username, stackNames...)
+			if err != nil {
+				return err
+			}
 		}
-		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-password", configuration.Name, cfg.name),
-			fmt.Sprintf("databases.%s.password", cfg.name), cfg.config.Password, stackNames...)
-		if err != nil {
-			return err
+		if cfg.config.Password != "" {
+			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-database-password", configuration.Name, cfg.name),
+				fmt.Sprintf("databases.%s.password", cfg.name), cfg.config.Password, stackNames...)
+			if err != nil {
+				return err
+			}
 		}
-		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-secret", configuration.Name, cfg.name),
-			fmt.Sprintf("databases.%s.secret", cfg.name), cfg.config.CredentialsFromSecret, stackNames...)
-		if err != nil {
-			return err
+		if cfg.config.CredentialsFromSecret != "" {
+			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-database-secret", configuration.Name, cfg.name),
+				fmt.Sprintf("databases.%s.secret", cfg.name), cfg.config.CredentialsFromSecret, stackNames...)
+			if err != nil {
+				return err
+			}
 		}
-		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-ssl", configuration.Name, cfg.name),
-			fmt.Sprintf("databases.%s.ssl.disable", cfg.name), cfg.config.DisableSSLMode, stackNames...)
-		if err != nil {
-			return err
+		if cfg.config.DisableSSLMode {
+			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-database-ssl", configuration.Name, cfg.name),
+				fmt.Sprintf("databases.%s.ssl.disable", cfg.name), cfg.config.DisableSSLMode, stackNames...)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
@@ -129,51 +141,72 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 		}
 	}
 
-	_, _, err := CreateOrUpdate[*v1beta1.BrokerConfiguration](ctx, types.NamespacedName{
-		Name: configuration.Name,
-	}, func(t *v1beta1.BrokerConfiguration) {
-		t.Spec = v1beta1.BrokerConfigurationSpec{
-			ConfigurationProperties: v1beta1.ConfigurationProperties{
-				Stacks: Map(stacks.Items, func(from v1beta3.Stack) string {
-					return from.GetName()
-				}),
-			},
-			Kafka: func() *v1beta1.BrokerKafkaConfig {
-				if configuration.Spec.Broker.Kafka == nil {
-					return nil
-				}
-				return &v1beta1.BrokerKafkaConfig{
-					Brokers: configuration.Spec.Broker.Kafka.Brokers,
-					TLS:     configuration.Spec.Broker.Kafka.TLS,
-					SASL: func() *v1beta1.BrokerKafkaSASLConfig {
-						if configuration.Spec.Broker.Kafka.SASL == nil {
-							return nil
-						}
-						return &v1beta1.BrokerKafkaSASLConfig{
-							Username:     configuration.Spec.Broker.Kafka.SASL.Username,
-							Password:     configuration.Spec.Broker.Kafka.SASL.Password,
-							Mechanism:    configuration.Spec.Broker.Kafka.SASL.Mechanism,
-							ScramSHASize: configuration.Spec.Broker.Kafka.SASL.ScramSHASize,
-						}
-					}(),
-				}
-			}(),
-			Nats: func() *v1beta1.BrokerNatsConfig {
-				if configuration.Spec.Broker.Nats == nil {
-					return nil
-				}
-				return &v1beta1.BrokerNatsConfig{
-					URL:      configuration.Spec.Broker.Nats.URL,
-					Replicas: configuration.Spec.Broker.Nats.Replicas,
-				}
-			}(),
+	if configuration.Spec.Broker.Kafka != nil {
+		_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-broker-kind", configuration.Name),
+			"broker.kind", "kafka", stackNames...)
+		if err != nil {
+			return err
 		}
-	})
-	if err != nil {
-		return errors.Wrap(err, "creating broker configuration for service")
+
+		if len(configuration.Spec.Broker.Kafka.Brokers) > 0 {
+			_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-broker-kind", configuration.Name),
+				"broker.kafka.endpoints", strings.Join(configuration.Spec.Broker.Kafka.Brokers, ","), stackNames...)
+			if err != nil {
+				return err
+			}
+		}
+
+		if configuration.Spec.Broker.Kafka.TLS {
+			_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-broker-ssl", configuration.Name),
+				"broker.kafka.ssl.enabled", "true", stackNames...)
+			if err != nil {
+				return err
+			}
+		}
+
+		if sasl := configuration.Spec.Broker.Kafka.SASL; sasl != nil {
+			_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-broker-kafka-username", configuration.Name),
+				"broker.kafka.sasl.username", sasl.Username, stackNames...)
+			if err != nil {
+				return err
+			}
+			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-broker-kafka-password", configuration.Name),
+				"broker.kafka.sasl.password", sasl.Password, stackNames...)
+			if err != nil {
+				return err
+			}
+			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-broker-kafka-mechanism", configuration.Name),
+				"broker.kafka.sasl.mechanism", sasl.Mechanism, stackNames...)
+			if err != nil {
+				return err
+			}
+			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-broker-kafka-scram-sha-size", configuration.Name),
+				"broker.kafka.sasl.scram-sha-size", sasl.ScramSHASize, stackNames...)
+			if err != nil {
+				return err
+			}
+		}
+	} else if configuration.Spec.Broker.Nats != nil {
+		_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-broker-kind", configuration.Name),
+			"broker.kind", "nats", stackNames...)
+		if err != nil {
+			return err
+		}
+
+		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-broker-nats-url", configuration.Name),
+			"broker.nats.endpoint", configuration.Spec.Broker.Nats.URL, stackNames...)
+		if err != nil {
+			return err
+		}
+
+		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-broker-nats-replicas", configuration.Name),
+			"broker.nats.replicas", configuration.Spec.Broker.Nats.Replicas, stackNames...)
+		if err != nil {
+			return err
+		}
 	}
 
-	_, _, err = CreateOrUpdate[*v1beta1.TemporalConfiguration](ctx, types.NamespacedName{
+	_, _, err := CreateOrUpdate[*v1beta1.TemporalConfiguration](ctx, types.NamespacedName{
 		Name: configuration.Name,
 	}, func(t *v1beta1.TemporalConfiguration) {
 		t.Spec = v1beta1.TemporalConfigurationSpec{

@@ -3,6 +3,7 @@ package tests_test
 import (
 	"fmt"
 	"github.com/formancehq/operator/internal/resources/databases"
+	"github.com/formancehq/operator/internal/resources/settings"
 	"github.com/google/uuid"
 
 	. "github.com/formancehq/operator/internal/tests/internal"
@@ -17,14 +18,15 @@ import (
 var _ = Describe("OrchestrationController", func() {
 	Context("When creating a Auth object", func() {
 		var (
-			stack                 *v1beta1.Stack
-			gateway               *v1beta1.Gateway
-			auth                  *v1beta1.Auth
-			ledger                *v1beta1.Ledger
-			databaseHostSetting   *v1beta1.Settings
-			orchestration         *v1beta1.Orchestration
-			brokerConfiguration   *v1beta1.BrokerConfiguration
-			temporalConfiguration *v1beta1.TemporalConfiguration
+			stack                      *v1beta1.Stack
+			gateway                    *v1beta1.Gateway
+			auth                       *v1beta1.Auth
+			ledger                     *v1beta1.Ledger
+			databaseHostSetting        *v1beta1.Settings
+			orchestration              *v1beta1.Orchestration
+			brokerKindSettings         *v1beta1.Settings
+			brokerNatsEndpointSettings *v1beta1.Settings
+			temporalConfiguration      *v1beta1.TemporalConfiguration
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -73,24 +75,18 @@ var _ = Describe("OrchestrationController", func() {
 					},
 				},
 			}
-			brokerConfiguration = &v1beta1.BrokerConfiguration{
-				ObjectMeta: RandObjectMeta(),
-				Spec: v1beta1.BrokerConfigurationSpec{
-					ConfigurationProperties: v1beta1.ConfigurationProperties{
-						Stacks: []string{stack.Name},
-					},
-					Nats: &v1beta1.BrokerNatsConfig{},
-				},
-			}
+			brokerKindSettings = settings.New(uuid.NewString(), "broker.kind", "nats", stack.Name)
+			brokerNatsEndpointSettings = settings.New(uuid.NewString(), "broker.nats.endpoint", "localhost:1234", stack.Name)
 		})
 		JustBeforeEach(func() {
+			Expect(Create(brokerKindSettings)).To(BeNil())
+			Expect(Create(brokerNatsEndpointSettings)).To(BeNil())
 			Expect(Create(stack)).To(Succeed())
 			Expect(Create(gateway)).To(Succeed())
 			Expect(Create(databaseHostSetting)).To(Succeed())
 			Expect(Create(auth)).To(Succeed())
 			Expect(Create(ledger)).To(Succeed())
 			Expect(Create(orchestration)).To(Succeed())
-			Expect(Create(brokerConfiguration)).To(Succeed())
 			Expect(Create(temporalConfiguration)).To(Succeed())
 		})
 		AfterEach(func() {
@@ -100,7 +96,8 @@ var _ = Describe("OrchestrationController", func() {
 			Expect(Delete(stack)).To(Succeed())
 			Expect(Delete(ledger)).To(Succeed())
 			Expect(Delete(orchestration)).To(Succeed())
-			Expect(Delete(brokerConfiguration)).To(Succeed())
+			Expect(Delete(brokerNatsEndpointSettings)).To(Succeed())
+			Expect(Delete(brokerKindSettings)).To(Succeed())
 			Expect(Delete(temporalConfiguration)).To(Succeed())
 		})
 		It("Should create a deployment", func() {

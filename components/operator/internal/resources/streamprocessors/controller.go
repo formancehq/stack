@@ -19,6 +19,7 @@ package streamprocessors
 import (
 	"embed"
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/brokertopics"
 	"sort"
 	"strings"
 
@@ -43,7 +44,7 @@ import (
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, streamProcessor *v1beta1.StreamProcessor) error {
 
-	brokerConfiguration, err := RequireConfigurationObject[*v1beta1.BrokerConfiguration](ctx, streamProcessor.Spec.Stack)
+	brokerConfiguration, err := brokertopics.FindBrokerConfiguration(ctx, stack)
 	if err != nil {
 		return errors.Wrap(err, "searching broker configuration")
 	}
@@ -72,21 +73,21 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, streamProcessor *v1beta1.Strea
 	if configuration != nil {
 		env = append(env, opentelemetryconfigurations.GetEnvVars(configuration, "gateway")...)
 	}
-	if brokerConfiguration.Spec.Kafka != nil {
-		env = append(env, Env("KAFKA_ADDRESS", strings.Join(brokerConfiguration.Spec.Kafka.Brokers, ",")))
-		if brokerConfiguration.Spec.Kafka.TLS {
+	if brokerConfiguration.Kafka != nil {
+		env = append(env, Env("KAFKA_ADDRESS", strings.Join(brokerConfiguration.Kafka.Brokers, ",")))
+		if brokerConfiguration.Kafka.TLS {
 			env = append(env, Env("KAFKA_TLS_ENABLED", "true"))
 		}
-		if brokerConfiguration.Spec.Kafka.SASL != nil {
+		if brokerConfiguration.Kafka.SASL != nil {
 			env = append(env,
-				Env("KAFKA_SASL_USERNAME", brokerConfiguration.Spec.Kafka.SASL.Username),
-				Env("KAFKA_SASL_PASSWORD", brokerConfiguration.Spec.Kafka.SASL.Password),
-				Env("KAFKA_SASL_MECHANISM", brokerConfiguration.Spec.Kafka.SASL.Mechanism),
+				Env("KAFKA_SASL_USERNAME", brokerConfiguration.Kafka.SASL.Username),
+				Env("KAFKA_SASL_PASSWORD", brokerConfiguration.Kafka.SASL.Password),
+				Env("KAFKA_SASL_MECHANISM", brokerConfiguration.Kafka.SASL.Mechanism),
 			)
 		}
 	}
-	if brokerConfiguration.Spec.Nats != nil {
-		env = append(env, Env("NATS_URL", brokerConfiguration.Spec.Nats.URL))
+	if brokerConfiguration.Nats != nil {
+		env = append(env, Env("NATS_URL", brokerConfiguration.Nats.URL))
 	}
 	if elasticSearchConfiguration.Spec.BasicAuth != nil {
 		env = append(env, Env("BASIC_AUTH_ENABLED", "true"))
@@ -276,7 +277,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, streamProcessor *v1beta1.Strea
 func init() {
 	Init(
 		WithStackDependencyReconciler(Reconcile,
-			WithWatchConfigurationObject(&v1beta1.BrokerConfiguration{}),
+			WithWatchConfigurationObject(&v1beta1.Settings{}),
 			WithWatchConfigurationObject(&v1beta1.ElasticSearchConfiguration{}),
 			WithWatchConfigurationObject(&v1beta1.OpenTelemetryConfiguration{}),
 			WithWatchConfigurationObject(&v1beta1.RegistriesConfiguration{}),

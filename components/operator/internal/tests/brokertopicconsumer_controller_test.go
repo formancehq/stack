@@ -3,7 +3,9 @@ package tests_test
 import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
+	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/operator/internal/tests/internal"
+	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -13,9 +15,10 @@ import (
 var _ = Describe("BrokerTopicConsumer", func() {
 	Context("When creating a BrokerTopicConsumer", func() {
 		var (
-			brokerTopicConsumer *v1beta1.BrokerTopicConsumer
-			brokerConfig        *v1beta1.BrokerConfiguration
-			stack               *v1beta1.Stack
+			brokerTopicConsumer        *v1beta1.BrokerTopicConsumer
+			brokerKindSettings         *v1beta1.Settings
+			brokerNatsEndpointSettings *v1beta1.Settings
+			stack                      *v1beta1.Stack
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -23,15 +26,10 @@ var _ = Describe("BrokerTopicConsumer", func() {
 				Spec:       v1beta1.StackSpec{},
 			}
 			Expect(Create(stack)).To(BeNil())
-			brokerConfig = &v1beta1.BrokerConfiguration{
-				ObjectMeta: RandObjectMeta(),
-				Spec: v1beta1.BrokerConfigurationSpec{
-					ConfigurationProperties: v1beta1.ConfigurationProperties{
-						Stacks: []string{stack.Name},
-					},
-				},
-			}
-			Expect(Create(brokerConfig)).To(Succeed())
+			brokerKindSettings = settings.New(uuid.NewString(), "broker.kind", "nats", stack.Name)
+			Expect(Create(brokerKindSettings)).To(BeNil())
+			brokerNatsEndpointSettings = settings.New(uuid.NewString(), "broker.nats.endpoint", "localhost:1234", stack.Name)
+			Expect(Create(brokerNatsEndpointSettings)).To(BeNil())
 			brokerTopicConsumer = &v1beta1.BrokerTopicConsumer{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.BrokerTopicConsumerSpec{
@@ -46,7 +44,8 @@ var _ = Describe("BrokerTopicConsumer", func() {
 		})
 		AfterEach(func() {
 			Expect(Delete(stack)).To(Succeed())
-			Expect(Delete(brokerConfig)).To(Succeed())
+			Expect(Delete(brokerNatsEndpointSettings)).To(Succeed())
+			Expect(Delete(brokerKindSettings)).To(Succeed())
 			Expect(client.IgnoreNotFound(Delete(brokerTopicConsumer))).To(Succeed())
 		})
 		It("Should create a BrokerTopic", func() {

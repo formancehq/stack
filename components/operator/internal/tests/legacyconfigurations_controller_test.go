@@ -64,11 +64,11 @@ var _ = Describe("ConfigurationsController (legacy)", func() {
 					return LoadResource("", configuration.Name, &v1beta1.OpenTelemetryConfiguration{})
 				}).Should(Succeed())
 			})
-			By("BrokerConfiguration", func() {
-				Eventually(func(g Gomega) error {
-					return LoadResource("", configuration.Name, &v1beta1.BrokerConfiguration{})
-				}).Should(Succeed())
-			})
+			//By("BrokerConfiguration", func() {
+			//	Eventually(func(g Gomega) error {
+			//		return LoadResource("", configuration.Name, &v1beta1.BrokerConfiguration{})
+			//	}).Should(Succeed())
+			//})
 			By("ElasticSearchConfiguration", func() {
 				Eventually(func(g Gomega) error {
 					return LoadResource("", configuration.Name, &v1beta1.ElasticSearchConfiguration{})

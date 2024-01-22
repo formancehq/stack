@@ -19,13 +19,13 @@ func createJob(ctx core.Context, topic *v1beta1.BrokerTopic, configuration v1bet
 	},
 		func(t *v1.Job) {
 			args := []string{"nats", "stream", "add",
-				"--server", fmt.Sprintf("nats://%s", configuration.Spec.Nats.URL),
+				"--server", fmt.Sprintf("nats://%s", configuration.Nats.URL),
 				"--retention", "interest",
 				"--subjects", topic.Name,
 				"--defaults",
 			}
-			if configuration.Spec.Nats.Replicas > 0 {
-				args = append(args, "--replicas", fmt.Sprint(configuration.Spec.Nats.Replicas))
+			if configuration.Nats.Replicas > 0 {
+				args = append(args, "--replicas", fmt.Sprint(configuration.Nats.Replicas))
 			}
 			args = append(args, topic.Name)
 

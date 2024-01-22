@@ -2,6 +2,7 @@ package brokerconfigurations
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/brokertopics"
 	"strings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -9,8 +10,8 @@ import (
 	v1 "k8s.io/api/core/v1"
 )
 
-func GetEnvVars(ctx core.Context, stackName, serviceName string) ([]v1.EnvVar, error) {
-	configuration, err := core.GetConfigurationObject[*v1beta1.BrokerConfiguration](ctx, stackName)
+func GetEnvVars(ctx core.Context, stack *v1beta1.Stack, serviceName string) ([]v1.EnvVar, error) {
+	configuration, err := brokertopics.FindBrokerConfiguration(ctx, stack)
 	if err != nil {
 		return nil, err
 	}
@@ -18,14 +19,14 @@ func GetEnvVars(ctx core.Context, stackName, serviceName string) ([]v1.EnvVar, e
 		return nil, core.ErrNotFound
 	}
 
-	return BrokerEnvVars(configuration.Spec, stackName, serviceName), nil
+	return BrokerEnvVars(*configuration, stack.Name, serviceName), nil
 }
 
-func BrokerEnvVars(broker v1beta1.BrokerConfigurationSpec, stackName, serviceName string) []v1.EnvVar {
+func BrokerEnvVars(broker v1beta1.BrokerConfiguration, stackName, serviceName string) []v1.EnvVar {
 	return BrokerEnvVarsWithPrefix(broker, stackName, serviceName, "")
 }
 
-func BrokerEnvVarsWithPrefix(broker v1beta1.BrokerConfigurationSpec, stackName, serviceName, prefix string) []v1.EnvVar {
+func BrokerEnvVarsWithPrefix(broker v1beta1.BrokerConfiguration, stackName, serviceName, prefix string) []v1.EnvVar {
 	ret := make([]v1.EnvVar, 0)
 
 	switch {

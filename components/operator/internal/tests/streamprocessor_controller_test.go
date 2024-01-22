@@ -3,7 +3,9 @@ package tests_test
 import (
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
+	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/operator/internal/tests/internal"
+	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
@@ -18,7 +20,8 @@ var _ = Describe("StreamProcessorController", func() {
 			streamProcessor            *v1beta1.StreamProcessor
 			stack                      *v1beta1.Stack
 			elasticSearchConfiguration *v1beta1.ElasticSearchConfiguration
-			brokerConfiguration        *v1beta1.BrokerConfiguration
+			brokerKindSettings         *v1beta1.Settings
+			brokerNatsEndpointSettings *v1beta1.Settings
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -33,14 +36,8 @@ var _ = Describe("StreamProcessorController", func() {
 					},
 				},
 			}
-			brokerConfiguration = &v1beta1.BrokerConfiguration{
-				ObjectMeta: RandObjectMeta(),
-				Spec: v1beta1.BrokerConfigurationSpec{
-					ConfigurationProperties: v1beta1.ConfigurationProperties{
-						Stacks: []string{stack.Name},
-					},
-				},
-			}
+			brokerKindSettings = settings.New(uuid.NewString(), "broker.kind", "nats", stack.Name)
+			brokerNatsEndpointSettings = settings.New(uuid.NewString(), "broker.nats.endpoint", "localhost:1234", stack.Name)
 			streamProcessor = &v1beta1.StreamProcessor{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.StreamProcessorSpec{
@@ -51,15 +48,17 @@ var _ = Describe("StreamProcessorController", func() {
 			}
 		})
 		JustBeforeEach(func() {
+			Expect(Create(brokerKindSettings)).To(BeNil())
+			Expect(Create(brokerNatsEndpointSettings)).To(BeNil())
 			Expect(Create(stack)).To(Succeed())
 			Expect(Create(elasticSearchConfiguration)).To(Succeed())
-			Expect(Create(brokerConfiguration)).To(Succeed())
 			Expect(Create(streamProcessor)).To(Succeed())
 		})
 		JustAfterEach(func() {
 			Expect(Delete(stack)).To(Succeed())
 			Expect(Delete(elasticSearchConfiguration)).To(Succeed())
-			Expect(Delete(brokerConfiguration)).To(Succeed())
+			Expect(Delete(brokerNatsEndpointSettings)).To(Succeed())
+			Expect(Delete(brokerKindSettings)).To(Succeed())
 			Expect(Delete(streamProcessor)).To(Succeed())
 		})
 		It("Should create a deployment", func() {

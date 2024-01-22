@@ -99,7 +99,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, orchestration *v1b
 		)
 	}
 
-	brokerEnvVars, err := brokerconfigurations.GetEnvVars(ctx, stack.Name, "orchestration")
+	brokerEnvVars, err := brokerconfigurations.GetEnvVars(ctx, stack, "orchestration")
 	if err != nil && !errors.Is(err, core.ErrNotFound) {
 		return err
 	}

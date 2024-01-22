@@ -2,6 +2,7 @@ package tests_test
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/settings"
 
 	. "github.com/formancehq/operator/internal/tests/internal"
 
@@ -19,9 +20,10 @@ import (
 var _ = Describe("BrokerTopicController", func() {
 	Context("When creating a BrokerTopic", func() {
 		var (
-			stack               *v1beta1.Stack
-			brokerTopic         *v1beta1.BrokerTopic
-			brokerConfiguration *v1beta1.BrokerConfiguration
+			stack                      *v1beta1.Stack
+			brokerTopic                *v1beta1.BrokerTopic
+			brokerKindSettings         *v1beta1.Settings
+			brokerNatsEndpointSettings *v1beta1.Settings
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -31,16 +33,10 @@ var _ = Describe("BrokerTopicController", func() {
 				Spec: v1beta1.StackSpec{},
 			}
 			Expect(Create(stack)).To(BeNil())
-			brokerConfiguration = &v1beta1.BrokerConfiguration{
-				ObjectMeta: RandObjectMeta(),
-				Spec: v1beta1.BrokerConfigurationSpec{
-					ConfigurationProperties: v1beta1.ConfigurationProperties{
-						Stacks: []string{stack.Name},
-					},
-					Nats: &v1beta1.BrokerNatsConfig{},
-				},
-			}
-			Expect(Create(brokerConfiguration)).To(Succeed())
+			brokerKindSettings = settings.New(uuid.NewString(), "broker.kind", "nats", stack.Name)
+			Expect(Create(brokerKindSettings)).To(BeNil())
+			brokerNatsEndpointSettings = settings.New(uuid.NewString(), "broker.nats.endpoint", "localhost:1234", stack.Name)
+			Expect(Create(brokerNatsEndpointSettings)).To(BeNil())
 			brokerTopic = &v1beta1.BrokerTopic{
 				ObjectMeta: v1.ObjectMeta{
 					Name: uuid.NewString(),
@@ -58,7 +54,8 @@ var _ = Describe("BrokerTopicController", func() {
 		AfterEach(func() {
 			Expect(Delete(stack)).To(Succeed())
 			Expect(client.IgnoreNotFound(Delete(brokerTopic))).To(Succeed())
-			Expect(Delete(brokerConfiguration)).To(Succeed())
+			Expect(Delete(brokerKindSettings)).To(Succeed())
+			Expect(Delete(brokerNatsEndpointSettings)).To(Succeed())
 		})
 		It("Should be set to ready status", func() {
 			t := &v1beta1.BrokerTopic{}

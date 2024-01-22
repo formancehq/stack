@@ -5,7 +5,6 @@ resources:
 - bases/formance.com_databases.yaml
 - bases/formance.com_stacks.yaml
 - bases/formance.com_brokertopics.yaml
-- bases/formance.com_brokerconfigurations.yaml
 - bases/formance.com_brokertopicconsumers.yaml
 - bases/formance.com_httpapis.yaml
 - bases/formance.com_ledgers.yaml

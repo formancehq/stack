@@ -18,13 +18,11 @@ package databases
 
 import (
 	"fmt"
-	"github.com/formancehq/stack/libs/go-libs/pointer"
-	"reflect"
-	"strconv"
-	"strings"
-
 	"github.com/formancehq/operator/internal/core"
+	"github.com/formancehq/operator/internal/resources/settings"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/pkg/errors"
+	"reflect"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	batchv1 "k8s.io/api/batch/v1"
@@ -123,71 +121,13 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 	return nil
 }
 
-func GetSetting(ctx core.Context, stack string, keys ...string) (*string, error) {
-	key := strings.Join(keys, ".")
-	list := &v1beta1.SettingsList{}
-	if err := ctx.GetClient().List(ctx, list, client.MatchingFields{
-		"stack": stack,
-		"key":   key,
-	}); err != nil {
-		return nil, err
-	}
-
-	if len(list.Items) == 0 {
-		return nil, nil
-	}
-	if len(list.Items) > 1 {
-		return nil, fmt.Errorf("found multiple matching setting with key '%s' and stack '%s'", key, stack)
-	}
-
-	return &list.Items[0].Spec.Value, nil
-}
-
-func GetStringSetting(ctx core.Context, stack string, keys ...string) (*string, error) {
-	return GetSetting(ctx, stack, keys...)
-}
-
-func ValueOrDefault[T any](v *T, defaultValue T) T {
-	if v == nil {
-		return defaultValue
-	}
-	return *v
-}
-
-func GetInt64Setting(ctx core.Context, stack string, keys ...string) (*int64, error) {
-	value, err := GetSetting(ctx, stack, keys...)
-	if err != nil {
-		return nil, err
-	}
-	if value == nil {
-		return nil, nil
-	}
-	intValue, err := strconv.ParseInt(*value, 10, 64)
-	if err != nil {
-		return nil, err
-	}
-
-	return &intValue, nil
-}
-
-func GetBoolSetting(ctx core.Context, stack string, keys ...string) (*bool, error) {
-	value, err := GetSetting(ctx, stack, keys...)
-	if err != nil {
-		return nil, err
-	}
-	if value == nil {
-		return nil, nil
-	}
-	return pointer.For(*value == "true"), nil
-}
-
 func findConfiguration(ctx core.Context, database *v1beta1.Database) (*v1beta1.DatabaseConfiguration, error) {
-	host, err := GetStringSetting(ctx, database.Spec.Stack, "databases", database.Spec.Service, "host")
+	host, err := settings.GetString(ctx, database.Spec.Stack, "databases", database.Spec.Service, "host")
 	if err != nil {
 		return nil, err
 	}
 	if host == nil {
-		host, err = GetStringSetting(ctx, database.Spec.Stack, "databases", "host")
+		host, err = settings.GetString(ctx, database.Spec.Stack, "databases", "host")
 		if err != nil {
 			return nil, err
 		}
@@ -197,12 +137,12 @@ func findConfiguration(ctx core.Context, database *v1beta1.Database) (*v1beta1.D
 		return nil, errors.New("missing database host")
 	}
 
-	port, err := GetInt64Setting(ctx, database.Spec.Stack, "databases", database.Spec.Service, "port")
+	port, err := settings.GetInt64(ctx, database.Spec.Stack, "databases", database.Spec.Service, "port")
 	if err != nil {
 		return nil, err
 	}
 	if port == nil {
-		port, err = GetInt64Setting(ctx, database.Spec.Stack, "databases", "port")
+		port, err = settings.GetInt64(ctx, database.Spec.Stack, "databases", "port")
 		if err != nil {
 			return nil, err
 		}
@@ -211,45 +151,45 @@ func findConfiguration(ctx core.Context, database *v1beta1.Database) (*v1beta1.D
 		port = pointer.For(int64(5432)) // default postgres port
 	}
 
-	username, err := GetStringSetting(ctx, database.Spec.Stack, "databases", database.Spec.Service, "username")
+	username, err := settings.GetString(ctx, database.Spec.Stack, "databases", database.Spec.Service, "username")
 	if err != nil {
 		return nil, err
 	}
 	if username == nil {
-		username, err = GetStringSetting(ctx, database.Spec.Stack, "databases", "username")
+		username, err = settings.GetString(ctx, database.Spec.Stack, "databases", "username")
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	password, err := GetStringSetting(ctx, database.Spec.Stack, "databases", database.Spec.Service, "password")
+	password, err := settings.GetString(ctx, database.Spec.Stack, "databases", database.Spec.Service, "password")
 	if err != nil {
 		return nil, err
 	}
 	if password == nil {
-		password, err = GetStringSetting(ctx, database.Spec.Stack, "databases", "password")
+		password, err = settings.GetString(ctx, database.Spec.Stack, "databases", "password")
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	credentialsFromSecret, err := GetStringSetting(ctx, database.Spec.Stack, "databases", database.Spec.Service, "credentials-from-secret")
+	credentialsFromSecret, err := settings.GetString(ctx, database.Spec.Stack, "databases", database.Spec.Service, "credentials-from-secret")
 	if err != nil {
 		return nil, err
 	}
 	if credentialsFromSecret == nil {
-		credentialsFromSecret, err = GetStringSetting(ctx, database.Spec.Stack, "databases", "secret")
+		credentialsFromSecret, err = settings.GetString(ctx, database.Spec.Stack, "databases", "secret")
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	disableSSLMode, err := GetBoolSetting(ctx, database.Spec.Stack, "databases", database.Spec.Service, "ssl", "disable")
+	disableSSLMode, err := settings.GetBool(ctx, database.Spec.Stack, "databases", database.Spec.Service, "ssl", "disable")
 	if err != nil {
 		return nil, err
 	}
 	if disableSSLMode == nil {
-		disableSSLMode, err = GetBoolSetting(ctx, database.Spec.Stack, "databases", "disable-ssl-mode")
+		disableSSLMode, err = settings.GetBool(ctx, database.Spec.Stack, "databases", "disable-ssl-mode")
 		if err != nil {
 			return nil, err
 		}
@@ -258,10 +198,10 @@ func findConfiguration(ctx core.Context, database *v1beta1.Database) (*v1beta1.D
 	return &v1beta1.DatabaseConfiguration{
 		Port:                  int(*port),
 		Host:                  *host,
-		Username:              ValueOrDefault(username, ""),
-		Password:              ValueOrDefault(password, ""),
-		CredentialsFromSecret: ValueOrDefault(credentialsFromSecret, ""),
-		DisableSSLMode:        ValueOrDefault(disableSSLMode, false),
+		Username:              settings.ValueOrDefault(username, ""),
+		Password:              settings.ValueOrDefault(password, ""),
+		CredentialsFromSecret: settings.ValueOrDefault(credentialsFromSecret, ""),
+		DisableSSLMode:        settings.ValueOrDefault(disableSSLMode, false),
 	}, nil
 }
 

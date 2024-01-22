@@ -2,7 +2,12 @@ package webhooks
 
 import (
 	"fmt"
+<<<<<<< HEAD
 	"golang.org/x/mod/semver"
+=======
+	"github.com/formancehq/operator/internal/resources/brokertopics"
+	"github.com/pkg/errors"
+>>>>>>> 68113ecf3 (feat: remove BrokerConfiguration object)
 	"strings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -21,9 +26,12 @@ import (
 
 func createDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumers brokertopicconsumers.Consumers, version string) error {
 
-	brokerConfiguration, err := core.RequireConfigurationObject[*v1beta1.BrokerConfiguration](ctx, stack.Name)
+	brokerConfiguration, err := brokertopics.FindBrokerConfiguration(ctx, stack)
 	if err != nil {
 		return err
+	}
+	if brokerConfiguration == nil {
+		return errors.New("missing broker configuration")
 	}
 
 	image, err := registries.GetImage(ctx, stack, "webhooks", version)
@@ -52,7 +60,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.
 
 	env = append(env, authEnvVars...)
 	env = append(env, databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfiguration, database.Status.Configuration.Database)...)
-	env = append(env, brokerconfigurations.BrokerEnvVars(brokerConfiguration.Spec, stack.Name, "webhooks")...)
+	env = append(env, brokerconfigurations.BrokerEnvVars(*brokerConfiguration, stack.Name, "webhooks")...)
 	env = append(env, core.Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"))
 	env = append(env, core.Env("WORKER", "true"))
 	env = append(env, core.Env("KAFKA_TOPICS", strings.Join(collectionutils.Map(consumers, func(from *v1beta1.BrokerTopicConsumer) string {

@@ -5,6 +5,7 @@ import (
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
+	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/operator/internal/tests/internal"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/google/uuid"
@@ -114,22 +115,15 @@ var _ = Describe("LedgerController", func() {
 				}).Should(BeTrue())
 			}
 			var (
-				brokerConfiguration *v1beta1.BrokerConfiguration
-				brokerTopic         *v1beta1.BrokerTopic
+				brokerKindSettings         *v1beta1.Settings
+				brokerNatsEndpointSettings *v1beta1.Settings
+				brokerTopic                *v1beta1.BrokerTopic
 			)
 			JustBeforeEach(func() {
-				brokerConfiguration = &v1beta1.BrokerConfiguration{
-					ObjectMeta: RandObjectMeta(),
-					Spec: v1beta1.BrokerConfigurationSpec{
-						ConfigurationProperties: v1beta1.ConfigurationProperties{
-							Stacks: []string{stack.Name},
-						},
-						Nats: &v1beta1.BrokerNatsConfig{
-							URL: "nats://localhost:1234",
-						},
-					},
-				}
-				Expect(Create(brokerConfiguration)).To(Succeed())
+				brokerKindSettings = settings.New(uuid.NewString(), "broker.kind", "nats", stack.Name)
+				Expect(Create(brokerKindSettings)).To(BeNil())
+				brokerNatsEndpointSettings = settings.New(uuid.NewString(), "broker.nats.endpoint", "localhost:1234", stack.Name)
+				Expect(Create(brokerNatsEndpointSettings)).To(BeNil())
 				brokerTopic = &v1beta1.BrokerTopic{
 					ObjectMeta: RandObjectMeta(),
 					Spec: v1beta1.BrokerTopicSpec{
@@ -143,7 +137,8 @@ var _ = Describe("LedgerController", func() {
 				Expect(Create(brokerTopic)).To(Succeed())
 			})
 			AfterEach(func() {
-				Expect(Delete(brokerConfiguration)).To(Succeed())
+				Expect(Delete(brokerNatsEndpointSettings)).To(Succeed())
+				Expect(Delete(brokerKindSettings)).To(Succeed())
 				Expect(client.IgnoreNotFound(Delete(brokerTopic))).To(Succeed())
 			})
 			It("Should start the deployment with env var defined for publishing in the event bus", deploymentShouldBeConfigured)
