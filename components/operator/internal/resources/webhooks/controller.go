@@ -64,7 +64,6 @@ func init() {
 			WithWatchDependency(&v1beta1.Payments{}),
 			WithWatch(databases.Watch("webhooks", &v1beta1.Payments{})),
 			WithWatchConfigurationObject(&v1beta1.OpenTelemetryConfiguration{}),
-			WithWatchConfigurationObject(&v1beta1.RegistriesConfiguration{}),
 		),
 	)
 }

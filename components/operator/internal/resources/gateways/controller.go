@@ -105,7 +105,6 @@ func init() {
 			WithOwn(&appsv1.Deployment{}),
 			WithOwn(&corev1.Service{}),
 			WithOwn(&networkingv1.Ingress{}),
-			WithWatchConfigurationObject(&v1beta1.RegistriesConfiguration{}),
 			WithWatchConfigurationObject(&v1beta1.OpenTelemetryConfiguration{}),
 			WithWatchDependency(&v1beta1.HTTPAPI{}),
 			WithWatchDependency(&v1beta1.Auth{}),

@@ -125,7 +125,6 @@ func init() {
 			WithWatch[*v1beta1.BrokerTopic](brokertopics.Watch[*v1beta1.Ledger]("ledger")),
 			WithWatch(databases.Watch("ledger", &v1beta1.Ledger{})),
 			WithWatchConfigurationObject(&v1beta1.OpenTelemetryConfiguration{}),
-			WithWatchConfigurationObject(&v1beta1.RegistriesConfiguration{}),
 			WithWatchDependency(&v1beta1.Search{}),
 		),
 	)

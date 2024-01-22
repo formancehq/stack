@@ -39,7 +39,6 @@ func init() {
 		WithModuleReconciler(Reconcile,
 			WithWatchStack(),
 			WithWatchConfigurationObject(&v1beta1.OpenTelemetryConfiguration{}),
-			WithWatchConfigurationObject(&v1beta1.RegistriesConfiguration{}),
 			WithOwn(&appsv1.Deployment{}),
 		),
 	)

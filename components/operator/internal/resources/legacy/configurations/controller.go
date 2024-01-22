@@ -307,26 +307,12 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 	}
 
 	if len(configuration.Spec.Registries) > 0 {
-		_, _, err = CreateOrUpdate[*v1beta1.RegistriesConfiguration](ctx, types.NamespacedName{
-			Name: configuration.Name,
-		}, func(t *v1beta1.RegistriesConfiguration) {
-			registries := make(map[string]v1beta1.RegistryConfigurationSpec)
-			for k, config := range configuration.Spec.Registries {
-				registries[k] = v1beta1.RegistryConfigurationSpec{
-					Endpoint: config.Endpoint,
-				}
+		for name, config := range configuration.Spec.Registries {
+			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-registries-%s", configuration.Name, name),
+				fmt.Sprintf("registries.%s.endpoint", name), config.Endpoint, stackNames...)
+			if err != nil {
+				return err
 			}
-			t.Spec = v1beta1.RegistriesConfigurationSpec{
-				ConfigurationProperties: v1beta1.ConfigurationProperties{
-					Stacks: Map(stacks.Items, func(from v1beta3.Stack) string {
-						return from.GetName()
-					}),
-				},
-				Registries: registries,
-			}
-		})
-		if err != nil {
-			return errors.Wrap(err, "creating registries configuration")
 		}
 	}
 

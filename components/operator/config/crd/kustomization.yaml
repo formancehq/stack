@@ -23,7 +23,6 @@ resources:
 - bases/formance.com_searches.yaml
 - bases/formance.com_streams.yaml
 - bases/formance.com_streamprocessors.yaml
-- bases/formance.com_registriesconfiguration.yaml
 - bases/formance.com_stargates.yaml
 - bases/formance.com_temporalconfigurations.yaml
 - bases/formance.com_versionshistories.yaml

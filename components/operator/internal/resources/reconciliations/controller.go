@@ -65,7 +65,6 @@ func init() {
 			WithWatchDependency(&v1beta1.Ledger{}),
 			WithWatchDependency(&v1beta1.Payments{}),
 			WithWatchConfigurationObject(&v1beta1.OpenTelemetryConfiguration{}),
-			WithWatchConfigurationObject(&v1beta1.RegistriesConfiguration{}),
 		),
 	)
 }

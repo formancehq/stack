@@ -74,11 +74,11 @@ var _ = Describe("ConfigurationsController (legacy)", func() {
 			//		return LoadResource("", configuration.Name, &v1beta1.ElasticSearchConfiguration{})
 			//	}).Should(Succeed())
 			//})
-			By("RegistriesConfiguration", func() {
-				Eventually(func(g Gomega) error {
-					return LoadResource("", configuration.Name, &v1beta1.RegistriesConfiguration{})
-				}).Should(Succeed())
-			})
+			//By("RegistriesConfiguration", func() {
+			//	Eventually(func(g Gomega) error {
+			//		return LoadResource("", configuration.Name, &v1beta1.RegistriesConfiguration{})
+			//	}).Should(Succeed())
+			//})
 			By("SearchBatchingConfiguration", func() {
 				Eventually(func(g Gomega) error {
 					return LoadResource("", configuration.Name, &v1beta1.SearchBatchingConfiguration{})

@@ -209,7 +209,6 @@ func init() {
 	core.Init(
 		core.WithStackDependencyReconciler(Reconcile,
 			core.WithOwn(&batchv1.Job{}),
-			core.WithWatchConfigurationObject(&v1beta1.RegistriesConfiguration{}),
 			core.WithWatchConfigurationObject(&v1beta1.Settings{}),
 		),
 	)

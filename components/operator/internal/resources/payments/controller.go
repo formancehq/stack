@@ -111,7 +111,6 @@ func init() {
 			WithWatch(databases.Watch("payments", &v1beta1.Payments{})),
 			WithWatch[*v1beta1.BrokerTopic](brokertopics.Watch[*v1beta1.Payments]("payments")),
 			WithWatchConfigurationObject(&v1beta1.OpenTelemetryConfiguration{}),
-			WithWatchConfigurationObject(&v1beta1.RegistriesConfiguration{}),
 			WithWatchDependency(&v1beta1.Search{}),
 		),
 	)

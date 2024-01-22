@@ -75,7 +75,7 @@ func init() {
 			WithOwn(&v1beta1.Database{}),
 			WithOwn(&corev1.ConfigMap{}),
 			WithWatch(databases.Watch("auth", &v1beta1.Auth{})),
-			WithWatchConfigurationObject(&v1beta1.RegistriesConfiguration{}),
+			WithWatchConfigurationObject(&v1beta1.Settings{}),
 			WithWatchConfigurationObject(&v1beta1.OpenTelemetryConfiguration{}),
 			WithWatchDependency(&v1beta1.AuthClient{}),
 			WithWatchStack(),

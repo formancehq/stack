@@ -202,7 +202,6 @@ func init() {
 			WithWatchStack(),
 			WithWatchConfigurationObject(&v1beta1.Settings{}),
 			WithWatchConfigurationObject(&v1beta1.OpenTelemetryConfiguration{}),
-			WithWatchConfigurationObject(&v1beta1.RegistriesConfiguration{}),
 			WithWatchConfigurationObject(&v1beta1.SearchBatchingConfiguration{}),
 			WithOwn(&v1beta1.StreamProcessor{}),
 			WithOwn(&v1beta1.HTTPAPI{}),

@@ -280,7 +280,6 @@ func init() {
 		WithStackDependencyReconciler(Reconcile,
 			WithWatchConfigurationObject(&v1beta1.Settings{}),
 			WithWatchConfigurationObject(&v1beta1.OpenTelemetryConfiguration{}),
-			WithWatchConfigurationObject(&v1beta1.RegistriesConfiguration{}),
 			WithWatchStack(),
 			WithWatchDependency(&v1beta1.Stream{}),
 			WithOwn(&corev1.ConfigMap{}),
