@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
+	"golang.org/x/mod/semver"
 	"sort"
 	"strings"
 
@@ -557,10 +558,17 @@ func (r *serviceReconciler) createContainer(ctx ContainerResolutionConfiguration
 		)
 	}
 
-	if serviceName == "gateway" && r.Versions.Spec.Gateway < "v2.0.0-alpha" {
-		env = env.Append(
-			Env(fmt.Sprintf("%sSTACK_URL", r.service.EnvPrefix), r.Stack.PublicURL()),
-		)
+	if serviceName == "gateway" {
+		switch semver.Compare(r.Versions.Spec.Gateway, "v2.0.0-alpha") {
+		case -1:
+			env = env.Append(
+				Env(fmt.Sprintf("%sSTACK_URL", r.service.EnvPrefix), r.Stack.PublicURL()),
+			)
+		default:
+			env = env.Append(
+				Env(fmt.Sprintf("%sSTACK_URL", r.service.EnvPrefix), r.Stack.URL()),
+			)
+		}
 	} else {
 		env = env.Append(
 			Env(fmt.Sprintf("%sSTACK_URL", r.service.EnvPrefix), r.Stack.URL()),
