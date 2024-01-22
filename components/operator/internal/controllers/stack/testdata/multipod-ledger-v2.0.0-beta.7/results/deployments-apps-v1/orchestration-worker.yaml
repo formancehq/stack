@@ -73,10 +73,6 @@ spec:
                       value: orchestration-worker
                     - name: STACK
                       value: multipod-ledger-v2-0-0-beta-7
-                    - name: STACK_URL
-                      value: http://gateway:8000
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
                     - name: POSTGRES_DSN
                       value: $(POSTGRES_URI)
                     - name: TEMPORAL_TASK_QUEUE

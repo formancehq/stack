@@ -72,9 +72,9 @@ spec:
                     - name: STACK
                       value: multipod-latest
                     - name: STACK_URL
-                      value: http://example.net
+                      value: http://gateway:8000
                     - name: AUTH_ISSUER
-                      value: http://example.net/api/auth
+                      value: http://gateway:8000/api/auth
                     - name: POSTGRES_DSN
                       value: $(POSTGRES_URI)
                     - name: TEMPORAL_TASK_QUEUE

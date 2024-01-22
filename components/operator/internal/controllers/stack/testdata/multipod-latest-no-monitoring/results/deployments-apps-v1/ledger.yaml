@@ -57,9 +57,9 @@ spec:
                     - name: STACK
                       value: multipod-latest-no-monitoring
                     - name: STACK_URL
-                      value: http://example.net
+                      value: http://gateway:8000
                     - name: AUTH_ISSUER
-                      value: http://example.net/api/auth
+                      value: http://gateway:8000/api/auth
                     - name: STORAGE_DRIVER
                       value: postgres
                     - name: PUBLISHER_TOPIC_MAPPING

@@ -558,17 +558,19 @@ func (r *serviceReconciler) createContainer(ctx ContainerResolutionConfiguration
 		)
 	}
 
-	switch semver.Compare(r.Versions.Spec.Gateway, "v2.0.0-alpha") {
-	case -1:
-		env = env.Append(
-			Env(fmt.Sprintf("%sSTACK_URL", r.service.EnvPrefix), r.Stack.PublicURL()),
-			Env(fmt.Sprintf("%sAUTH_ISSUER", r.service.EnvPrefix), fmt.Sprintf("%s/api/auth", r.Stack.PublicURL())),
-		)
-	default:
+	if !semver.IsValid(r.Versions.Spec.Gateway) {
 		env = env.Append(
 			Env(fmt.Sprintf("%sSTACK_URL", r.service.EnvPrefix), r.Stack.URL()),
 			Env(fmt.Sprintf("%sAUTH_ISSUER", r.service.EnvPrefix), fmt.Sprintf("%s/api/auth", r.Stack.URL())),
 		)
+	} else {
+		switch semver.Compare(r.Versions.Spec.Gateway, "v2.0.0-alpha") {
+		case -1:
+			env = env.Append(
+				Env(fmt.Sprintf("%sSTACK_URL", r.service.EnvPrefix), r.Stack.PublicURL()),
+				Env(fmt.Sprintf("%sAUTH_ISSUER", r.service.EnvPrefix), fmt.Sprintf("%s/api/auth", r.Stack.PublicURL())),
+			)
+		}
 	}
 
 	for _, envVar := range container.Env {

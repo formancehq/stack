@@ -263,9 +263,11 @@ func createCaddyfile(context modules.ServiceInstallConfiguration) string {
 	})
 
 	issuer := fmt.Sprintf("%s/api/auth", context.Stack.URL())
-	switch semver.Compare(context.Versions.Spec.Gateway, "v2.0.0-alpha") {
-	case -1:
-		issuer = fmt.Sprintf("%s/api/auth", context.Stack.PublicURL())
+	if semver.IsValid(context.Versions.Spec.Gateway) {
+		switch semver.Compare(context.Versions.Spec.Gateway, "v2.0.0-alpha") {
+		case -1:
+			issuer = fmt.Sprintf("%s/api/auth", context.Stack.PublicURL())
+		}
 	}
 
 	if err := caddyFileTemplate(context).Execute(buf, map[string]any{

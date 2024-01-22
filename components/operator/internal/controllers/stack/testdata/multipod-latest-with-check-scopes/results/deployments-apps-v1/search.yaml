@@ -60,9 +60,9 @@ spec:
                     - name: STACK
                       value: multipod-latest-with-check-scopes
                     - name: STACK_URL
-                      value: http://example.net
+                      value: http://gateway:8000
                     - name: AUTH_ISSUER
-                      value: http://example.net/api/auth
+                      value: http://gateway:8000/api/auth
                     - name: OPENSEARCH_URL
                       value: http://elasticsearch:9200
                     - name: OPENSEARCH_BATCHING_COUNT

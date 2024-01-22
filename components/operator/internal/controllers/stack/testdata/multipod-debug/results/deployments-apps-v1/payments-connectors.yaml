@@ -77,9 +77,9 @@ spec:
                     - name: STACK
                       value: multipod-debug
                     - name: STACK_URL
-                      value: http://example.net
+                      value: http://gateway:8000
                     - name: AUTH_ISSUER
-                      value: http://example.net/api/auth
+                      value: http://gateway:8000/api/auth
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED

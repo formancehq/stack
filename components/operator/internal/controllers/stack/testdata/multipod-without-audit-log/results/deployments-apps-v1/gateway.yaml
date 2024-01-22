@@ -23,7 +23,7 @@ spec:
     template:
         metadata:
             annotations:
-                stack.formance.cloud/volumes-hash: a02vArrsq93-75hyQhELsvTZMzQ2y30-Eia8NlYPQDk=
+                stack.formance.cloud/volumes-hash: AwMzQLn7vWz_qDRK8d4-C_P1xjJTsOlv1gyjbaU5L4w=
             creationTimestamp: null
             labels:
                 app.kubernetes.io/name: gateway
@@ -49,9 +49,9 @@ spec:
                     - name: STACK
                       value: multipod-without-audit-log
                     - name: STACK_URL
-                      value: http://example.net
+                      value: http://gateway:8000
                     - name: AUTH_ISSUER
-                      value: http://example.net/api/auth
+                      value: http://gateway:8000/api/auth
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED

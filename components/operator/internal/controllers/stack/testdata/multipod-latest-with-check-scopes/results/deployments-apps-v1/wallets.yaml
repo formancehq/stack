@@ -60,9 +60,9 @@ spec:
                     - name: STACK
                       value: multipod-latest-with-check-scopes
                     - name: STACK_URL
-                      value: http://example.net
+                      value: http://gateway:8000
                     - name: AUTH_ISSUER
-                      value: http://example.net/api/auth
+                      value: http://gateway:8000/api/auth
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
                     - name: STACK_CLIENT_ID
