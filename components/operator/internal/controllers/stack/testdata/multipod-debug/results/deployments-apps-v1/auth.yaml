@@ -76,7 +76,7 @@ spec:
                     - name: STACK
                       value: multipod-debug
                     - name: STACK_URL
-                      value: http://gateway:8000
+                      value: http://example.net
                     - name: CONFIG
                       value: /config/config/config.yaml
                     - name: DELEGATED_CLIENT_SECRET

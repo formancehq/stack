@@ -60,7 +60,7 @@ spec:
                     - name: STACK
                       value: multipod-latest-with-check-scopes
                     - name: STACK_URL
-                      value: http://gateway:8000
+                      value: http://example.net
                     - name: ORGANIZATION_ID
                       value: multipod
                     - name: STACK_ID

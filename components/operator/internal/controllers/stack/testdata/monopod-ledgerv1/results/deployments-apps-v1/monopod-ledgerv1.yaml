@@ -76,7 +76,7 @@ spec:
                     - name: STACK
                       value: monopod-ledgerv1
                     - name: STACK_URL
-                      value: http://gateway:8000
+                      value: http://example.net
                     - name: CONFIG
                       value: /config/config/config.yaml
                     - name: DELEGATED_CLIENT_SECRET
@@ -145,7 +145,7 @@ spec:
                     - name: STACK
                       value: monopod-ledgerv1
                     - name: STACK_URL
-                      value: http://gateway:8000
+                      value: http://example.net
                     - name: API_URL
                       value: http://gateway:8000
                     - name: ENCRYPTION_KEY
@@ -279,7 +279,7 @@ spec:
                     - name: STACK
                       value: monopod-ledgerv1
                     - name: NUMARY_STACK_URL
-                      value: http://gateway:8000
+                      value: http://example.net
                     - name: NUMARY_STORAGE_DRIVER
                       value: postgres
                     - name: NUMARY_PUBLISHER_TOPIC_MAPPING
@@ -364,7 +364,7 @@ spec:
                     - name: STACK
                       value: monopod-ledgerv1
                     - name: STACK_URL
-                      value: http://gateway:8000
+                      value: http://example.net
                     - name: POSTGRES_DSN
                       value: $(POSTGRES_URI)
                     - name: TEMPORAL_TASK_QUEUE
@@ -449,7 +449,7 @@ spec:
                     - name: STACK
                       value: monopod-ledgerv1
                     - name: STACK_URL
-                      value: http://gateway:8000
+                      value: http://example.net
                     - name: POSTGRES_DSN
                       value: $(POSTGRES_URI)
                     - name: TEMPORAL_TASK_QUEUE
@@ -531,7 +531,7 @@ spec:
                     - name: STACK
                       value: monopod-ledgerv1
                     - name: STACK_URL
-                      value: http://gateway:8000
+                      value: http://example.net
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
@@ -618,7 +618,7 @@ spec:
                     - name: STACK
                       value: monopod-ledgerv1
                     - name: STACK_URL
-                      value: http://gateway:8000
+                      value: http://example.net
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
@@ -688,7 +688,7 @@ spec:
                     - name: STACK
                       value: monopod-ledgerv1
                     - name: STACK_URL
-                      value: http://gateway:8000
+                      value: http://example.net
                     - name: OPENSEARCH_URL
                       value: http://elasticsearch:9200
                     - name: OPENSEARCH_BATCHING_COUNT
@@ -782,7 +782,7 @@ spec:
                     - name: STACK
                       value: monopod-ledgerv1
                     - name: STACK_URL
-                      value: http://gateway:8000
+                      value: http://example.net
                     - name: OPENSEARCH_URL
                       value: http://elasticsearch:9200
                     - name: OPENSEARCH_BATCHING_COUNT
@@ -873,7 +873,7 @@ spec:
                     - name: STACK
                       value: monopod-ledgerv1
                     - name: STACK_URL
-                      value: http://gateway:8000
+                      value: http://example.net
                     - name: ORGANIZATION_ID
                       value: monopod
                     - name: STACK_ID
@@ -938,7 +938,7 @@ spec:
                     - name: STACK
                       value: monopod-ledgerv1
                     - name: STACK_URL
-                      value: http://gateway:8000
+                      value: http://example.net
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
                     - name: STACK_CLIENT_ID
@@ -1017,7 +1017,7 @@ spec:
                     - name: STACK
                       value: monopod-ledgerv1
                     - name: STACK_URL
-                      value: http://gateway:8000
+                      value: http://example.net
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
@@ -1100,7 +1100,7 @@ spec:
                     - name: STACK
                       value: monopod-ledgerv1
                     - name: STACK_URL
-                      value: http://gateway:8000
+                      value: http://example.net
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED

@@ -67,7 +67,7 @@ spec:
                     - name: STACK
                       value: multipod-latest-with-gateway-fallback
                     - name: STACK_URL
-                      value: http://gateway:8000
+                      value: http://example.net
                     - name: OPENSEARCH_URL
                       value: http://elasticsearch:9200
                     - name: OPENSEARCH_BATCHING_COUNT

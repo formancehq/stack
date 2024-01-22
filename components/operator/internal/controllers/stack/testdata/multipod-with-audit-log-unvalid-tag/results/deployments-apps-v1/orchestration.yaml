@@ -55,7 +55,7 @@ spec:
                     - name: STACK
                       value: multipod-with-audit-log-unvalid-tag
                     - name: STACK_URL
-                      value: http://gateway:8000
+                      value: http://example.net
                     - name: POSTGRES_DSN
                       value: $(POSTGRES_URI)
                     - name: TEMPORAL_TASK_QUEUE

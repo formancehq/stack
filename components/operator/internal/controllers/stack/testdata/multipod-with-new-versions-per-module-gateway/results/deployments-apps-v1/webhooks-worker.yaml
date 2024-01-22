@@ -59,7 +59,7 @@ spec:
                     - name: STACK
                       value: multipod-with-new-versions-per-module-gateway
                     - name: STACK_URL
-                      value: http://gateway:8000
+                      value: http://example.net
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
