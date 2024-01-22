@@ -67,6 +67,7 @@ func TestCreateTransferInitiation(t *testing.T) {
 				Provider:             models.ConnectorProviderDummyPay,
 				Type:                 models.TransferInitiationTypeTransfer,
 				Amount:               big.NewInt(100),
+				InitialAmount:        big.NewInt(100),
 				Asset:                models.Asset("EUR/2"),
 				RelatedAdjustments: []*models.TransferInitiationAdjustment{
 					{
@@ -105,6 +106,7 @@ func TestCreateTransferInitiation(t *testing.T) {
 				Provider:             models.ConnectorProviderDummyPay,
 				Type:                 models.TransferInitiationTypeTransfer,
 				Amount:               big.NewInt(100),
+				InitialAmount:        big.NewInt(100),
 				Asset:                models.Asset("EUR/2"),
 				RelatedAdjustments: []*models.TransferInitiationAdjustment{
 					{
@@ -145,6 +147,7 @@ func TestCreateTransferInitiation(t *testing.T) {
 				Provider:             models.ConnectorProviderDummyPay,
 				Type:                 models.TransferInitiationTypeTransfer,
 				Amount:               big.NewInt(100),
+				InitialAmount:        big.NewInt(100),
 				Asset:                models.Asset("EUR/2"),
 				RelatedAdjustments: []*models.TransferInitiationAdjustment{
 					{

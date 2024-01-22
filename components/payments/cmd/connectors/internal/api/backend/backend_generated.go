@@ -127,18 +127,18 @@ func (mr *MockServiceMockRecorder) RetryTransferInitiation(ctx, id interface{}) 
 }
 
 // ReverseTransferInitiation mocks base method.
-func (m *MockService) ReverseTransferInitiation(ctx context.Context, req *service.ReverseTransferInitiationRequest) (*models.TransferReversal, error) {
+func (m *MockService) ReverseTransferInitiation(ctx context.Context, transferID string, req *service.ReverseTransferInitiationRequest) (*models.TransferReversal, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReverseTransferInitiation", ctx, req)
+	ret := m.ctrl.Call(m, "ReverseTransferInitiation", ctx, transferID, req)
 	ret0, _ := ret[0].(*models.TransferReversal)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ReverseTransferInitiation indicates an expected call of ReverseTransferInitiation.
-func (mr *MockServiceMockRecorder) ReverseTransferInitiation(ctx, req interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) ReverseTransferInitiation(ctx, transferID, req interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReverseTransferInitiation", reflect.TypeOf((*MockService)(nil).ReverseTransferInitiation), ctx, req)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReverseTransferInitiation", reflect.TypeOf((*MockService)(nil).ReverseTransferInitiation), ctx, transferID, req)
 }
 
 // UpdateTransferInitiationStatus mocks base method.

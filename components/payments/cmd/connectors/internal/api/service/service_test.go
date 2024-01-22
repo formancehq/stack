@@ -49,10 +49,11 @@ var (
 			Reference:   "acc2",
 			ConnectorID: connectorDummyPay.ID,
 		},
-		Provider:    models.ConnectorProviderDummyPay,
-		ConnectorID: connectorDummyPay.ID,
-		Amount:      big.NewInt(100),
-		Asset:       "EUR/2",
+		Provider:      models.ConnectorProviderDummyPay,
+		ConnectorID:   connectorDummyPay.ID,
+		Amount:        big.NewInt(100),
+		InitialAmount: big.NewInt(100),
+		Asset:         "EUR/2",
 		RelatedAdjustments: []*models.TransferInitiationAdjustment{
 			{
 				ID: uuid.New(),
@@ -83,10 +84,11 @@ var (
 			Reference:   "acc2",
 			ConnectorID: connectorDummyPay.ID,
 		},
-		Provider:    models.ConnectorProviderDummyPay,
-		ConnectorID: connectorDummyPay.ID,
-		Amount:      big.NewInt(100),
-		Asset:       "EUR/2",
+		Provider:      models.ConnectorProviderDummyPay,
+		ConnectorID:   connectorDummyPay.ID,
+		Amount:        big.NewInt(100),
+		InitialAmount: big.NewInt(100),
+		Asset:         "EUR/2",
 		RelatedAdjustments: []*models.TransferInitiationAdjustment{
 			{
 				ID: uuid.New(),
