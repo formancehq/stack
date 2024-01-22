@@ -81,12 +81,20 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 
 	batching := search.Spec.Batching
 	if batching == nil {
-		batchingConfiguration, err := GetConfigurationObject[*v1beta1.SearchBatchingConfiguration](ctx, search.Spec.Stack)
+
+		batchingCount, err := settings.GetIntOrDefault(ctx, stack.Name, 0, "search.batching.count")
 		if err != nil {
 			return err
 		}
-		if batchingConfiguration != nil {
-			batching = &batchingConfiguration.Spec.Batching
+
+		batchingPeriod, err := settings.GetStringOrEmpty(ctx, stack.Name, "search.batching.period")
+		if err != nil {
+			return err
+		}
+
+		batching = &v1beta1.Batching{
+			Count:  batchingCount,
+			Period: batchingPeriod,
 		}
 	}
 
@@ -202,7 +210,6 @@ func init() {
 			WithWatchStack(),
 			WithWatchConfigurationObject(&v1beta1.Settings{}),
 			WithWatchConfigurationObject(&v1beta1.OpenTelemetryConfiguration{}),
-			WithWatchConfigurationObject(&v1beta1.SearchBatchingConfiguration{}),
 			WithOwn(&v1beta1.StreamProcessor{}),
 			WithOwn(&v1beta1.HTTPAPI{}),
 			WithOwn(&appsv1.Deployment{}),

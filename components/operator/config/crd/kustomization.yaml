@@ -27,7 +27,6 @@ resources:
 - bases/formance.com_temporalconfigurations.yaml
 - bases/formance.com_versionshistories.yaml
 - bases/formance.com_versions.yaml
-- bases/formance.com_searchbatchingconfigurations.yaml
 - bases/formance.com_settings.yaml
 #+kubebuilder:scaffold:crdkustomizeresource
 

@@ -287,23 +287,20 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 		}
 	}
 
-	_, _, err = CreateOrUpdate[*v1beta1.SearchBatchingConfiguration](ctx, types.NamespacedName{
-		Name: configuration.Name,
-	}, func(t *v1beta1.SearchBatchingConfiguration) {
-		t.Spec = v1beta1.SearchBatchingConfigurationSpec{
-			ConfigurationProperties: v1beta1.ConfigurationProperties{
-				Stacks: Map(stacks.Items, func(from v1beta3.Stack) string {
-					return from.GetName()
-				}),
-			},
-			Batching: v1beta1.Batching{
-				Count:  configuration.Spec.Services.Search.Batching.Count,
-				Period: configuration.Spec.Services.Search.Batching.Period,
-			},
+	if configuration.Spec.Services.Search.Batching.Count != 0 {
+		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-search-batching-count", configuration.Name),
+			"search.batching.count", fmt.Sprint(configuration.Spec.Services.Search.Batching.Count), stackNames...)
+		if err != nil {
+			return err
 		}
-	})
-	if err != nil {
-		return errors.Wrap(err, "creating registries configuration")
+	}
+
+	if configuration.Spec.Services.Search.Batching.Period != "" {
+		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-search-batching-count", configuration.Name),
+			"search.batching.period", configuration.Spec.Services.Search.Batching.Period, stackNames...)
+		if err != nil {
+			return err
+		}
 	}
 
 	if len(configuration.Spec.Registries) > 0 {
