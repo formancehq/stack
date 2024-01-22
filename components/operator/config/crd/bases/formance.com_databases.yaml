@@ -65,12 +65,8 @@ spec:
           status:
             description: DatabaseStatus defines the observed state of Database
             properties:
-              boundTo:
-                type: string
               configuration:
                 properties:
-                  applyOnAllStacks:
-                    type: boolean
                   credentialsFromSecret:
                     type: string
                   database:
@@ -83,19 +79,12 @@ spec:
                     type: string
                   port:
                     type: integer
-                  service:
-                    type: string
-                  stacks:
-                    items:
-                      type: string
-                    type: array
                   username:
                     type: string
                 required:
                 - database
                 - host
                 - port
-                - service
                 type: object
               error:
                 type: string

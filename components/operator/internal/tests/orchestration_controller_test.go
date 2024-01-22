@@ -2,6 +2,8 @@ package tests_test
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/databases"
+	"github.com/google/uuid"
 
 	. "github.com/formancehq/operator/internal/tests/internal"
 
@@ -19,7 +21,7 @@ var _ = Describe("OrchestrationController", func() {
 			gateway               *v1beta1.Gateway
 			auth                  *v1beta1.Auth
 			ledger                *v1beta1.Ledger
-			databaseConfiguration *v1beta1.DatabaseConfiguration
+			databaseHostSetting   *v1beta1.Settings
 			orchestration         *v1beta1.Orchestration
 			brokerConfiguration   *v1beta1.BrokerConfiguration
 			temporalConfiguration *v1beta1.TemporalConfiguration
@@ -38,15 +40,7 @@ var _ = Describe("OrchestrationController", func() {
 					Ingress: &v1beta1.GatewayIngress{},
 				},
 			}
-			databaseConfiguration = &v1beta1.DatabaseConfiguration{
-				ObjectMeta: RandObjectMeta(),
-				Spec: v1beta1.DatabaseConfigurationSpec{
-					ConfigurationProperties: v1beta1.ConfigurationProperties{
-						Stacks: []string{stack.Name},
-					},
-					Service: "any",
-				},
-			}
+			databaseHostSetting = databases.NewHostSetting(uuid.NewString(), "localhost", stack.Name)
 			temporalConfiguration = &v1beta1.TemporalConfiguration{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.TemporalConfigurationSpec{
@@ -92,7 +86,7 @@ var _ = Describe("OrchestrationController", func() {
 		JustBeforeEach(func() {
 			Expect(Create(stack)).To(Succeed())
 			Expect(Create(gateway)).To(Succeed())
-			Expect(Create(databaseConfiguration)).To(Succeed())
+			Expect(Create(databaseHostSetting)).To(Succeed())
 			Expect(Create(auth)).To(Succeed())
 			Expect(Create(ledger)).To(Succeed())
 			Expect(Create(orchestration)).To(Succeed())
@@ -102,7 +96,7 @@ var _ = Describe("OrchestrationController", func() {
 		AfterEach(func() {
 			Expect(Delete(auth)).To(Succeed())
 			Expect(Delete(gateway)).To(Succeed())
-			Expect(Delete(databaseConfiguration)).To(Succeed())
+			Expect(Delete(databaseHostSetting)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 			Expect(Delete(ledger)).To(Succeed())
 			Expect(Delete(orchestration)).To(Succeed())

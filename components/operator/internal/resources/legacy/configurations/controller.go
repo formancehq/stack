@@ -5,6 +5,7 @@ import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/api/stack.formance.com/v1beta3"
 	. "github.com/formancehq/operator/internal/core"
+	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/types"
@@ -25,6 +26,10 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 	}); err != nil {
 		return err
 	}
+
+	stackNames := Map(stacks.Items, func(from v1beta3.Stack) string {
+		return from.GetName()
+	})
 
 	type databaseDescriptor struct {
 		config v1beta3.PostgresConfig
@@ -57,29 +62,35 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 			name:   "reconciliation",
 		},
 	} {
-		_, _, err := CreateOrUpdate[*v1beta1.DatabaseConfiguration](ctx, types.NamespacedName{
-			Name: fmt.Sprintf("%s-%s", configuration.Name, cfg.name),
-		}, func(t *v1beta1.DatabaseConfiguration) {
-			if t.Labels == nil {
-				t.Labels = map[string]string{}
-			}
-			t.Spec = v1beta1.DatabaseConfigurationSpec{
-				Port:                  cfg.config.Port,
-				Host:                  cfg.config.Host,
-				Username:              cfg.config.Username,
-				Password:              cfg.config.Password,
-				CredentialsFromSecret: cfg.config.CredentialsFromSecret,
-				DisableSSLMode:        cfg.config.DisableSSLMode,
-				ConfigurationProperties: v1beta1.ConfigurationProperties{
-					Stacks: Map(stacks.Items, func(from v1beta3.Stack) string {
-						return from.GetName()
-					}),
-				},
-				Service: cfg.name,
-			}
-		})
+		_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-host", configuration.Name, cfg.name),
+			fmt.Sprintf("databases.%s.host", cfg.name), cfg.config.Host, stackNames...)
 		if err != nil {
-			return errors.Wrapf(err, "creating database configuration for service %s", cfg.name)
+			return err
+		}
+		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-port", configuration.Name, cfg.name),
+			fmt.Sprintf("databases.%s.port", cfg.name), cfg.config.Port, stackNames...)
+		if err != nil {
+			return err
+		}
+		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-username", configuration.Name, cfg.name),
+			fmt.Sprintf("databases.%s.username", cfg.name), cfg.config.Username, stackNames...)
+		if err != nil {
+			return err
+		}
+		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-password", configuration.Name, cfg.name),
+			fmt.Sprintf("databases.%s.password", cfg.name), cfg.config.Password, stackNames...)
+		if err != nil {
+			return err
+		}
+		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-secret", configuration.Name, cfg.name),
+			fmt.Sprintf("databases.%s.secret", cfg.name), cfg.config.CredentialsFromSecret, stackNames...)
+		if err != nil {
+			return err
+		}
+		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-ssl", configuration.Name, cfg.name),
+			fmt.Sprintf("databases.%s.ssl.disable", cfg.name), cfg.config.DisableSSLMode, stackNames...)
+		if err != nil {
+			return err
 		}
 	}
 

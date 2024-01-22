@@ -543,7 +543,7 @@ func watch[T client.Object](field string) func(ctx Context, object T) []reconcil
 func init() {
 	Init(
 		WithStdReconciler(Reconcile,
-			WithOwn(&v1beta1.DatabaseConfiguration{}),
+			WithOwn(&v1beta1.Settings{}),
 			WithOwn(&v1beta1.BrokerConfiguration{}),
 			WithOwn(&v1beta1.ElasticSearchConfiguration{}),
 			WithOwn(&v1beta1.OpenTelemetryConfiguration{}),

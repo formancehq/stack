@@ -2,10 +2,10 @@ package tests_test
 
 import (
 	"fmt"
-
-	. "github.com/formancehq/operator/internal/tests/internal"
-
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
+	"github.com/formancehq/operator/internal/resources/databases"
+	. "github.com/formancehq/operator/internal/tests/internal"
+	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	batchv1 "k8s.io/api/batch/v1"
@@ -15,9 +15,9 @@ import (
 var _ = Describe("DatabaseController", func() {
 	Context("When creating a Database", func() {
 		var (
-			stack                 *v1beta1.Stack
-			database              *v1beta1.Database
-			databaseConfiguration *v1beta1.DatabaseConfiguration
+			stack               *v1beta1.Stack
+			database            *v1beta1.Database
+			databaseHostSetting *v1beta1.Settings
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -25,16 +25,8 @@ var _ = Describe("DatabaseController", func() {
 				Spec:       v1beta1.StackSpec{},
 			}
 			Expect(Create(stack)).To(BeNil())
-			databaseConfiguration = &v1beta1.DatabaseConfiguration{
-				ObjectMeta: RandObjectMeta(),
-				Spec: v1beta1.DatabaseConfigurationSpec{
-					ConfigurationProperties: v1beta1.ConfigurationProperties{
-						Stacks: []string{stack.Name},
-					},
-					Service: "any",
-				},
-			}
-			Expect(Create(databaseConfiguration)).To(Succeed())
+			databaseHostSetting = databases.NewHostSetting(uuid.NewString(), "localhost", stack.Name)
+			Expect(Create(databaseHostSetting)).Should(Succeed())
 			database = &v1beta1.Database{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.DatabaseSpec{
@@ -48,7 +40,7 @@ var _ = Describe("DatabaseController", func() {
 		})
 		AfterEach(func() {
 			Expect(client.IgnoreNotFound(Delete(database))).To(Succeed())
-			Expect(Delete(databaseConfiguration)).To(Succeed())
+			Expect(Delete(databaseHostSetting)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 		})
 		shouldBeReady := func() {
@@ -82,9 +74,9 @@ var _ = Describe("DatabaseController", func() {
 					return database.Status.Ready
 				}).Should(BeTrue())
 
-				patch := client.MergeFrom(databaseConfiguration.DeepCopy())
-				databaseConfiguration.Spec.Host = "xxx"
-				Expect(Patch(databaseConfiguration, patch)).To(Succeed())
+				patch := client.MergeFrom(databaseHostSetting.DeepCopy())
+				databaseHostSetting.Spec.Value = "xxx"
+				Expect(Patch(databaseHostSetting, patch)).To(Succeed())
 			})
 			It("Should declare the Database object as out of sync", func() {
 				Eventually(func(g Gomega) bool {

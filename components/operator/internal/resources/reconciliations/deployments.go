@@ -32,7 +32,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, reconciliation *v1
 
 	env = append(env,
 		databases.PostgresEnvVars(
-			database.Status.Configuration.DatabaseConfigurationSpec,
+			database.Status.Configuration.DatabaseConfiguration,
 			core.GetObjectName(stack.Name, "reconciliation"),
 		)...,
 	)

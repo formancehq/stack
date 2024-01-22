@@ -32,7 +32,7 @@ func commonEnvVars(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Pay
 	}
 	env = append(env, gatewayEnv...)
 	env = append(env, core.GetDevEnvVars(stack, payments)...)
-	env = append(env, databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)...)
+	env = append(env, databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfiguration, database.Status.Configuration.Database)...)
 	env = append(env,
 		core.Env("POSTGRES_DATABASE_NAME", "$(POSTGRES_DATABASE)"),
 		core.Env("CONFIG_ENCRYPTION_KEY", payments.Spec.EncryptionKey),
@@ -217,7 +217,7 @@ func setInitContainer(payments *v1beta1.Payments, database *v1beta1.Database, im
 		t.Spec.Template.Spec.InitContainers = []v1.Container{
 			databases.MigrateDatabaseContainer(
 				image,
-				database.Status.Configuration.DatabaseConfigurationSpec,
+				database.Status.Configuration.DatabaseConfiguration,
 				database.Status.Configuration.Database,
 				func(m *databases.MigrationConfiguration) {
 					m.AdditionalEnv = []v1.EnvVar{

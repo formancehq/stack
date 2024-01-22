@@ -18,8 +18,10 @@ package databases
 
 import (
 	"fmt"
-	"k8s.io/apimachinery/pkg/fields"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"reflect"
+	"strconv"
+	"strings"
 
 	"github.com/formancehq/operator/internal/core"
 	"github.com/pkg/errors"
@@ -62,7 +64,7 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 		return core.ErrDeleted
 	}
 
-	databaseConfiguration, err := findDatabaseConfiguration(ctx, database)
+	databaseConfiguration, err := findConfiguration(ctx, database)
 	if err != nil {
 		return err
 	}
@@ -72,19 +74,21 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 	}
 
 	switch {
-	case database.Status.BoundTo == "" || !database.Status.Ready:
+	case !database.Status.Ready:
 		// Some job fields are immutable (env vars for example)
 		// So, if the configuration has changed, wee need to delete the job,
 		// Then recreate a new one
 		if database.Status.Configuration != nil {
 			if !reflect.DeepEqual(
-				database.Status.Configuration.DatabaseConfigurationSpec,
-				databaseConfiguration.Spec,
+				database.Status.Configuration.DatabaseConfiguration,
+				*databaseConfiguration,
 			) {
 				object := &batchv1.Job{}
-				object.SetNamespace(database.Spec.Stack)
 				object.SetName(fmt.Sprintf("%s-create-database", database.Spec.Service))
-				if err := ctx.GetClient().Delete(ctx, object); client.IgnoreNotFound(err) != nil {
+				object.SetNamespace(database.Spec.Stack)
+				if err := ctx.GetClient().Delete(ctx, object, &client.DeleteOptions{
+					GracePeriodSeconds: pointer.For(int64(0)),
+				}); client.IgnoreNotFound(err) != nil {
 					return err
 				}
 			}
@@ -104,81 +108,169 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 		}
 
 		database.Status.Configuration = &v1beta1.CreatedDatabase{
-			DatabaseConfigurationSpec: databaseConfiguration.Spec,
-			Database:                  dbName,
+			DatabaseConfiguration: *databaseConfiguration,
+			Database:              dbName,
 		}
-		database.Status.BoundTo = databaseConfiguration.Name
 
 		if job.Status.Succeeded == 0 {
 			return core.ErrPending
 		}
-	case !reflect.DeepEqual(database.Status.Configuration.DatabaseConfigurationSpec,
-		databaseConfiguration.Spec):
+	case !reflect.DeepEqual(database.Status.Configuration.DatabaseConfiguration,
+		*databaseConfiguration):
 		database.Status.OutOfSync = true
 	}
 
 	return nil
 }
 
-func findDatabaseConfiguration(ctx core.Context, database *v1beta1.Database) (*v1beta1.DatabaseConfiguration, error) {
-	for _, set := range []map[string]string{
-		{
-			"stack":   database.Spec.Stack,
-			"service": database.Spec.Service,
-		},
-		{
-			"stack":   database.Spec.Stack,
-			"service": "any",
-		},
-		{
-			"stack":   "any",
-			"service": database.Spec.Service,
-		},
-		{
-			"stack":   "any",
-			"service": "any",
-		},
-	} {
-		databaseConfiguration, err := findDatabaseConfigurationWithFields(ctx, database, set)
-		if err != nil {
-			return nil, err
-		}
-		if databaseConfiguration != nil {
-			return databaseConfiguration, nil
-		}
-	}
-
-	return nil, nil
-}
-
-func findDatabaseConfigurationWithFields(ctx core.Context, database *v1beta1.Database, set map[string]string) (*v1beta1.DatabaseConfiguration, error) {
-	databaseConfigurationList := &v1beta1.DatabaseConfigurationList{}
-	if err := ctx.GetClient().List(ctx, databaseConfigurationList, &client.ListOptions{
-		FieldSelector: fields.SelectorFromSet(set),
+func GetSetting(ctx core.Context, stack string, keys ...string) (*string, error) {
+	key := strings.Join(keys, ".")
+	list := &v1beta1.SettingsList{}
+	if err := ctx.GetClient().List(ctx, list, client.MatchingFields{
+		"stack": stack,
+		"key":   key,
 	}); err != nil {
 		return nil, err
 	}
 
-	switch len(databaseConfigurationList.Items) {
-	case 0:
+	if len(list.Items) == 0 {
 		return nil, nil
-	case 1:
-		return &databaseConfigurationList.Items[0], nil
-	default:
-		database.Status.OutOfSync = true
-		return nil, fmt.Errorf("multiple database configuration object found")
 	}
+	if len(list.Items) > 1 {
+		return nil, fmt.Errorf("found multiple matching setting with key '%s' and stack '%s'", key, stack)
+	}
+
+	return &list.Items[0].Spec.Value, nil
+}
+
+func GetStringSetting(ctx core.Context, stack string, keys ...string) (*string, error) {
+	return GetSetting(ctx, stack, keys...)
+}
+
+func ValueOrDefault[T any](v *T, defaultValue T) T {
+	if v == nil {
+		return defaultValue
+	}
+	return *v
+}
+
+func GetInt64Setting(ctx core.Context, stack string, keys ...string) (*int64, error) {
+	value, err := GetSetting(ctx, stack, keys...)
+	if err != nil {
+		return nil, err
+	}
+	if value == nil {
+		return nil, nil
+	}
+	intValue, err := strconv.ParseInt(*value, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	return &intValue, nil
+}
+
+func GetBoolSetting(ctx core.Context, stack string, keys ...string) (*bool, error) {
+	value, err := GetSetting(ctx, stack, keys...)
+	if err != nil {
+		return nil, err
+	}
+	if value == nil {
+		return nil, nil
+	}
+	return pointer.For(*value == "true"), nil
+}
+
+func findConfiguration(ctx core.Context, database *v1beta1.Database) (*v1beta1.DatabaseConfiguration, error) {
+	host, err := GetStringSetting(ctx, database.Spec.Stack, "databases", database.Spec.Service, "host")
+	if err != nil {
+		return nil, err
+	}
+	if host == nil {
+		host, err = GetStringSetting(ctx, database.Spec.Stack, "databases", "host")
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if host == nil {
+		return nil, errors.New("missing database host")
+	}
+
+	port, err := GetInt64Setting(ctx, database.Spec.Stack, "databases", database.Spec.Service, "port")
+	if err != nil {
+		return nil, err
+	}
+	if port == nil {
+		port, err = GetInt64Setting(ctx, database.Spec.Stack, "databases", "port")
+		if err != nil {
+			return nil, err
+		}
+	}
+	if port == nil {
+		port = pointer.For(int64(5432)) // default postgres port
+	}
+
+	username, err := GetStringSetting(ctx, database.Spec.Stack, "databases", database.Spec.Service, "username")
+	if err != nil {
+		return nil, err
+	}
+	if username == nil {
+		username, err = GetStringSetting(ctx, database.Spec.Stack, "databases", "username")
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	password, err := GetStringSetting(ctx, database.Spec.Stack, "databases", database.Spec.Service, "password")
+	if err != nil {
+		return nil, err
+	}
+	if password == nil {
+		password, err = GetStringSetting(ctx, database.Spec.Stack, "databases", "password")
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	credentialsFromSecret, err := GetStringSetting(ctx, database.Spec.Stack, "databases", database.Spec.Service, "credentials-from-secret")
+	if err != nil {
+		return nil, err
+	}
+	if credentialsFromSecret == nil {
+		credentialsFromSecret, err = GetStringSetting(ctx, database.Spec.Stack, "databases", "secret")
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	disableSSLMode, err := GetBoolSetting(ctx, database.Spec.Stack, "databases", database.Spec.Service, "ssl", "disable")
+	if err != nil {
+		return nil, err
+	}
+	if disableSSLMode == nil {
+		disableSSLMode, err = GetBoolSetting(ctx, database.Spec.Stack, "databases", "disable-ssl-mode")
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &v1beta1.DatabaseConfiguration{
+		Port:                  int(*port),
+		Host:                  *host,
+		Username:              ValueOrDefault(username, ""),
+		Password:              ValueOrDefault(password, ""),
+		CredentialsFromSecret: ValueOrDefault(credentialsFromSecret, ""),
+		DisableSSLMode:        ValueOrDefault(disableSSLMode, false),
+	}, nil
 }
 
 func init() {
 	core.Init(
 		core.WithStackDependencyReconciler(Reconcile,
 			core.WithOwn(&batchv1.Job{}),
-			core.WithWatchConfigurationObject(&v1beta1.DatabaseConfiguration{}),
 			core.WithWatchConfigurationObject(&v1beta1.RegistriesConfiguration{}),
+			core.WithWatchConfigurationObject(&v1beta1.Settings{}),
 		),
-		core.WithIndex[*v1beta1.DatabaseConfiguration]("service", func(t *v1beta1.DatabaseConfiguration) []string {
-			return []string{t.Spec.Service}
-		}),
 	)
 }

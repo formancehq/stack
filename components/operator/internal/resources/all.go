@@ -16,6 +16,7 @@ import (
 	_ "github.com/formancehq/operator/internal/resources/payments"
 	_ "github.com/formancehq/operator/internal/resources/reconciliations"
 	_ "github.com/formancehq/operator/internal/resources/searches"
+	_ "github.com/formancehq/operator/internal/resources/settings"
 	_ "github.com/formancehq/operator/internal/resources/stacks"
 	_ "github.com/formancehq/operator/internal/resources/stargates"
 	_ "github.com/formancehq/operator/internal/resources/streamprocessors"

@@ -3,7 +3,9 @@ package tests_test
 import (
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
+	"github.com/formancehq/operator/internal/resources/databases"
 	. "github.com/formancehq/operator/internal/tests/internal"
+	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
@@ -13,24 +15,16 @@ import (
 var _ = Describe("AuthController", func() {
 	Context("When creating a Auth object", func() {
 		var (
-			stack                 *v1beta1.Stack
-			auth                  *v1beta1.Auth
-			databaseConfiguration *v1beta1.DatabaseConfiguration
+			stack               *v1beta1.Stack
+			auth                *v1beta1.Auth
+			databaseHostSetting *v1beta1.Settings
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
 				ObjectMeta: RandObjectMeta(),
 				Spec:       v1beta1.StackSpec{},
 			}
-			databaseConfiguration = &v1beta1.DatabaseConfiguration{
-				ObjectMeta: RandObjectMeta(),
-				Spec: v1beta1.DatabaseConfigurationSpec{
-					ConfigurationProperties: v1beta1.ConfigurationProperties{
-						Stacks: []string{stack.Name},
-					},
-					Service: "any",
-				},
-			}
+			databaseHostSetting = databases.NewHostSetting(uuid.NewString(), "localhost", stack.Name)
 			auth = &v1beta1.Auth{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.AuthSpec{
@@ -42,12 +36,12 @@ var _ = Describe("AuthController", func() {
 		})
 		JustBeforeEach(func() {
 			Expect(Create(stack)).To(Succeed())
-			Expect(Create(databaseConfiguration)).To(Succeed())
+			Expect(Create(databaseHostSetting)).To(Succeed())
 			Expect(Create(auth)).To(Succeed())
 		})
 		AfterEach(func() {
 			Expect(Delete(auth)).To(Succeed())
-			Expect(Delete(databaseConfiguration)).To(Succeed())
+			Expect(Delete(databaseHostSetting)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 		})
 		It("Should create a deployment", func() {

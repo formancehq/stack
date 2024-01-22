@@ -26,9 +26,22 @@ type DatabaseSpec struct {
 	Service         string `json:"service"`
 }
 
+type DatabaseConfiguration struct {
+	Port int    `json:"port"`
+	Host string `json:"host"`
+	// +optional
+	Username string `json:"username"`
+	// +optional
+	Password string `json:"password"`
+	// +optional
+	CredentialsFromSecret string `json:"credentialsFromSecret"`
+	// +optional
+	DisableSSLMode bool `json:"disableSSLMode"`
+}
+
 type CreatedDatabase struct {
-	DatabaseConfigurationSpec `json:",inline"`
-	Database                  string `json:"database"`
+	DatabaseConfiguration `json:",inline"`
+	Database              string `json:"database"`
 }
 
 // DatabaseStatus defines the observed state of Database
@@ -39,8 +52,6 @@ type DatabaseStatus struct {
 	Ready bool `json:"ready,omitempty"`
 	//+optional
 	Configuration *CreatedDatabase `json:"configuration,omitempty"`
-	//+optional
-	BoundTo string `json:"boundTo,omitempty"`
 	//+optional
 	OutOfSync bool `json:"outOfSync"`
 }

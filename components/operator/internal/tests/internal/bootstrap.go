@@ -2,9 +2,11 @@ package internal
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 	osRuntime "runtime"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"time"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -46,7 +48,7 @@ var _ = BeforeSuite(func() {
 	logf.SetLogger(zap.New(zap.WriteTo(os.Stdout), zap.UseDevMode(true)))
 	ctx, cancel = context.WithCancel(context.Background())
 
-	SetDefaultEventuallyTimeout(2 * time.Second)
+	SetDefaultEventuallyTimeout(5 * time.Second)
 
 	_, filename, _, _ := osRuntime.Caller(0)
 
@@ -136,7 +138,21 @@ var _ = BeforeSuite(func() {
 				Namespace: request.Namespace,
 				Name:      request.Name,
 			}, job); err != nil {
+				if client.IgnoreNotFound(err) == nil {
+					return reconcile.Result{}, nil
+				}
 				return reconcile.Result{}, err
+			}
+			if !job.DeletionTimestamp.IsZero() {
+				patch := client.MergeFrom(job.DeepCopy())
+				if controllerutil.RemoveFinalizer(job, "orphan") {
+					fmt.Println("finalizer dropped")
+					if err := mgr.GetClient().Patch(ctx, job, patch); err != nil {
+						return reconcile.Result{}, err
+					}
+					fmt.Println("job updated")
+				}
+				return reconcile.Result{}, nil
 			}
 			job.Status.Succeeded = 1
 

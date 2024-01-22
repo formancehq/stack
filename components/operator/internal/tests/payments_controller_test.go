@@ -3,8 +3,10 @@ package tests_test
 import (
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
+	"github.com/formancehq/operator/internal/resources/databases"
 	. "github.com/formancehq/operator/internal/tests/internal"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
@@ -15,9 +17,9 @@ import (
 var _ = Describe("PaymentsController", func() {
 	Context("When creating a Payments object", func() {
 		var (
-			stack                 *v1beta1.Stack
-			payments              *v1beta1.Payments
-			databaseConfiguration *v1beta1.DatabaseConfiguration
+			stack               *v1beta1.Stack
+			payments            *v1beta1.Payments
+			databaseHostSetting *v1beta1.Settings
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -32,24 +34,16 @@ var _ = Describe("PaymentsController", func() {
 					},
 				},
 			}
-			databaseConfiguration = &v1beta1.DatabaseConfiguration{
-				ObjectMeta: RandObjectMeta(),
-				Spec: v1beta1.DatabaseConfigurationSpec{
-					ConfigurationProperties: v1beta1.ConfigurationProperties{
-						Stacks: []string{stack.Name},
-					},
-					Service: "any",
-				},
-			}
+			databaseHostSetting = databases.NewHostSetting(uuid.NewString(), "localhost", stack.Name)
 		})
 		JustBeforeEach(func() {
 			Expect(Create(stack)).To(Succeed())
-			Expect(Create(databaseConfiguration)).To(Succeed())
+			Expect(Create(databaseHostSetting)).To(Succeed())
 			Expect(Create(payments)).To(Succeed())
 		})
 		AfterEach(func() {
 			Expect(Delete(payments)).To(Succeed())
-			Expect(Delete(databaseConfiguration)).To(Succeed())
+			Expect(Delete(databaseHostSetting)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 		})
 		It("Should create a read deployment with a service", func() {

@@ -59,7 +59,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, orchestration *v1b
 	}
 	env = append(env, gatewayEnv...)
 	env = append(env, core.GetDevEnvVars(stack, orchestration)...)
-	env = append(env, databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfigurationSpec, database.Status.Configuration.Database)...)
+	env = append(env, databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfiguration, database.Status.Configuration.Database)...)
 
 	temporalConfiguration, err := core.RequireConfigurationObject[*v1beta1.TemporalConfiguration](ctx, stack.Name)
 	if err != nil {

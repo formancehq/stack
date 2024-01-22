@@ -3,7 +3,9 @@ package tests_test
 import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
+	"github.com/formancehq/operator/internal/resources/databases"
 	. "github.com/formancehq/operator/internal/tests/internal"
+	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
@@ -13,24 +15,16 @@ import (
 var _ = Describe("Modules Versions", func() {
 	Context("When creating a Ledger object", func() {
 		var (
-			stack                 *v1beta1.Stack
-			ledger                *v1beta1.Ledger
-			databaseConfiguration *v1beta1.DatabaseConfiguration
+			stack               *v1beta1.Stack
+			ledger              *v1beta1.Ledger
+			databaseHostSetting *v1beta1.Settings
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
 				ObjectMeta: RandObjectMeta(),
 				Spec:       v1beta1.StackSpec{},
 			}
-			databaseConfiguration = &v1beta1.DatabaseConfiguration{
-				ObjectMeta: RandObjectMeta(),
-				Spec: v1beta1.DatabaseConfigurationSpec{
-					ConfigurationProperties: v1beta1.ConfigurationProperties{
-						Stacks: []string{stack.Name},
-					},
-					Service: "any",
-				},
-			}
+			databaseHostSetting = databases.NewHostSetting(uuid.NewString(), "localhost", stack.Name)
 			ledger = &v1beta1.Ledger{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.LedgerSpec{
@@ -42,12 +36,12 @@ var _ = Describe("Modules Versions", func() {
 		})
 		JustBeforeEach(func() {
 			Expect(Create(stack)).To(Succeed())
-			Expect(Create(databaseConfiguration)).To(Succeed())
+			Expect(Create(databaseHostSetting)).To(Succeed())
 			Expect(Create(ledger)).To(Succeed())
 		})
 		AfterEach(func() {
 			Expect(Delete(ledger)).To(Succeed())
-			Expect(Delete(databaseConfiguration)).To(Succeed())
+			Expect(Delete(databaseHostSetting)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 		})
 		Context("With version defined at Ledger level", func() {

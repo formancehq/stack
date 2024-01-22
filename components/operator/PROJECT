@@ -202,4 +202,10 @@ resources:
   kind: SearchBatchingConfiguration
   path: github.com/formancehq/operator/api/formance.com/v1beta1
   version: v1beta1
+- api:
+    crdVersion: v1
+  group: formance.com
+  kind: Settings
+  path: github.com/formancehq/operator/api/formance.com/v1beta1
+  version: v1beta1
 version: "3"

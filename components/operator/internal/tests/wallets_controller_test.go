@@ -3,7 +3,9 @@ package tests_test
 import (
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
+	"github.com/formancehq/operator/internal/resources/databases"
 	. "github.com/formancehq/operator/internal/tests/internal"
+	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
@@ -12,12 +14,12 @@ import (
 var _ = Describe("WalletsController", func() {
 	Context("When creating a Wallets object", func() {
 		var (
-			stack                 *v1beta1.Stack
-			gateway               *v1beta1.Gateway
-			ledger                *v1beta1.Ledger
-			databaseConfiguration *v1beta1.DatabaseConfiguration
-			wallets               *v1beta1.Wallets
-			auth                  *v1beta1.Auth
+			stack               *v1beta1.Stack
+			gateway             *v1beta1.Gateway
+			ledger              *v1beta1.Ledger
+			databaseHostSetting *v1beta1.Settings
+			wallets             *v1beta1.Wallets
+			auth                *v1beta1.Auth
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -33,15 +35,7 @@ var _ = Describe("WalletsController", func() {
 					Ingress: &v1beta1.GatewayIngress{},
 				},
 			}
-			databaseConfiguration = &v1beta1.DatabaseConfiguration{
-				ObjectMeta: RandObjectMeta(),
-				Spec: v1beta1.DatabaseConfigurationSpec{
-					ConfigurationProperties: v1beta1.ConfigurationProperties{
-						Stacks: []string{stack.Name},
-					},
-					Service: "any",
-				},
-			}
+			databaseHostSetting = databases.NewHostSetting(uuid.NewString(), "localhost", stack.Name)
 			wallets = &v1beta1.Wallets{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.WalletsSpec{
@@ -71,7 +65,7 @@ var _ = Describe("WalletsController", func() {
 			Expect(Create(stack)).To(Succeed())
 			Expect(Create(auth)).To(Succeed())
 			Expect(Create(gateway)).To(Succeed())
-			Expect(Create(databaseConfiguration)).To(Succeed())
+			Expect(Create(databaseHostSetting)).To(Succeed())
 			Expect(Create(ledger)).To(Succeed())
 			Expect(Create(wallets)).To(Succeed())
 		})
@@ -80,7 +74,7 @@ var _ = Describe("WalletsController", func() {
 			Expect(Delete(wallets)).To(Succeed())
 			Expect(Delete(ledger)).To(Succeed())
 			Expect(Delete(gateway)).To(Succeed())
-			Expect(Delete(databaseConfiguration)).To(Succeed())
+			Expect(Delete(databaseHostSetting)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 		})
 		It("Should create a deployment", func() {

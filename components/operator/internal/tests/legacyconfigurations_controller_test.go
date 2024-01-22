@@ -1,7 +1,6 @@
 package tests_test
 
 import (
-	"fmt"
 	. "github.com/formancehq/operator/internal/tests/internal"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -50,16 +49,16 @@ var _ = Describe("ConfigurationsController (legacy)", func() {
 		AfterEach(func() {
 			Expect(Delete(configuration)).To(Succeed())
 		})
-		It("Should create the configuration objects", func() {
-			By("DatabaseConfiguration", func() {
-				for _, service := range []string{
-					"auth", "ledger", "payments", "orchestration", "webhooks", "reconciliation",
-				} {
-					Eventually(func(g Gomega) error {
-						return LoadResource("", fmt.Sprintf("%s-%s", configuration.Name, service), &v1beta1.DatabaseConfiguration{})
-					}).Should(Succeed())
-				}
-			})
+		It("Should create the settings objects", func() {
+			//By("DatabaseConfiguration", func() {
+			//	for _, service := range []string{
+			//		"auth", "ledger", "payments", "orchestration", "webhooks", "reconciliation",
+			//	} {
+			//		Eventually(func(g Gomega) error {
+			//			return LoadResource("", fmt.Sprintf("%s-%s", configuration.Name, service), &v1beta1.DatabaseConfiguration{})
+			//		}).Should(Succeed())
+			//	}
+			//})
 			By("OpenTelemetryConfiguration", func() {
 				Eventually(func(g Gomega) error {
 					return LoadResource("", configuration.Name, &v1beta1.OpenTelemetryConfiguration{})

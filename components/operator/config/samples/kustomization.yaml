@@ -30,4 +30,5 @@ resources:
 - formance.com_v1beta1_versionshistory.yaml
 - formance.com_v1beta1_versions.yaml
 - formance.com_v1beta1_searchbatchingconfiguration.yaml
+- formance.com_v1beta1_settings.yaml
 #+kubebuilder:scaffold:manifestskustomizesamples

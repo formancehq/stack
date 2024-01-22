@@ -34,7 +34,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, dat
 
 	env = append(env,
 		databases.PostgresEnvVars(
-			database.Status.Configuration.DatabaseConfigurationSpec,
+			database.Status.Configuration.DatabaseConfiguration,
 			GetObjectName(stack.Name, "auth"),
 		)...,
 	)
