@@ -10,6 +10,13 @@ import (
 	"strings"
 )
 
+func ValueOrDefault[T any](v *T, defaultValue T) T {
+	if v == nil {
+		return defaultValue
+	}
+	return *v
+}
+
 func Get(ctx core.Context, stack string, keys ...string) (*string, error) {
 	key := strings.Join(keys, ".")
 	list := &v1beta1.SettingsList{}
@@ -71,13 +78,6 @@ func RequireString(ctx core.Context, stack string, keys ...string) (string, erro
 	return *value, nil
 }
 
-func ValueOrDefault[T any](v *T, defaultValue T) T {
-	if v == nil {
-		return defaultValue
-	}
-	return *v
-}
-
 func GetInt64(ctx core.Context, stack string, keys ...string) (*int64, error) {
 	value, err := Get(ctx, stack, keys...)
 	if err != nil {
@@ -92,6 +92,22 @@ func GetInt64(ctx core.Context, stack string, keys ...string) (*int64, error) {
 	}
 
 	return &intValue, nil
+}
+
+func GetInt32(ctx core.Context, stack string, keys ...string) (*int32, error) {
+	value, err := Get(ctx, stack, keys...)
+	if err != nil {
+		return nil, err
+	}
+	if value == nil {
+		return nil, nil
+	}
+	intValue, err := strconv.ParseInt(*value, 10, 32)
+	if err != nil {
+		return nil, err
+	}
+
+	return pointer.For(int32(intValue)), nil
 }
 
 func GetUInt64(ctx core.Context, stack string, keys ...string) (*uint64, error) {
@@ -172,6 +188,18 @@ func GetUInt16OrDefault(ctx core.Context, stack string, defaultValue uint16, key
 	return *value, nil
 }
 
+func GetInt32OrDefault(ctx core.Context, stack string, defaultValue int32, keys ...string) (int32, error) {
+	value, err := GetInt32(ctx, stack, keys...)
+	if err != nil {
+		return 0, err
+	}
+
+	if value == nil {
+		return defaultValue, nil
+	}
+	return *value, nil
+}
+
 func GetBool(ctx core.Context, stack string, keys ...string) (*bool, error) {
 	value, err := Get(ctx, stack, keys...)
 	if err != nil {
@@ -196,4 +224,34 @@ func GetBoolOrDefault(ctx core.Context, stack string, defaultValue bool, keys ..
 
 func GetBoolOrFalse(ctx core.Context, stack string, keys ...string) (bool, error) {
 	return GetBoolOrDefault(ctx, stack, false, keys...)
+}
+
+func GetMap(ctx core.Context, stack string, keys ...string) (map[string]string, error) {
+	value, err := GetString(ctx, stack, keys...)
+	if err != nil {
+		return nil, err
+	}
+	if value == nil {
+		return nil, nil
+	}
+	ret := make(map[string]string)
+	parts := strings.Split(*value, ",")
+	for _, part := range parts {
+		parts := strings.SplitN(part, "=", 2)
+		ret[parts[0]] = parts[1]
+	}
+
+	return ret, nil
+}
+
+func GetMapOrEmpty(ctx core.Context, stack string, keys ...string) (map[string]string, error) {
+	value, err := GetMap(ctx, stack, keys...)
+	if err != nil {
+		return nil, err
+	}
+	if value == nil {
+		return map[string]string{}, nil
+	}
+
+	return value, nil
 }

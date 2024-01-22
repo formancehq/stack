@@ -105,11 +105,11 @@ func init() {
 			WithOwn(&appsv1.Deployment{}),
 			WithOwn(&corev1.Service{}),
 			WithOwn(&networkingv1.Ingress{}),
-			WithWatchConfigurationObject(&v1beta1.OpenTelemetryConfiguration{}),
+			WithWatchStack(),
+			WithWatchConfigurationObject(&v1beta1.Settings{}),
 			WithWatchDependency(&v1beta1.HTTPAPI{}),
 			WithWatchDependency(&v1beta1.Auth{}),
 			WithWatch[*v1beta1.BrokerTopic](brokertopics.Watch[*v1beta1.Gateway]("gateway")),
-			WithWatchStack(),
 		),
 	)
 }

@@ -122,9 +122,9 @@ func init() {
 			WithOwn(&v1beta1.HTTPAPI{}),
 			WithOwn(&v1beta1.Database{}),
 			WithWatchStack(),
+			WithWatchConfigurationObject(&v1beta1.Settings{}),
 			WithWatch[*v1beta1.BrokerTopic](brokertopics.Watch[*v1beta1.Ledger]("ledger")),
 			WithWatch(databases.Watch("ledger", &v1beta1.Ledger{})),
-			WithWatchConfigurationObject(&v1beta1.OpenTelemetryConfiguration{}),
 			WithWatchDependency(&v1beta1.Search{}),
 		),
 	)

@@ -12,7 +12,6 @@ import (
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
-	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/internal/resources/services"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	v1 "k8s.io/api/apps/v1"
@@ -191,7 +190,7 @@ func setCommonContainerConfiguration(ctx core.Context, stack *v1beta1.Stack, led
 		prefix = "NUMARY_"
 	}
 	env := make([]corev1.EnvVar, 0)
-	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabledWithPrefix(ctx, stack.Name, core.GetModuleName(ctx, ledger), prefix)
+	otlpEnv, err := settings.GetOTELEnvVarsIfEnabledWithPrefix(ctx, stack, core.GetModuleName(ctx, ledger), prefix)
 	if err != nil {
 		return err
 	}
@@ -272,7 +271,7 @@ func createLedgerContainerReadOnly(v2 bool) *corev1.Container {
 
 func createGatewayDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger) error {
 
-	caddyfileConfigMap, err := core.CreateCaddyfileConfigMap(ctx, stack, "ledger", Caddyfile, map[string]any{
+	caddyfileConfigMap, err := settings.CreateCaddyfileConfigMap(ctx, stack, "ledger", Caddyfile, map[string]any{
 		"Debug": stack.Spec.Debug || ledger.Spec.Debug,
 	}, core.WithController[*corev1.ConfigMap](ctx.GetScheme(), ledger))
 	if err != nil {
@@ -280,7 +279,7 @@ func createGatewayDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1b
 	}
 
 	env := make([]corev1.EnvVar, 0)
-	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, core.GetModuleName(ctx, ledger))
+	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, core.GetModuleName(ctx, ledger))
 	if err != nil {
 		return err
 	}
@@ -288,7 +287,7 @@ func createGatewayDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1b
 	env = append(env, core.GetDevEnvVars(stack, ledger)...)
 
 	_, err = deployments.CreateOrUpdate(ctx, ledger, "ledger-gateway",
-		core.ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", env, nil),
+		settings.ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", env, nil),
 		deployments.WithMatchingLabels("ledger"),
 	)
 	return err

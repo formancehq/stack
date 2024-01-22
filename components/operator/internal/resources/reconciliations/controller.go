@@ -62,9 +62,9 @@ func init() {
 			WithOwn(&appsv1.Deployment{}),
 			WithOwn(&v1beta1.AuthClient{}),
 			WithOwn(&v1beta1.HTTPAPI{}),
+			WithWatchConfigurationObject(&v1beta1.Settings{}),
 			WithWatchDependency(&v1beta1.Ledger{}),
 			WithWatchDependency(&v1beta1.Payments{}),
-			WithWatchConfigurationObject(&v1beta1.OpenTelemetryConfiguration{}),
 		),
 	)
 }

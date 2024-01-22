@@ -3,7 +3,6 @@ package tests_test
 import (
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
-	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/operator/internal/tests/internal"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
@@ -68,39 +67,29 @@ var _ = Describe("LedgerController", func() {
 			}).Should(Succeed())
 		})
 		Context("with monitoring enabled", func() {
-			var openTelemetryConfiguration *v1beta1.OpenTelemetryConfiguration
+			var (
+				otelTracesEnabledSetting  *v1beta1.Settings
+				otelTracesEndpointSetting *v1beta1.Settings
+			)
 			BeforeEach(func() {
-				openTelemetryConfiguration = &v1beta1.OpenTelemetryConfiguration{
-					ObjectMeta: RandObjectMeta(),
-					Spec: v1beta1.OpenTelemetryConfigurationSpec{
-						ConfigurationProperties: v1beta1.ConfigurationProperties{
-							Stacks: []string{stack.Name},
-						},
-						Traces: &v1beta1.TracesSpec{
-							Otlp: &v1beta1.OtlpSpec{
-								Endpoint: "otel-collector",
-								Port:     4317,
-								Insecure: true,
-							},
-						},
-					},
-				}
-				Expect(Create(openTelemetryConfiguration)).To(Succeed())
+				otelTracesEnabledSetting = settings.New(uuid.NewString(), "opentelemetry.traces.enabled", "true", stack.Name)
+				otelTracesEndpointSetting = settings.New(uuid.NewString(), "opentelemetry.traces.endpoint", "collector", stack.Name)
+				Expect(Create(otelTracesEndpointSetting)).To(Succeed())
+				Expect(Create(otelTracesEnabledSetting)).To(Succeed())
 			})
 			AfterEach(func() {
-				Expect(Delete(openTelemetryConfiguration)).To(Succeed())
+				Expect(Delete(otelTracesEndpointSetting)).To(Succeed())
+				Expect(Delete(otelTracesEnabledSetting)).To(Succeed())
 			})
 			It("Should add correct env vars to the deployment", func() {
 				Eventually(func(g Gomega) []corev1.EnvVar {
 					deployment := &appsv1.Deployment{}
 					g.Expect(Get(core.GetNamespacedResourceName(stack.Name, "ledger"), deployment)).To(Succeed())
 					return deployment.Spec.Template.Spec.Containers[0].Env
-				}).Should(ContainElements(
-					collectionutils.Map(
-						opentelemetryconfigurations.GetEnvVars(openTelemetryConfiguration, "ledger"),
-						collectionutils.ToAny[corev1.EnvVar],
-					)...,
-				))
+				}).Should(ContainElements(corev1.EnvVar{
+					Name:  "OTEL_SERVICE_NAME",
+					Value: "ledger",
+				}))
 			})
 		})
 		Context("with a BrokerTopic object existing on the ledger service", func() {

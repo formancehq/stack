@@ -12,7 +12,6 @@ import (
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
-	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
@@ -47,7 +46,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 	consumers []*v1beta1.BrokerTopicConsumer, version string) error {
 
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, GetModuleName(ctx, orchestration))
+	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, GetModuleName(ctx, orchestration))
 	if err != nil {
 		return err
 	}

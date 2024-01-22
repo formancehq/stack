@@ -7,15 +7,15 @@ import (
 	"github.com/formancehq/operator/internal/resources/auths"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
-	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/internal/resources/registries"
+	"github.com/formancehq/operator/internal/resources/settings"
 	v1 "k8s.io/api/core/v1"
 )
 
 func createDeployment(ctx core.Context, stack *v1beta1.Stack, wallets *v1beta1.Wallets,
 	authClient *v1beta1.AuthClient, version string) error {
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, core.GetModuleName(ctx, wallets))
+	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, core.GetModuleName(ctx, wallets))
 	if err != nil {
 		return err
 	}

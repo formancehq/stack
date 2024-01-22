@@ -3,7 +3,6 @@ package tests_test
 import (
 	. "github.com/formancehq/operator/internal/tests/internal"
 
-	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/api/stack.formance.com/v1beta3"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	. "github.com/onsi/ginkgo/v2"
@@ -59,11 +58,11 @@ var _ = Describe("ConfigurationsController (legacy)", func() {
 			//		}).Should(Succeed())
 			//	}
 			//})
-			By("OpenTelemetryConfiguration", func() {
-				Eventually(func(g Gomega) error {
-					return LoadResource("", configuration.Name, &v1beta1.OpenTelemetryConfiguration{})
-				}).Should(Succeed())
-			})
+			//By("OpenTelemetryConfiguration", func() {
+			//	Eventually(func(g Gomega) error {
+			//		return LoadResource("", configuration.Name, &v1beta1.OpenTelemetryConfiguration{})
+			//	}).Should(Succeed())
+			//})
 			//By("BrokerConfiguration", func() {
 			//	Eventually(func(g Gomega) error {
 			//		return LoadResource("", configuration.Name, &v1beta1.BrokerConfiguration{})

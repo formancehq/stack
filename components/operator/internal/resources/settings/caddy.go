@@ -1,7 +1,8 @@
-package core
+package settings
 
 import (
 	"bytes"
+	"github.com/formancehq/operator/internal/core"
 	"strings"
 	"text/template"
 
@@ -14,10 +15,10 @@ import (
 )
 
 func ConfigureCaddy(caddyfile *v1.ConfigMap, image string, env []v1.EnvVar,
-	resourceRequirements *v1.ResourceRequirements) ObjectMutator[*appsv1.Deployment] {
+	resourceRequirements *v1.ResourceRequirements) core.ObjectMutator[*appsv1.Deployment] {
 	return func(t *appsv1.Deployment) {
 		t.Spec.Template.Annotations = collectionutils.MergeMaps(t.Spec.Template.Annotations, map[string]string{
-			"caddyfile-hash": HashFromConfigMaps(caddyfile),
+			"caddyfile-hash": core.HashFromConfigMaps(caddyfile),
 		})
 		t.Spec.Template.Spec.Volumes = []v1.Volume{
 			volumeFromConfigMap("caddyfile", caddyfile),
@@ -33,9 +34,9 @@ func ConfigureCaddy(caddyfile *v1.ConfigMap, image string, env []v1.EnvVar,
 				},
 				Image:     image,
 				Env:       env,
-				Resources: GetResourcesRequirementsWithDefault(resourceRequirements, ResourceSizeSmall()),
+				Resources: core.GetResourcesRequirementsWithDefault(resourceRequirements, core.ResourceSizeSmall()),
 				VolumeMounts: []v1.VolumeMount{
-					NewVolumeMount("caddyfile", "/gateway"),
+					core.NewVolumeMount("caddyfile", "/gateway"),
 				},
 				Ports: []v1.ContainerPort{{
 					Name:          "http",
@@ -59,7 +60,7 @@ func volumeFromConfigMap(name string, cm *v1.ConfigMap) v1.Volume {
 	}
 }
 
-func ComputeCaddyfile(ctx Context, stack *v1beta1.Stack, _tpl string, additionalData map[string]any) (string, error) {
+func ComputeCaddyfile(ctx core.Context, stack *v1beta1.Stack, _tpl string, additionalData map[string]any) (string, error) {
 	tpl := template.Must(template.New("main").Funcs(map[string]any{
 		"join":            strings.Join,
 		"semver_compare":  semver.Compare,
@@ -67,10 +68,13 @@ func ComputeCaddyfile(ctx Context, stack *v1beta1.Stack, _tpl string, additional
 	}).Parse(_tpl))
 	buf := bytes.NewBufferString("")
 
-	openTelemetryEnabled, err := HasConfigurationObject[*v1beta1.OpenTelemetryConfiguration](ctx, stack.Name)
+	openTelemetryConfiguration, err := FindOpenTelemetryConfiguration(ctx, stack)
 	if err != nil {
 		return "", err
 	}
+	openTelemetryEnabled := openTelemetryConfiguration != nil &&
+		openTelemetryConfiguration.Traces != nil &&
+		openTelemetryConfiguration.Traces.Otlp != nil
 
 	data := map[string]any{
 		"EnableOpenTelemetry": openTelemetryEnabled,
@@ -84,14 +88,14 @@ func ComputeCaddyfile(ctx Context, stack *v1beta1.Stack, _tpl string, additional
 	return buf.String(), nil
 }
 
-func CreateCaddyfileConfigMap(ctx Context, stack *v1beta1.Stack,
-	name, _tpl string, additionalData map[string]any, options ...ObjectMutator[*v1.ConfigMap]) (*v1.ConfigMap, error) {
+func CreateCaddyfileConfigMap(ctx core.Context, stack *v1beta1.Stack,
+	name, _tpl string, additionalData map[string]any, options ...core.ObjectMutator[*v1.ConfigMap]) (*v1.ConfigMap, error) {
 	caddyfile, err := ComputeCaddyfile(ctx, stack, _tpl, additionalData)
 	if err != nil {
 		return nil, err
 	}
 
-	options = append([]ObjectMutator[*v1.ConfigMap]{
+	options = append([]core.ObjectMutator[*v1.ConfigMap]{
 		func(t *v1.ConfigMap) {
 			t.Data = map[string]string{
 				"Caddyfile": caddyfile,
@@ -99,7 +103,7 @@ func CreateCaddyfileConfigMap(ctx Context, stack *v1beta1.Stack,
 		},
 	}, options...)
 
-	configMap, _, err := CreateOrUpdate[*v1.ConfigMap](ctx, types.NamespacedName{
+	configMap, _, err := core.CreateOrUpdate[*v1.ConfigMap](ctx, types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      name,
 	},

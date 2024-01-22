@@ -2,12 +2,10 @@ package configurations
 
 import (
 	"fmt"
-	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/api/stack.formance.com/v1beta3"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
-	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
@@ -106,38 +104,61 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 		}
 	}
 
-	if configuration.Spec.Monitoring != nil {
-		_, _, err := CreateOrUpdate[*v1beta1.OpenTelemetryConfiguration](ctx, types.NamespacedName{
-			Name: configuration.Name,
-		}, func(t *v1beta1.OpenTelemetryConfiguration) {
-			t.Spec = v1beta1.OpenTelemetryConfigurationSpec{
-				Traces: func() *v1beta1.TracesSpec {
-					traces := configuration.Spec.Monitoring.Traces
-					if traces == nil {
-						return nil
-					}
-					return &v1beta1.TracesSpec{
-						Otlp: convertOtlpSpec(traces.Otlp),
-					}
-				}(),
-				Metrics: func() *v1beta1.MetricsSpec {
-					metrics := configuration.Spec.Monitoring.Metrics
-					if metrics == nil {
-						return nil
-					}
-					return &v1beta1.MetricsSpec{
-						Otlp: convertOtlpSpec(metrics.Otlp),
-					}
-				}(),
-				ConfigurationProperties: v1beta1.ConfigurationProperties{
-					Stacks: Map(stacks.Items, func(from v1beta3.Stack) string {
-						return from.GetName()
-					}),
-				},
+	if monitoring := configuration.Spec.Monitoring; monitoring != nil {
+
+		createSettings := func(discr string) error {
+			_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-otel-traces-enabled", configuration.Name),
+				fmt.Sprintf("opentelemetry.%s.enabled", discr), "true", stackNames...)
+			if err != nil {
+				return err
 			}
-		})
-		if err != nil {
-			return errors.Wrap(err, "creating opentelemetry configuration for service")
+			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-otel-traces-endpoint", configuration.Name),
+				fmt.Sprintf("opentelemetry.%s.endpoint", discr), monitoring.Traces.Otlp.Endpoint, stackNames...)
+			if err != nil {
+				return err
+			}
+			if monitoring.Traces.Otlp.Insecure {
+				_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-otel-traces-insecure", configuration.Name),
+					fmt.Sprintf("opentelemetry.%s.insecure", discr), "true", stackNames...)
+				if err != nil {
+					return err
+				}
+			}
+			if monitoring.Traces.Otlp.Port != 4317 {
+				_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-otel-traces-port", configuration.Name),
+					fmt.Sprintf("opentelemetry.%s.port", discr), fmt.Sprint(monitoring.Traces.Otlp.Port), stackNames...)
+				if err != nil {
+					return err
+				}
+			}
+			if monitoring.Traces.Otlp.Mode != "grpc" {
+				_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-otel-traces-mode", configuration.Name),
+					fmt.Sprintf("opentelemetry.%s.insecure", discr), monitoring.Traces.Otlp.Mode, stackNames...)
+				if err != nil {
+					return err
+				}
+			}
+			if monitoring.Traces.Otlp.ResourceAttributes != "" {
+				_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-otel-traces-mode", configuration.Name),
+					fmt.Sprintf("opentelemetry.%s.resource-attributes", discr), monitoring.Traces.Otlp.ResourceAttributes, stackNames...)
+				if err != nil {
+					return err
+				}
+			}
+
+			return nil
+		}
+
+		if monitoring.Traces != nil && monitoring.Traces.Otlp != nil {
+			if err := createSettings("traces"); err != nil {
+				return err
+			}
+		}
+
+		if monitoring.Metrics != nil && monitoring.Metrics.Otlp != nil {
+			if err := createSettings("metrics"); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -323,32 +344,6 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 	}
 
 	return nil
-}
-
-func convertOtlpSpec(otlp *v1beta3.OtlpSpec) *v1beta1.OtlpSpec {
-	if otlp == nil {
-		return nil
-	}
-
-	return &v1beta1.OtlpSpec{
-		Endpoint: otlp.Endpoint,
-		Port:     otlp.Port,
-		Insecure: otlp.Insecure,
-		Mode:     otlp.Mode,
-		ResourceAttributes: func() map[string]string {
-			if otlp.ResourceAttributes == "" {
-				return nil
-			}
-			parts := strings.Split(otlp.ResourceAttributes, " ")
-			ret := make(map[string]string)
-			for _, part := range parts {
-				parts := strings.Split(part, "=")
-				ret[parts[0]] = parts[1]
-			}
-
-			return ret
-		}(),
-	}
 }
 
 func init() {

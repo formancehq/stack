@@ -23,7 +23,6 @@ import (
 	"github.com/formancehq/operator/internal/resources/auths"
 	deployments "github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/httpapis"
-	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	. "github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/settings"
 	appsv1 "k8s.io/api/apps/v1"
@@ -42,7 +41,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 	}
 
 	env := make([]corev1.EnvVar, 0)
-	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, GetModuleName(ctx, search))
+	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, GetModuleName(ctx, search))
 	if err != nil {
 		return err
 	}
@@ -146,7 +145,6 @@ func init() {
 		WithModuleReconciler(Reconcile,
 			WithWatchStack(),
 			WithWatchConfigurationObject(&v1beta1.Settings{}),
-			WithWatchConfigurationObject(&v1beta1.OpenTelemetryConfiguration{}),
 			WithOwn(&v1beta1.StreamProcessor{}),
 			WithOwn(&v1beta1.HTTPAPI{}),
 			WithOwn(&appsv1.Deployment{}),

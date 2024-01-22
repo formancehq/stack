@@ -26,7 +26,6 @@ import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/deployments"
-	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	benthosOperator "github.com/formancehq/operator/internal/resources/searches/benthos"
 	"github.com/formancehq/search/benthos"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
@@ -66,12 +65,12 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, streamProcessor *v1beta1.Strea
 			Env("OPENSEARCH_BATCHING_PERIOD", streamProcessor.Spec.Batching.Period),
 		)
 	}
-	configuration, err := GetConfigurationObject[*v1beta1.OpenTelemetryConfiguration](ctx, streamProcessor.Spec.Stack)
+	openTelemetryConfiguration, err := settings.FindOpenTelemetryConfiguration(ctx, stack)
 	if err != nil {
 		return err
 	}
-	if configuration != nil {
-		env = append(env, opentelemetryconfigurations.GetEnvVars(configuration, "gateway")...)
+	if openTelemetryConfiguration != nil {
+		env = append(env, settings.GetOTELEnvVars(openTelemetryConfiguration, "gateway")...)
 	}
 	if brokerConfiguration.Kafka != nil {
 		env = append(env, Env("KAFKA_ADDRESS", strings.Join(brokerConfiguration.Kafka.Brokers, ",")))
@@ -117,11 +116,12 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, streamProcessor *v1beta1.Strea
 		"-r", "/resources/*.yaml",
 		"-t", "/templates/*.yaml",
 	}
-	isOpenTelemetryEnabled, err := HasConfigurationObject[*v1beta1.OpenTelemetryConfiguration](ctx, streamProcessor.Spec.Stack)
-	if err != nil {
-		return err
-	}
-	if isOpenTelemetryEnabled {
+
+	openTelemetryEnabled := openTelemetryConfiguration != nil &&
+		openTelemetryConfiguration.Traces != nil &&
+		openTelemetryConfiguration.Traces.Otlp != nil
+
+	if openTelemetryEnabled {
 		cmd = append(cmd, "-c", "/global/config.yaml")
 	}
 
@@ -145,7 +145,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, streamProcessor *v1beta1.Strea
 			fs:   benthos.Resources,
 		},
 	}
-	if isOpenTelemetryEnabled {
+	if openTelemetryEnabled {
 		directories = append(directories, directory{
 			name: "global",
 			fs:   benthosOperator.Global,
@@ -278,7 +278,6 @@ func init() {
 	Init(
 		WithStackDependencyReconciler(Reconcile,
 			WithWatchConfigurationObject(&v1beta1.Settings{}),
-			WithWatchConfigurationObject(&v1beta1.OpenTelemetryConfiguration{}),
 			WithWatchStack(),
 			WithWatchDependency(&v1beta1.Stream{}),
 			WithOwn(&corev1.ConfigMap{}),

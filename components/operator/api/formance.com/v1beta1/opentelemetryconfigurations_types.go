@@ -16,10 +16,6 @@ limitations under the License.
 
 package v1beta1
 
-import (
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-)
-
 type OtlpSpec struct {
 	// +optional
 	Endpoint string `json:"endpoint,omitempty"`
@@ -46,50 +42,10 @@ type MetricsSpec struct {
 }
 
 // OpenTelemetryConfigurationSpec defines the desired state of OpenTelemetryConfiguration
-type OpenTelemetryConfigurationSpec struct {
+type OpenTelemetryConfiguration struct {
 	ConfigurationProperties `json:",inline"`
 	// +optional
 	Traces *TracesSpec `json:"traces,omitempty"`
 	// +optional
 	Metrics *MetricsSpec `json:"metrics,omitempty"`
-}
-
-// OpenTelemetryConfigurationStatus defines the observed state of OpenTelemetryConfiguration
-type OpenTelemetryConfigurationStatus struct {
-}
-
-//+kubebuilder:object:root=true
-//+kubebuilder:subresource:status
-//+kubebuilder:resource:scope=Cluster
-
-// OpenTelemetryConfiguration is the Schema for the opentelemetrytraces API
-type OpenTelemetryConfiguration struct {
-	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
-
-	Spec   OpenTelemetryConfigurationSpec   `json:"spec,omitempty"`
-	Status OpenTelemetryConfigurationStatus `json:"status,omitempty"`
-}
-
-func (in *OpenTelemetryConfiguration) GetStacks() []string {
-	return in.Spec.Stacks
-}
-
-func (in *OpenTelemetryConfiguration) IsWildcard() bool {
-	return in.Spec.ApplyOnAllStacks
-}
-
-var _ ConfigurationObject = &OpenTelemetryConfiguration{}
-
-//+kubebuilder:object:root=true
-
-// OpenTelemetryConfigurationList contains a list of OpenTelemetryTraces
-type OpenTelemetryConfigurationList struct {
-	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []OpenTelemetryConfiguration `json:"items"`
-}
-
-func init() {
-	SchemeBuilder.Register(&OpenTelemetryConfiguration{}, &OpenTelemetryConfigurationList{})
 }

@@ -11,7 +11,6 @@ resources:
 - bases/formance.com_brokertopicconsumers.yaml
 - bases/formance.com_httpapis.yaml
 - bases/formance.com_ledgers.yaml
-- bases/formance.com_opentelemetryconfigurations.yaml
 - bases/formance.com_gateways.yaml
 - bases/formance.com_auths.yaml
 - bases/formance.com_authclients.yaml

@@ -9,7 +9,6 @@ import (
 
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/resources/httpapis"
-	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
@@ -231,30 +230,19 @@ var _ = Describe("GatewayController", func() {
 			//})
 		})
 		Context("With otlp enabled", func() {
-			var openTelemetryConfiguration *v1beta1.OpenTelemetryConfiguration
-			BeforeEach(func() {
-				openTelemetryConfiguration = &v1beta1.OpenTelemetryConfiguration{
-					ObjectMeta: RandObjectMeta(),
-					Spec: v1beta1.OpenTelemetryConfigurationSpec{
-						ConfigurationProperties: v1beta1.ConfigurationProperties{
-							Stacks: []string{stack.Name},
-						},
-						Traces: &v1beta1.TracesSpec{
-							Otlp: &v1beta1.OtlpSpec{
-								Endpoint: "otlp",
-								Port:     4317,
-								Insecure: false,
-								Mode:     "grpc",
-							},
-						},
-					},
-				}
-			})
+			var (
+				otelTracesEnabledSetting  *v1beta1.Settings
+				otelTracesEndpointSetting *v1beta1.Settings
+			)
 			JustBeforeEach(func() {
-				Expect(Create(openTelemetryConfiguration)).To(Succeed())
+				otelTracesEnabledSetting = settings.New(uuid.NewString(), "opentelemetry.traces.enabled", "true", stack.Name)
+				otelTracesEndpointSetting = settings.New(uuid.NewString(), "opentelemetry.traces.endpoint", "collector", stack.Name)
+				Expect(Create(otelTracesEndpointSetting)).To(Succeed())
+				Expect(Create(otelTracesEnabledSetting)).To(Succeed())
 			})
 			JustAfterEach(func() {
-				Expect(Delete(openTelemetryConfiguration)).To(Succeed())
+				Expect(Delete(otelTracesEndpointSetting)).To(Succeed())
+				Expect(Delete(otelTracesEnabledSetting)).To(Succeed())
 			})
 			It("Should adapt the Caddyfile", func() {
 				cm := &corev1.ConfigMap{}
@@ -268,9 +256,10 @@ var _ = Describe("GatewayController", func() {
 					d := &appsv1.Deployment{}
 					g.Expect(LoadResource(stack.Name, "gateway", d)).To(Succeed())
 					return d.Spec.Template.Spec.Containers[0].Env
-				}).Should(ContainElements(
-					opentelemetryconfigurations.GetEnvVars(openTelemetryConfiguration, "gateway"),
-				))
+				}).Should(ContainElements(corev1.EnvVar{
+					Name:  "OTEL_SERVICE_NAME",
+					Value: "gateway",
+				}))
 			})
 		})
 	})

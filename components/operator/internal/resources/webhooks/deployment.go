@@ -14,7 +14,6 @@ import (
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
-	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	v1 "k8s.io/api/core/v1"
@@ -36,7 +35,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.
 	}
 
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, core.GetModuleName(ctx, webhooks))
+	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, core.GetModuleName(ctx, webhooks))
 	if err != nil {
 		return err
 	}

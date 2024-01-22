@@ -11,7 +11,6 @@ import (
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
-	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/services"
 	corev1 "k8s.io/api/apps/v1"
@@ -20,7 +19,7 @@ import (
 
 func commonEnvVars(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) ([]v1.EnvVar, error) {
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, core.GetModuleName(ctx, payments))
+	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, core.GetModuleName(ctx, payments))
 	if err != nil {
 		return nil, err
 	}
@@ -190,7 +189,7 @@ func createConnectorsDeployment(ctx core.Context, stack *v1beta1.Stack, payments
 
 func createGateway(ctx core.Context, stack *v1beta1.Stack, p *v1beta1.Payments) error {
 
-	caddyfileConfigMap, err := core.CreateCaddyfileConfigMap(ctx, stack, "payments", Caddyfile, map[string]any{
+	caddyfileConfigMap, err := settings.CreateCaddyfileConfigMap(ctx, stack, "payments", Caddyfile, map[string]any{
 		"Debug": stack.Spec.Debug || p.Spec.Debug,
 	}, core.WithController[*v1.ConfigMap](ctx.GetScheme(), p))
 	if err != nil {
@@ -198,7 +197,7 @@ func createGateway(ctx core.Context, stack *v1beta1.Stack, p *v1beta1.Payments) 
 	}
 
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, core.GetModuleName(ctx, p))
+	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, core.GetModuleName(ctx, p))
 	if err != nil {
 		return err
 	}
@@ -206,7 +205,7 @@ func createGateway(ctx core.Context, stack *v1beta1.Stack, p *v1beta1.Payments) 
 	env = append(env, core.GetDevEnvVars(stack, p)...)
 
 	_, err = deployments.CreateOrUpdate(ctx, p, "payments",
-		core.ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", env, nil),
+		settings.ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", env, nil),
 		deployments.WithMatchingLabels("payments"),
 	)
 	return err

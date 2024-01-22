@@ -108,9 +108,9 @@ func init() {
 			WithOwn(&corev1.Service{}),
 			WithOwn(&v1beta1.HTTPAPI{}),
 			WithWatchStack(),
+			WithWatchConfigurationObject(&v1beta1.Settings{}),
 			WithWatch(databases.Watch("payments", &v1beta1.Payments{})),
 			WithWatch[*v1beta1.BrokerTopic](brokertopics.Watch[*v1beta1.Payments]("payments")),
-			WithWatchConfigurationObject(&v1beta1.OpenTelemetryConfiguration{}),
 			WithWatchDependency(&v1beta1.Search{}),
 		),
 	)

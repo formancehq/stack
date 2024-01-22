@@ -4,7 +4,6 @@ import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/deployments"
-	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/settings"
 	v1 "k8s.io/api/core/v1"
@@ -15,7 +14,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack,
 	auditTopic *v1beta1.BrokerTopic, version string) error {
 
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, core.GetModuleName(ctx, gateway))
+	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, core.GetModuleName(ctx, gateway))
 	if err != nil {
 		return err
 	}
@@ -34,7 +33,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack,
 	}
 
 	_, err = deployments.CreateOrUpdate(ctx, gateway, "gateway",
-		core.ConfigureCaddy(caddyfileConfigMap, image, env, gateway.Spec.ResourceRequirements),
+		settings.ConfigureCaddy(caddyfileConfigMap, image, env, gateway.Spec.ResourceRequirements),
 		deployments.WithMatchingLabels("gateway"),
 	)
 	return err

@@ -2,13 +2,13 @@ package auths
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/settings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
-	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/internal/resources/registries"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	appsv1 "k8s.io/api/apps/v1"
@@ -19,7 +19,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, dat
 	configMap *corev1.ConfigMap, version string) (*appsv1.Deployment, error) {
 
 	env := make([]corev1.EnvVar, 0)
-	otlpEnv, err := opentelemetryconfigurations.EnvVarsIfEnabled(ctx, stack.Name, GetModuleName(ctx, auth))
+	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, GetModuleName(ctx, auth))
 	if err != nil {
 		return nil, err
 	}

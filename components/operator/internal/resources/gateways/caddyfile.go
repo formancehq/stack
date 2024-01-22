@@ -2,6 +2,7 @@ package gateways
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/settings"
 	"sort"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -47,5 +48,5 @@ func CreateCaddyfile(ctx core.Context, stack *v1beta1.Stack,
 		}()
 	}
 
-	return core.ComputeCaddyfile(ctx, stack, Caddyfile, data)
+	return settings.ComputeCaddyfile(ctx, stack, Caddyfile, data)
 }

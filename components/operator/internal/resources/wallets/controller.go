@@ -60,7 +60,7 @@ func init() {
 	Init(
 		WithModuleReconciler(Reconcile,
 			WithWatchStack(),
-			WithWatchConfigurationObject(&v1beta1.OpenTelemetryConfiguration{}),
+			WithWatchConfigurationObject(&v1beta1.Settings{}),
 			WithWatchDependency(&v1beta1.Auth{}),
 			WithOwn(&v1beta1.AuthClient{}),
 			WithOwn(&appsv1.Deployment{}),
