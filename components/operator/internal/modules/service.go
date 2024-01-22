@@ -558,18 +558,12 @@ func (r *serviceReconciler) createContainer(ctx ContainerResolutionConfiguration
 		)
 	}
 
-	if serviceName == "gateway" {
-		switch semver.Compare(r.Versions.Spec.Gateway, "v2.0.0-alpha") {
-		case -1:
-			env = env.Append(
-				Env(fmt.Sprintf("%sSTACK_URL", r.service.EnvPrefix), r.Stack.PublicURL()),
-			)
-		default:
-			env = env.Append(
-				Env(fmt.Sprintf("%sSTACK_URL", r.service.EnvPrefix), r.Stack.URL()),
-			)
-		}
-	} else {
+	switch semver.Compare(r.Versions.Spec.Gateway, "v2.0.0-alpha") {
+	case -1:
+		env = env.Append(
+			Env(fmt.Sprintf("%sSTACK_URL", r.service.EnvPrefix), r.Stack.PublicURL()),
+		)
+	default:
 		env = env.Append(
 			Env(fmt.Sprintf("%sSTACK_URL", r.service.EnvPrefix), r.Stack.URL()),
 		)
