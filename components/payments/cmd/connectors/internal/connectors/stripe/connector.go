@@ -127,9 +127,9 @@ func (c *Connector) ReversePayment(ctx task.ConnectorContext, transferReversal *
 	// coming from a HTTP request.
 	detachedCtx, _ := contextutil.Detached(ctx.Context())
 	taskDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
-		Name:       "Reverse payment",
-		Key:        taskNameReversePayment,
-		TransferID: transferReversal.ID.String(),
+		Name:               "Reverse payment",
+		Key:                taskNameReversePayment,
+		TransferReversalID: transferReversal.ID.String(),
 	})
 	if err != nil {
 		return err

@@ -19,6 +19,10 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
+const (
+	transferIDKey string = "transfer_id"
+)
+
 func initiatePaymentTask(transferID string, stripeClient *client.DefaultClient) task.Task {
 	return func(
 		ctx context.Context,
@@ -116,6 +120,10 @@ func initiatePayment(
 			return err
 		}
 
+		if transfer.Metadata == nil {
+			transfer.Metadata = make(map[string]string)
+		}
+		transfer.Metadata[transferIDKey] = resp.ID
 		connectorPaymentID = resp.BalanceTransaction.ID
 		paymentType = models.PaymentTypeTransfer
 	case models.AccountTypeExternal:
@@ -143,6 +151,7 @@ func initiatePayment(
 		},
 		ConnectorID: connectorID,
 	}
+
 	err = ingester.AddTransferInitiationPaymentID(ctx, transfer, paymentID, time.Now())
 	if err != nil {
 		return err

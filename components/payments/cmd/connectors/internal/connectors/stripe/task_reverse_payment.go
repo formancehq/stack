@@ -2,6 +2,7 @@ package stripe
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/stripe/client"
@@ -86,8 +87,13 @@ func reversePayment(
 		c = c.ForAccount(transfer.SourceAccountID.Reference)
 	}
 
+	transferID, err := getTransferIDFromMetadata(transfer)
+	if err != nil {
+		return err
+	}
+
 	_, err = c.ReverseTransfer(ctx, &client.CreateTransferReversalRequest{
-		TransferID:  transfer.ID.Reference,
+		TransferID:  transferID,
 		Amount:      transferReversal.Amount.Int64(),
 		Description: transferReversal.Description,
 		Metadata:    transferReversal.Metadata,
@@ -97,6 +103,7 @@ func reversePayment(
 	}
 
 	transferReversal.Status = models.TransferReversalStatusProcessed
+	transferReversal.UpdatedAt = time.Now().UTC()
 	if err = ingester.UpdateTransferReversalStatus(ctx, transfer, transferReversal); err != nil {
 		return err
 	}
@@ -115,4 +122,19 @@ func getTransferReversal(
 	}
 
 	return transferReversal, nil
+}
+
+func getTransferIDFromMetadata(
+	transfer *models.TransferInitiation,
+) (string, error) {
+	if transfer.Metadata == nil {
+		return "", errors.New("metadata not found")
+	}
+
+	transferID, ok := transfer.Metadata[transferIDKey]
+	if !ok {
+		return "", errors.New("transfer id not found in metadata")
+	}
+
+	return transferID, nil
 }

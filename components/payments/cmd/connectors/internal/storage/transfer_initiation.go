@@ -22,7 +22,7 @@ func (s *Storage) CreateTransferInitiation(ctx context.Context, transferInitiati
 	}()
 
 	query := tx.NewInsert().
-		Column("id", "created_at", "scheduled_at", "description", "type", "destination_account_id", "provider", "connector_id", "amount", "asset", "metadata").
+		Column("id", "created_at", "scheduled_at", "description", "type", "destination_account_id", "provider", "connector_id", "initial_amount", "amount", "asset", "metadata").
 		Model(transferInitiation)
 
 	if transferInitiation.SourceAccountID != nil {
@@ -156,12 +156,20 @@ func (s *Storage) ListTransferInitiations(ctx context.Context, pagination Pagina
 	return tfs, paginationDetails, nil
 }
 
-func (s *Storage) AddTransferInitiationPaymentID(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, createdAt time.Time) error {
+func (s *Storage) AddTransferInitiationPaymentID(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, createdAt time.Time, metadata map[string]string) error {
+	tx, err := s.db.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		return err
+	}
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
 	if paymentID == nil {
 		return errors.New("payment id is nil")
 	}
 
-	_, err := s.db.NewInsert().
+	_, err = tx.NewInsert().
 		Column("transfer_initiation_id", "payment_id", "created_at", "status").
 		Model(&models.TransferInitiationPayment{
 			TransferInitiationID: id,
@@ -174,7 +182,18 @@ func (s *Storage) AddTransferInitiationPaymentID(ctx context.Context, id models.
 		return e("failed to add transfer initiation payment id", err)
 	}
 
-	return nil
+	if metadata != nil {
+		_, err := tx.NewUpdate().
+			Model((*models.TransferInitiation)(nil)).
+			Set("metadata = ?", metadata).
+			Where("id = ?", id).
+			Exec(ctx)
+		if err != nil {
+			return e("failed to add metadata", err)
+		}
+	}
+
+	return e("failed to commit transaction", tx.Commit())
 }
 
 func (s *Storage) UpdateTransferInitiationPaymentsStatus(

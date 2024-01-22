@@ -8,6 +8,7 @@ import (
 
 	"github.com/formancehq/payments/cmd/connectors/internal/api/backend"
 	"github.com/formancehq/payments/cmd/connectors/internal/api/service"
+	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
@@ -27,51 +28,38 @@ type reverseTransferInitiationResponse struct {
 	Metadata            map[string]string `json:"metadata"`
 }
 
-func reverseTransferInitiation(b backend.ServiceBackend) http.HandlerFunc {
+func reverseTransferInitiationHandler(b backend.ServiceBackend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := otel.Tracer().Start(r.Context(), "reverseTransferInitiationHandler")
+		defer span.End()
+
 		payload := &service.ReverseTransferInitiationRequest{}
 		if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+			otel.RecordError(span, err)
 			api.BadRequest(w, ErrMissingOrInvalidBody, err)
 			return
 		}
 
 		if err := payload.Validate(); err != nil {
+			otel.RecordError(span, err)
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
 		transferID, ok := mux.Vars(r)["transferID"]
 		if !ok {
+			otel.RecordError(span, errors.New("missing transferID"))
 			api.BadRequest(w, ErrInvalidID, errors.New("missing transferID"))
 			return
 		}
 
-		transferReversal, err := b.GetService().ReverseTransferInitiation(r.Context(), transferID, payload)
+		_, err := b.GetService().ReverseTransferInitiation(ctx, transferID, payload)
 		if err != nil {
+			otel.RecordError(span, err)
 			handleServiceErrors(w, r, err)
 			return
 		}
 
-		data := &reverseTransferInitiationResponse{
-			ID:                  transferID,
-			TranferInitiationID: transferID,
-			CreatedAt:           transferReversal.CreatedAt,
-			UpdatedAt:           transferReversal.UpdatedAt,
-			Reference:           transferReversal.ID.Reference,
-			Description:         transferReversal.Description,
-			Amount:              transferReversal.Amount,
-			Asset:               transferReversal.Asset.String(),
-			Status:              transferReversal.Status.String(),
-			Error:               transferReversal.Error,
-			Metadata:            transferReversal.Metadata,
-		}
-
-		err = json.NewEncoder(w).Encode(api.BaseResponse[reverseTransferInitiationResponse]{
-			Data: data,
-		})
-		if err != nil {
-			api.InternalServerError(w, r, err)
-			return
-		}
+		api.NoContent(w)
 	}
 }

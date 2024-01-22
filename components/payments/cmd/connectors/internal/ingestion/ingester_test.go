@@ -58,7 +58,7 @@ func (m *MockStore) UpdateTransferReversalStatus(ctx context.Context, transfer *
 	return nil
 }
 
-func (m *MockStore) AddTransferInitiationPaymentID(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, updatedAt time.Time) error {
+func (m *MockStore) AddTransferInitiationPaymentID(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, updatedAt time.Time, metadata map[string]string) error {
 	return nil
 }
 

@@ -26,6 +26,7 @@ type transferInitiationResponse struct {
 	ConnectorID          string            `json:"connectorID"`
 	Type                 string            `json:"type"`
 	Amount               *big.Int          `json:"amount"`
+	InitialAmount        *big.Int          `json:"initialAmount"`
 	Asset                string            `json:"asset"`
 	Status               string            `json:"status"`
 	Error                string            `json:"error"`
@@ -77,6 +78,7 @@ func createTransferInitiationHandler(b backend.ServiceBackend) http.HandlerFunc 
 			ConnectorID:          tf.ConnectorID.String(),
 			Type:                 tf.Type.String(),
 			Amount:               tf.Amount,
+			InitialAmount:        tf.InitialAmount,
 			Asset:                tf.Asset.String(),
 			Metadata:             tf.Metadata,
 		}

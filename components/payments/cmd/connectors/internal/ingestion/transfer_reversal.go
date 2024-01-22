@@ -11,7 +11,7 @@ import (
 )
 
 func (i *DefaultIngester) UpdateTransferReversalStatus(ctx context.Context, tf *models.TransferInitiation, transferReversal *models.TransferReversal) error {
-	finalAmount := transferReversal.Amount
+	finalAmount := new(big.Int)
 	isFullyReversed := transferReversal.Status == models.TransferReversalStatusProcessed &&
 		finalAmount.Sub(tf.Amount, transferReversal.Amount).Cmp(big.NewInt(0)) == 0
 

@@ -131,6 +131,7 @@ func (s *Service) CreateTransferInitiation(ctx context.Context, req *CreateTrans
 		Provider:             connectorID.Provider,
 		Type:                 models.MustTransferInitiationTypeFromString(req.Type),
 		Amount:               req.Amount,
+		InitialAmount:        req.Amount,
 		Asset:                models.Asset(req.Asset),
 		Metadata:             req.Metadata,
 		RelatedAdjustments: []*models.TransferInitiationAdjustment{

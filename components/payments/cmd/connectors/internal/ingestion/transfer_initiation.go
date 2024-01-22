@@ -51,7 +51,7 @@ func (i *DefaultIngester) AddTransferInitiationPaymentID(ctx context.Context, tf
 		Status:               models.TransferInitiationStatusProcessing,
 	})
 
-	if err := i.store.AddTransferInitiationPaymentID(ctx, tf.ID, paymentID, updatedAt); err != nil {
+	if err := i.store.AddTransferInitiationPaymentID(ctx, tf.ID, paymentID, updatedAt, tf.Metadata); err != nil {
 		return err
 	}
 

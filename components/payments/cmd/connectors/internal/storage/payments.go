@@ -98,7 +98,6 @@ func (s *Storage) UpsertPayments(ctx context.Context, payments []*models.Payment
 					"source_account_id",
 					"destination_account_id",
 					"status",
-					"raw_data",
 				),
 		).
 		Model((*models.Payment)(nil)).
@@ -110,7 +109,6 @@ func (s *Storage) UpsertPayments(ctx context.Context, payments []*models.Payment
 		Set("source_account_id = _data.source_account_id").
 		Set("destination_account_id = _data.destination_account_id").
 		Set("status = _data.status").
-		Set("raw_data = _data.raw_data").
 		Where(`(payment.id = _data.id) AND 
 			(payment.amount != _data.amount OR payment.type != _data.type OR payment.scheme != _data.scheme OR
 				payment.asset != _data.asset OR payment.source_account_id != _data.source_account_id OR 

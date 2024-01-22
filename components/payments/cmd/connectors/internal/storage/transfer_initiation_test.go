@@ -209,6 +209,9 @@ func testAddTransferInitiationPayments(t *testing.T, store *storage.Storage) {
 		t1ID,
 		p1ID,
 		tAddPayments,
+		map[string]string{
+			"test": "test",
+		},
 	)
 	require.NoError(t, err)
 
@@ -221,6 +224,9 @@ func testAddTransferInitiationPayments(t *testing.T, store *storage.Storage) {
 			Error:                "",
 		},
 	}
+	t1.Metadata = map[string]string{
+		"test": "test",
+	}
 	testGetTransferInitiation(t, store, t1ID, true, t1, nil)
 
 	err = store.AddTransferInitiationPaymentID(
@@ -228,6 +234,7 @@ func testAddTransferInitiationPayments(t *testing.T, store *storage.Storage) {
 		t1ID,
 		nil,
 		tAddPayments,
+		nil,
 	)
 	require.Error(t, err)
 
@@ -239,6 +246,7 @@ func testAddTransferInitiationPayments(t *testing.T, store *storage.Storage) {
 		},
 		p1ID,
 		tAddPayments,
+		nil,
 	)
 	require.Error(t, err)
 }
