@@ -544,7 +544,6 @@ func init() {
 	Init(
 		WithStdReconciler(Reconcile,
 			WithOwn(&v1beta1.Settings{}),
-			WithOwn(&v1beta1.ElasticSearchConfiguration{}),
 			WithOwn(&v1beta1.OpenTelemetryConfiguration{}),
 			WithOwn(&v1beta1.Ledger{}),
 			WithOwn(&v1beta1.Payments{}),

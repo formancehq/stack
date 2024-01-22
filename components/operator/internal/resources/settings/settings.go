@@ -94,6 +94,38 @@ func GetInt64(ctx core.Context, stack string, keys ...string) (*int64, error) {
 	return &intValue, nil
 }
 
+func GetUInt64(ctx core.Context, stack string, keys ...string) (*uint64, error) {
+	value, err := Get(ctx, stack, keys...)
+	if err != nil {
+		return nil, err
+	}
+	if value == nil {
+		return nil, nil
+	}
+	intValue, err := strconv.ParseUint(*value, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	return &intValue, nil
+}
+
+func GetUInt16(ctx core.Context, stack string, keys ...string) (*uint16, error) {
+	value, err := Get(ctx, stack, keys...)
+	if err != nil {
+		return nil, err
+	}
+	if value == nil {
+		return nil, nil
+	}
+	intValue, err := strconv.ParseUint(*value, 10, 16)
+	if err != nil {
+		return nil, err
+	}
+
+	return pointer.For(uint16(intValue)), nil
+}
+
 func GetInt(ctx core.Context, stack string, keys ...string) (*int, error) {
 	value, err := GetInt64(ctx, stack, keys...)
 	if err != nil {
@@ -105,8 +137,31 @@ func GetInt(ctx core.Context, stack string, keys ...string) (*int, error) {
 	return pointer.For(int(*value)), nil
 }
 
+func GetUInt(ctx core.Context, stack string, keys ...string) (*uint, error) {
+	value, err := GetUInt64(ctx, stack, keys...)
+	if err != nil {
+		return nil, err
+	}
+	if value == nil {
+		return nil, nil
+	}
+	return pointer.For(uint(*value)), nil
+}
+
 func GetIntOrDefault(ctx core.Context, stack string, defaultValue int, keys ...string) (int, error) {
 	value, err := GetInt(ctx, stack, keys...)
+	if err != nil {
+		return 0, err
+	}
+
+	if value == nil {
+		return defaultValue, nil
+	}
+	return *value, nil
+}
+
+func GetUInt16OrDefault(ctx core.Context, stack string, defaultValue uint16, keys ...string) (uint16, error) {
+	value, err := GetUInt16(ctx, stack, keys...)
 	if err != nil {
 		return 0, err
 	}

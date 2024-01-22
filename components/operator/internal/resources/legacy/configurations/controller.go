@@ -228,36 +228,63 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 		return errors.Wrap(err, "creating temporal configuration for service")
 	}
 
-	_, _, err = CreateOrUpdate[*v1beta1.ElasticSearchConfiguration](ctx, types.NamespacedName{
-		Name: configuration.Name,
-	}, func(t *v1beta1.ElasticSearchConfiguration) {
-		t.Spec = v1beta1.ElasticSearchConfigurationSpec{
-			Scheme: configuration.Spec.Services.Search.ElasticSearchConfig.Scheme,
-			Host:   configuration.Spec.Services.Search.ElasticSearchConfig.Host,
-			Port:   configuration.Spec.Services.Search.ElasticSearchConfig.Port,
-			TLS: v1beta1.ElasticSearchTLSConfig{
-				Enabled:        configuration.Spec.Services.Search.ElasticSearchConfig.TLS.Enabled,
-				SkipCertVerify: configuration.Spec.Services.Search.ElasticSearchConfig.TLS.SkipCertVerify,
-			},
-			BasicAuth: func() *v1beta1.ElasticSearchBasicAuthConfig {
-				if configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth == nil {
-					return nil
-				}
-				return &v1beta1.ElasticSearchBasicAuthConfig{
-					Username:   configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.Username,
-					Password:   configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.Password,
-					SecretName: configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth.SecretName,
-				}
-			}(),
-			ConfigurationProperties: v1beta1.ConfigurationProperties{
-				Stacks: Map(stacks.Items, func(from v1beta3.Stack) string {
-					return from.GetName()
-				}),
-			},
-		}
-	})
+	_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-elasticsearch-host", configuration.Name),
+		"elasticsearch.host", configuration.Spec.Services.Search.ElasticSearchConfig.Host, stackNames...)
 	if err != nil {
-		return errors.Wrap(err, "creating elasticsearch configuration for service")
+		return err
+	}
+
+	if configuration.Spec.Services.Search.ElasticSearchConfig.Scheme != "" {
+		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-elasticsearch-scheme", configuration.Name),
+			"elasticsearch.scheme", configuration.Spec.Services.Search.ElasticSearchConfig.Scheme, stackNames...)
+		if err != nil {
+			return err
+		}
+	}
+
+	if configuration.Spec.Services.Search.ElasticSearchConfig.Port != 9200 && configuration.Spec.Services.Search.ElasticSearchConfig.Port != 0 {
+		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-elasticsearch-port", configuration.Name),
+			"elasticsearch.port", configuration.Spec.Services.Search.ElasticSearchConfig.Scheme, stackNames...)
+		if err != nil {
+			return err
+		}
+	}
+
+	if configuration.Spec.Services.Search.ElasticSearchConfig.TLS.Enabled {
+		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-elasticsearch-tls-enabled", configuration.Name),
+			"elasticsearch.tls.enabled", "true", stackNames...)
+		if err != nil {
+			return err
+		}
+		if configuration.Spec.Services.Search.ElasticSearchConfig.TLS.SkipCertVerify {
+			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-elasticsearch-tls-skip-cert-verify", configuration.Name),
+				"elasticsearch.tls.skip-cert-verify", "true", stackNames...)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	if basicAuth := configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth; basicAuth != nil {
+		if basicAuth.Username != "" {
+			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-elasticsearch-basic-auth-username", configuration.Name),
+				"elasticsearch.basic-auth.username", basicAuth.Username, stackNames...)
+			if err != nil {
+				return err
+			}
+			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-elasticsearch-basic-auth-password", configuration.Name),
+				"elasticsearch.basic-auth.password", basicAuth.Password, stackNames...)
+			if err != nil {
+				return err
+			}
+		}
+		if basicAuth.SecretName != "" {
+			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-elasticsearch-basic-auth-secret", configuration.Name),
+				"elasticsearch.basic-auth.secret", basicAuth.SecretName, stackNames...)
+			if err != nil {
+				return err
+			}
+		}
 	}
 
 	_, _, err = CreateOrUpdate[*v1beta1.SearchBatchingConfiguration](ctx, types.NamespacedName{

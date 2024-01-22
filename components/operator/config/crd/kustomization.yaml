@@ -2,6 +2,9 @@
 # since it depends on service name and namespace that are out of this kustomize package.
 # It should be run by config/default
 resources:
+- bases/stack.formance.com_stacks.yaml
+- bases/stack.formance.com_configurations.yaml
+- bases/stack.formance.com_versions.yaml
 - bases/formance.com_databases.yaml
 - bases/formance.com_stacks.yaml
 - bases/formance.com_brokertopics.yaml
@@ -20,12 +23,8 @@ resources:
 - bases/formance.com_searches.yaml
 - bases/formance.com_streams.yaml
 - bases/formance.com_streamprocessors.yaml
-- bases/formance.com_elasticsearchconfigurations.yaml
 - bases/formance.com_registriesconfiguration.yaml
 - bases/formance.com_stargates.yaml
-- bases/stack.formance.com_stacks.yaml
-- bases/stack.formance.com_configurations.yaml
-- bases/stack.formance.com_versions.yaml
 - bases/formance.com_temporalconfigurations.yaml
 - bases/formance.com_versionshistories.yaml
 - bases/formance.com_versions.yaml

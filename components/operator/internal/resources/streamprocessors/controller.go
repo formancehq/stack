@@ -20,6 +20,7 @@ import (
 	"embed"
 	"fmt"
 	"github.com/formancehq/operator/internal/resources/brokertopics"
+	"github.com/formancehq/operator/internal/resources/searches"
 	"sort"
 	"strings"
 
@@ -49,13 +50,13 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, streamProcessor *v1beta1.Strea
 		return errors.Wrap(err, "searching broker configuration")
 	}
 
-	elasticSearchConfiguration, err := RequireConfigurationObject[*v1beta1.ElasticSearchConfiguration](ctx, streamProcessor.Spec.Stack)
+	elasticSearchConfiguration, err := searches.FindElasticSearchConfiguration(ctx, stack)
 	if err != nil {
 		return errors.Wrap(err, "searching elasticsearch configuration")
 	}
 
 	env := []corev1.EnvVar{
-		Env("OPENSEARCH_URL", elasticSearchConfiguration.Spec.Endpoint()),
+		Env("OPENSEARCH_URL", elasticSearchConfiguration.Endpoint()),
 		Env("TOPIC_PREFIX", streamProcessor.Spec.Stack+"-"),
 		Env("OPENSEARCH_INDEX", "stacks"),
 		Env("STACK", streamProcessor.Spec.Stack),
@@ -89,17 +90,17 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, streamProcessor *v1beta1.Strea
 	if brokerConfiguration.Nats != nil {
 		env = append(env, Env("NATS_URL", brokerConfiguration.Nats.URL))
 	}
-	if elasticSearchConfiguration.Spec.BasicAuth != nil {
+	if elasticSearchConfiguration.BasicAuth != nil {
 		env = append(env, Env("BASIC_AUTH_ENABLED", "true"))
-		if elasticSearchConfiguration.Spec.BasicAuth.SecretName == "" {
+		if elasticSearchConfiguration.BasicAuth.SecretName == "" {
 			env = append(env,
-				Env("BASIC_AUTH_USERNAME", elasticSearchConfiguration.Spec.BasicAuth.Username),
-				Env("BASIC_AUTH_PASSWORD", elasticSearchConfiguration.Spec.BasicAuth.Password),
+				Env("BASIC_AUTH_USERNAME", elasticSearchConfiguration.BasicAuth.Username),
+				Env("BASIC_AUTH_PASSWORD", elasticSearchConfiguration.BasicAuth.Password),
 			)
 		} else {
 			env = append(env,
-				EnvFromSecret("BASIC_AUTH_USERNAME", elasticSearchConfiguration.Spec.BasicAuth.SecretName, "username"),
-				EnvFromSecret("BASIC_AUTH_PASSWORD", elasticSearchConfiguration.Spec.BasicAuth.SecretName, "password"),
+				EnvFromSecret("BASIC_AUTH_USERNAME", elasticSearchConfiguration.BasicAuth.SecretName, "username"),
+				EnvFromSecret("BASIC_AUTH_PASSWORD", elasticSearchConfiguration.BasicAuth.SecretName, "password"),
 			)
 		}
 	} else {
@@ -278,7 +279,6 @@ func init() {
 	Init(
 		WithStackDependencyReconciler(Reconcile,
 			WithWatchConfigurationObject(&v1beta1.Settings{}),
-			WithWatchConfigurationObject(&v1beta1.ElasticSearchConfiguration{}),
 			WithWatchConfigurationObject(&v1beta1.OpenTelemetryConfiguration{}),
 			WithWatchConfigurationObject(&v1beta1.RegistriesConfiguration{}),
 			WithWatchStack(),

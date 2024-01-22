@@ -18,15 +18,14 @@ package searches
 
 import (
 	"fmt"
-
-	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
-
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/auths"
 	deployments "github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/httpapis"
+	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	. "github.com/formancehq/operator/internal/resources/registries"
+	"github.com/formancehq/operator/internal/resources/settings"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -37,7 +36,7 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=searches/finalizers,verbs=update
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, version string) error {
-	elasticSearchConfiguration, err := RequireConfigurationObject[*v1beta1.ElasticSearchConfiguration](ctx, search.Spec.Stack)
+	elasticSearchConfiguration, err := FindElasticSearchConfiguration(ctx, stack)
 	if err != nil {
 		return err
 	}
@@ -51,20 +50,20 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 	env = append(env, GetDevEnvVars(stack, search)...)
 
 	env = append(env,
-		Env("OPEN_SEARCH_SERVICE", fmt.Sprintf("%s:%d", elasticSearchConfiguration.Spec.Host, elasticSearchConfiguration.Spec.Port)),
-		Env("OPEN_SEARCH_SCHEME", elasticSearchConfiguration.Spec.Scheme),
+		Env("OPEN_SEARCH_SERVICE", fmt.Sprintf("%s:%d", elasticSearchConfiguration.Host, elasticSearchConfiguration.Port)),
+		Env("OPEN_SEARCH_SCHEME", elasticSearchConfiguration.Scheme),
 		Env("ES_INDICES", "stacks"),
 	)
-	if elasticSearchConfiguration.Spec.BasicAuth != nil {
-		if elasticSearchConfiguration.Spec.BasicAuth.SecretName == "" {
+	if elasticSearchConfiguration.BasicAuth != nil {
+		if elasticSearchConfiguration.BasicAuth.SecretName == "" {
 			env = append(env,
-				Env("OPEN_SEARCH_USERNAME", elasticSearchConfiguration.Spec.BasicAuth.Username),
-				Env("OPEN_SEARCH_PASSWORD", elasticSearchConfiguration.Spec.BasicAuth.Password),
+				Env("OPEN_SEARCH_USERNAME", elasticSearchConfiguration.BasicAuth.Username),
+				Env("OPEN_SEARCH_PASSWORD", elasticSearchConfiguration.BasicAuth.Password),
 			)
 		} else {
 			env = append(env,
-				EnvFromSecret("OPEN_SEARCH_USERNAME", elasticSearchConfiguration.Spec.BasicAuth.SecretName, "username"),
-				EnvFromSecret("OPEN_SEARCH_PASSWORD", elasticSearchConfiguration.Spec.BasicAuth.SecretName, "password"),
+				EnvFromSecret("OPEN_SEARCH_USERNAME", elasticSearchConfiguration.BasicAuth.SecretName, "username"),
+				EnvFromSecret("OPEN_SEARCH_PASSWORD", elasticSearchConfiguration.BasicAuth.SecretName, "password"),
 			)
 		}
 	}
@@ -134,12 +133,75 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 	return err
 }
 
+func FindElasticSearchConfiguration(ctx Context, stack *v1beta1.Stack) (*v1beta1.ElasticSearchConfiguration, error) {
+	elasticSearchHost, err := settings.RequireString(ctx, stack.Name, "elasticsearch.host")
+	if err != nil {
+		return nil, err
+	}
+
+	elasticSearchScheme, err := settings.GetStringOrDefault(ctx, stack.Name, "https", "elasticsearch.scheme")
+	if err != nil {
+		return nil, err
+	}
+
+	elasticSearchPort, err := settings.GetUInt16OrDefault(ctx, stack.Name, 9200, "elasticsearch.port")
+	if err != nil {
+		return nil, err
+	}
+
+	elasticSearchTLSEnabled, err := settings.GetBoolOrFalse(ctx, stack.Name, "elasticsearch.tls.enabled")
+	if err != nil {
+		return nil, err
+	}
+
+	elasticSearchTLSSkipCertVerify, err := settings.GetBoolOrFalse(ctx, stack.Name, "elasticsearch.tls.skip-cert-verify")
+	if err != nil {
+		return nil, err
+	}
+
+	var basicAuth *v1beta1.ElasticSearchBasicAuthConfig
+	basicAuthEnabled, err := settings.GetBoolOrFalse(ctx, stack.Name, "elasticsearch.basic-auth.enabled")
+	if basicAuthEnabled {
+		elasticSearchBasicAuthUsername, err := settings.GetStringOrEmpty(ctx, stack.Name, "elasticsearch.basic-auth.username")
+		if err != nil {
+			return nil, err
+		}
+
+		elasticSearchBasicAuthPassword, err := settings.GetStringOrEmpty(ctx, stack.Name, "elasticsearch.basic-auth.password")
+		if err != nil {
+			return nil, err
+		}
+
+		elasticSearchBasicAuthSecret, err := settings.GetStringOrEmpty(ctx, stack.Name, "elasticsearch.basic-auth.secret")
+		if err != nil {
+			return nil, err
+		}
+
+		basicAuth = &v1beta1.ElasticSearchBasicAuthConfig{
+			Username:   elasticSearchBasicAuthUsername,
+			Password:   elasticSearchBasicAuthPassword,
+			SecretName: elasticSearchBasicAuthSecret,
+		}
+	}
+
+	return &v1beta1.ElasticSearchConfiguration{
+		Scheme: elasticSearchScheme,
+		Host:   elasticSearchHost,
+		Port:   elasticSearchPort,
+		TLS: v1beta1.ElasticSearchTLSConfig{
+			Enabled:        elasticSearchTLSEnabled,
+			SkipCertVerify: elasticSearchTLSSkipCertVerify,
+		},
+		BasicAuth: basicAuth,
+	}, nil
+}
+
 func init() {
 	Init(
 		WithModuleReconciler(Reconcile,
 			WithWatchStack(),
+			WithWatchConfigurationObject(&v1beta1.Settings{}),
 			WithWatchConfigurationObject(&v1beta1.OpenTelemetryConfiguration{}),
-			WithWatchConfigurationObject(&v1beta1.ElasticSearchConfiguration{}),
 			WithWatchConfigurationObject(&v1beta1.RegistriesConfiguration{}),
 			WithWatchConfigurationObject(&v1beta1.SearchBatchingConfiguration{}),
 			WithOwn(&v1beta1.StreamProcessor{}),

@@ -3,7 +3,9 @@ package tests_test
 import (
 	"fmt"
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
+	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/operator/internal/tests/internal"
+	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -11,9 +13,9 @@ import (
 var _ = Describe("SearchesController", func() {
 	Context("When creating a Search object", func() {
 		var (
-			stack                      *v1beta1.Stack
-			search                     *v1beta1.Search
-			elasticSearchConfiguration *v1beta1.ElasticSearchConfiguration
+			stack                                 *v1beta1.Stack
+			search                                *v1beta1.Search
+			elasticSearchConfigurationHostSetting *v1beta1.Settings
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -28,26 +30,17 @@ var _ = Describe("SearchesController", func() {
 					},
 				},
 			}
-			elasticSearchConfiguration = &v1beta1.ElasticSearchConfiguration{
-				ObjectMeta: RandObjectMeta(),
-				Spec: v1beta1.ElasticSearchConfigurationSpec{
-					ConfigurationProperties: v1beta1.ConfigurationProperties{
-						Stacks: []string{stack.Name},
-					},
-					Scheme: "http",
-					Host:   "example.net",
-					Port:   9123,
-				},
-			}
+			elasticSearchConfigurationHostSetting = settings.New(uuid.NewString(),
+				"elasticsearch.host", "localhost", stack.Name)
 		})
 		JustBeforeEach(func() {
 			Expect(Create(stack)).To(Succeed())
-			Expect(Create(elasticSearchConfiguration)).To(Succeed())
+			Expect(Create(elasticSearchConfigurationHostSetting)).To(Succeed())
 			Expect(Create(search)).To(Succeed())
 		})
 		AfterEach(func() {
 			Expect(Delete(search)).To(Succeed())
-			Expect(Delete(elasticSearchConfiguration)).To(Succeed())
+			Expect(Delete(elasticSearchConfigurationHostSetting)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 		})
 		It("Should create a stream processor", func() {
