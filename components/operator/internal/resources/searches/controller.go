@@ -36,7 +36,7 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=searches/finalizers,verbs=update
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, version string) error {
-	elasticSearchConfiguration, err := FindElasticSearchConfiguration(ctx, stack)
+	elasticSearchConfiguration, err := settings.FindElasticSearchConfiguration(ctx, stack)
 	if err != nil {
 		return err
 	}
@@ -139,69 +139,6 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 	}
 
 	return err
-}
-
-func FindElasticSearchConfiguration(ctx Context, stack *v1beta1.Stack) (*v1beta1.ElasticSearchConfiguration, error) {
-	elasticSearchHost, err := settings.RequireString(ctx, stack.Name, "elasticsearch.host")
-	if err != nil {
-		return nil, err
-	}
-
-	elasticSearchScheme, err := settings.GetStringOrDefault(ctx, stack.Name, "https", "elasticsearch.scheme")
-	if err != nil {
-		return nil, err
-	}
-
-	elasticSearchPort, err := settings.GetUInt16OrDefault(ctx, stack.Name, 9200, "elasticsearch.port")
-	if err != nil {
-		return nil, err
-	}
-
-	elasticSearchTLSEnabled, err := settings.GetBoolOrFalse(ctx, stack.Name, "elasticsearch.tls.enabled")
-	if err != nil {
-		return nil, err
-	}
-
-	elasticSearchTLSSkipCertVerify, err := settings.GetBoolOrFalse(ctx, stack.Name, "elasticsearch.tls.skip-cert-verify")
-	if err != nil {
-		return nil, err
-	}
-
-	var basicAuth *v1beta1.ElasticSearchBasicAuthConfig
-	basicAuthEnabled, err := settings.GetBoolOrFalse(ctx, stack.Name, "elasticsearch.basic-auth.enabled")
-	if basicAuthEnabled {
-		elasticSearchBasicAuthUsername, err := settings.GetStringOrEmpty(ctx, stack.Name, "elasticsearch.basic-auth.username")
-		if err != nil {
-			return nil, err
-		}
-
-		elasticSearchBasicAuthPassword, err := settings.GetStringOrEmpty(ctx, stack.Name, "elasticsearch.basic-auth.password")
-		if err != nil {
-			return nil, err
-		}
-
-		elasticSearchBasicAuthSecret, err := settings.GetStringOrEmpty(ctx, stack.Name, "elasticsearch.basic-auth.secret")
-		if err != nil {
-			return nil, err
-		}
-
-		basicAuth = &v1beta1.ElasticSearchBasicAuthConfig{
-			Username:   elasticSearchBasicAuthUsername,
-			Password:   elasticSearchBasicAuthPassword,
-			SecretName: elasticSearchBasicAuthSecret,
-		}
-	}
-
-	return &v1beta1.ElasticSearchConfiguration{
-		Scheme: elasticSearchScheme,
-		Host:   elasticSearchHost,
-		Port:   elasticSearchPort,
-		TLS: v1beta1.ElasticSearchTLSConfig{
-			Enabled:        elasticSearchTLSEnabled,
-			SkipCertVerify: elasticSearchTLSSkipCertVerify,
-		},
-		BasicAuth: basicAuth,
-	}, nil
 }
 
 func init() {

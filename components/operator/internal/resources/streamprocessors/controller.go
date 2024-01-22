@@ -19,8 +19,7 @@ package streamprocessors
 import (
 	"embed"
 	"fmt"
-	"github.com/formancehq/operator/internal/resources/brokertopics"
-	"github.com/formancehq/operator/internal/resources/searches"
+	"github.com/formancehq/operator/internal/resources/settings"
 	"sort"
 	"strings"
 
@@ -45,12 +44,12 @@ import (
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, streamProcessor *v1beta1.StreamProcessor) error {
 
-	brokerConfiguration, err := brokertopics.FindBrokerConfiguration(ctx, stack)
+	brokerConfiguration, err := settings.FindBrokerConfiguration(ctx, stack)
 	if err != nil {
 		return errors.Wrap(err, "searching broker configuration")
 	}
 
-	elasticSearchConfiguration, err := searches.FindElasticSearchConfiguration(ctx, stack)
+	elasticSearchConfiguration, err := settings.FindElasticSearchConfiguration(ctx, stack)
 	if err != nil {
 		return errors.Wrap(err, "searching elasticsearch configuration")
 	}

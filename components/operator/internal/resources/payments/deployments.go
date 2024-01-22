@@ -2,11 +2,11 @@ package payments
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/settings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/auths"
-	"github.com/formancehq/operator/internal/resources/brokerconfigurations"
 	"github.com/formancehq/operator/internal/resources/brokertopics"
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/deployments"
@@ -70,7 +70,7 @@ func createFullDeployment(ctx core.Context, stack *v1beta1.Stack,
 			return fmt.Errorf("topic %s is not yet ready", topic.Name)
 		}
 
-		env = append(env, brokerconfigurations.BrokerEnvVars(*topic.Status.Configuration, stack.Name, "payments")...)
+		env = append(env, settings.GetBrokerEnvVars(*topic.Status.Configuration, stack.Name, "payments")...)
 		env = append(env, core.Env("PUBLISHER_TOPIC_MAPPING", "*:"+core.GetObjectName(stack.Name, "payments")))
 	}
 
@@ -153,7 +153,7 @@ func createConnectorsDeployment(ctx core.Context, stack *v1beta1.Stack, payments
 			return fmt.Errorf("topic %s is not yet ready", topic.Name)
 		}
 
-		env = append(env, brokerconfigurations.BrokerEnvVars(*topic.Status.Configuration, stack.Name, "payments")...)
+		env = append(env, settings.GetBrokerEnvVars(*topic.Status.Configuration, stack.Name, "payments")...)
 		env = append(env, core.Env("PUBLISHER_TOPIC_MAPPING", "*:"+core.GetObjectName(stack.Name, "payments")))
 	}
 

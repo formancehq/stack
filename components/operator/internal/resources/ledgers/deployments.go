@@ -2,12 +2,12 @@ package ledgers
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/settings"
 	"strconv"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/auths"
-	"github.com/formancehq/operator/internal/resources/brokerconfigurations"
 	"github.com/formancehq/operator/internal/resources/brokertopics"
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/deployments"
@@ -253,7 +253,7 @@ func createLedgerContainerFull(ctx core.Context, stack *v1beta1.Stack, v2 bool) 
 			prefix = "NUMARY_"
 		}
 
-		container.Env = append(container.Env, brokerconfigurations.BrokerEnvVarsWithPrefix(*topic.Status.Configuration, stack.Name, "ledger", prefix)...)
+		container.Env = append(container.Env, settings.GetBrokerEnvVarsWithPrefix(*topic.Status.Configuration, stack.Name, "ledger", prefix)...)
 		container.Env = append(container.Env, core.Env(fmt.Sprintf("%sPUBLISHER_TOPIC_MAPPING", prefix), "*:"+core.GetObjectName(stack.Name, "ledger")))
 	}
 

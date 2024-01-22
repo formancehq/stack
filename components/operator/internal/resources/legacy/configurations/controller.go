@@ -206,26 +206,35 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 		}
 	}
 
-	_, _, err := CreateOrUpdate[*v1beta1.TemporalConfiguration](ctx, types.NamespacedName{
-		Name: configuration.Name,
-	}, func(t *v1beta1.TemporalConfiguration) {
-		t.Spec = v1beta1.TemporalConfigurationSpec{
-			ConfigurationProperties: v1beta1.ConfigurationProperties{
-				Stacks: Map(stacks.Items, func(from v1beta3.Stack) string {
-					return from.GetName()
-				}),
-			},
-			Address:   configuration.Spec.Temporal.Address,
-			Namespace: configuration.Spec.Temporal.Namespace,
-			TLS: v1beta1.TemporalTLSConfig{
-				CRT:        configuration.Spec.Temporal.TLS.CRT,
-				Key:        configuration.Spec.Temporal.TLS.Key,
-				SecretName: configuration.Spec.Temporal.TLS.SecretName,
-			},
-		}
-	})
+	_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-temporal-address", configuration.Name),
+		"temporal-address", configuration.Spec.Temporal.Address, stackNames...)
 	if err != nil {
-		return errors.Wrap(err, "creating temporal configuration for service")
+		return err
+	}
+
+	_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-temporal-namespace", configuration.Name),
+		"temporal-namespace", configuration.Spec.Temporal.Namespace, stackNames...)
+	if err != nil {
+		return err
+	}
+
+	if configuration.Spec.Temporal.TLS.CRT != "" {
+		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-temporal-tls-crt", configuration.Name),
+			"temporal.tls.crt", configuration.Spec.Temporal.TLS.CRT, stackNames...)
+		if err != nil {
+			return err
+		}
+		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-temporal-tls-key", configuration.Name),
+			"temporal.tls.key", configuration.Spec.Temporal.TLS.Key, stackNames...)
+		if err != nil {
+			return err
+		}
+	} else if configuration.Spec.Temporal.TLS.SecretName != "" {
+		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-temporal-tls-secret", configuration.Name),
+			"temporal.tls.secret", configuration.Spec.Temporal.TLS.SecretName, stackNames...)
+		if err != nil {
+			return err
+		}
 	}
 
 	_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-elasticsearch-host", configuration.Name),

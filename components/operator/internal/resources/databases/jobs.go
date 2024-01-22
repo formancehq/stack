@@ -14,7 +14,6 @@ import (
 func createJob(ctx core.Context, databaseConfiguration v1beta1.DatabaseConfiguration,
 	database *v1beta1.Database, dbName string) (*batchv1.Job, error) {
 
-	fmt.Println(fmt.Sprintf("%s-create-database", database.Spec.Service))
 	job, _, err := core.CreateOrUpdate[*batchv1.Job](ctx, types.NamespacedName{
 		Namespace: database.Spec.Stack,
 		Name:      fmt.Sprintf("%s-create-database", database.Spec.Service),

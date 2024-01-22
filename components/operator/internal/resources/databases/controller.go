@@ -62,7 +62,7 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 		return core.ErrDeleted
 	}
 
-	databaseConfiguration, err := findConfiguration(ctx, database)
+	databaseConfiguration, err := settings.FindDatabaseConfiguration(ctx, database)
 	if err != nil {
 		return err
 	}
@@ -119,90 +119,6 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 	}
 
 	return nil
-}
-
-func findConfiguration(ctx core.Context, database *v1beta1.Database) (*v1beta1.DatabaseConfiguration, error) {
-	host, err := settings.GetString(ctx, database.Spec.Stack, "databases", database.Spec.Service, "host")
-	if err != nil {
-		return nil, err
-	}
-	if host == nil {
-		host, err = settings.GetString(ctx, database.Spec.Stack, "databases", "host")
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if host == nil {
-		return nil, errors.New("missing database host")
-	}
-
-	port, err := settings.GetInt64(ctx, database.Spec.Stack, "databases", database.Spec.Service, "port")
-	if err != nil {
-		return nil, err
-	}
-	if port == nil {
-		port, err = settings.GetInt64(ctx, database.Spec.Stack, "databases", "port")
-		if err != nil {
-			return nil, err
-		}
-	}
-	if port == nil {
-		port = pointer.For(int64(5432)) // default postgres port
-	}
-
-	username, err := settings.GetString(ctx, database.Spec.Stack, "databases", database.Spec.Service, "username")
-	if err != nil {
-		return nil, err
-	}
-	if username == nil {
-		username, err = settings.GetString(ctx, database.Spec.Stack, "databases", "username")
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	password, err := settings.GetString(ctx, database.Spec.Stack, "databases", database.Spec.Service, "password")
-	if err != nil {
-		return nil, err
-	}
-	if password == nil {
-		password, err = settings.GetString(ctx, database.Spec.Stack, "databases", "password")
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	credentialsFromSecret, err := settings.GetString(ctx, database.Spec.Stack, "databases", database.Spec.Service, "credentials-from-secret")
-	if err != nil {
-		return nil, err
-	}
-	if credentialsFromSecret == nil {
-		credentialsFromSecret, err = settings.GetString(ctx, database.Spec.Stack, "databases", "secret")
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	disableSSLMode, err := settings.GetBool(ctx, database.Spec.Stack, "databases", database.Spec.Service, "ssl", "disable")
-	if err != nil {
-		return nil, err
-	}
-	if disableSSLMode == nil {
-		disableSSLMode, err = settings.GetBool(ctx, database.Spec.Stack, "databases", "disable-ssl-mode")
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return &v1beta1.DatabaseConfiguration{
-		Port:                  int(*port),
-		Host:                  *host,
-		Username:              settings.ValueOrDefault(username, ""),
-		Password:              settings.ValueOrDefault(password, ""),
-		CredentialsFromSecret: settings.ValueOrDefault(credentialsFromSecret, ""),
-		DisableSSLMode:        settings.ValueOrDefault(disableSSLMode, false),
-	}, nil
 }
 
 func init() {

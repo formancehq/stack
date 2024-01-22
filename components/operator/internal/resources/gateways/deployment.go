@@ -3,10 +3,10 @@ package gateways
 import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
-	"github.com/formancehq/operator/internal/resources/brokerconfigurations"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/internal/resources/registries"
+	"github.com/formancehq/operator/internal/resources/settings"
 	v1 "k8s.io/api/core/v1"
 )
 
@@ -24,7 +24,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack,
 
 	if stack.Spec.EnableAudit && auditTopic != nil {
 		env = append(env,
-			brokerconfigurations.BrokerEnvVars(*auditTopic.Status.Configuration, stack.Name, "gateway")...,
+			settings.GetBrokerEnvVars(*auditTopic.Status.Configuration, stack.Name, "gateway")...,
 		)
 	}
 

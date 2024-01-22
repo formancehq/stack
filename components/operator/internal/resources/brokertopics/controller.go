@@ -17,7 +17,6 @@ limitations under the License.
 package brokertopics
 
 import (
-	"fmt"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/settings"
@@ -41,7 +40,7 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, topic *v1beta1.BrokerTopi
 		return nil
 	}
 
-	brokerConfiguration, err := FindBrokerConfiguration(ctx, stack)
+	brokerConfiguration, err := settings.FindBrokerConfiguration(ctx, stack)
 	if err != nil {
 		return err
 	}
@@ -61,92 +60,6 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, topic *v1beta1.BrokerTopi
 	}
 
 	return nil
-}
-
-func FindBrokerConfiguration(ctx core.Context, stack *v1beta1.Stack) (*v1beta1.BrokerConfiguration, error) {
-	brokerKind, err := settings.RequireString(ctx, stack.Name, "broker", "kind")
-	if err != nil {
-		return nil, err
-	}
-	switch brokerKind {
-	case "kafka":
-		return resolveKafkaConfiguration(ctx, stack)
-	case "nats":
-		return resolveNatsConfiguration(ctx, stack)
-	default:
-		return nil, fmt.Errorf("broker kind '%s' unknown", brokerKind)
-	}
-}
-
-func resolveNatsConfiguration(ctx core.Context, stack *v1beta1.Stack) (*v1beta1.BrokerConfiguration, error) {
-	url, err := settings.RequireString(ctx, stack.Name, "broker", "nats", "endpoint")
-	if err != nil {
-		return nil, err
-	}
-
-	replicas, err := settings.GetIntOrDefault(ctx, stack.Name, 1, "broker.nats.replicas")
-	if err != nil {
-		return nil, err
-	}
-
-	return &v1beta1.BrokerConfiguration{
-		Nats: &v1beta1.BrokerNatsConfig{
-			URL:      url,
-			Replicas: replicas,
-		},
-	}, nil
-}
-
-func resolveKafkaConfiguration(ctx core.Context, stack *v1beta1.Stack) (*v1beta1.BrokerConfiguration, error) {
-
-	endpoints, err := settings.GetStringSlice(ctx, stack.Name, "broker", "kafka", "endpoints")
-	if err != nil {
-		return nil, err
-	}
-
-	tls, err := settings.GetBoolOrFalse(ctx, stack.Name, "broker", "kafka", "ssl", "enabled")
-	if err != nil {
-		return nil, err
-	}
-
-	saslEnabled, err := settings.GetBoolOrDefault(ctx, stack.Name, false, "kafka", "sasl", "enabled")
-	if err != nil {
-		return nil, err
-	}
-
-	var saslConfig *v1beta1.BrokerKafkaSASLConfig
-	if saslEnabled {
-		saslUsername, err := settings.GetStringOrEmpty(ctx, stack.Name, "kafka", "sasl", "username")
-		if err != nil {
-			return nil, err
-		}
-		saslPassword, err := settings.GetStringOrEmpty(ctx, stack.Name, "kafka", "sasl", "password")
-		if err != nil {
-			return nil, err
-		}
-		saslMechanism, err := settings.GetStringOrEmpty(ctx, stack.Name, "kafka", "sasl", "mechanism")
-		if err != nil {
-			return nil, err
-		}
-		saslScramSHASize, err := settings.GetStringOrEmpty(ctx, stack.Name, "kafka", "sasl", "scram-sha-size")
-		if err != nil {
-			return nil, err
-		}
-		saslConfig = &v1beta1.BrokerKafkaSASLConfig{
-			Username:     saslUsername,
-			Password:     saslPassword,
-			Mechanism:    saslMechanism,
-			ScramSHASize: saslScramSHASize,
-		}
-	}
-
-	return &v1beta1.BrokerConfiguration{
-		Kafka: &v1beta1.BrokerKafkaConfig{
-			Brokers: endpoints,
-			TLS:     tls,
-			SASL:    saslConfig,
-		},
-	}, nil
 }
 
 func clear(ctx core.Context, topic *v1beta1.BrokerTopic) error {

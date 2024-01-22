@@ -3,7 +3,6 @@ package tests_test
 import (
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
-	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/opentelemetryconfigurations"
 	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/operator/internal/tests/internal"
@@ -29,7 +28,7 @@ var _ = Describe("LedgerController", func() {
 				ObjectMeta: RandObjectMeta(),
 				Spec:       v1beta1.StackSpec{},
 			}
-			databaseHostSetting = databases.NewHostSetting(uuid.NewString(), "localhost", stack.Name)
+			databaseHostSetting = settings.NewHostSetting(uuid.NewString(), "localhost", stack.Name)
 			ledger = &v1beta1.Ledger{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.LedgerSpec{

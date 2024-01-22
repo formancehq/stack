@@ -70,7 +70,7 @@ func init() {
 			WithWatchStack(),
 			WithWatch(databases.Watch("orchestration", &v1beta1.Orchestration{})),
 			WithWatchConfigurationObject(&v1beta1.OpenTelemetryConfiguration{}),
-			WithWatchConfigurationObject(&v1beta1.TemporalConfiguration{}),
+			WithWatchConfigurationObject(&v1beta1.Settings{}),
 			WithWatchDependency(&v1beta1.Ledger{}),
 			WithWatchDependency(&v1beta1.Auth{}),
 			WithWatchDependency(&v1beta1.Payments{}),

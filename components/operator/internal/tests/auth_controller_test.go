@@ -3,7 +3,7 @@ package tests_test
 import (
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
-	"github.com/formancehq/operator/internal/resources/databases"
+	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/operator/internal/tests/internal"
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
@@ -24,7 +24,7 @@ var _ = Describe("AuthController", func() {
 				ObjectMeta: RandObjectMeta(),
 				Spec:       v1beta1.StackSpec{},
 			}
-			databaseHostSetting = databases.NewHostSetting(uuid.NewString(), "localhost", stack.Name)
+			databaseHostSetting = settings.NewHostSetting(uuid.NewString(), "localhost", stack.Name)
 			auth = &v1beta1.Auth{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.AuthSpec{

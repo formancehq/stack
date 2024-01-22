@@ -24,7 +24,6 @@ resources:
 - bases/formance.com_streams.yaml
 - bases/formance.com_streamprocessors.yaml
 - bases/formance.com_stargates.yaml
-- bases/formance.com_temporalconfigurations.yaml
 - bases/formance.com_versionshistories.yaml
 - bases/formance.com_versions.yaml
 - bases/formance.com_settings.yaml
@@ -34,10 +33,8 @@ patches:
 # [WEBHOOK] To enable webhook, uncomment all the sections with [WEBHOOK] prefix.
 # patches here are for enabling the conversion webhook for each CRD
 #- path: patches/webhook_in_databases.yaml
-#- path: patches/webhook_in_databaseconfigurations.yaml
 #- path: patches/webhook_in_stacks.yaml
 #- path: patches/webhook_in_topics.yaml
-#- path: patches/webhook_in_brokerconfigurations.yaml
 #- path: patches/webhook_in_topicqueries.yaml
 #- path: patches/webhook_in_httpapis.yaml
 #- path: patches/webhook_in_ledgers.yaml
@@ -53,16 +50,12 @@ patches:
 #- path: patches/webhook_in_searches.yaml
 #- path: patches/webhook_in_streams.yaml
 #- path: patches/webhook_in_streamprocessors.yaml
-#- path: patches/webhook_in_elasticsearchconfigurations.yaml
-#- path: patches/webhook_in_registriesconfigurations.yaml
 #- path: patches/webhook_in_stargates.yaml
 #- path: patches/webhook_in_stack.formance.com_stacks.yaml
 #- path: patches/webhook_in_stack.formance.com_configurations.yaml
 #- path: patches/webhook_in_stack.formance.com_versions.yaml
-#- path: patches/webhook_in_formance.com_temporalconfigurations.yaml
 #- path: patches/webhook_in_formance.com_versionshistories.yaml
 #- path: patches/webhook_in_formance.com_versions.yaml
-#- path: patches/webhook_in_formance.com_searchbatchingconfigurations.yaml
 #- path: patches/webhook_in_formance.com_settings.yaml
 #+kubebuilder:scaffold:crdkustomizewebhookpatch
 

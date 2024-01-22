@@ -3,7 +3,7 @@ package tests_test
 import (
 	"fmt"
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
-	"github.com/formancehq/operator/internal/resources/databases"
+	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/operator/internal/tests/internal"
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
@@ -25,7 +25,7 @@ var _ = Describe("DatabaseController", func() {
 				Spec:       v1beta1.StackSpec{},
 			}
 			Expect(Create(stack)).To(BeNil())
-			databaseHostSetting = databases.NewHostSetting(uuid.NewString(), "localhost", stack.Name)
+			databaseHostSetting = settings.NewHostSetting(uuid.NewString(), "localhost", stack.Name)
 			Expect(Create(databaseHostSetting)).Should(Succeed())
 			database = &v1beta1.Database{
 				ObjectMeta: RandObjectMeta(),

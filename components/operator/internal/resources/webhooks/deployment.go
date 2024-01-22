@@ -2,18 +2,14 @@ package webhooks
 
 import (
 	"fmt"
-<<<<<<< HEAD
 	"golang.org/x/mod/semver"
-=======
-	"github.com/formancehq/operator/internal/resources/brokertopics"
+	"github.com/formancehq/operator/internal/resources/settings"
 	"github.com/pkg/errors"
->>>>>>> 68113ecf3 (feat: remove BrokerConfiguration object)
 	"strings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/auths"
-	"github.com/formancehq/operator/internal/resources/brokerconfigurations"
 	"github.com/formancehq/operator/internal/resources/brokertopicconsumers"
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/deployments"
@@ -26,7 +22,7 @@ import (
 
 func createDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumers brokertopicconsumers.Consumers, version string) error {
 
-	brokerConfiguration, err := brokertopics.FindBrokerConfiguration(ctx, stack)
+	brokerConfiguration, err := settings.FindBrokerConfiguration(ctx, stack)
 	if err != nil {
 		return err
 	}
@@ -60,7 +56,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.
 
 	env = append(env, authEnvVars...)
 	env = append(env, databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfiguration, database.Status.Configuration.Database)...)
-	env = append(env, brokerconfigurations.BrokerEnvVars(*brokerConfiguration, stack.Name, "webhooks")...)
+	env = append(env, settings.GetBrokerEnvVars(*brokerConfiguration, stack.Name, "webhooks")...)
 	env = append(env, core.Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"))
 	env = append(env, core.Env("WORKER", "true"))
 	env = append(env, core.Env("KAFKA_TOPICS", strings.Join(collectionutils.Map(consumers, func(from *v1beta1.BrokerTopicConsumer) string {

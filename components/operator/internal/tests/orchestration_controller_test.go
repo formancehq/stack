@@ -2,11 +2,9 @@ package tests_test
 
 import (
 	"fmt"
-	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/settings"
-	"github.com/google/uuid"
-
 	. "github.com/formancehq/operator/internal/tests/internal"
+	"github.com/google/uuid"
 
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	core "github.com/formancehq/operator/internal/core"
@@ -16,7 +14,7 @@ import (
 )
 
 var _ = Describe("OrchestrationController", func() {
-	Context("When creating a Auth object", func() {
+	Context("When creating a Orchestration object", func() {
 		var (
 			stack                      *v1beta1.Stack
 			gateway                    *v1beta1.Gateway
@@ -26,13 +24,23 @@ var _ = Describe("OrchestrationController", func() {
 			orchestration              *v1beta1.Orchestration
 			brokerKindSettings         *v1beta1.Settings
 			brokerNatsEndpointSettings *v1beta1.Settings
-			temporalConfiguration      *v1beta1.TemporalConfiguration
+			temporalAddressSettings    *v1beta1.Settings
+			temporalNamespaceSettings  *v1beta1.Settings
+			temporalTLSCrtSettings     *v1beta1.Settings
+			temporalTLSKeySettings     *v1beta1.Settings
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
 				ObjectMeta: RandObjectMeta(),
 				Spec:       v1beta1.StackSpec{},
 			}
+			databaseHostSetting = settings.NewHostSetting(uuid.NewString(), "localhost", stack.Name)
+			brokerKindSettings = settings.New(uuid.NewString(), "broker.kind", "nats", stack.Name)
+			brokerNatsEndpointSettings = settings.New(uuid.NewString(), "broker.nats.endpoint", "localhost:1234", stack.Name)
+			temporalAddressSettings = settings.New(uuid.NewString(), "temporal.address", "localhost", stack.Name)
+			temporalNamespaceSettings = settings.New(uuid.NewString(), "temporal.namespace", "namespace", stack.Name)
+			temporalTLSCrtSettings = settings.New(uuid.NewString(), "temporal.tls.crt", "crt", stack.Name)
+			temporalTLSKeySettings = settings.New(uuid.NewString(), "temporal.tls.key", "key", stack.Name)
 			gateway = &v1beta1.Gateway{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.GatewaySpec{
@@ -40,15 +48,6 @@ var _ = Describe("OrchestrationController", func() {
 						Stack: stack.Name,
 					},
 					Ingress: &v1beta1.GatewayIngress{},
-				},
-			}
-			databaseHostSetting = databases.NewHostSetting(uuid.NewString(), "localhost", stack.Name)
-			temporalConfiguration = &v1beta1.TemporalConfiguration{
-				ObjectMeta: RandObjectMeta(),
-				Spec: v1beta1.TemporalConfigurationSpec{
-					ConfigurationProperties: v1beta1.ConfigurationProperties{
-						Stacks: []string{stack.Name},
-					},
 				},
 			}
 			auth = &v1beta1.Auth{
@@ -75,19 +74,20 @@ var _ = Describe("OrchestrationController", func() {
 					},
 				},
 			}
-			brokerKindSettings = settings.New(uuid.NewString(), "broker.kind", "nats", stack.Name)
-			brokerNatsEndpointSettings = settings.New(uuid.NewString(), "broker.nats.endpoint", "localhost:1234", stack.Name)
 		})
 		JustBeforeEach(func() {
+			Expect(Create(stack)).To(Succeed())
+			Expect(Create(databaseHostSetting)).To(Succeed())
+			Expect(Create(temporalAddressSettings)).To(Succeed())
+			Expect(Create(temporalNamespaceSettings)).To(Succeed())
+			Expect(Create(temporalTLSCrtSettings)).To(Succeed())
+			Expect(Create(temporalTLSKeySettings)).To(Succeed())
 			Expect(Create(brokerKindSettings)).To(BeNil())
 			Expect(Create(brokerNatsEndpointSettings)).To(BeNil())
-			Expect(Create(stack)).To(Succeed())
 			Expect(Create(gateway)).To(Succeed())
-			Expect(Create(databaseHostSetting)).To(Succeed())
 			Expect(Create(auth)).To(Succeed())
 			Expect(Create(ledger)).To(Succeed())
 			Expect(Create(orchestration)).To(Succeed())
-			Expect(Create(temporalConfiguration)).To(Succeed())
 		})
 		AfterEach(func() {
 			Expect(Delete(auth)).To(Succeed())
@@ -98,7 +98,10 @@ var _ = Describe("OrchestrationController", func() {
 			Expect(Delete(orchestration)).To(Succeed())
 			Expect(Delete(brokerNatsEndpointSettings)).To(Succeed())
 			Expect(Delete(brokerKindSettings)).To(Succeed())
-			Expect(Delete(temporalConfiguration)).To(Succeed())
+			Expect(Delete(temporalAddressSettings)).To(Succeed())
+			Expect(Delete(temporalNamespaceSettings)).To(Succeed())
+			Expect(Delete(temporalTLSCrtSettings)).To(Succeed())
+			Expect(Delete(temporalTLSKeySettings)).To(Succeed())
 		})
 		It("Should create a deployment", func() {
 			deployment := &appsv1.Deployment{}

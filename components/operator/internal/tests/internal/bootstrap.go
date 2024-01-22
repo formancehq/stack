@@ -2,7 +2,6 @@ package internal
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"path/filepath"
 	osRuntime "runtime"
@@ -146,11 +145,9 @@ var _ = BeforeSuite(func() {
 			if !job.DeletionTimestamp.IsZero() {
 				patch := client.MergeFrom(job.DeepCopy())
 				if controllerutil.RemoveFinalizer(job, "orphan") {
-					fmt.Println("finalizer dropped")
 					if err := mgr.GetClient().Patch(ctx, job, patch); err != nil {
 						return reconcile.Result{}, err
 					}
-					fmt.Println("job updated")
 				}
 				return reconcile.Result{}, nil
 			}
