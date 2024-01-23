@@ -18,6 +18,10 @@ const (
 	taskNameUpdatePaymentStatus = "update-payment-status"
 )
 
+const (
+	timeTemplate = "2006-01-02T15:04:05-0700"
+)
+
 // TaskDescriptor is the definition of a task.
 type TaskDescriptor struct {
 	Name       string `json:"name" yaml:"name" bson:"name"`

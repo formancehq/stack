@@ -148,7 +148,7 @@ func checkPaymentsEqual(t *testing.T, p1, p2 *models.Payment) {
 
 func testUpdatePayment(t *testing.T, store *storage.Storage) {
 	p1.CreatedAt = time.Date(2023, 11, 14, 5, 55, 0, 0, time.UTC)
-	p1.Reference = "ref1"
+	p1.Reference = "ref1_updated"
 	p1.Amount = big.NewInt(150)
 	p1.Type = models.PaymentTypePayIn
 	p1.Status = models.PaymentStatusPending
@@ -162,9 +162,9 @@ func testUpdatePayment(t *testing.T, store *storage.Storage) {
 	payment, err := store.GetPayment(context.Background(), p1ID.String())
 	require.NoError(t, err)
 
-	require.NotEqual(t, p1.CreatedAt, payment.CreatedAt)
+	require.NotEqual(t, p1.Reference, payment.Reference)
 
-	p1.CreatedAt = p1T
+	p1.Reference = payment.Reference
 	testGetPayment(t, store, *p1ID, p1, nil)
 }
 

@@ -7,6 +7,7 @@ import (
 	"math"
 	"math/big"
 	"strings"
+	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/modulr/client"
@@ -107,6 +108,11 @@ func toBatch(
 			return nil, fmt.Errorf("failed to parse amount %s", transaction.Amount.String())
 		}
 
+		createdAt, err := time.Parse(timeTemplate, transaction.PostedDate)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse posted date %s: %w", transaction.PostedDate, err)
+		}
+
 		var amountInt big.Int
 		amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
 
@@ -119,6 +125,7 @@ func toBatch(
 					},
 					ConnectorID: connectorID,
 				},
+				CreatedAt:     createdAt,
 				Reference:     transaction.ID,
 				ConnectorID:   connectorID,
 				Type:          paymentType,

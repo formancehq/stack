@@ -86,7 +86,7 @@ func ingestBeneficiariesAccountsBatch(
 			return err
 		}
 
-		openingDate, err := time.Parse("2006-01-02T15:04:05.999999999+0000", beneficiary.Created)
+		openingDate, err := time.Parse(timeTemplate, beneficiary.Created)
 		if err != nil {
 			return err
 		}
