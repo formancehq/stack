@@ -29,9 +29,9 @@ func ComputeAccountMetadataBool(key string, value bool) metadata.Metadata {
 	return ComputeAccountMetadata(key, computedValue)
 }
 
-func ComputePaymentMetadata(paymentId models.PaymentID, key, value string) *models.Metadata {
+func ComputePaymentMetadata(paymentId models.PaymentID, key, value string) *models.PaymentMetadata {
 	namespacedKey := fmt.Sprintf("%s%s", atlarMetadataSpecNamespace, key)
-	return &models.Metadata{
+	return &models.PaymentMetadata{
 		PaymentID: paymentId,
 		CreatedAt: time.Now(),
 		Key:       namespacedKey,
@@ -39,7 +39,7 @@ func ComputePaymentMetadata(paymentId models.PaymentID, key, value string) *mode
 	}
 }
 
-func ComputePaymentMetadataBool(paymentId models.PaymentID, key string, value bool) *models.Metadata {
+func ComputePaymentMetadataBool(paymentId models.PaymentID, key string, value bool) *models.PaymentMetadata {
 	computedValue := valueFALSE
 	if value {
 		computedValue = valueTRUE

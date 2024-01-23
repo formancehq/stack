@@ -772,7 +772,7 @@ func migratePaymentID(ctx context.Context, tx bun.Tx) error {
 		}
 
 		_, err = tx.NewUpdate().
-			Model((*models.Adjustment)(nil)).
+			Model((*models.PaymentAdjustment)(nil)).
 			Set("payment_id = ?", migration.NewPaymentID).
 			Where("payment_id = ?", migration.PreviousPaymentID).
 			Exec(ctx)
@@ -781,7 +781,7 @@ func migratePaymentID(ctx context.Context, tx bun.Tx) error {
 		}
 
 		_, err = tx.NewUpdate().
-			Model((*models.Metadata)(nil)).
+			Model((*models.PaymentMetadata)(nil)).
 			Set("payment_id = ?", migration.NewPaymentID).
 			Where("payment_id = ?", migration.PreviousPaymentID).
 			Exec(ctx)

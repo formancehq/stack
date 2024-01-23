@@ -145,11 +145,10 @@ func listPaymentsHandler(b backend.Backend) http.HandlerFunc {
 
 			for adjustmentIdx := range ret[i].Adjustments {
 				data[i].Adjustments[adjustmentIdx] = paymentAdjustment{
-					Status:   ret[i].Adjustments[adjustmentIdx].Status,
-					Amount:   ret[i].Adjustments[adjustmentIdx].Amount,
-					Date:     ret[i].Adjustments[adjustmentIdx].CreatedAt,
-					Raw:      ret[i].Adjustments[adjustmentIdx].RawData,
-					Absolute: ret[i].Adjustments[adjustmentIdx].Absolute,
+					Status: ret[i].Adjustments[adjustmentIdx].Status,
+					Amount: ret[i].Adjustments[adjustmentIdx].Amount,
+					Date:   ret[i].Adjustments[adjustmentIdx].CreatedAt,
+					Raw:    ret[i].Adjustments[adjustmentIdx].RawData,
 				}
 			}
 
@@ -219,11 +218,10 @@ func readPaymentHandler(b backend.Backend) http.HandlerFunc {
 
 		for i := range payment.Adjustments {
 			data.Adjustments[i] = paymentAdjustment{
-				Status:   payment.Adjustments[i].Status,
-				Amount:   payment.Adjustments[i].Amount,
-				Date:     payment.Adjustments[i].CreatedAt,
-				Raw:      payment.Adjustments[i].RawData,
-				Absolute: payment.Adjustments[i].Absolute,
+				Status: payment.Adjustments[i].Status,
+				Amount: payment.Adjustments[i].Amount,
+				Date:   payment.Adjustments[i].CreatedAt,
+				Raw:    payment.Adjustments[i].RawData,
 			}
 		}
 

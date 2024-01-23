@@ -13,9 +13,8 @@ import (
 
 type PaymentBatchElement struct {
 	Payment    *models.Payment
-	Adjustment *models.Adjustment
-	Metadata   *models.Metadata
-	Update     bool
+	Adjustment *models.PaymentAdjustment
+	Metadata   []*models.PaymentMetadata
 }
 
 type PaymentBatch []PaymentBatchElement
@@ -38,20 +37,49 @@ func (i *DefaultIngester) IngestPayments(
 	}).Debugf("Ingest batch")
 
 	var allPayments []*models.Payment //nolint:prealloc // length is unknown
+	var allMetadata []*models.PaymentMetadata
+	var allAdjustments []*models.PaymentAdjustment
 
 	for batchIdx := range batch {
 		payment := batch[batchIdx].Payment
+		metadata := batch[batchIdx].Metadata
+		adjustment := batch[batchIdx].Adjustment
 
-		if payment == nil {
-			continue
+		if metadata != nil {
+			for _, data := range metadata {
+				data.Changelog = append(data.Changelog,
+					models.MetadataChangelog{
+						CreatedAt: time.Now(),
+						Value:     data.Value,
+					})
+
+				allMetadata = append(allMetadata, data)
+			}
 		}
 
-		allPayments = append(allPayments, payment)
+		if payment != nil {
+			allPayments = append(allPayments, payment)
+		}
+
+		if adjustment != nil && adjustment.Reference != "" {
+			allAdjustments = append(allAdjustments, adjustment)
+		}
 	}
 
+	// Insert first all payments
 	idsInserted, err := i.store.UpsertPayments(ctx, allPayments)
 	if err != nil {
 		return fmt.Errorf("error upserting payments: %w", err)
+	}
+
+	// Then insert all metadata
+	if err := i.store.UpsertPaymentsMetadata(ctx, allMetadata); err != nil {
+		return fmt.Errorf("error upserting payments metadata: %w", err)
+	}
+
+	// Then insert all adjustments
+	if err := i.store.UpsertPaymentsAdjustments(ctx, allAdjustments); err != nil {
+		return fmt.Errorf("error upserting payments adjustments: %w", err)
 	}
 
 	idsInsertedMap := make(map[string]struct{}, len(idsInserted))

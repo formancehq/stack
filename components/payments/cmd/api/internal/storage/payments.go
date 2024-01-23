@@ -101,8 +101,8 @@ func (s *Storage) UpsertPayments(ctx context.Context, payments []*models.Payment
 		return e("failed to create payments", err)
 	}
 
-	var adjustments []*models.Adjustment
-	var metadata []*models.Metadata
+	var adjustments []*models.PaymentAdjustment
+	var metadata []*models.PaymentMetadata
 
 	for i := range payments {
 		for _, adjustment := range payments[i].Adjustments {

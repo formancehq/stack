@@ -116,7 +116,6 @@ func ingestPaymentsBatch(
 				Metadata:      ExtractPaymentMetadata(paymentId, item),
 				RawData:       raw,
 			},
-			Update: true,
 		}
 
 		if *itemAmount.Value >= 0 {
@@ -181,8 +180,8 @@ func determinePaymentScheme(item *atlar_models.Transaction) models.PaymentScheme
 	return models.PaymentSchemeSepa
 }
 
-func ExtractPaymentMetadata(paymentId models.PaymentID, transaction *atlar_models.Transaction) []*models.Metadata {
-	result := []*models.Metadata{}
+func ExtractPaymentMetadata(paymentId models.PaymentID, transaction *atlar_models.Transaction) []*models.PaymentMetadata {
+	result := []*models.PaymentMetadata{}
 	if transaction.Date != "" {
 		result = append(result, ComputePaymentMetadata(paymentId, "date", transaction.Date))
 	}
