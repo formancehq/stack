@@ -108,6 +108,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**ListUsersOfOrganization**](docs/DefaultApi.md#listusersoforganization) | **Get** /organizations/{organizationId}/users | List users of organization
 *DefaultApi* | [**ReadConnectedUser**](docs/DefaultApi.md#readconnecteduser) | **Get** /me | Read user
 *DefaultApi* | [**ReadOrganization**](docs/DefaultApi.md#readorganization) | **Get** /organizations/{organizationId} | Read organization
+*DefaultApi* | [**ReadStackUserAccess**](docs/DefaultApi.md#readstackuseraccess) | **Get** /organizations/{organizationId}/stacks/{stackId}/users/{userId} | Read stack user access role within an organization
 *DefaultApi* | [**ReadUserOfOrganization**](docs/DefaultApi.md#readuseroforganization) | **Get** /organizations/{organizationId}/users/{userId} | Read user of organization
 *DefaultApi* | [**RestoreStack**](docs/DefaultApi.md#restorestack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
 *DefaultApi* | [**UpdateOrganization**](docs/DefaultApi.md#updateorganization) | **Put** /organizations/{organizationId} | Update organization
@@ -153,6 +154,7 @@ Class | Method | HTTP request | Description
  - [PublicRegionAllOf](docs/PublicRegionAllOf.md)
  - [ReadOrganizationResponse](docs/ReadOrganizationResponse.md)
  - [ReadOrganizationUserResponse](docs/ReadOrganizationUserResponse.md)
+ - [ReadStackUserAccess](docs/ReadStackUserAccess.md)
  - [ReadUserResponse](docs/ReadUserResponse.md)
  - [Region](docs/Region.md)
  - [Role](docs/Role.md)

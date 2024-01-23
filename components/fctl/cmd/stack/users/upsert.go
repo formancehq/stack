@@ -62,7 +62,18 @@ func (c *UpsertController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	role := membershipclient.Role(fctl.GetString(cmd, "role"))
 	req := membershipclient.UpdateStackUserRequest{}
 	if role != "" {
-		req.Role = role.Ptr()
+		req.Role = role
+	} else {
+		access, res, err := apiClient.DefaultApi.ReadStackUserAccess(cmd.Context(), organizationID, args[0], args[1]).Execute()
+		if err != nil {
+			return nil, err
+		}
+
+		if res.StatusCode > 300 {
+			return nil, err
+		}
+
+		req.Role = access.Data.Role
 	}
 
 	_, err = apiClient.DefaultApi.

@@ -86,7 +86,16 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	role := fctl.GetString(cmd, "role")
 	req := membershipclient.UpdateOrganizationUserRequest{}
 	if role != "" {
-		req.Role = membershipclient.Role(role).Ptr()
+		req.Role = membershipclient.Role(role)
+	} else {
+		access, res, err := apiClient.DefaultApi.ReadUserOfOrganization(cmd.Context(), organizationID, args[0]).Execute()
+		if err != nil {
+			return nil, err
+		}
+		if res.StatusCode > 300 {
+			return nil, fmt.Errorf("error reading user: %s", res.Status)
+		}
+		req.Role = access.Data.Role
 	}
 	response, err := apiClient.DefaultApi.UpsertOrganizationUser(
 		cmd.Context(),

@@ -522,6 +522,50 @@ paths:
         "204":
           description: Updated user
       summary: Delete stack user access role within an organization
+    get:
+      operationId: readStackUserAccess
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: stackId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadStackUserAccess'
+          description: Stack user access role
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not Authorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error
+      summary: Read stack user access role within an organization
     put:
       operationId: upsertStackUserAccess
       parameters:
@@ -1332,6 +1376,13 @@ components:
       items:
         $ref: '#/components/schemas/User'
       type: array
+    ReadStackUserAccess:
+      example:
+        data: null
+      properties:
+        data:
+          $ref: '#/components/schemas/StackUserAccess'
+      type: object
     StackUserAccess:
       allOf:
       - $ref: '#/components/schemas/StackUserAccess_allOf'
@@ -1662,6 +1713,8 @@ components:
       properties:
         role:
           $ref: '#/components/schemas/Role'
+      required:
+      - role
       type: object
     UpdateStackUserRequest:
       example:
@@ -1669,6 +1722,8 @@ components:
       properties:
         role:
           $ref: '#/components/schemas/Role'
+      required:
+      - role
       type: object
     GetRegionVersionsResponse:
       example:

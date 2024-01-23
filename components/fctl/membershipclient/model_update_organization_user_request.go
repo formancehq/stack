@@ -19,17 +19,16 @@ var _ MappedNullable = &UpdateOrganizationUserRequest{}
 
 // UpdateOrganizationUserRequest struct for UpdateOrganizationUserRequest
 type UpdateOrganizationUserRequest struct {
-	Role *Role `json:"role,omitempty"`
+	Role Role `json:"role"`
 }
 
 // NewUpdateOrganizationUserRequest instantiates a new UpdateOrganizationUserRequest object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewUpdateOrganizationUserRequest() *UpdateOrganizationUserRequest {
+func NewUpdateOrganizationUserRequest(role Role) *UpdateOrganizationUserRequest {
 	this := UpdateOrganizationUserRequest{}
-	var role Role = EMPTY
-	this.Role = &role
+	this.Role = role
 	return &this
 }
 
@@ -39,40 +38,32 @@ func NewUpdateOrganizationUserRequest() *UpdateOrganizationUserRequest {
 func NewUpdateOrganizationUserRequestWithDefaults() *UpdateOrganizationUserRequest {
 	this := UpdateOrganizationUserRequest{}
 	var role Role = EMPTY
-	this.Role = &role
+	this.Role = role
 	return &this
 }
 
-// GetRole returns the Role field value if set, zero value otherwise.
+// GetRole returns the Role field value
 func (o *UpdateOrganizationUserRequest) GetRole() Role {
-	if o == nil || IsNil(o.Role) {
+	if o == nil {
 		var ret Role
 		return ret
 	}
-	return *o.Role
+
+	return o.Role
 }
 
-// GetRoleOk returns a tuple with the Role field value if set, nil otherwise
+// GetRoleOk returns a tuple with the Role field value
 // and a boolean to check if the value has been set.
 func (o *UpdateOrganizationUserRequest) GetRoleOk() (*Role, bool) {
-	if o == nil || IsNil(o.Role) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Role, true
+	return &o.Role, true
 }
 
-// HasRole returns a boolean if a field has been set.
-func (o *UpdateOrganizationUserRequest) HasRole() bool {
-	if o != nil && !IsNil(o.Role) {
-		return true
-	}
-
-	return false
-}
-
-// SetRole gets a reference to the given Role and assigns it to the Role field.
+// SetRole sets field value
 func (o *UpdateOrganizationUserRequest) SetRole(v Role) {
-	o.Role = &v
+	o.Role = v
 }
 
 func (o UpdateOrganizationUserRequest) MarshalJSON() ([]byte, error) {
@@ -85,9 +76,7 @@ func (o UpdateOrganizationUserRequest) MarshalJSON() ([]byte, error) {
 
 func (o UpdateOrganizationUserRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Role) {
-		toSerialize["role"] = o.Role
-	}
+	toSerialize["role"] = o.Role
 	return toSerialize, nil
 }
 

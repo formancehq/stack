@@ -4,13 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Role** | Pointer to [**Role**](Role.md) |  | [optional] [default to EMPTY]
+**Role** | [**Role**](Role.md) |  | [default to EMPTY]
 
 ## Methods
 
 ### NewUpdateStackUserRequest
 
-`func NewUpdateStackUserRequest() *UpdateStackUserRequest`
+`func NewUpdateStackUserRequest(role Role, ) *UpdateStackUserRequest`
 
 NewUpdateStackUserRequest instantiates a new UpdateStackUserRequest object
 This constructor will assign default values to properties that have it defined,
@@ -44,11 +44,6 @@ and a boolean to check if the value has been set.
 
 SetRole sets Role field to given value.
 
-### HasRole
-
-`func (o *UpdateStackUserRequest) HasRole() bool`
-
-HasRole returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
