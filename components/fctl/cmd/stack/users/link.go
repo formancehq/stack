@@ -1,6 +1,8 @@
 package users
 
 import (
+	"fmt"
+
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
@@ -63,16 +65,7 @@ func (c *LinkController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	if role != "" {
 		req.Role = role
 	} else {
-		access, res, err := apiClient.DefaultApi.ReadStackUserAccess(cmd.Context(), organizationID, args[0], args[1]).Execute()
-		if err != nil {
-			return nil, err
-		}
-
-		if res.StatusCode > 300 {
-			return nil, err
-		}
-
-		req.Role = access.Data.Role
+		return nil, fmt.Errorf("role is required")
 	}
 
 	_, err = apiClient.DefaultApi.
