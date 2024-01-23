@@ -1,4 +1,4 @@
-package role
+package users
 
 import (
 	"github.com/formancehq/fctl/membershipclient"
@@ -33,7 +33,7 @@ func NewStackDeleteController() *StackDeleteController {
 func NewDeleteCommand() *cobra.Command {
 	return fctl.NewMembershipCommand("delete <stack-id> <user-id>",
 		fctl.WithConfirmFlag(),
-		fctl.WithShortDescription("Delete user access from a stack within an organization"),
+		fctl.WithShortDescription("Delete stack user access within an organization"),
 		fctl.WithAliases("del", "d"),
 		fctl.WithArgs(cobra.ExactArgs(2)),
 		fctl.WithController[*DeletedUserAccessStore](NewStackDeleteController()),

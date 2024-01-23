@@ -1,4 +1,4 @@
-package role
+package users
 
 import (
 	"github.com/formancehq/fctl/membershipclient"
