@@ -36,7 +36,7 @@ func NewUpdateCommand() *cobra.Command {
 		fctl.WithAliases("s"),
 		fctl.WithStringFlag("role", "", "Roles: (ADMIN, GUEST, NONE)"),
 		fctl.WithShortDescription("Update user roles by by id within an organization"),
-		fctl.WithArgs(cobra.MinimumNArgs(1)),
+		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithPreRunE(func(cmd *cobra.Command, args []string) error {
 			cfg, err := fctl.GetConfig(cmd)
 			if err != nil {
