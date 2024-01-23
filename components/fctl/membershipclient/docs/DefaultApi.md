@@ -37,8 +37,8 @@ Method | HTTP request | Description
 [**ReadUserOfOrganization**](DefaultApi.md#ReadUserOfOrganization) | **Get** /organizations/{organizationId}/users/{userId} | Read user of organization
 [**RestoreStack**](DefaultApi.md#RestoreStack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
 [**UpdateOrganization**](DefaultApi.md#UpdateOrganization) | **Put** /organizations/{organizationId} | Update organization
-[**UpsertOrganizationUser**](DefaultApi.md#UpsertOrganizationUser) | **Patch** /organizations/{organizationId}/users/{userId} | Update user within an organization
-[**UpsertStackUserAccess**](DefaultApi.md#UpsertStackUserAccess) | **Patch** /organizations/{organizationId}/stacks/{stackId}/users/{userId} | Update stack user access role within an organization
+[**UpsertOrganizationUser**](DefaultApi.md#UpsertOrganizationUser) | **Put** /organizations/{organizationId}/users/{userId} | Update user within an organization
+[**UpsertStackUserAccess**](DefaultApi.md#UpsertStackUserAccess) | **Put** /organizations/{organizationId}/stacks/{stackId}/users/{userId} | Update stack user access role within an organization
 
 
 

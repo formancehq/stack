@@ -203,7 +203,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReadOrganizationUserResponse'
-    patch:
+    put:
       summary: Update user within an organization
       operationId: upsertOrganizationUser
       requestBody:
@@ -453,7 +453,7 @@ paths:
                 $ref: '#/components/schemas/Error'
         204:
           description: Updated user
-    patch:
+    put:
       summary: Update stack user access role within an organization
       operationId: upsertStackUserAccess
       parameters:

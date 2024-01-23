@@ -4034,7 +4034,7 @@ func (a *DefaultApiService) UpsertOrganizationUser(ctx context.Context, organiza
 // Execute executes the request
 func (a *DefaultApiService) UpsertOrganizationUserExecute(r ApiUpsertOrganizationUserRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPatch
+		localVarHTTPMethod   = http.MethodPut
 		localVarPostBody     interface{}
 		formFiles            []formFile
 	)
@@ -4172,7 +4172,7 @@ func (a *DefaultApiService) UpsertStackUserAccess(ctx context.Context, organizat
 // Execute executes the request
 func (a *DefaultApiService) UpsertStackUserAccessExecute(r ApiUpsertStackUserAccessRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPatch
+		localVarHTTPMethod   = http.MethodPut
 		localVarPostBody     interface{}
 		formFiles            []formFile
 	)
