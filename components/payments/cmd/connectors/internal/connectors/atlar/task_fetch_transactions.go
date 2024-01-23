@@ -194,7 +194,7 @@ func ExtractPaymentMetadata(paymentId models.PaymentID, transaction *atlar_model
 	result = append(result, ComputePaymentMetadata(paymentId, "btc/description", transaction.Characteristics.BankTransactionCode.Description))
 	result = append(result, ComputePaymentMetadataBool(paymentId, "returned", transaction.Characteristics.Returned))
 	if transaction.CounterpartyDetails != nil && transaction.CounterpartyDetails.Name != "" {
-		result = append(result, ComputePaymentMetadata(paymentId, "counterparty/nane", transaction.CounterpartyDetails.Name))
+		result = append(result, ComputePaymentMetadata(paymentId, "counterparty/name", transaction.CounterpartyDetails.Name))
 		if transaction.CounterpartyDetails.ExternalAccount != nil && transaction.CounterpartyDetails.ExternalAccount.Identifier != nil {
 			result = append(result, ComputePaymentMetadata(paymentId, "counterparty/bank/bic", transaction.CounterpartyDetails.ExternalAccount.Bank.Bic))
 			result = append(result, ComputePaymentMetadata(paymentId, "counterparty/bank/name", transaction.CounterpartyDetails.ExternalAccount.Bank.Name))
