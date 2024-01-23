@@ -35,9 +35,9 @@ func NewCommand() *cobra.Command {
 			return fmt.Errorf("unsupported membership server version: %s", version)
 		}),
 		fctl.WithChildCommands(
-			NewUpsertCommand(),
+			NewLinkCommand(),
 			NewListCommand(),
-			NewDeleteCommand(),
+			NewUnlinkCommand(),
 		),
 	)
 }

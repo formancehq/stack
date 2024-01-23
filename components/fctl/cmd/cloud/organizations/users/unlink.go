@@ -6,36 +6,36 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type DeleteStore struct {
+type UnlinkStore struct {
 	OrganizationID string `json:"organizationId"`
 	UserID         string `json:"userId"`
 }
 type DeleteController struct {
-	store *DeleteStore
+	store *UnlinkStore
 }
 
-var _ fctl.Controller[*DeleteStore] = (*DeleteController)(nil)
+var _ fctl.Controller[*UnlinkStore] = (*DeleteController)(nil)
 
-func NewDefaultDeleteStore() *DeleteStore {
-	return &DeleteStore{}
+func NewDefaultUnlinkStore() *UnlinkStore {
+	return &UnlinkStore{}
 }
 
-func NewDeleteController() *DeleteController {
+func NewUnlinkController() *DeleteController {
 	return &DeleteController{
-		store: NewDefaultDeleteStore(),
+		store: NewDefaultUnlinkStore(),
 	}
 }
 
-func NewDeleteCommand() *cobra.Command {
-	return fctl.NewCommand("delete <user-id>",
+func NewUnlinkCommand() *cobra.Command {
+	return fctl.NewCommand("unlink <user-id>",
 		fctl.WithAliases("u", "un"),
-		fctl.WithShortDescription("Delete user from organization"),
+		fctl.WithShortDescription("Unlink user from organization"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithController[*DeleteStore](NewDeleteController()),
+		fctl.WithController[*UnlinkStore](NewUnlinkController()),
 	)
 }
 
-func (c *DeleteController) GetStore() *DeleteStore {
+func (c *DeleteController) GetStore() *UnlinkStore {
 	return c.store
 }
 

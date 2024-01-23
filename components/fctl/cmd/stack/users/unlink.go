@@ -7,43 +7,42 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type DeletedUserAccessStore struct {
+type UnlinkStore struct {
 	Stack  *membershipclient.Stack `json:"stack"`
 	Status string                  `json:"status"`
 }
-type StackDeleteController struct {
-	store *DeletedUserAccessStore
+type UnlinkController struct {
+	store *UnlinkStore
 }
 
-var _ fctl.Controller[*DeletedUserAccessStore] = (*StackDeleteController)(nil)
+var _ fctl.Controller[*UnlinkStore] = (*UnlinkController)(nil)
 
-func NewDefaultDeletedUserAccessStore() *DeletedUserAccessStore {
-	return &DeletedUserAccessStore{
+func NewDefaultUnlinkStore() *UnlinkStore {
+	return &UnlinkStore{
 		Stack:  &membershipclient.Stack{},
 		Status: "",
 	}
 }
 
-func NewStackDeleteController() *StackDeleteController {
-	return &StackDeleteController{
-		store: NewDefaultDeletedUserAccessStore(),
+func NewUnlinkController() *UnlinkController {
+	return &UnlinkController{
+		store: NewDefaultUnlinkStore(),
 	}
 }
 
-func NewDeleteCommand() *cobra.Command {
-	return fctl.NewMembershipCommand("delete <stack-id> <user-id>",
+func NewUnlinkCommand() *cobra.Command {
+	return fctl.NewMembershipCommand("unlink <stack-id> <user-id>",
 		fctl.WithConfirmFlag(),
-		fctl.WithShortDescription("Delete stack user access within an organization"),
-		fctl.WithAliases("del", "d"),
+		fctl.WithShortDescription("Unlink stack user within an organization"),
 		fctl.WithArgs(cobra.ExactArgs(2)),
-		fctl.WithController[*DeletedUserAccessStore](NewStackDeleteController()),
+		fctl.WithController[*UnlinkStore](NewUnlinkController()),
 	)
 }
-func (c *StackDeleteController) GetStore() *DeletedUserAccessStore {
+func (c *UnlinkController) GetStore() *UnlinkStore {
 	return c.store
 }
 
-func (c *StackDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *UnlinkController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
 		return nil, err
@@ -71,7 +70,7 @@ func (c *StackDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 	return c, nil
 }
 
-func (c *StackDeleteController) Render(cmd *cobra.Command, args []string) error {
+func (c *UnlinkController) Render(cmd *cobra.Command, args []string) error {
 	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Stack user access deleted.")
 	return nil
 }

@@ -7,41 +7,41 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type UpsertStore struct {
+type LinkStore struct {
 	OrganizationID string `json:"organizationId"`
 	UserID         string `json:"userId"`
 	StackID        string `json:"stackId"`
 }
-type UpsertController struct {
-	store *UpsertStore
+type LinkController struct {
+	store *LinkStore
 }
 
-var _ fctl.Controller[*UpsertStore] = (*UpsertController)(nil)
+var _ fctl.Controller[*LinkStore] = (*LinkController)(nil)
 
-func NewDefaultUpsertStore() *UpsertStore {
-	return &UpsertStore{}
+func NewDefaultLinkStore() *LinkStore {
+	return &LinkStore{}
 }
 
-func NewUpsertController() *UpsertController {
-	return &UpsertController{
-		store: NewDefaultUpsertStore(),
+func NewLinkController() *LinkController {
+	return &LinkController{
+		store: NewDefaultLinkStore(),
 	}
 }
 
-func NewUpsertCommand() *cobra.Command {
-	return fctl.NewCommand("upsert <stack-id> <user-id>",
+func NewLinkCommand() *cobra.Command {
+	return fctl.NewCommand("link <stack-id> <user-id>",
 		fctl.WithStringFlag("role", "", "Roles: (ADMIN, GUEST, NONE)"),
-		fctl.WithShortDescription("Update Stack User properties"),
+		fctl.WithShortDescription("Link stack user with properties"),
 		fctl.WithArgs(cobra.ExactArgs(2)),
-		fctl.WithController[*UpsertStore](NewUpsertController()),
+		fctl.WithController[*LinkStore](NewLinkController()),
 	)
 }
 
-func (c *UpsertController) GetStore() *UpsertStore {
+func (c *LinkController) GetStore() *LinkStore {
 	return c.store
 }
 
-func (c *UpsertController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *LinkController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
@@ -89,7 +89,7 @@ func (c *UpsertController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	return c, nil
 }
 
-func (c *UpsertController) Render(cmd *cobra.Command, args []string) error {
+func (c *LinkController) Render(cmd *cobra.Command, args []string) error {
 	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Organization '%s': stack %s, access roles updated for user %s", c.store.OrganizationID, c.store.StackID, c.store.UserID)
 
 	return nil
