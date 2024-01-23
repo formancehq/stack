@@ -55,6 +55,9 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, streamProcessor *v1beta1.Strea
 	if err != nil {
 		return errors.Wrap(err, "searching elasticsearch configuration")
 	}
+	if elasticSearchConfiguration == nil {
+		return errors.New("elasticsearch configuration not found")
+	}
 
 	env := []corev1.EnvVar{
 		Env("OPENSEARCH_URL", elasticSearchConfiguration.Endpoint()),

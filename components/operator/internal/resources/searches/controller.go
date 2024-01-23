@@ -25,6 +25,7 @@ import (
 	"github.com/formancehq/operator/internal/resources/httpapis"
 	. "github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/settings"
+	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -38,6 +39,10 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 	elasticSearchConfiguration, err := settings.FindElasticSearchConfiguration(ctx, stack)
 	if err != nil {
 		return err
+	}
+
+	if elasticSearchConfiguration == nil {
+		return errors.New("missing elastic search configuration")
 	}
 
 	env := make([]corev1.EnvVar, 0)

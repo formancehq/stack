@@ -13,11 +13,11 @@ import (
 var _ = Describe("SearchesController", func() {
 	Context("When creating a Search object", func() {
 		var (
-			stack                                 *v1beta1.Stack
-			search                                *v1beta1.Search
-			elasticSearchConfigurationHostSetting *v1beta1.Settings
-			brokerKindSettings                    *v1beta1.Settings
-			brokerNatsDSNSettings                 *v1beta1.Settings
+			stack                   *v1beta1.Stack
+			search                  *v1beta1.Search
+			elasticSearchDSNSetting *v1beta1.Settings
+			brokerKindSettings      *v1beta1.Settings
+			brokerNatsDSNSettings   *v1beta1.Settings
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -32,22 +32,20 @@ var _ = Describe("SearchesController", func() {
 					},
 				},
 			}
-			elasticSearchConfigurationHostSetting = settings.New(uuid.NewString(),
-				"elasticsearch.host", "localhost", stack.Name)
-			brokerKindSettings = settings.New(uuid.NewString(),
-				"broker.kind", "nats", stack.Name)
+			elasticSearchDSNSetting = settings.New(uuid.NewString(), "elasticsearch.dsn", "https://localhost", stack.Name)
+			brokerKindSettings = settings.New(uuid.NewString(), "broker.kind", "nats", stack.Name)
 			brokerNatsDSNSettings = settings.New(uuid.NewString(), "broker.nats.dsn", "nats://localhost:1234", stack.Name)
 		})
 		JustBeforeEach(func() {
 			Expect(Create(stack)).To(Succeed())
-			Expect(Create(elasticSearchConfigurationHostSetting)).To(Succeed())
+			Expect(Create(elasticSearchDSNSetting)).To(Succeed())
 			Expect(Create(brokerKindSettings)).To(Succeed())
 			Expect(Create(brokerNatsDSNSettings)).To(Succeed())
 			Expect(Create(search)).To(Succeed())
 		})
 		AfterEach(func() {
 			Expect(Delete(search)).To(Succeed())
-			Expect(Delete(elasticSearchConfigurationHostSetting)).To(Succeed())
+			Expect(Delete(elasticSearchDSNSetting)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 			Expect(Delete(brokerKindSettings)).To(Succeed())
 			Expect(Delete(brokerNatsDSNSettings)).To(Succeed())

@@ -17,11 +17,11 @@ var _ = Describe("StreamProcessorController", func() {
 
 	Context("When creating a stream processor", func() {
 		var (
-			streamProcessor               *v1beta1.StreamProcessor
-			stack                         *v1beta1.Stack
-			brokerKindSettings            *v1beta1.Settings
-			brokerNatsDSNSettings         *v1beta1.Settings
-			elasticSearchEndpointSettings *v1beta1.Settings
+			streamProcessor          *v1beta1.StreamProcessor
+			stack                    *v1beta1.Stack
+			brokerKindSettings       *v1beta1.Settings
+			brokerNatsDSNSettings    *v1beta1.Settings
+			elasticSearchDSNSettings *v1beta1.Settings
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -30,7 +30,7 @@ var _ = Describe("StreamProcessorController", func() {
 			}
 			brokerKindSettings = settings.New(uuid.NewString(), "broker.kind", "nats", stack.Name)
 			brokerNatsDSNSettings = settings.New(uuid.NewString(), "broker.nats.dsn", "nats://localhost:1234", stack.Name)
-			elasticSearchEndpointSettings = settings.New(uuid.NewString(), "elasticsearch.host", "localhost", stack.Name)
+			elasticSearchDSNSettings = settings.New(uuid.NewString(), "elasticsearch.dsn", "https://localhost", stack.Name)
 			streamProcessor = &v1beta1.StreamProcessor{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.StreamProcessorSpec{
@@ -44,12 +44,12 @@ var _ = Describe("StreamProcessorController", func() {
 			Expect(Create(brokerKindSettings)).To(BeNil())
 			Expect(Create(brokerNatsDSNSettings)).To(BeNil())
 			Expect(Create(stack)).To(Succeed())
-			Expect(Create(elasticSearchEndpointSettings)).To(Succeed())
+			Expect(Create(elasticSearchDSNSettings)).To(Succeed())
 			Expect(Create(streamProcessor)).To(Succeed())
 		})
 		JustAfterEach(func() {
 			Expect(Delete(stack)).To(Succeed())
-			Expect(Delete(elasticSearchEndpointSettings)).To(Succeed())
+			Expect(Delete(elasticSearchDSNSettings)).To(Succeed())
 			Expect(Delete(brokerNatsDSNSettings)).To(Succeed())
 			Expect(Delete(brokerKindSettings)).To(Succeed())
 			Expect(Delete(streamProcessor)).To(Succeed())
