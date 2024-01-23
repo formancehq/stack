@@ -21,12 +21,6 @@ func ValueOrDefault[T any](v *T, defaultValue T) T {
 }
 
 func Get(ctx core.Context, stack string, keys ...string) (*string, error) {
-
-	// Keys can be passed as "a.b.c", instead of "a", "b", "c"
-	keys = Flatten(Map(keys, func(from string) []string {
-		return strings.Split(from, ".")
-	}))
-
 	allSettings := &v1beta1.SettingsList{}
 	if err := ctx.GetClient().List(ctx, allSettings, client.MatchingFields{
 		"stack":  stack,
@@ -35,32 +29,7 @@ func Get(ctx core.Context, stack string, keys ...string) (*string, error) {
 		return nil, errors.Wrap(err, "listings settings")
 	}
 
-	settings := allSettings.Items
-	slices.SortFunc(settings, func(a, b v1beta1.Settings) int {
-		aKeys := strings.Split(a.Spec.Key, ".")
-		bKeys := strings.Split(b.Spec.Key, ".")
-
-		for _, aKey := range aKeys {
-			for _, bKey := range bKeys {
-				if aKey == "*" {
-					return -1
-				}
-				if bKey == "*" {
-					return 1
-				}
-			}
-		}
-
-		return 0
-	})
-
-	for _, setting := range settings {
-		if matchSetting(setting, keys...) {
-			return &setting.Spec.Value, nil
-		}
-	}
-
-	return nil, nil
+	return findMatchingSettings(allSettings.Items, keys...)
 }
 
 func GetString(ctx core.Context, stack string, keys ...string) (*string, error) {
@@ -280,6 +249,41 @@ func GetMapOrEmpty(ctx core.Context, stack string, keys ...string) (map[string]s
 	}
 
 	return value, nil
+}
+
+func findMatchingSettings(settings []v1beta1.Settings, keys ...string) (*string, error) {
+
+	// Keys can be passed as "a.b.c", instead of "a", "b", "c"
+	keys = Flatten(Map(keys, func(from string) []string {
+		return strings.Split(from, ".")
+	}))
+
+	slices.SortFunc(settings, func(a, b v1beta1.Settings) int {
+		aKeys := strings.Split(a.Spec.Key, ".")
+		bKeys := strings.Split(b.Spec.Key, ".")
+
+		for i := 0; i < len(aKeys); i++ {
+			if aKeys[i] == bKeys[i] {
+				continue
+			}
+			if aKeys[i] == "*" {
+				return 1
+			}
+			if bKeys[i] == "*" {
+				return -1
+			}
+		}
+
+		return 0
+	})
+
+	for _, setting := range settings {
+		if matchSetting(setting, keys...) {
+			return &setting.Spec.Value, nil
+		}
+	}
+
+	return nil, nil
 }
 
 func matchSetting(setting v1beta1.Settings, keys ...string) bool {
