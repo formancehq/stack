@@ -1299,6 +1299,7 @@ components:
       - NONE
       - ADMIN
       - GUEST
+      - USER
       type: string
     User:
       allOf:
