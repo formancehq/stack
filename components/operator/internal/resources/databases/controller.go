@@ -18,6 +18,7 @@ package databases
 
 import (
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/settings"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
@@ -66,6 +67,8 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 	if err != nil {
 		return err
 	}
+
+	spew.Dump(databaseConfiguration)
 
 	if databaseConfiguration == nil {
 		return fmt.Errorf("unable to find a database configuration")

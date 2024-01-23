@@ -14,12 +14,12 @@ import (
 var _ = Describe("WalletsController", func() {
 	Context("When creating a Wallets object", func() {
 		var (
-			stack               *v1beta1.Stack
-			gateway             *v1beta1.Gateway
-			ledger              *v1beta1.Ledger
-			databaseHostSetting *v1beta1.Settings
-			wallets             *v1beta1.Wallets
-			auth                *v1beta1.Auth
+			stack            *v1beta1.Stack
+			gateway          *v1beta1.Gateway
+			ledger           *v1beta1.Ledger
+			databaseSettings *v1beta1.Settings
+			wallets          *v1beta1.Wallets
+			auth             *v1beta1.Auth
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -35,7 +35,7 @@ var _ = Describe("WalletsController", func() {
 					Ingress: &v1beta1.GatewayIngress{},
 				},
 			}
-			databaseHostSetting = settings.NewHostSetting(uuid.NewString(), "localhost", stack.Name)
+			databaseSettings = settings.New(uuid.NewString(), "postgres.*.uri", "postgresql://localhost", stack.Name)
 			wallets = &v1beta1.Wallets{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.WalletsSpec{
@@ -65,7 +65,7 @@ var _ = Describe("WalletsController", func() {
 			Expect(Create(stack)).To(Succeed())
 			Expect(Create(auth)).To(Succeed())
 			Expect(Create(gateway)).To(Succeed())
-			Expect(Create(databaseHostSetting)).To(Succeed())
+			Expect(Create(databaseSettings)).To(Succeed())
 			Expect(Create(ledger)).To(Succeed())
 			Expect(Create(wallets)).To(Succeed())
 		})
@@ -74,7 +74,7 @@ var _ = Describe("WalletsController", func() {
 			Expect(Delete(wallets)).To(Succeed())
 			Expect(Delete(ledger)).To(Succeed())
 			Expect(Delete(gateway)).To(Succeed())
-			Expect(Delete(databaseHostSetting)).To(Succeed())
+			Expect(Delete(databaseSettings)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 		})
 		It("Should create a deployment", func() {

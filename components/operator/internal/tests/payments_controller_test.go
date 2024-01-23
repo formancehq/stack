@@ -17,9 +17,9 @@ import (
 var _ = Describe("PaymentsController", func() {
 	Context("When creating a Payments object", func() {
 		var (
-			stack               *v1beta1.Stack
-			payments            *v1beta1.Payments
-			databaseHostSetting *v1beta1.Settings
+			stack            *v1beta1.Stack
+			payments         *v1beta1.Payments
+			databaseSettings *v1beta1.Settings
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -34,16 +34,16 @@ var _ = Describe("PaymentsController", func() {
 					},
 				},
 			}
-			databaseHostSetting = settings.NewHostSetting(uuid.NewString(), "localhost", stack.Name)
+			databaseSettings = settings.New(uuid.NewString(), "postgres.*.uri", "postgresql://localhost", stack.Name)
 		})
 		JustBeforeEach(func() {
 			Expect(Create(stack)).To(Succeed())
-			Expect(Create(databaseHostSetting)).To(Succeed())
+			Expect(Create(databaseSettings)).To(Succeed())
 			Expect(Create(payments)).To(Succeed())
 		})
 		AfterEach(func() {
 			Expect(Delete(payments)).To(Succeed())
-			Expect(Delete(databaseHostSetting)).To(Succeed())
+			Expect(Delete(databaseSettings)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 		})
 		It("Should create a read deployment with a service", func() {

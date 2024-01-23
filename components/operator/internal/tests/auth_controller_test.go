@@ -15,16 +15,16 @@ import (
 var _ = Describe("AuthController", func() {
 	Context("When creating a Auth object", func() {
 		var (
-			stack               *v1beta1.Stack
-			auth                *v1beta1.Auth
-			databaseHostSetting *v1beta1.Settings
+			stack            *v1beta1.Stack
+			auth             *v1beta1.Auth
+			databaseSettings *v1beta1.Settings
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
 				ObjectMeta: RandObjectMeta(),
 				Spec:       v1beta1.StackSpec{},
 			}
-			databaseHostSetting = settings.NewHostSetting(uuid.NewString(), "localhost", stack.Name)
+			databaseSettings = settings.New(uuid.NewString(), "postgres.*.uri", "postgresql://localhost", stack.Name)
 			auth = &v1beta1.Auth{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.AuthSpec{
@@ -36,12 +36,12 @@ var _ = Describe("AuthController", func() {
 		})
 		JustBeforeEach(func() {
 			Expect(Create(stack)).To(Succeed())
-			Expect(Create(databaseHostSetting)).To(Succeed())
+			Expect(Create(databaseSettings)).To(Succeed())
 			Expect(Create(auth)).To(Succeed())
 		})
 		AfterEach(func() {
 			Expect(Delete(auth)).To(Succeed())
-			Expect(Delete(databaseHostSetting)).To(Succeed())
+			Expect(Delete(databaseSettings)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 		})
 		It("Should create a deployment", func() {

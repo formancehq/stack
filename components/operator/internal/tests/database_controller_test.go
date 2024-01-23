@@ -15,9 +15,9 @@ import (
 var _ = Describe("DatabaseController", func() {
 	Context("When creating a Database", func() {
 		var (
-			stack               *v1beta1.Stack
-			database            *v1beta1.Database
-			databaseHostSetting *v1beta1.Settings
+			stack            *v1beta1.Stack
+			database         *v1beta1.Database
+			databaseSettings *v1beta1.Settings
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -25,8 +25,8 @@ var _ = Describe("DatabaseController", func() {
 				Spec:       v1beta1.StackSpec{},
 			}
 			Expect(Create(stack)).To(BeNil())
-			databaseHostSetting = settings.NewHostSetting(uuid.NewString(), "localhost", stack.Name)
-			Expect(Create(databaseHostSetting)).Should(Succeed())
+			databaseSettings = settings.New(uuid.NewString(), "postgres.*.uri", "postgresql://localhost", stack.Name)
+			Expect(Create(databaseSettings)).Should(Succeed())
 			database = &v1beta1.Database{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.DatabaseSpec{
@@ -40,7 +40,7 @@ var _ = Describe("DatabaseController", func() {
 		})
 		AfterEach(func() {
 			Expect(client.IgnoreNotFound(Delete(database))).To(Succeed())
-			Expect(Delete(databaseHostSetting)).To(Succeed())
+			Expect(Delete(databaseSettings)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 		})
 		shouldBeReady := func() {
@@ -74,9 +74,9 @@ var _ = Describe("DatabaseController", func() {
 					return database.Status.Ready
 				}).Should(BeTrue())
 
-				patch := client.MergeFrom(databaseHostSetting.DeepCopy())
-				databaseHostSetting.Spec.Value = "xxx"
-				Expect(Patch(databaseHostSetting, patch)).To(Succeed())
+				patch := client.MergeFrom(databaseSettings.DeepCopy())
+				databaseSettings.Spec.Value = "postgresql://xxx"
+				Expect(Patch(databaseSettings, patch)).To(Succeed())
 			})
 			It("Should declare the Database object as out of sync", func() {
 				Eventually(func(g Gomega) bool {

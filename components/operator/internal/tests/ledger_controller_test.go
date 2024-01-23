@@ -18,16 +18,16 @@ import (
 var _ = Describe("LedgerController", func() {
 	Context("When creating a Ledger", func() {
 		var (
-			stack               *v1beta1.Stack
-			ledger              *v1beta1.Ledger
-			databaseHostSetting *v1beta1.Settings
+			stack            *v1beta1.Stack
+			ledger           *v1beta1.Ledger
+			databaseSettings *v1beta1.Settings
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
 				ObjectMeta: RandObjectMeta(),
 				Spec:       v1beta1.StackSpec{},
 			}
-			databaseHostSetting = settings.NewHostSetting(uuid.NewString(), "localhost", stack.Name)
+			databaseSettings = settings.New(uuid.NewString(), "postgres.*.uri", "postgresql://localhost", stack.Name)
 			ledger = &v1beta1.Ledger{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.LedgerSpec{
@@ -39,12 +39,12 @@ var _ = Describe("LedgerController", func() {
 		})
 		JustBeforeEach(func() {
 			Expect(Create(stack)).To(Succeed())
-			Expect(Create(databaseHostSetting)).To(Succeed())
+			Expect(Create(databaseSettings)).To(Succeed())
 			Expect(Create(ledger)).To(Succeed())
 		})
 		AfterEach(func() {
 			Expect(Delete(ledger)).To(Succeed())
-			Expect(Delete(databaseHostSetting)).To(Succeed())
+			Expect(Delete(databaseSettings)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 		})
 		It("Should create a deployment", func() {

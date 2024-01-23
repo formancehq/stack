@@ -2,8 +2,10 @@ package settings
 
 import (
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
+	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/pkg/errors"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -20,23 +22,46 @@ func ValueOrDefault[T any](v *T, defaultValue T) T {
 }
 
 func Get(ctx core.Context, stack string, keys ...string) (*string, error) {
-	key := strings.Join(keys, ".")
-	list := &v1beta1.SettingsList{}
-	if err := ctx.GetClient().List(ctx, list, client.MatchingFields{
-		"stack": stack,
-		"key":   key,
+
+	// Keys can be passed as "a.b.c", instead of "a", "b", "c"
+	keys = Flatten(Map(keys, func(from string) []string {
+		return strings.Split(from, ".")
+	}))
+
+	allSettings := &v1beta1.SettingsList{}
+	if err := ctx.GetClient().List(ctx, allSettings, client.MatchingFields{
+		"stack":  stack,
+		"keylen": fmt.Sprint(len(keys)),
 	}); err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "listings settings")
 	}
 
-	if len(list.Items) == 0 {
-		return nil, nil
-	}
-	if len(list.Items) > 1 {
-		return nil, fmt.Errorf("found multiple matching setting with key '%s' and stack '%s'", key, stack)
+	settings := allSettings.Items
+	slices.SortFunc(settings, func(a, b v1beta1.Settings) int {
+		aKeys := strings.Split(a.Spec.Key, ".")
+		bKeys := strings.Split(b.Spec.Key, ".")
+
+		for _, aKey := range aKeys {
+			for _, bKey := range bKeys {
+				if aKey == "*" {
+					return -1
+				}
+				if bKey == "*" {
+					return 1
+				}
+			}
+		}
+
+		return 0
+	})
+
+	for _, setting := range settings {
+		if matchSetting(setting, keys...) {
+			return &setting.Spec.Value, nil
+		}
 	}
 
-	return &list.Items[0].Spec.Value, nil
+	return nil, nil
 }
 
 func GetString(ctx core.Context, stack string, keys ...string) (*string, error) {
@@ -258,52 +283,19 @@ func GetMapOrEmpty(ctx core.Context, stack string, keys ...string) (map[string]s
 	return value, nil
 }
 
-func GetByPriority(ctx core.Context, stack string, keys ...string) (*string, error) {
-	allSettings := &v1beta1.SettingsList{}
-	if err := ctx.GetClient().List(ctx, allSettings, client.MatchingFields{
-		"stack":  stack,
-		"keylen": fmt.Sprint(len(keys)),
-	}); err != nil {
-		return nil, errors.Wrap(err, "listings settings")
-	}
-
-	settings := allSettings.Items
-	slices.SortFunc(settings, func(a, b v1beta1.Settings) int {
-		aKeys := strings.Split(a.Spec.Key, ".")
-		bKeys := strings.Split(b.Spec.Key, ".")
-
-		for _, aKey := range aKeys {
-			for _, bKey := range bKeys {
-				if aKey == "*" {
-					return -1
-				}
-				if bKey == "*" {
-					return 1
-				}
-			}
-		}
-
-		return 0
-	})
-
-	for _, setting := range settings {
-		if matchSetting(settings, keys...) {
-			return &setting.Spec.Value, nil
-		}
-	}
-
-	return nil, nil
-}
-
-func matchSetting(settings []v1beta1.Settings, keys ...string) bool {
-	for i, setting := range settings {
-		settingKeyParts := strings.Split(setting.Spec.Key, ".")
-		if settingKeyParts[i] == "*" {
+func matchSetting(setting v1beta1.Settings, keys ...string) bool {
+	settingKeyParts := strings.Split(setting.Spec.Key, ".")
+	spew.Dump(setting)
+	spew.Dump(keys)
+	for i, settingKeyPart := range settingKeyParts {
+		if settingKeyPart == "*" {
 			continue
 		}
-		if settingKeyParts[i] != keys[i] {
+		if settingKeyPart != keys[i] {
+			fmt.Println("not match because", settingKeyParts[i], keys[i])
 			return false
 		}
 	}
+	fmt.Println("match")
 	return true
 }

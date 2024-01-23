@@ -7,12 +7,13 @@ import (
 	"github.com/pkg/errors"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"strings"
 )
 
 func init() {
 	core.Init(
 		core.WithSimpleIndex[*v1beta1.Settings]("keylen", func(t *v1beta1.Settings) string {
-			return fmt.Sprint(len(t.Spec.Key))
+			return fmt.Sprint(len(strings.Split(t.Spec.Key, ".")))
 		}),
 	)
 }

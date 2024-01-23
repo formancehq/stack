@@ -20,7 +20,7 @@ var _ = Describe("OrchestrationController", func() {
 			gateway                    *v1beta1.Gateway
 			auth                       *v1beta1.Auth
 			ledger                     *v1beta1.Ledger
-			databaseHostSetting        *v1beta1.Settings
+			databaseSettings           *v1beta1.Settings
 			orchestration              *v1beta1.Orchestration
 			brokerKindSettings         *v1beta1.Settings
 			brokerNatsEndpointSettings *v1beta1.Settings
@@ -34,7 +34,7 @@ var _ = Describe("OrchestrationController", func() {
 				ObjectMeta: RandObjectMeta(),
 				Spec:       v1beta1.StackSpec{},
 			}
-			databaseHostSetting = settings.NewHostSetting(uuid.NewString(), "localhost", stack.Name)
+			databaseSettings = settings.New(uuid.NewString(), "postgres.*.uri", "postgresql://localhost", stack.Name)
 			brokerKindSettings = settings.New(uuid.NewString(), "broker.kind", "nats", stack.Name)
 			brokerNatsEndpointSettings = settings.New(uuid.NewString(), "broker.nats.endpoint", "localhost:1234", stack.Name)
 			temporalAddressSettings = settings.New(uuid.NewString(), "temporal.address", "localhost", stack.Name)
@@ -77,7 +77,7 @@ var _ = Describe("OrchestrationController", func() {
 		})
 		JustBeforeEach(func() {
 			Expect(Create(stack)).To(Succeed())
-			Expect(Create(databaseHostSetting)).To(Succeed())
+			Expect(Create(databaseSettings)).To(Succeed())
 			Expect(Create(temporalAddressSettings)).To(Succeed())
 			Expect(Create(temporalNamespaceSettings)).To(Succeed())
 			Expect(Create(temporalTLSCrtSettings)).To(Succeed())
@@ -92,7 +92,7 @@ var _ = Describe("OrchestrationController", func() {
 		AfterEach(func() {
 			Expect(Delete(auth)).To(Succeed())
 			Expect(Delete(gateway)).To(Succeed())
-			Expect(Delete(databaseHostSetting)).To(Succeed())
+			Expect(Delete(databaseSettings)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 			Expect(Delete(ledger)).To(Succeed())
 			Expect(Delete(orchestration)).To(Succeed())
