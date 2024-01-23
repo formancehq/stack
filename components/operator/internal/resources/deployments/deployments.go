@@ -2,20 +2,21 @@ package deployments
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/settings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/stoewer/go-strcase"
-	v1 "k8s.io/api/apps/v1"
-	v13 "k8s.io/api/core/v1"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func WithMatchingLabels(name string) func(deployment *v1.Deployment) {
-	return func(deployment *v1.Deployment) {
+func WithMatchingLabels(name string) func(deployment *appsv1.Deployment) error {
+	return func(deployment *appsv1.Deployment) error {
 		matchLabels := map[string]string{
 			"app.kubernetes.io/name": name,
 		}
@@ -24,30 +25,40 @@ func WithMatchingLabels(name string) func(deployment *v1.Deployment) {
 		}
 		deployment.Spec.Selector.MatchLabels = matchLabels
 		deployment.Spec.Template.Labels = matchLabels
+
+		return nil
 	}
 }
 
-func WithReplicas(replicas int32) func(t *v1.Deployment) {
-	return func(t *v1.Deployment) {
+func WithReplicas(replicas int32) func(t *appsv1.Deployment) error {
+	return func(t *appsv1.Deployment) error {
 		t.Spec.Replicas = pointer.For(replicas)
+
+		return nil
 	}
 }
 
-func WithContainers(containers ...v13.Container) func(r *v1.Deployment) {
-	return func(r *v1.Deployment) {
+func WithContainers(containers ...corev1.Container) func(r *appsv1.Deployment) error {
+	return func(r *appsv1.Deployment) error {
 		r.Spec.Template.Spec.Containers = containers
+
+		return nil
 	}
 }
 
-func WithInitContainers(containers ...v13.Container) func(r *v1.Deployment) {
-	return func(r *v1.Deployment) {
+func WithInitContainers(containers ...corev1.Container) func(r *appsv1.Deployment) error {
+	return func(r *appsv1.Deployment) error {
 		r.Spec.Template.Spec.InitContainers = containers
+
+		return nil
 	}
 }
 
-func WithVolumes(volumes ...v13.Volume) func(t *v1.Deployment) {
-	return func(t *v1.Deployment) {
+func WithVolumes(volumes ...corev1.Volume) func(t *appsv1.Deployment) error {
+	return func(t *appsv1.Deployment) error {
 		t.Spec.Template.Spec.Volumes = volumes
+
+		return nil
 	}
 }
 
@@ -55,7 +66,7 @@ func CreateOrUpdate(ctx core.Context, owner interface {
 	client.Object
 	GetStack() string
 	SetCondition(condition v1beta1.Condition)
-}, name string, mutators ...core.ObjectMutator[*v1.Deployment]) (*v1.Deployment, error) {
+}, name string, mutators ...core.ObjectMutator[*appsv1.Deployment]) (*appsv1.Deployment, error) {
 
 	condition := v1beta1.Condition{
 		Type:               "DeploymentReady",
@@ -67,9 +78,31 @@ func CreateOrUpdate(ctx core.Context, owner interface {
 		owner.SetCondition(condition)
 	}()
 
-	mutators = append(mutators, core.WithController[*v1.Deployment](ctx.GetScheme(), owner))
+	mutators = append(mutators, core.WithController[*appsv1.Deployment](ctx.GetScheme(), owner))
+	mutators = append(mutators, func(t *appsv1.Deployment) error {
+		for ind, container := range t.Spec.Template.Spec.InitContainers {
+			resourceRequirements, err := settings.GetResourceRequirements(ctx, owner.GetStack(),
+				"deployments", t.Name, "init-containers", container.Name, "resource-requirements")
+			if err != nil {
+				return err
+			}
+			container.Resources = mergeResourceRequirements(container.Resources, *resourceRequirements)
+			t.Spec.Template.Spec.InitContainers[ind] = container
+		}
+		for ind, container := range t.Spec.Template.Spec.Containers {
+			resourceRequirements, err := settings.GetResourceRequirements(ctx, owner.GetStack(),
+				"deployments", t.Name, "containers", container.Name, "resource-requirements")
+			if err != nil {
+				return err
+			}
+			container.Resources = mergeResourceRequirements(container.Resources, *resourceRequirements)
+			t.Spec.Template.Spec.Containers[ind] = container
+		}
 
-	deployment, _, err := core.CreateOrUpdate[*v1.Deployment](ctx, types.NamespacedName{
+		return nil
+	})
+
+	deployment, _, err := core.CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
 		Namespace: owner.GetStack(),
 		Name:      name,
 	}, mutators...)
@@ -90,7 +123,7 @@ func CreateOrUpdate(ctx core.Context, owner interface {
 	return deployment, nil
 }
 
-func checkStatus(deployment *v1.Deployment) (bool, string) {
+func checkStatus(deployment *appsv1.Deployment) (bool, string) {
 	if deployment.Status.ObservedGeneration != deployment.Generation {
 		return false, fmt.Sprintf("Generation not matching, generation: %d, observed: %d)",
 			deployment.Generation, deployment.Status.ObservedGeneration)
@@ -109,4 +142,17 @@ func checkStatus(deployment *v1.Deployment) (bool, string) {
 	}
 
 	return true, "deployment is ready"
+}
+
+func mergeResourceRequirements(dest, src corev1.ResourceRequirements) corev1.ResourceRequirements {
+	if dest.Limits == nil {
+		dest.Limits = src.Limits
+	}
+	if dest.Requests == nil {
+		dest.Requests = src.Requests
+	}
+	if dest.Claims == nil {
+		dest.Claims = src.Claims
+	}
+	return dest
 }

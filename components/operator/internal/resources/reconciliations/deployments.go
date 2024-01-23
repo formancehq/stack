@@ -10,7 +10,7 @@ import (
 	"github.com/formancehq/operator/internal/resources/gateways"
 	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/settings"
-	v12 "k8s.io/api/apps/v1"
+	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 )
 
@@ -51,15 +51,16 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, reconciliation *v1
 	}
 
 	_, err = deployments.CreateOrUpdate(ctx, reconciliation, "reconciliation",
-		func(t *v12.Deployment) {
+		func(t *appsv1.Deployment) error {
 			t.Spec.Template.Spec.Containers = []v1.Container{{
 				Name:          "reconciliation",
 				Env:           env,
 				Image:         image,
-				Resources:     core.GetResourcesRequirementsWithDefault(reconciliation.Spec.ResourceRequirements, core.ResourceSizeSmall()),
 				Ports:         []v1.ContainerPort{deployments.StandardHTTPPort()},
 				LivenessProbe: deployments.DefaultLiveness("http"),
 			}}
+
+			return nil
 		},
 		deployments.WithMatchingLabels("reconciliation"),
 	)

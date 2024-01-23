@@ -108,7 +108,7 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 
 	_, _, err := CreateOrUpdate[*v1beta1.Stack](ctx, types.NamespacedName{
 		Name: stack.Name,
-	}, func(t *v1beta1.Stack) {
+	}, func(t *v1beta1.Stack) error {
 		t.Spec.Dev = stack.Spec.Dev
 		t.Spec.Debug = stack.Spec.Debug
 		if configuration.Spec.Services.Gateway.EnableAuditPlugin != nil {
@@ -116,6 +116,8 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}
 		t.Spec.Disabled = stack.Spec.Disabled
 		t.Spec.VersionsFromFile = versions.Name
+
+		return nil
 	})
 	if err != nil {
 		return errors.Wrap(err, "creating stack")
@@ -156,10 +158,9 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 	if !isDisabled(stack, configuration, false, "ledger") {
 		ledger, _, err := CreateOrUpdate[*v1beta1.Ledger](ctx, types.NamespacedName{
 			Name: stack.Name,
-		}, func(t *v1beta1.Ledger) {
+		}, func(t *v1beta1.Ledger) error {
 			t.Spec.Stack = stack.Name
 			t.Spec.DeploymentStrategy = v1beta1.DeploymentStrategy(configuration.Spec.Services.Ledger.DeploymentStrategy)
-			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Ledger.ResourceProperties)
 			if annotations := configuration.Spec.Services.Ledger.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
 					Annotations: annotations,
@@ -181,6 +182,8 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 					}
 				}(),
 			}
+
+			return nil
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating ledger service")
@@ -191,14 +194,15 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 	if !isDisabled(stack, configuration, false, "payments") {
 		payments, _, err := CreateOrUpdate[*v1beta1.Payments](ctx, types.NamespacedName{
 			Name: stack.Name,
-		}, func(t *v1beta1.Payments) {
+		}, func(t *v1beta1.Payments) error {
 			t.Spec.Stack = stack.Name
-			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Payments.ResourceProperties)
 			if annotations := configuration.Spec.Services.Payments.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
 					Annotations: annotations,
 				}
 			}
+
+			return nil
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating payments service")
@@ -209,14 +213,15 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 	if !isDisabled(stack, configuration, false, "wallets") {
 		wallets, _, err := CreateOrUpdate[*v1beta1.Wallets](ctx, types.NamespacedName{
 			Name: stack.Name,
-		}, func(t *v1beta1.Wallets) {
+		}, func(t *v1beta1.Wallets) error {
 			t.Spec.Stack = stack.Name
-			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Wallets.ResourceProperties)
 			if annotations := configuration.Spec.Services.Wallets.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
 					Annotations: annotations,
 				}
 			}
+
+			return nil
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating wallets service")
@@ -227,14 +232,15 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 	if !isDisabled(stack, configuration, false, "orchestration") {
 		orchestration, _, err := CreateOrUpdate[*v1beta1.Orchestration](ctx, types.NamespacedName{
 			Name: stack.Name,
-		}, func(t *v1beta1.Orchestration) {
+		}, func(t *v1beta1.Orchestration) error {
 			t.Spec.Stack = stack.Name
-			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Orchestration.ResourceProperties)
 			if annotations := configuration.Spec.Services.Orchestration.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
 					Annotations: annotations,
 				}
 			}
+
+			return nil
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating orchestration service")
@@ -245,14 +251,15 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 	if !isDisabled(stack, configuration, false, "webhooks") {
 		webhooks, _, err := CreateOrUpdate[*v1beta1.Webhooks](ctx, types.NamespacedName{
 			Name: stack.Name,
-		}, func(t *v1beta1.Webhooks) {
+		}, func(t *v1beta1.Webhooks) error {
 			t.Spec.Stack = stack.Name
-			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Webhooks.ResourceProperties)
 			if annotations := configuration.Spec.Services.Webhooks.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
 					Annotations: annotations,
 				}
 			}
+
+			return nil
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating webhooks service")
@@ -266,14 +273,15 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 	if !isDisabled(stack, configuration, true, "reconciliation") {
 		reconciliation, _, err := CreateOrUpdate[*v1beta1.Reconciliation](ctx, types.NamespacedName{
 			Name: stack.Name,
-		}, func(t *v1beta1.Reconciliation) {
+		}, func(t *v1beta1.Reconciliation) error {
 			t.Spec.Stack = stack.Name
-			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Reconciliation.ResourceProperties)
 			if annotations := configuration.Spec.Services.Reconciliation.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
 					Annotations: annotations,
 				}
 			}
+
+			return nil
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating reconciliation service")
@@ -284,18 +292,15 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 	if !isDisabled(stack, configuration, false, "search") {
 		search, _, err := CreateOrUpdate[*v1beta1.Search](ctx, types.NamespacedName{
 			Name: stack.Name,
-		}, func(t *v1beta1.Search) {
+		}, func(t *v1beta1.Search) error {
 			t.Spec.Stack = stack.Name
-			if resourceProperties := configuration.Spec.Services.Search.BenthosResourceProperties; resourceProperties != nil {
-				t.Spec.StreamProcessor = &v1beta1.SearchStreamProcessorSpec{
-					ResourceRequirements: resourceRequirements(resourceProperties),
-				}
-			}
 			if annotations := configuration.Spec.Services.Search.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
 					Annotations: annotations,
 				}
 			}
+
+			return nil
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating search service")
@@ -306,9 +311,8 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 	if !isDisabled(stack, configuration, false, "auth") {
 		auth, _, err := CreateOrUpdate[*v1beta1.Auth](ctx, types.NamespacedName{
 			Name: stack.Name,
-		}, func(t *v1beta1.Auth) {
+		}, func(t *v1beta1.Auth) error {
 			t.Spec.Stack = stack.Name
-			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Auth.ResourceProperties)
 			if annotations := configuration.Spec.Services.Auth.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
 					Annotations: annotations,
@@ -319,6 +323,8 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 				ClientID:     stack.Spec.Auth.DelegatedOIDCServer.ClientID,
 				ClientSecret: stack.Spec.Auth.DelegatedOIDCServer.ClientSecret,
 			}
+
+			return nil
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating auth service")
@@ -329,7 +335,7 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 	if !isDisabled(stack, configuration, false, "gateway") {
 		gateway, _, err := CreateOrUpdate[*v1beta1.Gateway](ctx, types.NamespacedName{
 			Name: stack.Name,
-		}, func(t *v1beta1.Gateway) {
+		}, func(t *v1beta1.Gateway) error {
 			t.Spec.Stack = stack.Name
 			t.Spec.Ingress = &v1beta1.GatewayIngress{
 				Host:   stack.Spec.Host,
@@ -344,12 +350,13 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 				}(),
 				Annotations: configuration.Spec.Ingress.Annotations,
 			}
-			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Gateway.ResourceProperties)
 			if annotations := configuration.Spec.Services.Gateway.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
 					Annotations: annotations,
 				}
 			}
+
+			return nil
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating gateway service")
@@ -365,15 +372,16 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 
 			stargate, _, err := CreateOrUpdate[*v1beta1.Stargate](ctx, types.NamespacedName{
 				Name: stack.Name,
-			}, func(t *v1beta1.Stargate) {
+			}, func(t *v1beta1.Stargate) error {
 				t.Spec.Stack = stack.Name
-				t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Stargate.ResourceProperties)
 				t.Spec.ServerURL = stack.Spec.Stargate.StargateServerURL
 				t.Spec.OrganizationID = organizationID
 				t.Spec.StackID = stackID
 				t.Spec.Auth.Issuer = stack.Spec.Auth.DelegatedOIDCServer.Issuer
 				t.Spec.Auth.ClientID = stack.Spec.Auth.DelegatedOIDCServer.ClientID
 				t.Spec.Auth.ClientSecret = stack.Spec.Auth.DelegatedOIDCServer.ClientSecret
+
+				return nil
 			})
 			if err != nil {
 				return errors.Wrap(err, "creating stargate service")
@@ -385,7 +393,7 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 	for _, client := range stack.Spec.Auth.StaticClients {
 		_, _, err = CreateOrUpdate[*v1beta1.AuthClient](ctx, types.NamespacedName{
 			Name: fmt.Sprintf("%s-%s", stack.Name, client.ID),
-		}, func(t *v1beta1.AuthClient) {
+		}, func(t *v1beta1.AuthClient) error {
 			t.Spec = v1beta1.AuthClientSpec{
 				ID:     client.ID,
 				Public: client.Public,
@@ -406,6 +414,8 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 				}(),
 			}
 			t.Spec.Stack = stack.Name
+
+			return nil
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating auth client service")

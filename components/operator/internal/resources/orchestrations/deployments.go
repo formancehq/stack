@@ -115,7 +115,6 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 			Name:          "api",
 			Env:           env,
 			Image:         image,
-			Resources:     GetResourcesRequirementsWithDefault(orchestration.Spec.ResourceRequirements, ResourceSizeSmall()),
 			Ports:         []v1.ContainerPort{deployments.StandardHTTPPort()},
 			LivenessProbe: deployments.DefaultLiveness("http"),
 		}),

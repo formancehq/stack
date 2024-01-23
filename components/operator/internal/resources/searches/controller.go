@@ -106,19 +106,18 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 		Name: GetObjectName(stack.Name, "stream-processor"),
 	},
 		WithController[*v1beta1.StreamProcessor](ctx.GetScheme(), search),
-		func(t *v1beta1.StreamProcessor) {
+		func(t *v1beta1.StreamProcessor) error {
 			t.Spec.Stack = stack.Name
 			t.Spec.Batching = batching
 			t.Spec.DevProperties = search.Spec.DevProperties
-			if streamProcessor := search.Spec.StreamProcessor; streamProcessor != nil {
-				t.Spec.ResourceProperties = search.Spec.StreamProcessor.ResourceRequirements
-			}
 			t.Spec.InitContainers = []corev1.Container{{
 				Name:  "init-mapping",
 				Image: image,
 				Args:  []string{"init-mapping"},
 				Env:   env,
 			}}
+
+			return nil
 		},
 	)
 	if err != nil {
@@ -132,7 +131,6 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 			Image:         image,
 			Ports:         []corev1.ContainerPort{deployments.StandardHTTPPort()},
 			Env:           env,
-			Resources:     GetResourcesRequirementsWithDefault(search.Spec.ResourceRequirements, ResourceSizeSmall()),
 			LivenessProbe: deployments.DefaultLiveness("http"),
 		}),
 	)

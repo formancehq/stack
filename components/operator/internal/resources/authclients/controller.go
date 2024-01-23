@@ -35,11 +35,13 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, authClient *v1beta1.AuthClient
 		Name:      fmt.Sprintf("auth-client-%s", authClient.Name),
 		Namespace: stack.Name,
 	},
-		func(t *corev1.Secret) {
+		func(t *corev1.Secret) error {
 			t.StringData = map[string]string{
 				"id":     authClient.Spec.ID,
 				"secret": authClient.Spec.Secret,
 			}
+
+			return nil
 		},
 		WithController[*corev1.Secret](ctx.GetScheme(), authClient),
 	)

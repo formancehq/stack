@@ -17,7 +17,7 @@ import (
 func Reconcile(ctx Context, req *v1beta3.Versions) error {
 	_, _, err := CreateOrUpdate[*v1beta1.Versions](ctx, types.NamespacedName{
 		Name: req.Name,
-	}, func(t *v1beta1.Versions) {
+	}, func(t *v1beta1.Versions) error {
 		t.Spec = map[string]string{}
 
 		for i := 0; i < reflect.ValueOf(req.Spec).NumField(); i++ {
@@ -30,6 +30,8 @@ func Reconcile(ctx Context, req *v1beta3.Versions) error {
 			}
 			t.Spec[name] = value
 		}
+
+		return nil
 	})
 	return err
 }

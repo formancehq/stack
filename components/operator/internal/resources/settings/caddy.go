@@ -14,9 +14,8 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 )
 
-func ConfigureCaddy(caddyfile *v1.ConfigMap, image string, env []v1.EnvVar,
-	resourceRequirements *v1.ResourceRequirements) core.ObjectMutator[*appsv1.Deployment] {
-	return func(t *appsv1.Deployment) {
+func ConfigureCaddy(caddyfile *v1.ConfigMap, image string, env []v1.EnvVar) core.ObjectMutator[*appsv1.Deployment] {
+	return func(t *appsv1.Deployment) error {
 		t.Spec.Template.Annotations = collectionutils.MergeMaps(t.Spec.Template.Annotations, map[string]string{
 			"caddyfile-hash": core.HashFromConfigMaps(caddyfile),
 		})
@@ -32,9 +31,8 @@ func ConfigureCaddy(caddyfile *v1.ConfigMap, image string, env []v1.EnvVar,
 					"--config", "/gateway/Caddyfile",
 					"--adapter", "caddyfile",
 				},
-				Image:     image,
-				Env:       env,
-				Resources: core.GetResourcesRequirementsWithDefault(resourceRequirements, core.ResourceSizeSmall()),
+				Image: image,
+				Env:   env,
 				VolumeMounts: []v1.VolumeMount{
 					core.NewVolumeMount("caddyfile", "/gateway"),
 				},
@@ -44,6 +42,8 @@ func ConfigureCaddy(caddyfile *v1.ConfigMap, image string, env []v1.EnvVar,
 				}},
 			},
 		}
+
+		return nil
 	}
 }
 
@@ -96,10 +96,12 @@ func CreateCaddyfileConfigMap(ctx core.Context, stack *v1beta1.Stack,
 	}
 
 	options = append([]core.ObjectMutator[*v1.ConfigMap]{
-		func(t *v1.ConfigMap) {
+		func(t *v1.ConfigMap) error {
 			t.Data = map[string]string{
 				"Caddyfile": caddyfile,
 			}
+
+			return nil
 		},
 	}, options...)
 

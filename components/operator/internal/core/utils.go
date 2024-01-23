@@ -49,28 +49,30 @@ func CopyDir(f fs.FS, root, path string, ret *map[string]string) {
 	}
 }
 
-type ObjectMutator[T any] func(t T)
+type ObjectMutator[T any] func(t T) error
 
 func WithController[T client.Object](scheme *runtime.Scheme, owner client.Object) ObjectMutator[T] {
-	return func(t T) {
+	return func(t T) error {
 		if !metav1.IsControlledBy(t, owner) {
 			if err := controllerutil.SetControllerReference(owner, t, scheme); err != nil {
 				panic(err)
 			}
 		}
+		return nil
 	}
 }
 
 func WithOwner[T client.Object](scheme *runtime.Scheme, owner client.Object) ObjectMutator[T] {
-	return func(t T) {
+	return func(t T) error {
 		if err := controllerutil.SetOwnerReference(owner, t, scheme); err != nil {
 			panic(err)
 		}
+		return nil
 	}
 }
 
 func WithAnnotations[T client.Object](newAnnotations map[string]string) ObjectMutator[T] {
-	return func(t T) {
+	return func(t T) error {
 		annotations := t.GetAnnotations()
 		if annotations == nil {
 			annotations = make(map[string]string)
@@ -79,11 +81,13 @@ func WithAnnotations[T client.Object](newAnnotations map[string]string) ObjectMu
 			annotations[k] = v
 		}
 		t.SetAnnotations(annotations)
+
+		return nil
 	}
 }
 
 func WithLabels[T client.Object](newLabels map[string]string) ObjectMutator[T] {
-	return func(t T) {
+	return func(t T) error {
 		annotations := t.GetLabels()
 		if annotations == nil {
 			annotations = make(map[string]string)
@@ -92,6 +96,8 @@ func WithLabels[T client.Object](newLabels map[string]string) ObjectMutator[T] {
 			annotations[k] = v
 		}
 		t.SetLabels(annotations)
+
+		return nil
 	}
 }
 
@@ -104,7 +110,9 @@ func CreateOrUpdate[T client.Object](ctx Context,
 	ret.SetName(key.Name)
 	operationResult, err := controllerutil.CreateOrUpdate(ctx, ctx.GetClient(), ret, func() error {
 		for _, mutate := range mutators {
-			mutate(ret)
+			if err := mutate(ret); err != nil {
+				return err
+			}
 		}
 		return nil
 	})

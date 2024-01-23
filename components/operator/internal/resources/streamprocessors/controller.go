@@ -189,8 +189,10 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, streamProcessor *v1beta1.Strea
 			Namespace: streamProcessor.Spec.Stack,
 			Name:      "stream-processor-" + x.name,
 		},
-			func(t *corev1.ConfigMap) {
+			func(t *corev1.ConfigMap) error {
 				t.Data = data
+
+				return nil
 			},
 			WithController[*corev1.ConfigMap](ctx.GetScheme(), streamProcessor),
 		)
@@ -271,10 +273,12 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, streamProcessor *v1beta1.Strea
 				},
 			},
 		})...),
-		func(t *appsv1.Deployment) {
+		func(t *appsv1.Deployment) error {
 			t.Spec.Template.Annotations = MergeMaps(t.Spec.Template.Annotations, map[string]string{
 				"config-hash": HashFromConfigMaps(configMaps...),
 			})
+
+			return nil
 		},
 	)
 	return err

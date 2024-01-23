@@ -9,10 +9,6 @@ import (
 	"strings"
 )
 
-func NewHostSetting(...any) *v1beta1.Settings {
-	return nil
-}
-
 func FindDatabaseConfiguration(ctx core.Context, database *v1beta1.Database) (*v1beta1.DatabaseConfiguration, error) {
 
 	uri, err := GetString(ctx, database.Spec.Stack, "postgres", database.Spec.Service, "uri")

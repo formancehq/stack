@@ -17,7 +17,7 @@ func createJob(ctx core.Context, topic *v1beta1.BrokerTopic, configuration v1bet
 		Namespace: topic.Spec.Stack,
 		Name:      fmt.Sprintf("%s-create-topic", topic.Spec.Service),
 	},
-		func(t *v1.Job) {
+		func(t *v1.Job) error {
 			args := []string{"nats", "stream", "add",
 				"--server", fmt.Sprintf("nats://%s", configuration.Nats.URL),
 				"--retention", "interest",
@@ -37,6 +37,8 @@ func createJob(ctx core.Context, topic *v1beta1.BrokerTopic, configuration v1bet
 				Name:  "create-topic",
 				Args:  args,
 			}}
+
+			return nil
 		},
 		core.WithController[*v1.Job](ctx.GetScheme(), topic),
 	)
@@ -48,7 +50,7 @@ func deleteJob(ctx core.Context, topic *v1beta1.BrokerTopic) (*v1.Job, error) {
 		Namespace: topic.Spec.Stack,
 		Name:      fmt.Sprintf("%s-delete-topic", topic.Spec.Service),
 	},
-		func(t *v1.Job) {
+		func(t *v1.Job) error {
 			t.Spec.BackoffLimit = pointer.For(int32(10000))
 			t.Spec.TTLSecondsAfterFinished = pointer.For(int32(30))
 			t.Spec.Template.Spec.RestartPolicy = v12.RestartPolicyOnFailure
@@ -58,6 +60,8 @@ func deleteJob(ctx core.Context, topic *v1beta1.BrokerTopic) (*v1.Job, error) {
 				Args: []string{"nats", "stream", "rm", "-f", "--server",
 					fmt.Sprintf("nats://%s", topic.Status.Configuration.Nats.URL), topic.Name},
 			}}
+
+			return nil
 		},
 		core.WithController[*v1.Job](ctx.GetScheme(), topic),
 	)

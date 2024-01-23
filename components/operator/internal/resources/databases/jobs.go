@@ -18,7 +18,7 @@ func createJob(ctx core.Context, databaseConfiguration v1beta1.DatabaseConfigura
 		Namespace: database.Spec.Stack,
 		Name:      fmt.Sprintf("%s-create-database", database.Spec.Service),
 	},
-		func(t *batchv1.Job) {
+		func(t *batchv1.Job) error {
 			// PG does not support 'CREATE IF NOT EXISTS ' construct, emulate it with the above query
 			createDBCommand := `echo SELECT \'CREATE DATABASE \"${POSTGRES_DATABASE}\"\' WHERE NOT EXISTS \(SELECT FROM pg_database WHERE datname = \'${POSTGRES_DATABASE}\'\)\\gexec | psql -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USERNAME}`
 			if databaseConfiguration.DisableSSLMode {
@@ -37,6 +37,8 @@ func createJob(ctx core.Context, databaseConfiguration v1beta1.DatabaseConfigura
 					core.Env("PGPASSWORD", "$(POSTGRES_PASSWORD)"),
 				),
 			}}
+
+			return nil
 		},
 		core.WithController[*batchv1.Job](ctx.GetScheme(), database),
 	)
@@ -48,7 +50,7 @@ func deleteJob(ctx core.Context, database *v1beta1.Database) (*batchv1.Job, erro
 		Namespace: database.Spec.Stack,
 		Name:      fmt.Sprintf("%s-drop-database", database.Spec.Service),
 	},
-		func(t *batchv1.Job) {
+		func(t *batchv1.Job) error {
 			dropDBCommand := `psql -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USERNAME} -c "DROP DATABASE \"${POSTGRES_DATABASE}\""`
 			if database.Status.Configuration.DisableSSLMode {
 				dropDBCommand += ` "sslmode=disable"`
@@ -67,6 +69,8 @@ func deleteJob(ctx core.Context, database *v1beta1.Database) (*batchv1.Job, erro
 					core.Env("PGPASSWORD", "$(POSTGRES_PASSWORD)"),
 				),
 			}}
+
+			return nil
 		},
 		core.WithController[*batchv1.Job](ctx.GetScheme(), database),
 	)

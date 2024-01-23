@@ -21,6 +21,9 @@ func ValueOrDefault[T any](v *T, defaultValue T) T {
 }
 
 func Get(ctx core.Context, stack string, keys ...string) (*string, error) {
+	keys = Flatten(Map(keys, func(from string) []string {
+		return strings.Split(from, ".")
+	}))
 	allSettings := &v1beta1.SettingsList{}
 	if err := ctx.GetClient().List(ctx, allSettings, client.MatchingFields{
 		"stack":  stack,

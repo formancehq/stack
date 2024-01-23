@@ -45,7 +45,6 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, stargate *v1beta1.
 			Name:          "stargate",
 			Env:           env,
 			Image:         image,
-			Resources:     core.GetResourcesRequirementsWithDefault(stargate.Spec.ResourceRequirements, core.ResourceSizeSmall()),
 			Ports:         []v1.ContainerPort{deployments.StandardHTTPPort()},
 			LivenessProbe: deployments.DefaultLiveness("http"),
 		}),

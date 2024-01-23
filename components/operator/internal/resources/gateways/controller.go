@@ -64,10 +64,12 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, gateway *v1beta1.Gateway, vers
 		return err
 	}
 
-	if _, err := services.Create(ctx, gateway, "gateway", func(t *corev1.Service) {
+	if _, err := services.Create(ctx, gateway, "gateway", func(t *corev1.Service) error {
 		if gateway.Spec.Service != nil {
 			t.Annotations = gateway.Spec.Service.Annotations
 		}
+
+		return nil
 	}); err != nil {
 		return err
 	}

@@ -2,7 +2,6 @@ package v1beta1
 
 import (
 	"golang.org/x/mod/semver"
-	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -149,8 +148,6 @@ type ModuleProperties struct {
 	DevProperties `json:",inline"`
 	//+optional
 	Version string `json:"version,omitempty"`
-	//+optional
-	ResourceRequirements *v1.ResourceRequirements `json:"resourceRequirements,omitempty"`
 }
 
 func (in *ModuleProperties) CompareVersion(stack *Stack, version string) int {

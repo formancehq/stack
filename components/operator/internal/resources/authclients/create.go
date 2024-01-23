@@ -15,7 +15,7 @@ func Create(ctx core.Context, stack *v1beta1.Stack, owner client.Object, objectN
 	authClient, _, err := core.CreateOrUpdate[*v1beta1.AuthClient](ctx, types.NamespacedName{
 		Name: core.GetObjectName(stack.Name, objectName),
 	},
-		func(t *v1beta1.AuthClient) {
+		func(t *v1beta1.AuthClient) error {
 			t.Spec.Stack = stack.Name
 			if t.Spec.ID == "" {
 				t.Spec.ID = uuid.NewString()
@@ -26,6 +26,8 @@ func Create(ctx core.Context, stack *v1beta1.Stack, owner client.Object, objectN
 			for _, option := range options {
 				option(&t.Spec)
 			}
+
+			return nil
 		},
 		core.WithController[*v1beta1.AuthClient](ctx.GetScheme(), owner),
 	)

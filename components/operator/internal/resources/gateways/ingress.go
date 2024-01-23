@@ -19,7 +19,7 @@ func createIngress(ctx core.Context, stack *v1beta1.Stack,
 	}
 
 	_, _, err := core.CreateOrUpdate[*v1.Ingress](ctx, name,
-		func(ingress *v1.Ingress) {
+		func(ingress *v1.Ingress) error {
 			pathType := v1.PathTypePrefix
 			ingress.ObjectMeta.Annotations = gateway.Spec.Ingress.Annotations
 			ingress.Spec.TLS = func() []v1.IngressTLS {
@@ -53,6 +53,8 @@ func createIngress(ctx core.Context, stack *v1beta1.Stack,
 					},
 				},
 			}
+
+			return nil
 		},
 		core.WithController[*v1.Ingress](ctx.GetScheme(), gateway),
 	)

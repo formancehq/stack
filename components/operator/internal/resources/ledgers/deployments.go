@@ -15,7 +15,7 @@ import (
 	"github.com/formancehq/operator/internal/resources/services"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	v1 "k8s.io/api/apps/v1"
-	v13 "k8s.io/api/batch/v1"
+	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	v14 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -92,13 +92,15 @@ func getUpgradeContainer(database *v1beta1.Database, image string) corev1.Contai
 	)
 }
 
-func setInitContainer(database *v1beta1.Database, image string, v2 bool) func(t *v1.Deployment) {
-	return func(t *v1.Deployment) {
+func setInitContainer(database *v1beta1.Database, image string, v2 bool) func(t *v1.Deployment) error {
+	return func(t *v1.Deployment) error {
 		if !v2 {
 			t.Spec.Template.Spec.InitContainers = []corev1.Container{}
-			return
+			return nil
 		}
 		t.Spec.Template.Spec.InitContainers = []corev1.Container{getUpgradeContainer(database, image)}
+
+		return nil
 	}
 }
 
@@ -209,7 +211,6 @@ func setCommonContainerConfiguration(ctx core.Context, stack *v1beta1.Stack, led
 	}
 	env = append(env, authEnvVars...)
 
-	container.Resources = core.GetResourcesRequirementsWithDefault(ledger.Spec.ResourceRequirements, core.ResourceSizeSmall())
 	container.Image = image
 	container.Env = append(container.Env, env...)
 	container.Env = append(container.Env, databases.PostgresEnvVarsWithPrefix(
@@ -287,7 +288,7 @@ func createGatewayDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1b
 	env = append(env, core.GetDevEnvVars(stack, ledger)...)
 
 	_, err = deployments.CreateOrUpdate(ctx, ledger, "ledger-gateway",
-		settings.ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", env, nil),
+		settings.ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", env),
 		deployments.WithMatchingLabels("ledger"),
 	)
 	return err
@@ -295,7 +296,7 @@ func createGatewayDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1b
 
 func migrateToLedgerV2(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, database *v1beta1.Database, image string) error {
 
-	job := &v13.Job{}
+	job := &batchv1.Job{}
 	err := ctx.GetClient().Get(ctx, types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      "migrate-v2",
@@ -323,12 +324,12 @@ func migrateToLedgerV2(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.L
 		}
 	}
 
-	return ctx.GetClient().Create(ctx, &v13.Job{
+	return ctx.GetClient().Create(ctx, &batchv1.Job{
 		ObjectMeta: v14.ObjectMeta{
 			Namespace: stack.Name,
 			Name:      "migrate-v2",
 		},
-		Spec: v13.JobSpec{
+		Spec: batchv1.JobSpec{
 			BackoffLimit:            pointer.For(int32(10000)),
 			TTLSecondsAfterFinished: pointer.For(int32(30)),
 			Template: corev1.PodTemplateSpec{

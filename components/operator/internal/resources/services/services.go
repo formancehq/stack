@@ -20,8 +20,8 @@ func Create(ctx core.Context, owner v1beta1.Module, name string, mutators ...cor
 	return service, err
 }
 
-func Configure(name string) func(service *corev1.Service) {
-	return func(t *corev1.Service) {
+func Configure(name string) func(service *corev1.Service) error {
+	return func(t *corev1.Service) error {
 		t.Labels = map[string]string{
 			"app.kubernetes.io/service-name": name,
 		}
@@ -36,5 +36,7 @@ func Configure(name string) func(service *corev1.Service) {
 				"app.kubernetes.io/name": name,
 			},
 		}
+
+		return nil
 	}
 }

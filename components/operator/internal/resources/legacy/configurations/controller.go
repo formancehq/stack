@@ -29,6 +29,95 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 		return from.GetName()
 	})
 
+	type resourceRequirementDescriptor struct {
+		requirements *v1beta3.ResourceProperties
+		deployment   string
+		container    string
+	}
+	for _, cfg := range []resourceRequirementDescriptor{
+		{
+			requirements: configuration.Spec.Services.Ledger.ResourceProperties,
+			deployment:   "ledger",
+		},
+		{
+			requirements: configuration.Spec.Services.Payments.ResourceProperties,
+			deployment:   "payments",
+		},
+		{
+			requirements: configuration.Spec.Services.Orchestration.ResourceProperties,
+			deployment:   "orchestration",
+		},
+		{
+			requirements: configuration.Spec.Services.Auth.ResourceProperties,
+			deployment:   "auth",
+		},
+		{
+			requirements: configuration.Spec.Services.Webhooks.ResourceProperties,
+			deployment:   "webhooks",
+		},
+		{
+			requirements: configuration.Spec.Services.Reconciliation.ResourceProperties,
+			deployment:   "reconciliation",
+		},
+		{
+			requirements: configuration.Spec.Services.Gateway.ResourceProperties,
+			deployment:   "gateway",
+		},
+		{
+			requirements: configuration.Spec.Services.Wallets.ResourceProperties,
+			deployment:   "wallets",
+		},
+		{
+			requirements: configuration.Spec.Services.Stargate.ResourceProperties,
+			deployment:   "stargate",
+		},
+		{
+			requirements: configuration.Spec.Services.Search.SearchResourceProperties,
+			deployment:   "search",
+		},
+		{
+			requirements: configuration.Spec.Services.Search.BenthosResourceProperties,
+			deployment:   "stream-processor",
+		},
+	} {
+		if cfg.requirements == nil {
+			continue
+		}
+		var computeResourceList = func(resource *v1beta3.Resource) string {
+			limits := ""
+			if resource.Cpu != "" {
+				limits = limits + "cpu=" + resource.Cpu
+			}
+			if resource.Memory != "" {
+				if limits != "" {
+					limits = limits + ","
+				}
+				limits = limits + "memory=" + resource.Memory
+			}
+			return limits
+		}
+
+		if limits := computeResourceList(cfg.requirements.Limits); limits != "" {
+			settingName := fmt.Sprintf("%s-%s-resource-limits", configuration.Name, cfg.deployment)
+			settingKey := fmt.Sprintf("deployments.%s.containers.*.resource-requirements.limits", cfg.deployment)
+
+			_, err := settings.CreateOrUpdate(ctx, settingName, settingKey, limits, stackNames...)
+			if err != nil {
+				return err
+			}
+		}
+
+		if requests := computeResourceList(cfg.requirements.Request); requests != "" {
+			settingName := fmt.Sprintf("%s-%s-resource-requests", configuration.Name, cfg.deployment)
+			settingKey := fmt.Sprintf("deployments.%s.containers.*.resource-requirements.requests", cfg.deployment)
+
+			_, err := settings.CreateOrUpdate(ctx, settingName, settingKey, requests, stackNames...)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
 	type databaseDescriptor struct {
 		config v1beta3.PostgresConfig
 		name   string

@@ -34,10 +34,12 @@ func Create(ctx core.Context, service string, owner interface {
 	brokerTopicConsumer, _, err := core.CreateOrUpdate[*v1beta1.BrokerTopicConsumer](ctx, types.NamespacedName{
 		Name: core.GetObjectName(owner.GetStack(), fmt.Sprintf("%s-%s", queriedBy, service)),
 	},
-		func(t *v1beta1.BrokerTopicConsumer) {
+		func(t *v1beta1.BrokerTopicConsumer) error {
 			t.Spec.QueriedBy = queriedBy
 			t.Spec.Stack = owner.GetStack()
 			t.Spec.Service = service
+
+			return nil
 		},
 		core.WithController[*v1beta1.BrokerTopicConsumer](ctx.GetScheme(), owner),
 	)

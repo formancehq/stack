@@ -34,7 +34,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, httpAPI *v1beta1.HTTPAPI) erro
 		Namespace: httpAPI.Spec.Stack,
 		Name:      httpAPI.Spec.Name,
 	},
-		func(t *corev1.Service) {
+		func(t *corev1.Service) error {
 			if httpAPI.Spec.Service != nil {
 				t.ObjectMeta.Annotations = httpAPI.Spec.Service.Annotations
 			}
@@ -54,6 +54,8 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, httpAPI *v1beta1.HTTPAPI) erro
 					"app.kubernetes.io/name": httpAPI.Spec.Name,
 				},
 			}
+
+			return nil
 		},
 		WithController[*corev1.Service](ctx.GetScheme(), httpAPI),
 	)

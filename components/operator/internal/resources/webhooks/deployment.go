@@ -74,7 +74,6 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.
 			Env:           env,
 			Image:         image,
 			Args:          args,
-			Resources:     core.GetResourcesRequirementsWithDefault(webhooks.Spec.ResourceRequirements, core.ResourceSizeSmall()),
 			Ports:         []v1.ContainerPort{deployments.StandardHTTPPort()},
 			LivenessProbe: deployments.DefaultLiveness("http"),
 		}),

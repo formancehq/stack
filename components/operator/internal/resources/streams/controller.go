@@ -35,10 +35,12 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, stream *v1beta1.Stream) error 
 		Name:      fmt.Sprintf("stream-%s", stream.Name),
 	},
 		WithController[*corev1.ConfigMap](ctx.GetScheme(), stream),
-		func(t *corev1.ConfigMap) {
+		func(t *corev1.ConfigMap) error {
 			t.Data = map[string]string{
 				"stream.yaml": stream.Spec.Data,
 			}
+
+			return nil
 		},
 	)
 	if err != nil {

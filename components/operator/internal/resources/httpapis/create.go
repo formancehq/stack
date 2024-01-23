@@ -19,7 +19,7 @@ func Create(ctx core.Context, owner v1beta1.Module, options ...option) error {
 	_, _, err := core.CreateOrUpdate[*v1beta1.HTTPAPI](ctx, types.NamespacedName{
 		Name: core.GetObjectName(owner.GetStack(), core.GetModuleName(ctx, owner)),
 	},
-		func(t *v1beta1.HTTPAPI) {
+		func(t *v1beta1.HTTPAPI) error {
 			t.Spec = v1beta1.HTTPAPISpec{
 				StackDependency: v1beta1.StackDependency{
 					Stack: owner.GetStack(),
@@ -29,6 +29,8 @@ func Create(ctx core.Context, owner v1beta1.Module, options ...option) error {
 			for _, option := range append(defaultOptions, options...) {
 				option(t)
 			}
+
+			return nil
 		},
 		core.WithController[*v1beta1.HTTPAPI](ctx.GetScheme(), owner),
 	)

@@ -87,7 +87,6 @@ func createFullDeployment(ctx core.Context, stack *v1beta1.Stack,
 			Args:          []string{"serve"},
 			Env:           env,
 			Image:         image,
-			Resources:     core.GetResourcesRequirementsWithDefault(payments.Spec.ResourceRequirements, core.ResourceSizeSmall()),
 			LivenessProbe: deployments.DefaultLiveness("http", deployments.WithProbePath("/_health")),
 			Ports:         []v1.ContainerPort{deployments.StandardHTTPPort()},
 		}),
@@ -124,7 +123,6 @@ func createReadDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1be
 			Args:          []string{"api", "serve"},
 			Env:           env,
 			Image:         image,
-			Resources:     core.GetResourcesRequirementsWithDefault(payments.Spec.ResourceRequirements, core.ResourceSizeSmall()),
 			LivenessProbe: deployments.DefaultLiveness("http", deployments.WithProbePath("/_health")),
 			Ports:         []v1.ContainerPort{deployments.StandardHTTPPort()},
 		}),
@@ -171,12 +169,11 @@ func createConnectorsDeployment(ctx core.Context, stack *v1beta1.Stack, payments
 	_, err = deployments.CreateOrUpdate(ctx, payments, "payments-connectors",
 		deployments.WithMatchingLabels("payments-connectors"),
 		deployments.WithContainers(v1.Container{
-			Name:      "connectors",
-			Args:      []string{"connectors", "serve"},
-			Env:       env,
-			Image:     image,
-			Resources: core.GetResourcesRequirementsWithDefault(payments.Spec.ResourceRequirements, core.ResourceSizeSmall()),
-			Ports:     []v1.ContainerPort{deployments.StandardHTTPPort()},
+			Name:  "connectors",
+			Args:  []string{"connectors", "serve"},
+			Env:   env,
+			Image: image,
+			Ports: []v1.ContainerPort{deployments.StandardHTTPPort()},
 			LivenessProbe: deployments.DefaultLiveness("http",
 				deployments.WithProbePath("/_health")),
 		}),
@@ -212,14 +209,14 @@ func createGateway(ctx core.Context, stack *v1beta1.Stack, p *v1beta1.Payments) 
 	env = append(env, core.GetDevEnvVars(stack, p)...)
 
 	_, err = deployments.CreateOrUpdate(ctx, p, "payments",
-		settings.ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", env, nil),
+		settings.ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", env),
 		deployments.WithMatchingLabels("payments"),
 	)
 	return err
 }
 
-func setInitContainer(payments *v1beta1.Payments, database *v1beta1.Database, image string) func(t *corev1.Deployment) {
-	return func(t *corev1.Deployment) {
+func setInitContainer(payments *v1beta1.Payments, database *v1beta1.Database, image string) func(t *corev1.Deployment) error {
+	return func(t *corev1.Deployment) error {
 		t.Spec.Template.Spec.InitContainers = []v1.Container{
 			databases.MigrateDatabaseContainer(
 				image,
@@ -232,5 +229,7 @@ func setInitContainer(payments *v1beta1.Payments, database *v1beta1.Database, im
 				},
 			),
 		}
+
+		return nil
 	}
 }

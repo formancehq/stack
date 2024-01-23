@@ -18,7 +18,6 @@ package v1beta1
 
 import (
 	"fmt"
-	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -56,19 +55,12 @@ func (in *ElasticSearchConfiguration) Endpoint() string {
 	return fmt.Sprintf("%s://%s:%d", in.Scheme, in.Host, in.Port)
 }
 
-type SearchStreamProcessorSpec struct {
-	//+optional
-	ResourceRequirements *v1.ResourceRequirements `json:"resourceRequirements,omitempty"`
-}
-
 // SearchSpec defines the desired state of Search
 type SearchSpec struct {
 	StackDependency  `json:",inline"`
 	ModuleProperties `json:",inline"`
 	//+optional
 	Batching *Batching `json:"batching,omitempty"`
-	// +optional
-	StreamProcessor *SearchStreamProcessorSpec `json:"streamProcessor,omitempty"`
 	//+optional
 	Service *ServiceConfiguration `json:"service,omitempty"`
 	// +optional

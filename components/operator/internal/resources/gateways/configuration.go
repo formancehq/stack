@@ -19,10 +19,12 @@ func createConfigMap(ctx core.Context, stack *v1beta1.Stack,
 		Namespace: stack.Name,
 		Name:      "gateway",
 	},
-		func(t *v1.ConfigMap) {
+		func(t *v1.ConfigMap) error {
 			t.Data = map[string]string{
 				"Caddyfile": caddyfile,
 			}
+
+			return nil
 		},
 		core.WithController[*v1.ConfigMap](ctx.GetScheme(), gateway),
 	)

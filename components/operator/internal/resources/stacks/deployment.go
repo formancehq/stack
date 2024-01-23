@@ -54,7 +54,7 @@ func copySecrets(ctx core.Context, stack *v1beta1.Stack) ([]v1.Secret, error) {
 			Namespace: stack.Name,
 			Name:      secretName,
 		},
-			func(t *v1.Secret) {
+			func(t *v1.Secret) error {
 				t.Data = secret.Data
 				t.StringData = secret.StringData
 				t.Type = secret.Type
@@ -65,6 +65,8 @@ func copySecrets(ctx core.Context, stack *v1beta1.Stack) ([]v1.Secret, error) {
 					OriginalSecretNamespaceAnnotation: secret.Namespace,
 					OriginalSecretNameAnnotation:      secret.Name,
 				}
+
+				return nil
 			},
 			core.WithController[*v1.Secret](ctx.GetScheme(), stack),
 		)

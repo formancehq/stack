@@ -28,9 +28,11 @@ func LoadFromFileSystem(ctx core.Context, fs embed.FS,
 
 		sanitizedName := strings.ReplaceAll(file.Name(), "_", "-")
 
-		opts = append(opts, func(stream *v1beta1.Stream) {
+		opts = append(opts, func(stream *v1beta1.Stream) error {
 			stream.Spec.Data = string(streamContent)
 			stream.Spec.Stack = stackName
+
+			return nil
 		})
 		_, _, err = core.CreateOrUpdate[*v1beta1.Stream](ctx, types.NamespacedName{
 			Name: fmt.Sprintf("%s-%s", stackName, sanitizedName),

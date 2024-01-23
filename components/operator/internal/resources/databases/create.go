@@ -29,9 +29,11 @@ func Create(ctx core.Context, owner interface {
 	database, _, err := core.CreateOrUpdate[*v1beta1.Database](ctx, types.NamespacedName{
 		Name: core.GetObjectName(owner.GetStack(), serviceName),
 	},
-		func(t *v1beta1.Database) {
+		func(t *v1beta1.Database) error {
 			t.Spec.Stack = owner.GetStack()
 			t.Spec.Service = serviceName
+
+			return nil
 		},
 	)
 	if err != nil {

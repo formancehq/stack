@@ -29,9 +29,11 @@ func CreateOrUpdate(ctx core.Context, stack *v1beta1.Stack, owner client.Object,
 	ret, _, err := core.CreateOrUpdate[*v1beta1.BrokerTopic](ctx, types.NamespacedName{
 		Name: fmt.Sprintf("%s-%s", stack.Name, name),
 	},
-		func(t *v1beta1.BrokerTopic) {
+		func(t *v1beta1.BrokerTopic) error {
 			t.Spec.Service = service
 			t.Spec.Stack = stack.GetName()
+
+			return nil
 		},
 		core.WithController[*v1beta1.BrokerTopic](ctx.GetScheme(), owner),
 	)

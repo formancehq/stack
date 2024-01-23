@@ -78,16 +78,15 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, dat
 
 	return deployments.CreateOrUpdate(ctx, auth, "auth",
 		deployments.WithMatchingLabels("auth"),
-		func(t *appsv1.Deployment) {
+		func(t *appsv1.Deployment) error {
 			t.Spec.Template.Annotations = MergeMaps(t.Spec.Template.Annotations, map[string]string{
 				"config-hash": HashFromConfigMaps(configMap),
 			})
 			t.Spec.Template.Spec.Containers = []corev1.Container{{
-				Name:      "auth",
-				Args:      []string{"serve"},
-				Env:       env,
-				Image:     image,
-				Resources: GetResourcesRequirementsWithDefault(auth.Spec.ResourceRequirements, ResourceSizeSmall()),
+				Name:  "auth",
+				Args:  []string{"serve"},
+				Env:   env,
+				Image: image,
 				VolumeMounts: []corev1.VolumeMount{
 					NewVolumeMount("config", "/config"),
 				},
@@ -97,6 +96,8 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, dat
 			t.Spec.Template.Spec.Volumes = []corev1.Volume{
 				NewVolumeFromConfigMap("config", configMap),
 			}
+
+			return nil
 		},
 	)
 }

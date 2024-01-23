@@ -36,10 +36,12 @@ func New(name, key, value string, stacks ...string) *v1beta1.Settings {
 func CreateOrUpdate(ctx core.Context, name, key string, value any, stacks ...string) (*v1beta1.Settings, error) {
 	settings, _, err := core.CreateOrUpdate[*v1beta1.Settings](ctx, types.NamespacedName{
 		Name: name,
-	}, func(t *v1beta1.Settings) {
+	}, func(t *v1beta1.Settings) error {
 		t.Spec.Key = key
 		t.Spec.Value = fmt.Sprint(value)
 		t.Spec.Stacks = stacks
+
+		return nil
 	})
 	if err != nil {
 		return nil, errors.Wrapf(err, "creating settings '%s' with key '%s'", name, key)

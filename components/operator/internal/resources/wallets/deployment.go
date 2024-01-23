@@ -48,7 +48,6 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, wallets *v1beta1.W
 			Args:          []string{"serve"},
 			Env:           env,
 			Image:         image,
-			Resources:     core.GetResourcesRequirementsWithDefault(wallets.Spec.ResourceRequirements, core.ResourceSizeSmall()),
 			Ports:         []v1.ContainerPort{deployments.StandardHTTPPort()},
 			LivenessProbe: deployments.DefaultLiveness("http"),
 		}),

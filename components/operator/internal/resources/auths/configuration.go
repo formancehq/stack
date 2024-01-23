@@ -31,10 +31,12 @@ func createConfiguration(ctx Context, stack *v1beta1.Stack, items []*v1beta1.Aut
 	cm, _, err := CreateOrUpdate[*corev1.ConfigMap](ctx, types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      "auth-configuration",
-	}, func(t *corev1.ConfigMap) {
+	}, func(t *corev1.ConfigMap) error {
 		t.Data = map[string]string{
 			"config.yaml": string(yamlData),
 		}
+
+		return nil
 	})
 	if err != nil {
 		return nil, err

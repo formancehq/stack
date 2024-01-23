@@ -26,10 +26,12 @@ func InstalledVersionName(ctx Context, module v1beta1.Module, version string) st
 func ValidateInstalledVersion(ctx Context, module v1beta1.Module, version string) error {
 	_, _, err := CreateOrUpdate[*v1beta1.VersionsHistory](ctx, types.NamespacedName{
 		Name: InstalledVersionName(ctx, module, version),
-	}, func(t *v1beta1.VersionsHistory) {
+	}, func(t *v1beta1.VersionsHistory) error {
 		t.Spec.Stack = module.GetStack()
 		t.Spec.Module = GetModuleName(ctx, module)
 		t.Spec.Version = version
+
+		return nil
 	}, WithController[*v1beta1.VersionsHistory](ctx.GetScheme(), module))
 	return err
 }
