@@ -5,9 +5,10 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
-	"golang.org/x/mod/semver"
 	"sort"
 	"strings"
+
+	"golang.org/x/mod/semver"
 
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 
