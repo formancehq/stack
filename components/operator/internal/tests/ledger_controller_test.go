@@ -68,18 +68,14 @@ var _ = Describe("LedgerController", func() {
 		})
 		Context("with monitoring enabled", func() {
 			var (
-				otelTracesEnabledSetting  *v1beta1.Settings
-				otelTracesEndpointSetting *v1beta1.Settings
+				otelTracesDSNSetting *v1beta1.Settings
 			)
 			BeforeEach(func() {
-				otelTracesEnabledSetting = settings.New(uuid.NewString(), "opentelemetry.traces.enabled", "true", stack.Name)
-				otelTracesEndpointSetting = settings.New(uuid.NewString(), "opentelemetry.traces.endpoint", "collector", stack.Name)
-				Expect(Create(otelTracesEndpointSetting)).To(Succeed())
-				Expect(Create(otelTracesEnabledSetting)).To(Succeed())
+				otelTracesDSNSetting = settings.New(uuid.NewString(), "opentelemetry.traces.dsn", "grpc://collector", stack.Name)
+				Expect(Create(otelTracesDSNSetting)).To(Succeed())
 			})
 			AfterEach(func() {
-				Expect(Delete(otelTracesEndpointSetting)).To(Succeed())
-				Expect(Delete(otelTracesEnabledSetting)).To(Succeed())
+				Expect(Delete(otelTracesDSNSetting)).To(Succeed())
 			})
 			It("Should add correct env vars to the deployment", func() {
 				Eventually(func(g Gomega) []corev1.EnvVar {

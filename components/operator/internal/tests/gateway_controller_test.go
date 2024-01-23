@@ -230,19 +230,13 @@ var _ = Describe("GatewayController", func() {
 			//})
 		})
 		Context("With otlp enabled", func() {
-			var (
-				otelTracesEnabledSetting  *v1beta1.Settings
-				otelTracesEndpointSetting *v1beta1.Settings
-			)
+			var otelTracesDSNSetting *v1beta1.Settings
 			JustBeforeEach(func() {
-				otelTracesEnabledSetting = settings.New(uuid.NewString(), "opentelemetry.traces.enabled", "true", stack.Name)
-				otelTracesEndpointSetting = settings.New(uuid.NewString(), "opentelemetry.traces.endpoint", "collector", stack.Name)
-				Expect(Create(otelTracesEndpointSetting)).To(Succeed())
-				Expect(Create(otelTracesEnabledSetting)).To(Succeed())
+				otelTracesDSNSetting = settings.New(uuid.NewString(), "opentelemetry.traces.dsn", "grpc://collector", stack.Name)
+				Expect(Create(otelTracesDSNSetting)).To(Succeed())
 			})
 			JustAfterEach(func() {
-				Expect(Delete(otelTracesEndpointSetting)).To(Succeed())
-				Expect(Delete(otelTracesEnabledSetting)).To(Succeed())
+				Expect(Delete(otelTracesDSNSetting)).To(Succeed())
 			})
 			It("Should adapt the Caddyfile", func() {
 				cm := &corev1.ConfigMap{}

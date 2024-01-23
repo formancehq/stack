@@ -2,6 +2,8 @@ package settings
 
 import (
 	"fmt"
+	"net/url"
+	"strconv"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
@@ -123,32 +125,29 @@ func resolveTracesSpec(ctx core.Context, stack *v1beta1.Stack) (*v1beta1.TracesS
 
 func resolveOTLPSpec(ctx core.Context, stack *v1beta1.Stack, discr string) (*v1beta1.OtlpSpec, error) {
 
-	enabled, err := GetBoolOrFalse(ctx, stack.Name, "opentelemetry", discr, "enabled")
+	dsn, err := GetStringOrEmpty(ctx, stack.Name, "opentelemetry", discr, "dsn")
 	if err != nil {
 		return nil, err
 	}
-	if !enabled {
-		return nil, nil
-	}
-
-	endpoint, err := RequireString(ctx, stack.Name, "opentelemetry", discr, "endpoint")
-	if err != nil {
+	if dsn == "" {
 		return nil, err
 	}
 
-	port, err := GetInt32OrDefault(ctx, stack.Name, 4317, "opentelemetry", discr, "port")
+	otlpURI, err := url.Parse(dsn)
 	if err != nil {
 		return nil, err
 	}
 
-	insecure, err := GetBoolOrFalse(ctx, stack.Name, "opentelemetry", discr, "insecure")
-	if err != nil {
-		return nil, err
+	if otlpURI.Scheme != "http" && otlpURI.Scheme != "grpc" {
+		return nil, fmt.Errorf("invalid uri: %s", dsn)
 	}
 
-	mode, err := GetStringOrDefault(ctx, stack.Name, "grpc", "opentelemetry", discr, "mode")
-	if err != nil {
-		return nil, err
+	port := uint64(4317)
+	if otlpURI.Port() != "" {
+		port, err = strconv.ParseUint(otlpURI.Port(), 10, 16)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	resourceAttributes, err := GetMapOrEmpty(ctx, stack.Name, "opentelemetry", discr, "resource-attributes")
@@ -157,10 +156,10 @@ func resolveOTLPSpec(ctx core.Context, stack *v1beta1.Stack, discr string) (*v1b
 	}
 
 	return &v1beta1.OtlpSpec{
-		Endpoint:           endpoint,
-		Port:               port,
-		Insecure:           insecure,
-		Mode:               mode,
+		Endpoint:           otlpURI.Host,
+		Port:               int32(port),
+		Insecure:           isTrue(otlpURI.Query().Get("insecure")),
+		Mode:               otlpURI.Scheme,
 		ResourceAttributes: resourceAttributes,
 	}, nil
 }
