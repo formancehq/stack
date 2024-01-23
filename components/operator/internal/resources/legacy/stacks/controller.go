@@ -194,7 +194,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}, func(t *v1beta1.Payments) {
 			t.Spec.Stack = stack.Name
 			t.Spec.ResourceRequirements = resourceRequirements(configuration.Spec.Services.Payments.ResourceProperties)
-			t.Spec.EncryptionKey = configuration.Spec.Services.Payments.EncryptionKey
 			if annotations := configuration.Spec.Services.Payments.Annotations.Service; annotations != nil {
 				t.Spec.Service = &v1beta1.ServiceConfiguration{
 					Annotations: annotations,

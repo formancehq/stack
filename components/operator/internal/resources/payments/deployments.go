@@ -32,9 +32,16 @@ func commonEnvVars(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Pay
 	env = append(env, gatewayEnv...)
 	env = append(env, core.GetDevEnvVars(stack, payments)...)
 	env = append(env, databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfiguration, database.Status.Configuration.Database)...)
+	encryptionKey := payments.Spec.EncryptionKey
+	if encryptionKey == "" {
+		encryptionKey, err = settings.GetStringOrEmpty(ctx, stack.Name, "payments.encryption-key")
+		if err != nil {
+			return nil, err
+		}
+	}
 	env = append(env,
 		core.Env("POSTGRES_DATABASE_NAME", "$(POSTGRES_DATABASE)"),
-		core.Env("CONFIG_ENCRYPTION_KEY", payments.Spec.EncryptionKey),
+		core.Env("CONFIG_ENCRYPTION_KEY", encryptionKey),
 	)
 
 	return env, nil

@@ -343,6 +343,14 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 		}
 	}
 
+	if configuration.Spec.Services.Payments.EncryptionKey != "" {
+		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-payments-encryption-key", configuration.Name),
+			"payments.encryption-key", configuration.Spec.Services.Payments.EncryptionKey, stackNames...)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
