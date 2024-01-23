@@ -1253,6 +1253,7 @@ components:
         - NONE
         - ADMIN
         - GUEST
+        - USER
     User:
       allOf:
         - $ref: '#/components/schemas/UserData'
