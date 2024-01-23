@@ -110,7 +110,7 @@ func ingestAccountsBatch(
 			return err
 		}
 
-		openingDate, err := time.Parse("2006-01-02T15:04:05.999999999+0000", account.CreatedDate)
+		openingDate, err := time.Parse(timeTemplate, account.CreatedDate)
 		if err != nil {
 			return err
 		}
