@@ -7,6 +7,7 @@ import (
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
+	"golang.org/x/mod/semver"
 )
 
 type UpdateStore struct {
@@ -35,6 +36,28 @@ func NewUpdateCommand() *cobra.Command {
 		fctl.WithAliases("s"),
 		fctl.WithShortDescription("Update user roles by by id within an organization"),
 		fctl.WithArgs(cobra.MinimumNArgs(1)),
+		fctl.WithPreRunE(func(cmd *cobra.Command, args []string) error {
+			cfg, err := fctl.GetConfig(cmd)
+			if err != nil {
+				return err
+			}
+
+			apiClient, err := fctl.NewMembershipClient(cmd, cfg)
+			if err != nil {
+				return err
+			}
+
+			version := fctl.MembershipServerInfo(cmd.Context(), apiClient)
+			if !semver.IsValid(version) {
+				return nil
+			}
+
+			if semver.Compare(version, "v0.26.1") >= 0 {
+				return nil
+			}
+
+			return fmt.Errorf("unsupported membership server version: %s", version)
+		}),
 		fctl.WithController[*UpdateStore](NewUpdateController()),
 	)
 }
