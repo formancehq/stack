@@ -16,7 +16,6 @@ var _ = Describe("BrokerTopicConsumer", func() {
 	Context("When creating a BrokerTopicConsumer", func() {
 		var (
 			brokerTopicConsumer   *v1beta1.BrokerTopicConsumer
-			brokerKindSettings    *v1beta1.Settings
 			brokerNatsDSNSettings *v1beta1.Settings
 			stack                 *v1beta1.Stack
 		)
@@ -26,9 +25,7 @@ var _ = Describe("BrokerTopicConsumer", func() {
 				Spec:       v1beta1.StackSpec{},
 			}
 			Expect(Create(stack)).To(BeNil())
-			brokerKindSettings = settings.New(uuid.NewString(), "broker.kind", "nats", stack.Name)
-			Expect(Create(brokerKindSettings)).To(BeNil())
-			brokerNatsDSNSettings = settings.New(uuid.NewString(), "broker.nats.dsn", "nats://localhost:1234", stack.Name)
+			brokerNatsDSNSettings = settings.New(uuid.NewString(), "broker.dsn", "nats://localhost:1234", stack.Name)
 			Expect(Create(brokerNatsDSNSettings)).To(BeNil())
 			brokerTopicConsumer = &v1beta1.BrokerTopicConsumer{
 				ObjectMeta: RandObjectMeta(),
@@ -45,7 +42,6 @@ var _ = Describe("BrokerTopicConsumer", func() {
 		AfterEach(func() {
 			Expect(Delete(stack)).To(Succeed())
 			Expect(Delete(brokerNatsDSNSettings)).To(Succeed())
-			Expect(Delete(brokerKindSettings)).To(Succeed())
 			Expect(client.IgnoreNotFound(Delete(brokerTopicConsumer))).To(Succeed())
 		})
 		It("Should create a BrokerTopic", func() {

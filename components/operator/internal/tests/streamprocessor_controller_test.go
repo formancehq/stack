@@ -19,8 +19,7 @@ var _ = Describe("StreamProcessorController", func() {
 		var (
 			streamProcessor          *v1beta1.StreamProcessor
 			stack                    *v1beta1.Stack
-			brokerKindSettings       *v1beta1.Settings
-			brokerNatsDSNSettings    *v1beta1.Settings
+			brokerDSNSettings        *v1beta1.Settings
 			elasticSearchDSNSettings *v1beta1.Settings
 		)
 		BeforeEach(func() {
@@ -28,8 +27,7 @@ var _ = Describe("StreamProcessorController", func() {
 				ObjectMeta: RandObjectMeta(),
 				Spec:       v1beta1.StackSpec{},
 			}
-			brokerKindSettings = settings.New(uuid.NewString(), "broker.kind", "nats", stack.Name)
-			brokerNatsDSNSettings = settings.New(uuid.NewString(), "broker.nats.dsn", "nats://localhost:1234", stack.Name)
+			brokerDSNSettings = settings.New(uuid.NewString(), "broker.dsn", "nats://localhost:1234", stack.Name)
 			elasticSearchDSNSettings = settings.New(uuid.NewString(), "elasticsearch.dsn", "https://localhost", stack.Name)
 			streamProcessor = &v1beta1.StreamProcessor{
 				ObjectMeta: RandObjectMeta(),
@@ -41,8 +39,7 @@ var _ = Describe("StreamProcessorController", func() {
 			}
 		})
 		JustBeforeEach(func() {
-			Expect(Create(brokerKindSettings)).To(BeNil())
-			Expect(Create(brokerNatsDSNSettings)).To(BeNil())
+			Expect(Create(brokerDSNSettings)).To(BeNil())
 			Expect(Create(stack)).To(Succeed())
 			Expect(Create(elasticSearchDSNSettings)).To(Succeed())
 			Expect(Create(streamProcessor)).To(Succeed())
@@ -50,8 +47,7 @@ var _ = Describe("StreamProcessorController", func() {
 		JustAfterEach(func() {
 			Expect(Delete(stack)).To(Succeed())
 			Expect(Delete(elasticSearchDSNSettings)).To(Succeed())
-			Expect(Delete(brokerNatsDSNSettings)).To(Succeed())
-			Expect(Delete(brokerKindSettings)).To(Succeed())
+			Expect(Delete(brokerDSNSettings)).To(Succeed())
 			Expect(Delete(streamProcessor)).To(Succeed())
 		})
 		It("Should create a deployment", func() {

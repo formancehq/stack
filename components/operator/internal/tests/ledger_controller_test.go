@@ -99,15 +99,12 @@ var _ = Describe("LedgerController", func() {
 				}).Should(BeTrue())
 			}
 			var (
-				brokerKindSettings    *v1beta1.Settings
-				brokerNatsDSNSettings *v1beta1.Settings
-				brokerTopic           *v1beta1.BrokerTopic
+				brokerDSNSettings *v1beta1.Settings
+				brokerTopic       *v1beta1.BrokerTopic
 			)
 			JustBeforeEach(func() {
-				brokerKindSettings = settings.New(uuid.NewString(), "broker.kind", "nats", stack.Name)
-				Expect(Create(brokerKindSettings)).To(BeNil())
-				brokerNatsDSNSettings = settings.New(uuid.NewString(), "broker.nats.dsn", "nats://localhost:1234", stack.Name)
-				Expect(Create(brokerNatsDSNSettings)).To(BeNil())
+				brokerDSNSettings = settings.New(uuid.NewString(), "broker.dsn", "nats://localhost:1234", stack.Name)
+				Expect(Create(brokerDSNSettings)).To(BeNil())
 				brokerTopic = &v1beta1.BrokerTopic{
 					ObjectMeta: RandObjectMeta(),
 					Spec: v1beta1.BrokerTopicSpec{
@@ -121,8 +118,7 @@ var _ = Describe("LedgerController", func() {
 				Expect(Create(brokerTopic)).To(Succeed())
 			})
 			AfterEach(func() {
-				Expect(Delete(brokerNatsDSNSettings)).To(Succeed())
-				Expect(Delete(brokerKindSettings)).To(Succeed())
+				Expect(Delete(brokerDSNSettings)).To(Succeed())
 				Expect(client.IgnoreNotFound(Delete(brokerTopic))).To(Succeed())
 			})
 			It("Should start the deployment with env var defined for publishing in the event bus", deploymentShouldBeConfigured)

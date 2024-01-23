@@ -64,36 +64,32 @@ func GetBrokerEnvVarsWithPrefix(broker v1beta1.BrokerConfiguration, stackName, s
 }
 
 func FindBrokerConfiguration(ctx core.Context, stack *v1beta1.Stack) (*v1beta1.BrokerConfiguration, error) {
-	brokerKind, err := RequireString(ctx, stack.Name, "broker", "kind")
+	brokerDSN, err := GetString(ctx, stack.Name, "broker.dsn")
 	if err != nil {
 		return nil, err
 	}
-	switch brokerKind {
-	case "kafka":
-		return resolveKafkaConfiguration(ctx, stack)
-	case "nats":
-		return resolveNatsConfiguration(ctx, stack)
-	default:
-		return nil, fmt.Errorf("broker kind '%s' unknown", brokerKind)
-	}
-}
-
-func resolveNatsConfiguration(ctx core.Context, stack *v1beta1.Stack) (*v1beta1.BrokerConfiguration, error) {
-	natsDSN, err := GetString(ctx, stack.Name, "broker.nats.dsn")
-	if err != nil {
-		return nil, err
-	}
-	if natsDSN == nil {
+	if brokerDSN == nil {
 		return nil, nil
 	}
 
-	natsURI, err := url.Parse(*natsDSN)
+	switch {
+	case strings.HasPrefix(*brokerDSN, "kafka://"):
+		return resolveKafkaConfiguration(*brokerDSN)
+	case strings.HasPrefix(*brokerDSN, "nats://"):
+		return resolveNatsConfiguration(*brokerDSN)
+	default:
+		return nil, fmt.Errorf("broker kind '%s' unknown", *brokerDSN)
+	}
+}
+
+func resolveNatsConfiguration(natsDSN string) (*v1beta1.BrokerConfiguration, error) {
+	natsURI, err := url.Parse(natsDSN)
 	if err != nil {
 		return nil, err
 	}
 
 	if natsURI.Scheme != "nats" {
-		return nil, fmt.Errorf("invalid nats uri: %s", *natsDSN)
+		return nil, fmt.Errorf("invalid nats uri: %s", natsDSN)
 	}
 
 	replicas := uint64(1)
@@ -112,23 +108,15 @@ func resolveNatsConfiguration(ctx core.Context, stack *v1beta1.Stack) (*v1beta1.
 	}, nil
 }
 
-func resolveKafkaConfiguration(ctx core.Context, stack *v1beta1.Stack) (*v1beta1.BrokerConfiguration, error) {
+func resolveKafkaConfiguration(kafkaDSN string) (*v1beta1.BrokerConfiguration, error) {
 
-	kafkaDSN, err := GetString(ctx, stack.Name, "broker.kafka.dsn")
-	if err != nil {
-		return nil, err
-	}
-	if kafkaDSN == nil {
-		return nil, nil
-	}
-
-	kafkaURI, err := url.Parse(*kafkaDSN)
+	kafkaURI, err := url.Parse(kafkaDSN)
 	if err != nil {
 		return nil, err
 	}
 
 	if kafkaURI.Scheme != "kafka" {
-		return nil, fmt.Errorf("invalid kafka uri: %s", *kafkaDSN)
+		return nil, fmt.Errorf("invalid kafka uri: %s", kafkaDSN)
 	}
 
 	var saslConfig *v1beta1.BrokerKafkaSASLConfig

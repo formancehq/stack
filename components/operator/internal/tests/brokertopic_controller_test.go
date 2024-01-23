@@ -22,7 +22,6 @@ var _ = Describe("BrokerTopicController", func() {
 		var (
 			stack                 *v1beta1.Stack
 			brokerTopic           *v1beta1.BrokerTopic
-			brokerKindSettings    *v1beta1.Settings
 			brokerNatsDSNSettings *v1beta1.Settings
 		)
 		BeforeEach(func() {
@@ -33,9 +32,7 @@ var _ = Describe("BrokerTopicController", func() {
 				Spec: v1beta1.StackSpec{},
 			}
 			Expect(Create(stack)).To(BeNil())
-			brokerKindSettings = settings.New(uuid.NewString(), "broker.kind", "nats", stack.Name)
-			Expect(Create(brokerKindSettings)).To(BeNil())
-			brokerNatsDSNSettings = settings.New(uuid.NewString(), "broker.nats.dsn", "nats://localhost:1234", stack.Name)
+			brokerNatsDSNSettings = settings.New(uuid.NewString(), "broker.dsn", "nats://localhost:1234", stack.Name)
 			Expect(Create(brokerNatsDSNSettings)).To(BeNil())
 			brokerTopic = &v1beta1.BrokerTopic{
 				ObjectMeta: v1.ObjectMeta{
@@ -54,7 +51,6 @@ var _ = Describe("BrokerTopicController", func() {
 		AfterEach(func() {
 			Expect(Delete(stack)).To(Succeed())
 			Expect(client.IgnoreNotFound(Delete(brokerTopic))).To(Succeed())
-			Expect(Delete(brokerKindSettings)).To(Succeed())
 			Expect(Delete(brokerNatsDSNSettings)).To(Succeed())
 		})
 		It("Should be set to ready status", func() {
