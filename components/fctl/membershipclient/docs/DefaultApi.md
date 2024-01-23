@@ -34,10 +34,11 @@ Method | HTTP request | Description
 [**ListUsersOfOrganization**](DefaultApi.md#ListUsersOfOrganization) | **Get** /organizations/{organizationId}/users | List users of organization
 [**ReadConnectedUser**](DefaultApi.md#ReadConnectedUser) | **Get** /me | Read user
 [**ReadOrganization**](DefaultApi.md#ReadOrganization) | **Get** /organizations/{organizationId} | Read organization
+[**ReadStackUserAccess**](DefaultApi.md#ReadStackUserAccess) | **Get** /organizations/{organizationId}/stacks/{stackId}/users/{userId} | Read stack user access role within an organization
 [**ReadUserOfOrganization**](DefaultApi.md#ReadUserOfOrganization) | **Get** /organizations/{organizationId}/users/{userId} | Read user of organization
 [**RestoreStack**](DefaultApi.md#RestoreStack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
 [**UpdateOrganization**](DefaultApi.md#UpdateOrganization) | **Put** /organizations/{organizationId} | Update organization
-[**UpsertOrganizationUser**](DefaultApi.md#UpsertOrganizationUser) | **Put** /organizations/{organizationId}/users/{userId} | Update user role within an organization
+[**UpsertOrganizationUser**](DefaultApi.md#UpsertOrganizationUser) | **Put** /organizations/{organizationId}/users/{userId} | Update user within an organization
 [**UpsertStackUserAccess**](DefaultApi.md#UpsertStackUserAccess) | **Put** /organizations/{organizationId}/stacks/{stackId}/users/{userId} | Update stack user access role within an organization
 
 
@@ -2081,6 +2082,80 @@ Name | Type | Description  | Notes
 [[Back to README]](../README.md)
 
 
+## ReadStackUserAccess
+
+> ReadStackUserAccess ReadStackUserAccess(ctx, organizationId, stackId, userId).Execute()
+
+Read stack user access role within an organization
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
+)
+
+func main() {
+    organizationId := "organizationId_example" // string | 
+    stackId := "stackId_example" // string | 
+    userId := "userId_example" // string | 
+
+    configuration := openapiclient.NewConfiguration()
+    apiClient := openapiclient.NewAPIClient(configuration)
+    resp, r, err := apiClient.DefaultApi.ReadStackUserAccess(context.Background(), organizationId, stackId, userId).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ReadStackUserAccess``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `ReadStackUserAccess`: ReadStackUserAccess
+    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ReadStackUserAccess`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**organizationId** | **string** |  | 
+**stackId** | **string** |  | 
+**userId** | **string** |  | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiReadStackUserAccessRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+
+
+### Return type
+
+[**ReadStackUserAccess**](ReadStackUserAccess.md)
+
+### Authorization
+
+[oauth2](../README.md#oauth2)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
 ## ReadUserOfOrganization
 
 > ReadOrganizationUserResponse ReadUserOfOrganization(ctx, organizationId, userId).Execute()
@@ -2295,9 +2370,9 @@ Name | Type | Description  | Notes
 
 ## UpsertOrganizationUser
 
-> UpsertOrganizationUser(ctx, organizationId, userId).Body(body).Execute()
+> UpsertOrganizationUser(ctx, organizationId, userId).UpdateOrganizationUserRequest(updateOrganizationUserRequest).Execute()
 
-Update user role within an organization
+Update user within an organization
 
 ### Example
 
@@ -2314,11 +2389,11 @@ import (
 func main() {
     organizationId := "organizationId_example" // string | 
     userId := "userId_example" // string | 
-    body := string(987) // string |  (optional)
+    updateOrganizationUserRequest := *openapiclient.NewUpdateOrganizationUserRequest(openapiclient.Role("")) // UpdateOrganizationUserRequest |  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    r, err := apiClient.DefaultApi.UpsertOrganizationUser(context.Background(), organizationId, userId).Body(body).Execute()
+    r, err := apiClient.DefaultApi.UpsertOrganizationUser(context.Background(), organizationId, userId).UpdateOrganizationUserRequest(updateOrganizationUserRequest).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.UpsertOrganizationUser``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -2344,7 +2419,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
 
- **body** | **string** |  | 
+ **updateOrganizationUserRequest** | [**UpdateOrganizationUserRequest**](UpdateOrganizationUserRequest.md) |  | 
 
 ### Return type
 
@@ -2366,7 +2441,7 @@ Name | Type | Description  | Notes
 
 ## UpsertStackUserAccess
 
-> UpsertStackUserAccess(ctx, organizationId, stackId, userId).Body(body).Execute()
+> UpsertStackUserAccess(ctx, organizationId, stackId, userId).UpdateStackUserRequest(updateStackUserRequest).Execute()
 
 Update stack user access role within an organization
 
@@ -2386,11 +2461,11 @@ func main() {
     organizationId := "organizationId_example" // string | 
     stackId := "stackId_example" // string | 
     userId := "userId_example" // string | 
-    body := string(987) // string |  (optional)
+    updateStackUserRequest := *openapiclient.NewUpdateStackUserRequest(openapiclient.Role("")) // UpdateStackUserRequest |  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    r, err := apiClient.DefaultApi.UpsertStackUserAccess(context.Background(), organizationId, stackId, userId).Body(body).Execute()
+    r, err := apiClient.DefaultApi.UpsertStackUserAccess(context.Background(), organizationId, stackId, userId).UpdateStackUserRequest(updateStackUserRequest).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.UpsertStackUserAccess``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -2418,7 +2493,7 @@ Name | Type | Description  | Notes
 
 
 
- **body** | **string** |  | 
+ **updateStackUserRequest** | [**UpdateStackUserRequest**](UpdateStackUserRequest.md) |  | 
 
 ### Return type
 

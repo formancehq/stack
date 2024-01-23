@@ -26,7 +26,7 @@ func NewCreateController() *CreateController {
 }
 
 func NewCreateCommand() *cobra.Command {
-	return fctl.NewCommand("create <name> --default-stack-role \"ADMIN,GUEST\" --default-organization-role \"ADMIN,GUEST\"",
+	return fctl.NewCommand("create <name> --default-stack-role \"ADMIN\" --default-organization-role \"ADMIN\"",
 		fctl.WithAliases("cr", "c"),
 		fctl.WithShortDescription("Create organization"),
 		fctl.WithArgs(cobra.ExactArgs(1)),

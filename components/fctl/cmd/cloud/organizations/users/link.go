@@ -10,32 +10,32 @@ import (
 	"golang.org/x/mod/semver"
 )
 
-type UpdateStore struct {
+type LinkStore struct {
 	Id      string `json:"id"`
 	Email   string `json:"email"`
 	IsAdmin bool   `json:"is_admin"`
 }
-type UpdateController struct {
-	store *UpdateStore
+type LinkController struct {
+	store *LinkStore
 }
 
-var _ fctl.Controller[*UpdateStore] = (*UpdateController)(nil)
+var _ fctl.Controller[*LinkStore] = (*LinkController)(nil)
 
-func NewDefaultUpdateStore() *UpdateStore {
-	return &UpdateStore{}
+func NewDefaultLinkStore() *LinkStore {
+	return &LinkStore{}
 }
 
-func NewUpdateController() *UpdateController {
-	return &UpdateController{
-		store: NewDefaultUpdateStore(),
+func NewLinkController() *LinkController {
+	return &LinkController{
+		store: NewDefaultLinkStore(),
 	}
 }
 
-func NewUpdateCommand() *cobra.Command {
-	return fctl.NewCommand("update <user-id> <role>",
-		fctl.WithAliases("s"),
-		fctl.WithShortDescription("Update user roles by by id within an organization"),
-		fctl.WithArgs(cobra.MinimumNArgs(1)),
+func NewLinkCommand() *cobra.Command {
+	return fctl.NewCommand("link <user-id>",
+		fctl.WithStringFlag("role", "", "Roles: (ADMIN, GUEST, NONE)"),
+		fctl.WithShortDescription("Link user to an organization with properties"),
+		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithPreRunE(func(cmd *cobra.Command, args []string) error {
 			cfg, err := fctl.GetConfig(cmd)
 			if err != nil {
@@ -58,15 +58,15 @@ func NewUpdateCommand() *cobra.Command {
 
 			return fmt.Errorf("unsupported membership server version: %s", version)
 		}),
-		fctl.WithController[*UpdateStore](NewUpdateController()),
+		fctl.WithController[*LinkStore](NewLinkController()),
 	)
 }
 
-func (c *UpdateController) GetStore() *UpdateStore {
+func (c *LinkController) GetStore() *LinkStore {
 	return c.store
 }
 
-func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+func (c *LinkController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
 		return nil, err
@@ -81,10 +81,19 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	if err != nil {
 		return nil, err
 	}
+
+	role := fctl.GetString(cmd, "role")
+	req := membershipclient.UpdateOrganizationUserRequest{}
+	if role != "" {
+		req.Role = membershipclient.Role(role)
+	} else {
+		return nil, fmt.Errorf("role is required")
+	}
 	response, err := apiClient.DefaultApi.UpsertOrganizationUser(
 		cmd.Context(),
 		organizationID,
-		args[0]).Body(string(membershipclient.Role(args[1]))).Execute()
+		args[0]).
+		UpdateOrganizationUserRequest(req).Execute()
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +105,7 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	return c, nil
 }
 
-func (c *UpdateController) Render(cmd *cobra.Command, args []string) error {
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("User updated.")
+func (c *LinkController) Render(cmd *cobra.Command, args []string) error {
+	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("User Addd.")
 	return nil
 }

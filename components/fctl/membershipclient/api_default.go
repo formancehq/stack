@@ -3614,6 +3614,136 @@ func (a *DefaultApiService) ReadOrganizationExecute(r ApiReadOrganizationRequest
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
+type ApiReadStackUserAccessRequest struct {
+	ctx context.Context
+	ApiService *DefaultApiService
+	organizationId string
+	stackId string
+	userId string
+}
+
+func (r ApiReadStackUserAccessRequest) Execute() (*ReadStackUserAccess, *http.Response, error) {
+	return r.ApiService.ReadStackUserAccessExecute(r)
+}
+
+/*
+ReadStackUserAccess Read stack user access role within an organization
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param organizationId
+ @param stackId
+ @param userId
+ @return ApiReadStackUserAccessRequest
+*/
+func (a *DefaultApiService) ReadStackUserAccess(ctx context.Context, organizationId string, stackId string, userId string) ApiReadStackUserAccessRequest {
+	return ApiReadStackUserAccessRequest{
+		ApiService: a,
+		ctx: ctx,
+		organizationId: organizationId,
+		stackId: stackId,
+		userId: userId,
+	}
+}
+
+// Execute executes the request
+//  @return ReadStackUserAccess
+func (a *DefaultApiService) ReadStackUserAccessExecute(r ApiReadStackUserAccessRequest) (*ReadStackUserAccess, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *ReadStackUserAccess
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.ReadStackUserAccess")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/organizations/{organizationId}/stacks/{stackId}/users/{userId}"
+	localVarPath = strings.Replace(localVarPath, "{"+"organizationId"+"}", url.PathEscape(parameterValueToString(r.organizationId, "organizationId")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"stackId"+"}", url.PathEscape(parameterValueToString(r.stackId, "stackId")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"userId"+"}", url.PathEscape(parameterValueToString(r.userId, "userId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v Error
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v Error
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
 type ApiReadUserOfOrganizationRequest struct {
 	ctx context.Context
 	ApiService *DefaultApiService
@@ -4002,11 +4132,11 @@ type ApiUpsertOrganizationUserRequest struct {
 	ApiService *DefaultApiService
 	organizationId string
 	userId string
-	body *string
+	updateOrganizationUserRequest *UpdateOrganizationUserRequest
 }
 
-func (r ApiUpsertOrganizationUserRequest) Body(body string) ApiUpsertOrganizationUserRequest {
-	r.body = &body
+func (r ApiUpsertOrganizationUserRequest) UpdateOrganizationUserRequest(updateOrganizationUserRequest UpdateOrganizationUserRequest) ApiUpsertOrganizationUserRequest {
+	r.updateOrganizationUserRequest = &updateOrganizationUserRequest
 	return r
 }
 
@@ -4015,7 +4145,7 @@ func (r ApiUpsertOrganizationUserRequest) Execute() (*http.Response, error) {
 }
 
 /*
-UpsertOrganizationUser Update user role within an organization
+UpsertOrganizationUser Update user within an organization
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param organizationId
@@ -4070,7 +4200,7 @@ func (a *DefaultApiService) UpsertOrganizationUserExecute(r ApiUpsertOrganizatio
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.body
+	localVarPostBody = r.updateOrganizationUserRequest
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return nil, err
@@ -4138,11 +4268,11 @@ type ApiUpsertStackUserAccessRequest struct {
 	organizationId string
 	stackId string
 	userId string
-	body *string
+	updateStackUserRequest *UpdateStackUserRequest
 }
 
-func (r ApiUpsertStackUserAccessRequest) Body(body string) ApiUpsertStackUserAccessRequest {
-	r.body = &body
+func (r ApiUpsertStackUserAccessRequest) UpdateStackUserRequest(updateStackUserRequest UpdateStackUserRequest) ApiUpsertStackUserAccessRequest {
+	r.updateStackUserRequest = &updateStackUserRequest
 	return r
 }
 
@@ -4209,7 +4339,7 @@ func (a *DefaultApiService) UpsertStackUserAccessExecute(r ApiUpsertStackUserAcc
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.body
+	localVarPostBody = r.updateStackUserRequest
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return nil, err

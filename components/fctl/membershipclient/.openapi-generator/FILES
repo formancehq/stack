@@ -43,6 +43,7 @@ docs/PublicRegion.md
 docs/PublicRegionAllOf.md
 docs/ReadOrganizationResponse.md
 docs/ReadOrganizationUserResponse.md
+docs/ReadStackUserAccess.md
 docs/ReadUserResponse.md
 docs/Region.md
 docs/Role.md
@@ -55,6 +56,8 @@ docs/StackLifeCycle.md
 docs/StackUserAccess.md
 docs/StackUserAccessAllOf.md
 docs/StackUserAccessResponse.md
+docs/UpdateOrganizationUserRequest.md
+docs/UpdateStackUserRequest.md
 docs/User.md
 docs/UserAllOf.md
 docs/UserData.md
@@ -99,6 +102,7 @@ model_public_region.go
 model_public_region_all_of.go
 model_read_organization_response.go
 model_read_organization_user_response.go
+model_read_stack_user_access.go
 model_read_user_response.go
 model_region.go
 model_role.go
@@ -111,6 +115,8 @@ model_stack_life_cycle.go
 model_stack_user_access.go
 model_stack_user_access_all_of.go
 model_stack_user_access_response.go
+model_update_organization_user_request.go
+model_update_stack_user_request.go
 model_user.go
 model_user_all_of.go
 model_user_data.go

@@ -1,4 +1,4 @@
-package role
+package users
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 )
 
 func NewCommand() *cobra.Command {
-	return fctl.NewMembershipCommand("role",
+	return fctl.NewMembershipCommand("users",
 		fctl.WithAliases("s"),
 		fctl.WithShortDescription("Stack users management within an organization"),
 		fctl.WithRunE(func(cmd *cobra.Command, args []string) error {
@@ -35,9 +35,9 @@ func NewCommand() *cobra.Command {
 			return fmt.Errorf("unsupported membership server version: %s", version)
 		}),
 		fctl.WithChildCommands(
-			NewUpsertCommand(),
+			NewLinkCommand(),
 			NewListCommand(),
-			NewDeleteCommand(),
+			NewUnlinkCommand(),
 		),
 	)
 }
