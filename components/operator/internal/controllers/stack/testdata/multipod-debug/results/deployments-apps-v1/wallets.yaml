@@ -70,7 +70,7 @@ spec:
                     - name: STACK_CLIENT_SECRET
                       value: mocked-secret
                     - name: AUTH_ENABLED
-                      value: "true"
+                      value: "false"
                   image: ghcr.io/formancehq/wallets:latest
                   imagePullPolicy: Always
                   livenessProbe:

@@ -87,7 +87,7 @@ spec:
                     - name: PUBLISHER_KAFKA_BROKER
                       value: kafka:1234
                     - name: AUTH_ENABLED
-                      value: "true"
+                      value: "false"
                     - name: POSTGRES_DATABASE_NAME
                       value: $(POSTGRES_DATABASE)
                     - name: CONFIG_ENCRYPTION_KEY

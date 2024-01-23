@@ -75,6 +75,10 @@ spec:
                       value: webhooks-worker
                     - name: STACK
                       value: multipod-ledger-v2-0-0-beta-7
+                    - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
@@ -84,7 +88,7 @@ spec:
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
                     - name: AUTH_ENABLED
-                      value: "true"
+                      value: "false"
                     - name: KAFKA_TOPICS
                       value: multipod-ledger-v2-0-0-beta-7-ledger multipod-ledger-v2-0-0-beta-7-payments
                   image: ghcr.io/formancehq/webhooks:latest

@@ -88,7 +88,7 @@ spec:
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
                     - name: AUTH_ENABLED
-                      value: "true"
+                      value: "false"
                     - name: KAFKA_TOPICS
                       value: multipod-latest-with-gateway-fallback-ledger multipod-latest-with-gateway-fallback-payments
                   image: ghcr.io/formancehq/webhooks:latest

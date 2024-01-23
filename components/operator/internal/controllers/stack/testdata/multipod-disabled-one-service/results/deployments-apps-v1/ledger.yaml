@@ -88,7 +88,7 @@ spec:
                     - name: PUBLISHER_KAFKA_BROKER
                       value: kafka:1234
                     - name: AUTH_ENABLED
-                      value: "true"
+                      value: "false"
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
                   image: ghcr.io/formancehq/ledger:latest

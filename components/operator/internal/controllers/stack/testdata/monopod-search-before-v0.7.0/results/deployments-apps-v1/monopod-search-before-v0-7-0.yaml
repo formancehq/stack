@@ -299,7 +299,7 @@ spec:
                     - name: PUBLISHER_KAFKA_BROKER
                       value: kafka:1234
                     - name: AUTH_ENABLED
-                      value: "true"
+                      value: "false"
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
                   image: ghcr.io/formancehq/ledger:latest
@@ -382,7 +382,7 @@ spec:
                     - name: STACK_CLIENT_SECRET
                       value: mocked-secret
                     - name: AUTH_ENABLED
-                      value: "true"
+                      value: "false"
                     - name: TEMPORAL_SSL_CLIENT_KEY
                     - name: TEMPORAL_SSL_CLIENT_CERT
                   image: ghcr.io/formancehq/orchestration:latest
@@ -467,7 +467,7 @@ spec:
                     - name: STACK_CLIENT_SECRET
                       value: mocked-secret
                     - name: AUTH_ENABLED
-                      value: "true"
+                      value: "false"
                     - name: TEMPORAL_SSL_CLIENT_KEY
                     - name: TEMPORAL_SSL_CLIENT_CERT
                     - name: BROKER
@@ -545,7 +545,7 @@ spec:
                     - name: PUBLISHER_KAFKA_BROKER
                       value: kafka:1234
                     - name: AUTH_ENABLED
-                      value: "true"
+                      value: "false"
                     - name: POSTGRES_DATABASE_NAME
                       value: $(POSTGRES_DATABASE)
                     - name: CONFIG_ENCRYPTION_KEY
@@ -632,7 +632,7 @@ spec:
                     - name: PUBLISHER_KAFKA_BROKER
                       value: kafka:1234
                     - name: AUTH_ENABLED
-                      value: "true"
+                      value: "false"
                     - name: POSTGRES_DATABASE_NAME
                       value: $(POSTGRES_DATABASE)
                     - name: CONFIG_ENCRYPTION_KEY
@@ -719,7 +719,7 @@ spec:
                     - name: MAPPING_INIT_DISABLED
                       value: "true"
                     - name: AUTH_ENABLED
-                      value: "true"
+                      value: "false"
                     - name: ES_INDICES
                       value: monopod-search-before-v0-7-0
                   image: ghcr.io/formancehq/search:v0.6.2
@@ -956,7 +956,7 @@ spec:
                     - name: STACK_CLIENT_SECRET
                       value: mocked-secret
                     - name: AUTH_ENABLED
-                      value: "true"
+                      value: "false"
                   image: ghcr.io/formancehq/wallets:latest
                   imagePullPolicy: Always
                   livenessProbe:
@@ -1037,7 +1037,7 @@ spec:
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
                     - name: AUTH_ENABLED
-                      value: "true"
+                      value: "false"
                   image: ghcr.io/formancehq/webhooks:latest
                   imagePullPolicy: Always
                   livenessProbe:
@@ -1120,7 +1120,7 @@ spec:
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
                     - name: AUTH_ENABLED
-                      value: "true"
+                      value: "false"
                     - name: KAFKA_TOPICS
                       value: monopod-search-before-v0-7-0-ledger monopod-search-before-v0-7-0-payments
                   image: ghcr.io/formancehq/webhooks:latest

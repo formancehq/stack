@@ -87,7 +87,7 @@ spec:
                     - name: MAPPING_INIT_DISABLED
                       value: "true"
                     - name: AUTH_ENABLED
-                      value: "true"
+                      value: "false"
                     - name: ES_INDICES
                       value: stacks
                   image: localhost:5000/formancehq/search:latest

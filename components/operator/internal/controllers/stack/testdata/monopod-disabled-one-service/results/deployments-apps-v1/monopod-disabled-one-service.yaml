@@ -298,7 +298,7 @@ spec:
                     - name: PUBLISHER_KAFKA_BROKER
                       value: kafka:1234
                     - name: AUTH_ENABLED
-                      value: "true"
+                      value: "false"
                     - name: POSTGRES_DATABASE_NAME
                       value: $(POSTGRES_DATABASE)
                     - name: CONFIG_ENCRYPTION_KEY
@@ -385,7 +385,7 @@ spec:
                     - name: PUBLISHER_KAFKA_BROKER
                       value: kafka:1234
                     - name: AUTH_ENABLED
-                      value: "true"
+                      value: "false"
                     - name: POSTGRES_DATABASE_NAME
                       value: $(POSTGRES_DATABASE)
                     - name: CONFIG_ENCRYPTION_KEY
@@ -472,7 +472,7 @@ spec:
                     - name: MAPPING_INIT_DISABLED
                       value: "true"
                     - name: AUTH_ENABLED
-                      value: "true"
+                      value: "false"
                     - name: ES_INDICES
                       value: stacks
                   image: ghcr.io/formancehq/search:latest
@@ -709,7 +709,7 @@ spec:
                     - name: STACK_CLIENT_SECRET
                       value: mocked-secret
                     - name: AUTH_ENABLED
-                      value: "true"
+                      value: "false"
                   image: ghcr.io/formancehq/wallets:latest
                   imagePullPolicy: Always
                   livenessProbe:
@@ -790,7 +790,7 @@ spec:
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
                     - name: AUTH_ENABLED
-                      value: "true"
+                      value: "false"
                   image: ghcr.io/formancehq/webhooks:latest
                   imagePullPolicy: Always
                   livenessProbe:
@@ -873,7 +873,7 @@ spec:
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
                     - name: AUTH_ENABLED
-                      value: "true"
+                      value: "false"
                     - name: KAFKA_TOPICS
                       value: monopod-disabled-one-service-ledger monopod-disabled-one-service-payments
                   image: ghcr.io/formancehq/webhooks:latest

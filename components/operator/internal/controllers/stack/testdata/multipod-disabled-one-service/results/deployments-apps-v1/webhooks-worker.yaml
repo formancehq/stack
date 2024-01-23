@@ -88,7 +88,7 @@ spec:
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
                     - name: AUTH_ENABLED
-                      value: "true"
+                      value: "false"
                     - name: KAFKA_TOPICS
                       value: multipod-disabled-one-service-ledger multipod-disabled-one-service-payments
                   image: ghcr.io/formancehq/webhooks:latest
