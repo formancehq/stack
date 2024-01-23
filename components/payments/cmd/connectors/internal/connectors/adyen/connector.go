@@ -23,6 +23,15 @@ type Connector struct {
 	cfg    Config
 }
 
+func newConnector(logger logging.Logger, cfg Config) *Connector {
+	return &Connector{
+		logger: logger.WithFields(map[string]any{
+			"component": "connector",
+		}),
+		cfg: cfg,
+	}
+}
+
 func (c *Connector) UpdateConfig(ctx task.ConnectorContext, config models.ConnectorConfigObject) error {
 	cfg, ok := config.(Config)
 	if !ok {
@@ -52,18 +61,6 @@ func (c *Connector) UpdateConfig(ctx task.ConnectorContext, config models.Connec
 	}
 
 	return nil
-}
-
-func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error {
-	return connectors.ErrNotImplemented
-}
-
-func (c *Connector) CreateExternalBankAccount(ctx task.ConnectorContext, bankAccount *models.BankAccount) error {
-	return connectors.ErrNotImplemented
-}
-
-func (c *Connector) SupportedCurrenciesAndDecimals() map[string]int {
-	return supportedCurrenciesWithDecimal
 }
 
 func (c *Connector) Install(ctx task.ConnectorContext) error {
@@ -96,13 +93,20 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 	return resolveTasks(c.logger, c.cfg)(taskDescriptor)
 }
 
-var _ connectors.Connector = &Connector{}
-
-func newConnector(logger logging.Logger, cfg Config) *Connector {
-	return &Connector{
-		logger: logger.WithFields(map[string]any{
-			"component": "connector",
-		}),
-		cfg: cfg,
-	}
+func (c *Connector) SupportedCurrenciesAndDecimals() map[string]int {
+	return supportedCurrenciesWithDecimal
 }
+
+func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error {
+	return connectors.ErrNotImplemented
+}
+
+func (c *Connector) ReversePayment(ctx task.ConnectorContext, transferReversal *models.TransferReversal) error {
+	return connectors.ErrNotImplemented
+}
+
+func (c *Connector) CreateExternalBankAccount(ctx task.ConnectorContext, bankAccount *models.BankAccount) error {
+	return connectors.ErrNotImplemented
+}
+
+var _ connectors.Connector = &Connector{}

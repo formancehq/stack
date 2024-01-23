@@ -11,4 +11,9 @@
 | `TransferInitiationStatusFailed`               | FAILED                                         |
 | `TransferInitiationStatusRejected`             | REJECTED                                       |
 | `TransferInitiationStatusValidated`            | VALIDATED                                      |
-| `TransferInitiationStatusRetried`              | RETRIED                                        |
+| `TransferInitiationStatusAskRetried`           | ASK_RETRIED                                    |
+| `TransferInitiationStatusAskReversed`          | ASK_REVERSED                                   |
+| `TransferInitiationStatusReverseProcessing`    | REVERSE_PROCESSING                             |
+| `TransferInitiationStatusReverseFailed`        | REVERSE_FAILED                                 |
+| `TransferInitiationStatusPartiallyReversed`    | PARTIALLY_REVERSED                             |
+| `TransferInitiationStatusReversed`             | REVERSED                                       |

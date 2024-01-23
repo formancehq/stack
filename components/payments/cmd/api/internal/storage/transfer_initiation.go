@@ -14,7 +14,7 @@ func (s *Storage) GetTransferInitiation(ctx context.Context, id models.TransferI
 	var transferInitiation models.TransferInitiation
 
 	query := s.db.NewSelect().
-		Column("id", "connector_id", "created_at", "scheduled_at", "description", "type", "source_account_id", "destination_account_id", "provider", "amount", "asset", "metadata").
+		Column("id", "connector_id", "created_at", "scheduled_at", "description", "type", "source_account_id", "destination_account_id", "provider", "initial_amount", "amount", "asset", "metadata").
 		Model(&transferInitiation).
 		Relation("RelatedAdjustments").
 		Where("id = ?", id)
@@ -34,8 +34,8 @@ func (s *Storage) GetTransferInitiation(ctx context.Context, id models.TransferI
 	return &transferInitiation, nil
 }
 
-func (s *Storage) ReadTransferInitiationPayments(ctx context.Context, id models.TransferInitiationID) ([]*models.TransferInitiationPayments, error) {
-	var payments []*models.TransferInitiationPayments
+func (s *Storage) ReadTransferInitiationPayments(ctx context.Context, id models.TransferInitiationID) ([]*models.TransferInitiationPayment, error) {
+	var payments []*models.TransferInitiationPayment
 
 	query := s.db.NewSelect().
 		Column("transfer_initiation_id", "payment_id", "created_at", "status", "error").
@@ -55,7 +55,7 @@ func (s *Storage) ListTransferInitiations(ctx context.Context, pagination Pagina
 	var tfs []*models.TransferInitiation
 
 	query := s.db.NewSelect().
-		Column("id", "connector_id", "created_at", "scheduled_at", "description", "type", "source_account_id", "destination_account_id", "provider", "amount", "asset", "metadata").
+		Column("id", "connector_id", "created_at", "scheduled_at", "description", "type", "source_account_id", "destination_account_id", "provider", "initial_amount", "amount", "asset", "metadata").
 		Model(&tfs).
 		Relation("RelatedAdjustments")
 
@@ -98,7 +98,7 @@ func (s *Storage) ListTransferInitiations(ctx context.Context, pagination Pagina
 		lastReference = tfs[len(tfs)-1].CreatedAt.Format(time.RFC3339Nano)
 
 		query = s.db.NewSelect().
-			Column("id", "connector_id", "created_at", "description", "type", "source_account_id", "destination_account_id", "provider", "amount", "asset", "metadata").
+			Column("id", "connector_id", "created_at", "scheduled_at", "description", "type", "source_account_id", "destination_account_id", "provider", "initial_amount", "amount", "asset", "metadata").
 			Model(&tfs).
 			Relation("RelatedAdjustments")
 

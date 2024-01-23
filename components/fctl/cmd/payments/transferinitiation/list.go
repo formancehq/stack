@@ -122,13 +122,14 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 			tf.ConnectorID,
 			string(tf.Type),
 			fmt.Sprint(tf.Amount),
+			fmt.Sprint(tf.InitialAmount),
 			tf.Asset,
 			string(tf.Status),
 			tf.Error,
 		}
 	})
 	tableData = fctl.Prepend(tableData, []string{"ID", "Reference", "CreatedAt", "ScheduledAt", "Description", "Source Account ID",
-		"Destination Account ID", "ConnectorID", "Type", "Amount", "Asset", "Status", "Error"})
+		"Destination Account ID", "ConnectorID", "Type", "Amount", "InitialAmount", "Asset", "Status", "Error"})
 	if err := pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).

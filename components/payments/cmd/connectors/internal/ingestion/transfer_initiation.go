@@ -12,13 +12,15 @@ import (
 )
 
 func (i *DefaultIngester) UpdateTransferInitiationPaymentsStatus(ctx context.Context, tf *models.TransferInitiation, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, updatedAt time.Time) error {
-	adjustment := &models.TransferInitiationAdjustments{
+	adjustment := &models.TransferInitiationAdjustment{
 		ID:                   uuid.New(),
 		TransferInitiationID: tf.ID,
 		CreatedAt:            updatedAt.UTC(),
 		Status:               status,
 		Error:                errorMessage,
 	}
+
+	tf.RelatedAdjustments = append([]*models.TransferInitiationAdjustment{adjustment}, tf.RelatedAdjustments...)
 
 	if err := i.store.UpdateTransferInitiationPaymentsStatus(ctx, tf.ID, paymentID, adjustment); err != nil {
 		return err
@@ -42,14 +44,14 @@ func (i *DefaultIngester) AddTransferInitiationPaymentID(ctx context.Context, tf
 		return fmt.Errorf("payment id is nil")
 	}
 
-	tf.RelatedPayments = append(tf.RelatedPayments, &models.TransferInitiationPayments{
+	tf.RelatedPayments = append(tf.RelatedPayments, &models.TransferInitiationPayment{
 		TransferInitiationID: tf.ID,
 		PaymentID:            *paymentID,
 		CreatedAt:            updatedAt.UTC(),
 		Status:               models.TransferInitiationStatusProcessing,
 	})
 
-	if err := i.store.AddTransferInitiationPaymentID(ctx, tf.ID, paymentID, updatedAt); err != nil {
+	if err := i.store.AddTransferInitiationPaymentID(ctx, tf.ID, paymentID, updatedAt, tf.Metadata); err != nil {
 		return err
 	}
 

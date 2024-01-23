@@ -59,6 +59,7 @@ type BuiltConnector struct {
 	updateConfig              func(ctx task.ConnectorContext, config models.ConnectorConfigObject) error
 	install                   func(ctx task.ConnectorContext) error
 	initiatePayment           func(ctx task.ConnectorContext, transfer *models.TransferInitiation) error
+	reversePayment            func(ctx task.ConnectorContext, transferReversal *models.TransferReversal) error
 	createExternalBankAccount func(ctx task.ConnectorContext, account *models.BankAccount) error
 }
 
@@ -77,6 +78,14 @@ func (b *BuiltConnector) SupportedCurrenciesAndDecimals() map[string]int {
 func (b *BuiltConnector) InitiatePayment(ctx task.ConnectorContext, transfer *models.TransferInitiation) error {
 	if b.initiatePayment != nil {
 		return b.initiatePayment(ctx, transfer)
+	}
+
+	return nil
+}
+
+func (b *BuiltConnector) ReversePayment(ctx task.ConnectorContext, transferReversal *models.TransferReversal) error {
+	if b.reversePayment != nil {
+		return b.reversePayment(ctx, transferReversal)
 	}
 
 	return nil

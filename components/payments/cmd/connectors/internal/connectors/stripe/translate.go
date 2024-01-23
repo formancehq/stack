@@ -160,6 +160,34 @@ func createBatchElement(
 			}
 		}
 
+	case stripe.BalanceTransactionTypeTransferRefund:
+		payment = models.Payment{
+			ID: models.PaymentID{
+				PaymentReference: models.PaymentReference{
+					Reference: balanceTransaction.ID,
+					Type:      models.PaymentTypeTransfer,
+				},
+				ConnectorID: connectorID,
+			},
+			Reference:     balanceTransaction.ID,
+			ConnectorID:   connectorID,
+			Type:          models.PaymentTypeTransfer,
+			Status:        models.PaymentStatusSucceeded,
+			Amount:        big.NewInt(balanceTransaction.Amount),
+			InitialAmount: big.NewInt(balanceTransaction.Source.Transfer.Amount),
+			RawData:       rawData,
+			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, string(balanceTransaction.Source.Transfer.Currency)),
+			Scheme:        models.PaymentSchemeOther,
+			CreatedAt:     time.Unix(balanceTransaction.Created, 0),
+		}
+
+		if account != "" {
+			payment.DestinationAccountID = &models.AccountID{
+				Reference:   account,
+				ConnectorID: connectorID,
+			}
+		}
+
 	case stripe.BalanceTransactionTypeRefund:
 		payment = models.Payment{
 			ID: models.PaymentID{

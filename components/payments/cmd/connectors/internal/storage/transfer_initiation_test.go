@@ -58,7 +58,7 @@ func testCreateTransferInitiations(t *testing.T, store *storage.Storage) {
 		Provider:    models.ConnectorProviderDummyPay,
 		Amount:      big.NewInt(100),
 		Asset:       models.Asset("USD/2"),
-		RelatedAdjustments: []*models.TransferInitiationAdjustments{
+		RelatedAdjustments: []*models.TransferInitiationAdjustment{
 			{
 				ID:                   adjumentID1,
 				TransferInitiationID: t1ID,
@@ -84,7 +84,7 @@ func testCreateTransferInitiations(t *testing.T, store *storage.Storage) {
 		Asset:                models.Asset("USD/2"),
 		SourceAccountID:      &acc1ID,
 		DestinationAccountID: acc2ID,
-		RelatedAdjustments: []*models.TransferInitiationAdjustments{
+		RelatedAdjustments: []*models.TransferInitiationAdjustment{
 			{
 				ID:                   adjumentID2,
 				TransferInitiationID: t2ID,
@@ -209,10 +209,13 @@ func testAddTransferInitiationPayments(t *testing.T, store *storage.Storage) {
 		t1ID,
 		p1ID,
 		tAddPayments,
+		map[string]string{
+			"test": "test",
+		},
 	)
 	require.NoError(t, err)
 
-	t1.RelatedPayments = []*models.TransferInitiationPayments{
+	t1.RelatedPayments = []*models.TransferInitiationPayment{
 		{
 			TransferInitiationID: t1ID,
 			PaymentID:            *p1ID,
@@ -221,6 +224,9 @@ func testAddTransferInitiationPayments(t *testing.T, store *storage.Storage) {
 			Error:                "",
 		},
 	}
+	t1.Metadata = map[string]string{
+		"test": "test",
+	}
 	testGetTransferInitiation(t, store, t1ID, true, t1, nil)
 
 	err = store.AddTransferInitiationPaymentID(
@@ -228,6 +234,7 @@ func testAddTransferInitiationPayments(t *testing.T, store *storage.Storage) {
 		t1ID,
 		nil,
 		tAddPayments,
+		nil,
 	)
 	require.Error(t, err)
 
@@ -239,12 +246,13 @@ func testAddTransferInitiationPayments(t *testing.T, store *storage.Storage) {
 		},
 		p1ID,
 		tAddPayments,
+		nil,
 	)
 	require.Error(t, err)
 }
 
 func testUpdateTransferInitiationStatus(t *testing.T, store *storage.Storage) {
-	adjustment1 := &models.TransferInitiationAdjustments{
+	adjustment1 := &models.TransferInitiationAdjustment{
 		ID:                   uuid.New(),
 		TransferInitiationID: t1ID,
 		CreatedAt:            tUpdateStatus1,
@@ -259,12 +267,12 @@ func testUpdateTransferInitiationStatus(t *testing.T, store *storage.Storage) {
 	)
 	require.NoError(t, err)
 
-	t1.RelatedAdjustments = append([]*models.TransferInitiationAdjustments{
+	t1.RelatedAdjustments = append([]*models.TransferInitiationAdjustment{
 		adjustment1,
 	}, t1.RelatedAdjustments...)
 	testGetTransferInitiation(t, store, t1ID, true, t1, nil)
 
-	adjustment2 := &models.TransferInitiationAdjustments{
+	adjustment2 := &models.TransferInitiationAdjustment{
 		ID:                   uuid.New(),
 		TransferInitiationID: t1ID,
 		CreatedAt:            tUpdateStatus2,
@@ -281,7 +289,7 @@ func testUpdateTransferInitiationStatus(t *testing.T, store *storage.Storage) {
 
 	t1.RelatedPayments[0].Status = models.TransferInitiationStatusFailed
 	t1.RelatedPayments[0].Error = "test_error2"
-	t1.RelatedAdjustments = append([]*models.TransferInitiationAdjustments{
+	t1.RelatedAdjustments = append([]*models.TransferInitiationAdjustment{
 		adjustment2,
 	}, t1.RelatedAdjustments...)
 	testGetTransferInitiation(t, store, t1ID, true, t1, nil)

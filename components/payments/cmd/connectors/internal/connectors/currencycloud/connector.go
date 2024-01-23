@@ -125,6 +125,10 @@ func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.
 	return nil
 }
 
+func (c *Connector) ReversePayment(ctx task.ConnectorContext, transfer *models.TransferReversal) error {
+	return connectors.ErrNotImplemented
+}
+
 func (c *Connector) CreateExternalBankAccount(ctx task.ConnectorContext, bankAccount *models.BankAccount) error {
 	return connectors.ErrNotImplemented
 }

@@ -129,6 +129,21 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+  
+  /transfer-initiations/{transferId}/reverse:
+    post:
+      summary: Reverse a transfer initiation
+      tags:
+        - Payments
+      operationId: reverseTransferInitiation
+      description: Reverse transfer initiation
+      parameters:
+        - $ref: '#/components/parameters/TransferId'
+      requestBody:
+        $ref: '#/components/requestBodies/ReverseTransferInitiation'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
 
   /transfer-initiations/{transferId}/retry:
     post:
@@ -848,6 +863,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/UpdateTransferInitiationStatusRequest'
+    ReverseTransferInitiation:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ReverseTransferInitiationRequest'
     Transfer:
       required: true
       content:
@@ -1179,7 +1200,12 @@ components:
         - FAILED
         - REJECTED
         - VALIDATED
-        - RETRIED
+        - ASK_RETRIED
+        - ASK_REVERSED
+        - REVERSE_PROCESSING
+        - REVERSE_FAILED
+        - PARTIALLY_REVERSED
+        - REVERSED
     ConnectorConfig:
       anyOf:
         - $ref: '#/components/schemas/StripeConfig'
@@ -1488,6 +1514,7 @@ components:
         - connectorID
         - type
         - amount
+        - initialAmount
         - asset
         - status
         - error
@@ -1517,6 +1544,9 @@ components:
             - TRANSFER
             - PAYOUT
         amount:
+          type: integer
+          format: bigint
+        initialAmount:
           type: integer
           format: bigint
         asset:
@@ -2110,6 +2140,31 @@ components:
           example: USD
         validated:
           type: boolean
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          nullable: true
+    ReverseTransferInitiationRequest:
+      type: object
+      required:
+        - reference
+        - description
+        - amount
+        - asset
+        - metadata
+      properties:
+        reference:
+          type: string
+          example: XXX
+        description:
+          type: string
+        amount:
+          type: integer
+          format: bigint
+        asset:
+          type: string
+          example: USD
         metadata:
           type: object
           additionalProperties:

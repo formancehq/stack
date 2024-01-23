@@ -49,11 +49,12 @@ var (
 			Reference:   "acc2",
 			ConnectorID: connectorDummyPay.ID,
 		},
-		Provider:    models.ConnectorProviderDummyPay,
-		ConnectorID: connectorDummyPay.ID,
-		Amount:      big.NewInt(100),
-		Asset:       "EUR/2",
-		RelatedAdjustments: []*models.TransferInitiationAdjustments{
+		Provider:      models.ConnectorProviderDummyPay,
+		ConnectorID:   connectorDummyPay.ID,
+		Amount:        big.NewInt(100),
+		InitialAmount: big.NewInt(100),
+		Asset:         "EUR/2",
+		RelatedAdjustments: []*models.TransferInitiationAdjustment{
 			{
 				ID: uuid.New(),
 				TransferInitiationID: models.TransferInitiationID{
@@ -83,11 +84,12 @@ var (
 			Reference:   "acc2",
 			ConnectorID: connectorDummyPay.ID,
 		},
-		Provider:    models.ConnectorProviderDummyPay,
-		ConnectorID: connectorDummyPay.ID,
-		Amount:      big.NewInt(100),
-		Asset:       "EUR/2",
-		RelatedAdjustments: []*models.TransferInitiationAdjustments{
+		Provider:      models.ConnectorProviderDummyPay,
+		ConnectorID:   connectorDummyPay.ID,
+		Amount:        big.NewInt(100),
+		InitialAmount: big.NewInt(100),
+		Asset:         "EUR/2",
+		RelatedAdjustments: []*models.TransferInitiationAdjustment{
 			{
 				ID: uuid.New(),
 				TransferInitiationID: models.TransferInitiationID{
@@ -194,11 +196,15 @@ func (m *MockStore) ReadTransferInitiation(ctx context.Context, id models.Transf
 	return nil, storage.ErrNotFound
 }
 
-func (m *MockStore) UpdateTransferInitiationPaymentsStatus(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, adjustment *models.TransferInitiationAdjustments) error {
+func (m *MockStore) UpdateTransferInitiationPaymentsStatus(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, adjustment *models.TransferInitiationAdjustment) error {
 	return nil
 }
 
 func (m *MockStore) DeleteTransferInitiation(ctx context.Context, id models.TransferInitiationID) error {
+	return nil
+}
+
+func (m *MockStore) CreateTransferReversal(ctx context.Context, transferReversal *models.TransferReversal) error {
 	return nil
 }
 

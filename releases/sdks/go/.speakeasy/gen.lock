@@ -1,7 +1,7 @@
 lockVersion: 2.0.0
-id: 0fdfd940-dc71-4d72-b356-dc122a42aa76
+id: 5f2b701c-164e-4582-91d7-0f765257797b
 management:
-  docChecksum: 5ecb893e1ddb7b683bdb143d145d47a0
+  docChecksum: 51b71f2e6c06e9721d7d089c13d6b8f0
   docVersion: INTERNAL
   speakeasyVersion: internal
   generationVersion: 2.237.2
@@ -168,6 +168,7 @@ generatedFiles:
   - /pkg/models/operations/resetconnector.go
   - /pkg/models/operations/resetconnectorv1.go
   - /pkg/models/operations/retrytransferinitiation.go
+  - /pkg/models/operations/reversetransferinitiation.go
   - /pkg/models/operations/udpatetransferinitiationstatus.go
   - /pkg/models/operations/uninstallconnector.go
   - /pkg/models/operations/uninstallconnectorv1.go
@@ -493,6 +494,7 @@ generatedFiles:
   - /pkg/models/shared/paymentsaccount.go
   - /pkg/models/shared/accountscursor.go
   - /pkg/models/shared/connectorconfigresponse.go
+  - /pkg/models/shared/reversetransferinitiationrequest.go
   - /pkg/models/shared/updatetransferinitiationstatusrequest.go
   - /pkg/models/shared/reconciliationerrorresponse.go
   - /pkg/models/shared/policyresponse.go
@@ -759,6 +761,8 @@ generatedFiles:
   - docs/pkg/models/operations/resetconnectorv1response.md
   - docs/pkg/models/operations/retrytransferinitiationrequest.md
   - docs/pkg/models/operations/retrytransferinitiationresponse.md
+  - docs/pkg/models/operations/reversetransferinitiationrequest.md
+  - docs/pkg/models/operations/reversetransferinitiationresponse.md
   - docs/pkg/models/operations/udpatetransferinitiationstatusrequest.md
   - docs/pkg/models/operations/udpatetransferinitiationstatusresponse.md
   - docs/pkg/models/operations/uninstallconnectorrequest.md
@@ -1198,6 +1202,7 @@ generatedFiles:
   - docs/pkg/models/shared/cursor.md
   - docs/pkg/models/shared/accountscursor.md
   - docs/pkg/models/shared/connectorconfigresponse.md
+  - docs/pkg/models/shared/reversetransferinitiationrequest.md
   - docs/pkg/models/shared/status.md
   - docs/pkg/models/shared/updatetransferinitiationstatusrequest.md
   - docs/pkg/models/shared/reconciliationerrorresponse.md

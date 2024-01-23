@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"sort"
 	"time"
@@ -12,34 +13,39 @@ import (
 )
 
 func (s *Storage) CreateTransferInitiation(ctx context.Context, transferInitiation *models.TransferInitiation) error {
-	query := s.db.NewInsert().
-		Column("id", "created_at", "scheduled_at", "description", "type", "destination_account_id", "provider", "connector_id", "amount", "asset", "metadata").
+	tx, err := s.db.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		return err
+	}
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
+	query := tx.NewInsert().
+		Column("id", "created_at", "scheduled_at", "description", "type", "destination_account_id", "provider", "connector_id", "initial_amount", "amount", "asset", "metadata").
 		Model(transferInitiation)
 
 	if transferInitiation.SourceAccountID != nil {
 		query = query.Column("source_account_id")
 	}
 
-	_, err := query.Exec(ctx)
+	_, err = query.Exec(ctx)
 	if err != nil {
 		return e("failed to create transfer initiation", err)
 	}
 
 	for _, adjustment := range transferInitiation.RelatedAdjustments {
-		if err := s.AddTransferInitiationAdjustment(ctx, adjustment); err != nil {
+		adj := adjustment
+		if _, err := tx.NewInsert().Model(adj).Exec(ctx); err != nil {
 			return e("failed to add adjustment", err)
 		}
 	}
 
-	return nil
+	return e("failed to commit transaction", tx.Commit())
 }
 
-func (s *Storage) AddTransferInitiationAdjustment(ctx context.Context, adjustment *models.TransferInitiationAdjustments) error {
-	_, err := s.db.NewInsert().
-		Column("id", "transfer_initiation_id", "created_at", "status", "error", "metadata").
-		Model(adjustment).
-		Exec(ctx)
-	if err != nil {
+func (s *Storage) AddTransferInitiationAdjustment(ctx context.Context, adjustment *models.TransferInitiationAdjustment) error {
+	if _, err := s.db.NewInsert().Model(adjustment).Exec(ctx); err != nil {
 		return e("failed to add adjustment", err)
 	}
 
@@ -70,8 +76,8 @@ func (s *Storage) ReadTransferInitiation(ctx context.Context, id models.Transfer
 	return &transferInitiation, nil
 }
 
-func (s *Storage) ReadTransferInitiationPayments(ctx context.Context, id models.TransferInitiationID) ([]*models.TransferInitiationPayments, error) {
-	var payments []*models.TransferInitiationPayments
+func (s *Storage) ReadTransferInitiationPayments(ctx context.Context, id models.TransferInitiationID) ([]*models.TransferInitiationPayment, error) {
+	var payments []*models.TransferInitiationPayment
 
 	query := s.db.NewSelect().
 		Column("transfer_initiation_id", "payment_id", "created_at", "status", "error").
@@ -150,14 +156,22 @@ func (s *Storage) ListTransferInitiations(ctx context.Context, pagination Pagina
 	return tfs, paginationDetails, nil
 }
 
-func (s *Storage) AddTransferInitiationPaymentID(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, createdAt time.Time) error {
+func (s *Storage) AddTransferInitiationPaymentID(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, createdAt time.Time, metadata map[string]string) error {
+	tx, err := s.db.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		return err
+	}
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
 	if paymentID == nil {
 		return errors.New("payment id is nil")
 	}
 
-	_, err := s.db.NewInsert().
+	_, err = tx.NewInsert().
 		Column("transfer_initiation_id", "payment_id", "created_at", "status").
-		Model(&models.TransferInitiationPayments{
+		Model(&models.TransferInitiationPayment{
 			TransferInitiationID: id,
 			PaymentID:            *paymentID,
 			CreatedAt:            createdAt,
@@ -168,18 +182,37 @@ func (s *Storage) AddTransferInitiationPaymentID(ctx context.Context, id models.
 		return e("failed to add transfer initiation payment id", err)
 	}
 
-	return nil
+	if metadata != nil {
+		_, err := tx.NewUpdate().
+			Model((*models.TransferInitiation)(nil)).
+			Set("metadata = ?", metadata).
+			Where("id = ?", id).
+			Exec(ctx)
+		if err != nil {
+			return e("failed to add metadata", err)
+		}
+	}
+
+	return e("failed to commit transaction", tx.Commit())
 }
 
 func (s *Storage) UpdateTransferInitiationPaymentsStatus(
 	ctx context.Context,
 	id models.TransferInitiationID,
 	paymentID *models.PaymentID,
-	adjustment *models.TransferInitiationAdjustments,
+	adjustment *models.TransferInitiationAdjustment,
 ) error {
+	tx, err := s.db.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		return err
+	}
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
 	if paymentID != nil {
-		query := s.db.NewUpdate().
-			Model((*models.TransferInitiationPayments)(nil)).
+		query := tx.NewUpdate().
+			Model((*models.TransferInitiationPayment)(nil)).
 			Set("status = ?", adjustment.Status)
 
 		if adjustment.Error != "" {
@@ -195,7 +228,11 @@ func (s *Storage) UpdateTransferInitiationPaymentsStatus(
 		}
 	}
 
-	return s.AddTransferInitiationAdjustment(ctx, adjustment)
+	if _, err = tx.NewInsert().Model(adjustment).Exec(ctx); err != nil {
+		return e("failed to add adjustment", err)
+	}
+
+	return e("failed to commit transaction", tx.Commit())
 }
 
 func (s *Storage) DeleteTransferInitiation(ctx context.Context, id models.TransferInitiationID) error {

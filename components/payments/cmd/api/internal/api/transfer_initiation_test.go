@@ -173,7 +173,7 @@ func TestListTransferInitiations(t *testing.T) {
 					ConnectorID: connectorID,
 					Amount:      big.NewInt(100),
 					Asset:       models.Asset("EUR/2"),
-					RelatedAdjustments: []*models.TransferInitiationAdjustments{
+					RelatedAdjustments: []*models.TransferInitiationAdjustment{
 						{
 							ID: uuid.New(),
 							TransferInitiationID: models.TransferInitiationID{
@@ -193,7 +193,7 @@ func TestListTransferInitiations(t *testing.T) {
 							Status:    models.TransferInitiationStatusWaitingForValidation,
 						},
 					},
-					RelatedPayments: []*models.TransferInitiationPayments{
+					RelatedPayments: []*models.TransferInitiationPayment{
 						{
 							TransferInitiationID: models.TransferInitiationID{
 								Reference:   "t1",
@@ -236,7 +236,7 @@ func TestListTransferInitiations(t *testing.T) {
 					ConnectorID: connectorID,
 					Amount:      big.NewInt(2000),
 					Asset:       models.Asset("USD/2"),
-					RelatedAdjustments: []*models.TransferInitiationAdjustments{
+					RelatedAdjustments: []*models.TransferInitiationAdjustment{
 						{
 							ID: uuid.New(),
 							TransferInitiationID: models.TransferInitiationID{
@@ -450,7 +450,7 @@ func TestGetTransferInitiation(t *testing.T) {
 					ConnectorID: connectorID,
 					Amount:      big.NewInt(100),
 					Asset:       models.Asset("EUR/2"),
-					RelatedAdjustments: []*models.TransferInitiationAdjustments{
+					RelatedAdjustments: []*models.TransferInitiationAdjustment{
 						{
 							ID: uuid.New(),
 							TransferInitiationID: models.TransferInitiationID{
@@ -470,7 +470,7 @@ func TestGetTransferInitiation(t *testing.T) {
 							Status:    models.TransferInitiationStatusWaitingForValidation,
 						},
 					},
-					RelatedPayments: []*models.TransferInitiationPayments{
+					RelatedPayments: []*models.TransferInitiationPayment{
 						{
 							TransferInitiationID: models.TransferInitiationID{
 								Reference:   "t1",
@@ -558,7 +558,7 @@ func TestGetTransferInitiation(t *testing.T) {
 					ConnectorID: connectorID,
 					Amount:      big.NewInt(2000),
 					Asset:       models.Asset("USD/2"),
-					RelatedAdjustments: []*models.TransferInitiationAdjustments{
+					RelatedAdjustments: []*models.TransferInitiationAdjustment{
 						{
 							ID: uuid.New(),
 							TransferInitiationID: models.TransferInitiationID{

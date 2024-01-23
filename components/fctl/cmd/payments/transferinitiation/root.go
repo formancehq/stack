@@ -16,6 +16,7 @@ func NewTransferInitiationCommand() *cobra.Command {
 			NewRetryCommand(),
 			NewShowCommand(),
 			NewUpdateStatusCommand(),
+			NewReverseCommand(),
 		),
 	)
 }

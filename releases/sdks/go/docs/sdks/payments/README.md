@@ -37,6 +37,7 @@
 * [~~ResetConnector~~](#resetconnector) - Reset a connector :warning: **Deprecated**
 * [ResetConnectorV1](#resetconnectorv1) - Reset a connector
 * [RetryTransferInitiation](#retrytransferinitiation) - Retry a failed transfer initiation
+* [ReverseTransferInitiation](#reversetransferinitiation) - Reverse a transfer initiation
 * [UdpateTransferInitiationStatus](#udpatetransferinitiationstatus) - Update the status of a transfer initiation
 * [~~UninstallConnector~~](#uninstallconnector) - Uninstall a connector :warning: **Deprecated**
 * [UninstallConnectorV1](#uninstallconnectorv1) - Uninstall a connector
@@ -1921,6 +1922,70 @@ func main() {
 ### Response
 
 **[*operations.RetryTransferInitiationResponse](../../pkg/models/operations/retrytransferinitiationresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
+
+## ReverseTransferInitiation
+
+Reverse transfer initiation
+
+### Example Usage
+
+```go
+package main
+
+import(
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
+	"context"
+	"math/big"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"log"
+	"net/http"
+)
+
+func main() {
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
+
+    ctx := context.Background()
+    res, err := s.Payments.ReverseTransferInitiation(ctx, operations.ReverseTransferInitiationRequest{
+        ReverseTransferInitiationRequest: shared.ReverseTransferInitiationRequest{
+            Amount: big.NewInt(327549),
+            Asset: "USD",
+            Description: "Streamlined high-level local area network",
+            Metadata: map[string]string{
+                "key": "string",
+            },
+            Reference: "XXX",
+        },
+        TransferID: "string",
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    if res.StatusCode == http.StatusOK {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                                                                      | Type                                                                                                           | Required                                                                                                       | Description                                                                                                    |
+| -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                          | [context.Context](https://pkg.go.dev/context#Context)                                                          | :heavy_check_mark:                                                                                             | The context to use for the request.                                                                            |
+| `request`                                                                                                      | [operations.ReverseTransferInitiationRequest](../../pkg/models/operations/reversetransferinitiationrequest.md) | :heavy_check_mark:                                                                                             | The request object to use for the request.                                                                     |
+
+
+### Response
+
+**[*operations.ReverseTransferInitiationResponse](../../pkg/models/operations/reversetransferinitiationresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
 | sdkerrors.SDKError | 4xx-5xx            | */*                |

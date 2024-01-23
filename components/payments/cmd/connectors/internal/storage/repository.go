@@ -31,4 +31,5 @@ type Reader interface {
 	GetBankAccount(ctx context.Context, id uuid.UUID, expand bool) (*models.BankAccount, error)
 	GetWebhook(ctx context.Context, id uuid.UUID) (*models.Webhook, error)
 	GetPayment(ctx context.Context, id string) (*models.Payment, error)
+	GetTransferReversal(ctx context.Context, id models.TransferReversalID) (*models.TransferReversal, error)
 }

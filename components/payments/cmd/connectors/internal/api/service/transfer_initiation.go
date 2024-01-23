@@ -131,9 +131,10 @@ func (s *Service) CreateTransferInitiation(ctx context.Context, req *CreateTrans
 		Provider:             connectorID.Provider,
 		Type:                 models.MustTransferInitiationTypeFromString(req.Type),
 		Amount:               req.Amount,
+		InitialAmount:        req.Amount,
 		Asset:                models.Asset(req.Asset),
 		Metadata:             req.Metadata,
-		RelatedAdjustments: []*models.TransferInitiationAdjustments{
+		RelatedAdjustments: []*models.TransferInitiationAdjustment{
 			{
 				ID:                   uuid.New(),
 				TransferInitiationID: id,
@@ -173,7 +174,7 @@ func (s *Service) CreateTransferInitiation(ctx context.Context, req *CreateTrans
 			return nil, errors.Wrap(ErrValidation, fmt.Sprintf("no payment handler for provider %v", connector.Provider))
 		}
 
-		err = handlers.PaymentHandler(ctx, tf)
+		err = handlers.InitiatePaymentHandler(ctx, tf)
 		if err != nil {
 			switch {
 			case errors.Is(err, manager.ErrValidation):
@@ -233,7 +234,7 @@ func (s *Service) UpdateTransferInitiationStatus(ctx context.Context, id string,
 		return errors.Wrap(ErrValidation, "only waiting for validation transfer initiation can be updated")
 	}
 
-	adjustment := &models.TransferInitiationAdjustments{
+	adjustment := &models.TransferInitiationAdjustment{
 		ID:                   uuid.New(),
 		TransferInitiationID: transferID,
 		CreatedAt:            time.Now(),
@@ -265,7 +266,7 @@ func (s *Service) UpdateTransferInitiationStatus(ctx context.Context, id string,
 			return errors.Wrap(ErrValidation, fmt.Sprintf("no payment handler for provider %v", previousTransferInitiation.Provider))
 		}
 
-		err = handlers.PaymentHandler(ctx, previousTransferInitiation)
+		err = handlers.InitiatePaymentHandler(ctx, previousTransferInitiation)
 		if err != nil {
 			switch {
 			case errors.Is(err, manager.ErrValidation):
@@ -297,11 +298,11 @@ func (s *Service) RetryTransferInitiation(ctx context.Context, id string) error 
 		return errors.Wrap(ErrValidation, "only failed transfer initiation can be retried")
 	}
 
-	adjustment := &models.TransferInitiationAdjustments{
+	adjustment := &models.TransferInitiationAdjustment{
 		ID:                   uuid.New(),
 		TransferInitiationID: transferID,
 		CreatedAt:            time.Now(),
-		Status:               models.TransferInitiationStatusRetried,
+		Status:               models.TransferInitiationStatusAskRetried,
 		Error:                "",
 		Metadata:             map[string]string{},
 	}
@@ -326,7 +327,7 @@ func (s *Service) RetryTransferInitiation(ctx context.Context, id string) error 
 		return errors.Wrap(ErrValidation, fmt.Sprintf("no payment handler for provider %v", previousTransferInitiation.Provider))
 	}
 
-	err = handlers.PaymentHandler(ctx, previousTransferInitiation)
+	err = handlers.InitiatePaymentHandler(ctx, previousTransferInitiation)
 	if err != nil {
 		switch {
 		case errors.Is(err, manager.ErrValidation):

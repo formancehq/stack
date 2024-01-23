@@ -109,6 +109,7 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 	tableData = append(tableData, []string{pterm.LightCyan("ConnectorID"), string(c.store.TransferInitiation.ConnectorID)})
 	tableData = append(tableData, []string{pterm.LightCyan("Type"), string(c.store.TransferInitiation.Type)})
 	tableData = append(tableData, []string{pterm.LightCyan("Amount"), fmt.Sprint(c.store.TransferInitiation.Amount)})
+	tableData = append(tableData, []string{pterm.LightCyan("InitialAmount"), fmt.Sprint(c.store.TransferInitiation.InitialAmount)})
 	tableData = append(tableData, []string{pterm.LightCyan("Asset"), c.store.TransferInitiation.Asset})
 	tableData = append(tableData, []string{pterm.LightCyan("Status"), string(c.store.TransferInitiation.Status)})
 	tableData = append(tableData, []string{pterm.LightCyan("Error"), c.store.TransferInitiation.Error})

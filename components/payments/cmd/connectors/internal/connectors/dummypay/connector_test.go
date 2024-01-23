@@ -102,6 +102,10 @@ func (m *MockIngester) AddTransferInitiationPaymentID(ctx context.Context, tf *m
 	return nil
 }
 
+func (m *MockIngester) UpdateTransferReversalStatus(ctx context.Context, transfer *models.TransferInitiation, transferReversal *models.TransferReversal) error {
+	return nil
+}
+
 func (m *MockIngester) LinkBankAccountWithAccount(ctx context.Context, bankAccount *models.BankAccount, accountID *models.AccountID) error {
 	return nil
 }

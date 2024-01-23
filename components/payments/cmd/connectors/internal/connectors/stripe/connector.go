@@ -7,6 +7,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
@@ -112,6 +113,30 @@ func (c *Connector) InitiatePayment(ctx task.ConnectorContext, transfer *models.
 	err = ctx.Scheduler().Schedule(ctx.Context(), taskDescriptor, models.TaskSchedulerOptions{
 		ScheduleOption: scheduleOption,
 		ScheduleAt:     scheduledAt,
+		RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
+	})
+	if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Connector) ReversePayment(ctx task.ConnectorContext, transferReversal *models.TransferReversal) error {
+	// Detach the context since we're launching an async task and we're mostly
+	// coming from a HTTP request.
+	detachedCtx, _ := contextutil.Detached(ctx.Context())
+	taskDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
+		Name:               "Reverse payment",
+		Key:                taskNameReversePayment,
+		TransferReversalID: transferReversal.ID.String(),
+	})
+	if err != nil {
+		return err
+	}
+
+	err = ctx.Scheduler().Schedule(detachedCtx, taskDescriptor, models.TaskSchedulerOptions{
+		ScheduleOption: models.OPTIONS_RUN_NOW_SYNC,
 		RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 	})
 	if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {

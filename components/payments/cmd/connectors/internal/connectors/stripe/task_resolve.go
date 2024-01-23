@@ -12,18 +12,20 @@ const (
 	taskNameFetchBalances            = "fetch_balance"
 	taskNameFetchExternalAccounts    = "fetch_external_accounts"
 	taskNameInitiatePayment          = "initiate-payment"
+	taskNameReversePayment           = "reverse-payment"
 	taskNameUpdatePaymentStatus      = "update-payment-status"
 )
 
 // TaskDescriptor is the definition of a task.
 type TaskDescriptor struct {
-	Name       string `json:"name" yaml:"name" bson:"name"`
-	Key        string `json:"key" yaml:"key" bson:"key"`
-	Main       bool   `json:"main,omitempty" yaml:"main" bson:"main"`
-	Account    string `json:"account,omitempty" yaml:"account" bson:"account"`
-	TransferID string `json:"transferID" yaml:"transferID" bson:"transferID"`
-	PaymentID  string `json:"paymentID" yaml:"paymentID" bson:"paymentID"`
-	Attempt    int    `json:"attempt" yaml:"attempt" bson:"attempt"`
+	Name               string `json:"name" yaml:"name" bson:"name"`
+	Key                string `json:"key" yaml:"key" bson:"key"`
+	Main               bool   `json:"main,omitempty" yaml:"main" bson:"main"`
+	Account            string `json:"account,omitempty" yaml:"account" bson:"account"`
+	TransferID         string `json:"transferID,omitempty" yaml:"transferID" bson:"transferID"`
+	TransferReversalID string `json:"transferReversalID,omitempty" yaml:"transferReversalID" bson:"transferReversalID"`
+	PaymentID          string `json:"paymentID,omitempty" yaml:"paymentID" bson:"paymentID"`
+	Attempt            int    `json:"attempt,omitempty" yaml:"attempt" bson:"attempt"`
 }
 
 // clientID, apiKey, endpoint string, logger logging
@@ -48,6 +50,8 @@ func (c *Connector) resolveTasks() func(taskDefinition TaskDescriptor) task.Task
 			return balanceTask(taskDescriptor.Account, client)
 		case taskNameInitiatePayment:
 			return initiatePaymentTask(taskDescriptor.TransferID, client)
+		case taskNameReversePayment:
+			return reversePaymentTask(taskDescriptor.TransferReversalID, client)
 		case taskNameUpdatePaymentStatus:
 			return updatePaymentStatusTask(taskDescriptor.TransferID, taskDescriptor.PaymentID, taskDescriptor.Attempt, client)
 		default:

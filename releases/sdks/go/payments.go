@@ -2124,6 +2124,67 @@ func (s *Payments) RetryTransferInitiation(ctx context.Context, request operatio
 	return res, nil
 }
 
+// ReverseTransferInitiation - Reverse a transfer initiation
+// Reverse transfer initiation
+func (s *Payments) ReverseTransferInitiation(ctx context.Context, request operations.ReverseTransferInitiationRequest) (*operations.ReverseTransferInitiationResponse, error) {
+	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
+	url, err := utils.GenerateURL(ctx, baseURL, "/api/payments/transfer-initiations/{transferId}/reverse", request, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error generating URL: %w", err)
+	}
+
+	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "ReverseTransferInitiationRequest", "json", `request:"mediaType=application/json"`)
+	if err != nil {
+		return nil, fmt.Errorf("error serializing request body: %w", err)
+	}
+	if bodyReader == nil {
+		return nil, fmt.Errorf("request body is required")
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", url, bodyReader)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "*/*")
+	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
+
+	req.Header.Set("Content-Type", reqContentType)
+
+	client := s.sdkConfiguration.SecurityClient
+
+	httpRes, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %w", err)
+	}
+	if httpRes == nil {
+		return nil, fmt.Errorf("error sending request: no response")
+	}
+
+	contentType := httpRes.Header.Get("Content-Type")
+
+	res := &operations.ReverseTransferInitiationResponse{
+		StatusCode:  httpRes.StatusCode,
+		ContentType: contentType,
+		RawResponse: httpRes,
+	}
+
+	rawBody, err := io.ReadAll(httpRes.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error reading response body: %w", err)
+	}
+	httpRes.Body.Close()
+	httpRes.Body = io.NopCloser(bytes.NewBuffer(rawBody))
+	switch {
+	case httpRes.StatusCode == 204:
+	case httpRes.StatusCode >= 400 && httpRes.StatusCode < 500:
+		fallthrough
+	case httpRes.StatusCode >= 500 && httpRes.StatusCode < 600:
+		return nil, sdkerrors.NewSDKError("API error occurred", httpRes.StatusCode, string(rawBody), httpRes)
+	}
+
+	return res, nil
+}
+
 // UdpateTransferInitiationStatus - Update the status of a transfer initiation
 // Update a transfer initiation status
 func (s *Payments) UdpateTransferInitiationStatus(ctx context.Context, request operations.UdpateTransferInitiationStatusRequest) (*operations.UdpateTransferInitiationStatusResponse, error) {

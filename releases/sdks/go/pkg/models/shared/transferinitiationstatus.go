@@ -16,7 +16,12 @@ const (
 	TransferInitiationStatusFailed               TransferInitiationStatus = "FAILED"
 	TransferInitiationStatusRejected             TransferInitiationStatus = "REJECTED"
 	TransferInitiationStatusValidated            TransferInitiationStatus = "VALIDATED"
-	TransferInitiationStatusRetried              TransferInitiationStatus = "RETRIED"
+	TransferInitiationStatusAskRetried           TransferInitiationStatus = "ASK_RETRIED"
+	TransferInitiationStatusAskReversed          TransferInitiationStatus = "ASK_REVERSED"
+	TransferInitiationStatusReverseProcessing    TransferInitiationStatus = "REVERSE_PROCESSING"
+	TransferInitiationStatusReverseFailed        TransferInitiationStatus = "REVERSE_FAILED"
+	TransferInitiationStatusPartiallyReversed    TransferInitiationStatus = "PARTIALLY_REVERSED"
+	TransferInitiationStatusReversed             TransferInitiationStatus = "REVERSED"
 )
 
 func (e TransferInitiationStatus) ToPointer() *TransferInitiationStatus {
@@ -41,7 +46,17 @@ func (e *TransferInitiationStatus) UnmarshalJSON(data []byte) error {
 		fallthrough
 	case "VALIDATED":
 		fallthrough
-	case "RETRIED":
+	case "ASK_RETRIED":
+		fallthrough
+	case "ASK_REVERSED":
+		fallthrough
+	case "REVERSE_PROCESSING":
+		fallthrough
+	case "REVERSE_FAILED":
+		fallthrough
+	case "PARTIALLY_REVERSED":
+		fallthrough
+	case "REVERSED":
 		*e = TransferInitiationStatus(v)
 		return nil
 	default:
