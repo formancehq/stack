@@ -40,6 +40,17 @@ lint:
 pre-commit:
     BUILD --pass-args +tidy
     BUILD --pass-args +lint
+    BUILD --pass-args +completions
+
+completions:
+    FROM core+builder-image
+    COPY --pass-args (+sources/src) /src
+    WORKDIR /src/components/fctl
+    RUN mkdir -p ./completions
+    RUN go run main.go completion bash > "./completions/fctl.bash"
+    RUN go run main.go completion zsh > "./completions/fctl.zsh"
+    RUN go run main.go completion fish > "./completions/fctl.fish"
+    SAVE ARTIFACT ./completions AS LOCAL completions
 
 openapi:
     RUN echo "not implemented"
