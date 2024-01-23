@@ -251,7 +251,7 @@ paths:
                 $ref: '#/components/schemas/ReadOrganizationUserResponse'
           description: Read a user
       summary: Read user of organization
-    put:
+    patch:
       operationId: upsertOrganizationUser
       parameters:
       - explode: false
@@ -272,7 +272,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Role'
+              $ref: '#/components/schemas/UpdateOrganizationUserRequest'
       responses:
         "400":
           content:
@@ -294,7 +294,7 @@ paths:
           description: Error
         "204":
           description: Updated user
-      summary: Update user role within an organization
+      summary: Update user within an organization
   /organizations/{organizationId}/stacks:
     get:
       operationId: listStacks
@@ -522,7 +522,7 @@ paths:
         "204":
           description: Updated user
       summary: Delete stack user access role within an organization
-    put:
+    patch:
       operationId: upsertStackUserAccess
       parameters:
       - explode: false
@@ -550,7 +550,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Role'
+              $ref: '#/components/schemas/UpdateStackUserRequest'
       responses:
         "400":
           content:
@@ -1655,6 +1655,20 @@ components:
       required:
       - name
       - versions
+      type: object
+    UpdateOrganizationUserRequest:
+      example:
+        role: null
+      properties:
+        role:
+          $ref: '#/components/schemas/Role'
+      type: object
+    UpdateStackUserRequest:
+      example:
+        role: null
+      properties:
+        role:
+          $ref: '#/components/schemas/Role'
       type: object
     GetRegionVersionsResponse:
       example:

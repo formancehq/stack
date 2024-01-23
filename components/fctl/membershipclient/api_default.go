@@ -4002,11 +4002,11 @@ type ApiUpsertOrganizationUserRequest struct {
 	ApiService *DefaultApiService
 	organizationId string
 	userId string
-	body *string
+	updateOrganizationUserRequest *UpdateOrganizationUserRequest
 }
 
-func (r ApiUpsertOrganizationUserRequest) Body(body string) ApiUpsertOrganizationUserRequest {
-	r.body = &body
+func (r ApiUpsertOrganizationUserRequest) UpdateOrganizationUserRequest(updateOrganizationUserRequest UpdateOrganizationUserRequest) ApiUpsertOrganizationUserRequest {
+	r.updateOrganizationUserRequest = &updateOrganizationUserRequest
 	return r
 }
 
@@ -4015,7 +4015,7 @@ func (r ApiUpsertOrganizationUserRequest) Execute() (*http.Response, error) {
 }
 
 /*
-UpsertOrganizationUser Update user role within an organization
+UpsertOrganizationUser Update user within an organization
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param organizationId
@@ -4034,7 +4034,7 @@ func (a *DefaultApiService) UpsertOrganizationUser(ctx context.Context, organiza
 // Execute executes the request
 func (a *DefaultApiService) UpsertOrganizationUserExecute(r ApiUpsertOrganizationUserRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPut
+		localVarHTTPMethod   = http.MethodPatch
 		localVarPostBody     interface{}
 		formFiles            []formFile
 	)
@@ -4070,7 +4070,7 @@ func (a *DefaultApiService) UpsertOrganizationUserExecute(r ApiUpsertOrganizatio
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.body
+	localVarPostBody = r.updateOrganizationUserRequest
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return nil, err
@@ -4138,11 +4138,11 @@ type ApiUpsertStackUserAccessRequest struct {
 	organizationId string
 	stackId string
 	userId string
-	body *string
+	updateStackUserRequest *UpdateStackUserRequest
 }
 
-func (r ApiUpsertStackUserAccessRequest) Body(body string) ApiUpsertStackUserAccessRequest {
-	r.body = &body
+func (r ApiUpsertStackUserAccessRequest) UpdateStackUserRequest(updateStackUserRequest UpdateStackUserRequest) ApiUpsertStackUserAccessRequest {
+	r.updateStackUserRequest = &updateStackUserRequest
 	return r
 }
 
@@ -4172,7 +4172,7 @@ func (a *DefaultApiService) UpsertStackUserAccess(ctx context.Context, organizat
 // Execute executes the request
 func (a *DefaultApiService) UpsertStackUserAccessExecute(r ApiUpsertStackUserAccessRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPut
+		localVarHTTPMethod   = http.MethodPatch
 		localVarPostBody     interface{}
 		formFiles            []formFile
 	)
@@ -4209,7 +4209,7 @@ func (a *DefaultApiService) UpsertStackUserAccessExecute(r ApiUpsertStackUserAcc
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.body
+	localVarPostBody = r.updateStackUserRequest
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return nil, err

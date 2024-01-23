@@ -37,8 +37,8 @@ Method | HTTP request | Description
 [**ReadUserOfOrganization**](DefaultApi.md#ReadUserOfOrganization) | **Get** /organizations/{organizationId}/users/{userId} | Read user of organization
 [**RestoreStack**](DefaultApi.md#RestoreStack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
 [**UpdateOrganization**](DefaultApi.md#UpdateOrganization) | **Put** /organizations/{organizationId} | Update organization
-[**UpsertOrganizationUser**](DefaultApi.md#UpsertOrganizationUser) | **Put** /organizations/{organizationId}/users/{userId} | Update user role within an organization
-[**UpsertStackUserAccess**](DefaultApi.md#UpsertStackUserAccess) | **Put** /organizations/{organizationId}/stacks/{stackId}/users/{userId} | Update stack user access role within an organization
+[**UpsertOrganizationUser**](DefaultApi.md#UpsertOrganizationUser) | **Patch** /organizations/{organizationId}/users/{userId} | Update user within an organization
+[**UpsertStackUserAccess**](DefaultApi.md#UpsertStackUserAccess) | **Patch** /organizations/{organizationId}/stacks/{stackId}/users/{userId} | Update stack user access role within an organization
 
 
 
@@ -2295,9 +2295,9 @@ Name | Type | Description  | Notes
 
 ## UpsertOrganizationUser
 
-> UpsertOrganizationUser(ctx, organizationId, userId).Body(body).Execute()
+> UpsertOrganizationUser(ctx, organizationId, userId).UpdateOrganizationUserRequest(updateOrganizationUserRequest).Execute()
 
-Update user role within an organization
+Update user within an organization
 
 ### Example
 
@@ -2314,11 +2314,11 @@ import (
 func main() {
     organizationId := "organizationId_example" // string | 
     userId := "userId_example" // string | 
-    body := string(987) // string |  (optional)
+    updateOrganizationUserRequest := *openapiclient.NewUpdateOrganizationUserRequest() // UpdateOrganizationUserRequest |  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    r, err := apiClient.DefaultApi.UpsertOrganizationUser(context.Background(), organizationId, userId).Body(body).Execute()
+    r, err := apiClient.DefaultApi.UpsertOrganizationUser(context.Background(), organizationId, userId).UpdateOrganizationUserRequest(updateOrganizationUserRequest).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.UpsertOrganizationUser``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -2344,7 +2344,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
 
- **body** | **string** |  | 
+ **updateOrganizationUserRequest** | [**UpdateOrganizationUserRequest**](UpdateOrganizationUserRequest.md) |  | 
 
 ### Return type
 
@@ -2366,7 +2366,7 @@ Name | Type | Description  | Notes
 
 ## UpsertStackUserAccess
 
-> UpsertStackUserAccess(ctx, organizationId, stackId, userId).Body(body).Execute()
+> UpsertStackUserAccess(ctx, organizationId, stackId, userId).UpdateStackUserRequest(updateStackUserRequest).Execute()
 
 Update stack user access role within an organization
 
@@ -2386,11 +2386,11 @@ func main() {
     organizationId := "organizationId_example" // string | 
     stackId := "stackId_example" // string | 
     userId := "userId_example" // string | 
-    body := string(987) // string |  (optional)
+    updateStackUserRequest := *openapiclient.NewUpdateStackUserRequest() // UpdateStackUserRequest |  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    r, err := apiClient.DefaultApi.UpsertStackUserAccess(context.Background(), organizationId, stackId, userId).Body(body).Execute()
+    r, err := apiClient.DefaultApi.UpsertStackUserAccess(context.Background(), organizationId, stackId, userId).UpdateStackUserRequest(updateStackUserRequest).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.UpsertStackUserAccess``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -2418,7 +2418,7 @@ Name | Type | Description  | Notes
 
 
 
- **body** | **string** |  | 
+ **updateStackUserRequest** | [**UpdateStackUserRequest**](UpdateStackUserRequest.md) |  | 
 
 ### Return type
 

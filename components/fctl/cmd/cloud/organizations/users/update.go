@@ -32,8 +32,9 @@ func NewUpdateController() *UpdateController {
 }
 
 func NewUpdateCommand() *cobra.Command {
-	return fctl.NewCommand("update <user-id> <role>",
+	return fctl.NewCommand("update <user-id>",
 		fctl.WithAliases("s"),
+		fctl.WithStringFlag("role", "", "Roles: (ADMIN, GUEST, NONE)"),
 		fctl.WithShortDescription("Update user roles by by id within an organization"),
 		fctl.WithArgs(cobra.MinimumNArgs(1)),
 		fctl.WithPreRunE(func(cmd *cobra.Command, args []string) error {
@@ -81,10 +82,17 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	if err != nil {
 		return nil, err
 	}
+
+	role := fctl.GetString(cmd, "role")
+	req := membershipclient.UpdateOrganizationUserRequest{}
+	if role != "" {
+		req.Role = membershipclient.Role(role).Ptr()
+	}
 	response, err := apiClient.DefaultApi.UpsertOrganizationUser(
 		cmd.Context(),
 		organizationID,
-		args[0]).Body(string(membershipclient.Role(args[1]))).Execute()
+		args[0]).
+		UpdateOrganizationUserRequest(req).Execute()
 	if err != nil {
 		return nil, err
 	}

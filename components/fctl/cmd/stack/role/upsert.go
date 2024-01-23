@@ -29,9 +29,10 @@ func NewUpsertController() *UpsertController {
 }
 
 func NewUpsertCommand() *cobra.Command {
-	return fctl.NewCommand("upsert <stack-id> <user-id> <stack-role>",
+	return fctl.NewCommand("upsert <stack-id> <user-id>",
 		fctl.WithAliases("usar"),
-		fctl.WithShortDescription("Update Stack Access Roles within an organization (ADMIN, GUEST, NONE)"),
+		fctl.WithStringFlag("role", "", "Roles: (ADMIN, GUEST, NONE)"),
+		fctl.WithShortDescription("Update Stack User properties"),
 		fctl.WithArgs(cobra.MinimumNArgs(3)),
 		fctl.WithController[*UpsertStore](NewUpsertController()),
 	)
@@ -58,8 +59,15 @@ func (c *UpsertController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
+	role := membershipclient.Role(fctl.GetString(cmd, "role"))
+	req := membershipclient.UpdateStackUserRequest{}
+	if role != "" {
+		req.Role = role.Ptr()
+	}
+
 	_, err = apiClient.DefaultApi.
-		UpsertStackUserAccess(cmd.Context(), organizationID, args[0], args[1]).Body(`"` + string(membershipclient.Role(args[2])) + `"`).Execute()
+		UpsertStackUserAccess(cmd.Context(), organizationID, args[0], args[1]).
+		UpdateStackUserRequest(req).Execute()
 	if err != nil {
 		return nil, err
 	}

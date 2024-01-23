@@ -203,14 +203,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReadOrganizationUserResponse'
-    put:
-      summary: Update user role within an organization
+    patch:
+      summary: Update user within an organization
       operationId: upsertOrganizationUser
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Role'
+              $ref: '#/components/schemas/UpdateOrganizationUserRequest'
       responses:
         400:
           description: Error
@@ -453,7 +453,7 @@ paths:
                 $ref: '#/components/schemas/Error'
         204:
           description: Updated user
-    put:
+    patch:
       summary: Update stack user access role within an organization
       operationId: upsertStackUserAccess
       parameters:
@@ -476,7 +476,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Role'
+              $ref: '#/components/schemas/UpdateStackUserRequest'
       responses:
         400:
           description: Error
@@ -1528,7 +1528,16 @@ components:
           type: object
           additionalProperties:
             type: string
-
+    UpdateOrganizationUserRequest:
+      type: object
+      properties:
+        role:
+          $ref: '#/components/schemas/Role'
+    UpdateStackUserRequest:
+      type: object
+      properties:
+        role:
+          $ref: '#/components/schemas/Role'
     GetRegionVersionsResponse:
       type: object
       properties:
