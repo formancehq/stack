@@ -30,7 +30,6 @@ func NewUpsertController() *UpsertController {
 
 func NewUpsertCommand() *cobra.Command {
 	return fctl.NewCommand("upsert <stack-id> <user-id>",
-		fctl.WithAliases("usar"),
 		fctl.WithStringFlag("role", "", "Roles: (ADMIN, GUEST, NONE)"),
 		fctl.WithShortDescription("Update Stack User properties"),
 		fctl.WithArgs(cobra.ExactArgs(2)),
