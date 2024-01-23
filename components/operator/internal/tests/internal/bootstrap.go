@@ -182,12 +182,22 @@ var (
 	done chan struct{}
 )
 
-func Create(ob client.Object) error {
-	return k8sClient.Create(ctx, ob)
+func Create(objects ...client.Object) error {
+	for _, object := range objects {
+		if err := k8sClient.Create(ctx, object); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
-func Delete(ob client.Object) error {
-	return k8sClient.Delete(ctx, ob)
+func Delete(objects ...client.Object) error {
+	for _, object := range objects {
+		if err := k8sClient.Delete(ctx, object); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func Update(ob client.Object) error {

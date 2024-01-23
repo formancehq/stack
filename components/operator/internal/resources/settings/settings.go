@@ -11,8 +11,8 @@ import (
 
 func init() {
 	core.Init(
-		core.WithSimpleIndex[*v1beta1.Settings]("key", func(t *v1beta1.Settings) string {
-			return t.Spec.Key
+		core.WithSimpleIndex[*v1beta1.Settings]("keylen", func(t *v1beta1.Settings) string {
+			return fmt.Sprint(len(t.Spec.Key))
 		}),
 	)
 }

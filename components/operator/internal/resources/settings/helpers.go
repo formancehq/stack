@@ -5,7 +5,9 @@ import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
+	"github.com/pkg/errors"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -254,4 +256,54 @@ func GetMapOrEmpty(ctx core.Context, stack string, keys ...string) (map[string]s
 	}
 
 	return value, nil
+}
+
+func GetByPriority(ctx core.Context, stack string, keys ...string) (*string, error) {
+	allSettings := &v1beta1.SettingsList{}
+	if err := ctx.GetClient().List(ctx, allSettings, client.MatchingFields{
+		"stack":  stack,
+		"keylen": fmt.Sprint(len(keys)),
+	}); err != nil {
+		return nil, errors.Wrap(err, "listings settings")
+	}
+
+	settings := allSettings.Items
+	slices.SortFunc(settings, func(a, b v1beta1.Settings) int {
+		aKeys := strings.Split(a.Spec.Key, ".")
+		bKeys := strings.Split(b.Spec.Key, ".")
+
+		for _, aKey := range aKeys {
+			for _, bKey := range bKeys {
+				if aKey == "*" {
+					return -1
+				}
+				if bKey == "*" {
+					return 1
+				}
+			}
+		}
+
+		return 0
+	})
+
+	for _, setting := range settings {
+		if matchSetting(settings, keys...) {
+			return &setting.Spec.Value, nil
+		}
+	}
+
+	return nil, nil
+}
+
+func matchSetting(settings []v1beta1.Settings, keys ...string) bool {
+	for i, setting := range settings {
+		settingKeyParts := strings.Split(setting.Spec.Key, ".")
+		if settingKeyParts[i] == "*" {
+			continue
+		}
+		if settingKeyParts[i] != keys[i] {
+			return false
+		}
+	}
+	return true
 }
