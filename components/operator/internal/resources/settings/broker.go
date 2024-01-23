@@ -2,6 +2,8 @@ package settings
 
 import (
 	"fmt"
+	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -77,71 +79,72 @@ func FindBrokerConfiguration(ctx core.Context, stack *v1beta1.Stack) (*v1beta1.B
 }
 
 func resolveNatsConfiguration(ctx core.Context, stack *v1beta1.Stack) (*v1beta1.BrokerConfiguration, error) {
-	url, err := RequireString(ctx, stack.Name, "broker", "nats", "endpoint")
+	natsDSN, err := GetString(ctx, stack.Name, "broker.nats.dsn")
+	if err != nil {
+		return nil, err
+	}
+	if natsDSN == nil {
+		return nil, nil
+	}
+
+	natsURI, err := url.Parse(*natsDSN)
 	if err != nil {
 		return nil, err
 	}
 
-	replicas, err := GetIntOrDefault(ctx, stack.Name, 1, "broker.nats.replicas")
-	if err != nil {
-		return nil, err
+	if natsURI.Scheme != "nats" {
+		return nil, fmt.Errorf("invalid nats uri: %s", *natsDSN)
+	}
+
+	replicas := uint64(1)
+	if replicasValue := natsURI.Query().Get("replicas"); replicasValue != "" {
+		replicas, err = strconv.ParseUint(replicasValue, 10, 16)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &v1beta1.BrokerConfiguration{
 		Nats: &v1beta1.BrokerNatsConfig{
-			URL:      url,
-			Replicas: replicas,
+			URL:      natsURI.Host,
+			Replicas: int(replicas),
 		},
 	}, nil
 }
 
 func resolveKafkaConfiguration(ctx core.Context, stack *v1beta1.Stack) (*v1beta1.BrokerConfiguration, error) {
 
-	endpoints, err := GetStringSlice(ctx, stack.Name, "broker", "kafka", "endpoints")
+	kafkaDSN, err := GetString(ctx, stack.Name, "broker.kafka.dsn")
+	if err != nil {
+		return nil, err
+	}
+	if kafkaDSN == nil {
+		return nil, nil
+	}
+
+	kafkaURI, err := url.Parse(*kafkaDSN)
 	if err != nil {
 		return nil, err
 	}
 
-	tls, err := GetBoolOrFalse(ctx, stack.Name, "broker", "kafka", "ssl", "enabled")
-	if err != nil {
-		return nil, err
-	}
-
-	saslEnabled, err := GetBoolOrDefault(ctx, stack.Name, false, "kafka", "sasl", "enabled")
-	if err != nil {
-		return nil, err
+	if kafkaURI.Scheme != "kafka" {
+		return nil, fmt.Errorf("invalid kafka uri: %s", *kafkaDSN)
 	}
 
 	var saslConfig *v1beta1.BrokerKafkaSASLConfig
-	if saslEnabled {
-		saslUsername, err := GetStringOrEmpty(ctx, stack.Name, "kafka", "sasl", "username")
-		if err != nil {
-			return nil, err
-		}
-		saslPassword, err := GetStringOrEmpty(ctx, stack.Name, "kafka", "sasl", "password")
-		if err != nil {
-			return nil, err
-		}
-		saslMechanism, err := GetStringOrEmpty(ctx, stack.Name, "kafka", "sasl", "mechanism")
-		if err != nil {
-			return nil, err
-		}
-		saslScramSHASize, err := GetStringOrEmpty(ctx, stack.Name, "kafka", "sasl", "scram-sha-size")
-		if err != nil {
-			return nil, err
-		}
+	if isTrue(kafkaURI.Query().Get("saslEnabled")) {
 		saslConfig = &v1beta1.BrokerKafkaSASLConfig{
-			Username:     saslUsername,
-			Password:     saslPassword,
-			Mechanism:    saslMechanism,
-			ScramSHASize: saslScramSHASize,
+			Username:     kafkaURI.Query().Get("saslUsername"),
+			Password:     kafkaURI.Query().Get("saslPassword"),
+			Mechanism:    kafkaURI.Query().Get("saslMechanism"),
+			ScramSHASize: kafkaURI.Query().Get("saslSCRAMSHASize"),
 		}
 	}
 
 	return &v1beta1.BrokerConfiguration{
 		Kafka: &v1beta1.BrokerKafkaConfig{
-			Brokers: endpoints,
-			TLS:     tls,
+			Brokers: []string{kafkaURI.Host},
+			TLS:     isTrue(kafkaURI.Query().Get("tls")),
 			SASL:    saslConfig,
 		},
 	}, nil

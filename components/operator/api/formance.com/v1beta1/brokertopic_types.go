@@ -37,7 +37,6 @@ type BrokerKafkaConfig struct {
 
 type BrokerNatsConfig struct {
 	URL string `json:"url"`
-	// +kubebuilder:default:=1
 	// +optional
 	Replicas int `json:"replicas"`
 }

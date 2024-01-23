@@ -20,6 +20,7 @@ import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/settings"
+	"github.com/pkg/errors"
 	batchv1 "k8s.io/api/batch/v1"
 )
 
@@ -43,6 +44,9 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, topic *v1beta1.BrokerTopi
 	brokerConfiguration, err := settings.FindBrokerConfiguration(ctx, stack)
 	if err != nil {
 		return err
+	}
+	if brokerConfiguration == nil {
+		return errors.New("broker configuration not found")
 	}
 
 	topic.Status.Configuration = brokerConfiguration

@@ -47,6 +47,9 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, streamProcessor *v1beta1.Strea
 	if err != nil {
 		return errors.Wrap(err, "searching broker configuration")
 	}
+	if brokerConfiguration == nil {
+		return errors.New("broker configuration not found")
+	}
 
 	elasticSearchConfiguration, err := settings.FindElasticSearchConfiguration(ctx, stack)
 	if err != nil {

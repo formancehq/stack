@@ -15,10 +15,10 @@ import (
 var _ = Describe("BrokerTopicConsumer", func() {
 	Context("When creating a BrokerTopicConsumer", func() {
 		var (
-			brokerTopicConsumer        *v1beta1.BrokerTopicConsumer
-			brokerKindSettings         *v1beta1.Settings
-			brokerNatsEndpointSettings *v1beta1.Settings
-			stack                      *v1beta1.Stack
+			brokerTopicConsumer   *v1beta1.BrokerTopicConsumer
+			brokerKindSettings    *v1beta1.Settings
+			brokerNatsDSNSettings *v1beta1.Settings
+			stack                 *v1beta1.Stack
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -28,8 +28,8 @@ var _ = Describe("BrokerTopicConsumer", func() {
 			Expect(Create(stack)).To(BeNil())
 			brokerKindSettings = settings.New(uuid.NewString(), "broker.kind", "nats", stack.Name)
 			Expect(Create(brokerKindSettings)).To(BeNil())
-			brokerNatsEndpointSettings = settings.New(uuid.NewString(), "broker.nats.endpoint", "localhost:1234", stack.Name)
-			Expect(Create(brokerNatsEndpointSettings)).To(BeNil())
+			brokerNatsDSNSettings = settings.New(uuid.NewString(), "broker.nats.dsn", "nats://localhost:1234", stack.Name)
+			Expect(Create(brokerNatsDSNSettings)).To(BeNil())
 			brokerTopicConsumer = &v1beta1.BrokerTopicConsumer{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.BrokerTopicConsumerSpec{
@@ -44,7 +44,7 @@ var _ = Describe("BrokerTopicConsumer", func() {
 		})
 		AfterEach(func() {
 			Expect(Delete(stack)).To(Succeed())
-			Expect(Delete(brokerNatsEndpointSettings)).To(Succeed())
+			Expect(Delete(brokerNatsDSNSettings)).To(Succeed())
 			Expect(Delete(brokerKindSettings)).To(Succeed())
 			Expect(client.IgnoreNotFound(Delete(brokerTopicConsumer))).To(Succeed())
 		})

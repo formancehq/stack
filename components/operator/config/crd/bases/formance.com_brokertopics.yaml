@@ -90,7 +90,6 @@ spec:
                   nats:
                     properties:
                       replicas:
-                        default: 1
                         type: integer
                       url:
                         type: string

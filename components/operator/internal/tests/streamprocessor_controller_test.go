@@ -20,7 +20,7 @@ var _ = Describe("StreamProcessorController", func() {
 			streamProcessor               *v1beta1.StreamProcessor
 			stack                         *v1beta1.Stack
 			brokerKindSettings            *v1beta1.Settings
-			brokerNatsEndpointSettings    *v1beta1.Settings
+			brokerNatsDSNSettings         *v1beta1.Settings
 			elasticSearchEndpointSettings *v1beta1.Settings
 		)
 		BeforeEach(func() {
@@ -29,7 +29,7 @@ var _ = Describe("StreamProcessorController", func() {
 				Spec:       v1beta1.StackSpec{},
 			}
 			brokerKindSettings = settings.New(uuid.NewString(), "broker.kind", "nats", stack.Name)
-			brokerNatsEndpointSettings = settings.New(uuid.NewString(), "broker.nats.endpoint", "localhost:1234", stack.Name)
+			brokerNatsDSNSettings = settings.New(uuid.NewString(), "broker.nats.dsn", "nats://localhost:1234", stack.Name)
 			elasticSearchEndpointSettings = settings.New(uuid.NewString(), "elasticsearch.host", "localhost", stack.Name)
 			streamProcessor = &v1beta1.StreamProcessor{
 				ObjectMeta: RandObjectMeta(),
@@ -42,7 +42,7 @@ var _ = Describe("StreamProcessorController", func() {
 		})
 		JustBeforeEach(func() {
 			Expect(Create(brokerKindSettings)).To(BeNil())
-			Expect(Create(brokerNatsEndpointSettings)).To(BeNil())
+			Expect(Create(brokerNatsDSNSettings)).To(BeNil())
 			Expect(Create(stack)).To(Succeed())
 			Expect(Create(elasticSearchEndpointSettings)).To(Succeed())
 			Expect(Create(streamProcessor)).To(Succeed())
@@ -50,7 +50,7 @@ var _ = Describe("StreamProcessorController", func() {
 		JustAfterEach(func() {
 			Expect(Delete(stack)).To(Succeed())
 			Expect(Delete(elasticSearchEndpointSettings)).To(Succeed())
-			Expect(Delete(brokerNatsEndpointSettings)).To(Succeed())
+			Expect(Delete(brokerNatsDSNSettings)).To(Succeed())
 			Expect(Delete(brokerKindSettings)).To(Succeed())
 			Expect(Delete(streamProcessor)).To(Succeed())
 		})

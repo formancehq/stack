@@ -2,7 +2,6 @@ package settings
 
 import (
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
@@ -285,17 +284,13 @@ func GetMapOrEmpty(ctx core.Context, stack string, keys ...string) (map[string]s
 
 func matchSetting(setting v1beta1.Settings, keys ...string) bool {
 	settingKeyParts := strings.Split(setting.Spec.Key, ".")
-	spew.Dump(setting)
-	spew.Dump(keys)
 	for i, settingKeyPart := range settingKeyParts {
 		if settingKeyPart == "*" {
 			continue
 		}
 		if settingKeyPart != keys[i] {
-			fmt.Println("not match because", settingKeyParts[i], keys[i])
 			return false
 		}
 	}
-	fmt.Println("match")
 	return true
 }

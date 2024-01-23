@@ -16,18 +16,18 @@ import (
 var _ = Describe("OrchestrationController", func() {
 	Context("When creating a Orchestration object", func() {
 		var (
-			stack                      *v1beta1.Stack
-			gateway                    *v1beta1.Gateway
-			auth                       *v1beta1.Auth
-			ledger                     *v1beta1.Ledger
-			databaseSettings           *v1beta1.Settings
-			orchestration              *v1beta1.Orchestration
-			brokerKindSettings         *v1beta1.Settings
-			brokerNatsEndpointSettings *v1beta1.Settings
-			temporalAddressSettings    *v1beta1.Settings
-			temporalNamespaceSettings  *v1beta1.Settings
-			temporalTLSCrtSettings     *v1beta1.Settings
-			temporalTLSKeySettings     *v1beta1.Settings
+			stack                     *v1beta1.Stack
+			gateway                   *v1beta1.Gateway
+			auth                      *v1beta1.Auth
+			ledger                    *v1beta1.Ledger
+			databaseSettings          *v1beta1.Settings
+			orchestration             *v1beta1.Orchestration
+			brokerKindSettings        *v1beta1.Settings
+			brokerNatsDSNSettings     *v1beta1.Settings
+			temporalAddressSettings   *v1beta1.Settings
+			temporalNamespaceSettings *v1beta1.Settings
+			temporalTLSCrtSettings    *v1beta1.Settings
+			temporalTLSKeySettings    *v1beta1.Settings
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -36,7 +36,7 @@ var _ = Describe("OrchestrationController", func() {
 			}
 			databaseSettings = settings.New(uuid.NewString(), "postgres.*.uri", "postgresql://localhost", stack.Name)
 			brokerKindSettings = settings.New(uuid.NewString(), "broker.kind", "nats", stack.Name)
-			brokerNatsEndpointSettings = settings.New(uuid.NewString(), "broker.nats.endpoint", "localhost:1234", stack.Name)
+			brokerNatsDSNSettings = settings.New(uuid.NewString(), "broker.nats.dsn", "nats://localhost:1234", stack.Name)
 			temporalAddressSettings = settings.New(uuid.NewString(), "temporal.address", "localhost", stack.Name)
 			temporalNamespaceSettings = settings.New(uuid.NewString(), "temporal.namespace", "namespace", stack.Name)
 			temporalTLSCrtSettings = settings.New(uuid.NewString(), "temporal.tls.crt", "crt", stack.Name)
@@ -83,7 +83,7 @@ var _ = Describe("OrchestrationController", func() {
 			Expect(Create(temporalTLSCrtSettings)).To(Succeed())
 			Expect(Create(temporalTLSKeySettings)).To(Succeed())
 			Expect(Create(brokerKindSettings)).To(BeNil())
-			Expect(Create(brokerNatsEndpointSettings)).To(BeNil())
+			Expect(Create(brokerNatsDSNSettings)).To(BeNil())
 			Expect(Create(gateway)).To(Succeed())
 			Expect(Create(auth)).To(Succeed())
 			Expect(Create(ledger)).To(Succeed())
@@ -96,7 +96,7 @@ var _ = Describe("OrchestrationController", func() {
 			Expect(Delete(stack)).To(Succeed())
 			Expect(Delete(ledger)).To(Succeed())
 			Expect(Delete(orchestration)).To(Succeed())
-			Expect(Delete(brokerNatsEndpointSettings)).To(Succeed())
+			Expect(Delete(brokerNatsDSNSettings)).To(Succeed())
 			Expect(Delete(brokerKindSettings)).To(Succeed())
 			Expect(Delete(temporalAddressSettings)).To(Succeed())
 			Expect(Delete(temporalNamespaceSettings)).To(Succeed())

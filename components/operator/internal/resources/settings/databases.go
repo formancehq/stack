@@ -51,3 +51,7 @@ func FindDatabaseConfiguration(ctx core.Context, database *v1beta1.Database) (*v
 		DisableSSLMode:        strings.ToLower(parsedUrl.Query().Get("disableSSLMode")) == "true" || parsedUrl.Query().Get("disableSSLMode") == "1",
 	}, nil
 }
+
+func isTrue(v string) bool {
+	return strings.ToLower(v) == "true" || v == "1"
+}

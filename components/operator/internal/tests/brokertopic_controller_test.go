@@ -20,10 +20,10 @@ import (
 var _ = Describe("BrokerTopicController", func() {
 	Context("When creating a BrokerTopic", func() {
 		var (
-			stack                      *v1beta1.Stack
-			brokerTopic                *v1beta1.BrokerTopic
-			brokerKindSettings         *v1beta1.Settings
-			brokerNatsEndpointSettings *v1beta1.Settings
+			stack                 *v1beta1.Stack
+			brokerTopic           *v1beta1.BrokerTopic
+			brokerKindSettings    *v1beta1.Settings
+			brokerNatsDSNSettings *v1beta1.Settings
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -35,8 +35,8 @@ var _ = Describe("BrokerTopicController", func() {
 			Expect(Create(stack)).To(BeNil())
 			brokerKindSettings = settings.New(uuid.NewString(), "broker.kind", "nats", stack.Name)
 			Expect(Create(brokerKindSettings)).To(BeNil())
-			brokerNatsEndpointSettings = settings.New(uuid.NewString(), "broker.nats.endpoint", "localhost:1234", stack.Name)
-			Expect(Create(brokerNatsEndpointSettings)).To(BeNil())
+			brokerNatsDSNSettings = settings.New(uuid.NewString(), "broker.nats.dsn", "nats://localhost:1234", stack.Name)
+			Expect(Create(brokerNatsDSNSettings)).To(BeNil())
 			brokerTopic = &v1beta1.BrokerTopic{
 				ObjectMeta: v1.ObjectMeta{
 					Name: uuid.NewString(),
@@ -55,7 +55,7 @@ var _ = Describe("BrokerTopicController", func() {
 			Expect(Delete(stack)).To(Succeed())
 			Expect(client.IgnoreNotFound(Delete(brokerTopic))).To(Succeed())
 			Expect(Delete(brokerKindSettings)).To(Succeed())
-			Expect(Delete(brokerNatsEndpointSettings)).To(Succeed())
+			Expect(Delete(brokerNatsDSNSettings)).To(Succeed())
 		})
 		It("Should be set to ready status", func() {
 			t := &v1beta1.BrokerTopic{}

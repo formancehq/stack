@@ -188,20 +188,20 @@ var _ = Describe("GatewayController", func() {
 		})
 		Context("With audit enabled", func() {
 			var (
-				brokerKindSettings         *v1beta1.Settings
-				brokerNatsEndpointSettings *v1beta1.Settings
+				brokerKindSettings    *v1beta1.Settings
+				brokerNatsDSNSettings *v1beta1.Settings
 			)
 			BeforeEach(func() {
 				stack.Spec.EnableAudit = true
 				brokerKindSettings = settings.New(uuid.NewString(), "broker.kind", "nats", stack.Name)
-				brokerNatsEndpointSettings = settings.New(uuid.NewString(), "broker.nats.endpoint", "localhost:1234", stack.Name)
+				brokerNatsDSNSettings = settings.New(uuid.NewString(), "broker.nats.dsn", "nats://localhost:1234", stack.Name)
 			})
 			JustBeforeEach(func() {
 				Expect(Create(brokerKindSettings)).To(BeNil())
-				Expect(Create(brokerNatsEndpointSettings)).To(BeNil())
+				Expect(Create(brokerNatsDSNSettings)).To(BeNil())
 			})
 			JustAfterEach(func() {
-				Expect(Delete(brokerNatsEndpointSettings)).To(Succeed())
+				Expect(Delete(brokerNatsDSNSettings)).To(Succeed())
 				Expect(Delete(brokerKindSettings)).To(Succeed())
 
 			})
