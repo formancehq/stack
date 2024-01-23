@@ -8,6 +8,8 @@ import (
 	"sort"
 	"strings"
 
+	"golang.org/x/mod/semver"
+
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
@@ -551,11 +553,30 @@ func (r *serviceReconciler) createContainer(ctx ContainerResolutionConfiguration
 			Env(fmt.Sprintf("%sDEV", r.service.EnvPrefix), fmt.Sprintf("%v", r.Stack.Spec.Dev)),
 			// TODO: the stack url is a full url, we can target the gateway. Need to find how to generalize this
 			// as the gateway is a component like another
-			Env(fmt.Sprintf("%sSTACK_URL", r.service.EnvPrefix), r.Stack.URL()),
 			Env(fmt.Sprintf("%sSTACK_PUBLIC_URL", r.service.EnvPrefix), r.Stack.PublicURL()),
 			Env(fmt.Sprintf("%sOTEL_SERVICE_NAME", r.service.EnvPrefix), serviceName),
 			Env("STACK", r.Stack.Name),
 		)
+	}
+
+	if !semver.IsValid(r.Versions.Spec.Gateway) {
+		env = env.Append(
+			Env(fmt.Sprintf("%sSTACK_URL", r.service.EnvPrefix), r.Stack.URL()),
+			Env(fmt.Sprintf("%sAUTH_ISSUER", r.service.EnvPrefix), fmt.Sprintf("%s/api/auth", r.Stack.URL())),
+		)
+	} else {
+		switch semver.Compare(r.Versions.Spec.Gateway, "v2.0.0-alpha") {
+		case -1:
+			env = env.Append(
+				Env(fmt.Sprintf("%sSTACK_URL", r.service.EnvPrefix), r.Stack.PublicURL()),
+				Env(fmt.Sprintf("%sAUTH_ISSUER", r.service.EnvPrefix), fmt.Sprintf("%s/api/auth", r.Stack.PublicURL())),
+			)
+		default:
+			env = env.Append(
+				Env(fmt.Sprintf("%sSTACK_URL", r.service.EnvPrefix), r.Stack.URL()),
+				Env(fmt.Sprintf("%sAUTH_ISSUER", r.service.EnvPrefix), fmt.Sprintf("%s/api/auth", r.Stack.URL())),
+			)
+		}
 	}
 
 	for _, envVar := range container.Env {

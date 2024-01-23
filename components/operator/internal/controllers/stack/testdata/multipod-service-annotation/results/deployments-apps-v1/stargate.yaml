@@ -36,14 +36,16 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: stargate
                     - name: STACK
                       value: multipod-service-annotation
+                    - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: ORGANIZATION_ID
                       value: multipod
                     - name: STACK_ID

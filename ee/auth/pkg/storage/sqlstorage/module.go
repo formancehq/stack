@@ -3,6 +3,7 @@ package sqlstorage
 import (
 	"context"
 	"crypto/rsa"
+
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/uptrace/bun"
 

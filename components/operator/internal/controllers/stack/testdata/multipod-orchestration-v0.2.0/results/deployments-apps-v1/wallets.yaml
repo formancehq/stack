@@ -53,14 +53,16 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: wallets
                     - name: STACK
                       value: multipod-orchestration-v0-2-0
+                    - name: STACK_URL
+                      value: http://example.net
+                    - name: AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
                     - name: STACK_CLIENT_ID
@@ -68,9 +70,7 @@ spec:
                     - name: STACK_CLIENT_SECRET
                       value: mocked-secret
                     - name: AUTH_ENABLED
-                      value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
+                      value: "false"
                   image: ghcr.io/formancehq/wallets:latest
                   imagePullPolicy: Always
                   livenessProbe:

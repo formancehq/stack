@@ -53,14 +53,16 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: search
                     - name: STACK
                       value: multipod-latest-with-gateway-fallback
+                    - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: OPENSEARCH_URL
                       value: http://elasticsearch:9200
                     - name: OPENSEARCH_BATCHING_COUNT
@@ -85,9 +87,7 @@ spec:
                     - name: MAPPING_INIT_DISABLED
                       value: "true"
                     - name: AUTH_ENABLED
-                      value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
+                      value: "false"
                     - name: ES_INDICES
                       value: stacks
                   image: ghcr.io/formancehq/search:latest

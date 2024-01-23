@@ -53,14 +53,16 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: payments-connectors
                     - name: STACK
                       value: multipod-without-audit-log
+                    - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
@@ -68,9 +70,7 @@ spec:
                     - name: PUBLISHER_KAFKA_BROKER
                       value: kafka:1234
                     - name: AUTH_ENABLED
-                      value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
+                      value: "false"
                     - name: POSTGRES_DATABASE_NAME
                       value: $(POSTGRES_DATABASE)
                     - name: CONFIG_ENCRYPTION_KEY

@@ -23,7 +23,7 @@ spec:
     template:
         metadata:
             annotations:
-                stack.formance.cloud/volumes-hash: AwMzQLn7vWz_qDRK8d4-C_P1xjJTsOlv1gyjbaU5L4w=
+                stack.formance.cloud/volumes-hash: a02vArrsq93-75hyQhELsvTZMzQ2y30-Eia8NlYPQDk=
             creationTimestamp: null
             labels:
                 app.kubernetes.io/name: gateway
@@ -42,14 +42,16 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: gateway
                     - name: STACK
                       value: multipod-with-new-versions-per-module-gateway
+                    - name: STACK_URL
+                      value: http://example.net
+                    - name: AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED

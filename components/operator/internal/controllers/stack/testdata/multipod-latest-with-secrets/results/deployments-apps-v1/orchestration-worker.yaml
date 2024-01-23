@@ -73,14 +73,16 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: orchestration-worker
                     - name: STACK
                       value: multipod-latest-with-secrets
+                    - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: POSTGRES_DSN
                       value: $(POSTGRES_URI)
                     - name: TEMPORAL_TASK_QUEUE
@@ -92,9 +94,7 @@ spec:
                     - name: STACK_CLIENT_SECRET
                       value: mocked-secret
                     - name: AUTH_ENABLED
-                      value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
+                      value: "false"
                     - name: TEMPORAL_SSL_CLIENT_KEY
                       valueFrom:
                         secretKeyRef:

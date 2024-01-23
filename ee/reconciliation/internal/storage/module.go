@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/uptrace/bun"

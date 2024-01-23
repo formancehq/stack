@@ -69,14 +69,16 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: auth
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: CONFIG
                       value: /config/config/config.yaml
                     - name: DELEGATED_CLIENT_SECRET
@@ -138,14 +140,16 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: control
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: API_URL
                       value: http://gateway:8000
                     - name: ENCRYPTION_KEY
@@ -203,14 +207,16 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: gateway
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
@@ -272,14 +278,16 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: ledger
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: STORAGE_DRIVER
                       value: postgres
                     - name: PUBLISHER_TOPIC_MAPPING
@@ -291,9 +299,7 @@ spec:
                     - name: PUBLISHER_KAFKA_BROKER
                       value: kafka:1234
                     - name: AUTH_ENABLED
-                      value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
+                      value: "false"
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
                   image: ghcr.io/formancehq/ledger:latest
@@ -355,14 +361,16 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: orchestration
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: POSTGRES_DSN
                       value: $(POSTGRES_URI)
                     - name: TEMPORAL_TASK_QUEUE
@@ -374,9 +382,7 @@ spec:
                     - name: STACK_CLIENT_SECRET
                       value: mocked-secret
                     - name: AUTH_ENABLED
-                      value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
+                      value: "false"
                     - name: TEMPORAL_SSL_CLIENT_KEY
                     - name: TEMPORAL_SSL_CLIENT_CERT
                   image: ghcr.io/formancehq/orchestration:latest
@@ -440,14 +446,16 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: orchestration-worker
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: POSTGRES_DSN
                       value: $(POSTGRES_URI)
                     - name: TEMPORAL_TASK_QUEUE
@@ -459,9 +467,7 @@ spec:
                     - name: STACK_CLIENT_SECRET
                       value: mocked-secret
                     - name: AUTH_ENABLED
-                      value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
+                      value: "false"
                     - name: TEMPORAL_SSL_CLIENT_KEY
                     - name: TEMPORAL_SSL_CLIENT_CERT
                     - name: BROKER
@@ -519,14 +525,16 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: payments
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
@@ -534,9 +542,7 @@ spec:
                     - name: PUBLISHER_KAFKA_BROKER
                       value: kafka:1234
                     - name: AUTH_ENABLED
-                      value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
+                      value: "false"
                     - name: POSTGRES_DATABASE_NAME
                       value: $(POSTGRES_DATABASE)
                     - name: CONFIG_ENCRYPTION_KEY
@@ -589,14 +595,16 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: search
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: OPENSEARCH_URL
                       value: http://elasticsearch:9200
                     - name: OPENSEARCH_BATCHING_COUNT
@@ -621,9 +629,7 @@ spec:
                     - name: MAPPING_INIT_DISABLED
                       value: "true"
                     - name: AUTH_ENABLED
-                      value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
+                      value: "false"
                     - name: ES_INDICES
                       value: stacks
                   image: ghcr.io/formancehq/search:latest
@@ -683,14 +689,16 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: search-benthos
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: OPENSEARCH_URL
                       value: http://elasticsearch:9200
                     - name: OPENSEARCH_BATCHING_COUNT
@@ -774,14 +782,16 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: stargate
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: ORGANIZATION_ID
                       value: monopod
                     - name: STACK_ID
@@ -839,14 +849,16 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: wallets
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
                     - name: STACK_CLIENT_ID
@@ -854,9 +866,7 @@ spec:
                     - name: STACK_CLIENT_SECRET
                       value: mocked-secret
                     - name: AUTH_ENABLED
-                      value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
+                      value: "false"
                   image: ghcr.io/formancehq/wallets:latest
                   imagePullPolicy: Always
                   livenessProbe:
@@ -918,14 +928,16 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: webhooks
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
@@ -935,9 +947,7 @@ spec:
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
                     - name: AUTH_ENABLED
-                      value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
+                      value: "false"
                   image: ghcr.io/formancehq/webhooks:latest
                   imagePullPolicy: Always
                   livenessProbe:
@@ -1001,14 +1011,16 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: webhooks-worker
                     - name: STACK
                       value: monopod-payments-before-v1-0-0-alpha-6
+                    - name: STACK_URL
+                      value: http://gateway:8000
+                    - name: AUTH_ISSUER
+                      value: http://gateway:8000/api/auth
                     - name: BROKER
                       value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
@@ -1018,9 +1030,7 @@ spec:
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
                     - name: AUTH_ENABLED
-                      value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
+                      value: "false"
                     - name: KAFKA_TOPICS
                       value: monopod-payments-before-v1-0-0-alpha-6-ledger monopod-payments-before-v1-0-0-alpha-6-payments
                   image: ghcr.io/formancehq/webhooks:latest

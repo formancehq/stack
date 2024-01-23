@@ -27,10 +27,6 @@ builds:
       - amd64
       - arm64
 
-before:
-  hooks:
-  - sh ./scripts/completions.sh
-
 archives:
   - id: "{{.ProjectName}}"
     builds:

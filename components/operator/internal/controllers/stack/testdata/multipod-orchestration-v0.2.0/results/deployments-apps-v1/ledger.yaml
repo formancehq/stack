@@ -67,14 +67,16 @@ spec:
                       value: "false"
                     - name: DEV
                       value: "false"
-                    - name: STACK_URL
-                      value: http://gateway:8000
                     - name: STACK_PUBLIC_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: ledger
                     - name: STACK
                       value: multipod-orchestration-v0-2-0
+                    - name: STACK_URL
+                      value: http://example.net
+                    - name: AUTH_ISSUER
+                      value: http://example.net/api/auth
                     - name: STORAGE_DRIVER
                       value: postgres
                     - name: PUBLISHER_TOPIC_MAPPING
@@ -86,9 +88,7 @@ spec:
                     - name: PUBLISHER_KAFKA_BROKER
                       value: kafka1:1234 kafka2:1234
                     - name: AUTH_ENABLED
-                      value: "true"
-                    - name: AUTH_ISSUER
-                      value: http://gateway:8000/api/auth
+                      value: "false"
                     - name: STORAGE_POSTGRES_CONN_STRING
                       value: $(POSTGRES_URI)
                   image: ghcr.io/formancehq/ledger:latest
