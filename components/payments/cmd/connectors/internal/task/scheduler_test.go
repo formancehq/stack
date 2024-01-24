@@ -207,7 +207,7 @@ func TestTaskScheduler(t *testing.T) {
 			RestartOption:  models.OPTIONS_RESTART_NEVER,
 		}))
 		require.Eventually(t, TaskActive(store, connectorID, descriptor1), time.Second, 100*time.Millisecond)
-		require.Eventually(t, TaskPending(store, connectorID, descriptor2), time.Second, 100*time.Millisecond)
+		require.Eventually(t, TaskActive(store, connectorID, descriptor2), time.Second, 100*time.Millisecond)
 		close(task1Terminated)
 		require.Eventually(t, TaskTerminated(store, connectorID, descriptor1), time.Second, 100*time.Millisecond)
 		require.Eventually(t, TaskActive(store, connectorID, descriptor2), time.Second, 100*time.Millisecond)
@@ -238,7 +238,9 @@ func TestTaskScheduler(t *testing.T) {
 						}))
 					}
 				default:
-					panic("should not be called")
+					return func() {
+
+					}
 				}
 			}), metrics.NewNoOpMetricsRegistry(), 1)
 
@@ -248,7 +250,9 @@ func TestTaskScheduler(t *testing.T) {
 		}))
 		require.Eventually(t, TaskActive(store, connectorID, mainDescriptor), time.Second, 100*time.Millisecond)
 		require.NoError(t, scheduler.Shutdown(context.TODO()))
-		require.Eventually(t, TaskTerminated(store, connectorID, mainDescriptor), time.Second, 100*time.Millisecond)
-		require.Eventually(t, TaskPending(store, connectorID, workerDescriptor), time.Second, 100*time.Millisecond)
+		// the main task should be still marked as active since it failed to
+		// schedule the worker task because the scheduler was stopped
+		require.Eventually(t, TaskActive(store, connectorID, mainDescriptor), time.Second, 100*time.Millisecond)
+		require.Eventually(t, TaskActive(store, connectorID, workerDescriptor), time.Second, 100*time.Millisecond)
 	})
 }

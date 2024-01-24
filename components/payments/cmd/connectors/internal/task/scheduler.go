@@ -134,15 +134,6 @@ func (s *DefaultTaskScheduler) schedule(ctx context.Context, descriptor models.T
 		// Do nothing
 	}
 
-	if s.stopped {
-		err := s.stackTask(ctx, descriptor)
-		if err != nil {
-			return returnErrorFunc(errors.Wrap(err, "stacking task"))
-		}
-
-		return returnErrorFunc(nil)
-	}
-
 	errChan := s.startTask(ctx, descriptor, options)
 
 	return errChan
@@ -154,6 +145,7 @@ func (s *DefaultTaskScheduler) Shutdown(ctx context.Context) error {
 	s.mu.Unlock()
 
 	s.logger(ctx).Infof("Stopping scheduler...")
+	s.workerPool.Stop()
 
 	for name, task := range s.tasks {
 		task.logger.Debugf("Stopping task")
@@ -173,8 +165,6 @@ func (s *DefaultTaskScheduler) Shutdown(ctx context.Context) error {
 
 		delete(s.tasks, name)
 	}
-
-	s.workerPool.Stop()
 
 	return nil
 }
@@ -465,6 +455,16 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 				}
 
 				if e := recover(); e != nil {
+					switch v := e.(type) {
+					case error:
+						if errors.Is(v, pond.ErrSubmitOnStoppedPool) {
+							// Pool is stopped and task is marked as active,
+							// nothing to do as they will be restarted on
+							// next startup
+							return
+						}
+					}
+
 					s.registerTaskError(ctx, holder, e)
 					debug.PrintStack()
 
@@ -487,10 +487,6 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 			select {
 			case <-done:
 			case <-ctx.Done():
-				return
-			case ch := <-holder.stopChan:
-				logger.Infof("Stopping task...")
-				close(ch)
 				return
 			}
 			if err != nil {
@@ -596,14 +592,6 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 	}
 
 	return errChan
-}
-
-func (s *DefaultTaskScheduler) stackTask(ctx context.Context, descriptor models.TaskDescriptor) error {
-	s.logger(ctx).WithFields(map[string]interface{}{
-		"descriptor": string(descriptor),
-	}).Infof("Stacking task")
-
-	return s.store.UpdateTaskStatus(ctx, s.connectorID, descriptor, models.TaskStatusPending, "")
 }
 
 func (s *DefaultTaskScheduler) logger(ctx context.Context) logging.Logger {
