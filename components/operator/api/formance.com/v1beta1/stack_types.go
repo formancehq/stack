@@ -49,6 +49,10 @@ type StackStatus struct {
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
+//+kubebuilder:printcolumn:name="Disable",type=string,JSONPath=".spec.disabled",description="Stack Disabled"
+//+kubebuilder:printcolumn:name="Version",type="string",JSONPath=".spec.version",description="Stack Version"
+//+kubebuilder:printcolumn:name="Versions From file",type="string",JSONPath=".spec.versionsFromFile",description="Stack Version From File"
+//+kubebuilder:printcolumn:name="Ready",type="boolean",JSONPath=".status.ready",description="Is stack ready"
 
 // Stack is the Schema for the stacks API
 type Stack struct {

@@ -14,7 +14,24 @@ spec:
     singular: stack
   scope: Cluster
   versions:
-  - name: v1beta1
+  - additionalPrinterColumns:
+    - description: Stack Disabled
+      jsonPath: .spec.disabled
+      name: Disable
+      type: string
+    - description: Stack Version
+      jsonPath: .spec.version
+      name: Version
+      type: string
+    - description: Stack Version From File
+      jsonPath: .spec.versionsFromFile
+      name: Versions From file
+      type: string
+    - description: Is stack ready
+      jsonPath: .status.ready
+      name: Ready
+      type: boolean
+    name: v1beta1
     schema:
       openAPIV3Schema:
         description: Stack is the Schema for the stacks API

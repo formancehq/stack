@@ -55,7 +55,7 @@ func WithController[T client.Object](scheme *runtime.Scheme, owner client.Object
 	return func(t T) error {
 		if !metav1.IsControlledBy(t, owner) {
 			if err := controllerutil.SetControllerReference(owner, t, scheme); err != nil {
-				panic(err)
+				return err
 			}
 		}
 		return nil

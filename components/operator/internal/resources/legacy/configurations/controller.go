@@ -256,7 +256,10 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 		options.Set("secret", configuration.Spec.Temporal.TLS.SecretName)
 	}
 	_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-temporal-dsn", configuration.Name),
-		"temporal.dsn", "temporal://"+configuration.Spec.Temporal.Address+"/"+configuration.Spec.Temporal.Namespace, stackNames...)
+		"temporal.dsn",
+		fmt.Sprintf("temporal://%s/%s?%s", configuration.Spec.Temporal.Address, configuration.Spec.Temporal.Namespace, options.Encode()),
+		stackNames...,
+	)
 	if err != nil {
 		return err
 	}

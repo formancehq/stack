@@ -28,6 +28,10 @@ import (
 // +kubebuilder:rbac:groups=stack.formance.com,resources=configurations,verbs=get;list;watch
 
 func Reconcile(ctx Context, stack *v1beta3.Stack) error {
+	if stack.GetLabels()[SkipLabel] == "true" {
+		return nil
+	}
+
 	if stack.Spec.Versions == "" {
 		patch := client.MergeFrom(stack.DeepCopy())
 		stack.Spec.Versions = "default"

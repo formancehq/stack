@@ -58,6 +58,9 @@ func ForStackDependency[T v1beta1.Dependent](ctrl func(ctx Context, stack *v1bet
 			if stack.Spec.Disabled {
 				return nil
 			}
+			if stack.GetLabels()[SkipLabel] == "true" {
+				return nil
+			}
 		}
 
 		return ctrl(ctx, stack, t)
