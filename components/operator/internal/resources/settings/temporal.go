@@ -2,10 +2,11 @@ package settings
 
 import (
 	"fmt"
-	"github.com/formancehq/operator/api/formance.com/v1beta1"
-	"github.com/formancehq/operator/internal/core"
 	"net/url"
 	"strings"
+
+	"github.com/formancehq/operator/api/formance.com/v1beta1"
+	"github.com/formancehq/operator/internal/core"
 )
 
 func FindTemporalConfiguration(ctx core.Context, stack *v1beta1.Stack) (*v1beta1.TemporalConfiguration, error) {
@@ -48,7 +49,7 @@ func FindTemporalConfiguration(ctx core.Context, stack *v1beta1.Stack) (*v1beta1
 		TLS: v1beta1.TemporalTLSConfig{
 			CRT:        temporalTLSCrt,
 			Key:        temporalTLSKey,
-			SecretName: temporalURI.Query().Get("useSecret"),
+			SecretName: temporalURI.Query().Get("secret"),
 		},
 	}, nil
 }

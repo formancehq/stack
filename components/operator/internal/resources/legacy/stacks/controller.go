@@ -16,7 +16,6 @@ import (
 	. "github.com/formancehq/operator/internal/core"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -434,42 +433,6 @@ func isDisabled(stack *v1beta3.Stack, configuration *v1beta3.Configuration, isEE
 	} else {
 		return stack.Spec.Services.IsExplicitlyDisabled(name) || configuration.Spec.Services.IsExplicitlyDisabled(name)
 	}
-}
-
-func resourceRequirements(resourceProperties *v1beta3.ResourceProperties) *corev1.ResourceRequirements {
-	if resourceProperties == nil {
-		return nil
-	}
-	resources := &corev1.ResourceRequirements{}
-	if resourceProperties.Request != nil {
-		if resources.Requests == nil {
-			resources.Requests = make(corev1.ResourceList)
-		}
-
-		if resourceProperties.Request.Cpu != "" {
-			resources.Requests[corev1.ResourceCPU] = resource.MustParse(resourceProperties.Request.Cpu)
-		}
-
-		if resourceProperties.Request.Memory != "" {
-			resources.Requests[corev1.ResourceMemory] = resource.MustParse(resourceProperties.Request.Memory)
-		}
-	}
-
-	if resourceProperties.Limits != nil {
-		if resources.Limits == nil {
-			resources.Limits = make(corev1.ResourceList)
-		}
-
-		if resourceProperties.Limits.Cpu != "" {
-			resources.Limits[corev1.ResourceCPU] = resource.MustParse(resourceProperties.Limits.Cpu)
-		}
-
-		if resourceProperties.Limits.Memory != "" {
-			resources.Limits[corev1.ResourceMemory] = resource.MustParse(resourceProperties.Limits.Memory)
-		}
-	}
-
-	return resources
 }
 
 func listStacksAndReconcile(ctx Context, opts ...client.ListOption) []reconcile.Request {

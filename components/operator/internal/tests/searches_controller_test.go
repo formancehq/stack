@@ -2,6 +2,7 @@ package tests_test
 
 import (
 	"fmt"
+
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/operator/internal/tests/internal"
@@ -56,7 +57,7 @@ var _ = Describe("SearchesController", func() {
 		Context("Then when creating a SearchBatchingConfiguration object", func() {
 			var searchBatchingCountSettings *v1beta1.Settings
 			JustBeforeEach(func() {
-				searchBatchingCountSettings = settings.New(uuid.NewString(), "search.batching.count", "10", stack.Name)
+				searchBatchingCountSettings = settings.New(uuid.NewString(), "search.batching", "count=10", stack.Name)
 				Expect(Create(searchBatchingCountSettings)).To(Succeed())
 			})
 			JustAfterEach(func() {

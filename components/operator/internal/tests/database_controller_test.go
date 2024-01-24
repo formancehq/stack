@@ -2,6 +2,7 @@ package tests_test
 
 import (
 	"fmt"
+
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/operator/internal/tests/internal"

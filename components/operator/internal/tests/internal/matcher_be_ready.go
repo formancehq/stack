@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 
 	gomegaTypes "github.com/onsi/gomega/types"

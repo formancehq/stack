@@ -2,8 +2,9 @@ package ledgers
 
 import (
 	"fmt"
-	"github.com/formancehq/operator/internal/resources/settings"
 	"strconv"
+
+	"github.com/formancehq/operator/internal/resources/settings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"

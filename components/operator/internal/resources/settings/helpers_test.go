@@ -1,10 +1,11 @@
 package settings
 
 import (
+	"testing"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestFindMatchingSettings(t *testing.T) {

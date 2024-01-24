@@ -2,8 +2,9 @@ package orchestrations
 
 import (
 	"fmt"
-	"github.com/formancehq/operator/internal/resources/settings"
 	"strings"
+
+	"github.com/formancehq/operator/internal/resources/settings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"

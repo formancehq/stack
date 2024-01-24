@@ -2,9 +2,10 @@ package settings
 
 import (
 	"bytes"
-	"github.com/formancehq/operator/internal/core"
 	"strings"
 	"text/template"
+
+	"github.com/formancehq/operator/internal/core"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
@@ -72,6 +73,7 @@ func ComputeCaddyfile(ctx core.Context, stack *v1beta1.Stack, _tpl string, addit
 	if err != nil {
 		return "", err
 	}
+
 	openTelemetryEnabled := openTelemetryConfiguration != nil &&
 		openTelemetryConfiguration.Traces != nil &&
 		openTelemetryConfiguration.Traces.Otlp != nil

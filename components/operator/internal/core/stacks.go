@@ -3,7 +3,6 @@ package core
 import (
 	"reflect"
 
-	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -88,17 +87,5 @@ func GetIfExists(ctx Context, stackName string, to client.Object) (bool, error) 
 	if errors.Is(err, ErrNotFound) {
 		return false, nil
 	}
-	return true, nil
-}
-
-func HasConfigurationObject[T v1beta1.ConfigurationObject](ctx Context, stackName string) (bool, error) {
-	ret, err := GetConfigurationObject[T](ctx, stackName)
-	if err != nil {
-		return false, err
-	}
-	if reflect.ValueOf(ret).IsZero() {
-		return false, nil
-	}
-
 	return true, nil
 }

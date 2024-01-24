@@ -43,7 +43,6 @@ type MetricsSpec struct {
 
 // OpenTelemetryConfigurationSpec defines the desired state of OpenTelemetryConfiguration
 type OpenTelemetryConfiguration struct {
-	ConfigurationProperties `json:",inline"`
 	// +optional
 	Traces *TracesSpec `json:"traces,omitempty"`
 	// +optional

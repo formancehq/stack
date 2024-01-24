@@ -62,14 +62,6 @@ spec:
                   - path
                   type: object
                 type: array
-              service:
-                description: ServiceConfiguration
-                properties:
-                  annotations:
-                    additionalProperties:
-                      type: string
-                    type: object
-                type: object
               stack:
                 type: string
             required:

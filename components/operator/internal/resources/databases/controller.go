@@ -18,11 +18,12 @@ package databases
 
 import (
 	"fmt"
+	"reflect"
+
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/settings"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/pkg/errors"
-	"reflect"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	batchv1 "k8s.io/api/batch/v1"

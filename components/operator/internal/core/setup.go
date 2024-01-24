@@ -2,10 +2,11 @@ package core
 
 import (
 	"context"
+	"reflect"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"reflect"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )

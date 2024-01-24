@@ -18,6 +18,8 @@ package searches
 
 import (
 	"fmt"
+	"strconv"
+
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/auths"
@@ -86,19 +88,22 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 	batching := search.Spec.Batching
 	if batching == nil {
 
-		batchingCount, err := settings.GetIntOrDefault(ctx, stack.Name, 0, "search.batching.count")
+		batchingMap, err := settings.GetMapOrEmpty(ctx, stack.Name, "search.batching")
 		if err != nil {
 			return err
 		}
 
-		batchingPeriod, err := settings.GetStringOrEmpty(ctx, stack.Name, "search.batching.period")
-		if err != nil {
-			return err
+		batching = &v1beta1.Batching{}
+		if countString, ok := batchingMap["count"]; ok {
+			count, err := strconv.ParseUint(countString, 10, 64)
+			if err != nil {
+				return err
+			}
+			batching.Count = int(count)
 		}
 
-		batching = &v1beta1.Batching{
-			Count:  batchingCount,
-			Period: batchingPeriod,
+		if period, ok := batchingMap["period"]; ok {
+			batching.Period = period
 		}
 	}
 

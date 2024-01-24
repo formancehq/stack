@@ -2,16 +2,16 @@ package settings
 
 import (
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
+	"slices"
+	"strconv"
+	"strings"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/pkg/errors"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"slices"
-	"strconv"
-	"strings"
 )
 
 func ValueOrDefault[T any](v *T, defaultValue T) T {
@@ -32,8 +32,6 @@ func Get(ctx core.Context, stack string, keys ...string) (*string, error) {
 	}); err != nil {
 		return nil, errors.Wrap(err, "listings settings")
 	}
-
-	spew.Dump(allSettings.Items)
 
 	return findMatchingSettings(allSettings.Items, keys...)
 }

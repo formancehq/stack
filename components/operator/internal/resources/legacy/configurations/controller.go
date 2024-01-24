@@ -2,6 +2,8 @@ package configurations
 
 import (
 	"fmt"
+	"net/url"
+
 	"github.com/formancehq/operator/api/stack.formance.com/v1beta3"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/settings"
@@ -9,7 +11,6 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
-	"strings"
 )
 
 // +kubebuilder:rbac:groups=stack.formance.com,resources=configurations,verbs=get;list;watch;create;update;patch;delete
@@ -32,7 +33,6 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 	type resourceRequirementDescriptor struct {
 		requirements *v1beta3.ResourceProperties
 		deployment   string
-		container    string
 	}
 	for _, cfg := range []resourceRequirementDescriptor{
 		{
@@ -149,185 +149,114 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 			name:   "reconciliation",
 		},
 	} {
-		// TODO: merge into one settings
-		_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-database-host", configuration.Name, cfg.name),
-			fmt.Sprintf("databases.%s.host", cfg.name), cfg.config.Host, stackNames...)
+		basicAuth := ""
+		if cfg.config.Username != "" {
+			basicAuth = fmt.Sprintf("%s:%s@", cfg.config.Username, cfg.config.Password)
+		}
+		endpoint := fmt.Sprintf("%s:%d", cfg.config.Host, cfg.config.Port)
+
+		options := url.Values{}
+		if cfg.config.DisableSSLMode {
+			options.Set("disableSSLMode", "true")
+		}
+		if cfg.config.CredentialsFromSecret != "" {
+			options.Set("secret", cfg.config.CredentialsFromSecret)
+		}
+
+		_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-postgres-uri", configuration.Name, cfg.name),
+			fmt.Sprintf("postgres.%s.uri", cfg.name),
+			fmt.Sprintf("postgresql://%s%s?%s", basicAuth, endpoint, options.Encode()),
+			stackNames...)
 		if err != nil {
 			return err
 		}
-
-		if cfg.config.Port != 0 && cfg.config.Port != 5432 {
-			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-database-port", configuration.Name, cfg.name),
-				fmt.Sprintf("databases.%s.port", cfg.name), cfg.config.Port, stackNames...)
-			if err != nil {
-				return err
-			}
-		}
-
-		if cfg.config.Username != "" {
-			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-database-username", configuration.Name, cfg.name),
-				fmt.Sprintf("databases.%s.username", cfg.name), cfg.config.Username, stackNames...)
-			if err != nil {
-				return err
-			}
-		}
-		if cfg.config.Password != "" {
-			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-database-password", configuration.Name, cfg.name),
-				fmt.Sprintf("databases.%s.password", cfg.name), cfg.config.Password, stackNames...)
-			if err != nil {
-				return err
-			}
-		}
-		if cfg.config.CredentialsFromSecret != "" {
-			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-database-secret", configuration.Name, cfg.name),
-				fmt.Sprintf("databases.%s.secret", cfg.name), cfg.config.CredentialsFromSecret, stackNames...)
-			if err != nil {
-				return err
-			}
-		}
-		if cfg.config.DisableSSLMode {
-			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-database-ssl", configuration.Name, cfg.name),
-				fmt.Sprintf("databases.%s.ssl.disable", cfg.name), cfg.config.DisableSSLMode, stackNames...)
-			if err != nil {
-				return err
-			}
-		}
 	}
 
-	// TODO: merge into one settings
 	if monitoring := configuration.Spec.Monitoring; monitoring != nil {
 
-		createSettings := func(discr string) error {
-			_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-otel-traces-enabled", configuration.Name),
-				fmt.Sprintf("opentelemetry.%s.enabled", discr), "true", stackNames...)
+		var createSettings = func(discr string, spec *v1beta3.OtlpSpec) error {
+			options := url.Values{}
+			if spec.Insecure {
+				options.Set("insecure", "true")
+			}
+			dsn := fmt.Sprintf(
+				"%s://%s:%d?%s",
+				spec.Mode,
+				spec.Endpoint,
+				spec.Port,
+				options.Encode(),
+			)
+
+			_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-otel-traces", configuration.Name),
+				fmt.Sprintf("opentelemetry.%s.dsn", discr), dsn, stackNames...)
 			if err != nil {
 				return err
-			}
-			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-otel-traces-endpoint", configuration.Name),
-				fmt.Sprintf("opentelemetry.%s.endpoint", discr), monitoring.Traces.Otlp.Endpoint, stackNames...)
-			if err != nil {
-				return err
-			}
-			if monitoring.Traces.Otlp.Insecure {
-				_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-otel-traces-insecure", configuration.Name),
-					fmt.Sprintf("opentelemetry.%s.insecure", discr), "true", stackNames...)
-				if err != nil {
-					return err
-				}
-			}
-			if monitoring.Traces.Otlp.Port != 4317 {
-				_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-otel-traces-port", configuration.Name),
-					fmt.Sprintf("opentelemetry.%s.port", discr), fmt.Sprint(monitoring.Traces.Otlp.Port), stackNames...)
-				if err != nil {
-					return err
-				}
-			}
-			if monitoring.Traces.Otlp.Mode != "grpc" {
-				_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-otel-traces-mode", configuration.Name),
-					fmt.Sprintf("opentelemetry.%s.insecure", discr), monitoring.Traces.Otlp.Mode, stackNames...)
-				if err != nil {
-					return err
-				}
-			}
-			if monitoring.Traces.Otlp.ResourceAttributes != "" {
-				_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-otel-traces-mode", configuration.Name),
-					fmt.Sprintf("opentelemetry.%s.resource-attributes", discr), monitoring.Traces.Otlp.ResourceAttributes, stackNames...)
-				if err != nil {
-					return err
-				}
 			}
 
 			return nil
 		}
 
 		if monitoring.Traces != nil && monitoring.Traces.Otlp != nil {
-			if err := createSettings("traces"); err != nil {
+			if err := createSettings("traces", monitoring.Traces.Otlp); err != nil {
 				return err
 			}
 		}
 
 		if monitoring.Metrics != nil && monitoring.Metrics.Otlp != nil {
-			if err := createSettings("metrics"); err != nil {
+			if err := createSettings("metrics", monitoring.Metrics.Otlp); err != nil {
 				return err
 			}
 		}
 	}
 
-	// TODO: merge into one settings
 	if configuration.Spec.Broker.Kafka != nil {
-		_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-broker-kind", configuration.Name),
-			"broker.kind", "kafka", stackNames...)
+		options := url.Values{}
+		if configuration.Spec.Broker.Kafka.TLS {
+			options.Set("tls", "true")
+		}
+		if sasl := configuration.Spec.Broker.Kafka.SASL; sasl != nil {
+			options.Set("saslEnabled", "true")
+			if sasl.Username != "" {
+				options.Set("saslUsername", sasl.Username)
+			}
+			if sasl.Password != "" {
+				options.Set("saslPassword", sasl.Password)
+			}
+			if sasl.Mechanism != "" {
+				options.Set("saslMechanism", sasl.Mechanism)
+			}
+			if sasl.ScramSHASize != "" {
+				options.Set("saslSCRAMSHASize", sasl.ScramSHASize)
+			}
+		}
+		dsn := fmt.Sprintf("kafka://%s?%s", configuration.Spec.Broker.Kafka.Brokers[0], options.Encode())
+
+		_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-broker", configuration.Name),
+			"broker.dsn", dsn, stackNames...)
 		if err != nil {
 			return err
-		}
-
-		if len(configuration.Spec.Broker.Kafka.Brokers) > 0 {
-			_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-broker-kind", configuration.Name),
-				"broker.kafka.endpoints", strings.Join(configuration.Spec.Broker.Kafka.Brokers, ","), stackNames...)
-			if err != nil {
-				return err
-			}
-		}
-
-		if configuration.Spec.Broker.Kafka.TLS {
-			_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-broker-ssl", configuration.Name),
-				"broker.kafka.ssl.enabled", "true", stackNames...)
-			if err != nil {
-				return err
-			}
-		}
-
-		if sasl := configuration.Spec.Broker.Kafka.SASL; sasl != nil {
-			_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-broker-kafka-username", configuration.Name),
-				"broker.kafka.sasl.username", sasl.Username, stackNames...)
-			if err != nil {
-				return err
-			}
-			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-broker-kafka-password", configuration.Name),
-				"broker.kafka.sasl.password", sasl.Password, stackNames...)
-			if err != nil {
-				return err
-			}
-			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-broker-kafka-mechanism", configuration.Name),
-				"broker.kafka.sasl.mechanism", sasl.Mechanism, stackNames...)
-			if err != nil {
-				return err
-			}
-			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-broker-kafka-scram-sha-size", configuration.Name),
-				"broker.kafka.sasl.scram-sha-size", sasl.ScramSHASize, stackNames...)
-			if err != nil {
-				return err
-			}
 		}
 	} else if configuration.Spec.Broker.Nats != nil {
-		_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-broker-kind", configuration.Name),
-			"broker.kind", "nats", stackNames...)
-		if err != nil {
-			return err
-		}
 
-		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-broker-nats-url", configuration.Name),
-			"broker.nats.endpoint", configuration.Spec.Broker.Nats.URL, stackNames...)
-		if err != nil {
-			return err
+		options := url.Values{}
+		if configuration.Spec.Broker.Nats.Replicas != 0 {
+			options.Set("replicas", fmt.Sprint(configuration.Spec.Broker.Nats.Replicas))
 		}
+		dsn := fmt.Sprintf("nats://%s?%s", configuration.Spec.Broker.Nats.URL, options.Encode())
 
-		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-broker-nats-replicas", configuration.Name),
-			"broker.nats.replicas", configuration.Spec.Broker.Nats.Replicas, stackNames...)
+		_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-broker", configuration.Name),
+			"broker.dsn", dsn, stackNames...)
 		if err != nil {
 			return err
 		}
 	}
 
-	// TODO: merge into one settings
-	_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-temporal-address", configuration.Name),
-		"temporal-address", configuration.Spec.Temporal.Address, stackNames...)
-	if err != nil {
-		return err
+	options := url.Values{}
+	if configuration.Spec.Temporal.TLS.SecretName != "" {
+		options.Set("secret", configuration.Spec.Temporal.TLS.SecretName)
 	}
-
-	_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-temporal-namespace", configuration.Name),
-		"temporal-namespace", configuration.Spec.Temporal.Namespace, stackNames...)
+	_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-temporal-dsn", configuration.Name),
+		"temporal.dsn", "temporal://"+configuration.Spec.Temporal.Address+"/"+configuration.Spec.Temporal.Namespace, stackNames...)
 	if err != nil {
 		return err
 	}
@@ -343,86 +272,55 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 		if err != nil {
 			return err
 		}
-	} else if configuration.Spec.Temporal.TLS.SecretName != "" {
-		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-temporal-tls-secret", configuration.Name),
-			"temporal.tls.secret", configuration.Spec.Temporal.TLS.SecretName, stackNames...)
-		if err != nil {
-			return err
+	}
+
+	basicAuth := ""
+	options = url.Values{}
+	if basicAuthConf := configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth; basicAuthConf != nil {
+		if basicAuthConf.Username != "" {
+			basicAuth = fmt.Sprintf("%s:%s@", basicAuthConf.Username, basicAuthConf.Password)
+		}
+		if basicAuthConf.SecretName != "" {
+			options.Set("secret", basicAuthConf.SecretName)
+		}
+	}
+	if configuration.Spec.Services.Search.ElasticSearchConfig.TLS.Enabled {
+		options.Set("tls", "true")
+		if configuration.Spec.Services.Search.ElasticSearchConfig.TLS.SkipCertVerify {
+			options.Set("skipCertVerify", "true")
 		}
 	}
 
-	// TODO: merge into one settings
-	_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-elasticsearch-host", configuration.Name),
-		"elasticsearch.host", configuration.Spec.Services.Search.ElasticSearchConfig.Host, stackNames...)
+	elasticSearchDSN := fmt.Sprintf(
+		"%s://%s%s:%d?%s",
+		configuration.Spec.Services.Search.ElasticSearchConfig.Scheme,
+		basicAuth,
+		configuration.Spec.Services.Search.ElasticSearchConfig.Host,
+		configuration.Spec.Services.Search.ElasticSearchConfig.Port,
+		options.Encode(),
+	)
+
+	_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-elasticsearch-dsn", configuration.Name),
+		"elasticsearch.dsn", elasticSearchDSN, stackNames...)
 	if err != nil {
 		return err
 	}
 
-	if configuration.Spec.Services.Search.ElasticSearchConfig.Scheme != "" {
-		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-elasticsearch-scheme", configuration.Name),
-			"elasticsearch.scheme", configuration.Spec.Services.Search.ElasticSearchConfig.Scheme, stackNames...)
-		if err != nil {
-			return err
-		}
-	}
+	batchingConfig := ""
 
-	if configuration.Spec.Services.Search.ElasticSearchConfig.Port != 9200 && configuration.Spec.Services.Search.ElasticSearchConfig.Port != 0 {
-		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-elasticsearch-port", configuration.Name),
-			"elasticsearch.port", configuration.Spec.Services.Search.ElasticSearchConfig.Scheme, stackNames...)
-		if err != nil {
-			return err
-		}
-	}
-
-	if configuration.Spec.Services.Search.ElasticSearchConfig.TLS.Enabled {
-		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-elasticsearch-tls-enabled", configuration.Name),
-			"elasticsearch.tls.enabled", "true", stackNames...)
-		if err != nil {
-			return err
-		}
-		if configuration.Spec.Services.Search.ElasticSearchConfig.TLS.SkipCertVerify {
-			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-elasticsearch-tls-skip-cert-verify", configuration.Name),
-				"elasticsearch.tls.skip-cert-verify", "true", stackNames...)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	if basicAuth := configuration.Spec.Services.Search.ElasticSearchConfig.BasicAuth; basicAuth != nil {
-		if basicAuth.Username != "" {
-			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-elasticsearch-basic-auth-username", configuration.Name),
-				"elasticsearch.basic-auth.username", basicAuth.Username, stackNames...)
-			if err != nil {
-				return err
-			}
-			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-elasticsearch-basic-auth-password", configuration.Name),
-				"elasticsearch.basic-auth.password", basicAuth.Password, stackNames...)
-			if err != nil {
-				return err
-			}
-		}
-		if basicAuth.SecretName != "" {
-			_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-elasticsearch-basic-auth-secret", configuration.Name),
-				"elasticsearch.basic-auth.secret", basicAuth.SecretName, stackNames...)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	// TODO: merge into one settings
 	if configuration.Spec.Services.Search.Batching.Count != 0 {
-		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-search-batching-count", configuration.Name),
-			"search.batching.count", fmt.Sprint(configuration.Spec.Services.Search.Batching.Count), stackNames...)
-		if err != nil {
-			return err
-		}
+		batchingConfig = fmt.Sprintf("count=%d", configuration.Spec.Services.Search.Batching.Count)
 	}
 
 	if configuration.Spec.Services.Search.Batching.Period != "" {
-		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-search-batching-count", configuration.Name),
-			"search.batching.period", configuration.Spec.Services.Search.Batching.Period, stackNames...)
+		if len(batchingConfig) > 0 {
+			batchingConfig = batchingConfig + ","
+		}
+		batchingConfig = batchingConfig + "period=" + configuration.Spec.Services.Search.Batching.Period
+	}
+	if batchingConfig != "" {
+		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-search-batching", configuration.Name),
+			"search.batching", batchingConfig, stackNames...)
 		if err != nil {
 			return err
 		}
@@ -446,7 +344,69 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 		}
 	}
 
-	// TODO: Handle service annotations
+	type serviceAnnotationsDescriptor struct {
+		annotations map[string]string
+		name        string
+	}
+	for _, cfg := range []serviceAnnotationsDescriptor{
+		{
+			annotations: configuration.Spec.Services.Ledger.Annotations.Service,
+			name:        "ledger",
+		},
+		{
+			annotations: configuration.Spec.Services.Payments.Annotations.Service,
+			name:        "payments",
+		},
+		{
+			annotations: configuration.Spec.Services.Orchestration.Annotations.Service,
+			name:        "orchestration",
+		},
+		{
+			annotations: configuration.Spec.Services.Auth.Annotations.Service,
+			name:        "auth",
+		},
+		{
+			annotations: configuration.Spec.Services.Webhooks.Annotations.Service,
+			name:        "webhooks",
+		},
+		{
+			annotations: configuration.Spec.Services.Reconciliation.Annotations.Service,
+			name:        "reconciliation",
+		},
+		{
+			annotations: configuration.Spec.Services.Gateway.Annotations.Service,
+			name:        "gateway",
+		},
+		{
+			annotations: configuration.Spec.Services.Wallets.Annotations.Service,
+			name:        "wallets",
+		},
+		{
+			annotations: configuration.Spec.Services.Stargate.Annotations.Service,
+			name:        "stargate",
+		},
+		{
+			annotations: configuration.Spec.Services.Search.Annotations.Service,
+			name:        "search",
+		},
+	} {
+		if cfg.annotations == nil || len(cfg.annotations) == 0 {
+			continue
+		}
+
+		computed := ""
+		for key, value := range cfg.annotations {
+			computed = fmt.Sprintf("%s=%s,%s", key, value, computed)
+		}
+		computed = computed[:len(computed)-1]
+
+		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-service-annotations", configuration.Name, cfg.name),
+			fmt.Sprintf("services.%s.annotations", cfg.name),
+			computed, stackNames...)
+		if err != nil {
+			return err
+		}
+	}
 
 	return nil
 }

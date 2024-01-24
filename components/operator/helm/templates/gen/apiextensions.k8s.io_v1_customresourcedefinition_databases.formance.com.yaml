@@ -65,8 +65,6 @@ spec:
           status:
             description: DatabaseStatus defines the observed state of Database
             properties:
-              boundTo:
-                type: string
               configuration:
                 properties:
                   credentialsFromSecret:

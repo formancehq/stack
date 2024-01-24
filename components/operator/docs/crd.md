@@ -11,26 +11,21 @@ Package v1beta1 contains API Schema definitions for the formance v1beta1 API gro
 ### Resource Types
 - [Auth](#auth)
 - [AuthClient](#authclient)
-- [BrokerConfiguration](#brokerconfiguration)
 - [BrokerTopic](#brokertopic)
 - [BrokerTopicConsumer](#brokertopicconsumer)
 - [Database](#database)
-- [DatabaseConfiguration](#databaseconfiguration)
-- [ElasticSearchConfiguration](#elasticsearchconfiguration)
 - [Gateway](#gateway)
 - [HTTPAPI](#httpapi)
 - [Ledger](#ledger)
-- [OpenTelemetryConfiguration](#opentelemetryconfiguration)
 - [Orchestration](#orchestration)
 - [Payments](#payments)
 - [Reconciliation](#reconciliation)
-- [RegistriesConfiguration](#registriesconfiguration)
 - [Search](#search)
+- [Settings](#settings)
 - [Stack](#stack)
 - [Stargate](#stargate)
 - [Stream](#stream)
 - [StreamProcessor](#streamprocessor)
-- [TemporalConfiguration](#temporalconfiguration)
 - [Versions](#versions)
 - [VersionsHistory](#versionshistory)
 - [Wallets](#wallets)
@@ -128,13 +123,11 @@ _Appears in:_
 | `debug` _boolean_ |  |
 | `dev` _boolean_ |  |
 | `version` _string_ |  |
-| `resourceRequirements` _[ResourceRequirements](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#resourcerequirements-v1-core)_ |  |
 | `stack` _string_ |  |
 | `delegatedOIDCServer` _[DelegatedOIDCServerConfiguration](#delegatedoidcserverconfiguration)_ |  |
 | `signingKey` _string_ |  |
 | `signingKeyFromSecret` _[SecretKeySelector](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#secretkeyselector-v1-core)_ |  |
 | `enableScopes` _boolean_ |  |
-| `service` _[ServiceConfiguration](#serviceconfiguration)_ |  |
 
 
 
@@ -159,34 +152,17 @@ _Appears in:_
 
 
 
-BrokerConfiguration is the Schema for the brokerconfigurations API
-
-
-
-| Field | Description |
-| --- | --- |
-| `apiVersion` _string_ | `formance.com/v1beta1`
-| `kind` _string_ | `BrokerConfiguration`
-| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
-| `spec` _[BrokerConfigurationSpec](#brokerconfigurationspec)_ |  |
-
-
-#### BrokerConfigurationSpec
-
-
-
-BrokerConfigurationSpec defines the desired state of BrokerConfig
+BrokerConfiguration defines the desired state of BrokerConfig
 
 _Appears in:_
-- [BrokerConfiguration](#brokerconfiguration)
 - [BrokerTopicStatus](#brokertopicstatus)
 
 | Field | Description |
 | --- | --- |
+| `stacks` _string array_ |  |
+| `applyOnAllStacks` _boolean_ |  |
 | `kafka` _[BrokerKafkaConfig](#brokerkafkaconfig)_ |  |
 | `nats` _[BrokerNatsConfig](#brokernatsconfig)_ |  |
-
-
 
 
 #### BrokerKafkaConfig
@@ -196,7 +172,7 @@ _Appears in:_
 
 
 _Appears in:_
-- [BrokerConfigurationSpec](#brokerconfigurationspec)
+- [BrokerConfiguration](#brokerconfiguration)
 
 | Field | Description |
 | --- | --- |
@@ -229,7 +205,7 @@ _Appears in:_
 
 
 _Appears in:_
-- [BrokerConfigurationSpec](#brokerconfigurationspec)
+- [BrokerConfiguration](#brokerconfiguration)
 
 | Field | Description |
 | --- | --- |
@@ -366,6 +342,26 @@ _Appears in:_
 | `reason` _string_ | reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty. |
 
 
+
+
+#### ConfigurationProperties
+
+
+
+
+
+_Appears in:_
+- [BrokerConfiguration](#brokerconfiguration)
+- [OpenTelemetryConfiguration](#opentelemetryconfiguration)
+- [SettingsSpec](#settingsspec)
+- [TemporalConfiguration](#temporalconfiguration)
+
+| Field | Description |
+| --- | --- |
+| `stacks` _string array_ |  |
+| `applyOnAllStacks` _boolean_ |  |
+
+
 #### CreatedDatabase
 
 
@@ -406,27 +402,10 @@ Database is the Schema for the databases API
 
 
 
-DatabaseConfiguration is the Schema for the databaseconfigurations API
 
-
-
-| Field | Description |
-| --- | --- |
-| `apiVersion` _string_ | `formance.com/v1beta1`
-| `kind` _string_ | `DatabaseConfiguration`
-| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
-| `spec` _[DatabaseConfigurationSpec](#databaseconfigurationspec)_ |  |
-
-
-#### DatabaseConfigurationSpec
-
-
-
-DatabaseConfigurationSpec defines the desired state of DatabaseConfiguration
 
 _Appears in:_
 - [CreatedDatabase](#createddatabase)
-- [DatabaseConfiguration](#databaseconfiguration)
 
 | Field | Description |
 | --- | --- |
@@ -436,8 +415,6 @@ _Appears in:_
 | `password` _string_ |  |
 | `credentialsFromSecret` _string_ |  |
 | `disableSSLMode` _boolean_ |  |
-
-
 
 
 #### DatabaseSpec
@@ -471,6 +448,8 @@ _Appears in:_
 | `issuer` _string_ |  |
 | `clientID` _string_ |  |
 | `clientSecret` _string_ |  |
+
+
 
 
 #### DeploymentStrategy
@@ -518,47 +497,13 @@ _Appears in:_
 
 
 _Appears in:_
-- [ElasticSearchConfigurationSpec](#elasticsearchconfigurationspec)
+- [ElasticSearchConfiguration](#elasticsearchconfiguration)
 
 | Field | Description |
 | --- | --- |
 | `username` _string_ |  |
 | `password` _string_ |  |
 | `secretName` _string_ |  |
-
-
-#### ElasticSearchConfiguration
-
-
-
-ElasticSearchConfiguration is the Schema for the elasticsearchconfigs API
-
-
-
-| Field | Description |
-| --- | --- |
-| `apiVersion` _string_ | `formance.com/v1beta1`
-| `kind` _string_ | `ElasticSearchConfiguration`
-| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
-| `spec` _[ElasticSearchConfigurationSpec](#elasticsearchconfigurationspec)_ |  |
-
-
-#### ElasticSearchConfigurationSpec
-
-
-
-ElasticSearchConfigurationSpec defines the desired state of ElasticSearchConfiguration
-
-_Appears in:_
-- [ElasticSearchConfiguration](#elasticsearchconfiguration)
-
-| Field | Description |
-| --- | --- |
-| `scheme` _string_ |  |
-| `host` _string_ |  |
-| `port` _integer_ |  |
-| `tls` _[ElasticSearchTLSConfig](#elasticsearchtlsconfig)_ |  |
-| `basicAuth` _[ElasticSearchBasicAuthConfig](#elasticsearchbasicauthconfig)_ |  |
 
 
 
@@ -570,7 +515,7 @@ _Appears in:_
 
 
 _Appears in:_
-- [ElasticSearchConfigurationSpec](#elasticsearchconfigurationspec)
+- [ElasticSearchConfiguration](#elasticsearchconfiguration)
 
 | Field | Description |
 | --- | --- |
@@ -642,9 +587,7 @@ _Appears in:_
 | `debug` _boolean_ |  |
 | `dev` _boolean_ |  |
 | `version` _string_ |  |
-| `resourceRequirements` _[ResourceRequirements](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#resourcerequirements-v1-core)_ |  |
 | `ingress` _[GatewayIngress](#gatewayingress)_ |  |
-| `service` _[ServiceConfiguration](#serviceconfiguration)_ |  |
 
 
 
@@ -695,7 +638,6 @@ _Appears in:_
 | `stack` _string_ |  |
 | `name` _string_ | Name indicates prefix api |
 | `rules` _[HTTPAPIRule](#httpapirule) array_ | Rules |
-| `service` _[ServiceConfiguration](#serviceconfiguration)_ | ServiceConfiguration |
 
 
 
@@ -730,11 +672,9 @@ _Appears in:_
 | `debug` _boolean_ |  |
 | `dev` _boolean_ |  |
 | `version` _string_ |  |
-| `resourceRequirements` _[ResourceRequirements](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#resourcerequirements-v1-core)_ |  |
 | `stack` _string_ |  |
 | `auth` _[AuthConfig](#authconfig)_ |  |
 | `deploymentStrategy` _[DeploymentStrategy](#deploymentstrategy)_ |  |
-| `service` _[ServiceConfiguration](#serviceconfiguration)_ |  |
 | `locking` _[LockingStrategy](#lockingstrategy)_ | Locking is intended for ledger v1 only |
 
 
@@ -780,11 +720,13 @@ _Appears in:_
 
 
 _Appears in:_
-- [OpenTelemetryConfigurationSpec](#opentelemetryconfigurationspec)
+- [OpenTelemetryConfiguration](#opentelemetryconfiguration)
 
 | Field | Description |
 | --- | --- |
 | `otlp` _[OtlpSpec](#otlpspec)_ |  |
+
+
 
 
 #### ModuleProperties
@@ -810,7 +752,6 @@ _Appears in:_
 | `debug` _boolean_ |  |
 | `dev` _boolean_ |  |
 | `version` _string_ |  |
-| `resourceRequirements` _[ResourceRequirements](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#resourcerequirements-v1-core)_ |  |
 
 
 #### ModuleStatus
@@ -839,35 +780,6 @@ _Appears in:_
 | `version` _string_ |  |
 
 
-#### OpenTelemetryConfiguration
-
-
-
-OpenTelemetryConfiguration is the Schema for the opentelemetrytraces API
-
-
-
-| Field | Description |
-| --- | --- |
-| `apiVersion` _string_ | `formance.com/v1beta1`
-| `kind` _string_ | `OpenTelemetryConfiguration`
-| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
-| `spec` _[OpenTelemetryConfigurationSpec](#opentelemetryconfigurationspec)_ |  |
-
-
-#### OpenTelemetryConfigurationSpec
-
-
-
-OpenTelemetryConfigurationSpec defines the desired state of OpenTelemetryConfiguration
-
-_Appears in:_
-- [OpenTelemetryConfiguration](#opentelemetryconfiguration)
-
-| Field | Description |
-| --- | --- |
-| `traces` _[TracesSpec](#tracesspec)_ |  |
-| `metrics` _[MetricsSpec](#metricsspec)_ |  |
 
 
 
@@ -903,8 +815,6 @@ _Appears in:_
 | `debug` _boolean_ |  |
 | `dev` _boolean_ |  |
 | `version` _string_ |  |
-| `resourceRequirements` _[ResourceRequirements](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#resourcerequirements-v1-core)_ |  |
-| `service` _[ServiceConfiguration](#serviceconfiguration)_ |  |
 | `auth` _[AuthConfig](#authconfig)_ |  |
 
 
@@ -960,9 +870,7 @@ _Appears in:_
 | `debug` _boolean_ |  |
 | `dev` _boolean_ |  |
 | `version` _string_ |  |
-| `resourceRequirements` _[ResourceRequirements](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#resourcerequirements-v1-core)_ |  |
 | `encryptionKey` _string_ |  |
-| `service` _[ServiceConfiguration](#serviceconfiguration)_ |  |
 | `auth` _[AuthConfig](#authconfig)_ |  |
 
 
@@ -999,57 +907,9 @@ _Appears in:_
 | `debug` _boolean_ |  |
 | `dev` _boolean_ |  |
 | `version` _string_ |  |
-| `resourceRequirements` _[ResourceRequirements](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#resourcerequirements-v1-core)_ |  |
-| `service` _[ServiceConfiguration](#serviceconfiguration)_ |  |
 | `auth` _[AuthConfig](#authconfig)_ |  |
 
 
-
-
-#### RegistriesConfiguration
-
-
-
-RegistriesConfiguration is the Schema for the registries API
-
-
-
-| Field | Description |
-| --- | --- |
-| `apiVersion` _string_ | `formance.com/v1beta1`
-| `kind` _string_ | `RegistriesConfiguration`
-| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
-| `spec` _[RegistriesConfigurationSpec](#registriesconfigurationspec)_ |  |
-
-
-#### RegistriesConfigurationSpec
-
-
-
-RegistriesConfigurationSpec defines the desired state of RegistriesConfiguration
-
-_Appears in:_
-- [RegistriesConfiguration](#registriesconfiguration)
-
-| Field | Description |
-| --- | --- |
-| `registries` _object (keys:string, values:[RegistryConfigurationSpec](#registryconfigurationspec))_ |  |
-
-
-
-
-#### RegistryConfigurationSpec
-
-
-
-
-
-_Appears in:_
-- [RegistriesConfigurationSpec](#registriesconfigurationspec)
-
-| Field | Description |
-| --- | --- |
-| `endpoint` _string_ |  |
 
 
 #### Search
@@ -1083,51 +943,45 @@ _Appears in:_
 | `debug` _boolean_ |  |
 | `dev` _boolean_ |  |
 | `version` _string_ |  |
-| `resourceRequirements` _[ResourceRequirements](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#resourcerequirements-v1-core)_ |  |
 | `batching` _[Batching](#batching)_ |  |
-| `streamProcessor` _[SearchStreamProcessorSpec](#searchstreamprocessorspec)_ |  |
-| `service` _[ServiceConfiguration](#serviceconfiguration)_ |  |
 | `auth` _[AuthConfig](#authconfig)_ |  |
 
 
 
 
-#### SearchStreamProcessorSpec
+#### Settings
 
 
 
+Settings is the Schema for the settings API
 
 
-_Appears in:_
-- [SearchSpec](#searchspec)
 
 | Field | Description |
 | --- | --- |
-| `resourceRequirements` _[ResourceRequirements](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#resourcerequirements-v1-core)_ |  |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `Settings`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[SettingsSpec](#settingsspec)_ |  |
 
 
-#### ServiceConfiguration
+#### SettingsSpec
 
 
 
-
+SettingsSpec defines the desired state of Settings
 
 _Appears in:_
-- [AuthSpec](#authspec)
-- [GatewaySpec](#gatewayspec)
-- [HTTPAPISpec](#httpapispec)
-- [LedgerSpec](#ledgerspec)
-- [OrchestrationSpec](#orchestrationspec)
-- [PaymentsSpec](#paymentsspec)
-- [ReconciliationSpec](#reconciliationspec)
-- [SearchSpec](#searchspec)
-- [StargateSpec](#stargatespec)
-- [WalletsSpec](#walletsspec)
-- [WebhooksSpec](#webhooksspec)
+- [Settings](#settings)
 
 | Field | Description |
 | --- | --- |
-| `annotations` _object (keys:string, values:string)_ |  |
+| `stacks` _string array_ |  |
+| `applyOnAllStacks` _boolean_ |  |
+| `key` _string_ |  |
+| `value` _string_ |  |
+
+
 
 
 #### Stack
@@ -1244,13 +1098,11 @@ _Appears in:_
 | `debug` _boolean_ |  |
 | `dev` _boolean_ |  |
 | `version` _string_ |  |
-| `resourceRequirements` _[ResourceRequirements](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#resourcerequirements-v1-core)_ |  |
 | `stack` _string_ |  |
 | `serverURL` _string_ |  |
 | `organizationID` _string_ |  |
 | `stackID` _string_ |  |
 | `auth` _[StargateAuthSpec](#stargateauthspec)_ |  |
-| `service` _[ServiceConfiguration](#serviceconfiguration)_ |  |
 
 
 
@@ -1325,38 +1177,6 @@ _Appears in:_
 
 
 
-#### TemporalConfiguration
-
-
-
-TemporalConfiguration is the Schema for the temporalconfigurations API
-
-
-
-| Field | Description |
-| --- | --- |
-| `apiVersion` _string_ | `formance.com/v1beta1`
-| `kind` _string_ | `TemporalConfiguration`
-| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
-| `spec` _[TemporalConfigurationSpec](#temporalconfigurationspec)_ |  |
-
-
-#### TemporalConfigurationSpec
-
-
-
-TemporalConfigurationSpec defines the desired state of TemporalConfiguration
-
-_Appears in:_
-- [TemporalConfiguration](#temporalconfiguration)
-
-| Field | Description |
-| --- | --- |
-| `address` _string_ |  |
-| `namespace` _string_ |  |
-| `tls` _[TemporalTLSConfig](#temporaltlsconfig)_ |  |
-
-
 
 
 #### TemporalTLSConfig
@@ -1366,7 +1186,7 @@ _Appears in:_
 
 
 _Appears in:_
-- [TemporalConfigurationSpec](#temporalconfigurationspec)
+- [TemporalConfiguration](#temporalconfiguration)
 
 | Field | Description |
 | --- | --- |
@@ -1382,7 +1202,7 @@ _Appears in:_
 
 
 _Appears in:_
-- [OpenTelemetryConfigurationSpec](#opentelemetryconfigurationspec)
+- [OpenTelemetryConfiguration](#opentelemetryconfiguration)
 
 | Field | Description |
 | --- | --- |
@@ -1469,9 +1289,7 @@ _Appears in:_
 | `debug` _boolean_ |  |
 | `dev` _boolean_ |  |
 | `version` _string_ |  |
-| `resourceRequirements` _[ResourceRequirements](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#resourcerequirements-v1-core)_ |  |
 | `stack` _string_ |  |
-| `service` _[ServiceConfiguration](#serviceconfiguration)_ |  |
 | `auth` _[AuthConfig](#authconfig)_ |  |
 
 
@@ -1508,8 +1326,6 @@ _Appears in:_
 | `debug` _boolean_ |  |
 | `dev` _boolean_ |  |
 | `version` _string_ |  |
-| `resourceRequirements` _[ResourceRequirements](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#resourcerequirements-v1-core)_ |  |
-| `service` _[ServiceConfiguration](#serviceconfiguration)_ |  |
 | `auth` _[AuthConfig](#authconfig)_ |  |
 
 

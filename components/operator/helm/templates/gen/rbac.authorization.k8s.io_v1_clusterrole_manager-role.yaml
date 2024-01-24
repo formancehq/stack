@@ -754,9 +754,27 @@ rules:
   resources:
   - configurations
   verbs:
+  - create
+  - delete
   - get
   - list
+  - patch
+  - update
   - watch
+- apiGroups:
+  - stack.formance.com
+  resources:
+  - configurations/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - stack.formance.com
+  resources:
+  - configurations/status
+  verbs:
+  - get
+  - patch
+  - update
 - apiGroups:
   - stack.formance.com
   resources:

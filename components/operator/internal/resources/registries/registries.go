@@ -2,8 +2,9 @@ package registries
 
 import (
 	"fmt"
-	"github.com/formancehq/operator/internal/resources/settings"
 	"strings"
+
+	"github.com/formancehq/operator/internal/resources/settings"
 
 	"github.com/formancehq/operator/internal/core"
 )

@@ -2,11 +2,12 @@ package settings
 
 import (
 	"fmt"
-	"github.com/formancehq/operator/api/formance.com/v1beta1"
-	"github.com/formancehq/operator/internal/core"
 	"net/url"
 	"strconv"
 	"strings"
+
+	"github.com/formancehq/operator/api/formance.com/v1beta1"
+	"github.com/formancehq/operator/internal/core"
 )
 
 func FindDatabaseConfiguration(ctx core.Context, database *v1beta1.Database) (*v1beta1.DatabaseConfiguration, error) {
@@ -43,7 +44,7 @@ func FindDatabaseConfiguration(ctx core.Context, database *v1beta1.Database) (*v
 		Host:                  parsedUrl.Hostname(),
 		Username:              parsedUrl.User.Username(),
 		Password:              password,
-		CredentialsFromSecret: parsedUrl.Query().Get("credentialsFromSecret"),
+		CredentialsFromSecret: parsedUrl.Query().Get("secret"),
 		DisableSSLMode:        strings.ToLower(parsedUrl.Query().Get("disableSSLMode")) == "true" || parsedUrl.Query().Get("disableSSLMode") == "1",
 	}, nil
 }

@@ -4,21 +4,29 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.9.2
   creationTimestamp: null
-  name: databaseconfigurations.formance.com
+  name: settings.formance.com
 spec:
   group: formance.com
   names:
-    kind: DatabaseConfiguration
-    listKind: DatabaseConfigurationList
-    plural: databaseconfigurations
-    singular: databaseconfiguration
+    kind: Settings
+    listKind: SettingsList
+    plural: settings
+    singular: settings
   scope: Cluster
   versions:
-  - name: v1beta1
+  - additionalPrinterColumns:
+    - description: Key
+      jsonPath: .spec.key
+      name: Key
+      type: string
+    - description: Value
+      jsonPath: .spec.value
+      name: Value
+      type: string
+    name: v1beta1
     schema:
       openAPIV3Schema:
-        description: DatabaseConfiguration is the Schema for the databaseconfigurations
-          API
+        description: Settings is the Schema for the settings API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -33,27 +41,24 @@ spec:
           metadata:
             type: object
           spec:
-            description: DatabaseConfigurationSpec defines the desired state of DatabaseConfiguration
+            description: SettingsSpec defines the desired state of Settings
             properties:
-              credentialsFromSecret:
-                type: string
-              disableSSLMode:
+              applyOnAllStacks:
                 type: boolean
-              host:
+              key:
                 type: string
-              password:
-                type: string
-              port:
-                type: integer
-              username:
+              stacks:
+                items:
+                  type: string
+                type: array
+              value:
                 type: string
             required:
-            - host
-            - port
+            - key
+            - value
             type: object
           status:
-            description: DatabaseConfigurationStatus defines the observed state of
-              DatabaseConfiguration
+            description: SettingsStatus defines the observed state of Settings
             type: object
         type: object
     served: true

@@ -5,8 +5,9 @@ import (
 	"os"
 	"path/filepath"
 	osRuntime "runtime"
-	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"time"
+
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/api/stack.formance.com/v1beta3"

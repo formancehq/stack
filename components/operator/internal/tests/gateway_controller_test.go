@@ -208,15 +208,6 @@ var _ = Describe("GatewayController", func() {
 				Expect(cm.Data["Caddyfile"]).To(
 					MatchGoldenFile("gateway-controller", "configmap-with-audit.yaml"))
 			})
-			//It("Should add env vars to the deployment", func() {
-			//	Eventually(func(g Gomega) []corev1.EnvVar {
-			//		d := &appsv1.Deployment{}
-			//		g.Expect(LoadResource(stack.Name, "gateway", d)).To(Succeed())
-			//		return d.Spec.Template.Spec.Containers[0].Env
-			//	}).Should(ContainElements(
-			//		brokerconfigurations.BrokerEnvVars(brokerConfiguration.Spec, stack.Name, "gateway"),
-			//	))
-			//})
 		})
 		Context("With otlp enabled", func() {
 			var otelTracesDSNSetting *v1beta1.Settings

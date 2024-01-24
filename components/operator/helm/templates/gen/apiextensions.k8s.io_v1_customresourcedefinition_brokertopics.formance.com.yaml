@@ -58,9 +58,10 @@ spec:
             description: BrokerTopicStatus defines the observed state of BrokerTopic
             properties:
               configuration:
-                description: BrokerConfigurationSpec defines the desired state of
-                  BrokerConfig
+                description: BrokerConfiguration defines the desired state of BrokerConfig
                 properties:
+                  applyOnAllStacks:
+                    type: boolean
                   kafka:
                     properties:
                       brokers:
@@ -89,13 +90,16 @@ spec:
                   nats:
                     properties:
                       replicas:
-                        default: 1
                         type: integer
                       url:
                         type: string
                     required:
                     - url
                     type: object
+                  stacks:
+                    items:
+                      type: string
+                    type: array
                 type: object
               error:
                 type: string

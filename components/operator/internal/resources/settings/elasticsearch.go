@@ -1,10 +1,11 @@
 package settings
 
 import (
-	"github.com/formancehq/operator/api/formance.com/v1beta1"
-	"github.com/formancehq/operator/internal/core"
 	"net/url"
 	"strconv"
+
+	"github.com/formancehq/operator/api/formance.com/v1beta1"
+	"github.com/formancehq/operator/internal/core"
 )
 
 func FindElasticSearchConfiguration(ctx core.Context, stack *v1beta1.Stack) (*v1beta1.ElasticSearchConfiguration, error) {
