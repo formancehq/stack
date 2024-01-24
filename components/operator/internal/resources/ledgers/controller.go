@@ -18,6 +18,7 @@ package ledgers
 
 import (
 	_ "embed"
+	"fmt"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
@@ -69,12 +70,11 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, versio
 		if isV2 {
 			streamsVersion = "v2.0.0"
 		}
-		if err := streams.LoadFromFileSystem(ctx, benthos.Streams, ledger.Spec.Stack, "streams/ledger/"+streamsVersion,
-			WithController[*v1beta1.BenthosStream](ctx.GetScheme(), ledger),
-			WithLabels[*v1beta1.BenthosStream](map[string]string{
-				"service": "ledger",
-			}),
-		); err != nil {
+		if err := streams.LoadFromFileSystem(ctx, benthos.Streams, ledger, "streams/ledger/"+streamsVersion); err != nil {
+			return err
+		}
+
+		if err := streams.LoadFromFileSystem(ctx, reindexStreams, ledger, fmt.Sprintf("assets/reindex/%s", streamsVersion)); err != nil {
 			return err
 		}
 	} else {

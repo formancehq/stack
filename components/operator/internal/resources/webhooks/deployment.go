@@ -36,7 +36,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.
 	}
 
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, core.GetModuleName(ctx, webhooks))
+	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, core.LowerCamelCaseName(ctx, webhooks))
 	if err != nil {
 		return err
 	}

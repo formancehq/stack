@@ -156,7 +156,7 @@ func resolveOTLPSpec(ctx core.Context, stack *v1beta1.Stack, discr string) (*v1b
 	}
 
 	return &v1beta1.OtlpSpec{
-		Endpoint:           otlpURI.Host,
+		Endpoint:           otlpURI.Hostname(),
 		Port:               int32(port),
 		Insecure:           isTrue(otlpURI.Query().Get("insecure")),
 		Mode:               otlpURI.Scheme,

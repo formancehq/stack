@@ -41,10 +41,13 @@ spec:
             properties:
               data:
                 type: string
+              name:
+                type: string
               stack:
                 type: string
             required:
             - data
+            - name
             type: object
           status:
             description: BenthosStreamStatus defines the observed state of BenthosStream

@@ -17,7 +17,7 @@ import (
 func createDeployment(ctx core.Context, stack *v1beta1.Stack, reconciliation *v1beta1.Reconciliation,
 	database *v1beta1.Database, authClient *v1beta1.AuthClient, version string) error {
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, core.GetModuleName(ctx, reconciliation))
+	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, core.LowerCamelCaseName(ctx, reconciliation))
 	if err != nil {
 		return err
 	}

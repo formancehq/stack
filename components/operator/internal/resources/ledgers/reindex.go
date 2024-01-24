@@ -20,6 +20,7 @@ func createReindexCronJob(ctx core.Context, ledger *v1beta1.Ledger) (*batchv1.Cr
 			Schedule: "* * * * *",
 			JobTemplate: batchv1.JobTemplateSpec{
 				Spec: batchv1.JobSpec{
+					TTLSecondsAfterFinished: pointer.For(int32(30)),
 					Template: corev1.PodTemplateSpec{
 						Spec: corev1.PodSpec{
 							RestartPolicy: corev1.RestartPolicyOnFailure,
@@ -34,6 +35,7 @@ func createReindexCronJob(ctx core.Context, ledger *v1beta1.Ledger) (*batchv1.Cr
 				},
 			},
 		}
+
 		return nil
 	}, core.WithController[*batchv1.CronJob](ctx.GetScheme(), ledger))
 	return cronJob, err

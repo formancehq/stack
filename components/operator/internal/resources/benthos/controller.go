@@ -306,7 +306,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 								},
 								Items: []corev1.KeyToPath{{
 									Key:  "stream.yaml",
-									Path: stream.Name + ".yaml",
+									Path: stream.Spec.Name + ".yaml",
 								}},
 							},
 						}

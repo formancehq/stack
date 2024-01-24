@@ -2,25 +2,24 @@ package core
 
 import (
 	"fmt"
-	"sort"
-	"strings"
-
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
+	"github.com/iancoleman/strcase"
 	"golang.org/x/mod/semver"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sort"
 )
 
-func GetModuleName(ctx Context, module v1beta1.Module) string {
-	kinds, _, err := ctx.GetScheme().ObjectKinds(module)
+func LowerCamelCaseName(ctx Context, ob client.Object) string {
+	kinds, _, err := ctx.GetScheme().ObjectKinds(ob)
 	if err != nil {
 		panic(err)
 	}
-	return strings.ToLower(kinds[0].Kind)
+	return strcase.ToLowerCamel(kinds[0].Kind)
 }
 
 func InstalledVersionName(ctx Context, module v1beta1.Module, version string) string {
-	return fmt.Sprintf("%s-%s-%s", module.GetStack(), GetModuleName(ctx, module), version)
+	return fmt.Sprintf("%s-%s-%s", module.GetStack(), LowerCamelCaseName(ctx, module), version)
 }
 
 func ValidateInstalledVersion(ctx Context, module v1beta1.Module, version string) error {
@@ -28,7 +27,7 @@ func ValidateInstalledVersion(ctx Context, module v1beta1.Module, version string
 		Name: InstalledVersionName(ctx, module, version),
 	}, func(t *v1beta1.VersionsHistory) error {
 		t.Spec.Stack = module.GetStack()
-		t.Spec.Module = GetModuleName(ctx, module)
+		t.Spec.Module = LowerCamelCaseName(ctx, module)
 		t.Spec.Version = version
 
 		return nil
@@ -39,7 +38,7 @@ func ValidateInstalledVersion(ctx Context, module v1beta1.Module, version string
 func ActualVersion(ctx Context, module v1beta1.Module) (string, error) {
 	list := &v1beta1.VersionsHistoryList{}
 	if err := ctx.GetClient().List(ctx, list, client.MatchingFields{
-		".spec.module": GetModuleName(ctx, module),
+		".spec.module": LowerCamelCaseName(ctx, module),
 	}); err != nil {
 		return "", err
 	}

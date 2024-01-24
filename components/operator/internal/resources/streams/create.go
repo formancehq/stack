@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
-	"github.com/formancehq/operator/internal/core"
+	. "github.com/formancehq/operator/internal/core"
 
 	"strings"
 
@@ -13,8 +13,8 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 )
 
-func LoadFromFileSystem(ctx core.Context, fs embed.FS,
-	stackName string, streamDirectory string, opts ...core.ObjectMutator[*v1beta1.BenthosStream]) error {
+func LoadFromFileSystem(ctx Context, fs embed.FS,
+	owner v1beta1.Module, streamDirectory string, opts ...ObjectMutator[*v1beta1.BenthosStream]) error {
 	streamFiles, err := fs.ReadDir(streamDirectory)
 	if err != nil {
 		return err
@@ -28,14 +28,20 @@ func LoadFromFileSystem(ctx core.Context, fs embed.FS,
 
 		sanitizedName := strings.ReplaceAll(file.Name(), "_", "-")
 
-		opts = append(opts, func(stream *v1beta1.BenthosStream) error {
-			stream.Spec.Data = string(streamContent)
-			stream.Spec.Stack = stackName
+		opts = append(opts,
+			func(stream *v1beta1.BenthosStream) error {
+				stream.Spec.Data = string(streamContent)
+				stream.Spec.Stack = owner.GetStack()
+				stream.Spec.Name = strings.TrimSuffix(file.Name(), ".yaml")
 
-			return nil
-		})
-		_, _, err = core.CreateOrUpdate[*v1beta1.BenthosStream](ctx, types.NamespacedName{
-			Name: fmt.Sprintf("%s-%s", stackName, sanitizedName),
+				return nil
+			},
+			WithLabels[*v1beta1.BenthosStream](map[string]string{
+				"service": LowerCamelCaseName(ctx, owner),
+			}),
+			WithController[*v1beta1.BenthosStream](ctx.GetScheme(), owner))
+		_, _, err = CreateOrUpdate[*v1beta1.BenthosStream](ctx, types.NamespacedName{
+			Name: fmt.Sprintf("%s-%s", owner.GetStack(), sanitizedName),
 		}, opts...)
 		if err != nil {
 			return errors.Wrap(err, "creating stream")

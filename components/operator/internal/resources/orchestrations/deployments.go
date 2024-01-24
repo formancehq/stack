@@ -47,7 +47,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 	consumers []*v1beta1.BrokerTopicConsumer, version string) error {
 
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, GetModuleName(ctx, orchestration))
+	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, LowerCamelCaseName(ctx, orchestration))
 	if err != nil {
 		return err
 	}

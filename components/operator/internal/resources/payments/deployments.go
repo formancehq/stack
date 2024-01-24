@@ -20,7 +20,7 @@ import (
 
 func commonEnvVars(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) ([]v1.EnvVar, error) {
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, core.GetModuleName(ctx, payments))
+	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, core.LowerCamelCaseName(ctx, payments))
 	if err != nil {
 		return nil, err
 	}
@@ -91,6 +91,7 @@ func createFullDeployment(ctx core.Context, stack *v1beta1.Stack,
 			LivenessProbe: deployments.DefaultLiveness("http", deployments.WithProbePath("/_health")),
 			Ports:         []v1.ContainerPort{deployments.StandardHTTPPort()},
 		}),
+		setInitContainer(payments, database, image),
 	)
 	if err != nil {
 		return err
@@ -202,7 +203,7 @@ func createGateway(ctx core.Context, stack *v1beta1.Stack, p *v1beta1.Payments) 
 	}
 
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, core.GetModuleName(ctx, p))
+	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, core.LowerCamelCaseName(ctx, p))
 	if err != nil {
 		return err
 	}

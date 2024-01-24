@@ -193,7 +193,7 @@ func setCommonContainerConfiguration(ctx core.Context, stack *v1beta1.Stack, led
 		prefix = "NUMARY_"
 	}
 	env := make([]corev1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVarsIfEnabledWithPrefix(ctx, stack, core.GetModuleName(ctx, ledger), prefix)
+	otlpEnv, err := settings.GetOTELEnvVarsIfEnabledWithPrefix(ctx, stack, core.LowerCamelCaseName(ctx, ledger), prefix)
 	if err != nil {
 		return err
 	}
@@ -281,7 +281,7 @@ func createGatewayDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1b
 	}
 
 	env := make([]corev1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, core.GetModuleName(ctx, ledger))
+	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, core.LowerCamelCaseName(ctx, ledger))
 	if err != nil {
 		return err
 	}

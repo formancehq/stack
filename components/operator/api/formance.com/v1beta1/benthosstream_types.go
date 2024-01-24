@@ -24,6 +24,7 @@ import (
 type BenthosStreamSpec struct {
 	StackDependency `json:",inline"`
 	Data            string `json:"data"`
+	Name            string `json:"name"`
 }
 
 // BenthosStreamStatus defines the observed state of BenthosStream

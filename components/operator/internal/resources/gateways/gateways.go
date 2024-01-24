@@ -25,6 +25,15 @@ func EnvVarsIfEnabledWithPrefix(ctx core.Context, stackName, prefix string) ([]v
 	if !ok {
 		return nil, nil
 	}
+
+	return GetEnvVarsWithPrefix(gateway, prefix), nil
+}
+
+func GetEnvVars(gateway *v1beta1.Gateway) []v1.EnvVar {
+	return GetEnvVarsWithPrefix(gateway, "")
+}
+
+func GetEnvVarsWithPrefix(gateway *v1beta1.Gateway, prefix string) []v1.EnvVar {
 	ret := []v1.EnvVar{{
 		Name:  fmt.Sprintf("%sSTACK_URL", prefix),
 		Value: "http://gateway:8080",
@@ -36,5 +45,5 @@ func EnvVarsIfEnabledWithPrefix(ctx core.Context, stackName, prefix string) ([]v
 		})
 	}
 
-	return ret, nil
+	return ret
 }
