@@ -179,7 +179,7 @@ func generatePaymentsFile(
 	if err != nil {
 		return fmt.Errorf("failed to marshal payment: %w", err)
 	}
-	if err := ingester.IngestPayments(ctx, connectorID, ingestion.PaymentBatch{
+	if err := ingester.IngestPayments(ctx, ingestion.PaymentBatch{
 		{
 			Payment: &models.Payment{
 				ID: models.PaymentID{
@@ -203,7 +203,7 @@ func generatePaymentsFile(
 				DestinationAccountID: destinationAccountID,
 			},
 		},
-	}, struct{}{}); err != nil {
+	}); err != nil {
 		return fmt.Errorf("failed to ingest payments: %w", err)
 	}
 

@@ -126,7 +126,7 @@ func fetchTransfers(
 		paymentBatch = append(paymentBatch, batchElement)
 	}
 
-	if err := ingester.IngestPayments(ctx, connectorID, paymentBatch, struct{}{}); err != nil {
+	if err := ingester.IngestPayments(ctx, paymentBatch); err != nil {
 		return err
 	}
 

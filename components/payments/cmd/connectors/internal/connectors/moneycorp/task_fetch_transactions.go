@@ -161,7 +161,7 @@ func ingestBatch(
 		batch = append(batch, batchElement)
 	}
 
-	return ingester.IngestPayments(ctx, connectorID, batch, struct{}{})
+	return ingester.IngestPayments(ctx, batch)
 }
 
 func matchPaymentType(transactionType string, transactionDirection string) (models.PaymentType, bool) {

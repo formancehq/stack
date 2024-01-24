@@ -13,8 +13,9 @@ import (
 
 type Ingester interface {
 	IngestAccounts(ctx context.Context, batch AccountBatch) error
-	IngestPayments(ctx context.Context, connectorID models.ConnectorID, batch PaymentBatch, commitState any) error
+	IngestPayments(ctx context.Context, batch PaymentBatch) error
 	IngestBalances(ctx context.Context, batch BalanceBatch, checkIfAccountExists bool) error
+	UpdateTaskState(ctx context.Context, state any) error
 	UpdateTransferInitiationPaymentsStatus(ctx context.Context, tf *models.TransferInitiation, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, updatedAt time.Time) error
 	UpdateTransferReversalStatus(ctx context.Context, transfer *models.TransferInitiation, transferReversal *models.TransferReversal) error
 	AddTransferInitiationPaymentID(ctx context.Context, tf *models.TransferInitiation, paymentID *models.PaymentID, updatedAt time.Time) error
@@ -22,11 +23,12 @@ type Ingester interface {
 }
 
 type DefaultIngester struct {
-	provider   models.ConnectorProvider
-	store      Store
-	descriptor models.TaskDescriptor
-	publisher  message.Publisher
-	messages   *messages.Messages
+	provider    models.ConnectorProvider
+	connectorID models.ConnectorID
+	store       Store
+	descriptor  models.TaskDescriptor
+	publisher   message.Publisher
+	messages    *messages.Messages
 }
 
 type Store interface {
@@ -42,17 +44,19 @@ type Store interface {
 
 func NewDefaultIngester(
 	provider models.ConnectorProvider,
+	connectorID models.ConnectorID,
 	descriptor models.TaskDescriptor,
 	repo Store,
 	publisher message.Publisher,
 	messages *messages.Messages,
 ) *DefaultIngester {
 	return &DefaultIngester{
-		provider:   provider,
-		descriptor: descriptor,
-		store:      repo,
-		publisher:  publisher,
-		messages:   messages,
+		provider:    provider,
+		connectorID: connectorID,
+		descriptor:  descriptor,
+		store:       repo,
+		publisher:   publisher,
+		messages:    messages,
 	}
 }
 

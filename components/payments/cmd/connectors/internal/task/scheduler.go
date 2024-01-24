@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/alitto/pond"
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/internal/models"
@@ -46,9 +47,9 @@ type DefaultTaskScheduler struct {
 	containerFactory ContainerCreateFunc
 	tasks            map[string]*taskHolder
 	mu               sync.Mutex
-	maxTasks         int
 	resolver         Resolver
 	stopped          bool
+	workerPool       *pond.WorkerPool
 }
 
 func (s *DefaultTaskScheduler) ListTasks(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.Task, storage.PaginationDetails, error) {
@@ -133,7 +134,7 @@ func (s *DefaultTaskScheduler) schedule(ctx context.Context, descriptor models.T
 		// Do nothing
 	}
 
-	if s.maxTasks != 0 && len(s.tasks) >= s.maxTasks || s.stopped {
+	if s.stopped {
 		err := s.stackTask(ctx, descriptor)
 		if err != nil {
 			return returnErrorFunc(errors.Wrap(err, "stacking task"))
@@ -172,6 +173,8 @@ func (s *DefaultTaskScheduler) Shutdown(ctx context.Context) error {
 
 		delete(s.tasks, name)
 	}
+
+	s.workerPool.Stop()
 
 	return nil
 }
@@ -476,7 +479,20 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 				}
 			}()
 
-			err = container.Invoke(taskResolver)
+			done := make(chan struct{})
+			s.workerPool.Submit(func() {
+				defer close(done)
+				err = container.Invoke(taskResolver)
+			})
+			select {
+			case <-done:
+			case <-ctx.Done():
+				return
+			case ch := <-holder.stopChan:
+				logger.Infof("Stopping task...")
+				close(ch)
+				return
+			}
 			if err != nil {
 				s.registerTaskError(ctx, holder, err)
 
@@ -512,11 +528,38 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 				}
 			}()
 
-			// launch it once before starting the ticker
-			err = container.Invoke(taskResolver)
-			if err != nil {
-				s.registerTaskError(ctx, holder, err)
+			processFunc := func() (bool, error) {
+				done := make(chan struct{})
+				s.workerPool.Submit(func() {
+					defer close(done)
+					err = container.Invoke(taskResolver)
+				})
+				select {
+				case <-done:
+				case <-ctx.Done():
+					return true, nil
+				case ch := <-holder.stopChan:
+					logger.Infof("Stopping task...")
+					close(ch)
+					return true, nil
+				}
+				if err != nil {
+					s.registerTaskError(ctx, holder, err)
+					return false, err
+				}
 
+				return false, err
+			}
+
+			// launch it once before starting the ticker
+			stop, err := processFunc()
+			if err != nil {
+				// error is already registered
+				return
+			}
+
+			if stop {
+				// Task is stopped or context is done
 				return
 			}
 
@@ -532,10 +575,14 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 					return
 				case <-ticker.C:
 					logger.Infof("Polling trigger, running task...")
-					err = container.Invoke(taskResolver)
+					stop, err := processFunc()
 					if err != nil {
-						s.registerTaskError(ctx, holder, err)
+						// error is already registered
+						return
+					}
 
+					if stop {
+						// Task is stopped or context is done
 						return
 					}
 				}
@@ -582,7 +629,7 @@ func NewDefaultScheduler(
 		metricsRegistry:  metricsRegistry,
 		tasks:            map[string]*taskHolder{},
 		containerFactory: containerFactory,
-		maxTasks:         maxTasks,
 		resolver:         resolver,
+		workerPool:       pond.New(maxTasks, maxTasks),
 	}
 }

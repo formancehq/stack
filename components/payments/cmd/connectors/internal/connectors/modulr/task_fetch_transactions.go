@@ -64,7 +64,7 @@ func fetchTransactions(
 			return err
 		}
 
-		if err := ingester.IngestPayments(ctx, connectorID, batch, struct{}{}); err != nil {
+		if err := ingester.IngestPayments(ctx, batch); err != nil {
 			return err
 		}
 
