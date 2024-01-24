@@ -12,7 +12,6 @@ import (
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/alitto/pond"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/formancehq/webhooks/cmd/flag"
 	webhooks "github.com/formancehq/webhooks/pkg"
@@ -25,7 +24,6 @@ import (
 func StartModule(serviceName string, retriesCron time.Duration, retriesSchedule []time.Duration) fx.Option {
 	var options []fx.Option
 
-	options = append(options, otlptraces.CLITracesModule(viper.GetViper()))
 	options = append(options, publish.CLIPublisherModule(viper.GetViper(), serviceName))
 
 	options = append(options, fx.Provide(

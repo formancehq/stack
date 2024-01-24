@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"net/http"
 	"strings"
 	"time"
@@ -46,6 +47,7 @@ func runWorker(cmd *cobra.Command, _ []string) error {
 	return service.New(
 		cmd.OutOrStdout(),
 		otlp.HttpClientModule(),
+		otlptraces.CLITracesModule(viper.GetViper()),
 		postgres.NewModule(viper.GetString(flag.StoragePostgresConnString)),
 		fx.Provide(worker.NewWorkerHandler),
 		fx.Invoke(func(lc fx.Lifecycle, h http.Handler) {
