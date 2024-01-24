@@ -3,7 +3,9 @@ package tests_test
 import (
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/resources/httpapis"
+	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/operator/internal/tests/internal"
+	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
@@ -51,12 +53,15 @@ var _ = Describe("HTTPAPI", func() {
 			}))
 		})
 		Context("With user defined annotations", func() {
-			BeforeEach(func() {
-				httpAPI.Spec.Service = &v1beta1.ServiceConfiguration{
-					Annotations: map[string]string{
-						"foo": "bar",
-					},
-				}
+			var (
+				annotationsSettings *v1beta1.Settings
+			)
+			JustBeforeEach(func() {
+				annotationsSettings = settings.New(uuid.NewString(), "services.*.annotations", "foo=bar", stack.Name)
+				Expect(Create(annotationsSettings)).To(Succeed())
+			})
+			JustAfterEach(func() {
+				Expect(Delete(annotationsSettings)).To(Succeed())
 			})
 			It("should add annotations to the service", func() {
 				Eventually(func(g Gomega) bool {

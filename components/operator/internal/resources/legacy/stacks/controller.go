@@ -161,11 +161,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}, func(t *v1beta1.Ledger) error {
 			t.Spec.Stack = stack.Name
 			t.Spec.DeploymentStrategy = v1beta1.DeploymentStrategy(configuration.Spec.Services.Ledger.DeploymentStrategy)
-			if annotations := configuration.Spec.Services.Ledger.Annotations.Service; annotations != nil {
-				t.Spec.Service = &v1beta1.ServiceConfiguration{
-					Annotations: annotations,
-				}
-			}
 			t.Spec.Locking = v1beta1.LockingStrategy{
 				Strategy: configuration.Spec.Services.Ledger.Locking.Strategy,
 				Redis: func() *v1beta1.LockingStrategyRedisConfig {
@@ -196,12 +191,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			Name: stack.Name,
 		}, func(t *v1beta1.Payments) error {
 			t.Spec.Stack = stack.Name
-			if annotations := configuration.Spec.Services.Payments.Annotations.Service; annotations != nil {
-				t.Spec.Service = &v1beta1.ServiceConfiguration{
-					Annotations: annotations,
-				}
-			}
-
 			return nil
 		})
 		if err != nil {
@@ -215,12 +204,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			Name: stack.Name,
 		}, func(t *v1beta1.Wallets) error {
 			t.Spec.Stack = stack.Name
-			if annotations := configuration.Spec.Services.Wallets.Annotations.Service; annotations != nil {
-				t.Spec.Service = &v1beta1.ServiceConfiguration{
-					Annotations: annotations,
-				}
-			}
-
 			return nil
 		})
 		if err != nil {
@@ -234,12 +217,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			Name: stack.Name,
 		}, func(t *v1beta1.Orchestration) error {
 			t.Spec.Stack = stack.Name
-			if annotations := configuration.Spec.Services.Orchestration.Annotations.Service; annotations != nil {
-				t.Spec.Service = &v1beta1.ServiceConfiguration{
-					Annotations: annotations,
-				}
-			}
-
 			return nil
 		})
 		if err != nil {
@@ -253,12 +230,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			Name: stack.Name,
 		}, func(t *v1beta1.Webhooks) error {
 			t.Spec.Stack = stack.Name
-			if annotations := configuration.Spec.Services.Webhooks.Annotations.Service; annotations != nil {
-				t.Spec.Service = &v1beta1.ServiceConfiguration{
-					Annotations: annotations,
-				}
-			}
-
 			return nil
 		})
 		if err != nil {
@@ -275,12 +246,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			Name: stack.Name,
 		}, func(t *v1beta1.Reconciliation) error {
 			t.Spec.Stack = stack.Name
-			if annotations := configuration.Spec.Services.Reconciliation.Annotations.Service; annotations != nil {
-				t.Spec.Service = &v1beta1.ServiceConfiguration{
-					Annotations: annotations,
-				}
-			}
-
 			return nil
 		})
 		if err != nil {
@@ -294,12 +259,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			Name: stack.Name,
 		}, func(t *v1beta1.Search) error {
 			t.Spec.Stack = stack.Name
-			if annotations := configuration.Spec.Services.Search.Annotations.Service; annotations != nil {
-				t.Spec.Service = &v1beta1.ServiceConfiguration{
-					Annotations: annotations,
-				}
-			}
-
 			return nil
 		})
 		if err != nil {
@@ -313,11 +272,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			Name: stack.Name,
 		}, func(t *v1beta1.Auth) error {
 			t.Spec.Stack = stack.Name
-			if annotations := configuration.Spec.Services.Auth.Annotations.Service; annotations != nil {
-				t.Spec.Service = &v1beta1.ServiceConfiguration{
-					Annotations: annotations,
-				}
-			}
 			t.Spec.DelegatedOIDCServer = &v1beta1.DelegatedOIDCServerConfiguration{
 				Issuer:       stack.Spec.Auth.DelegatedOIDCServer.Issuer,
 				ClientID:     stack.Spec.Auth.DelegatedOIDCServer.ClientID,
@@ -349,11 +303,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 					}
 				}(),
 				Annotations: configuration.Spec.Ingress.Annotations,
-			}
-			if annotations := configuration.Spec.Services.Gateway.Annotations.Service; annotations != nil {
-				t.Spec.Service = &v1beta1.ServiceConfiguration{
-					Annotations: annotations,
-				}
 			}
 
 			return nil

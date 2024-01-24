@@ -40,8 +40,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, ve
 		return err
 	}
 
-	if err := httpapis.Create(ctx, webhooks,
-		httpapis.WithServiceConfiguration(webhooks.Spec.Service)); err != nil {
+	if err := httpapis.Create(ctx, webhooks); err != nil {
 		return err
 	}
 

@@ -66,13 +66,6 @@ spec:
                 type: boolean
               enableScopes:
                 type: boolean
-              service:
-                properties:
-                  annotations:
-                    additionalProperties:
-                      type: string
-                    type: object
-                type: object
               signingKey:
                 type: string
               signingKeyFromSecret:

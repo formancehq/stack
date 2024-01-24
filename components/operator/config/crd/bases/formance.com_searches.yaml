@@ -68,13 +68,6 @@ spec:
                 type: boolean
               dev:
                 type: boolean
-              service:
-                properties:
-                  annotations:
-                    additionalProperties:
-                      type: string
-                    type: object
-                type: object
               stack:
                 type: string
               version:

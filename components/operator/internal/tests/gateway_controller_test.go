@@ -47,12 +47,7 @@ var _ = Describe("GatewayController", func() {
 					StackDependency: v1beta1.StackDependency{
 						Stack: stack.Name,
 					},
-					Name: "ledger",
-					Service: &v1beta1.ServiceConfiguration{
-						Annotations: map[string]string{
-							"foo": "bar",
-						},
-					},
+					Name:  "ledger",
 					Rules: []v1beta1.HTTPAPIRule{httpapis.RuleSecured()},
 				},
 			}

@@ -90,13 +90,6 @@ spec:
                     default: memory
                     type: string
                 type: object
-              service:
-                properties:
-                  annotations:
-                    additionalProperties:
-                      type: string
-                    type: object
-                type: object
               stack:
                 type: string
               version:

@@ -81,13 +81,6 @@ spec:
                 - host
                 - scheme
                 type: object
-              service:
-                properties:
-                  annotations:
-                    additionalProperties:
-                      type: string
-                    type: object
-                type: object
               stack:
                 type: string
               version:

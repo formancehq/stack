@@ -19,10 +19,8 @@ package httpapis
 import (
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
+	"github.com/formancehq/operator/internal/resources/services"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/apimachinery/pkg/util/intstr"
-	"k8s.io/utils/pointer"
 )
 
 //+kubebuilder:rbac:groups=formance.com,resources=httpapis,verbs=get;list;watch;create;update;patch;delete
@@ -30,35 +28,7 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=httpapis/finalizers,verbs=update
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, httpAPI *v1beta1.HTTPAPI) error {
-	_, _, err := CreateOrUpdate[*corev1.Service](ctx, types.NamespacedName{
-		Namespace: httpAPI.Spec.Stack,
-		Name:      httpAPI.Spec.Name,
-	},
-		func(t *corev1.Service) error {
-			if httpAPI.Spec.Service != nil {
-				t.ObjectMeta.Annotations = httpAPI.Spec.Service.Annotations
-			}
-
-			t.Labels = map[string]string{
-				"app.kubernetes.io/service-name": httpAPI.Name,
-			}
-			t.Spec = corev1.ServiceSpec{
-				Ports: []corev1.ServicePort{{
-					Name:        "http",
-					Port:        8080,
-					Protocol:    "TCP",
-					AppProtocol: pointer.String("http"),
-					TargetPort:  intstr.FromString("http"),
-				}},
-				Selector: map[string]string{
-					"app.kubernetes.io/name": httpAPI.Spec.Name,
-				},
-			}
-
-			return nil
-		},
-		WithController[*corev1.Service](ctx.GetScheme(), httpAPI),
-	)
+	_, err := services.Create(ctx, httpAPI, httpAPI.Spec.Name)
 	if err != nil {
 		return err
 	}
@@ -70,6 +40,7 @@ func init() {
 	Init(
 		WithStackDependencyReconciler(Reconcile,
 			WithOwn(&corev1.Service{}),
+			WithWatchConfigurationObject(&v1beta1.Settings{}),
 		),
 	)
 }

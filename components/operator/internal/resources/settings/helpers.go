@@ -2,6 +2,7 @@ package settings
 
 import (
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
@@ -31,6 +32,8 @@ func Get(ctx core.Context, stack string, keys ...string) (*string, error) {
 	}); err != nil {
 		return nil, errors.Wrap(err, "listings settings")
 	}
+
+	spew.Dump(allSettings.Items)
 
 	return findMatchingSettings(allSettings.Items, keys...)
 }

@@ -61,8 +61,6 @@ type SearchSpec struct {
 	ModuleProperties `json:",inline"`
 	//+optional
 	Batching *Batching `json:"batching,omitempty"`
-	//+optional
-	Service *ServiceConfiguration `json:"service,omitempty"`
 	// +optional
 	Auth *AuthConfig `json:"auth,omitempty"`
 }

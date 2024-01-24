@@ -47,8 +47,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, reconciliation *v1beta1.Reconc
 		}
 	}
 
-	if err := httpapis.Create(ctx, reconciliation,
-		httpapis.WithServiceConfiguration(reconciliation.Spec.Service)); err != nil {
+	if err := httpapis.Create(ctx, reconciliation); err != nil {
 		return err
 	}
 

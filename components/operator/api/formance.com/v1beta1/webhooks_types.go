@@ -24,8 +24,6 @@ import (
 type WebhooksSpec struct {
 	StackDependency  `json:",inline"`
 	ModuleProperties `json:",inline"`
-	//+optional
-	Service *ServiceConfiguration `json:"service,omitempty"`
 	// +optional
 	Auth *AuthConfig `json:"auth,omitempty"`
 }

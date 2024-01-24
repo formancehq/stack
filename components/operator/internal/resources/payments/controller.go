@@ -94,7 +94,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, p *v1beta1.Payments, version s
 				Secured: true,
 			},
 			httpapis.RuleSecured(),
-		), httpapis.WithServiceConfiguration(p.Spec.Service)); err != nil {
+		)); err != nil {
 		return err
 	}
 

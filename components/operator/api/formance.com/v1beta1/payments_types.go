@@ -25,8 +25,6 @@ type PaymentsSpec struct {
 	StackDependency  `json:",inline"`
 	ModuleProperties `json:",inline"`
 	EncryptionKey    string `json:"encryptionKey"`
-	//+optional
-	Service *ServiceConfiguration `json:"service,omitempty"`
 	// +optional
 	Auth *AuthConfig `json:"auth,omitempty"`
 }

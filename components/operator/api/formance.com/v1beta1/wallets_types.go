@@ -24,8 +24,6 @@ import (
 type WalletsSpec struct {
 	ModuleProperties `json:",inline"`
 	StackDependency  `json:",inline"`
-	//+optional
-	Service *ServiceConfiguration `json:"service,omitempty"`
 	// +optional
 	Auth *AuthConfig `json:"auth,omitempty"`
 }

@@ -56,9 +56,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, version st
 		}
 	}
 
-	if err := httpapis.Create(ctx, auth,
-		httpapis.WithRules(httpapis.RuleUnsecured()),
-		httpapis.WithServiceConfiguration(auth.Spec.Service)); err != nil {
+	if err := httpapis.Create(ctx, auth, httpapis.WithRules(httpapis.RuleUnsecured())); err != nil {
 		return errors.Wrap(err, "creating http api")
 	}
 

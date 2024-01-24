@@ -50,8 +50,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, versio
 		return err
 	}
 
-	if err := httpapis.Create(ctx, ledger,
-		httpapis.WithServiceConfiguration(ledger.Spec.Service)); err != nil {
+	if err := httpapis.Create(ctx, ledger); err != nil {
 		return err
 	}
 

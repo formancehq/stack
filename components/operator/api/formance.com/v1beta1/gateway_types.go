@@ -40,8 +40,6 @@ type GatewaySpec struct {
 	ModuleProperties `json:",inline"`
 	//+optional
 	Ingress *GatewayIngress `json:"ingress,omitempty"`
-	//+optional
-	Service *ServiceConfiguration `json:"service,omitempty"`
 }
 
 // GatewayStatus defines the observed state of Gateway

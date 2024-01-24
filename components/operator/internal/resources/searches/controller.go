@@ -135,8 +135,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 		}),
 	)
 
-	if err := httpapis.Create(ctx, search,
-		httpapis.WithServiceConfiguration(search.Spec.Service)); err != nil {
+	if err := httpapis.Create(ctx, search); err != nil {
 		return err
 	}
 

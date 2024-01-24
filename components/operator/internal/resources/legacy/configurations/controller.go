@@ -149,6 +149,7 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 			name:   "reconciliation",
 		},
 	} {
+		// TODO: merge into one settings
 		_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-%s-database-host", configuration.Name, cfg.name),
 			fmt.Sprintf("databases.%s.host", cfg.name), cfg.config.Host, stackNames...)
 		if err != nil {
@@ -193,6 +194,7 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 		}
 	}
 
+	// TODO: merge into one settings
 	if monitoring := configuration.Spec.Monitoring; monitoring != nil {
 
 		createSettings := func(discr string) error {
@@ -251,6 +253,7 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 		}
 	}
 
+	// TODO: merge into one settings
 	if configuration.Spec.Broker.Kafka != nil {
 		_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-broker-kind", configuration.Name),
 			"broker.kind", "kafka", stackNames...)
@@ -316,6 +319,7 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 		}
 	}
 
+	// TODO: merge into one settings
 	_, err := settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-temporal-address", configuration.Name),
 		"temporal-address", configuration.Spec.Temporal.Address, stackNames...)
 	if err != nil {
@@ -347,6 +351,7 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 		}
 	}
 
+	// TODO: merge into one settings
 	_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-elasticsearch-host", configuration.Name),
 		"elasticsearch.host", configuration.Spec.Services.Search.ElasticSearchConfig.Host, stackNames...)
 	if err != nil {
@@ -406,6 +411,7 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 		}
 	}
 
+	// TODO: merge into one settings
 	if configuration.Spec.Services.Search.Batching.Count != 0 {
 		_, err = settings.CreateOrUpdate(ctx, fmt.Sprintf("%s-search-batching-count", configuration.Name),
 			"search.batching.count", fmt.Sprint(configuration.Spec.Services.Search.Batching.Count), stackNames...)
@@ -439,6 +445,8 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 			return err
 		}
 	}
+
+	// TODO: Handle service annotations
 
 	return nil
 }

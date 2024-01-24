@@ -59,8 +59,6 @@ type LedgerSpec struct {
 	Auth *AuthConfig `json:"auth,omitempty"`
 	//+optional
 	DeploymentStrategy DeploymentStrategy `json:"deploymentStrategy,omitempty"`
-	//+optional
-	Service *ServiceConfiguration `json:"service,omitempty"`
 	// Locking is intended for ledger v1 only
 	//+optional
 	Locking LockingStrategy `json:"locking,omitempty"`
