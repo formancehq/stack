@@ -28,7 +28,7 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=httpapis/finalizers,verbs=update
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, httpAPI *v1beta1.HTTPAPI) error {
-	_, err := services.Create(ctx, httpAPI, httpAPI.Spec.Name)
+	_, err := services.Create(ctx, httpAPI, httpAPI.Spec.Name, services.WithDefault(httpAPI.Spec.Name))
 	if err != nil {
 		return err
 	}

@@ -11,7 +11,6 @@ import (
 
 func Create(ctx core.Context, owner v1beta1.Dependent, name string, mutators ...core.ObjectMutator[*corev1.Service]) (*corev1.Service, error) {
 	mutators = append(mutators,
-		Configure(name),
 		core.WithController[*corev1.Service](ctx.GetScheme(), owner),
 	)
 	mutators = append(mutators, func(t *corev1.Service) error {
@@ -29,7 +28,7 @@ func Create(ctx core.Context, owner v1beta1.Dependent, name string, mutators ...
 	return service, err
 }
 
-func Configure(name string) func(service *corev1.Service) error {
+func WithDefault(name string) core.ObjectMutator[*corev1.Service] {
 	return func(t *corev1.Service) error {
 		t.Labels = map[string]string{
 			"app.kubernetes.io/service-name": name,

@@ -85,6 +85,11 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, versio
 		}
 	}
 
+	_, err = createReindexCronJob(ctx, ledger)
+	if err != nil {
+		return err
+	}
+
 	if database.Status.Ready {
 
 		actualVersion, err := ActualVersion(ctx, ledger)

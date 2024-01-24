@@ -132,7 +132,7 @@ func createReadDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1be
 		return err
 	}
 
-	_, err = services.Create(ctx, payments, "payments-read")
+	_, err = services.Create(ctx, payments, "payments-read", services.WithDefault("payments-read"))
 	if err != nil {
 		return err
 	}
@@ -184,7 +184,7 @@ func createConnectorsDeployment(ctx core.Context, stack *v1beta1.Stack, payments
 		return err
 	}
 
-	_, err = services.Create(ctx, payments, "payments-connectors")
+	_, err = services.Create(ctx, payments, "payments-connectors", services.WithDefault("payments-connectors"))
 	if err != nil {
 		return err
 	}

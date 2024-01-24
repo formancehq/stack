@@ -19,6 +19,8 @@ package benthos
 import (
 	"embed"
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/services"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	"sort"
 	"strings"
 
@@ -44,6 +46,40 @@ import (
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) error {
 
+	if err := createDeployment(ctx, stack, b); err != nil {
+		return err
+	}
+
+	if err := createService(ctx, b); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func createService(ctx Context, b *v1beta1.Benthos) error {
+	_, err := services.Create(ctx, b, "benthos", func(t *corev1.Service) error {
+		t.Labels = map[string]string{
+			"app.kubernetes.io/service-name": "benthos",
+		}
+		t.Spec = corev1.ServiceSpec{
+			Ports: []corev1.ServicePort{{
+				Name:       "http",
+				Port:       4195,
+				Protocol:   "TCP",
+				TargetPort: intstr.FromString("http"),
+			}},
+			Selector: map[string]string{
+				"app.kubernetes.io/name": "benthos",
+			},
+		}
+
+		return nil
+	})
+	return err
+}
+
+func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) error {
 	brokerConfiguration, err := settings.FindBrokerConfiguration(ctx, stack)
 	if err != nil {
 		return errors.Wrap(err, "searching broker configuration")
@@ -248,6 +284,10 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) error {
 			Image:   "public.ecr.aws/formance-internal/jeffail/benthos:v4.23.0-es",
 			Env:     env,
 			Command: cmd,
+			Ports: []corev1.ContainerPort{{
+				Name:          "http",
+				ContainerPort: 4195,
+			}},
 			VolumeMounts: append(volumeMounts, corev1.VolumeMount{
 				Name:      "streams",
 				ReadOnly:  true,
@@ -282,6 +322,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) error {
 			return nil
 		},
 	)
+
 	return err
 }
 

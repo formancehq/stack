@@ -117,7 +117,7 @@ func installLedgerMonoWriterMultipleReader(ctx core.Context, stack *v1beta1.Stac
 			return err
 		}
 
-		if _, err := services.Create(ctx, ledger, name); err != nil {
+		if _, err := services.Create(ctx, ledger, name, services.WithDefault(name)); err != nil {
 			return err
 		}
 
