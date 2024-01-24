@@ -64,8 +64,6 @@ spec:
                 type: string
               version:
                 type: string
-            required:
-            - encryptionKey
             type: object
           status:
             description: PaymentsStatus defines the observed state of Payments

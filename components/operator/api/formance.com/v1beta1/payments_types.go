@@ -24,7 +24,8 @@ import (
 type PaymentsSpec struct {
 	StackDependency  `json:",inline"`
 	ModuleProperties `json:",inline"`
-	EncryptionKey    string `json:"encryptionKey"`
+	// +optional
+	EncryptionKey string `json:"encryptionKey"`
 	// +optional
 	Auth *AuthConfig `json:"auth,omitempty"`
 }
