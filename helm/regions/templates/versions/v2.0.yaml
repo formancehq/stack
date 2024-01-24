@@ -7,7 +7,7 @@ spec:
   ledger: v2.0.0-beta.14
   search: v2.0.0-beta.14
   stargate: v2.0.0-beta.14
-  auth: v2.0.0-beta.14
+  auth: v0.4.4 #v2.0.0-beta.14
   wallets: v2.0.0-beta.14
   webhooks: v2.0.0-beta.14
   gateway: v2.0.0-beta.14
