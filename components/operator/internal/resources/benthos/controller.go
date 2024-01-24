@@ -224,7 +224,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) error {
 		cmd = append(cmd, "/audit/gateway_audit.yaml")
 	}
 
-	streamList := &v1beta1.StreamList{}
+	streamList := &v1beta1.BenthosStreamList{}
 	if err := ctx.GetClient().List(ctx, streamList, client.MatchingFields{
 		"stack": b.Spec.Stack,
 	}); err != nil {
@@ -258,7 +258,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) error {
 			Name: "streams",
 			VolumeSource: corev1.VolumeSource{
 				Projected: &corev1.ProjectedVolumeSource{
-					Sources: Map(streams, func(stream v1beta1.Stream) corev1.VolumeProjection {
+					Sources: Map(streams, func(stream v1beta1.BenthosStream) corev1.VolumeProjection {
 						return corev1.VolumeProjection{
 							ConfigMap: &corev1.ConfigMapProjection{
 								LocalObjectReference: corev1.LocalObjectReference{
@@ -290,7 +290,7 @@ func init() {
 		WithStackDependencyReconciler(Reconcile,
 			WithWatchConfigurationObject(&v1beta1.Settings{}),
 			WithWatchStack(),
-			WithWatchDependency(&v1beta1.Stream{}),
+			WithWatchDependency(&v1beta1.BenthosStream{}),
 			WithOwn(&corev1.ConfigMap{}),
 			WithOwn(&appsv1.Deployment{}),
 		),

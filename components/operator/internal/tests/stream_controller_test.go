@@ -10,9 +10,9 @@ import (
 )
 
 var _ = Describe("StreamController", func() {
-	Context("When creating a Stream", func() {
+	Context("When creating a BenthosStream", func() {
 		var (
-			stream *v1beta1.Stream
+			stream *v1beta1.BenthosStream
 			stack  *v1beta1.Stack
 		)
 		BeforeEach(func() {
@@ -21,9 +21,9 @@ var _ = Describe("StreamController", func() {
 				Spec:       v1beta1.StackSpec{},
 			}
 			Expect(Create(stack)).To(BeNil())
-			stream = &v1beta1.Stream{
+			stream = &v1beta1.BenthosStream{
 				ObjectMeta: RandObjectMeta(),
-				Spec: v1beta1.StreamSpec{
+				Spec: v1beta1.BenthosStreamSpec{
 					StackDependency: v1beta1.StackDependency{
 						Stack: stack.Name,
 					},

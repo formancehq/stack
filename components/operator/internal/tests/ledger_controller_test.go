@@ -205,10 +205,10 @@ var _ = Describe("LedgerController", func() {
 				Expect(client.IgnoreNotFound(Delete(search))).To(Succeed())
 			})
 			checkStreamsExists := func() {
-				l := &v1beta1.StreamList{}
+				l := &v1beta1.BenthosStreamList{}
 				Eventually(func(g Gomega) int {
 					g.Expect(List(l)).To(Succeed())
-					return len(collectionutils.Filter(l.Items, func(stream v1beta1.Stream) bool {
+					return len(collectionutils.Filter(l.Items, func(stream v1beta1.BenthosStream) bool {
 						return stream.Spec.Stack == stack.Name
 					}))
 				}).Should(BeNumerically(">", 0))
@@ -220,10 +220,10 @@ var _ = Describe("LedgerController", func() {
 					Expect(Delete(search)).To(Succeed())
 				})
 				It("Should remove streams", func() {
-					l := &v1beta1.StreamList{}
+					l := &v1beta1.BenthosStreamList{}
 					Eventually(func(g Gomega) int {
 						g.Expect(List(l)).To(Succeed())
-						return len(collectionutils.Filter(l.Items, func(stream v1beta1.Stream) bool {
+						return len(collectionutils.Filter(l.Items, func(stream v1beta1.BenthosStream) bool {
 							return stream.Spec.Stack == stack.Name
 						}))
 					}).Should(BeZero())

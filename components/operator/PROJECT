@@ -133,7 +133,7 @@ resources:
 - api:
     crdVersion: v1
   group: formance.com
-  kind: Stream
+  kind: BenthosStream
   path: github.com/formancehq/operator/api/v1beta1
   version: v1beta1
 - api:

@@ -20,14 +20,14 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// StreamSpec defines the desired state of Stream
-type StreamSpec struct {
+// BenthosStreamSpec defines the desired state of BenthosStream
+type BenthosStreamSpec struct {
 	StackDependency `json:",inline"`
 	Data            string `json:"data"`
 }
 
-// StreamStatus defines the observed state of Stream
-type StreamStatus struct {
+// BenthosStreamStatus defines the observed state of BenthosStream
+type BenthosStreamStatus struct {
 	CommonStatus `json:",inline"`
 }
 
@@ -36,40 +36,40 @@ type StreamStatus struct {
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:printcolumn:name="Stack",type=string,JSONPath=".spec.stack",description="Stack"
 
-// Stream is the Schema for the streams API
-type Stream struct {
+// BenthosStream is the Schema for the streams API
+type BenthosStream struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   StreamSpec   `json:"spec,omitempty"`
-	Status StreamStatus `json:"status,omitempty"`
+	Spec   BenthosStreamSpec   `json:"spec,omitempty"`
+	Status BenthosStreamStatus `json:"status,omitempty"`
 }
 
-func (in *Stream) SetReady(b bool) {
+func (in *BenthosStream) SetReady(b bool) {
 	in.Status.Ready = b
 }
 
-func (in *Stream) IsReady() bool {
+func (in *BenthosStream) IsReady() bool {
 	return in.Status.Ready
 }
 
-func (in *Stream) SetError(s string) {
+func (in *BenthosStream) SetError(s string) {
 	in.Status.Error = s
 }
 
-func (a Stream) GetStack() string {
+func (a BenthosStream) GetStack() string {
 	return a.Spec.Stack
 }
 
 //+kubebuilder:object:root=true
 
-// StreamList contains a list of Stream
-type StreamList struct {
+// BenthosStreamList contains a list of BenthosStream
+type BenthosStreamList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []Stream `json:"items"`
+	Items           []BenthosStream `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&Stream{}, &StreamList{})
+	SchemeBuilder.Register(&BenthosStream{}, &BenthosStreamList{})
 }

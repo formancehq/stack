@@ -14,7 +14,7 @@ import (
 )
 
 func LoadFromFileSystem(ctx core.Context, fs embed.FS,
-	stackName string, streamDirectory string, opts ...core.ObjectMutator[*v1beta1.Stream]) error {
+	stackName string, streamDirectory string, opts ...core.ObjectMutator[*v1beta1.BenthosStream]) error {
 	streamFiles, err := fs.ReadDir(streamDirectory)
 	if err != nil {
 		return err
@@ -28,13 +28,13 @@ func LoadFromFileSystem(ctx core.Context, fs embed.FS,
 
 		sanitizedName := strings.ReplaceAll(file.Name(), "_", "-")
 
-		opts = append(opts, func(stream *v1beta1.Stream) error {
+		opts = append(opts, func(stream *v1beta1.BenthosStream) error {
 			stream.Spec.Data = string(streamContent)
 			stream.Spec.Stack = stackName
 
 			return nil
 		})
-		_, _, err = core.CreateOrUpdate[*v1beta1.Stream](ctx, types.NamespacedName{
+		_, _, err = core.CreateOrUpdate[*v1beta1.BenthosStream](ctx, types.NamespacedName{
 			Name: fmt.Sprintf("%s-%s", stackName, sanitizedName),
 		}, opts...)
 		if err != nil {

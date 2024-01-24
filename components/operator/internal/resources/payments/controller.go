@@ -71,15 +71,15 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, p *v1beta1.Payments, version s
 	}
 	if hasSearch {
 		if err := streams.LoadFromFileSystem(ctx, benthos.Streams, p.Spec.Stack, "streams/payments/v0.0.0",
-			WithController[*v1beta1.Stream](ctx.GetScheme(), p),
-			WithLabels[*v1beta1.Stream](map[string]string{
+			WithController[*v1beta1.BenthosStream](ctx.GetScheme(), p),
+			WithLabels[*v1beta1.BenthosStream](map[string]string{
 				"service": "payments",
 			}),
 		); err != nil {
 			return err
 		}
 	} else {
-		if err := ctx.GetClient().DeleteAllOf(ctx, &v1beta1.Stream{}, client.MatchingLabels{
+		if err := ctx.GetClient().DeleteAllOf(ctx, &v1beta1.BenthosStream{}, client.MatchingLabels{
 			"service": "payments",
 		}); err != nil {
 			return err

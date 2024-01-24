@@ -20,7 +20,7 @@ resources:
 - bases/formance.com_reconciliations.yaml
 - bases/formance.com_payments.yaml
 - bases/formance.com_searches.yaml
-- bases/formance.com_streams.yaml
+- bases/formance.com_benthosstreams.yaml
 - bases/formance.com_benthos.yaml
 - bases/formance.com_stargates.yaml
 - bases/formance.com_versionshistories.yaml
@@ -78,7 +78,7 @@ patches:
 #- path: patches/cainjection_in_reconciliations.yaml
 #- path: patches/cainjection_in_payments.yaml
 #- path: patches/cainjection_in_searches.yaml
-#- path: patches/cainjection_in_streams.yaml
+#- path: patches/cainjection_in_benthosstreams.yaml
 #- path: patches/cainjection_in_benthos.yaml
 #- path: patches/cainjection_in_elasticsearchconfigurations.yaml
 #- path: patches/cainjection_in_registriesconfigurations.yaml
