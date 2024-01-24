@@ -4,12 +4,7 @@ resources:
 - stack.formance.com_v1beta3_configuration.yaml
 - stack.formance.com_v1beta3_versions.yaml
 - formance.com_v1beta1_database.yaml
-- formance.com_v1beta1_databaseconfiguration.yaml
 - formance.com_v1beta1_stack.yaml
-- formance.com_v1beta1_topic.yaml
-- formance.com_v1beta1_brokerconfig.yaml
-- formance.com_v1beta1_topicquery.yaml
-- formance.com_v1beta1_httpapi.yaml
 - formance.com_v1beta1_ledger.yaml
 - formance.com_v1beta1_opentelemetryconfigurations.yaml
 - formance.com_v1beta1_gateway.yaml
@@ -21,14 +16,5 @@ resources:
 - formance.com_v1beta1_reconciliation.yaml
 - formance.com_v1beta1_payments.yaml
 - formance.com_v1beta1_search.yaml
-- formance.com_v1beta1_stream.yaml
-- formance.com_v1beta1_streamprocessor.yaml
-- formance.com_v1beta1_elasticsearchconfiguration.yaml
-- formance.com_v1beta1_registries.yaml
 - formance.com_v1beta1_stargate.yaml
-- formance.com_v1beta1_temporalconfiguration.yaml
-- formance.com_v1beta1_versionshistory.yaml
-- formance.com_v1beta1_versions.yaml
-- formance.com_v1beta1_searchbatchingconfiguration.yaml
-- formance.com_v1beta1_settings.yaml
 #+kubebuilder:scaffold:manifestskustomizesamples

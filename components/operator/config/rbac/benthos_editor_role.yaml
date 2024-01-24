@@ -1,20 +1,20 @@
-# permissions for end users to edit streamprocessors.
+# permissions for end users to edit benthos.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
     app.kubernetes.io/name: clusterrole
-    app.kubernetes.io/instance: streamprocessor-editor-role
+    app.kubernetes.io/instance: benthos-editor-role
     app.kubernetes.io/component: rbac
     app.kubernetes.io/created-by: operatorv2
     app.kubernetes.io/part-of: operatorv2
     app.kubernetes.io/managed-by: kustomize
-  name: streamprocessor-editor-role
+  name: benthos-editor-role
 rules:
 - apiGroups:
   - formance.com
   resources:
-  - streamprocessors
+  - benthos
   verbs:
   - create
   - delete
@@ -26,6 +26,6 @@ rules:
 - apiGroups:
   - formance.com
   resources:
-  - streamprocessors/status
+  - benthos/status
   verbs:
   - get

@@ -168,6 +168,32 @@ rules:
 - apiGroups:
   - formance.com
   resources:
+  - benthos
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - benthos/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - benthos/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
   - brokerconfigurations
   verbs:
   - create
@@ -603,32 +629,6 @@ rules:
   - formance.com
   resources:
   - stargates/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - formance.com
-  resources:
-  - streamprocessors
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - formance.com
-  resources:
-  - streamprocessors/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - formance.com
-  resources:
-  - streamprocessors/status
   verbs:
   - get
   - patch

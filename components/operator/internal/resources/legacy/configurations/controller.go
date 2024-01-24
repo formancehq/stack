@@ -77,7 +77,7 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 		},
 		{
 			requirements: configuration.Spec.Services.Search.BenthosResourceProperties,
-			deployment:   "stream-processor",
+			deployment:   "benthos",
 		},
 	} {
 		if cfg.requirements == nil {

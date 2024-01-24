@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package streamprocessors
+package benthos
 
 import (
 	"embed"
@@ -38,11 +38,11 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-//+kubebuilder:rbac:groups=formance.com,resources=streamprocessors,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=formance.com,resources=streamprocessors/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=formance.com,resources=streamprocessors/finalizers,verbs=update
+//+kubebuilder:rbac:groups=formance.com,resources=benthos,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=formance.com,resources=benthos/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=formance.com,resources=benthos/finalizers,verbs=update
 
-func Reconcile(ctx Context, stack *v1beta1.Stack, streamProcessor *v1beta1.StreamProcessor) error {
+func Reconcile(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) error {
 
 	brokerConfiguration, err := settings.FindBrokerConfiguration(ctx, stack)
 	if err != nil {
@@ -62,14 +62,14 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, streamProcessor *v1beta1.Strea
 
 	env := []corev1.EnvVar{
 		Env("OPENSEARCH_URL", elasticSearchConfiguration.Endpoint()),
-		Env("TOPIC_PREFIX", streamProcessor.Spec.Stack+"-"),
+		Env("TOPIC_PREFIX", b.Spec.Stack+"-"),
 		Env("OPENSEARCH_INDEX", "stacks"),
-		Env("STACK", streamProcessor.Spec.Stack),
+		Env("STACK", b.Spec.Stack),
 	}
-	if streamProcessor.Spec.Batching != nil {
+	if b.Spec.Batching != nil {
 		env = append(env,
-			Env("OPENSEARCH_BATCHING_COUNT", fmt.Sprint(streamProcessor.Spec.Batching.Count)),
-			Env("OPENSEARCH_BATCHING_PERIOD", streamProcessor.Spec.Batching.Period),
+			Env("OPENSEARCH_BATCHING_COUNT", fmt.Sprint(b.Spec.Batching.Count)),
+			Env("OPENSEARCH_BATCHING_PERIOD", b.Spec.Batching.Period),
 		)
 	}
 	openTelemetryConfiguration, err := settings.FindOpenTelemetryConfiguration(ctx, stack)
@@ -173,7 +173,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, streamProcessor *v1beta1.Strea
 		object := &unstructured.Unstructured{}
 		object.SetGroupVersionKind(kinds[0])
 		object.SetNamespace(stack.Name)
-		object.SetName("stream-processor-audit")
+		object.SetName("benthos-audit")
 		if err := client.IgnoreNotFound(ctx.GetClient().Delete(ctx, object)); err != nil {
 			return errors.Wrap(err, "deleting audit config map")
 		}
@@ -187,15 +187,15 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, streamProcessor *v1beta1.Strea
 		CopyDir(x.fs, x.name, x.name, &data)
 
 		configMap, _, err := CreateOrUpdate[*corev1.ConfigMap](ctx, types.NamespacedName{
-			Namespace: streamProcessor.Spec.Stack,
-			Name:      "stream-processor-" + x.name,
+			Namespace: b.Spec.Stack,
+			Name:      "benthos-" + x.name,
 		},
 			func(t *corev1.ConfigMap) error {
 				t.Data = data
 
 				return nil
 			},
-			WithController[*corev1.ConfigMap](ctx.GetScheme(), streamProcessor),
+			WithController[*corev1.ConfigMap](ctx.GetScheme(), b),
 		)
 		if err != nil {
 			return err
@@ -208,7 +208,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, streamProcessor *v1beta1.Strea
 			VolumeSource: corev1.VolumeSource{
 				ConfigMap: &corev1.ConfigMapVolumeSource{
 					LocalObjectReference: corev1.LocalObjectReference{
-						Name: "stream-processor-" + x.name,
+						Name: "benthos-" + x.name,
 					},
 				},
 			},
@@ -226,7 +226,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, streamProcessor *v1beta1.Strea
 
 	streamList := &v1beta1.StreamList{}
 	if err := ctx.GetClient().List(ctx, streamList, client.MatchingFields{
-		"stack": streamProcessor.Spec.Stack,
+		"stack": b.Spec.Stack,
 	}); err != nil {
 		return err
 	}
@@ -237,14 +237,14 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, streamProcessor *v1beta1.Strea
 	})
 
 	_, _, err = CreateOrUpdate(ctx, types.NamespacedName{
-		Namespace: streamProcessor.Spec.Stack,
-		Name:      "stream-processor",
+		Namespace: b.Spec.Stack,
+		Name:      "benthos",
 	},
-		WithController[*appsv1.Deployment](ctx.GetScheme(), streamProcessor),
-		deployments.WithMatchingLabels("stream-processor"),
-		deployments.WithInitContainers(streamProcessor.Spec.InitContainers...),
+		WithController[*appsv1.Deployment](ctx.GetScheme(), b),
+		deployments.WithMatchingLabels("benthos"),
+		deployments.WithInitContainers(b.Spec.InitContainers...),
 		deployments.WithContainers(corev1.Container{
-			Name:    "stream-processor",
+			Name:    "benthos",
 			Image:   "public.ecr.aws/formance-internal/jeffail/benthos:v4.23.0-es",
 			Env:     env,
 			Command: cmd,

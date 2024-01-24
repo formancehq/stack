@@ -47,12 +47,12 @@ var _ = Describe("SearchesController", func() {
 			Expect(Delete(stack)).To(Succeed())
 			Expect(Delete(brokerDSNSettings)).To(Succeed())
 		})
-		It("Should create a stream processor", func() {
-			streamProcessor := &v1beta1.StreamProcessor{}
+		It("Should create a Benthos", func() {
+			benthos := &v1beta1.Benthos{}
 			Eventually(func() error {
-				return LoadResource(stack.Name, fmt.Sprintf("%s-stream-processor", stack.Name), streamProcessor)
+				return LoadResource(stack.Name, fmt.Sprintf("%s-benthos", stack.Name), benthos)
 			}).Should(Succeed())
-			Expect(streamProcessor).To(BeControlledBy(search))
+			Expect(benthos).To(BeControlledBy(search))
 		})
 		Context("Then when creating a SearchBatchingConfiguration object", func() {
 			var searchBatchingCountSettings *v1beta1.Settings
@@ -63,12 +63,12 @@ var _ = Describe("SearchesController", func() {
 			JustAfterEach(func() {
 				Expect(Delete(searchBatchingCountSettings)).To(Succeed())
 			})
-			It("Should update the stream processor with the new batching configuration", func() {
-				streamProcessor := &v1beta1.StreamProcessor{}
+			It("Should update the Benthos with the new batching configuration", func() {
+				benthos := &v1beta1.Benthos{}
 				Eventually(func(g Gomega) v1beta1.Batching {
-					g.Expect(LoadResource(stack.Name, fmt.Sprintf("%s-stream-processor", stack.Name), streamProcessor)).To(Succeed())
-					g.Expect(streamProcessor.Spec.Batching).NotTo(BeNil())
-					return *streamProcessor.Spec.Batching
+					g.Expect(LoadResource(stack.Name, fmt.Sprintf("%s-benthos", stack.Name), benthos)).To(Succeed())
+					g.Expect(benthos.Spec.Batching).NotTo(BeNil())
+					return *benthos.Spec.Batching
 				}).Should(Equal(v1beta1.Batching{
 					Count: 10,
 				}))

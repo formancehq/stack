@@ -26,8 +26,8 @@ type Batching struct {
 	Period string `json:"period"`
 }
 
-// StreamProcessorSpec defines the desired state of StreamProcessor
-type StreamProcessorSpec struct {
+// BenthosSpec defines the desired state of Benthos
+type BenthosSpec struct {
 	StackDependency `json:",inline"`
 	DevProperties   `json:",inline"`
 	//+optional
@@ -38,8 +38,8 @@ type StreamProcessorSpec struct {
 	InitContainers []corev1.Container `json:"initContainers"`
 }
 
-// StreamProcessorStatus defines the observed state of StreamProcessor
-type StreamProcessorStatus struct {
+// BenthosStatus defines the observed state of Benthos
+type BenthosStatus struct {
 	CommonStatus `json:",inline"`
 }
 
@@ -50,40 +50,40 @@ type StreamProcessorStatus struct {
 //+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
 //+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
 
-// StreamProcessor is the Schema for the streamprocessors API
-type StreamProcessor struct {
+// Benthos is the Schema for the benthos API
+type Benthos struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   StreamProcessorSpec   `json:"spec,omitempty"`
-	Status StreamProcessorStatus `json:"status,omitempty"`
+	Spec   BenthosSpec   `json:"spec,omitempty"`
+	Status BenthosStatus `json:"status,omitempty"`
 }
 
-func (in *StreamProcessor) SetReady(b bool) {
+func (in *Benthos) SetReady(b bool) {
 	in.Status.Ready = b
 }
 
-func (in *StreamProcessor) IsReady() bool {
+func (in *Benthos) IsReady() bool {
 	return in.Status.Ready
 }
 
-func (in *StreamProcessor) SetError(s string) {
+func (in *Benthos) SetError(s string) {
 	in.Status.Error = s
 }
 
-func (a StreamProcessor) GetStack() string {
+func (a Benthos) GetStack() string {
 	return a.Spec.Stack
 }
 
 //+kubebuilder:object:root=true
 
-// StreamProcessorList contains a list of StreamProcessor
-type StreamProcessorList struct {
+// BenthosList contains a list of Benthos
+type BenthosList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []StreamProcessor `json:"items"`
+	Items           []Benthos `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&StreamProcessor{}, &StreamProcessorList{})
+	SchemeBuilder.Register(&Benthos{}, &BenthosList{})
 }

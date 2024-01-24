@@ -107,11 +107,11 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 		}
 	}
 
-	_, _, err = CreateOrUpdate[*v1beta1.StreamProcessor](ctx, types.NamespacedName{
-		Name: GetObjectName(stack.Name, "stream-processor"),
+	_, _, err = CreateOrUpdate[*v1beta1.Benthos](ctx, types.NamespacedName{
+		Name: GetObjectName(stack.Name, "benthos"),
 	},
-		WithController[*v1beta1.StreamProcessor](ctx.GetScheme(), search),
-		func(t *v1beta1.StreamProcessor) error {
+		WithController[*v1beta1.Benthos](ctx.GetScheme(), search),
+		func(t *v1beta1.Benthos) error {
 			t.Spec.Stack = stack.Name
 			t.Spec.Batching = batching
 			t.Spec.DevProperties = search.Spec.DevProperties
@@ -152,7 +152,7 @@ func init() {
 		WithModuleReconciler(Reconcile,
 			WithWatchStack(),
 			WithWatchConfigurationObject(&v1beta1.Settings{}),
-			WithOwn(&v1beta1.StreamProcessor{}),
+			WithOwn(&v1beta1.Benthos{}),
 			WithOwn(&v1beta1.HTTPAPI{}),
 			WithOwn(&appsv1.Deployment{}),
 		),

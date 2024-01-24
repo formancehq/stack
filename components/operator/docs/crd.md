@@ -11,6 +11,7 @@ Package v1beta1 contains API Schema definitions for the formance v1beta1 API gro
 ### Resource Types
 - [Auth](#auth)
 - [AuthClient](#authclient)
+- [Benthos](#benthos)
 - [BrokerTopic](#brokertopic)
 - [BrokerTopicConsumer](#brokertopicconsumer)
 - [Database](#database)
@@ -25,7 +26,6 @@ Package v1beta1 contains API Schema definitions for the formance v1beta1 API gro
 - [Stack](#stack)
 - [Stargate](#stargate)
 - [Stream](#stream)
-- [StreamProcessor](#streamprocessor)
 - [Versions](#versions)
 - [VersionsHistory](#versionshistory)
 - [Wallets](#wallets)
@@ -139,13 +139,50 @@ _Appears in:_
 
 
 _Appears in:_
+- [BenthosSpec](#benthosspec)
 - [SearchSpec](#searchspec)
-- [StreamProcessorSpec](#streamprocessorspec)
 
 | Field | Description |
 | --- | --- |
 | `count` _integer_ |  |
 | `period` _string_ |  |
+
+
+#### Benthos
+
+
+
+Benthos is the Schema for the benthos API
+
+
+
+| Field | Description |
+| --- | --- |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `Benthos`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[BenthosSpec](#benthosspec)_ |  |
+
+
+#### BenthosSpec
+
+
+
+BenthosSpec defines the desired state of Benthos
+
+_Appears in:_
+- [Benthos](#benthos)
+
+| Field | Description |
+| --- | --- |
+| `stack` _string_ |  |
+| `debug` _boolean_ |  |
+| `dev` _boolean_ |  |
+| `resourceRequirements` _[ResourceRequirements](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#resourcerequirements-v1-core)_ |  |
+| `batching` _[Batching](#batching)_ |  |
+| `initContainers` _[Container](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#container-v1-core) array_ |  |
+
+
 
 
 #### BrokerConfiguration
@@ -289,6 +326,7 @@ _Appears in:_
 _Appears in:_
 - [AuthClientStatus](#authclientstatus)
 - [AuthStatus](#authstatus)
+- [BenthosStatus](#benthosstatus)
 - [BrokerTopicConsumerStatus](#brokertopicconsumerstatus)
 - [BrokerTopicStatus](#brokertopicstatus)
 - [GatewayStatus](#gatewaystatus)
@@ -301,7 +339,6 @@ _Appears in:_
 - [SearchStatus](#searchstatus)
 - [StackStatus](#stackstatus)
 - [StargateStatus](#stargatestatus)
-- [StreamProcessorStatus](#streamprocessorstatus)
 - [StreamStatus](#streamstatus)
 - [WalletsStatus](#walletsstatus)
 - [WebhooksStatus](#webhooksstatus)
@@ -352,7 +389,6 @@ _Appears in:_
 
 _Appears in:_
 - [BrokerConfiguration](#brokerconfiguration)
-- [OpenTelemetryConfiguration](#opentelemetryconfiguration)
 - [SettingsSpec](#settingsspec)
 - [TemporalConfiguration](#temporalconfiguration)
 
@@ -471,6 +507,7 @@ _Appears in:_
 
 _Appears in:_
 - [AuthSpec](#authspec)
+- [BenthosSpec](#benthosspec)
 - [GatewaySpec](#gatewayspec)
 - [LedgerSpec](#ledgerspec)
 - [ModuleProperties](#moduleproperties)
@@ -480,7 +517,6 @@ _Appears in:_
 - [SearchSpec](#searchspec)
 - [StackSpec](#stackspec)
 - [StargateSpec](#stargatespec)
-- [StreamProcessorSpec](#streamprocessorspec)
 - [WalletsSpec](#walletsspec)
 - [WebhooksSpec](#webhooksspec)
 
@@ -1009,6 +1045,7 @@ Stack is the Schema for the stacks API
 _Appears in:_
 - [AuthClientSpec](#authclientspec)
 - [AuthSpec](#authspec)
+- [BenthosSpec](#benthosspec)
 - [BrokerTopicConsumerSpec](#brokertopicconsumerspec)
 - [BrokerTopicSpec](#brokertopicspec)
 - [DatabaseSpec](#databasespec)
@@ -1020,7 +1057,6 @@ _Appears in:_
 - [ReconciliationSpec](#reconciliationspec)
 - [SearchSpec](#searchspec)
 - [StargateSpec](#stargatespec)
-- [StreamProcessorSpec](#streamprocessorspec)
 - [StreamSpec](#streamspec)
 - [VersionsHistorySpec](#versionshistoryspec)
 - [WalletsSpec](#walletsspec)
@@ -1121,43 +1157,6 @@ Stream is the Schema for the streams API
 | `kind` _string_ | `Stream`
 | `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
 | `spec` _[StreamSpec](#streamspec)_ |  |
-
-
-#### StreamProcessor
-
-
-
-StreamProcessor is the Schema for the streamprocessors API
-
-
-
-| Field | Description |
-| --- | --- |
-| `apiVersion` _string_ | `formance.com/v1beta1`
-| `kind` _string_ | `StreamProcessor`
-| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
-| `spec` _[StreamProcessorSpec](#streamprocessorspec)_ |  |
-
-
-#### StreamProcessorSpec
-
-
-
-StreamProcessorSpec defines the desired state of StreamProcessor
-
-_Appears in:_
-- [StreamProcessor](#streamprocessor)
-
-| Field | Description |
-| --- | --- |
-| `stack` _string_ |  |
-| `debug` _boolean_ |  |
-| `dev` _boolean_ |  |
-| `resourceRequirements` _[ResourceRequirements](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#resourcerequirements-v1-core)_ |  |
-| `batching` _[Batching](#batching)_ |  |
-| `initContainers` _[Container](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#container-v1-core) array_ |  |
-
-
 
 
 #### StreamSpec
