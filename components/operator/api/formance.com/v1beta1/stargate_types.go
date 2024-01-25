@@ -46,7 +46,7 @@ type StargateStatus struct {
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:printcolumn:name="Stack",type=string,JSONPath=".spec.stack",description="Stack"
 //+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
-//+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
+//+kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
 
 // Stargate is the Schema for the stargates API
 type Stargate struct {
@@ -78,7 +78,7 @@ func (in *Stargate) IsReady() bool {
 }
 
 func (in *Stargate) SetError(s string) {
-	in.Status.Error = s
+	in.Status.Info = s
 }
 
 func (a Stargate) IsDebug() bool {

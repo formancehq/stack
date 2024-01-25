@@ -76,7 +76,7 @@ spec:
           status:
             description: StackStatus defines the observed state of Stack
             properties:
-              error:
+              info:
                 type: string
               ready:
                 type: boolean

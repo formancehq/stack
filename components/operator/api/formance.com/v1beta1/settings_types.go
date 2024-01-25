@@ -53,7 +53,7 @@ func (in *Settings) GetStacks() []string {
 }
 
 func (in *Settings) IsWildcard() bool {
-	return in.Spec.ApplyOnAllStacks
+	return len(in.Spec.Stacks) == 1 && in.Spec.Stacks[0] == "*"
 }
 
 //+kubebuilder:object:root=true

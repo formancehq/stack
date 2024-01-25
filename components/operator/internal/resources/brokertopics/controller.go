@@ -34,7 +34,7 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, topic *v1beta1.BrokerTopi
 		if err := clear(ctx, topic); err != nil {
 			return err
 		}
-		return core.ErrDeleted
+		return core.NewDeletedError()
 	}
 
 	if topic.Status.Ready {
@@ -59,7 +59,7 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, topic *v1beta1.BrokerTopi
 		}
 
 		if job.Status.Succeeded == 0 {
-			return core.ErrPending
+			return core.NewPendingError()
 		}
 	}
 
@@ -76,7 +76,7 @@ func clear(ctx core.Context, topic *v1beta1.BrokerTopic) error {
 			}
 
 			if job.Status.Succeeded == 0 {
-				return core.ErrPending
+				return core.NewPendingError()
 			}
 		}
 	}

@@ -37,7 +37,7 @@ type BrokerTopicConsumerStatus struct {
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:printcolumn:name="Stack",type=string,JSONPath=".spec.stack",description="Stack"
 //+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Ready"
-//+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
+//+kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
 
 // BrokerTopicConsumer is the Schema for the brokertopicconsumers API
 type BrokerTopicConsumer struct {
@@ -57,7 +57,7 @@ func (in *BrokerTopicConsumer) IsReady() bool {
 }
 
 func (in *BrokerTopicConsumer) SetError(s string) {
-	in.Status.Error = s
+	in.Status.Info = s
 }
 
 func (a BrokerTopicConsumer) GetStack() string {

@@ -68,7 +68,7 @@ func (in *HTTPAPI) IsReady() bool {
 }
 
 func (in *HTTPAPI) SetError(s string) {
-	in.Status.Error = s
+	in.Status.Info = s
 }
 
 func (a HTTPAPI) GetStack() string {

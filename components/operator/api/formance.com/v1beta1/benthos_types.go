@@ -40,7 +40,7 @@ type BenthosSpec struct {
 
 // BenthosStatus defines the observed state of Benthos
 type BenthosStatus struct {
-	CommonStatus `json:",inline"`
+	StatusWithConditions `json:",inline"`
 }
 
 //+kubebuilder:object:root=true
@@ -48,7 +48,7 @@ type BenthosStatus struct {
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:printcolumn:name="Stack",type=string,JSONPath=".spec.stack",description="Stack"
 //+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
-//+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
+//+kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
 
 // Benthos is the Schema for the benthos API
 type Benthos struct {
@@ -68,11 +68,19 @@ func (in *Benthos) IsReady() bool {
 }
 
 func (in *Benthos) SetError(s string) {
-	in.Status.Error = s
+	in.Status.Info = s
 }
 
 func (a Benthos) GetStack() string {
 	return a.Spec.Stack
+}
+
+func (in *Benthos) GetConditions() []Condition {
+	return in.Status.Conditions
+}
+
+func (a *Benthos) SetCondition(condition Condition) {
+	a.Status.SetCondition(condition)
 }
 
 //+kubebuilder:object:root=true

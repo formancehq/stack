@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"

@@ -43,8 +43,6 @@ spec:
           spec:
             description: SettingsSpec defines the desired state of Settings
             properties:
-              applyOnAllStacks:
-                type: boolean
               key:
                 type: string
               stacks:

@@ -52,7 +52,7 @@ func installLedgerSingleInstance(ctx core.Context, stack *v1beta1.Stack,
 		return err
 	}
 
-	if !v2 && ledger.Spec.Locking.Strategy == "redis" {
+	if !v2 && ledger.Spec.Locking != nil && ledger.Spec.Locking.Strategy == "redis" {
 		container.Env = append(container.Env,
 			core.Env("NUMARY_LOCK_STRATEGY", "redis"),
 			core.Env("NUMARY_LOCK_STRATEGY_REDIS_URL", ledger.Spec.Locking.Redis.Uri),
@@ -307,7 +307,7 @@ func migrateToLedgerV2(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.L
 	}
 	if err == nil {
 		if job.Status.Succeeded == 0 {
-			return core.ErrPending
+			return core.NewPendingError()
 		}
 		return nil
 	}

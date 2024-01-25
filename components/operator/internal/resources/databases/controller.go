@@ -49,7 +49,7 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 			}
 
 			if job.Status.Succeeded == 0 {
-				return core.ErrPending
+				return core.NewPendingError()
 			}
 		}
 
@@ -60,7 +60,7 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 			}
 		}
 
-		return core.ErrDeleted
+		return core.NewDeletedError()
 	}
 
 	databaseConfiguration, err := settings.FindDatabaseConfiguration(ctx, database)
@@ -112,7 +112,7 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 		}
 
 		if job.Status.Succeeded == 0 {
-			return core.ErrPending
+			return core.NewPendingError()
 		}
 	case !reflect.DeepEqual(database.Status.Configuration.DatabaseConfiguration,
 		*databaseConfiguration):

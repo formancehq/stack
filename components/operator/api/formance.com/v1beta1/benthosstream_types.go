@@ -55,7 +55,7 @@ func (in *BenthosStream) IsReady() bool {
 }
 
 func (in *BenthosStream) SetError(s string) {
-	in.Status.Error = s
+	in.Status.Info = s
 }
 
 func (a BenthosStream) GetStack() string {

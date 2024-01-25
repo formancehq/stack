@@ -23,9 +23,9 @@ spec:
       jsonPath: .status.ready
       name: Ready
       type: string
-    - description: Error
-      jsonPath: .status.error
-      name: Error
+    - description: Info
+      jsonPath: .status.info
+      name: Info
       type: string
     name: v1beta1
     schema:
@@ -60,8 +60,6 @@ spec:
               configuration:
                 description: BrokerConfiguration defines the desired state of BrokerConfig
                 properties:
-                  applyOnAllStacks:
-                    type: boolean
                   kafka:
                     properties:
                       brokers:
@@ -101,7 +99,7 @@ spec:
                       type: string
                     type: array
                 type: object
-              error:
+              info:
                 type: string
               ready:
                 type: boolean

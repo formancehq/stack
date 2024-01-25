@@ -106,7 +106,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, topicQuery *v1beta1.BrokerTopi
 	}
 
 	if !topic.Status.Ready {
-		return ErrPending
+		return NewPendingError()
 	}
 
 	return nil

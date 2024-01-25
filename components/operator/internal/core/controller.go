@@ -2,7 +2,6 @@ package core
 
 import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
-	pkgError "github.com/pkg/errors"
 	"golang.org/x/mod/semver"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -31,7 +30,7 @@ func ForModule[T v1beta1.Module](underlyingController func(ctx Context, stack *v
 			}
 
 			if condition.Status != metav1.ConditionTrue {
-				return ErrPending
+				return NewPendingError()
 			}
 		}
 
@@ -56,7 +55,7 @@ func ForStackDependency[T v1beta1.Dependent](ctrl func(ctx Context, stack *v1bet
 			}
 		} else {
 			if stack.Spec.Disabled {
-				return nil
+				return NewStackDisabledError()
 			}
 			if stack.GetLabels()[SkipLabel] == "true" {
 				return nil
@@ -83,8 +82,7 @@ func ForReadier[T v1beta1.Object](controller Controller[T]) Controller[T] {
 		err := controller(ctx, object)
 		if err != nil {
 			setStatus(err)
-			if !pkgError.Is(err, ErrPending) &&
-				!pkgError.Is(err, ErrDeleted) {
+			if !IsApplicationError(err) {
 				reconcilerError = err
 			}
 		} else {

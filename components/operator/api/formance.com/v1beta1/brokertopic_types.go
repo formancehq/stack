@@ -69,7 +69,7 @@ type BrokerTopicStatus struct {
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:printcolumn:name="Stack",type=string,JSONPath=".spec.stack",description="Stack"
 //+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Ready"
-//+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
+//+kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
 
 // BrokerTopic is the Schema for the brokertopics API
 type BrokerTopic struct {
@@ -89,7 +89,7 @@ func (in *BrokerTopic) IsReady() bool {
 }
 
 func (in *BrokerTopic) SetError(s string) {
-	in.Status.Error = s
+	in.Status.Info = s
 }
 
 func (a BrokerTopic) GetStack() string {

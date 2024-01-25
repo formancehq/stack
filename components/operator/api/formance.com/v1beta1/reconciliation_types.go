@@ -38,7 +38,7 @@ type ReconciliationStatus struct {
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:printcolumn:name="Stack",type=string,JSONPath=".spec.stack",description="Stack"
 //+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
-//+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
+//+kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
 
 // Reconciliation is the Schema for the reconciliations API
 type Reconciliation struct {
@@ -62,7 +62,7 @@ func (in *Reconciliation) IsReady() bool {
 }
 
 func (in *Reconciliation) SetError(s string) {
-	in.Status.Error = s
+	in.Status.Info = s
 }
 
 func (in *Reconciliation) GetConditions() []Condition {

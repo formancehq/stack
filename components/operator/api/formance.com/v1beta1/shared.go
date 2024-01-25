@@ -90,7 +90,7 @@ type CommonStatus struct {
 	//+optional
 	Ready bool `json:"ready"`
 	//+optional
-	Error string `json:"error,omitempty"`
+	Info string `json:"info,omitempty"`
 }
 
 func (c *CommonStatus) SetReady(ready bool) {
@@ -98,18 +98,16 @@ func (c *CommonStatus) SetReady(ready bool) {
 }
 
 func (c *CommonStatus) SetError(err string) {
-	c.Error = err
+	c.Info = err
 }
 
-type ModuleStatus struct {
+type StatusWithConditions struct {
 	CommonStatus `json:",inline"`
 	//+optional
 	Conditions []Condition `json:"conditions,omitempty"`
-	//+optional
-	Version string `json:"version,omitempty"`
 }
 
-func (c *ModuleStatus) DeleteCondition(t, reason string) {
+func (c *StatusWithConditions) DeleteCondition(t, reason string) {
 	for i, existingCondition := range c.Conditions {
 		if existingCondition.Type == t && existingCondition.Reason == reason {
 			if i < len(c.Conditions)-1 {
@@ -122,9 +120,15 @@ func (c *ModuleStatus) DeleteCondition(t, reason string) {
 	}
 }
 
-func (c *ModuleStatus) SetCondition(condition Condition) {
+func (c *StatusWithConditions) SetCondition(condition Condition) {
 	c.DeleteCondition(condition.Type, condition.Reason)
 	c.Conditions = append(c.Conditions, condition)
+}
+
+type ModuleStatus struct {
+	StatusWithConditions `json:",inline"`
+	//+optional
+	Version string `json:"version,omitempty"`
 }
 
 type AuthConfig struct {
@@ -186,8 +190,6 @@ type ConfigurationObject interface {
 type ConfigurationProperties struct {
 	//+optional
 	Stacks []string `json:"stacks,omitempty"`
-	//+optional
-	ApplyOnAllStacks bool `json:"applyOnAllStacks,omitempty"`
 }
 
 // +kubebuilder:object:generate=false

@@ -38,7 +38,7 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		if err := ctx.GetClient().Patch(ctx, stack, patch); err != nil {
 			return err
 		}
-		return ErrPending
+		return NewPendingError()
 	}
 
 	configuration := &v1beta3.Configuration{}
@@ -164,7 +164,7 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}, func(t *v1beta1.Ledger) error {
 			t.Spec.Stack = stack.Name
 			t.Spec.DeploymentStrategy = v1beta1.DeploymentStrategy(configuration.Spec.Services.Ledger.DeploymentStrategy)
-			t.Spec.Locking = v1beta1.LockingStrategy{
+			t.Spec.Locking = &v1beta1.LockingStrategy{
 				Strategy: configuration.Spec.Services.Ledger.Locking.Strategy,
 				Redis: func() *v1beta1.LockingStrategyRedisConfig {
 					if configuration.Spec.Services.Ledger.Locking.Strategy != "redis" {

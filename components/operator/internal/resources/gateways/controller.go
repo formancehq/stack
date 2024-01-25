@@ -87,7 +87,7 @@ func createAuditTopic(ctx Context, stack *v1beta1.Stack, gateway *v1beta1.Gatewa
 			return nil, err
 		}
 		if !topic.Status.Ready {
-			return nil, ErrPending
+			return nil, NewPendingError()
 		}
 		return topic, nil
 	}

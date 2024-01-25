@@ -23,7 +23,6 @@ import (
 )
 
 type LockingStrategyRedisConfig struct {
-	// +optional
 	Uri string `json:"uri,omitempty"`
 	// +optional
 	TLS bool `json:"tls"`
@@ -61,7 +60,7 @@ type LedgerSpec struct {
 	DeploymentStrategy DeploymentStrategy `json:"deploymentStrategy,omitempty"`
 	// Locking is intended for ledger v1 only
 	//+optional
-	Locking LockingStrategy `json:"locking,omitempty"`
+	Locking *LockingStrategy `json:"locking,omitempty"`
 }
 
 // LedgerStatus defines the observed state of Ledger
@@ -74,7 +73,7 @@ type LedgerStatus struct {
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:printcolumn:name="Stack",type=string,JSONPath=".spec.stack",description="Stack"
 //+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
-//+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
+//+kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
 
 // Ledger is the Schema for the ledgers API
 type Ledger struct {
@@ -98,7 +97,7 @@ func (in *Ledger) SetReady(b bool) {
 }
 
 func (in *Ledger) SetError(s string) {
-	in.Status.Error = s
+	in.Status.Info = s
 }
 
 func (in *Ledger) GetConditions() []Condition {

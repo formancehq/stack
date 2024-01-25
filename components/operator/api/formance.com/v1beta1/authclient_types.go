@@ -85,7 +85,7 @@ func (in *AuthClient) IsReady() bool {
 }
 
 func (a *AuthClient) SetError(s string) {
-	a.Status.Error = s
+	a.Status.Info = s
 }
 
 func (a AuthClient) GetStack() string {

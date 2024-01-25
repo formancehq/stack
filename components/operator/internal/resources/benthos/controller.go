@@ -272,11 +272,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 		return streams[i].Name < streams[j].Name
 	})
 
-	_, _, err = CreateOrUpdate(ctx, types.NamespacedName{
-		Namespace: b.Spec.Stack,
-		Name:      "benthos",
-	},
-		WithController[*appsv1.Deployment](ctx.GetScheme(), b),
+	_, err = deployments.CreateOrUpdate(ctx, b, "benthos",
 		deployments.WithMatchingLabels("benthos"),
 		deployments.WithInitContainers(b.Spec.InitContainers...),
 		deployments.WithContainers(corev1.Container{

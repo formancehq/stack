@@ -60,7 +60,7 @@ func (in *Wallets) IsReady() bool {
 }
 
 func (in *Wallets) SetError(s string) {
-	in.Status.Error = s
+	in.Status.Info = s
 }
 
 func (in *Wallets) GetConditions() []Condition {

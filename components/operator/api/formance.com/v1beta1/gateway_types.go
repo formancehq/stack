@@ -58,7 +58,7 @@ type GatewayStatus struct {
 //+kubebuilder:printcolumn:name="HTTP APIs",type=string,JSONPath=".status.syncHTTPAPIs",description="Synchronized http apis"
 //+kubebuilder:printcolumn:name="Auth enabled",type=string,JSONPath=".status.authEnabled",description="Is authentication enabled"
 //+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
-//+kubebuilder:printcolumn:name="Error",type=string,JSONPath=".status.error",description="Error"
+//+kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
 
 // Gateway is the Schema for the gateways API
 type Gateway struct {
@@ -90,7 +90,7 @@ func (in *Gateway) IsReady() bool {
 }
 
 func (in *Gateway) SetError(s string) {
-	in.Status.Error = s
+	in.Status.Info = s
 }
 
 func (a Gateway) GetStack() string {

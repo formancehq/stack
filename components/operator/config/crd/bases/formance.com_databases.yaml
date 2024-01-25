@@ -31,9 +31,9 @@ spec:
       jsonPath: .status.outOfSync
       name: Out of sync
       type: string
-    - description: Error
-      jsonPath: .status.error
-      name: Error
+    - description: Info
+      jsonPath: .status.info
+      name: Info
       type: string
     name: v1beta1
     schema:

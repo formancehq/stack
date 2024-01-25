@@ -14,26 +14,27 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func ValueOrDefault[T any](v *T, defaultValue T) T {
-	if v == nil {
-		return defaultValue
-	}
-	return *v
-}
-
 func Get(ctx core.Context, stack string, keys ...string) (*string, error) {
 	keys = Flatten(Map(keys, func(from string) []string {
 		return strings.Split(from, ".")
 	}))
-	allSettings := &v1beta1.SettingsList{}
-	if err := ctx.GetClient().List(ctx, allSettings, client.MatchingFields{
+	allSettingsTargetingStack := &v1beta1.SettingsList{}
+	if err := ctx.GetClient().List(ctx, allSettingsTargetingStack, client.MatchingFields{
 		"stack":  stack,
 		"keylen": fmt.Sprint(len(keys)),
 	}); err != nil {
 		return nil, errors.Wrap(err, "listings settings")
 	}
 
-	return findMatchingSettings(allSettings.Items, keys...)
+	allSettingsTargetingAllStacks := &v1beta1.SettingsList{}
+	if err := ctx.GetClient().List(ctx, allSettingsTargetingAllStacks, client.MatchingFields{
+		"stack":  "*",
+		"keylen": fmt.Sprint(len(keys)),
+	}); err != nil {
+		return nil, errors.Wrap(err, "listings settings")
+	}
+
+	return findMatchingSettings(append(allSettingsTargetingStack.Items, allSettingsTargetingAllStacks.Items...), keys...)
 }
 
 func GetString(ctx core.Context, stack string, keys ...string) (*string, error) {
@@ -262,24 +263,7 @@ func findMatchingSettings(settings []v1beta1.Settings, keys ...string) (*string,
 		return strings.Split(from, ".")
 	}))
 
-	slices.SortFunc(settings, func(a, b v1beta1.Settings) int {
-		aKeys := strings.Split(a.Spec.Key, ".")
-		bKeys := strings.Split(b.Spec.Key, ".")
-
-		for i := 0; i < len(aKeys); i++ {
-			if aKeys[i] == bKeys[i] {
-				continue
-			}
-			if aKeys[i] == "*" {
-				return 1
-			}
-			if bKeys[i] == "*" {
-				return -1
-			}
-		}
-
-		return 0
-	})
+	slices.SortFunc(settings, sortSettingsByPriority)
 
 	for _, setting := range settings {
 		if matchSetting(setting, keys...) {
@@ -301,4 +285,29 @@ func matchSetting(setting v1beta1.Settings, keys ...string) bool {
 		}
 	}
 	return true
+}
+
+func sortSettingsByPriority(a, b v1beta1.Settings) int {
+	switch {
+	case a.IsWildcard() && !b.IsWildcard():
+		return 1
+	case !a.IsWildcard() && b.IsWildcard():
+		return -1
+	}
+	aKeys := strings.Split(a.Spec.Key, ".")
+	bKeys := strings.Split(b.Spec.Key, ".")
+
+	for i := 0; i < len(aKeys); i++ {
+		if aKeys[i] == bKeys[i] {
+			continue
+		}
+		if aKeys[i] == "*" {
+			return 1
+		}
+		if bKeys[i] == "*" {
+			return -1
+		}
+	}
+
+	return 0
 }
