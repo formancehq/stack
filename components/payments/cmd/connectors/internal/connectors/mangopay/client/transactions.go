@@ -54,7 +54,9 @@ func (c *Client) GetTransactions(ctx context.Context, walletsID string, page, pa
 	q.Add("per_page", strconv.Itoa(pageSize))
 	q.Add("page", fmt.Sprint(page))
 	q.Add("Sort", "CreationDate:ASC")
-	q.Add("AfterDate", strconv.FormatInt(afterCreatedAt.Unix(), 10))
+	if !afterCreatedAt.IsZero() {
+		q.Add("AfterDate", strconv.FormatInt(afterCreatedAt.UTC().Unix(), 10))
+	}
 	req.URL.RawQuery = q.Encode()
 
 	resp, err := c.httpClient.Do(req)

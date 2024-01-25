@@ -78,8 +78,12 @@ func ingestUsers(
 
 	for _, user := range users {
 		userCreationDate := time.Unix(user.CreationDate, 0)
-		if userCreationDate.Before(state.LastCreationDate) {
+		switch userCreationDate.Compare(state.LastCreationDate) {
+		case -1, 0:
+			// creationDate <= state.LastCreationDate, nothing to do,
+			// we already processed this user.
 			continue
+		default:
 		}
 
 		walletsTask, err := models.EncodeTaskDescriptor(TaskDescriptor{

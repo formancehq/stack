@@ -96,6 +96,7 @@ func fetchTransactions(
 			}
 
 			if batchElement.Payment != nil {
+				// State update
 				if firstCreatedCreationDate.IsZero() &&
 					batchElement.Payment.Status == models.PaymentStatusPending {
 					firstCreatedCreationDate = batchElement.Payment.CreatedAt

@@ -87,8 +87,12 @@ func ingestBankAccounts(
 		var accountBatch ingestion.AccountBatch
 		for _, bankAccount := range pagedBankAccounts {
 			creationDate := time.Unix(bankAccount.CreationDate, 0)
-			if creationDate.Before(state.LastCreationDate) {
+			switch creationDate.Compare(state.LastCreationDate) {
+			case -1, 0:
+				// creationDate <= state.LastCreationDate, nothing to do,
+				// we already processed this bank account.
 				continue
+			default:
 			}
 			newState.LastCreationDate = creationDate
 

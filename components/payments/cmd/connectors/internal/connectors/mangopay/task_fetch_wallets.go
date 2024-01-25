@@ -130,8 +130,12 @@ func handleWallets(
 	var lastCreationDate time.Time
 	for _, wallet := range pagedWallets {
 		creationDate := time.Unix(wallet.CreationDate, 0)
-		if creationDate.Before(state.LastCreationDate) {
+		switch creationDate.Compare(state.LastCreationDate) {
+		case -1, 0:
+			// creationDate <= state.LastCreationDate, nothing to do,
+			// we already processed wallets.
 			continue
+		default:
 		}
 
 		transactionTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
