@@ -7,6 +7,7 @@ import (
 	"math"
 	"math/big"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currencycloud/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
@@ -14,20 +15,22 @@ import (
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 )
 
 func taskFetchTransactions(client *client.Client, config Config) task.Task {
 	return func(
 		ctx context.Context,
+		taskID models.TaskID,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 	) error {
-		span := trace.SpanFromContext(ctx)
-		span.SetName("currencycloud.taskFetchTransactions")
-		span.SetAttributes(
+		ctx, span := connectors.StartSpan(
+			ctx,
+			"currencycloud.taskFetchTransactions",
 			attribute.String("connectorID", connectorID.String()),
+			attribute.String("taskID", taskID.String()),
 		)
+		defer span.End()
 
 		if err := ingestTransactions(ctx, connectorID, client, ingester); err != nil {
 			otel.RecordError(span, err)

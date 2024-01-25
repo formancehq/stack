@@ -4,25 +4,28 @@ import (
 	"context"
 	"errors"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 )
 
 // taskMain is the main task of the connector. It launches the other tasks.
 func taskMain() task.Task {
 	return func(
 		ctx context.Context,
+		taskID models.TaskID,
 		connectorID models.ConnectorID,
 		scheduler task.Scheduler,
 	) error {
-		span := trace.SpanFromContext(ctx)
-		span.SetName("currencycloud.taskMain")
-		span.SetAttributes(
+		ctx, span := connectors.StartSpan(
+			ctx,
+			"currencycloud.taskMain",
 			attribute.String("connectorID", connectorID.String()),
+			attribute.String("taskID", taskID.String()),
 		)
+		defer span.End()
 
 		taskAccounts, err := models.EncodeTaskDescriptor(TaskDescriptor{
 			Name: "Fetch accounts from client",

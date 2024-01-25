@@ -3,6 +3,7 @@ package stripe
 import (
 	"context"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/stripe/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
@@ -11,20 +12,26 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/stripe/stripe-go/v72"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 )
 
-func fetchPaymentsTask(config TimelineConfig, client *client.DefaultClient) func(ctx context.Context, logger logging.Logger, connectorID models.ConnectorID, resolver task.StateResolver,
-	scheduler task.Scheduler, ingester ingestion.Ingester) error {
-	return func(ctx context.Context, logger logging.Logger, connectorID models.ConnectorID, resolver task.StateResolver,
-		scheduler task.Scheduler, ingester ingestion.Ingester,
+func fetchPaymentsTask(config TimelineConfig, client *client.DefaultClient) task.Task {
+	return func(
+		ctx context.Context,
+		logger logging.Logger,
+		taskID models.TaskID,
+		connectorID models.ConnectorID,
+		resolver task.StateResolver,
+		scheduler task.Scheduler,
+		ingester ingestion.Ingester,
 	) error {
-		span := trace.SpanFromContext(ctx)
-		span.SetName("stripe.fetchPaymentsTask")
-		span.SetAttributes(
+		ctx, span := connectors.StartSpan(
+			ctx,
+			"stripe.fetchPaymentsTask",
 			attribute.String("connectorID", connectorID.String()),
+			attribute.String("taskID", taskID.String()),
 			attribute.String("account", rootAccountReference),
 		)
+		defer span.End()
 
 		tt := NewTimelineTrigger(
 			logger,

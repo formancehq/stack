@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/stripe/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
@@ -16,7 +17,6 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/stripe/stripe-go/v72"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 )
 
 const (
@@ -26,6 +26,7 @@ const (
 func initiatePaymentTask(transferID string, stripeClient *client.DefaultClient) task.Task {
 	return func(
 		ctx context.Context,
+		taskID models.TaskID,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
@@ -33,13 +34,15 @@ func initiatePaymentTask(transferID string, stripeClient *client.DefaultClient) 
 	) error {
 		transferInitiationID := models.MustTransferInitiationIDFromString(transferID)
 
-		span := trace.SpanFromContext(ctx)
-		span.SetName("stripe.initiatePaymentTask")
-		span.SetAttributes(
+		ctx, span := connectors.StartSpan(
+			ctx,
+			"stripe.initiatePaymentTask",
 			attribute.String("connectorID", connectorID.String()),
+			attribute.String("taskID", taskID.String()),
 			attribute.String("transferID", transferID),
 			attribute.String("reference", transferInitiationID.Reference),
 		)
+		defer span.End()
 
 		transfer, err := getTransfer(ctx, storageReader, transferInitiationID, true)
 		if err != nil {
@@ -188,6 +191,8 @@ func updatePaymentStatusTask(
 ) task.Task {
 	return func(
 		ctx context.Context,
+		taskID models.TaskID,
+		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 		storageReader storage.Reader,
@@ -195,14 +200,17 @@ func updatePaymentStatusTask(
 		paymentID := models.MustPaymentIDFromString(pID)
 		transferInitiationID := models.MustTransferInitiationIDFromString(transferID)
 
-		span := trace.SpanFromContext(ctx)
-		span.SetName("stripe.updatePaymentStatusTask")
-		span.SetAttributes(
+		ctx, span := connectors.StartSpan(
+			ctx,
+			"stripe.updatePaymentStatusTask",
+			attribute.String("connectorID", connectorID.String()),
+			attribute.String("taskID", taskID.String()),
 			attribute.String("transferID", transferID),
 			attribute.String("paymentID", pID),
 			attribute.Int("attempt", attempt),
 			attribute.String("reference", transferInitiationID.Reference),
 		)
+		defer span.End()
 
 		transfer, err := getTransfer(ctx, storageReader, transferInitiationID, false)
 		if err != nil {

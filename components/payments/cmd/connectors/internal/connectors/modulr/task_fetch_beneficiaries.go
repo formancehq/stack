@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/modulr/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
@@ -18,15 +18,18 @@ import (
 func taskFetchBeneficiaries(config Config, client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
+		taskID models.TaskID,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 	) error {
-		span := trace.SpanFromContext(ctx)
-		span.SetName("modulr.taskFetchBeneficiaries")
-		span.SetAttributes(
+		ctx, span := connectors.StartSpan(
+			ctx,
+			"modulr.taskFetchBeneficiaries",
 			attribute.String("connectorID", connectorID.String()),
+			attribute.String("taskID", taskID.String()),
 		)
+		defer span.End()
 
 		if err := fetchBeneficiaries(ctx, config, client, connectorID, ingester, scheduler); err != nil {
 			otel.RecordError(span, err)

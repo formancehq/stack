@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/atlar/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
@@ -20,12 +21,12 @@ import (
 	"github.com/get-momo/atlar-v1-go-client/client/credit_transfers"
 	atlar_models "github.com/get-momo/atlar-v1-go-client/models"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 )
 
 func InitiatePaymentTask(config Config, client *client.Client, transferID string) task.Task {
 	return func(
 		ctx context.Context,
+		taskID models.TaskID,
 		connectorID models.ConnectorID,
 		scheduler task.Scheduler,
 		storageReader storage.Reader,
@@ -33,13 +34,15 @@ func InitiatePaymentTask(config Config, client *client.Client, transferID string
 	) error {
 		transferInitiationID := models.MustTransferInitiationIDFromString(transferID)
 
-		span := trace.SpanFromContext(ctx)
-		span.SetName("atlar.taskInitiatePayment")
-		span.SetAttributes(
+		ctx, span := connectors.StartSpan(
+			ctx,
+			"atlar.taskInitiatePayment",
 			attribute.String("connectorID", connectorID.String()),
+			attribute.String("taskID", taskID.String()),
 			attribute.String("transferID", transferID),
 			attribute.String("reference", transferInitiationID.Reference),
 		)
+		defer span.End()
 
 		transfer, err := getTransfer(ctx, storageReader, transferInitiationID, true)
 		if err != nil {
@@ -165,6 +168,7 @@ func UpdatePaymentStatusTask(
 ) task.Task {
 	return func(
 		ctx context.Context,
+		taskID models.TaskID,
 		connectorID models.ConnectorID,
 		scheduler task.Scheduler,
 		storageReader storage.Reader,
@@ -173,15 +177,17 @@ func UpdatePaymentStatusTask(
 		paymentID := models.MustPaymentIDFromString(stringPaymentID)
 		transferInitiationID := models.MustTransferInitiationIDFromString(transferID)
 
-		span := trace.SpanFromContext(ctx)
-		span.SetName("atlar.taskUpdatePaymentStatus")
-		span.SetAttributes(
+		ctx, span := connectors.StartSpan(
+			ctx,
+			"atlar.taskUpdatePaymentStatus",
 			attribute.String("connectorID", connectorID.String()),
+			attribute.String("taskID", taskID.String()),
 			attribute.String("transferID", transferID),
 			attribute.String("paymentID", stringPaymentID),
 			attribute.Int("attempt", attempt),
 			attribute.String("reference", transferInitiationID.Reference),
 		)
+		defer span.End()
 
 		transfer, err := getTransfer(ctx, storageReader, transferInitiationID, true)
 		if err != nil {

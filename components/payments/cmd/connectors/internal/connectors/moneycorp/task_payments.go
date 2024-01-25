@@ -8,6 +8,7 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/moneycorp/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
@@ -17,12 +18,12 @@ import (
 	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 )
 
 func taskInitiatePayment(moneycorpClient *client.Client, transferID string) task.Task {
 	return func(
 		ctx context.Context,
+		taskID models.TaskID,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
@@ -30,13 +31,15 @@ func taskInitiatePayment(moneycorpClient *client.Client, transferID string) task
 	) error {
 		transferInitiationID := models.MustTransferInitiationIDFromString(transferID)
 
-		span := trace.SpanFromContext(ctx)
-		span.SetName("moneycorp.taskInitiatePayment")
-		span.SetAttributes(
+		ctx, span := connectors.StartSpan(
+			ctx,
+			"moneycorp.taskInitiatePayment",
 			attribute.String("connectorID", connectorID.String()),
+			attribute.String("taskID", taskID.String()),
 			attribute.String("transferID", transferID),
 			attribute.String("reference", transferInitiationID.Reference),
 		)
+		defer span.End()
 
 		transfer, err := getTransfer(ctx, storageReader, transferInitiationID, true)
 		if err != nil {
@@ -186,6 +189,8 @@ func taskUpdatePaymentStatus(
 ) task.Task {
 	return func(
 		ctx context.Context,
+		taskID models.TaskID,
+		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
 		storageReader storage.Reader,
@@ -193,14 +198,17 @@ func taskUpdatePaymentStatus(
 		paymentID := models.MustPaymentIDFromString(pID)
 		transferInitiationID := models.MustTransferInitiationIDFromString(transferID)
 
-		span := trace.SpanFromContext(ctx)
-		span.SetName("moneycorp.taskUpdatePaymentStatus")
-		span.SetAttributes(
+		ctx, span := connectors.StartSpan(
+			ctx,
+			"moneycorp.taskUpdatePaymentStatus",
+			attribute.String("connectorID", connectorID.String()),
+			attribute.String("taskID", taskID.String()),
 			attribute.String("transferID", transferID),
 			attribute.String("paymentID", pID),
 			attribute.Int("attempt", attempt),
 			attribute.String("reference", transferInitiationID.Reference),
 		)
+		defer span.End()
 
 		transfer, err := getTransfer(ctx, storageReader, transferInitiationID, true)
 		if err != nil {
@@ -255,6 +263,7 @@ func updatePaymentStatus(
 			Name:       "Update transfer initiation status",
 			Key:        taskNameUpdatePaymentStatus,
 			TransferID: transfer.ID.String(),
+			PaymentID:  paymentID.String(),
 			Attempt:    attempt + 1,
 		})
 		if err != nil {

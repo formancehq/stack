@@ -5,6 +5,7 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/stripe/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
@@ -13,20 +14,25 @@ import (
 	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 )
 
-func balanceTask(account string, client *client.DefaultClient) func(ctx context.Context, logger logging.Logger, connectorID models.ConnectorID,
-	ingester ingestion.Ingester, resolver task.StateResolver) error {
-	return func(ctx context.Context, logger logging.Logger, connectorID models.ConnectorID, ingester ingestion.Ingester,
+func balanceTask(account string, client *client.DefaultClient) task.Task {
+	return func(
+		ctx context.Context,
+		logger logging.Logger,
+		taskID models.TaskID,
+		connectorID models.ConnectorID,
+		ingester ingestion.Ingester,
 		resolver task.StateResolver,
 	) error {
-		span := trace.SpanFromContext(ctx)
-		span.SetName("stripe.balanceTask")
-		span.SetAttributes(
+		ctx, span := connectors.StartSpan(
+			ctx,
+			"stripe.balanceTask",
 			attribute.String("connectorID", connectorID.String()),
+			attribute.String("taskID", taskID.String()),
 			attribute.String("account", account),
 		)
+		defer span.End()
 
 		stripeAccount := account
 		if account == rootAccountReference {
