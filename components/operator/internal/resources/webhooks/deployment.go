@@ -2,11 +2,11 @@ package webhooks
 
 import (
 	"fmt"
-	"strings"
-
 	"github.com/formancehq/operator/internal/resources/settings"
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
 	"golang.org/x/mod/semver"
+	"strings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
@@ -16,56 +16,67 @@ import (
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
 	"github.com/formancehq/operator/internal/resources/registries"
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	v1 "k8s.io/api/core/v1"
 )
 
-func createDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumers brokertopicconsumers.Consumers, version string) error {
+func deploymentEnvVars(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumers brokertopicconsumers.Consumers) ([]v1.EnvVar, error) {
 
 	brokerConfiguration, err := settings.FindBrokerConfiguration(ctx, stack)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if brokerConfiguration == nil {
-		return errors.New("missing broker configuration")
-	}
-
-	image, err := registries.GetImage(ctx, stack, "webhooks", version)
-	if err != nil {
-		return err
+		return nil, errors.New("missing broker configuration")
 	}
 
 	env := make([]v1.EnvVar, 0)
 	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, core.LowerCamelCaseName(ctx, webhooks))
 	if err != nil {
-		return err
+		return nil, err
 	}
 	env = append(env, otlpEnv...)
 
 	gatewayEnv, err := gateways.EnvVarsIfEnabled(ctx, stack.Name)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	env = append(env, gatewayEnv...)
 	env = append(env, core.GetDevEnvVars(stack, webhooks)...)
 
 	authEnvVars, err := auths.ProtectedEnvVars(ctx, stack, "webhooks", webhooks.Spec.Auth)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	env = append(env, authEnvVars...)
 	env = append(env, databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfiguration, database.Status.Configuration.Database)...)
 	env = append(env, settings.GetBrokerEnvVars(*brokerConfiguration, stack.Name, "webhooks")...)
 	env = append(env, core.Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"))
-	env = append(env, core.Env("WORKER", "true"))
-	env = append(env, core.Env("KAFKA_TOPICS", strings.Join(collectionutils.Map(consumers, func(from *v1beta1.BrokerTopicConsumer) string {
-		return fmt.Sprintf("%s-%s", stack.Name, from.Spec.Service)
-	}), " ")))
+
+	return env, nil
+}
+
+func createAPIDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumers brokertopicconsumers.Consumers, version string, withWorker bool) error {
+
+	image, err := registries.GetImage(ctx, stack, "webhooks", version)
+	if err != nil {
+		return err
+	}
+
+	env, err := deploymentEnvVars(ctx, stack, webhooks, database, consumers)
+	if err != nil {
+		return err
+	}
 
 	args := []string{"serve"}
 	if !semver.IsValid(version) || semver.Compare(version, "v2.0.0-alpha") >= 0 {
 		args = append(args, "--auto-migrate")
+	}
+	if withWorker {
+		env = append(env, core.Env("WORKER", "true"))
+		env = append(env, core.Env("KAFKA_TOPICS", strings.Join(collectionutils.Map(consumers, func(from *v1beta1.BrokerTopicConsumer) string {
+			return fmt.Sprintf("%s-%s", stack.Name, from.Spec.Service)
+		}), " ")))
 	}
 
 	_, err = deployments.CreateOrUpdate(ctx, webhooks, "webhooks",
@@ -80,4 +91,48 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.
 		}),
 	)
 	return err
+}
+
+func createWorkerDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumers brokertopicconsumers.Consumers, version string, withWorker bool) error {
+
+	image, err := registries.GetImage(ctx, stack, "webhooks", version)
+	if err != nil {
+		return err
+	}
+
+	env, err := deploymentEnvVars(ctx, stack, webhooks, database, consumers)
+	if err != nil {
+		return err
+	}
+
+	env = append(env, core.Env("WORKER", "true"))
+	env = append(env, core.Env("KAFKA_TOPICS", strings.Join(collectionutils.Map(consumers, func(from *v1beta1.BrokerTopicConsumer) string {
+		return fmt.Sprintf("%s-%s", stack.Name, from.Spec.Service)
+	}), " ")))
+
+	_, err = deployments.CreateOrUpdate(ctx, webhooks, "webhooks-worker",
+		deployments.WithMatchingLabels("webhooks-worker"),
+		deployments.WithContainers(v1.Container{
+			Name:  "worker",
+			Env:   env,
+			Image: image,
+			Args:  []string{"worker"},
+		}),
+	)
+	return err
+}
+
+func createSingleDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumers brokertopicconsumers.Consumers, version string) error {
+	return createAPIDeployment(ctx, stack, webhooks, database, consumers, version, true)
+}
+
+func createDualDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumers brokertopicconsumers.Consumers, version string) error {
+	if err := createAPIDeployment(ctx, stack, webhooks, database, consumers, version, false); err != nil {
+		return err
+	}
+	if err := createWorkerDeployment(ctx, stack, webhooks, database, consumers, version, false); err != nil {
+		return err
+	}
+
+	return nil
 }

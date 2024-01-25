@@ -22,6 +22,7 @@ import (
 	"github.com/formancehq/operator/internal/resources/brokertopicconsumers"
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/httpapis"
+	"golang.org/x/mod/semver"
 	appsv1 "k8s.io/api/apps/v1"
 )
 
@@ -45,8 +46,14 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, ve
 	}
 
 	if database.Status.Ready && consumers.Ready() {
-		if err := createDeployment(ctx, stack, webhooks, database, consumers, version); err != nil {
-			return err
+		if !semver.IsValid(version) || semver.Compare(version, "v0.7.1") > 0 {
+			if err := createSingleDeployment(ctx, stack, webhooks, database, consumers, version); err != nil {
+				return err
+			}
+		} else {
+			if err := createDualDeployment(ctx, stack, webhooks, database, consumers, version); err != nil {
+				return err
+			}
 		}
 	}
 
