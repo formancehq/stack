@@ -19,7 +19,6 @@ package ledgers
 import (
 	_ "embed"
 	"fmt"
-
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/benthosstreams"
@@ -92,21 +91,11 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, versio
 	}
 
 	if database.Status.Ready {
-
-		actualVersion, err := ActualVersion(ctx, ledger)
-		if err != nil {
-			return err
-		}
-
-		actualVersionIsV1 := false
-		if !semver.IsValid(actualVersion) || semver.Compare(actualVersion, "v2.0.0-alpha") < 0 {
-			actualVersionIsV1 = true
-		}
-
-		if actualVersionIsV1 && isV2 {
+		if isV2 && !ledger.Status.IsMigratedOnV2 {
 			if err := migrateToLedgerV2(ctx, stack, ledger, database, image); err != nil {
 				return err
 			}
+			ledger.Status.IsMigratedOnV2 = true
 		}
 
 		err = installLedger(ctx, stack, ledger, database, image, isV2)

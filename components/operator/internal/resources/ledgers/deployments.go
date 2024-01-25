@@ -299,19 +299,6 @@ func createGatewayDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1b
 
 func migrateToLedgerV2(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, database *v1beta1.Database, image string) error {
 
-	list := &v1.DeploymentList{}
-	if err := ctx.GetClient().List(ctx, list, client.InNamespace(stack.Name)); err != nil {
-		return err
-	}
-
-	for _, item := range list.Items {
-		if controller := metav1.GetControllerOf(&item); controller != nil && controller.UID == ledger.GetUID() {
-			if err := ctx.GetClient().Delete(ctx, &item); err != nil {
-				return err
-			}
-		}
-	}
-
 	expectedSpec := batchv1.JobSpec{
 		BackoffLimit:            pointer.For(int32(10000)),
 		TTLSecondsAfterFinished: pointer.For(int32(30)),
@@ -336,23 +323,38 @@ func migrateToLedgerV2(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.L
 			return nil
 		}
 
-		if equality.Semantic.DeepEqual(job.Spec, expectedSpec) {
+		if equality.Semantic.DeepDerivative(expectedSpec, job.Spec) {
 			return nil
 		}
 
-		if err := ctx.GetClient().Delete(ctx, job); err != nil {
+		if err := ctx.GetClient().Delete(ctx, job, &client.DeleteOptions{
+			GracePeriodSeconds: pointer.For(int64(0)),
+		}); err != nil {
 			return errors.Wrap(err, "deleting old v2 migration job")
+		}
+	} else {
+		list := &v1.DeploymentList{}
+		if err := ctx.GetClient().List(ctx, list, client.InNamespace(stack.Name)); err != nil {
+			return err
+		}
+
+		for _, item := range list.Items {
+			if controller := metav1.GetControllerOf(&item); controller != nil && controller.UID == ledger.GetUID() {
+				if err := ctx.GetClient().Delete(ctx, &item); err != nil {
+					return err
+				}
+			}
 		}
 	}
 
-	job = &batchv1.Job{
-		ObjectMeta: metav1.ObjectMeta{
-			Namespace: stack.Name,
-			Name:      "migrate-v2",
-		},
-		Spec: expectedSpec,
-	}
-	if err := ctx.GetClient().Create(ctx, job); err != nil {
+	if _, _, err := core.CreateOrUpdate[*batchv1.Job](ctx, types.NamespacedName{
+		Namespace: stack.Name,
+		Name:      "migrate-v2",
+	}, core.WithController[*batchv1.Job](ctx.GetScheme(), ledger), func(t *batchv1.Job) error {
+		t.Spec = expectedSpec
+
+		return nil
+	}); err != nil {
 		return err
 	}
 
