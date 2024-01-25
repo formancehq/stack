@@ -22,9 +22,10 @@ import (
 
 // SettingsSpec defines the desired state of Settings
 type SettingsSpec struct {
-	ConfigurationProperties `json:",inline"`
-	Key                     string `json:"key"`
-	Value                   string `json:"value"`
+	//+optional
+	Stacks []string `json:"stacks,omitempty"`
+	Key    string   `json:"key"`
+	Value  string   `json:"value"`
 }
 
 // SettingsStatus defines the observed state of Settings
@@ -45,8 +46,6 @@ type Settings struct {
 	Spec   SettingsSpec   `json:"spec,omitempty"`
 	Status SettingsStatus `json:"status,omitempty"`
 }
-
-var _ ConfigurationObject = &Settings{}
 
 func (in *Settings) GetStacks() []string {
 	return in.Spec.Stacks

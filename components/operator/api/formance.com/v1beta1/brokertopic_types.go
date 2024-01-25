@@ -43,7 +43,6 @@ type BrokerNatsConfig struct {
 
 // BrokerConfiguration defines the desired state of BrokerConfig
 type BrokerConfiguration struct {
-	ConfigurationProperties `json:",inline"`
 	// +optional
 	Kafka *BrokerKafkaConfig `json:"kafka,omitempty"`
 	// +optional

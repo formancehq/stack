@@ -25,11 +25,9 @@ func New(name, key, value string, stacks ...string) *v1beta1.Settings {
 			Name: name,
 		},
 		Spec: v1beta1.SettingsSpec{
-			ConfigurationProperties: v1beta1.ConfigurationProperties{
-				Stacks: stacks,
-			},
-			Key:   key,
-			Value: value,
+			Stacks: stacks,
+			Key:    key,
+			Value:  value,
 		},
 	}
 }

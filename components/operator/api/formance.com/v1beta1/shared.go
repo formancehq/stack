@@ -181,18 +181,6 @@ func (d StackDependency) GetStack() string {
 }
 
 // +kubebuilder:object:generate=false
-type ConfigurationObject interface {
-	client.Object
-	GetStacks() []string
-	IsWildcard() bool
-}
-
-type ConfigurationProperties struct {
-	//+optional
-	Stacks []string `json:"stacks,omitempty"`
-}
-
-// +kubebuilder:object:generate=false
 type Object interface {
 	client.Object
 	SetReady(bool)

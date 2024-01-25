@@ -46,10 +46,7 @@ type CreatedDatabase struct {
 
 // DatabaseStatus defines the observed state of Database
 type DatabaseStatus struct {
-	//+optional
-	Error string `json:"error,omitempty"`
-	//+optional
-	Ready bool `json:"ready,omitempty"`
+	CommonStatus `json:",inline"`
 	//+optional
 	Configuration *CreatedDatabase `json:"configuration,omitempty"`
 	//+optional
@@ -61,7 +58,6 @@ type DatabaseStatus struct {
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:printcolumn:name="Stack",type=string,JSONPath=".spec.stack",description="Stack"
 //+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Ready"
-//+kubebuilder:printcolumn:name="Bound to",type=string,JSONPath=".status.boundTo",description="Bound to database configuration"
 //+kubebuilder:printcolumn:name="Out of sync",type=string,JSONPath=".status.outOfSync",description="Is the databse configuration out of sync"
 //+kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
 
@@ -75,7 +71,7 @@ type Database struct {
 }
 
 func (in *Database) SetReady(b bool) {
-	in.Status.Ready = b
+	in.Status.SetReady(b)
 }
 
 func (in *Database) IsReady() bool {
@@ -83,7 +79,7 @@ func (in *Database) IsReady() bool {
 }
 
 func (in *Database) SetError(s string) {
-	in.Status.Error = s
+	in.Status.SetError(s)
 }
 
 func (a Database) GetStack() string {

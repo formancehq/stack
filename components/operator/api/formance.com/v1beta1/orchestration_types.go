@@ -31,10 +31,9 @@ type TemporalTLSConfig struct {
 
 // TemporalConfigurationSpec defines the desired state of TemporalConfiguration
 type TemporalConfiguration struct {
-	ConfigurationProperties `json:",inline"`
-	Address                 string            `json:"address"`
-	Namespace               string            `json:"namespace"`
-	TLS                     TemporalTLSConfig `json:"tls"`
+	Address   string            `json:"address"`
+	Namespace string            `json:"namespace"`
+	TLS       TemporalTLSConfig `json:"tls"`
 }
 
 // OrchestrationSpec defines the desired state of Orchestration

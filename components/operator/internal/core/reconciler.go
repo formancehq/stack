@@ -51,16 +51,45 @@ func WithOwn(v client.Object, opts ...builder.OwnsOption) reconcilerOption {
 	}
 }
 
-func WithWatchConfigurationObject(t client.Object) reconcilerOption {
+func WithWatchSettings() reconcilerOption {
+
+	buildReconcileRequests := func(ctx context.Context, mgr Manager, target client.Object, opts ...client.ListOption) []reconcile.Request {
+		kinds, _, err := mgr.GetScheme().ObjectKinds(target)
+		if err != nil {
+			return []reconcile.Request{}
+		}
+
+		us := &unstructured.UnstructuredList{}
+		us.SetGroupVersionKind(kinds[0])
+		if err := mgr.GetClient().List(ctx, us, opts...); err != nil {
+			return []reconcile.Request{}
+		}
+
+		return MapObjectToReconcileRequests(
+			Map(us.Items, ToPointer[unstructured.Unstructured])...,
+		)
+	}
+
 	return func(mgr Manager, builder *builder.Builder, target client.Object) error {
-		builder.Watches(t, handler.EnqueueRequestsFromMapFunc(WatchConfigurationObject(mgr, target)))
+		builder.Watches(&v1beta1.Settings{}, handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, object client.Object) []reconcile.Request {
+			settings := object.(*v1beta1.Settings)
+
+			ret := make([]reconcile.Request, 0)
+			if !settings.IsWildcard() {
+				for _, stack := range settings.GetStacks() {
+					ret = append(ret, buildReconcileRequests(ctx, mgr, target, client.MatchingFields{
+						"stack": stack,
+					})...)
+				}
+			} else {
+				ret = append(ret, buildReconcileRequests(ctx, mgr, target)...)
+			}
+
+			return ret
+		}))
 
 		return nil
 	}
-}
-
-func WithWatchSettings() reconcilerOption {
-	return WithWatchConfigurationObject(&v1beta1.Settings{})
 }
 
 func WithWatchDependency(t v1beta1.Dependent) reconcilerOption {

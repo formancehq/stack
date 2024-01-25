@@ -49,7 +49,7 @@ func ForStackDependency[T v1beta1.Dependent](ctrl func(ctx Context, stack *v1bet
 			Name: t.GetStack(),
 		}, stack); err != nil {
 			if errors.IsNotFound(err) {
-				return nil
+				return NewStackNotFoundError()
 			} else {
 				return err
 			}

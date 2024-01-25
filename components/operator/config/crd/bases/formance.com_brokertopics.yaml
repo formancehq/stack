@@ -94,10 +94,6 @@ spec:
                     required:
                     - url
                     type: object
-                  stacks:
-                    items:
-                      type: string
-                    type: array
                 type: object
               info:
                 type: string

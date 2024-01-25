@@ -4,6 +4,7 @@ const (
 	CodePending       = "pending"
 	CodeDeleted       = "object deleted"
 	CodeStackDisabled = "stack disabled"
+	CodeStackNotFound = "stack not found"
 )
 
 type ApplicationError struct {
@@ -26,6 +27,10 @@ func NewDeletedError() *ApplicationError {
 
 func NewStackDisabledError() *ApplicationError {
 	return NewApplicationError(CodeStackDisabled)
+}
+
+func NewStackNotFoundError() *ApplicationError {
+	return NewApplicationError(CodeStackNotFound)
 }
 
 func NewPendingError() *ApplicationError {

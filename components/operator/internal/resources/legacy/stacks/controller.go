@@ -109,7 +109,7 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}
 	}
 
-	_, _, err := CreateOrUpdate[*v1beta1.Stack](ctx, types.NamespacedName{
+	newStack, _, err := CreateOrUpdate[*v1beta1.Stack](ctx, types.NamespacedName{
 		Name: stack.Name,
 	}, func(t *v1beta1.Stack) error {
 		t.Spec.Dev = stack.Spec.Dev
@@ -124,10 +124,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 	})
 	if err != nil {
 		return errors.Wrap(err, "creating stack")
-	}
-
-	if stack.Spec.Disabled {
-		return nil
 	}
 
 	ns := &corev1.Namespace{}
@@ -182,7 +178,7 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			}
 
 			return nil
-		})
+		}, WithController[*v1beta1.Ledger](ctx.GetScheme(), newStack))
 		if err != nil {
 			return errors.Wrap(err, "creating ledger service")
 		}
@@ -195,7 +191,7 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}, func(t *v1beta1.Payments) error {
 			t.Spec.Stack = stack.Name
 			return nil
-		})
+		}, WithController[*v1beta1.Payments](ctx.GetScheme(), newStack))
 		if err != nil {
 			return errors.Wrap(err, "creating payments service")
 		}
@@ -208,7 +204,7 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}, func(t *v1beta1.Wallets) error {
 			t.Spec.Stack = stack.Name
 			return nil
-		})
+		}, WithController[*v1beta1.Wallets](ctx.GetScheme(), newStack))
 		if err != nil {
 			return errors.Wrap(err, "creating wallets service")
 		}
@@ -221,7 +217,7 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}, func(t *v1beta1.Orchestration) error {
 			t.Spec.Stack = stack.Name
 			return nil
-		})
+		}, WithController[*v1beta1.Orchestration](ctx.GetScheme(), newStack))
 		if err != nil {
 			return errors.Wrap(err, "creating orchestration service")
 		}
@@ -234,7 +230,7 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}, func(t *v1beta1.Webhooks) error {
 			t.Spec.Stack = stack.Name
 			return nil
-		})
+		}, WithController[*v1beta1.Webhooks](ctx.GetScheme(), newStack))
 		if err != nil {
 			return errors.Wrap(err, "creating webhooks service")
 		}
@@ -250,7 +246,7 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}, func(t *v1beta1.Reconciliation) error {
 			t.Spec.Stack = stack.Name
 			return nil
-		})
+		}, WithController[*v1beta1.Reconciliation](ctx.GetScheme(), newStack))
 		if err != nil {
 			return errors.Wrap(err, "creating reconciliation service")
 		}
@@ -263,7 +259,7 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}, func(t *v1beta1.Search) error {
 			t.Spec.Stack = stack.Name
 			return nil
-		})
+		}, WithController[*v1beta1.Search](ctx.GetScheme(), newStack))
 		if err != nil {
 			return errors.Wrap(err, "creating search service")
 		}
@@ -282,7 +278,7 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			}
 
 			return nil
-		})
+		}, WithController[*v1beta1.Auth](ctx.GetScheme(), newStack))
 		if err != nil {
 			return errors.Wrap(err, "creating auth service")
 		}
@@ -309,7 +305,7 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			}
 
 			return nil
-		})
+		}, WithController[*v1beta1.Gateway](ctx.GetScheme(), newStack))
 		if err != nil {
 			return errors.Wrap(err, "creating gateway service")
 		}
@@ -334,7 +330,7 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 				t.Spec.Auth.ClientSecret = stack.Spec.Auth.DelegatedOIDCServer.ClientSecret
 
 				return nil
-			})
+			}, WithController[*v1beta1.Stargate](ctx.GetScheme(), newStack))
 			if err != nil {
 				return errors.Wrap(err, "creating stargate service")
 			}
@@ -368,7 +364,7 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			t.Spec.Stack = stack.Name
 
 			return nil
-		})
+		}, WithController[*v1beta1.AuthClient](ctx.GetScheme(), newStack))
 		if err != nil {
 			return errors.Wrap(err, "creating auth client service")
 		}

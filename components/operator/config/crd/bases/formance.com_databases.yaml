@@ -23,10 +23,6 @@ spec:
       jsonPath: .status.ready
       name: Ready
       type: string
-    - description: Bound to database configuration
-      jsonPath: .status.boundTo
-      name: Bound to
-      type: string
     - description: Is the databse configuration out of sync
       jsonPath: .status.outOfSync
       name: Out of sync
@@ -86,7 +82,7 @@ spec:
                 - host
                 - port
                 type: object
-              error:
+              info:
                 type: string
               outOfSync:
                 type: boolean
