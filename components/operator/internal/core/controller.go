@@ -2,7 +2,6 @@ package core
 
 import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
-	"golang.org/x/mod/semver"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -32,10 +31,6 @@ func ForModule[T v1beta1.Module](underlyingController func(ctx Context, stack *v
 			if condition.Status != metav1.ConditionTrue {
 				return NewPendingError()
 			}
-		}
-
-		if semver.IsValid(moduleVersion) {
-			return ValidateInstalledVersion(ctx, t, moduleVersion)
 		}
 
 		return nil
