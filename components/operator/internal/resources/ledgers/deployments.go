@@ -2,6 +2,8 @@ package ledgers
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
+	"k8s.io/apimachinery/pkg/api/equality"
 	"strconv"
 
 	"github.com/formancehq/operator/internal/resources/settings"
@@ -18,7 +20,7 @@ import (
 	v1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
-	v14 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -297,6 +299,30 @@ func createGatewayDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1b
 
 func migrateToLedgerV2(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, database *v1beta1.Database, image string) error {
 
+	list := &v1.DeploymentList{}
+	if err := ctx.GetClient().List(ctx, list, client.InNamespace(stack.Name)); err != nil {
+		return err
+	}
+
+	for _, item := range list.Items {
+		if controller := metav1.GetControllerOf(&item); controller != nil && controller.UID == ledger.GetUID() {
+			if err := ctx.GetClient().Delete(ctx, &item); err != nil {
+				return err
+			}
+		}
+	}
+
+	expectedSpec := batchv1.JobSpec{
+		BackoffLimit:            pointer.For(int32(10000)),
+		TTLSecondsAfterFinished: pointer.For(int32(30)),
+		Template: corev1.PodTemplateSpec{
+			Spec: corev1.PodSpec{
+				RestartPolicy: corev1.RestartPolicyOnFailure,
+				Containers:    []corev1.Container{getUpgradeContainer(database, image)},
+			},
+		},
+	}
+
 	job := &batchv1.Job{}
 	err := ctx.GetClient().Get(ctx, types.NamespacedName{
 		Namespace: stack.Name,
@@ -306,39 +332,29 @@ func migrateToLedgerV2(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.L
 		return err
 	}
 	if err == nil {
-		if job.Status.Succeeded == 0 {
-			return core.NewPendingError()
+		if job.Status.Succeeded > 0 {
+			return nil
 		}
-		return nil
-	}
 
-	list := &v1.DeploymentList{}
-	if err := ctx.GetClient().List(ctx, list, client.InNamespace(stack.Name)); err != nil {
-		return err
-	}
+		if equality.Semantic.DeepEqual(job.Spec, expectedSpec) {
+			return nil
+		}
 
-	for _, item := range list.Items {
-		if controller := v14.GetControllerOf(&item); controller != nil && controller.UID == ledger.GetUID() {
-			if err := ctx.GetClient().Delete(ctx, &item); err != nil {
-				return err
-			}
+		if err := ctx.GetClient().Delete(ctx, job); err != nil {
+			return errors.Wrap(err, "deleting old v2 migration job")
 		}
 	}
 
-	return ctx.GetClient().Create(ctx, &batchv1.Job{
-		ObjectMeta: v14.ObjectMeta{
+	job = &batchv1.Job{
+		ObjectMeta: metav1.ObjectMeta{
 			Namespace: stack.Name,
 			Name:      "migrate-v2",
 		},
-		Spec: batchv1.JobSpec{
-			BackoffLimit:            pointer.For(int32(10000)),
-			TTLSecondsAfterFinished: pointer.For(int32(30)),
-			Template: corev1.PodTemplateSpec{
-				Spec: corev1.PodSpec{
-					RestartPolicy: corev1.RestartPolicyOnFailure,
-					Containers:    []corev1.Container{getUpgradeContainer(database, image)},
-				},
-			},
-		},
-	})
+		Spec: expectedSpec,
+	}
+	if err := ctx.GetClient().Create(ctx, job); err != nil {
+		return err
+	}
+
+	return core.NewPendingError()
 }
