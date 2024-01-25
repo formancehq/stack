@@ -83,7 +83,7 @@ type Condition struct {
 	// +optional
 	// +kubebuilder:validation:MaxLength=1024
 	// +kubebuilder:validation:Pattern=`^([A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?)?$`
-	Reason string `json:"reason" protobuf:"bytes,5,opt,name=reason"`
+	Reason string `json:"reason,omitempty" protobuf:"bytes,5,opt,name=reason"`
 }
 
 type CommonStatus struct {

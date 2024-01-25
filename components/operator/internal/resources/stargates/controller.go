@@ -37,8 +37,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, stargate *v1beta1.Stargate, ve
 func init() {
 	Init(
 		WithModuleReconciler(Reconcile,
-			WithWatchStack(),
-			WithWatchConfigurationObject(&v1beta1.Settings{}),
+			WithWatchSettings(),
 			WithOwn(&appsv1.Deployment{}),
 		),
 	)

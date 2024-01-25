@@ -22,11 +22,11 @@ import (
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
+	"github.com/formancehq/operator/internal/resources/benthosstreams"
 	"github.com/formancehq/operator/internal/resources/brokertopics"
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/httpapis"
 	"github.com/formancehq/operator/internal/resources/registries"
-	"github.com/formancehq/operator/internal/resources/streams"
 	"github.com/formancehq/search/benthos"
 	"golang.org/x/mod/semver"
 	appsv1 "k8s.io/api/apps/v1"
@@ -38,6 +38,7 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=ledgers,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=formance.com,resources=ledgers/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=ledgers/finalizers,verbs=update
+//+kubebuilder:rbac:groups=batch,resources=cronjobs,verbs=get;list;watch;create;update;patch;delete
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, version string) error {
 
@@ -70,11 +71,11 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, versio
 		if isV2 {
 			streamsVersion = "v2.0.0"
 		}
-		if err := streams.LoadFromFileSystem(ctx, benthos.Streams, ledger, "streams/ledger/"+streamsVersion); err != nil {
+		if err := benthosstreams.LoadFromFileSystem(ctx, benthos.Streams, ledger, "streams/ledger/"+streamsVersion); err != nil {
 			return err
 		}
 
-		if err := streams.LoadFromFileSystem(ctx, reindexStreams, ledger, fmt.Sprintf("assets/reindex/%s", streamsVersion)); err != nil {
+		if err := benthosstreams.LoadFromFileSystem(ctx, reindexStreams, ledger, fmt.Sprintf("assets/reindex/%s", streamsVersion)); err != nil {
 			return err
 		}
 	} else {
@@ -125,8 +126,8 @@ func init() {
 			WithOwn(&corev1.Service{}),
 			WithOwn(&v1beta1.HTTPAPI{}),
 			WithOwn(&v1beta1.Database{}),
-			WithWatchStack(),
-			WithWatchConfigurationObject(&v1beta1.Settings{}),
+			WithOwn(&batchv1.CronJob{}),
+			WithWatchSettings(),
 			WithWatch[*v1beta1.BrokerTopic](brokertopics.Watch[*v1beta1.Ledger]("ledger")),
 			WithWatch(databases.Watch("ledger", &v1beta1.Ledger{})),
 			WithWatchDependency(&v1beta1.Search{}),

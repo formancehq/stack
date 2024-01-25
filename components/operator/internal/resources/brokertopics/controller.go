@@ -88,8 +88,7 @@ func init() {
 	core.Init(
 		core.WithStackDependencyReconciler(Reconcile,
 			core.WithOwn(&batchv1.Job{}),
-			core.WithWatchConfigurationObject(&v1beta1.Settings{}),
-			core.WithWatchStack(),
+			core.WithWatchSettings(),
 		),
 		core.WithSimpleIndex[*v1beta1.BrokerTopic](".spec.service", func(t *v1beta1.BrokerTopic) string {
 			return t.Spec.Service

@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package streams
+package benthosstreams
 
 import (
 	"fmt"
@@ -25,9 +25,9 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 )
 
-//+kubebuilder:rbac:groups=formance.com,resources=streams,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=formance.com,resources=streams/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=formance.com,resources=streams/finalizers,verbs=update
+//+kubebuilder:rbac:groups=formance.com,resources=benthosstreams,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=formance.com,resources=benthosstreams/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=formance.com,resources=benthosstreams/finalizers,verbs=update
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, stream *v1beta1.BenthosStream) error {
 	_, _, err := CreateOrUpdate[*corev1.ConfigMap](ctx, types.NamespacedName{

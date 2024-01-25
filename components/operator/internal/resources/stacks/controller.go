@@ -21,30 +21,14 @@ import (
 // +kubebuilder:rbac:groups=core,resources=secrets,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=core,resources=namespaces,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=core,resources=events,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=batch,resources=cronjobs,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=batch,resources=jobs,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=cert-manager.io,resources=certificates,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=formance.com,resources=stacks,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=formance.com,resources=stacks/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=formance.com,resources=stacks/finalizers,verbs=update
-// +kubebuilder:rbac:groups=formance.com,resources=opentelemetryconfigurations,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=formance.com,resources=opentelemetryconfigurations/status,verbs=get;update;patch
-// +kubebuilder:rbac:groups=formance.com,resources=opentelemetryconfigurations/finalizers,verbs=update
-// +kubebuilder:rbac:groups=formance.com,resources=databaseconfigurations,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=formance.com,resources=databaseconfigurations/status,verbs=get;update;patch
-// +kubebuilder:rbac:groups=formance.com,resources=databaseconfigurations/finalizers,verbs=update
-// +kubebuilder:rbac:groups=formance.com,resources=brokerconfigurations,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=formance.com,resources=brokerconfigurations/status,verbs=get;update;patch
-// +kubebuilder:rbac:groups=formance.com,resources=brokerconfigurations/finalizers,verbs=update
-// +kubebuilder:rbac:groups=formance.com,resources=elasticsearchconfigurations,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=formance.com,resources=elasticsearchconfigurations/status,verbs=get;update;patch
-// +kubebuilder:rbac:groups=formance.com,resources=elasticsearchconfigurations/finalizers,verbs=update
-// +kubebuilder:rbac:groups=formance.com,resources=registriesconfigurations,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=formance.com,resources=registriesconfigurations/status,verbs=get;update;patch
-// +kubebuilder:rbac:groups=formance.com,resources=registriesconfigurations/finalizers,verbs=update
-// +kubebuilder:rbac:groups=formance.com,resources=temporalconfigurations,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=formance.com,resources=temporalconfigurations/status,verbs=get;update;patch
-// +kubebuilder:rbac:groups=formance.com,resources=temporalconfigurations/finalizers,verbs=update
+// +kubebuilder:rbac:groups=formance.com,resources=settings,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=formance.com,resources=settings/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=formance.com,resources=settings/finalizers,verbs=update
 
 func Reconcile(ctx Context, stack *v1beta1.Stack) error {
 

@@ -40,7 +40,7 @@ func init() {
 	Init(
 		WithStackDependencyReconciler(Reconcile,
 			WithOwn(&corev1.Service{}),
-			WithWatchConfigurationObject(&v1beta1.Settings{}),
+			WithWatchSettings(),
 		),
 	)
 }

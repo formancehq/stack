@@ -150,8 +150,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 func init() {
 	Init(
 		WithModuleReconciler(Reconcile,
-			WithWatchStack(),
-			WithWatchConfigurationObject(&v1beta1.Settings{}),
+			WithWatchSettings(),
 			WithOwn(&v1beta1.Benthos{}),
 			WithOwn(&v1beta1.HTTPAPI{}),
 			WithOwn(&appsv1.Deployment{}),

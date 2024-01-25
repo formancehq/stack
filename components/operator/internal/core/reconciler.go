@@ -59,6 +59,10 @@ func WithWatchConfigurationObject(t client.Object) reconcilerOption {
 	}
 }
 
+func WithWatchSettings() reconcilerOption {
+	return WithWatchConfigurationObject(&v1beta1.Settings{})
+}
+
 func WithWatchDependency(t v1beta1.Dependent) reconcilerOption {
 	return func(mgr Manager, builder *builder.Builder, target client.Object) error {
 		builder.Watches(t, handler.EnqueueRequestsFromMapFunc(WatchDependents(mgr, target)))
@@ -168,6 +172,7 @@ func WithStdReconciler[T v1beta1.Object](ctrl func(ctx Context, t T) error, opts
 }
 
 func WithStackDependencyReconciler[T v1beta1.Dependent](fn func(ctx Context, stack *v1beta1.Stack, t T) error, opts ...reconcilerOption) Initializer {
+	opts = append(opts, WithWatchStack())
 	return WithStdReconciler(ForStackDependency(fn), opts...)
 }
 

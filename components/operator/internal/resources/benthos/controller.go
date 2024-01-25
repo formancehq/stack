@@ -325,8 +325,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 func init() {
 	Init(
 		WithStackDependencyReconciler(Reconcile,
-			WithWatchConfigurationObject(&v1beta1.Settings{}),
-			WithWatchStack(),
+			WithWatchSettings(),
 			WithWatchDependency(&v1beta1.BenthosStream{}),
 			WithOwn(&corev1.ConfigMap{}),
 			WithOwn(&appsv1.Deployment{}),

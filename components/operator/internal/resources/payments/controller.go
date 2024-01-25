@@ -20,7 +20,7 @@ import (
 	_ "embed"
 	"net/http"
 
-	"github.com/formancehq/operator/internal/resources/streams"
+	"github.com/formancehq/operator/internal/resources/benthosstreams"
 	"github.com/formancehq/search/benthos"
 	"golang.org/x/mod/semver"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -70,7 +70,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, p *v1beta1.Payments, version s
 		return err
 	}
 	if hasSearch {
-		if err := streams.LoadFromFileSystem(ctx, benthos.Streams, p, "streams/payments/v0.0.0"); err != nil {
+		if err := benthosstreams.LoadFromFileSystem(ctx, benthos.Streams, p, "streams/payments/v0.0.0"); err != nil {
 			return err
 		}
 	} else {
@@ -102,8 +102,7 @@ func init() {
 			WithOwn(&appsv1.Deployment{}),
 			WithOwn(&corev1.Service{}),
 			WithOwn(&v1beta1.HTTPAPI{}),
-			WithWatchStack(),
-			WithWatchConfigurationObject(&v1beta1.Settings{}),
+			WithWatchSettings(),
 			WithWatch(databases.Watch("payments", &v1beta1.Payments{})),
 			WithWatch[*v1beta1.BrokerTopic](brokertopics.Watch[*v1beta1.Payments]("payments")),
 			WithWatchDependency(&v1beta1.Search{}),

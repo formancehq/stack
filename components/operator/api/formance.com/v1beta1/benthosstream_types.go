@@ -37,7 +37,7 @@ type BenthosStreamStatus struct {
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:printcolumn:name="Stack",type=string,JSONPath=".spec.stack",description="Stack"
 
-// BenthosStream is the Schema for the streams API
+// BenthosStream is the Schema for the benthosstreams API
 type BenthosStream struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`

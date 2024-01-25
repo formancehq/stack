@@ -17,6 +17,7 @@ limitations under the License.
 package orchestrations
 
 import (
+	"fmt"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/brokertopicconsumers"
@@ -30,6 +31,12 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=orchestrations/finalizers,verbs=update
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, o *v1beta1.Orchestration, version string) error {
+
+	fmt.Println("reconcile orchestration")
+	fmt.Println("reconcile orchestration")
+	fmt.Println("reconcile orchestration")
+	fmt.Println("reconcile orchestration")
+	fmt.Println("reconcile orchestration")
 
 	database, err := databases.Create(ctx, o)
 	if err != nil {
@@ -66,9 +73,8 @@ func init() {
 			WithOwn(&v1beta1.AuthClient{}),
 			WithOwn(&appsv1.Deployment{}),
 			WithOwn(&v1beta1.HTTPAPI{}),
-			WithWatchStack(),
 			WithWatch(databases.Watch("orchestration", &v1beta1.Orchestration{})),
-			WithWatchConfigurationObject(&v1beta1.Settings{}),
+			WithWatchSettings(),
 			WithWatchDependency(&v1beta1.Ledger{}),
 			WithWatchDependency(&v1beta1.Auth{}),
 			WithWatchDependency(&v1beta1.Payments{}),

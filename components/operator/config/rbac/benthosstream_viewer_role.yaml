@@ -1,4 +1,4 @@
-# permissions for end users to view streams.
+# permissions for end users to view benthosstreams.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -14,7 +14,7 @@ rules:
 - apiGroups:
   - formance.com
   resources:
-  - streams
+  - benthosstreams
   verbs:
   - get
   - list
@@ -22,6 +22,6 @@ rules:
 - apiGroups:
   - formance.com
   resources:
-  - streams/status
+  - benthosstreams/status
   verbs:
   - get
