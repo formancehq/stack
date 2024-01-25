@@ -32,7 +32,7 @@ type fetchTransactionsState struct {
 	FirstCreatedTransactionCreationDate time.Time `json:"first_created_transaction_creation_date"`
 }
 
-func taskFetchTransactions(client *client.Client, userID string) task.Task {
+func taskFetchTransactions(client *client.Client, walletsID string) task.Task {
 	return func(
 		ctx context.Context,
 		taskID models.TaskID,
@@ -45,13 +45,13 @@ func taskFetchTransactions(client *client.Client, userID string) task.Task {
 			"mangopay.taskFetchTransactions",
 			attribute.String("connectorID", connectorID.String()),
 			attribute.String("taskID", taskID.String()),
-			attribute.String("userID", userID),
+			attribute.String("walletsID", walletsID),
 		)
 		defer span.End()
 
 		state := task.MustResolveTo(ctx, resolver, fetchTransactionsState{})
 
-		newState, err := fetchTransactions(ctx, client, userID, connectorID, ingester, state)
+		newState, err := fetchTransactions(ctx, client, walletsID, connectorID, ingester, state)
 		if err != nil {
 			otel.RecordError(span, err)
 			return err
@@ -69,7 +69,7 @@ func taskFetchTransactions(client *client.Client, userID string) task.Task {
 func fetchTransactions(
 	ctx context.Context,
 	client *client.Client,
-	userID string,
+	walletsID string,
 	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	state fetchTransactionsState,
@@ -79,7 +79,7 @@ func fetchTransactions(
 	var firstCreatedCreationDate time.Time
 	var lastCreationDate time.Time
 	for page := 1; ; page++ {
-		pagedPayments, err := client.GetTransactions(ctx, userID, page, pageSize, state.FirstCreatedTransactionCreationDate)
+		pagedPayments, err := client.GetTransactions(ctx, walletsID, page, pageSize, state.FirstCreatedTransactionCreationDate)
 		if err != nil {
 			return fetchTransactionsState{}, err
 		}
