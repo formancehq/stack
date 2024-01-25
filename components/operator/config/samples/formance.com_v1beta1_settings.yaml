@@ -1,3 +1,4 @@
+---
 apiVersion: formance.com/v1beta1
 kind: Settings
 metadata:
@@ -7,3 +8,13 @@ spec:
   - "*"
   key: deployments.*.containers.*.resource-requirements.limits
   value: memory=1024Mi
+---
+apiVersion: formance.com/v1beta1
+kind: Settings
+metadata:
+  name: search-batching
+spec:
+  stacks:
+    - "*"
+  key: search.batching
+  value: count=10,period=10s
