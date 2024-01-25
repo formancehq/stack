@@ -54,7 +54,7 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 		case taskNameMain:
 			return taskMain()
 		case taskNameFetchUsers:
-			return taskFetchUsers(mangopayClient)
+			return taskFetchUsers(mangopayClient, &config)
 		case taskNameFetchBankAccounts:
 			return taskFetchBankAccounts(mangopayClient, taskDescriptor.UserID)
 		case taskNameFetchTransactions:
@@ -64,7 +64,7 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 		case taskNameUpdatePaymentStatus:
 			return taskUpdatePaymentStatus(mangopayClient, taskDescriptor.TransferID, taskDescriptor.PaymentID, taskDescriptor.Attempt)
 		case taskNameFetchWallets:
-			return taskFetchWallets(mangopayClient, taskDescriptor.UserID)
+			return taskFetchWallets(mangopayClient, &config, taskDescriptor.UserID)
 		}
 
 		// This should never happen.

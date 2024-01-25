@@ -3,26 +3,29 @@ package stripe
 import (
 	"context"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 )
 
 // Launch accounts and payments tasks
 func (c *Connector) mainTask() task.Task {
 	return func(
 		ctx context.Context,
+		taskID models.TaskID,
 		connectorID models.ConnectorID,
 		scheduler task.Scheduler,
 	) error {
-		span := trace.SpanFromContext(ctx)
-		span.SetName("stripe.mainTask")
-		span.SetAttributes(
+		ctx, span := connectors.StartSpan(
+			ctx,
+			"stripe.mainTask",
 			attribute.String("connectorID", connectorID.String()),
+			attribute.String("taskID", taskID.String()),
 		)
+		defer span.End()
 
 		taskAccounts, err := models.EncodeTaskDescriptor(TaskDescriptor{
 			Name: "Fetch accounts from client",

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/stripe/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
@@ -13,12 +14,12 @@ import (
 	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 )
 
 func reversePaymentTask(transferReversalID string, stripeClient *client.DefaultClient) task.Task {
 	return func(
 		ctx context.Context,
+		taskID models.TaskID,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
@@ -26,13 +27,15 @@ func reversePaymentTask(transferReversalID string, stripeClient *client.DefaultC
 	) error {
 		reversalID := models.MustTransferReversalIDFromString(transferReversalID)
 
-		span := trace.SpanFromContext(ctx)
-		span.SetName("stripe.reversePaymentTask")
-		span.SetAttributes(
+		ctx, span := connectors.StartSpan(
+			ctx,
+			"stripe.reversePaymentTask",
 			attribute.String("connectorID", connectorID.String()),
+			attribute.String("taskID", taskID.String()),
 			attribute.String("transferReversalID", transferReversalID),
 			attribute.String("reference", reversalID.Reference),
 		)
+		defer span.End()
 
 		transferReversal, err := getTransferReversal(ctx, storageReader, reversalID)
 		if err != nil {

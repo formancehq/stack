@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/stripe/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
@@ -14,24 +15,26 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/stripe/stripe-go/v72"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 )
 
 func fetchExternalAccountsTask(config TimelineConfig, account string, client *client.DefaultClient) task.Task {
 	return func(
 		ctx context.Context,
 		logger logging.Logger,
+		taskID models.TaskID,
 		connectorID models.ConnectorID,
 		resolver task.StateResolver,
 		scheduler task.Scheduler,
 		ingester ingestion.Ingester,
 	) error {
-		span := trace.SpanFromContext(ctx)
-		span.SetName("stripe.fetchExternalAccountsTask")
-		span.SetAttributes(
+		ctx, span := connectors.StartSpan(
+			ctx,
+			"stripe.fetchExternalAccountsTask",
 			attribute.String("connectorID", connectorID.String()),
+			attribute.String("taskID", taskID.String()),
 			attribute.String("account", account),
 		)
+		defer span.End()
 
 		tt := NewTimelineTrigger(
 			logger,

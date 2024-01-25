@@ -3,6 +3,7 @@ package stripe
 import (
 	"context"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/stripe/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
@@ -11,7 +12,6 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/stripe/stripe-go/v72"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 )
 
 func ingestBatch(
@@ -59,17 +59,23 @@ func ingestBatch(
 	return nil
 }
 
-func connectedAccountTask(config TimelineConfig, account string, client *client.DefaultClient) func(ctx context.Context, logger logging.Logger, connectorID models.ConnectorID,
-	ingester ingestion.Ingester, resolver task.StateResolver) error {
-	return func(ctx context.Context, logger logging.Logger, connectorID models.ConnectorID, ingester ingestion.Ingester,
+func connectedAccountTask(config TimelineConfig, account string, client *client.DefaultClient) task.Task {
+	return func(
+		ctx context.Context,
+		logger logging.Logger,
+		taskID models.TaskID,
+		connectorID models.ConnectorID,
+		ingester ingestion.Ingester,
 		resolver task.StateResolver,
 	) error {
-		span := trace.SpanFromContext(ctx)
-		span.SetName("stripe.connectedAccountTask")
-		span.SetAttributes(
+		ctx, span := connectors.StartSpan(
+			ctx,
+			"stripe.connectedAccountTask",
 			attribute.String("connectorID", connectorID.String()),
+			attribute.String("taskID", taskID.String()),
 			attribute.String("account", account),
 		)
+		defer span.End()
 
 		trigger := NewTimelineTrigger(
 			logger,

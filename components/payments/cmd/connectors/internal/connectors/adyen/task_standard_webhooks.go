@@ -63,16 +63,19 @@ func handleStandardWebhooks() http.HandlerFunc {
 func taskHandleStandardWebhooks(client *client.Client, webhookID uuid.UUID) task.Task {
 	return func(
 		ctx context.Context,
+		taskID models.TaskID,
 		connectorID models.ConnectorID,
 		storageReader storage.Reader,
 		ingester ingestion.Ingester,
 	) error {
-		span := trace.SpanFromContext(ctx)
-		span.SetName("adyen.taskHandleStandardWebhooks")
-		span.SetAttributes(
+		ctx, span := connectors.StartSpan(
+			ctx,
+			"adyen.taskHandleStandardWebhooks",
 			attribute.String("connectorID", connectorID.String()),
+			attribute.String("taskID", taskID.String()),
 			attribute.String("webhookID", webhookID.String()),
 		)
+		defer span.End()
 
 		w, err := storageReader.GetWebhook(ctx, webhookID)
 		if err != nil {

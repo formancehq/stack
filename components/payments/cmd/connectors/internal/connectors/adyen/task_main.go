@@ -4,24 +4,27 @@ import (
 	"context"
 	"errors"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 )
 
 func taskMain() task.Task {
 	return func(
 		ctx context.Context,
+		taskID models.TaskID,
 		connectorID models.ConnectorID,
 		scheduler task.Scheduler,
 	) error {
-		span := trace.SpanFromContext(ctx)
-		span.SetName("adyen.taskMain")
-		span.SetAttributes(
+		ctx, span := connectors.StartSpan(
+			ctx,
+			"adyen.taskMain",
 			attribute.String("connectorID", connectorID.String()),
+			attribute.String("taskID", taskID.String()),
 		)
+		defer span.End()
 
 		taskAccounts, err := models.EncodeTaskDescriptor(TaskDescriptor{
 			Name: "Fetch accounts from client",

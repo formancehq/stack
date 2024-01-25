@@ -12,12 +12,9 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/dig"
 )
 
@@ -324,19 +321,6 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 	}
 
 	ctx, cancel := context.WithCancel(ctx)
-	parentSpan := trace.SpanFromContext(ctx)
-	ctx, span := otel.Tracer().Start(
-		ctx,
-		"task",
-		trace.WithNewRoot(),
-		trace.WithLinks(trace.Link{
-			SpanContext: parentSpan.SpanContext(),
-		}),
-		trace.WithAttributes(
-			attribute.Stringer("id", task.ID),
-			attribute.String("connectorID", s.connectorID.String()),
-		),
-	)
 
 	holder := &taskHolder{
 		cancel:     cancel,
@@ -370,6 +354,10 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 	if err != nil {
 		panic(err)
 	}
+
+	err = container.Provide(func() models.TaskID {
+		return models.TaskID(task.ID)
+	})
 
 	err = container.Provide(func() StopChan {
 		s.mu.Lock()
@@ -414,7 +402,6 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 	if err != nil {
 		errChan <- err
 		close(errChan)
-		span.End()
 		return errChan
 	}
 
@@ -447,7 +434,6 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 			logger.Infof("Starting task...")
 
 			defer func() {
-				defer span.End()
 				defer s.deleteTask(ctx, holder)
 
 				if sendError {
@@ -513,7 +499,6 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 	case models.OPTIONS_RUN_PERIODICALLY:
 		go func() {
 			defer func() {
-				defer span.End()
 				defer s.deleteTask(ctx, holder)
 
 				if e := recover(); e != nil {
@@ -548,13 +533,13 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 			}
 
 			// launch it once before starting the ticker
-			stop, err := processFunc()
+			stopped, err := processFunc()
 			if err != nil {
 				// error is already registered
 				return
 			}
 
-			if stop {
+			if stopped {
 				// Task is stopped or context is done
 				return
 			}

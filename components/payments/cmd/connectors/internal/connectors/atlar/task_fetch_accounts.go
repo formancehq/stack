@@ -9,6 +9,7 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/atlar/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
@@ -19,21 +20,23 @@ import (
 	"github.com/get-momo/atlar-v1-go-client/client/accounts"
 	"github.com/get-momo/atlar-v1-go-client/client/external_accounts"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 )
 
 func FetchAccountsTask(config Config, client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
+		taskID models.TaskID,
 		connectorID models.ConnectorID,
 		scheduler task.Scheduler,
 		ingester ingestion.Ingester,
 	) error {
-		span := trace.SpanFromContext(ctx)
-		span.SetName("atlar.taskFetchAccounts")
-		span.SetAttributes(
+		ctx, span := connectors.StartSpan(
+			ctx,
+			"atlar.taskFetchAccounts",
 			attribute.String("connectorID", connectorID.String()),
+			attribute.String("taskID", taskID.String()),
 		)
+		defer span.End()
 
 		// Pagination works by cursor token.
 		for token := ""; ; {

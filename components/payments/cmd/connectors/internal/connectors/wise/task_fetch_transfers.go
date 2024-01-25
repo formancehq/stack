@@ -8,6 +8,7 @@ import (
 	"math/big"
 	"strconv"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/wise/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
@@ -15,22 +16,24 @@ import (
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 )
 
 func taskFetchTransfers(wiseClient *client.Client, profileID uint64) task.Task {
 	return func(
 		ctx context.Context,
+		taskID models.TaskID,
 		connectorID models.ConnectorID,
 		scheduler task.Scheduler,
 		ingester ingestion.Ingester,
 	) error {
-		span := trace.SpanFromContext(ctx)
-		span.SetName("wise.taskFetchTransfers")
-		span.SetAttributes(
+		ctx, span := connectors.StartSpan(
+			ctx,
+			"wise.taskFetchTransfers",
 			attribute.String("connectorID", connectorID.String()),
+			attribute.String("taskID", taskID.String()),
 			attribute.String("profileID", strconv.FormatUint(profileID, 10)),
 		)
+		defer span.End()
 
 		if err := fetchTransfers(ctx, wiseClient, profileID, connectorID, scheduler, ingester); err != nil {
 			otel.RecordError(span, err)

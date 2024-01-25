@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
@@ -38,7 +39,7 @@ type Payment struct {
 	DebitedWalletID  string `json:"DebitedWalletId"`
 }
 
-func (c *Client) GetTransactions(ctx context.Context, walletsID string, page int) ([]*Payment, error) {
+func (c *Client) GetTransactions(ctx context.Context, walletsID string, page, pageSize int, afterCreatedAt time.Time) ([]*Payment, error) {
 	f := connectors.ClientMetrics(ctx, "mangopay", "list_transactions")
 	now := time.Now()
 	defer f(ctx, now)
@@ -50,8 +51,12 @@ func (c *Client) GetTransactions(ctx context.Context, walletsID string, page int
 	}
 
 	q := req.URL.Query()
-	q.Add("per_page", "100")
+	q.Add("per_page", strconv.Itoa(pageSize))
 	q.Add("page", fmt.Sprint(page))
+	q.Add("Sort", "CreationDate:ASC")
+	if !afterCreatedAt.IsZero() {
+		q.Add("AfterDate", strconv.FormatInt(afterCreatedAt.UTC().Unix(), 10))
+	}
 	req.URL.RawQuery = q.Encode()
 
 	resp, err := c.httpClient.Do(req)

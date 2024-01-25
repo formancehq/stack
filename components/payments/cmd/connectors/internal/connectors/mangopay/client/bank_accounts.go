@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
@@ -16,7 +17,7 @@ type bankAccount struct {
 	CreationDate int64  `json:"CreationDate"`
 }
 
-func (c *Client) GetBankAccounts(ctx context.Context, userID string, page int) ([]*bankAccount, error) {
+func (c *Client) GetBankAccounts(ctx context.Context, userID string, page, pageSize int) ([]*bankAccount, error) {
 	f := connectors.ClientMetrics(ctx, "mangopay", "list_bank_accounts")
 	now := time.Now()
 	defer f(ctx, now)
@@ -28,8 +29,9 @@ func (c *Client) GetBankAccounts(ctx context.Context, userID string, page int) (
 	}
 
 	q := req.URL.Query()
-	q.Add("per_page", "100")
+	q.Add("per_page", strconv.Itoa(pageSize))
 	q.Add("page", fmt.Sprint(page))
+	q.Add("Sort", "CreationDate:ASC")
 	req.URL.RawQuery = q.Encode()
 
 	resp, err := c.httpClient.Do(req)

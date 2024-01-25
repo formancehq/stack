@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/bankingcircle/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
@@ -12,7 +13,6 @@ import (
 	"github.com/formancehq/payments/internal/otel"
 	"github.com/google/uuid"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 )
 
 // No need to call any API for banking circle since it does not support it.
@@ -24,16 +24,19 @@ func taskCreateExternalAccount(
 ) task.Task {
 	return func(
 		ctx context.Context,
+		taskID models.TaskID,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		storageReader storage.Reader,
 	) error {
-		span := trace.SpanFromContext(ctx)
-		span.SetName("bankingcircle.taskCreateExternalAccount")
-		span.SetAttributes(
+		ctx, span := connectors.StartSpan(
+			ctx,
+			"bankingcircle.taskCreateExternalAccount",
 			attribute.String("connectorID", connectorID.String()),
+			attribute.String("taskID", taskID.String()),
 			attribute.String("bankAccount.id", bankAccountID.String()),
 		)
+		defer span.End()
 
 		bankAccount, err := storageReader.GetBankAccount(ctx, bankAccountID, false)
 		if err != nil {

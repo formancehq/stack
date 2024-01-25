@@ -11,6 +11,12 @@ import (
 	"github.com/google/uuid"
 )
 
+type TaskID uuid.UUID
+
+func (id TaskID) String() string {
+	return uuid.UUID(id).String()
+}
+
 type ScheduleOption int
 
 const (

@@ -3,13 +3,13 @@ package atlar
 import (
 	"context"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 )
 
 // Launch accounts and payments tasks.
@@ -17,14 +17,17 @@ import (
 func MainTask(logger logging.Logger) task.Task {
 	return func(
 		ctx context.Context,
+		taskID models.TaskID,
 		connectorID models.ConnectorID,
 		scheduler task.Scheduler,
 	) error {
-		span := trace.SpanFromContext(ctx)
-		span.SetName("atlar.taskMain")
-		span.SetAttributes(
+		ctx, span := connectors.StartSpan(
+			ctx,
+			"atlar.taskMain",
 			attribute.String("connectorID", connectorID.String()),
+			attribute.String("taskID", taskID.String()),
 		)
+		defer span.End()
 
 		taskAccounts, err := models.EncodeTaskDescriptor(TaskDescriptor{
 			Name: "Fetch accounts from client",

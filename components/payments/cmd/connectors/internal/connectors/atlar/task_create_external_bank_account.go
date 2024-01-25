@@ -5,28 +5,31 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/atlar/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 )
 
 func CreateExternalBankAccountTask(config Config, client *client.Client, newExternalBankAccount *models.BankAccount) task.Task {
 	return func(
 		ctx context.Context,
+		taskID models.TaskID,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 	) error {
-		span := trace.SpanFromContext(ctx)
-		span.SetName("atlar.taskCreateExternalBankAccount")
-		span.SetAttributes(
+		ctx, span := connectors.StartSpan(
+			ctx,
+			"atlar.taskCreateExternalBankAccount",
 			attribute.String("connectorID", connectorID.String()),
+			attribute.String("taskID", taskID.String()),
 			attribute.String("bankAccount.name", newExternalBankAccount.Name),
 			attribute.String("bankAccount.id", newExternalBankAccount.ID.String()),
 		)
+		defer span.End()
 
 		err := validateExternalBankAccount(newExternalBankAccount)
 		if err != nil {
