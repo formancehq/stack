@@ -8,6 +8,10 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/configtemplate"
 )
 
+const (
+	pageSize = 100
+)
+
 type Config struct {
 	Name          string              `json:"name" yaml:"name" bson:"name"`
 	ClientID      string              `json:"clientID" yaml:"clientID" bson:"clientID"`

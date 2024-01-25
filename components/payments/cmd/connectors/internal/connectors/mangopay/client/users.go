@@ -5,22 +5,25 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
 type user struct {
-	ID string `json:"Id"`
+	ID           string `json:"Id"`
+	CreationDate int64  `json:"CreationDate"`
 }
 
-func (c *Client) GetAllUsers(ctx context.Context) ([]*user, error) {
+func (c *Client) GetAllUsers(ctx context.Context, lastPage int, pageSize int) ([]*user, int, error) {
 	var users []*user
+	var currentPage int
 
-	for page := 1; ; page++ {
-		pagedUsers, err := c.getUsers(ctx, page)
+	for currentPage = lastPage; ; currentPage++ {
+		pagedUsers, err := c.getUsers(ctx, currentPage, pageSize)
 		if err != nil {
-			return nil, err
+			return nil, lastPage, err
 		}
 
 		if len(pagedUsers) == 0 {
@@ -28,12 +31,16 @@ func (c *Client) GetAllUsers(ctx context.Context) ([]*user, error) {
 		}
 
 		users = append(users, pagedUsers...)
+
+		if len(pagedUsers) < pageSize {
+			break
+		}
 	}
 
-	return users, nil
+	return users, currentPage, nil
 }
 
-func (c *Client) getUsers(ctx context.Context, page int) ([]*user, error) {
+func (c *Client) getUsers(ctx context.Context, page int, pageSize int) ([]*user, error) {
 	f := connectors.ClientMetrics(ctx, "mangopay", "list_users")
 	now := time.Now()
 	defer f(ctx, now)
@@ -45,8 +52,9 @@ func (c *Client) getUsers(ctx context.Context, page int) ([]*user, error) {
 	}
 
 	q := req.URL.Query()
-	q.Add("per_page", "100")
+	q.Add("per_page", strconv.Itoa(pageSize))
 	q.Add("page", fmt.Sprint(page))
+	q.Add("Sort", "CreationDate:ASC")
 	req.URL.RawQuery = q.Encode()
 
 	resp, err := c.httpClient.Do(req)

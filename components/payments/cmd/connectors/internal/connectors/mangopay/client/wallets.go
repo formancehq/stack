@@ -5,12 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
-type wallet struct {
+type Wallet struct {
 	ID           string `json:"Id"`
 	Description  string `json:"Description"`
 	CreationDate int64  `json:"CreationDate"`
@@ -21,7 +22,7 @@ type wallet struct {
 	} `json:"Balance"`
 }
 
-func (c *Client) GetWallets(ctx context.Context, userID string, page int) ([]*wallet, error) {
+func (c *Client) GetWallets(ctx context.Context, userID string, page, pageSize int) ([]*Wallet, error) {
 	f := connectors.ClientMetrics(ctx, "mangopay", "list_wallets")
 	now := time.Now()
 	defer f(ctx, now)
@@ -33,8 +34,9 @@ func (c *Client) GetWallets(ctx context.Context, userID string, page int) ([]*wa
 	}
 
 	q := req.URL.Query()
-	q.Add("per_page", "100")
+	q.Add("per_page", strconv.Itoa(pageSize))
 	q.Add("page", fmt.Sprint(page))
+	q.Add("Sort", "CreationDate:ASC")
 	req.URL.RawQuery = q.Encode()
 
 	resp, err := c.httpClient.Do(req)
@@ -53,7 +55,7 @@ func (c *Client) GetWallets(ctx context.Context, userID string, page int) ([]*wa
 		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
 	}
 
-	var wallets []*wallet
+	var wallets []*Wallet
 	if err := json.NewDecoder(resp.Body).Decode(&wallets); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal wallets response body: %w", err)
 	}
