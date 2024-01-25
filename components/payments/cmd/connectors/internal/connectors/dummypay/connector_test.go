@@ -86,11 +86,15 @@ func (m *MockIngester) IngestAccounts(ctx context.Context, batch ingestion.Accou
 	return nil
 }
 
-func (m *MockIngester) IngestPayments(ctx context.Context, connectorID models.ConnectorID, batch ingestion.PaymentBatch, commitState any) error {
+func (m *MockIngester) IngestPayments(ctx context.Context, batch ingestion.PaymentBatch) error {
 	return nil
 }
 
 func (m *MockIngester) IngestBalances(ctx context.Context, batch ingestion.BalanceBatch, checkIfAccountExists bool) error {
+	return nil
+}
+
+func (m *MockIngester) UpdateTaskState(ctx context.Context, state any) error {
 	return nil
 }
 

@@ -189,9 +189,7 @@ func handleAuthorisation(
 
 	if err := ingester.IngestPayments(
 		ctx,
-		connectorID,
 		ingestion.PaymentBatch{{Payment: payment}},
-		struct{}{},
 	); err != nil {
 		return err
 	}
@@ -223,9 +221,7 @@ func handleAuthorisationAdjustment(
 
 		if err := ingester.IngestPayments(
 			ctx,
-			connectorID,
 			ingestion.PaymentBatch{{Payment: payment}},
-			struct{}{},
 		); err != nil {
 			return err
 		}
@@ -257,9 +253,7 @@ func handleCancellation(
 
 		if err := ingester.IngestPayments(
 			ctx,
-			connectorID,
 			ingestion.PaymentBatch{{Payment: payment}},
-			struct{}{},
 		); err != nil {
 			return err
 		}
@@ -292,9 +286,7 @@ func handleCapture(
 
 		if err := ingester.IngestPayments(
 			ctx,
-			connectorID,
 			ingestion.PaymentBatch{{Payment: payment}},
-			struct{}{},
 		); err != nil {
 			return err
 		}
@@ -326,9 +318,7 @@ func handleCaptureFailed(
 
 		if err := ingester.IngestPayments(
 			ctx,
-			connectorID,
 			ingestion.PaymentBatch{{Payment: payment}},
-			struct{}{},
 		); err != nil {
 			return err
 		}
@@ -363,9 +353,7 @@ func handleRefund(
 
 		if err := ingester.IngestPayments(
 			ctx,
-			connectorID,
 			ingestion.PaymentBatch{{Payment: payment}},
-			struct{}{},
 		); err != nil {
 			return err
 		}
@@ -402,9 +390,7 @@ func handleRefundedReversed(
 
 		if err := ingester.IngestPayments(
 			ctx,
-			connectorID,
 			ingestion.PaymentBatch{{Payment: payment}},
-			struct{}{},
 		); err != nil {
 			return err
 		}
@@ -439,9 +425,7 @@ func handleRefundWithData(
 
 		if err := ingester.IngestPayments(
 			ctx,
-			connectorID,
 			ingestion.PaymentBatch{{Payment: payment}},
-			struct{}{},
 		); err != nil {
 			return err
 		}
@@ -492,9 +476,7 @@ func handlePayoutThirdparty(
 
 	if err := ingester.IngestPayments(
 		ctx,
-		connectorID,
 		ingestion.PaymentBatch{{Payment: payment}},
-		struct{}{},
 	); err != nil {
 		return err
 	}
@@ -543,9 +525,7 @@ func handlePayoutDecline(
 
 	if err := ingester.IngestPayments(
 		ctx,
-		connectorID,
 		ingestion.PaymentBatch{{Payment: payment}},
-		struct{}{},
 	); err != nil {
 		return err
 	}
@@ -594,9 +574,7 @@ func handlePayoutExpire(
 
 	if err := ingester.IngestPayments(
 		ctx,
-		connectorID,
 		ingestion.PaymentBatch{{Payment: payment}},
-		struct{}{},
 	); err != nil {
 		return err
 	}

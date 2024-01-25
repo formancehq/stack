@@ -70,7 +70,7 @@ func handleFile(
 			return err
 		}
 
-		err = ingester.IngestPayments(ctx, connectorID, batch, struct{}{})
+		err = ingester.IngestPayments(ctx, batch)
 		if err != nil {
 			return fmt.Errorf("failed to ingest file '%s': %w", descriptor.FileName, err)
 		}

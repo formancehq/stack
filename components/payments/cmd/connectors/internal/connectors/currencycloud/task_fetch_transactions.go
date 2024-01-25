@@ -119,7 +119,7 @@ func ingestTransactions(
 			batch = append(batch, batchElement)
 		}
 
-		err = ingester.IngestPayments(ctx, connectorID, batch, struct{}{})
+		err = ingester.IngestPayments(ctx, batch)
 		if err != nil {
 			return err
 		}

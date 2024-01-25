@@ -2,7 +2,6 @@ package ingestion
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"time"
 
@@ -29,9 +28,7 @@ func (fn IngesterFn) IngestPayments(ctx context.Context, batch PaymentBatch, com
 
 func (i *DefaultIngester) IngestPayments(
 	ctx context.Context,
-	connectorID models.ConnectorID,
 	batch PaymentBatch,
-	commitState any,
 ) error {
 	startingAt := time.Now()
 
@@ -60,15 +57,6 @@ func (i *DefaultIngester) IngestPayments(
 	idsInsertedMap := make(map[string]struct{}, len(idsInserted))
 	for idx := range idsInserted {
 		idsInsertedMap[idsInserted[idx].String()] = struct{}{}
-	}
-
-	taskState, err := json.Marshal(commitState)
-	if err != nil {
-		return fmt.Errorf("error marshaling task state: %w", err)
-	}
-
-	if err = i.store.UpdateTaskState(ctx, connectorID, i.descriptor, taskState); err != nil {
-		return fmt.Errorf("error updating task state: %w", err)
 	}
 
 	for paymentIdx := range allPayments {

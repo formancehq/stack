@@ -166,13 +166,14 @@ func TestIngestPayments(t *testing.T) {
 
 			ingester := NewDefaultIngester(
 				models.ConnectorProviderDummyPay,
+				connectorID,
 				nil,
 				NewMockStore().WithPaymentIDsNotModified(tc.paymentIDsNotModified),
 				publisher,
 				messages.NewMessages(""),
 			)
 
-			err := ingester.IngestPayments(context.Background(), connectorID, tc.batch, nil)
+			err := ingester.IngestPayments(context.Background(), tc.batch)
 			publisher.Close()
 			require.NoError(t, err)
 

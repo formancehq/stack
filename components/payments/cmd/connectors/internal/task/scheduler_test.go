@@ -169,6 +169,9 @@ func TestTaskScheduler(t *testing.T) {
 		descriptor1 := newDescriptor()
 		descriptor2 := newDescriptor()
 
+		task1Launched := make(chan struct{})
+		task2Launched := make(chan struct{})
+
 		task1Terminated := make(chan struct{})
 		task2Terminated := make(chan struct{})
 
@@ -177,6 +180,7 @@ func TestTaskScheduler(t *testing.T) {
 				switch string(descriptor) {
 				case string(descriptor1):
 					return func(ctx context.Context) error {
+						close(task1Launched)
 						select {
 						case <-task1Terminated:
 							return nil
@@ -186,6 +190,7 @@ func TestTaskScheduler(t *testing.T) {
 					}
 				case string(descriptor2):
 					return func(ctx context.Context) error {
+						close(task2Launched)
 						select {
 						case <-task2Terminated:
 							return nil
@@ -206,13 +211,25 @@ func TestTaskScheduler(t *testing.T) {
 			ScheduleOption: models.OPTIONS_RUN_NOW,
 			RestartOption:  models.OPTIONS_RESTART_NEVER,
 		}))
-		require.Eventually(t, TaskActive(store, connectorID, descriptor1), time.Second, 100*time.Millisecond)
-		require.Eventually(t, TaskPending(store, connectorID, descriptor2), time.Second, 100*time.Millisecond)
-		close(task1Terminated)
-		require.Eventually(t, TaskTerminated(store, connectorID, descriptor1), time.Second, 100*time.Millisecond)
-		require.Eventually(t, TaskActive(store, connectorID, descriptor2), time.Second, 100*time.Millisecond)
-		close(task2Terminated)
-		require.Eventually(t, TaskTerminated(store, connectorID, descriptor2), time.Second, 100*time.Millisecond)
+
+		select {
+		case <-task1Launched:
+			require.Eventually(t, TaskActive(store, connectorID, descriptor1), time.Second, 100*time.Millisecond)
+			require.Eventually(t, TaskActive(store, connectorID, descriptor2), time.Second, 100*time.Millisecond)
+			close(task1Terminated)
+			require.Eventually(t, TaskTerminated(store, connectorID, descriptor1), time.Second, 100*time.Millisecond)
+			require.Eventually(t, TaskActive(store, connectorID, descriptor2), time.Second, 100*time.Millisecond)
+			close(task2Terminated)
+			require.Eventually(t, TaskTerminated(store, connectorID, descriptor2), time.Second, 100*time.Millisecond)
+		case <-task2Launched:
+			require.Eventually(t, TaskActive(store, connectorID, descriptor1), time.Second, 100*time.Millisecond)
+			require.Eventually(t, TaskActive(store, connectorID, descriptor2), time.Second, 100*time.Millisecond)
+			close(task2Terminated)
+			require.Eventually(t, TaskTerminated(store, connectorID, descriptor2), time.Second, 100*time.Millisecond)
+			require.Eventually(t, TaskActive(store, connectorID, descriptor1), time.Second, 100*time.Millisecond)
+			close(task1Terminated)
+			require.Eventually(t, TaskTerminated(store, connectorID, descriptor1), time.Second, 100*time.Millisecond)
+		}
 	})
 
 	t.Run("Stop scheduler", func(t *testing.T) {
@@ -238,7 +255,9 @@ func TestTaskScheduler(t *testing.T) {
 						}))
 					}
 				default:
-					panic("should not be called")
+					return func() {
+
+					}
 				}
 			}), metrics.NewNoOpMetricsRegistry(), 1)
 
@@ -248,7 +267,9 @@ func TestTaskScheduler(t *testing.T) {
 		}))
 		require.Eventually(t, TaskActive(store, connectorID, mainDescriptor), time.Second, 100*time.Millisecond)
 		require.NoError(t, scheduler.Shutdown(context.TODO()))
-		require.Eventually(t, TaskTerminated(store, connectorID, mainDescriptor), time.Second, 100*time.Millisecond)
-		require.Eventually(t, TaskPending(store, connectorID, workerDescriptor), time.Second, 100*time.Millisecond)
+		// the main task should be still marked as active since it failed to
+		// schedule the worker task because the scheduler was stopped
+		require.Eventually(t, TaskActive(store, connectorID, mainDescriptor), time.Second, 100*time.Millisecond)
+		require.Eventually(t, TaskActive(store, connectorID, workerDescriptor), time.Second, 100*time.Millisecond)
 	})
 }

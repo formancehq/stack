@@ -46,7 +46,12 @@ func ingestBatch(
 		"state": commitState,
 	}).Debugf("updating state")
 
-	err := ingester.IngestPayments(ctx, connectorID, batch, commitState)
+	err := ingester.IngestPayments(ctx, batch)
+	if err != nil {
+		return err
+	}
+
+	err = ingester.UpdateTaskState(ctx, commitState)
 	if err != nil {
 		return err
 	}

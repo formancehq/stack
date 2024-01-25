@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/alitto/pond"
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/internal/models"
@@ -46,9 +47,9 @@ type DefaultTaskScheduler struct {
 	containerFactory ContainerCreateFunc
 	tasks            map[string]*taskHolder
 	mu               sync.Mutex
-	maxTasks         int
 	resolver         Resolver
 	stopped          bool
+	workerPool       *pond.WorkerPool
 }
 
 func (s *DefaultTaskScheduler) ListTasks(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.Task, storage.PaginationDetails, error) {
@@ -133,15 +134,6 @@ func (s *DefaultTaskScheduler) schedule(ctx context.Context, descriptor models.T
 		// Do nothing
 	}
 
-	if s.maxTasks != 0 && len(s.tasks) >= s.maxTasks || s.stopped {
-		err := s.stackTask(ctx, descriptor)
-		if err != nil {
-			return returnErrorFunc(errors.Wrap(err, "stacking task"))
-		}
-
-		return returnErrorFunc(nil)
-	}
-
 	errChan := s.startTask(ctx, descriptor, options)
 
 	return errChan
@@ -153,6 +145,7 @@ func (s *DefaultTaskScheduler) Shutdown(ctx context.Context) error {
 	s.mu.Unlock()
 
 	s.logger(ctx).Infof("Stopping scheduler...")
+	s.workerPool.Stop()
 
 	for name, task := range s.tasks {
 		task.logger.Debugf("Stopping task")
@@ -462,6 +455,16 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 				}
 
 				if e := recover(); e != nil {
+					switch v := e.(type) {
+					case error:
+						if errors.Is(v, pond.ErrSubmitOnStoppedPool) {
+							// Pool is stopped and task is marked as active,
+							// nothing to do as they will be restarted on
+							// next startup
+							return
+						}
+					}
+
 					s.registerTaskError(ctx, holder, e)
 					debug.PrintStack()
 
@@ -476,7 +479,16 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 				}
 			}()
 
-			err = container.Invoke(taskResolver)
+			done := make(chan struct{})
+			s.workerPool.Submit(func() {
+				defer close(done)
+				err = container.Invoke(taskResolver)
+			})
+			select {
+			case <-done:
+			case <-ctx.Done():
+				return
+			}
 			if err != nil {
 				s.registerTaskError(ctx, holder, err)
 
@@ -512,11 +524,38 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 				}
 			}()
 
-			// launch it once before starting the ticker
-			err = container.Invoke(taskResolver)
-			if err != nil {
-				s.registerTaskError(ctx, holder, err)
+			processFunc := func() (bool, error) {
+				done := make(chan struct{})
+				s.workerPool.Submit(func() {
+					defer close(done)
+					err = container.Invoke(taskResolver)
+				})
+				select {
+				case <-done:
+				case <-ctx.Done():
+					return true, nil
+				case ch := <-holder.stopChan:
+					logger.Infof("Stopping task...")
+					close(ch)
+					return true, nil
+				}
+				if err != nil {
+					s.registerTaskError(ctx, holder, err)
+					return false, err
+				}
 
+				return false, err
+			}
+
+			// launch it once before starting the ticker
+			stop, err := processFunc()
+			if err != nil {
+				// error is already registered
+				return
+			}
+
+			if stop {
+				// Task is stopped or context is done
 				return
 			}
 
@@ -532,10 +571,14 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 					return
 				case <-ticker.C:
 					logger.Infof("Polling trigger, running task...")
-					err = container.Invoke(taskResolver)
+					stop, err := processFunc()
 					if err != nil {
-						s.registerTaskError(ctx, holder, err)
+						// error is already registered
+						return
+					}
 
+					if stop {
+						// Task is stopped or context is done
 						return
 					}
 				}
@@ -549,14 +592,6 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 	}
 
 	return errChan
-}
-
-func (s *DefaultTaskScheduler) stackTask(ctx context.Context, descriptor models.TaskDescriptor) error {
-	s.logger(ctx).WithFields(map[string]interface{}{
-		"descriptor": string(descriptor),
-	}).Infof("Stacking task")
-
-	return s.store.UpdateTaskStatus(ctx, s.connectorID, descriptor, models.TaskStatusPending, "")
 }
 
 func (s *DefaultTaskScheduler) logger(ctx context.Context) logging.Logger {
@@ -582,7 +617,7 @@ func NewDefaultScheduler(
 		metricsRegistry:  metricsRegistry,
 		tasks:            map[string]*taskHolder{},
 		containerFactory: containerFactory,
-		maxTasks:         maxTasks,
 		resolver:         resolver,
+		workerPool:       pond.New(maxTasks, maxTasks),
 	}
 }

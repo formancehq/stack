@@ -50,7 +50,7 @@ func addConnector[ConnectorConfig models.ConnectorConfigObject](loader manager.L
 					container := dig.New()
 
 					if err := container.Provide(func() ingestion.Ingester {
-						return ingestion.NewDefaultIngester(loader.Name(), descriptor, store, publisher, messages)
+						return ingestion.NewDefaultIngester(loader.Name(), connectorID, descriptor, store, publisher, messages)
 					}); err != nil {
 						return nil, err
 					}
