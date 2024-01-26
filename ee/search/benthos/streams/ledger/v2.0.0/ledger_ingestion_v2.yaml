@@ -93,7 +93,11 @@ pipeline:
             )
             root = root.append(
               this.payload.accountMetadata.map_each(item -> item.value.map_each(metadata -> {
-                "script": "ctx._source.data.metadata[\"" + metadata.key + "\"]=\"" + metadata.value + "\"",
+                "script": "ctx._source.data.metadata[params.key]=params.value",
+                "params": {
+                  "key": metadata.key,
+                  "value": metadata.value
+                },
                 "action": "update",
                 "id": "ACCOUNT-%s-%s".format(this.payload.ledger, item.key),
                 "upsert": {
@@ -137,7 +141,11 @@ pipeline:
         processors:
         - bloblang: |
             root = this.payload.metadata.map_each(item -> {
-              "script": "if (ctx._source.data.metadata == null) { ctx._source.data.metadata = ['" + item.key + "': '" + item.value + "'] }  ctx._source.data.metadata['" + item.key + "']='" + item.value + "'",
+              "script": "if (ctx._source.data.metadata == null) { ctx._source.data.metadata = [params.key: params.value] }  ctx._source.data.metadata[params.key]=params.value",
+              "params": {
+                "key": item.key,
+                "value": item.value
+              },
               "action": "update",
               "id": "%s-%s-%s".format(this.payload.targetType, this.payload.ledger, this.payload.targetId),
               "upsert": {
@@ -161,7 +169,10 @@ pipeline:
         processors:
         - bloblang: |
             root = {
-              "script": "ctx._source.data.metadata.remove(\"" + this.payload.key + "\")",
+              "script": "ctx._source.data.metadata.remove(params.key)",
+              "params": {
+                "key": this.payload.key
+              },
               "action": "update",
               "id": "%s-%s-%s".format(this.payload.targetType, this.payload.ledger, this.payload.targetId)
             }

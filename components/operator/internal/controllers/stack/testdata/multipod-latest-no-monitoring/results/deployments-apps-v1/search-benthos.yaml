@@ -20,7 +20,7 @@ spec:
     template:
         metadata:
             annotations:
-                stack.formance.cloud/volumes-hash: EzO6HC1Z4jk4Ld2Ua4vIfjNEaYrtFQPY3G06P14GkrU=
+                stack.formance.cloud/volumes-hash: SKMuqJo00TeiIbsAJrChX-gmffYXjf1omWjMmImsS4k=
             creationTimestamp: null
             labels:
                 app.kubernetes.io/name: search-benthos
@@ -84,7 +84,7 @@ spec:
                       value: $(LEDGER_POSTGRES_NO_DATABASE_URI)/$(LEDGER_POSTGRES_DATABASE)?sslmode=disable
                     - name: BROKER
                       value: kafka
-                  image: public.ecr.aws/formance-internal/jeffail/benthos:v4.23.0-es
+                  image: public.ecr.aws/formance-internal/jeffail/benthos:v4.23.1-es
                   imagePullPolicy: IfNotPresent
                   name: search-benthos
                   ports:

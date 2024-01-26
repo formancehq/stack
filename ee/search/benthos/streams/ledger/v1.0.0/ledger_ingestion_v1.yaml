@@ -112,7 +112,11 @@ pipeline:
         processors:
         - bloblang: |
             root = this.payload.metadata.map_each(item -> {
-              "script": "if (ctx._source.data.metadata == null) { ctx._source.data.metadata = ['" + item.key + "': '" + item.value.string() + "'] }  ctx._source.data.metadata['" + item.key + "']='" + item.value.string() + "'",
+              "script": "if (ctx._source.data.metadata == null) { ctx._source.data.metadata = [params.key: params.value] }  ctx._source.data.metadata[params.key]=params.value",
+              "params": {
+                "key": item.key,
+                "value": item.value.string()
+              },
               "action": "update",
               "id": "%s-%s-%s".format(this.payload.targetType, this.payload.ledger, this.payload.targetId),
               "upsert": {
