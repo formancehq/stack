@@ -39,3 +39,4 @@ output_resources:
     doc: ${! if json().exists("document") { json("document") } else {""} }
     script: ${! if json().exists("script") { json("script") } else {""} }
     upsert: ${! if json().exists("upsert") { json("upsert") } else {""} }
+    params: ${! if json().exists("params") { json("params") } else {""} }
