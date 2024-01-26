@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"io/fs"
 	"path/filepath"
 	"reflect"
@@ -129,4 +130,35 @@ func DeleteIfExists[T client.Object](ctx Context, name types.NamespacedName) err
 		return err
 	}
 	return ctx.GetClient().Delete(ctx, t)
+}
+
+func hasOwnerReference(ctx Context, owner client.Object, object client.Object, controller, blockOwnerDeletion bool) (bool, error) {
+	kinds, _, err := ctx.GetScheme().ObjectKinds(owner)
+	if err != nil {
+		return false, nil
+	}
+	expectedOwnerReference := metav1.OwnerReference{
+		APIVersion: kinds[0].GroupVersion().String(),
+		Kind:       kinds[0].Kind,
+		Name:       owner.GetName(),
+		UID:        owner.GetUID(),
+	}
+	if controller {
+		expectedOwnerReference.Controller = pointer.For(true)
+	}
+	if blockOwnerDeletion {
+		expectedOwnerReference.BlockOwnerDeletion = pointer.For(true)
+	}
+
+	for _, reference := range object.GetOwnerReferences() {
+		if reflect.DeepEqual(reference, expectedOwnerReference) {
+			return true, nil
+		}
+	}
+
+	return false, nil
+}
+
+func HasControllerReference(ctx Context, owner client.Object, object client.Object) (bool, error) {
+	return hasOwnerReference(ctx, owner, object, true, true)
 }

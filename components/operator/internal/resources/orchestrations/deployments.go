@@ -2,6 +2,7 @@ package orchestrations
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/secrets"
 	"strings"
 
 	"github.com/formancehq/operator/internal/resources/settings"
@@ -64,6 +65,14 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 	temporalConfiguration, err := settings.FindTemporalConfiguration(ctx, stack)
 	if err != nil {
 		return err
+	}
+
+	if temporalConfiguration.TLS.SecretName != "" {
+		secret, err := secrets.SyncOne(ctx, orchestration, stack.Name, temporalConfiguration.TLS.SecretName)
+		if err != nil {
+			return err
+		}
+		temporalConfiguration.TLS.SecretName = secret.Name
 	}
 
 	env = append(env,

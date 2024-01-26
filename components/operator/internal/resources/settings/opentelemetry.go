@@ -53,6 +53,7 @@ func GetOTELEnvVarsWithPrefix(config *v1beta1.OpenTelemetryConfiguration, servic
 
 func otelEnvVars(otlp *v1beta1.OtlpSpec, monitoringType MonitoringType, serviceName, prefix string) []v1.EnvVar {
 
+	// OtelTracesExporterOTLPModeFlag       = "otel-traces-exporter-otlp-mode"
 	ret := []v1.EnvVar{
 		core.Env(fmt.Sprintf("%sOTEL_%s", prefix, string(monitoringType)), "true"),
 		core.Env(fmt.Sprintf("%sOTEL_%s_EXPORTER", prefix, string(monitoringType)), "otlp"),
@@ -63,8 +64,6 @@ func otelEnvVars(otlp *v1beta1.OtlpSpec, monitoringType MonitoringType, serviceN
 		core.Env(fmt.Sprintf("%sOTEL_%s_EXPORTER_OTLP_ENDPOINT", prefix, string(monitoringType)), core.ComputeEnvVar("%s:%s",
 			fmt.Sprintf("%sOTEL_%s_ENDPOINT", prefix, string(monitoringType)),
 			fmt.Sprintf("%sOTEL_%s_PORT", prefix, string(monitoringType)))),
-		core.Env(fmt.Sprintf("%sOTEL_EXPORTER_OTLP_TRACES_ENDPOINT", prefix),
-			core.ComputeEnvVar("http://%s", fmt.Sprintf("%sOTEL_TRACES_EXPORTER_OTLP_ENDPOINT", prefix))),
 		core.Env(fmt.Sprintf("%sOTEL_SERVICE_NAME", prefix), serviceName),
 	}
 

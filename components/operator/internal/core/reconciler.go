@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	corev1 "k8s.io/api/core/v1"
 	"reflect"
 	"strings"
 
@@ -51,24 +52,46 @@ func WithOwn(v client.Object, opts ...builder.OwnsOption) reconcilerOption {
 	}
 }
 
-func WithWatchSettings() reconcilerOption {
-
-	buildReconcileRequests := func(ctx context.Context, mgr Manager, target client.Object, opts ...client.ListOption) []reconcile.Request {
-		kinds, _, err := mgr.GetScheme().ObjectKinds(target)
-		if err != nil {
-			return []reconcile.Request{}
-		}
-
-		us := &unstructured.UnstructuredList{}
-		us.SetGroupVersionKind(kinds[0])
-		if err := mgr.GetClient().List(ctx, us, opts...); err != nil {
-			return []reconcile.Request{}
-		}
-
-		return MapObjectToReconcileRequests(
-			Map(us.Items, ToPointer[unstructured.Unstructured])...,
-		)
+func buildReconcileRequests(ctx context.Context, mgr Manager, target client.Object, opts ...client.ListOption) []reconcile.Request {
+	kinds, _, err := mgr.GetScheme().ObjectKinds(target)
+	if err != nil {
+		return []reconcile.Request{}
 	}
+
+	us := &unstructured.UnstructuredList{}
+	us.SetGroupVersionKind(kinds[0])
+	if err := mgr.GetClient().List(ctx, us, opts...); err != nil {
+		return []reconcile.Request{}
+	}
+
+	return MapObjectToReconcileRequests(
+		Map(us.Items, ToPointer[unstructured.Unstructured])...,
+	)
+}
+
+func WithWatchSecrets() reconcilerOption {
+
+	return func(mgr Manager, builder *builder.Builder, target client.Object) error {
+		builder.Watches(&corev1.Secret{}, handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, object client.Object) []reconcile.Request {
+			ret := make([]reconcile.Request, 0)
+			if object.GetLabels()[StackLabel] != "any" {
+				for _, stack := range strings.Split(object.GetLabels()[StackLabel], ",") {
+					ret = append(ret, buildReconcileRequests(ctx, mgr, target, client.MatchingFields{
+						"stack": stack,
+					})...)
+				}
+			} else {
+				ret = append(ret, buildReconcileRequests(ctx, mgr, target)...)
+			}
+
+			return ret
+		}))
+
+		return nil
+	}
+}
+
+func WithWatchSettings() reconcilerOption {
 
 	return func(mgr Manager, builder *builder.Builder, target client.Object) error {
 		builder.Watches(&v1beta1.Settings{}, handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, object client.Object) []reconcile.Request {

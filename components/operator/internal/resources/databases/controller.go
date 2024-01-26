@@ -18,6 +18,8 @@ package databases
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/secrets"
+	v1 "k8s.io/api/core/v1"
 	"reflect"
 
 	"github.com/formancehq/operator/internal/core"
@@ -70,6 +72,14 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 
 	if databaseConfiguration == nil {
 		return fmt.Errorf("unable to find a database configuration")
+	}
+
+	if databaseConfiguration.CredentialsFromSecret != "" {
+		secret, err := secrets.SyncOne(ctx, database, stack.Name, databaseConfiguration.CredentialsFromSecret)
+		if err != nil {
+			return err
+		}
+		databaseConfiguration.CredentialsFromSecret = secret.Name
 	}
 
 	switch {
@@ -126,7 +136,9 @@ func init() {
 	core.Init(
 		core.WithStackDependencyReconciler(Reconcile,
 			core.WithOwn(&batchv1.Job{}),
+			core.WithOwn(&v1.Secret{}),
 			core.WithWatchSettings(),
+			core.WithWatchSecrets(),
 		),
 	)
 }

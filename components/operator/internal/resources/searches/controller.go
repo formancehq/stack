@@ -18,6 +18,7 @@ package searches
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/secrets"
 	"strconv"
 
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -45,6 +46,14 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 
 	if elasticSearchConfiguration == nil {
 		return errors.New("missing elastic search configuration")
+	}
+
+	if elasticSearchConfiguration.BasicAuth != nil && elasticSearchConfiguration.BasicAuth.SecretName != "" {
+		secret, err := secrets.SyncOne(ctx, search, stack.Name, elasticSearchConfiguration.BasicAuth.SecretName)
+		if err != nil {
+			return err
+		}
+		elasticSearchConfiguration.BasicAuth.SecretName = secret.Name
 	}
 
 	env := make([]corev1.EnvVar, 0)
@@ -151,6 +160,8 @@ func init() {
 	Init(
 		WithModuleReconciler(Reconcile,
 			WithWatchSettings(),
+			WithWatchSecrets(),
+			WithOwn(&corev1.Secret{}),
 			WithOwn(&v1beta1.Benthos{}),
 			WithOwn(&v1beta1.HTTPAPI{}),
 			WithOwn(&appsv1.Deployment{}),

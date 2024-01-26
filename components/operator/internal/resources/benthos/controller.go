@@ -19,6 +19,7 @@ package benthos
 import (
 	"embed"
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/secrets"
 	"github.com/formancehq/operator/internal/resources/services"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"sort"
@@ -79,6 +80,8 @@ func createService(ctx Context, b *v1beta1.Benthos) error {
 	return err
 }
 
+// TODO(gfyrag): there is a ton of search related configuration
+// We need to this controller and keep it focused on benthos
 func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) error {
 	brokerConfiguration, err := settings.FindBrokerConfiguration(ctx, stack)
 	if err != nil {
@@ -95,6 +98,13 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 	if elasticSearchConfiguration == nil {
 		return errors.New("elasticsearch configuration not found")
 	}
+	if elasticSearchConfiguration.BasicAuth != nil && elasticSearchConfiguration.BasicAuth.SecretName != "" {
+		secret, err := secrets.SyncOne(ctx, b, stack.Name, elasticSearchConfiguration.BasicAuth.SecretName)
+		if err != nil {
+			return err
+		}
+		elasticSearchConfiguration.BasicAuth.SecretName = secret.Name
+	}
 
 	env := []corev1.EnvVar{
 		Env("OPENSEARCH_URL", elasticSearchConfiguration.Endpoint()),
@@ -103,17 +113,19 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 		Env("STACK", b.Spec.Stack),
 	}
 	if b.Spec.Batching != nil {
-		env = append(env,
-			Env("OPENSEARCH_BATCHING_COUNT", fmt.Sprint(b.Spec.Batching.Count)),
-			Env("OPENSEARCH_BATCHING_PERIOD", b.Spec.Batching.Period),
-		)
+		if b.Spec.Batching.Count != 0 {
+			env = append(env, Env("OPENSEARCH_BATCHING_COUNT", fmt.Sprint(b.Spec.Batching.Count)))
+		}
+		if b.Spec.Batching.Period != "" {
+			env = append(env, Env("OPENSEARCH_BATCHING_PERIOD", b.Spec.Batching.Period))
+		}
 	}
 	openTelemetryConfiguration, err := settings.FindOpenTelemetryConfiguration(ctx, stack)
 	if err != nil {
 		return err
 	}
 	if openTelemetryConfiguration != nil {
-		env = append(env, settings.GetOTELEnvVars(openTelemetryConfiguration, "gateway")...)
+		env = append(env, settings.GetOTELEnvVars(openTelemetryConfiguration, "benthos")...)
 	}
 	if brokerConfiguration.Kafka != nil {
 		env = append(env, Env("KAFKA_ADDRESS", strings.Join(brokerConfiguration.Kafka.Brokers, ",")))
@@ -326,7 +338,9 @@ func init() {
 	Init(
 		WithStackDependencyReconciler(Reconcile,
 			WithWatchSettings(),
+			WithWatchSecrets(),
 			WithWatchDependency(&v1beta1.BenthosStream{}),
+			WithOwn(&corev1.Secret{}),
 			WithOwn(&corev1.ConfigMap{}),
 			WithOwn(&appsv1.Deployment{}),
 		),
