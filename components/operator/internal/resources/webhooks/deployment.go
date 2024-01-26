@@ -49,7 +49,7 @@ func deploymentEnvVars(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1
 	}
 
 	env = append(env, authEnvVars...)
-	env = append(env, databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfiguration, database.Status.Configuration.Database)...)
+	env = append(env, databases.GetPostgresEnvVars(database)...)
 	env = append(env, settings.GetBrokerEnvVars(*brokerConfiguration, stack.Name, "webhooks")...)
 	env = append(env, core.Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"))
 

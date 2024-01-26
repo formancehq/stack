@@ -2,6 +2,7 @@ package settings
 
 import (
 	"fmt"
+	"net/url"
 	"slices"
 	"strconv"
 	"strings"
@@ -76,6 +77,17 @@ func RequireString(ctx core.Context, stack string, keys ...string) (string, erro
 		return "", fmt.Errorf("settings '%s' not found for stack '%s'", strings.Join(keys, "."), stack)
 	}
 	return *value, nil
+}
+
+func RequireURL(ctx core.Context, stack string, keys ...string) (*url.URL, error) {
+	value, err := RequireString(ctx, stack, keys...)
+	if err != nil {
+		return nil, err
+	}
+	if value == "" {
+		return nil, fmt.Errorf("settings '%s' not found for stack '%s'", strings.Join(keys, "."), stack)
+	}
+	return url.Parse(value)
 }
 
 func GetInt64(ctx core.Context, stack string, keys ...string) (*int64, error) {
@@ -310,4 +322,8 @@ func sortSettingsByPriority(a, b v1beta1.Settings) int {
 	}
 
 	return 0
+}
+
+func IsTrue(v string) bool {
+	return strings.ToLower(v) == "true" || v == "1"
 }

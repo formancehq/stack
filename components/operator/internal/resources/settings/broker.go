@@ -120,7 +120,7 @@ func resolveKafkaConfiguration(kafkaDSN string) (*v1beta1.BrokerConfiguration, e
 	}
 
 	var saslConfig *v1beta1.BrokerKafkaSASLConfig
-	if isTrue(kafkaURI.Query().Get("saslEnabled")) {
+	if IsTrue(kafkaURI.Query().Get("saslEnabled")) {
 		saslConfig = &v1beta1.BrokerKafkaSASLConfig{
 			Username:     kafkaURI.Query().Get("saslUsername"),
 			Password:     kafkaURI.Query().Get("saslPassword"),
@@ -132,7 +132,7 @@ func resolveKafkaConfiguration(kafkaDSN string) (*v1beta1.BrokerConfiguration, e
 	return &v1beta1.BrokerConfiguration{
 		Kafka: &v1beta1.BrokerKafkaConfig{
 			Brokers: []string{kafkaURI.Host},
-			TLS:     isTrue(kafkaURI.Query().Get("tls")),
+			TLS:     IsTrue(kafkaURI.Query().Get("tls")),
 			SASL:    saslConfig,
 		},
 	}, nil

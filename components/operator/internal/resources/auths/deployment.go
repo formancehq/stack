@@ -30,18 +30,13 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, dat
 	if err != nil {
 		return nil, err
 	}
+
 	env = append(env, gatewayEnv...)
 	env = append(env, GetDevEnvVars(stack, auth)...)
-
-	env = append(env,
-		databases.PostgresEnvVars(
-			database.Status.Configuration.DatabaseConfiguration,
-			GetObjectName(stack.Name, "auth"),
-		)...,
-	)
+	env = append(env, databases.GetPostgresEnvVars(database)...)
 	env = append(env, Env("CONFIG", "/config/config.yaml"))
 
-	authUrl, err := url(ctx, stack.Name)
+	authUrl, err := getUrl(ctx, stack.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +98,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, dat
 	)
 }
 
-func url(ctx Context, stackName string) (string, error) {
+func getUrl(ctx Context, stackName string) (string, error) {
 	gateway := &v1beta1.Gateway{}
 	ok, err := GetIfExists(ctx, stackName, gateway)
 	if err != nil {

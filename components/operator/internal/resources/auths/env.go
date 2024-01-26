@@ -24,7 +24,7 @@ func ProtectedAPIEnvVarsWithPrefix(ctx Context, stack *v1beta1.Stack, moduleName
 		return ret, nil
 	}
 
-	url, err := url(ctx, stack.Name)
+	url, err := getUrl(ctx, stack.Name)
 	if err != nil {
 		return nil, err
 	}

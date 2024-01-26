@@ -29,13 +29,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, reconciliation *v1
 	}
 	env = append(env, gatewayEnv...)
 	env = append(env, core.GetDevEnvVars(stack, reconciliation)...)
-
-	env = append(env,
-		databases.PostgresEnvVars(
-			database.Status.Configuration.DatabaseConfiguration,
-			core.GetObjectName(stack.Name, "reconciliation"),
-		)...,
-	)
+	env = append(env, databases.GetPostgresEnvVars(database)...)
 	env = append(env, core.Env("POSTGRES_DATABASE_NAME", "$(POSTGRES_DATABASE)"))
 	env = append(env, authclients.GetEnvVars(authClient)...)
 

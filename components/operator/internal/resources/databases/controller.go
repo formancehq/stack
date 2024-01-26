@@ -19,6 +19,7 @@ package databases
 import (
 	"fmt"
 	"github.com/formancehq/operator/internal/resources/secrets"
+	"github.com/pkg/errors"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"reflect"
@@ -39,63 +40,47 @@ const (
 //+kubebuilder:rbac:groups=formance.com,resources=databases/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=databases/finalizers,verbs=update
 
-func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Database) error {
+func Reconcile(ctx core.Context, _ *v1beta1.Stack, database *v1beta1.Database) error {
 
-	databaseConfiguration, err := settings.FindDatabaseConfiguration(ctx, database)
+	databaseURL, err := settings.RequireURL(ctx, database.Spec.Stack, "postgres", database.Spec.Service, "uri")
 	if err != nil {
-		return err
-	}
-
-	if databaseConfiguration == nil {
-		return fmt.Errorf("unable to find a database configuration")
-	}
-
-	if databaseConfiguration.CredentialsFromSecret != "" {
-		secret, err := secrets.SyncOne(ctx, database, stack.Name, databaseConfiguration.CredentialsFromSecret)
-		if err != nil {
-			return err
-		}
-		databaseConfiguration.CredentialsFromSecret = secret.Name
+		return errors.Wrap(err, "retrieving database configuration")
 	}
 
 	switch {
 	// TODO: We have multiple occurrences of this type of code, we need to factorize
-	case !database.Status.Ready:
+	case !database.Status.Ready || database.Status.URL().Host == databaseURL.Host:
 		// Some job fields are immutable (env vars for example)
 		// So, if the configuration has changed, wee need to delete the job,
 		// Then recreate a new one
-		if database.Status.Configuration != nil {
-			if !reflect.DeepEqual(
-				database.Status.Configuration.DatabaseConfiguration,
-				*databaseConfiguration,
-			) {
-				object := &batchv1.Job{}
-				object.SetName(fmt.Sprintf("%s-create-database", database.Spec.Service))
-				object.SetNamespace(database.Spec.Stack)
-				if err := ctx.GetClient().Delete(ctx, object, &client.DeleteOptions{
-					GracePeriodSeconds: pointer.For(int64(0)),
-				}); client.IgnoreNotFound(err) != nil {
-					return err
-				}
+		if database.Status.DSN != databaseURL.String() {
+			object := &batchv1.Job{}
+			object.SetName(fmt.Sprintf("%s-create-database", database.Spec.Service))
+			object.SetNamespace(database.Spec.Stack)
+			if err := ctx.GetClient().Delete(ctx, object, &client.DeleteOptions{
+				GracePeriodSeconds: pointer.For(int64(0)),
+			}); client.IgnoreNotFound(err) != nil {
+				return err
 			}
 		}
 
-		dbName := core.GetObjectName(database.Spec.Stack, database.Spec.Service)
-		job, err := createDatabase(ctx, *databaseConfiguration, database, dbName)
-		if err != nil {
+		if err := secrets.SyncFromURLs(ctx, database, database.Status.URL(), databaseURL); err != nil {
 			return err
 		}
 
-		database.Status.Configuration = &v1beta1.CreatedDatabase{
-			DatabaseConfiguration: *databaseConfiguration,
-			Database:              dbName,
+		dbName := core.GetObjectName(database.Spec.Stack, database.Spec.Service)
+		database.Status.DSN = databaseURL.String()
+		database.Status.Database = dbName
+
+		job, err := createDatabase(ctx, database)
+		if err != nil {
+			return err
 		}
 
 		if job.Status.Succeeded == 0 {
 			return core.NewPendingError()
 		}
-	case !reflect.DeepEqual(database.Status.Configuration.DatabaseConfiguration,
-		*databaseConfiguration):
+	case !reflect.DeepEqual(database.Status.DSN, databaseURL.String()):
 		database.Status.OutOfSync = true
 	}
 
@@ -103,7 +88,7 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 }
 
 func Delete(ctx core.Context, database *v1beta1.Database) error {
-	if database.Status.Configuration == nil {
+	if database.Status.DSN == "" {
 		return nil
 	}
 	job, _, err := core.CreateOrUpdate[*batchv1.Job](ctx, types.NamespacedName{
@@ -112,7 +97,7 @@ func Delete(ctx core.Context, database *v1beta1.Database) error {
 	},
 		func(t *batchv1.Job) error {
 			dropDBCommand := `psql -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USERNAME} -c "DROP DATABASE \"${POSTGRES_DATABASE}\""`
-			if database.Status.Configuration.DisableSSLMode {
+			if isDisabledSSLMode(database.Status.URL()) {
 				dropDBCommand += ` "sslmode=disable"`
 			}
 
@@ -123,11 +108,7 @@ func Delete(ctx core.Context, database *v1beta1.Database) error {
 				Name:  "drop-database",
 				Image: "postgres:15-alpine",
 				Args:  []string{"sh", "-c", dropDBCommand},
-				Env: append(PostgresEnvVars(database.Status.Configuration.DatabaseConfiguration,
-					database.Status.Configuration.Database),
-					// psql use PGPASSWORD env var
-					core.Env("PGPASSWORD", "$(POSTGRES_PASSWORD)"),
-				),
+				Env:   psqlEnvVars(database),
 			}}
 
 			return nil
@@ -145,8 +126,7 @@ func Delete(ctx core.Context, database *v1beta1.Database) error {
 	return nil
 }
 
-func createDatabase(ctx core.Context, databaseConfiguration v1beta1.DatabaseConfiguration,
-	database *v1beta1.Database, dbName string) (*batchv1.Job, error) {
+func createDatabase(ctx core.Context, database *v1beta1.Database) (*batchv1.Job, error) {
 
 	job, _, err := core.CreateOrUpdate[*batchv1.Job](ctx, types.NamespacedName{
 		Namespace: database.Spec.Stack,
@@ -155,7 +135,7 @@ func createDatabase(ctx core.Context, databaseConfiguration v1beta1.DatabaseConf
 		func(t *batchv1.Job) error {
 			// PG does not support 'CREATE IF NOT EXISTS ' construct, emulate it with the above query
 			createDBCommand := `echo SELECT \'CREATE DATABASE \"${POSTGRES_DATABASE}\"\' WHERE NOT EXISTS \(SELECT FROM pg_database WHERE datname = \'${POSTGRES_DATABASE}\'\)\\gexec | psql -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USERNAME}`
-			if databaseConfiguration.DisableSSLMode {
+			if isDisabledSSLMode(database.Status.URL()) {
 				createDBCommand += ` "sslmode=disable"`
 			}
 
@@ -166,10 +146,7 @@ func createDatabase(ctx core.Context, databaseConfiguration v1beta1.DatabaseConf
 				Name:  "create-database",
 				Image: "postgres:15-alpine",
 				Args:  []string{"sh", "-c", createDBCommand},
-				Env: append(PostgresEnvVars(databaseConfiguration, dbName),
-					// psql use PGPASSWORD env var
-					core.Env("PGPASSWORD", "$(POSTGRES_PASSWORD)"),
-				),
+				Env:   psqlEnvVars(database),
 			}}
 
 			return nil
@@ -177,6 +154,13 @@ func createDatabase(ctx core.Context, databaseConfiguration v1beta1.DatabaseConf
 		core.WithController[*batchv1.Job](ctx.GetScheme(), database),
 	)
 	return job, err
+}
+
+func psqlEnvVars(database *v1beta1.Database) []v1.EnvVar {
+	return append(GetPostgresEnvVars(database),
+		// psql use PGPASSWORD env var
+		core.Env("PGPASSWORD", "$(POSTGRES_PASSWORD)"),
+	)
 }
 
 func init() {

@@ -10,7 +10,7 @@ type MigrationConfiguration struct {
 	AdditionalEnv []v1.EnvVar
 }
 
-func MigrateDatabaseContainer(image string, database v1beta1.DatabaseConfiguration, databaseName string, options ...func(m *MigrationConfiguration)) v1.Container {
+func MigrateDatabaseContainer(image string, database *v1beta1.Database, options ...func(m *MigrationConfiguration)) v1.Container {
 	m := &MigrationConfiguration{}
 	for _, option := range options {
 		option(m)
@@ -19,7 +19,8 @@ func MigrateDatabaseContainer(image string, database v1beta1.DatabaseConfigurati
 	if len(args) == 0 {
 		args = []string{"migrate"}
 	}
-	env := PostgresEnvVars(database, databaseName)
+
+	env := GetPostgresEnvVars(database)
 	if m.AdditionalEnv != nil {
 		env = append(env, m.AdditionalEnv...)
 	}

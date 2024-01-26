@@ -49,8 +49,8 @@ func FindElasticSearchConfiguration(ctx core.Context, stack *v1beta1.Stack) (*v1
 		Host:   elasticSearchURI.Hostname(),
 		Port:   uint16(port),
 		TLS: v1beta1.ElasticSearchTLSConfig{
-			Enabled:        isTrue(elasticSearchURI.Query().Get("tls")),
-			SkipCertVerify: isTrue(elasticSearchURI.Query().Get("skipCertVerify")),
+			Enabled:        IsTrue(elasticSearchURI.Query().Get("tls")),
+			SkipCertVerify: IsTrue(elasticSearchURI.Query().Get("skipCertVerify")),
 		},
 		BasicAuth: basicAuth,
 	}, nil

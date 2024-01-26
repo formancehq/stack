@@ -62,27 +62,10 @@ spec:
           status:
             description: DatabaseStatus defines the observed state of Database
             properties:
-              configuration:
-                properties:
-                  credentialsFromSecret:
-                    type: string
-                  database:
-                    type: string
-                  disableSSLMode:
-                    type: boolean
-                  host:
-                    type: string
-                  password:
-                    type: string
-                  port:
-                    type: integer
-                  username:
-                    type: string
-                required:
-                - database
-                - host
-                - port
-                type: object
+              database:
+                type: string
+              dsn:
+                type: string
               info:
                 type: string
               outOfSync:

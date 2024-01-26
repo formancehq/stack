@@ -18,6 +18,7 @@ package v1beta1
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"net/url"
 )
 
 // DatabaseSpec defines the desired state of Database
@@ -26,31 +27,23 @@ type DatabaseSpec struct {
 	Service         string `json:"service"`
 }
 
-type DatabaseConfiguration struct {
-	Port int    `json:"port"`
-	Host string `json:"host"`
-	// +optional
-	Username string `json:"username"`
-	// +optional
-	Password string `json:"password"`
-	// +optional
-	CredentialsFromSecret string `json:"credentialsFromSecret"`
-	// +optional
-	DisableSSLMode bool `json:"disableSSLMode"`
-}
-
-type CreatedDatabase struct {
-	DatabaseConfiguration `json:",inline"`
-	Database              string `json:"database"`
-}
-
 // DatabaseStatus defines the observed state of Database
 type DatabaseStatus struct {
 	CommonStatus `json:",inline"`
 	//+optional
-	Configuration *CreatedDatabase `json:"configuration,omitempty"`
+	DSN string `json:"dsn"`
+	//+optional
+	Database string `json:"database"`
 	//+optional
 	OutOfSync bool `json:"outOfSync"`
+}
+
+func (d *DatabaseStatus) URL() *url.URL {
+	ret, err := url.Parse(d.DSN)
+	if err != nil {
+		panic(err)
+	}
+	return ret
 }
 
 //+kubebuilder:object:root=true

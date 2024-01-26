@@ -82,10 +82,7 @@ func installLedgerSingleInstance(ctx core.Context, stack *v1beta1.Stack,
 }
 
 func getUpgradeContainer(database *v1beta1.Database, image string) corev1.Container {
-	return databases.MigrateDatabaseContainer(
-		image,
-		database.Status.Configuration.DatabaseConfiguration,
-		database.Status.Configuration.Database,
+	return databases.MigrateDatabaseContainer(image, database,
 		func(m *databases.MigrationConfiguration) {
 			m.Command = []string{"buckets", "upgrade-all"}
 			m.AdditionalEnv = []corev1.EnvVar{
@@ -216,8 +213,7 @@ func setCommonContainerConfiguration(ctx core.Context, stack *v1beta1.Stack, led
 
 	container.Image = image
 	container.Env = append(container.Env, env...)
-	container.Env = append(container.Env, databases.PostgresEnvVarsWithPrefix(
-		database.Status.Configuration.DatabaseConfiguration, database.Status.Configuration.Database, prefix)...)
+	container.Env = append(container.Env, databases.PostgresEnvVarsWithPrefix(database, prefix)...)
 	container.Env = append(container.Env, core.Env(fmt.Sprintf("%sSTORAGE_POSTGRES_CONN_STRING", prefix), fmt.Sprintf("$(%sPOSTGRES_URI)", prefix)))
 	container.Env = append(container.Env, core.Env(fmt.Sprintf("%sSTORAGE_DRIVER", prefix), "postgres"))
 	container.Ports = []corev1.ContainerPort{deployments.StandardHTTPPort()}

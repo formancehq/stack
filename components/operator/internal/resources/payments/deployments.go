@@ -32,7 +32,7 @@ func commonEnvVars(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Pay
 	}
 	env = append(env, gatewayEnv...)
 	env = append(env, core.GetDevEnvVars(stack, payments)...)
-	env = append(env, databases.PostgresEnvVars(database.Status.Configuration.DatabaseConfiguration, database.Status.Configuration.Database)...)
+	env = append(env, databases.GetPostgresEnvVars(database)...)
 	encryptionKey := payments.Spec.EncryptionKey
 	if encryptionKey == "" {
 		encryptionKey, err = settings.GetStringOrEmpty(ctx, stack.Name, "payments.encryption-key")
@@ -220,10 +220,7 @@ func createGateway(ctx core.Context, stack *v1beta1.Stack, p *v1beta1.Payments) 
 func setInitContainer(payments *v1beta1.Payments, database *v1beta1.Database, image string) func(t *corev1.Deployment) error {
 	return func(t *corev1.Deployment) error {
 		t.Spec.Template.Spec.InitContainers = []v1.Container{
-			databases.MigrateDatabaseContainer(
-				image,
-				database.Status.Configuration.DatabaseConfiguration,
-				database.Status.Configuration.Database,
+			databases.MigrateDatabaseContainer(image, database,
 				func(m *databases.MigrationConfiguration) {
 					m.AdditionalEnv = []v1.EnvVar{
 						core.Env("CONFIG_ENCRYPTION_KEY", payments.Spec.EncryptionKey),

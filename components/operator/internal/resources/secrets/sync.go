@@ -2,7 +2,6 @@ package secrets
 
 import (
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
@@ -11,6 +10,7 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/selection"
 	"k8s.io/apimachinery/pkg/types"
+	"net/url"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -98,13 +98,10 @@ func Clean(ctx core.Context, owner v1beta1.Dependent, ns string, ignoreSecrets .
 		return errors.Wrap(err, "listing secrets")
 	}
 
-	spew.Dump(existingSecrets.Items)
-
 l:
 	for _, existingSecret := range existingSecrets.Items {
 		for _, ignoreSecret := range ignoreSecrets {
 			if ignoreSecret.Name == existingSecret.Name {
-				fmt.Println("ignore secret", existingSecret.Name)
 				continue l
 			}
 			hasControllerReference, err := core.HasControllerReference(ctx, owner, &existingSecret)
@@ -112,13 +109,9 @@ l:
 				return errors.Wrap(err, "checking controller reference")
 			}
 			if !hasControllerReference {
-				spew.Dump(existingSecret.OwnerReferences)
-				spew.Dump(owner.GetUID())
-				fmt.Println("ignore secret because of ownership", existingSecret.Name)
 				continue l
 			}
 		}
-		fmt.Println("delete secret", existingSecret.Name)
 		if err := ctx.GetClient().Delete(ctx, &existingSecret); err != nil {
 			return errors.Wrap(err, "error deleting old secret")
 		}
@@ -151,4 +144,27 @@ func SyncOne(ctx core.Context, owner v1beta1.Dependent, ns string, name string) 
 	}
 
 	return secrets[0], nil
+}
+
+func SyncFromURLs(ctx core.Context, owner v1beta1.Dependent, from, to *url.URL) error {
+	existingSecret := from.Query().Get("secret")
+	newSecret := to.Query().Get("secret")
+
+	if existingSecret != "" && newSecret != existingSecret {
+		secret := &v1.Secret{}
+		secret.SetName(fmt.Sprintf("%s-%s", owner.GetName(), existingSecret))
+		secret.SetNamespace(owner.GetStack())
+		if err := ctx.GetClient().Delete(ctx, secret); err != nil {
+			return errors.Wrapf(err, "deleting secret '%s'", secret.Name)
+		}
+	}
+
+	if newSecret != "" {
+		_, err := Copy(ctx, owner, owner.GetStack(), newSecret)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
