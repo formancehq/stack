@@ -64,14 +64,14 @@ spec:
             properties:
               database:
                 type: string
-              dsn:
-                type: string
               info:
                 type: string
               outOfSync:
                 type: boolean
               ready:
                 type: boolean
+              uri:
+                type: string
             type: object
         type: object
     served: true

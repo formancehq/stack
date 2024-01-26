@@ -18,6 +18,7 @@ package databases
 
 import (
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/formancehq/operator/internal/resources/secrets"
 	"github.com/pkg/errors"
 	v1 "k8s.io/api/core/v1"
@@ -47,13 +48,17 @@ func Reconcile(ctx core.Context, _ *v1beta1.Stack, database *v1beta1.Database) e
 		return errors.Wrap(err, "retrieving database configuration")
 	}
 
+	spew.Dump(database.Status)
+	spew.Dump(databaseURL)
+	fmt.Println("after")
 	switch {
 	// TODO: We have multiple occurrences of this type of code, we need to factorize
-	case !database.Status.Ready || database.Status.URL().Host == databaseURL.Host:
+	case !database.Status.Ready || database.Status.URI.Host == databaseURL.Host:
 		// Some job fields are immutable (env vars for example)
 		// So, if the configuration has changed, wee need to delete the job,
 		// Then recreate a new one
-		if database.Status.DSN != databaseURL.String() {
+
+		if database.Status.URI != nil && database.Status.URI.String() != databaseURL.String() {
 			object := &batchv1.Job{}
 			object.SetName(fmt.Sprintf("%s-create-database", database.Spec.Service))
 			object.SetNamespace(database.Spec.Stack)
@@ -64,12 +69,12 @@ func Reconcile(ctx core.Context, _ *v1beta1.Stack, database *v1beta1.Database) e
 			}
 		}
 
-		if err := secrets.SyncFromURLs(ctx, database, database.Status.URL(), databaseURL); err != nil {
+		if err := secrets.SyncFromURLs(ctx, database, database.Status.URI, databaseURL); err != nil {
 			return err
 		}
 
 		dbName := core.GetObjectName(database.Spec.Stack, database.Spec.Service)
-		database.Status.DSN = databaseURL.String()
+		database.Status.URI = databaseURL
 		database.Status.Database = dbName
 
 		job, err := createDatabase(ctx, database)
@@ -80,7 +85,7 @@ func Reconcile(ctx core.Context, _ *v1beta1.Stack, database *v1beta1.Database) e
 		if job.Status.Succeeded == 0 {
 			return core.NewPendingError()
 		}
-	case !reflect.DeepEqual(database.Status.DSN, databaseURL.String()):
+	case !reflect.DeepEqual(database.Status.URI, databaseURL.String()):
 		database.Status.OutOfSync = true
 	}
 
@@ -88,7 +93,7 @@ func Reconcile(ctx core.Context, _ *v1beta1.Stack, database *v1beta1.Database) e
 }
 
 func Delete(ctx core.Context, database *v1beta1.Database) error {
-	if database.Status.DSN == "" {
+	if database.Status.URI == nil {
 		return nil
 	}
 	job, _, err := core.CreateOrUpdate[*batchv1.Job](ctx, types.NamespacedName{
@@ -97,7 +102,7 @@ func Delete(ctx core.Context, database *v1beta1.Database) error {
 	},
 		func(t *batchv1.Job) error {
 			dropDBCommand := `psql -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USERNAME} -c "DROP DATABASE \"${POSTGRES_DATABASE}\""`
-			if isDisabledSSLMode(database.Status.URL()) {
+			if isDisabledSSLMode(database.Status.URI) {
 				dropDBCommand += ` "sslmode=disable"`
 			}
 
@@ -135,7 +140,7 @@ func createDatabase(ctx core.Context, database *v1beta1.Database) (*batchv1.Job,
 		func(t *batchv1.Job) error {
 			// PG does not support 'CREATE IF NOT EXISTS ' construct, emulate it with the above query
 			createDBCommand := `echo SELECT \'CREATE DATABASE \"${POSTGRES_DATABASE}\"\' WHERE NOT EXISTS \(SELECT FROM pg_database WHERE datname = \'${POSTGRES_DATABASE}\'\)\\gexec | psql -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USERNAME}`
-			if isDisabledSSLMode(database.Status.URL()) {
+			if isDisabledSSLMode(database.Status.URI) {
 				createDBCommand += ` "sslmode=disable"`
 			}
 

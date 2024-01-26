@@ -10,7 +10,6 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/selection"
 	"k8s.io/apimachinery/pkg/types"
-	"net/url"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -146,16 +145,18 @@ func SyncOne(ctx core.Context, owner v1beta1.Dependent, ns string, name string) 
 	return secrets[0], nil
 }
 
-func SyncFromURLs(ctx core.Context, owner v1beta1.Dependent, from, to *url.URL) error {
-	existingSecret := from.Query().Get("secret")
+func SyncFromURLs(ctx core.Context, owner v1beta1.Dependent, from, to *v1beta1.URI) error {
 	newSecret := to.Query().Get("secret")
+	if from != nil && !from.IsZero() {
+		existingSecret := from.Query().Get("secret")
 
-	if existingSecret != "" && newSecret != existingSecret {
-		secret := &v1.Secret{}
-		secret.SetName(fmt.Sprintf("%s-%s", owner.GetName(), existingSecret))
-		secret.SetNamespace(owner.GetStack())
-		if err := ctx.GetClient().Delete(ctx, secret); err != nil {
-			return errors.Wrapf(err, "deleting secret '%s'", secret.Name)
+		if existingSecret != "" && newSecret != existingSecret {
+			secret := &v1.Secret{}
+			secret.SetName(fmt.Sprintf("%s-%s", owner.GetName(), existingSecret))
+			secret.SetNamespace(owner.GetStack())
+			if err := ctx.GetClient().Delete(ctx, secret); err != nil {
+				return errors.Wrapf(err, "deleting secret '%s'", secret.Name)
+			}
 		}
 	}
 
