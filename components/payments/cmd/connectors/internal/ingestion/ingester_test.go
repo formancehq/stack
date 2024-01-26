@@ -42,6 +42,14 @@ func (m *MockStore) UpsertPayments(ctx context.Context, payments []*models.Payme
 	return ids, nil
 }
 
+func (m *MockStore) UpsertPaymentsAdjustments(ctx context.Context, adjustments []*models.PaymentAdjustment) error {
+	return nil
+}
+
+func (m *MockStore) UpsertPaymentsMetadata(ctx context.Context, metadata []*models.PaymentMetadata) error {
+	return nil
+}
+
 func (m *MockStore) InsertBalances(ctx context.Context, balances []*models.Balance, checkIfAccountExists bool) error {
 	return nil
 }

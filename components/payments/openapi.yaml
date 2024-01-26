@@ -1708,12 +1708,17 @@ components:
     PaymentAdjustment:
         type: object
         required:
-          - status
+          - reference
+          - createdAt
           - amount
-          - date
+          - status
           - raw
-          - absolute
         properties:
+          reference:
+            type: string
+          createdAt:
+            type: string
+            format: date-time
           status:
             $ref: '#/components/schemas/PaymentStatus'
           amount:
@@ -1721,13 +1726,8 @@ components:
             format: bigint
             minimum: 0
             example: 100
-          date:
-            type: string
-            format: date-time
           raw:
             type: object
-          absolute:
-            type: boolean
     PaymentMetadata:
       type: object
       additionalProperties:
@@ -2227,6 +2227,10 @@ components:
         - FAILED
         - EXPIRED
         - REFUNDED
+        - REFUNDED_FAILURE
+        - DISPUTE
+        - DISPUTE_WON
+        - DISPUTE_LOST
         - OTHER
     ServerInfo:
       type: object

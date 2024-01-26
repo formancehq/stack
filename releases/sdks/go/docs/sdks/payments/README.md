@@ -251,7 +251,7 @@ func main() {
         CreatedAt: types.MustTimeFromString("2024-11-09T01:03:21.153Z"),
         Reference: "string",
         Scheme: shared.PaymentSchemeGooglePay,
-        Status: shared.PaymentStatusRefunded,
+        Status: shared.PaymentStatusDisputeWon,
         Type: shared.PaymentTypeTransfer,
     })
     if err != nil {

@@ -207,6 +207,18 @@ func PaymentStatusFromString(value string) (PaymentStatus, error) {
 		return PaymentStatusCancelled, nil
 	case "FAILED":
 		return PaymentStatusFailed, nil
+	case "EXPIRED":
+		return PaymentStatusExpired, nil
+	case "REFUNDED":
+		return PaymentStatusRefunded, nil
+	case "REFUNDED_FAILURE":
+		return PaymentStatusRefundedFailure, nil
+	case "DISPUTE":
+		return PaymentStatusDispute, nil
+	case "DISPUTE_WON":
+		return PaymentStatusDisputeWon, nil
+	case "DISPUTE_LOST":
+		return PaymentStatusDisputeLost, nil
 	case "OTHER":
 		return PaymentStatusOther, nil
 	default:
