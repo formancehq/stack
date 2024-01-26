@@ -137,6 +137,8 @@ spec:
                 type: string
               ready:
                 type: boolean
+              temporalURI:
+                type: string
               version:
                 type: string
             type: object

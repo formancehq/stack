@@ -11,7 +11,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 )
 
-func createJob(ctx core.Context, topic *v1beta1.BrokerTopic, configuration v1beta1.BrokerConfiguration) (*v1.Job, error) {
+func createJob(ctx core.Context, topic *v1beta1.BrokerTopic, brokerURI *v1beta1.URI) (*v1.Job, error) {
 
 	job, _, err := core.CreateOrUpdate[*v1.Job](ctx, types.NamespacedName{
 		Namespace: topic.Spec.Stack,
@@ -19,13 +19,13 @@ func createJob(ctx core.Context, topic *v1beta1.BrokerTopic, configuration v1bet
 	},
 		func(t *v1.Job) error {
 			args := []string{"nats", "stream", "add",
-				"--server", fmt.Sprintf("nats://%s", configuration.Nats.URL),
+				"--server", fmt.Sprintf("nats://%s", brokerURI.Host),
 				"--retention", "interest",
 				"--subjects", topic.Name,
 				"--defaults",
 			}
-			if configuration.Nats.Replicas > 0 {
-				args = append(args, "--replicas", fmt.Sprint(configuration.Nats.Replicas))
+			if replicas := brokerURI.Query().Get("replicas"); replicas != "" {
+				args = append(args, "--replicas", replicas)
 			}
 			args = append(args, topic.Name)
 
@@ -58,7 +58,7 @@ func deleteJob(ctx core.Context, topic *v1beta1.BrokerTopic) (*v1.Job, error) {
 				Image: "natsio/nats-box:0.14.1",
 				Name:  "create-topic",
 				Args: []string{"nats", "stream", "rm", "-f", "--server",
-					fmt.Sprintf("nats://%s", topic.Status.Configuration.Nats.URL), topic.Name},
+					fmt.Sprintf("nats://%s", topic.Status.URI.Host), topic.Name},
 			}}
 
 			return nil

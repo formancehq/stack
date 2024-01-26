@@ -38,19 +38,19 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, topic *v1beta1.BrokerTopi
 		return nil
 	}
 
-	brokerConfiguration, err := settings.FindBrokerConfiguration(ctx, stack)
+	brokerURI, err := settings.RequireURL(ctx, stack.Name, "broker.dsn")
 	if err != nil {
 		return err
 	}
-	if brokerConfiguration == nil {
+	if brokerURI == nil {
 		return errors.New("broker configuration not found")
 	}
 
-	topic.Status.Configuration = brokerConfiguration
+	topic.Status.URI = brokerURI
 
 	switch {
-	case brokerConfiguration.Nats != nil:
-		job, err := createJob(ctx, topic, *brokerConfiguration)
+	case brokerURI.Scheme == "nats":
+		job, err := createJob(ctx, topic, brokerURI)
 		if err != nil {
 			return err
 		}
@@ -64,9 +64,9 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, topic *v1beta1.BrokerTopi
 }
 
 func clear(ctx core.Context, topic *v1beta1.BrokerTopic) error {
-	if topic.Status.Ready && topic.Status.Configuration != nil {
+	if topic.Status.Ready && topic.Status.URI != nil {
 		switch {
-		case topic.Status.Configuration.Nats != nil:
+		case topic.Status.URI.Scheme == "nats":
 			job, err := deleteJob(ctx, topic)
 			if err != nil {
 				return err

@@ -1489,6 +1489,8 @@ spec:
                   - type
                   type: object
                 type: array
+              elasticSearchURI:
+                type: string
               info:
                 type: string
               ready:

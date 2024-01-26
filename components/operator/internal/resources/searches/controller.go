@@ -28,7 +28,6 @@ import (
 	"github.com/formancehq/operator/internal/resources/httpapis"
 	. "github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/settings"
-	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -39,25 +38,17 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=searches/finalizers,verbs=update
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, version string) error {
-	elasticSearchConfiguration, err := settings.FindElasticSearchConfiguration(ctx, stack)
+	elasticSearchURI, err := settings.RequireURL(ctx, stack.Name, "elasticsearch.dsn")
 	if err != nil {
 		return err
 	}
 
-	if elasticSearchConfiguration == nil {
-		return errors.New("missing elastic search configuration")
-	}
-
-	if elasticSearchConfiguration.BasicAuth != nil && elasticSearchConfiguration.BasicAuth.SecretName != "" {
-		secret, err := secrets.SyncOne(ctx, search, stack.Name, elasticSearchConfiguration.BasicAuth.SecretName)
-		if err != nil {
-			return err
-		}
-		elasticSearchConfiguration.BasicAuth.SecretName = secret.Name
+	if err := secrets.SyncFromURLs(ctx, search, search.Status.ElasticSearchURI, elasticSearchURI); err != nil {
+		return err
 	}
 
 	env := make([]corev1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, LowerCamelCaseName(ctx, search))
+	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, LowerCamelCaseName(ctx, search))
 	if err != nil {
 		return err
 	}
@@ -65,20 +56,22 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 	env = append(env, GetDevEnvVars(stack, search)...)
 
 	env = append(env,
-		Env("OPEN_SEARCH_SERVICE", fmt.Sprintf("%s:%d", elasticSearchConfiguration.Host, elasticSearchConfiguration.Port)),
-		Env("OPEN_SEARCH_SCHEME", elasticSearchConfiguration.Scheme),
+		Env("OPEN_SEARCH_SERVICE", elasticSearchURI.Host),
+		Env("OPEN_SEARCH_SCHEME", elasticSearchURI.Scheme),
 		Env("ES_INDICES", "stacks"),
 	)
-	if elasticSearchConfiguration.BasicAuth != nil {
-		if elasticSearchConfiguration.BasicAuth.SecretName == "" {
+	if secret := elasticSearchURI.Query().Get("secret"); elasticSearchURI.User != nil || secret != "" {
+		if secret == "" {
+			password, _ := elasticSearchURI.User.Password()
 			env = append(env,
-				Env("OPEN_SEARCH_USERNAME", elasticSearchConfiguration.BasicAuth.Username),
-				Env("OPEN_SEARCH_PASSWORD", elasticSearchConfiguration.BasicAuth.Password),
+				Env("OPEN_SEARCH_USERNAME", elasticSearchURI.User.Username()),
+				Env("OPEN_SEARCH_PASSWORD", password),
 			)
 		} else {
+			secret := fmt.Sprintf("%s-%s", search.Name, secret)
 			env = append(env,
-				EnvFromSecret("OPEN_SEARCH_USERNAME", elasticSearchConfiguration.BasicAuth.SecretName, "username"),
-				EnvFromSecret("OPEN_SEARCH_PASSWORD", elasticSearchConfiguration.BasicAuth.SecretName, "password"),
+				EnvFromSecret("OPEN_SEARCH_USERNAME", secret, "username"),
+				EnvFromSecret("OPEN_SEARCH_PASSWORD", secret, "password"),
 			)
 		}
 	}

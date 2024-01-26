@@ -192,7 +192,7 @@ func setCommonContainerConfiguration(ctx core.Context, stack *v1beta1.Stack, led
 		prefix = "NUMARY_"
 	}
 	env := make([]corev1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVarsIfEnabledWithPrefix(ctx, stack, core.LowerCamelCaseName(ctx, ledger), prefix)
+	otlpEnv, err := settings.GetOTELEnvVarsWithPrefix(ctx, stack.Name, core.LowerCamelCaseName(ctx, ledger), prefix)
 	if err != nil {
 		return err
 	}
@@ -252,7 +252,7 @@ func createLedgerContainerFull(ctx core.Context, stack *v1beta1.Stack, v2 bool) 
 			prefix = "NUMARY_"
 		}
 
-		container.Env = append(container.Env, settings.GetBrokerEnvVarsWithPrefix(*topic.Status.Configuration, stack.Name, "ledger", prefix)...)
+		container.Env = append(container.Env, settings.GetBrokerEnvVarsWithPrefix(topic.Status.URI, stack.Name, "ledger", prefix)...)
 		container.Env = append(container.Env, core.Env(fmt.Sprintf("%sPUBLISHER_TOPIC_MAPPING", prefix), "*:"+core.GetObjectName(stack.Name, "ledger")))
 	}
 
@@ -279,7 +279,7 @@ func createGatewayDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1b
 	}
 
 	env := make([]corev1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, core.LowerCamelCaseName(ctx, ledger))
+	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseName(ctx, ledger))
 	if err != nil {
 		return err
 	}

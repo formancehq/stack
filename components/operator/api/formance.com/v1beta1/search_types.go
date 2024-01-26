@@ -17,44 +17,8 @@ limitations under the License.
 package v1beta1
 
 import (
-	"fmt"
-
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
-
-type ElasticSearchTLSConfig struct {
-	// +optional
-	Enabled bool `json:"enabled,omitempty"`
-	// +optional
-	SkipCertVerify bool `json:"skipCertVerify,omitempty"`
-}
-
-type ElasticSearchBasicAuthConfig struct {
-	// +optional
-	Username string `json:"username"`
-	// +optional
-	Password string `json:"password"`
-	// +optional
-	SecretName string `json:"secretName"`
-}
-
-// ElasticSearchConfiguration defines the desired state of ElasticSearchConfiguration
-type ElasticSearchConfiguration struct {
-	// +optional
-	// +kubebuilder:validation:Enum:={http,https}
-	// +kubebuilder:validation:default:=https
-	Scheme string `json:"scheme,omitempty"`
-	Host   string `json:"host,omitempty"`
-	Port   uint16 `json:"port,omitempty"`
-	// +optional
-	TLS ElasticSearchTLSConfig `json:"tls"`
-	// +optional
-	BasicAuth *ElasticSearchBasicAuthConfig `json:"basicAuth,omitempty"`
-}
-
-func (in *ElasticSearchConfiguration) Endpoint() string {
-	return fmt.Sprintf("%s://%s:%d", in.Scheme, in.Host, in.Port)
-}
 
 // SearchSpec defines the desired state of Search
 type SearchSpec struct {
@@ -69,6 +33,8 @@ type SearchSpec struct {
 // SearchStatus defines the observed state of Search
 type SearchStatus struct {
 	ModuleStatus `json:",inline"`
+	//+optional
+	ElasticSearchURI *URI `json:"elasticSearchURI,omitempty"`
 }
 
 //+kubebuilder:object:root=true

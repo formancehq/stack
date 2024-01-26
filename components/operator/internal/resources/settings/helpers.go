@@ -78,6 +78,17 @@ func RequireString(ctx core.Context, stack string, keys ...string) (string, erro
 	return *value, nil
 }
 
+func GetURL(ctx core.Context, stack string, keys ...string) (*v1beta1.URI, error) {
+	value, err := GetString(ctx, stack, keys...)
+	if err != nil {
+		return nil, err
+	}
+	if value == nil {
+		return nil, nil
+	}
+	return v1beta1.ParseURL(*value)
+}
+
 func RequireURL(ctx core.Context, stack string, keys ...string) (*v1beta1.URI, error) {
 	value, err := RequireString(ctx, stack, keys...)
 	if err != nil {

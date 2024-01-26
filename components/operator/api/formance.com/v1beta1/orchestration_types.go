@@ -20,22 +20,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type TemporalTLSConfig struct {
-	// +optional
-	CRT string `json:"crt"`
-	// +optional
-	Key string `json:"key"`
-	// +optional
-	SecretName string `json:"secretName"`
-}
-
-// TemporalConfigurationSpec defines the desired state of TemporalConfiguration
-type TemporalConfiguration struct {
-	Address   string            `json:"address"`
-	Namespace string            `json:"namespace"`
-	TLS       TemporalTLSConfig `json:"tls"`
-}
-
 // OrchestrationSpec defines the desired state of Orchestration
 type OrchestrationSpec struct {
 	StackDependency  `json:",inline"`
@@ -47,6 +31,8 @@ type OrchestrationSpec struct {
 // OrchestrationStatus defines the observed state of Orchestration
 type OrchestrationStatus struct {
 	ModuleStatus `json:",inline"`
+	//+optional
+	TemporalURI *URI `json:"temporalURI,omitempty"`
 }
 
 //+kubebuilder:object:root=true

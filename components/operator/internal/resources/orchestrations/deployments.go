@@ -48,7 +48,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 	consumers []*v1beta1.BrokerTopicConsumer, version string) error {
 
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, LowerCamelCaseName(ctx, orchestration))
+	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, LowerCamelCaseName(ctx, orchestration))
 	if err != nil {
 		return err
 	}
@@ -62,24 +62,24 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 	env = append(env, GetDevEnvVars(stack, orchestration)...)
 	env = append(env, databases.GetPostgresEnvVars(database)...)
 
-	temporalConfiguration, err := settings.FindTemporalConfiguration(ctx, stack)
+	temporalURI, err := settings.RequireURL(ctx, stack.Name, "temporal.dsn")
 	if err != nil {
 		return err
 	}
 
-	if temporalConfiguration.TLS.SecretName != "" {
-		secret, err := secrets.SyncOne(ctx, orchestration, stack.Name, temporalConfiguration.TLS.SecretName)
-		if err != nil {
-			return err
-		}
-		temporalConfiguration.TLS.SecretName = secret.Name
+	if err := validateTemporalURI(temporalURI); err != nil {
+		return err
+	}
+
+	if err := secrets.SyncFromURLs(ctx, orchestration, orchestration.Status.TemporalURI, temporalURI); err != nil {
+		return err
 	}
 
 	env = append(env,
 		Env("POSTGRES_DSN", "$(POSTGRES_URI)"),
 		Env("TEMPORAL_TASK_QUEUE", stack.Name),
-		Env("TEMPORAL_ADDRESS", temporalConfiguration.Address),
-		Env("TEMPORAL_NAMESPACE", temporalConfiguration.Namespace),
+		Env("TEMPORAL_ADDRESS", temporalURI.Host),
+		Env("TEMPORAL_NAMESPACE", temporalURI.Path[1:]),
 		Env("WORKER", "true"),
 		Env("TOPICS", strings.Join(collectionutils.Map(consumers, func(from *v1beta1.BrokerTopicConsumer) string {
 			return fmt.Sprintf("%s-%s", stack.Name, from.Spec.Service)
@@ -96,15 +96,26 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 		env = append(env, authclients.GetEnvVars(client)...)
 	}
 
-	if temporalConfiguration.TLS.SecretName == "" {
+	if secret := temporalURI.Query().Get("secret"); secret == "" {
+		temporalTLSCrt, err := settings.GetStringOrEmpty(ctx, stack.Name, "temporal.tls.crt")
+		if err != nil {
+			return err
+		}
+
+		temporalTLSKey, err := settings.GetStringOrEmpty(ctx, stack.Name, "temporal.tls.key")
+		if err != nil {
+			return err
+		}
+
 		env = append(env,
-			Env("TEMPORAL_SSL_CLIENT_KEY", temporalConfiguration.TLS.Key),
-			Env("TEMPORAL_SSL_CLIENT_CERT", temporalConfiguration.TLS.CRT),
+			Env("TEMPORAL_SSL_CLIENT_KEY", temporalTLSKey),
+			Env("TEMPORAL_SSL_CLIENT_CERT", temporalTLSCrt),
 		)
 	} else {
+		secret := fmt.Sprintf("%s-%s", orchestration.Name, secret)
 		env = append(env,
-			EnvFromSecret("TEMPORAL_SSL_CLIENT_KEY", temporalConfiguration.TLS.SecretName, "tls.key"),
-			EnvFromSecret("TEMPORAL_SSL_CLIENT_CERT", temporalConfiguration.TLS.SecretName, "tls.crt"),
+			EnvFromSecret("TEMPORAL_SSL_CLIENT_KEY", secret, "tls.key"),
+			EnvFromSecret("TEMPORAL_SSL_CLIENT_CERT", secret, "tls.crt"),
 		)
 	}
 
@@ -130,4 +141,20 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 		}),
 	)
 	return err
+}
+
+func validateTemporalURI(temporalURI *v1beta1.URI) error {
+	if temporalURI.Scheme != "temporal" {
+		return fmt.Errorf("invalid temporal uri: %s", temporalURI.String())
+	}
+
+	if temporalURI.Path == "" {
+		return fmt.Errorf("invalid temporal uri: %s", temporalURI.String())
+	}
+
+	if !strings.HasPrefix(temporalURI.Path, "/") {
+		return fmt.Errorf("invalid temporal uri: %s", temporalURI.String())
+	}
+
+	return nil
 }

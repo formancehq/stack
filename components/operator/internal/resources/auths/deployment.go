@@ -20,7 +20,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, dat
 	configMap *corev1.ConfigMap, version string) (*appsv1.Deployment, error) {
 
 	env := make([]corev1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, LowerCamelCaseName(ctx, auth))
+	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, LowerCamelCaseName(ctx, auth))
 	if err != nil {
 		return nil, err
 	}

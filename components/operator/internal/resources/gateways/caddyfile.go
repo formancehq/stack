@@ -38,15 +38,7 @@ func CreateCaddyfile(ctx core.Context, stack *v1beta1.Stack,
 
 	if stack.Spec.EnableAudit && auditTopic != nil {
 		data["EnableAudit"] = true
-		data["Broker"] = func() string {
-			if auditTopic.Status.Configuration.Kafka != nil {
-				return "kafka"
-			}
-			if auditTopic.Status.Configuration.Nats != nil {
-				return "nats"
-			}
-			return ""
-		}()
+		data["Broker"] = auditTopic.Status.URI.Scheme
 	}
 
 	return settings.ComputeCaddyfile(ctx, stack, Caddyfile, data)

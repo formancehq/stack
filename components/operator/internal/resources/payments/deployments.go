@@ -20,7 +20,7 @@ import (
 
 func commonEnvVars(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) ([]v1.EnvVar, error) {
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, core.LowerCamelCaseName(ctx, payments))
+	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseName(ctx, payments))
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func createFullDeployment(ctx core.Context, stack *v1beta1.Stack,
 			return fmt.Errorf("topic %s is not yet ready", topic.Name)
 		}
 
-		env = append(env, settings.GetBrokerEnvVars(*topic.Status.Configuration, stack.Name, "payments")...)
+		env = append(env, settings.GetBrokerEnvVars(topic.Status.URI, stack.Name, "payments")...)
 		env = append(env, core.Env("PUBLISHER_TOPIC_MAPPING", "*:"+core.GetObjectName(stack.Name, "payments")))
 	}
 
@@ -159,7 +159,7 @@ func createConnectorsDeployment(ctx core.Context, stack *v1beta1.Stack, payments
 			return fmt.Errorf("topic %s is not yet ready", topic.Name)
 		}
 
-		env = append(env, settings.GetBrokerEnvVars(*topic.Status.Configuration, stack.Name, "payments")...)
+		env = append(env, settings.GetBrokerEnvVars(topic.Status.URI, stack.Name, "payments")...)
 		env = append(env, core.Env("PUBLISHER_TOPIC_MAPPING", "*:"+core.GetObjectName(stack.Name, "payments")))
 	}
 
@@ -203,7 +203,7 @@ func createGateway(ctx core.Context, stack *v1beta1.Stack, p *v1beta1.Payments) 
 	}
 
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, core.LowerCamelCaseName(ctx, p))
+	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseName(ctx, p))
 	if err != nil {
 		return err
 	}

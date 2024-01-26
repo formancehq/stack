@@ -21,11 +21,9 @@ import (
 	"fmt"
 	"github.com/formancehq/operator/internal/resources/secrets"
 	"github.com/formancehq/operator/internal/resources/services"
+	"github.com/formancehq/operator/internal/resources/settings"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"sort"
-	"strings"
-
-	"github.com/formancehq/operator/internal/resources/settings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
@@ -83,31 +81,22 @@ func createService(ctx Context, b *v1beta1.Benthos) error {
 // TODO(gfyrag): there is a ton of search related configuration
 // We need to this controller and keep it focused on benthos
 func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) error {
-	brokerConfiguration, err := settings.FindBrokerConfiguration(ctx, stack)
+	brokerURI, err := settings.RequireURL(ctx, stack.Name, "broker.dsn")
 	if err != nil {
 		return errors.Wrap(err, "searching broker configuration")
 	}
-	if brokerConfiguration == nil {
-		return errors.New("broker configuration not found")
-	}
 
-	elasticSearchConfiguration, err := settings.FindElasticSearchConfiguration(ctx, stack)
+	elasticSearchURI, err := settings.RequireURL(ctx, stack.Name, "elasticsearch.dsn")
 	if err != nil {
 		return errors.Wrap(err, "searching elasticsearch configuration")
 	}
-	if elasticSearchConfiguration == nil {
-		return errors.New("elasticsearch configuration not found")
-	}
-	if elasticSearchConfiguration.BasicAuth != nil && elasticSearchConfiguration.BasicAuth.SecretName != "" {
-		secret, err := secrets.SyncOne(ctx, b, stack.Name, elasticSearchConfiguration.BasicAuth.SecretName)
-		if err != nil {
-			return err
-		}
-		elasticSearchConfiguration.BasicAuth.SecretName = secret.Name
+
+	if err := secrets.SyncFromURLs(ctx, b, b.Status.ElasticSearchURI, elasticSearchURI); err != nil {
+		return err
 	}
 
 	env := []corev1.EnvVar{
-		Env("OPENSEARCH_URL", elasticSearchConfiguration.Endpoint()),
+		Env("OPENSEARCH_URL", elasticSearchURI.WithoutQuery().String()),
 		Env("TOPIC_PREFIX", b.Spec.Stack+"-"),
 		Env("OPENSEARCH_INDEX", "stacks"),
 		Env("STACK", b.Spec.Stack),
@@ -120,40 +109,42 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 			env = append(env, Env("OPENSEARCH_BATCHING_PERIOD", b.Spec.Batching.Period))
 		}
 	}
-	openTelemetryConfiguration, err := settings.FindOpenTelemetryConfiguration(ctx, stack)
+
+	otelEnvVars, err := settings.GetOTELEnvVars(ctx, stack.Name, "benthos")
 	if err != nil {
 		return err
 	}
-	if openTelemetryConfiguration != nil {
-		env = append(env, settings.GetOTELEnvVars(openTelemetryConfiguration, "benthos")...)
-	}
-	if brokerConfiguration.Kafka != nil {
-		env = append(env, Env("KAFKA_ADDRESS", strings.Join(brokerConfiguration.Kafka.Brokers, ",")))
-		if brokerConfiguration.Kafka.TLS {
+	env = append(env, otelEnvVars...)
+
+	if brokerURI.Scheme == "kafka" {
+		env = append(env, Env("KAFKA_ADDRESS", brokerURI.Host))
+		if settings.IsTrue(brokerURI.Query().Get("tls")) {
 			env = append(env, Env("KAFKA_TLS_ENABLED", "true"))
 		}
-		if brokerConfiguration.Kafka.SASL != nil {
+		if settings.IsTrue(brokerURI.Query().Get("saslEnabled")) {
 			env = append(env,
-				Env("KAFKA_SASL_USERNAME", brokerConfiguration.Kafka.SASL.Username),
-				Env("KAFKA_SASL_PASSWORD", brokerConfiguration.Kafka.SASL.Password),
-				Env("KAFKA_SASL_MECHANISM", brokerConfiguration.Kafka.SASL.Mechanism),
+				Env("KAFKA_SASL_USERNAME", brokerURI.Query().Get("saslUsername")),
+				Env("KAFKA_SASL_PASSWORD", brokerURI.Query().Get("saslPassword")),
+				Env("KAFKA_SASL_MECHANISM", brokerURI.Query().Get("saslMechanism")),
 			)
 		}
 	}
-	if brokerConfiguration.Nats != nil {
-		env = append(env, Env("NATS_URL", brokerConfiguration.Nats.URL))
+	if brokerURI.Scheme == "nats" {
+		env = append(env, Env("NATS_URL", brokerURI.Host))
 	}
-	if elasticSearchConfiguration.BasicAuth != nil {
+	if secret := elasticSearchURI.Query().Get("secret"); elasticSearchURI.User != nil || secret != "" {
 		env = append(env, Env("BASIC_AUTH_ENABLED", "true"))
-		if elasticSearchConfiguration.BasicAuth.SecretName == "" {
+		if secret == "" {
+			password, _ := brokerURI.User.Password()
 			env = append(env,
-				Env("BASIC_AUTH_USERNAME", elasticSearchConfiguration.BasicAuth.Username),
-				Env("BASIC_AUTH_PASSWORD", elasticSearchConfiguration.BasicAuth.Password),
+				Env("BASIC_AUTH_USERNAME", brokerURI.User.Username()),
+				Env("BASIC_AUTH_PASSWORD", password),
 			)
 		} else {
+			secret := fmt.Sprintf("%s-%s", b.Name, secret)
 			env = append(env,
-				EnvFromSecret("BASIC_AUTH_USERNAME", elasticSearchConfiguration.BasicAuth.SecretName, "username"),
-				EnvFromSecret("BASIC_AUTH_PASSWORD", elasticSearchConfiguration.BasicAuth.SecretName, "password"),
+				EnvFromSecret("BASIC_AUTH_USERNAME", secret, "username"),
+				EnvFromSecret("BASIC_AUTH_PASSWORD", secret, "password"),
 			)
 		}
 	} else {
@@ -172,10 +163,10 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 		"-t", "/templates/*.yaml",
 	}
 
-	openTelemetryEnabled := openTelemetryConfiguration != nil &&
-		openTelemetryConfiguration.Traces != nil &&
-		openTelemetryConfiguration.Traces.Otlp != nil
-
+	openTelemetryEnabled, err := settings.HasOpenTelemetryTracesEnabled(ctx, stack.Name)
+	if err != nil {
+		return err
+	}
 	if openTelemetryEnabled {
 		cmd = append(cmd, "-c", "/global/config.yaml")
 	}

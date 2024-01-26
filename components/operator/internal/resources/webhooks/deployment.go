@@ -21,16 +21,16 @@ import (
 
 func deploymentEnvVars(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumers brokertopicconsumers.Consumers) ([]v1.EnvVar, error) {
 
-	brokerConfiguration, err := settings.FindBrokerConfiguration(ctx, stack)
+	brokerURI, err := settings.RequireURL(ctx, stack.Name, "broker.dsn")
 	if err != nil {
 		return nil, err
 	}
-	if brokerConfiguration == nil {
+	if brokerURI == nil {
 		return nil, errors.New("missing broker configuration")
 	}
 
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, core.LowerCamelCaseName(ctx, webhooks))
+	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseName(ctx, webhooks))
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func deploymentEnvVars(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1
 
 	env = append(env, authEnvVars...)
 	env = append(env, databases.GetPostgresEnvVars(database)...)
-	env = append(env, settings.GetBrokerEnvVars(*brokerConfiguration, stack.Name, "webhooks")...)
+	env = append(env, settings.GetBrokerEnvVars(brokerURI, stack.Name, "webhooks")...)
 	env = append(env, core.Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"))
 
 	return env, nil

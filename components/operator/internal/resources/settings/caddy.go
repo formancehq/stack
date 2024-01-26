@@ -69,14 +69,10 @@ func ComputeCaddyfile(ctx core.Context, stack *v1beta1.Stack, _tpl string, addit
 	}).Parse(_tpl))
 	buf := bytes.NewBufferString("")
 
-	openTelemetryConfiguration, err := FindOpenTelemetryConfiguration(ctx, stack)
+	openTelemetryEnabled, err := HasOpenTelemetryTracesEnabled(ctx, stack.Name)
 	if err != nil {
 		return "", err
 	}
-
-	openTelemetryEnabled := openTelemetryConfiguration != nil &&
-		openTelemetryConfiguration.Traces != nil &&
-		openTelemetryConfiguration.Traces.Otlp != nil
 
 	data := map[string]any{
 		"EnableOpenTelemetry": openTelemetryEnabled,

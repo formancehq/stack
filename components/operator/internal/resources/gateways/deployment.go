@@ -14,7 +14,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack,
 	auditTopic *v1beta1.BrokerTopic, version string) error {
 
 	env := GetEnvVars(gateway)
-	otlpEnv, err := settings.GetOTELEnvVarsIfEnabled(ctx, stack, core.LowerCamelCaseName(ctx, gateway))
+	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseName(ctx, gateway))
 	if err != nil {
 		return err
 	}
@@ -22,9 +22,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack,
 	env = append(env, core.GetDevEnvVars(stack, gateway)...)
 
 	if stack.Spec.EnableAudit && auditTopic != nil {
-		env = append(env,
-			settings.GetBrokerEnvVars(*auditTopic.Status.Configuration, stack.Name, "gateway")...,
-		)
+		env = append(env, settings.GetBrokerEnvVars(auditTopic.Status.URI, stack.Name, "gateway")...)
 	}
 
 	image, err := registries.GetImage(ctx, stack, "gateway", version)

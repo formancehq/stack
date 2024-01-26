@@ -41,6 +41,8 @@ type BenthosSpec struct {
 // BenthosStatus defines the observed state of Benthos
 type BenthosStatus struct {
 	StatusWithConditions `json:",inline"`
+	//+optional
+	ElasticSearchURI *URI `json:"elasticSearchURI"`
 }
 
 //+kubebuilder:object:root=true

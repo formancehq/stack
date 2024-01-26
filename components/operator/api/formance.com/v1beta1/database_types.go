@@ -70,6 +70,14 @@ func (u *URI) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+func (in *URI) WithoutQuery() *URI {
+	cp := *in.URL
+	in.URL.RawQuery = ""
+	return &URI{
+		URL: &cp,
+	}
+}
+
 func ParseURL(v string) (*URI, error) {
 	ret, err := url.Parse(v)
 	if err != nil {

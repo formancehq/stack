@@ -83,68 +83,6 @@ func Copy(ctx core.Context, owner v1beta1.Dependent, ns, name string) (*v1.Secre
 	return &foundSecrets[0], nil
 }
 
-func Clean(ctx core.Context, owner v1beta1.Dependent, ns string, ignoreSecrets ...*v1.Secret) error {
-	requirement, err := labels.NewRequirement(CopiedSecretLabel, selection.Equals, []string{TrueValue})
-	if err != nil {
-		return err
-	}
-
-	existingSecrets := &v1.SecretList{}
-	if err := ctx.GetClient().List(ctx, existingSecrets, &client.ListOptions{
-		Namespace:     ns,
-		LabelSelector: labels.NewSelector().Add(*requirement),
-	}); err != nil {
-		return errors.Wrap(err, "listing secrets")
-	}
-
-l:
-	for _, existingSecret := range existingSecrets.Items {
-		for _, ignoreSecret := range ignoreSecrets {
-			if ignoreSecret.Name == existingSecret.Name {
-				continue l
-			}
-			hasControllerReference, err := core.HasControllerReference(ctx, owner, &existingSecret)
-			if err != nil {
-				return errors.Wrap(err, "checking controller reference")
-			}
-			if !hasControllerReference {
-				continue l
-			}
-		}
-		if err := ctx.GetClient().Delete(ctx, &existingSecret); err != nil {
-			return errors.Wrap(err, "error deleting old secret")
-		}
-	}
-
-	return nil
-}
-
-func Sync(ctx core.Context, owner v1beta1.Dependent, ns string, names ...string) ([]*v1.Secret, error) {
-	secrets := make([]*v1.Secret, 0)
-	for _, name := range names {
-		secret, err := Copy(ctx, owner, ns, name)
-		if err != nil {
-			return nil, errors.Wrapf(err, "copying secret '%s'", name)
-		}
-		secrets = append(secrets, secret)
-	}
-
-	if err := Clean(ctx, owner, ns, secrets...); err != nil {
-		return nil, errors.Wrap(err, "cleaning old secret")
-	}
-
-	return secrets, nil
-}
-
-func SyncOne(ctx core.Context, owner v1beta1.Dependent, ns string, name string) (*v1.Secret, error) {
-	secrets, err := Sync(ctx, owner, ns, name)
-	if err != nil {
-		return nil, err
-	}
-
-	return secrets[0], nil
-}
-
 func SyncFromURLs(ctx core.Context, owner v1beta1.Dependent, from, to *v1beta1.URI) error {
 	newSecret := to.Query().Get("secret")
 	if from != nil && !from.IsZero() {
