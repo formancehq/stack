@@ -2,6 +2,7 @@ package tests_test
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/internal/core"
 
 	"github.com/formancehq/operator/internal/resources/settings"
 	"github.com/google/uuid"
@@ -62,6 +63,14 @@ var _ = Describe("GatewayController", func() {
 			Expect(Delete(stack)).To(BeNil())
 			Expect(Delete(httpAPI)).To(Succeed())
 			Expect(Delete(gateway)).To(Succeed())
+		})
+		It("Should add an owner reference on the stack", func() {
+			Eventually(func(g Gomega) bool {
+				g.Expect(LoadResource("", gateway.Name, gateway)).To(Succeed())
+				reference, err := core.HasOwnerReference(TestContext(), stack, gateway)
+				g.Expect(err).To(BeNil())
+				return reference
+			}).Should(BeTrue())
 		})
 		It("Should create a deployment", func() {
 			Eventually(func() error {

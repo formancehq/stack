@@ -2,6 +2,7 @@ package tests_test
 
 import (
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
+	"github.com/formancehq/operator/internal/core"
 	. "github.com/formancehq/operator/internal/tests/internal"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -43,6 +44,14 @@ var _ = Describe("StargateController", func() {
 		AfterEach(func() {
 			Expect(Delete(stargate)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
+		})
+		It("Should add an owner reference on the stack", func() {
+			Eventually(func(g Gomega) bool {
+				g.Expect(LoadResource("", stargate.Name, stargate)).To(Succeed())
+				reference, err := core.HasOwnerReference(TestContext(), stack, stargate)
+				g.Expect(err).To(BeNil())
+				return reference
+			}).Should(BeTrue())
 		})
 		It("Should create a deployment", func() {
 			deployment := &appsv1.Deployment{}

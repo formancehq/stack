@@ -88,6 +88,14 @@ var _ = Describe("OrchestrationController", func() {
 			Expect(Delete(brokerDSNSettings)).To(Succeed())
 			Expect(Delete(temporalDSNSettings)).To(Succeed())
 		})
+		It("Should add an owner reference on the stack", func() {
+			Eventually(func(g Gomega) bool {
+				g.Expect(LoadResource("", orchestration.Name, orchestration)).To(Succeed())
+				reference, err := core.HasOwnerReference(TestContext(), stack, orchestration)
+				g.Expect(err).To(BeNil())
+				return reference
+			}).Should(BeTrue())
+		})
 		It("Should create a deployment", func() {
 			deployment := &appsv1.Deployment{}
 			Eventually(func() error {

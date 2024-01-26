@@ -2,10 +2,12 @@ package core
 
 import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
-	"k8s.io/apimachinery/pkg/api/errors"
+	"github.com/pkg/errors"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
 
 type Controller[T client.Object] func(ctx Context, req T) error
@@ -16,6 +18,21 @@ func ForModule[T v1beta1.Module](underlyingController func(ctx Context, stack *v
 		moduleVersion, err := GetModuleVersion(ctx, stack, t)
 		if err != nil {
 			return err
+		}
+
+		hasOwnerReference, err := HasOwnerReference(ctx, stack, t)
+		if err != nil {
+			return err
+		}
+
+		if !hasOwnerReference {
+			patch := client.MergeFrom(t.DeepCopyObject().(T))
+			if err := controllerutil.SetOwnerReference(stack, t, ctx.GetScheme()); err != nil {
+				return err
+			}
+			if err := ctx.GetClient().Patch(ctx, t, patch); err != nil {
+				return errors.Wrap(err, "patching object to add owner reference on stack")
+			}
 		}
 
 		err = underlyingController(ctx, stack, t, moduleVersion)
@@ -43,7 +60,7 @@ func ForStackDependency[T v1beta1.Dependent](ctrl func(ctx Context, stack *v1bet
 		if err := ctx.GetClient().Get(ctx, types.NamespacedName{
 			Name: t.GetStack(),
 		}, stack); err != nil {
-			if errors.IsNotFound(err) {
+			if apierrors.IsNotFound(err) {
 				return NewStackNotFoundError()
 			} else {
 				return err

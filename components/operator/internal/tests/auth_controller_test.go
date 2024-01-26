@@ -66,6 +66,14 @@ var _ = Describe("AuthController", func() {
 				return auth.Status.Ready
 			}).Should(BeTrue())
 		})
+		It("Should add an owner reference on the stack", func() {
+			Eventually(func(g Gomega) bool {
+				g.Expect(LoadResource("", auth.Name, auth)).To(Succeed())
+				reference, err := core.HasOwnerReference(TestContext(), stack, auth)
+				g.Expect(err).To(BeNil())
+				return reference
+			}).Should(BeTrue())
+		})
 		Context("Then when create an AuthClient object", func() {
 			var (
 				authClient *v1beta1.AuthClient

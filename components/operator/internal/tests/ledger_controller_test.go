@@ -47,6 +47,14 @@ var _ = Describe("LedgerController", func() {
 			Expect(Delete(databaseSettings)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 		})
+		It("Should add an owner reference on the stack", func() {
+			Eventually(func(g Gomega) bool {
+				g.Expect(LoadResource("", ledger.Name, ledger)).To(Succeed())
+				reference, err := core.HasOwnerReference(TestContext(), stack, ledger)
+				g.Expect(err).To(BeNil())
+				return reference
+			}).Should(BeTrue())
+		})
 		It("Should create a deployment", func() {
 			deployment := &appsv1.Deployment{}
 			Eventually(func() error {

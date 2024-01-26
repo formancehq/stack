@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"io/fs"
+	"k8s.io/apimachinery/pkg/api/equality"
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -151,7 +152,7 @@ func hasOwnerReference(ctx Context, owner client.Object, object client.Object, c
 	}
 
 	for _, reference := range object.GetOwnerReferences() {
-		if reflect.DeepEqual(reference, expectedOwnerReference) {
+		if equality.Semantic.DeepDerivative(expectedOwnerReference, reference) {
 			return true, nil
 		}
 	}
@@ -161,4 +162,8 @@ func hasOwnerReference(ctx Context, owner client.Object, object client.Object, c
 
 func HasControllerReference(ctx Context, owner client.Object, object client.Object) (bool, error) {
 	return hasOwnerReference(ctx, owner, object, true, true)
+}
+
+func HasOwnerReference(ctx Context, owner client.Object, object client.Object) (bool, error) {
+	return hasOwnerReference(ctx, owner, object, false, false)
 }

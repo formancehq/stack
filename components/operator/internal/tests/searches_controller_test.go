@@ -2,6 +2,7 @@ package tests_test
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/internal/core"
 
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/resources/settings"
@@ -46,6 +47,14 @@ var _ = Describe("SearchesController", func() {
 			Expect(Delete(elasticSearchDSNSetting)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 			Expect(Delete(brokerDSNSettings)).To(Succeed())
+		})
+		It("Should add an owner reference on the stack", func() {
+			Eventually(func(g Gomega) bool {
+				g.Expect(LoadResource("", search.Name, search)).To(Succeed())
+				reference, err := core.HasOwnerReference(TestContext(), stack, search)
+				g.Expect(err).To(BeNil())
+				return reference
+			}).Should(BeTrue())
 		})
 		It("Should create a Benthos", func() {
 			benthos := &v1beta1.Benthos{}

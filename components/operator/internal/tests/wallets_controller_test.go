@@ -79,6 +79,14 @@ var _ = Describe("WalletsController", func() {
 				auth, gateway, ledger, wallets,
 			)).To(Succeed())
 		})
+		It("Should add an owner reference on the stack", func() {
+			Eventually(func(g Gomega) bool {
+				g.Expect(LoadResource("", wallets.Name, wallets)).To(Succeed())
+				reference, err := core.HasOwnerReference(TestContext(), stack, wallets)
+				g.Expect(err).To(BeNil())
+				return reference
+			}).Should(BeTrue())
+		})
 		It("Should create a deployment", func() {
 			deployment := &appsv1.Deployment{}
 			Eventually(func() error {

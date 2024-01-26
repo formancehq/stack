@@ -46,6 +46,14 @@ var _ = Describe("PaymentsController", func() {
 			Expect(Delete(databaseSettings)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 		})
+		It("Should add an owner reference on the stack", func() {
+			Eventually(func(g Gomega) bool {
+				g.Expect(LoadResource("", payments.Name, payments)).To(Succeed())
+				reference, err := core.HasOwnerReference(TestContext(), stack, payments)
+				g.Expect(err).To(BeNil())
+				return reference
+			}).Should(BeTrue())
+		})
 		It("Should create a read deployment with a service", func() {
 			deployment := &appsv1.Deployment{}
 			Eventually(func() error {
