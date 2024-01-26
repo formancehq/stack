@@ -99,13 +99,13 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, p *v1beta1.Payments, version s
 func init() {
 	Init(
 		WithModuleReconciler(Reconcile,
-			WithOwn(&appsv1.Deployment{}),
-			WithOwn(&corev1.Service{}),
-			WithOwn(&v1beta1.HTTPAPI{}),
-			WithWatchSettings(),
-			WithWatch(databases.Watch("payments", &v1beta1.Payments{})),
-			WithWatch[*v1beta1.BrokerTopic](brokertopics.Watch[*v1beta1.Payments]("payments")),
-			WithWatchDependency(&v1beta1.Search{}),
+			WithOwn[*v1beta1.Payments](&appsv1.Deployment{}),
+			WithOwn[*v1beta1.Payments](&corev1.Service{}),
+			WithOwn[*v1beta1.Payments](&v1beta1.HTTPAPI{}),
+			WithWatchSettings[*v1beta1.Payments](),
+			WithWatchDependency[*v1beta1.Payments](&v1beta1.Search{}),
+			databases.Watch[*v1beta1.Payments](),
+			brokertopics.Watch[*v1beta1.Payments]("payments"),
 		),
 	)
 }

@@ -53,8 +53,8 @@ func init() {
 			return t.Spec.VersionsFromFile
 		}),
 		WithStdReconciler(Reconcile,
-			WithOwn(&corev1.Secret{}),
-			WithOwn(&corev1.Namespace{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})),
+			WithOwn[*v1beta1.Stack](&corev1.Secret{}),
+			WithOwn[*v1beta1.Stack](&corev1.Namespace{}, builder.WithPredicates(predicate.GenerationChangedPredicate{})),
 		),
 	)
 }

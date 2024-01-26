@@ -5,7 +5,6 @@ import (
 
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
-	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -50,31 +49,4 @@ func Create(ctx core.Context, owner interface {
 	}
 
 	return database, err
-}
-
-type MigrationConfiguration struct {
-	Command       []string
-	AdditionalEnv []v1.EnvVar
-}
-
-func MigrateDatabaseContainer(image string, database v1beta1.DatabaseConfiguration, databaseName string, options ...func(m *MigrationConfiguration)) v1.Container {
-	m := &MigrationConfiguration{}
-	for _, option := range options {
-		option(m)
-	}
-	args := m.Command
-	if len(args) == 0 {
-		args = []string{"migrate"}
-	}
-	env := PostgresEnvVars(database, databaseName)
-	if m.AdditionalEnv != nil {
-		env = append(env, m.AdditionalEnv...)
-	}
-
-	return v1.Container{
-		Name:  "migrate",
-		Image: image,
-		Args:  args,
-		Env:   env,
-	}
 }

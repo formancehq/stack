@@ -53,7 +53,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, stream *v1beta1.BenthosStream)
 func init() {
 	Init(
 		WithStackDependencyReconciler(Reconcile,
-			WithOwn(&corev1.ConfigMap{}),
+			WithOwn[*v1beta1.BenthosStream](&corev1.ConfigMap{}),
 		),
 	)
 }

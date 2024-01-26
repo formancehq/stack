@@ -68,13 +68,13 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, version st
 func init() {
 	Init(
 		WithModuleReconciler(Reconcile,
-			WithOwn(&appsv1.Deployment{}),
-			WithOwn(&v1beta1.HTTPAPI{}),
-			WithOwn(&v1beta1.Database{}),
-			WithOwn(&corev1.ConfigMap{}),
-			WithWatch(databases.Watch("auth", &v1beta1.Auth{})),
-			WithWatchSettings(),
-			WithWatchDependency(&v1beta1.AuthClient{}),
+			WithOwn[*v1beta1.Auth](&appsv1.Deployment{}),
+			WithOwn[*v1beta1.Auth](&v1beta1.HTTPAPI{}),
+			WithOwn[*v1beta1.Auth](&v1beta1.Database{}),
+			WithOwn[*v1beta1.Auth](&corev1.ConfigMap{}),
+			WithWatchSettings[*v1beta1.Auth](),
+			WithWatchDependency[*v1beta1.Auth](&v1beta1.AuthClient{}),
+			databases.Watch[*v1beta1.Auth](),
 		),
 	)
 }

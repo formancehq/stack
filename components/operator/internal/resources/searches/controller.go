@@ -159,12 +159,12 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 func init() {
 	Init(
 		WithModuleReconciler(Reconcile,
-			WithWatchSettings(),
-			WithWatchSecrets(),
-			WithOwn(&corev1.Secret{}),
-			WithOwn(&v1beta1.Benthos{}),
-			WithOwn(&v1beta1.HTTPAPI{}),
-			WithOwn(&appsv1.Deployment{}),
+			WithWatchSettings[*v1beta1.Search](),
+			WithWatchSecrets[*v1beta1.Search](),
+			WithOwn[*v1beta1.Search](&corev1.Secret{}),
+			WithOwn[*v1beta1.Search](&v1beta1.Benthos{}),
+			WithOwn[*v1beta1.Search](&v1beta1.HTTPAPI{}),
+			WithOwn[*v1beta1.Search](&appsv1.Deployment{}),
 		),
 	)
 }

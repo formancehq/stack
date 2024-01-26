@@ -57,13 +57,13 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, reconciliation *v1beta1.Reconc
 func init() {
 	Init(
 		WithModuleReconciler(Reconcile,
-			WithOwn(&v1beta1.Database{}),
-			WithOwn(&appsv1.Deployment{}),
-			WithOwn(&v1beta1.AuthClient{}),
-			WithOwn(&v1beta1.HTTPAPI{}),
-			WithWatchSettings(),
-			WithWatchDependency(&v1beta1.Ledger{}),
-			WithWatchDependency(&v1beta1.Payments{}),
+			WithOwn[*v1beta1.Reconciliation](&v1beta1.Database{}),
+			WithOwn[*v1beta1.Reconciliation](&appsv1.Deployment{}),
+			WithOwn[*v1beta1.Reconciliation](&v1beta1.AuthClient{}),
+			WithOwn[*v1beta1.Reconciliation](&v1beta1.HTTPAPI{}),
+			WithWatchSettings[*v1beta1.Reconciliation](),
+			WithWatchDependency[*v1beta1.Reconciliation](&v1beta1.Ledger{}),
+			WithWatchDependency[*v1beta1.Reconciliation](&v1beta1.Payments{}),
 		),
 	)
 }

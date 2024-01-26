@@ -63,12 +63,12 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, ve
 func init() {
 	Init(
 		WithModuleReconciler(Reconcile,
-			WithOwn(&appsv1.Deployment{}),
-			WithOwn(&v1beta1.HTTPAPI{}),
-			WithWatchSettings(),
-			WithWatchDependency(&v1beta1.Ledger{}),
-			WithWatchDependency(&v1beta1.Payments{}),
-			WithWatch(databases.Watch("webhooks", &v1beta1.Payments{})),
+			WithOwn[*v1beta1.Webhooks](&appsv1.Deployment{}),
+			WithOwn[*v1beta1.Webhooks](&v1beta1.HTTPAPI{}),
+			WithWatchSettings[*v1beta1.Webhooks](),
+			WithWatchDependency[*v1beta1.Webhooks](&v1beta1.Ledger{}),
+			WithWatchDependency[*v1beta1.Webhooks](&v1beta1.Payments{}),
+			databases.Watch[*v1beta1.Webhooks](),
 		),
 	)
 }

@@ -39,37 +39,6 @@ const (
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, topicQuery *v1beta1.BrokerTopicConsumer) error {
 
-	if !topicQuery.DeletionTimestamp.IsZero() {
-		topic := &v1beta1.BrokerTopic{}
-		if err := ctx.GetClient().Get(ctx, types.NamespacedName{
-			Name: GetObjectName(topicQuery.Spec.Stack, topicQuery.Spec.Service),
-		}, topic); err != nil {
-			if !errors.IsNotFound(err) {
-				return err
-			}
-		} else {
-			if err := controllerutil.RemoveOwnerReference(topicQuery, topic, ctx.GetScheme()); err != nil {
-				return err
-			}
-			if err := ctx.GetClient().Update(ctx, topic); err != nil {
-				return err
-			}
-		}
-
-		if updated := controllerutil.RemoveFinalizer(topicQuery, gcFinalizer); updated {
-			if err := ctx.GetClient().Update(ctx, topicQuery); err != nil {
-				return err
-			}
-		}
-		return nil
-	}
-
-	if updated := controllerutil.AddFinalizer(topicQuery, gcFinalizer); updated {
-		if err := ctx.GetClient().Update(ctx, topicQuery); err != nil {
-			return err
-		}
-	}
-
 	topic := &v1beta1.BrokerTopic{}
 	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
 		Name: GetObjectName(topicQuery.Spec.Stack, topicQuery.Spec.Service),
@@ -112,10 +81,30 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, topicQuery *v1beta1.BrokerTopi
 	return nil
 }
 
+func Delete(ctx Context, topicQuery *v1beta1.BrokerTopicConsumer) error {
+	topic := &v1beta1.BrokerTopic{}
+	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
+		Name: GetObjectName(topicQuery.Spec.Stack, topicQuery.Spec.Service),
+	}, topic); err != nil {
+		if !errors.IsNotFound(err) {
+			return err
+		}
+	} else {
+		if err := controllerutil.RemoveOwnerReference(topicQuery, topic, ctx.GetScheme()); err != nil {
+			return err
+		}
+		if err := ctx.GetClient().Update(ctx, topic); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func init() {
 	Init(
 		WithStackDependencyReconciler(Reconcile,
-			WithWatch[*v1beta1.BrokerTopic](func(ctx Context, object *v1beta1.BrokerTopic) []reconcile.Request {
+			WithWatch[*v1beta1.BrokerTopicConsumer, *v1beta1.BrokerTopic](func(ctx Context, object *v1beta1.BrokerTopic) []reconcile.Request {
 				list := v1beta1.BrokerTopicConsumerList{}
 				if err := ctx.GetClient().List(ctx, &list, client.MatchingFields{
 					".spec.service": object.Spec.Service,
@@ -129,6 +118,7 @@ func init() {
 					Map(list.Items, ToPointer[v1beta1.BrokerTopicConsumer])...,
 				)
 			}),
+			WithFinalizer[*v1beta1.BrokerTopicConsumer](gcFinalizer, Delete),
 		),
 		WithSimpleIndex[*v1beta1.BrokerTopicConsumer](".spec.service", func(t *v1beta1.BrokerTopicConsumer) string {
 			return t.Spec.Service

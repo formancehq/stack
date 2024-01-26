@@ -1,23 +1,24 @@
 package databases
 
 import (
-	"reflect"
-
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
+	"reflect"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-func Watch(service string, target any) func(ctx core.Context, object *v1beta1.Database) []reconcile.Request {
-	return func(ctx core.Context, object *v1beta1.Database) []reconcile.Request {
-		if object.Spec.Service != service {
+func Watch[T client.Object]() core.ReconcilerOption[T] {
+	var t T
+	t = reflect.New(reflect.TypeOf(t).Elem()).Interface().(T)
+	return core.WithWatch[T, *v1beta1.Database](func(ctx core.Context, database *v1beta1.Database) []reconcile.Request {
+		if database.Spec.Service != core.LowerCamelCaseName(ctx, t) {
 			return []reconcile.Request{}
 		}
 
-		slice := reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(target)), 0, 0).Interface()
+		slice := reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(t)), 0, 0).Interface()
 
-		err := core.GetAllStackDependencies(ctx, object.Spec.Stack, &slice)
+		err := core.GetAllStackDependencies(ctx, database.Spec.Stack, &slice)
 		if err != nil {
 			return []reconcile.Request{}
 		}
@@ -28,5 +29,5 @@ func Watch(service string, target any) func(ctx core.Context, object *v1beta1.Da
 		}
 
 		return core.MapObjectToReconcileRequests(objects...)
-	}
+	})
 }

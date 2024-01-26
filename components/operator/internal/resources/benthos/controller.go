@@ -337,12 +337,12 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 func init() {
 	Init(
 		WithStackDependencyReconciler(Reconcile,
-			WithWatchSettings(),
-			WithWatchSecrets(),
-			WithWatchDependency(&v1beta1.BenthosStream{}),
-			WithOwn(&corev1.Secret{}),
-			WithOwn(&corev1.ConfigMap{}),
-			WithOwn(&appsv1.Deployment{}),
+			WithWatchSettings[*v1beta1.Benthos](),
+			WithWatchSecrets[*v1beta1.Benthos](),
+			WithWatchDependency[*v1beta1.Benthos](&v1beta1.BenthosStream{}),
+			WithOwn[*v1beta1.Benthos](&corev1.Secret{}),
+			WithOwn[*v1beta1.Benthos](&corev1.ConfigMap{}),
+			WithOwn[*v1beta1.Benthos](&appsv1.Deployment{}),
 		),
 	)
 }

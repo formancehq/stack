@@ -2,15 +2,17 @@ package core
 
 import (
 	"context"
+	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
 	"reflect"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"strings"
 
 	"k8s.io/client-go/util/workqueue"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
-	"k8s.io/apimachinery/pkg/api/errors"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/event"
@@ -42,20 +44,23 @@ func Init(i ...Initializer) {
 	initializers = append(initializers, i...)
 }
 
-type reconcilerOptionsWatch struct {
-	handler func(mgr Manager, builder *builder.Builder, target client.Object) handler.EventHandler
+type ReconcilerOptionsWatch struct {
+	Handler func(mgr Manager, builder *builder.Builder, target client.Object) handler.EventHandler
 }
 
-type reconcilerOptions struct {
-	owns     map[client.Object][]builder.OwnsOption
-	watchers map[client.Object]reconcilerOptionsWatch
+type Finalizer[T client.Object] func(ctx Context, t T) error
+
+type ReconcilerOptions[T client.Object] struct {
+	Owns       map[client.Object][]builder.OwnsOption
+	Watchers   map[client.Object]ReconcilerOptionsWatch
+	Finalizers map[string]Finalizer[T]
 }
 
-type reconcilerOption func(*reconcilerOptions)
+type ReconcilerOption[T client.Object] func(*ReconcilerOptions[T])
 
-func WithOwn(v client.Object, opts ...builder.OwnsOption) reconcilerOption {
-	return func(options *reconcilerOptions) {
-		options.owns[v] = opts
+func WithOwn[T client.Object](v client.Object, opts ...builder.OwnsOption) ReconcilerOption[T] {
+	return func(options *ReconcilerOptions[T]) {
+		options.Owns[v] = opts
 	}
 }
 
@@ -76,10 +81,10 @@ func buildReconcileRequests(ctx context.Context, mgr Manager, target client.Obje
 	)
 }
 
-func WithWatchSecrets() reconcilerOption {
-	return func(options *reconcilerOptions) {
-		options.watchers[&corev1.Secret{}] = reconcilerOptionsWatch{
-			handler: func(mgr Manager, builder *builder.Builder, target client.Object) handler.EventHandler {
+func WithWatchSecrets[T client.Object]() ReconcilerOption[T] {
+	return func(options *ReconcilerOptions[T]) {
+		options.Watchers[&corev1.Secret{}] = ReconcilerOptionsWatch{
+			Handler: func(mgr Manager, builder *builder.Builder, target client.Object) handler.EventHandler {
 				return handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, object client.Object) []reconcile.Request {
 					ret := make([]reconcile.Request, 0)
 					if object.GetLabels()[StackLabel] != "any" {
@@ -99,11 +104,16 @@ func WithWatchSecrets() reconcilerOption {
 	}
 }
 
-func WithWatchSettings() reconcilerOption {
+func WithFinalizer[T client.Object](name string, callback Finalizer[T]) ReconcilerOption[T] {
+	return func(r *ReconcilerOptions[T]) {
+		r.Finalizers[name] = callback
+	}
+}
 
-	return func(options *reconcilerOptions) {
-		options.watchers[&v1beta1.Settings{}] = reconcilerOptionsWatch{
-			handler: func(mgr Manager, builder *builder.Builder, target client.Object) handler.EventHandler {
+func WithWatchSettings[T client.Object]() ReconcilerOption[T] {
+	return func(options *ReconcilerOptions[T]) {
+		options.Watchers[&v1beta1.Settings{}] = ReconcilerOptionsWatch{
+			Handler: func(mgr Manager, builder *builder.Builder, target client.Object) handler.EventHandler {
 				return handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, object client.Object) []reconcile.Request {
 					settings := object.(*v1beta1.Settings)
 
@@ -125,46 +135,47 @@ func WithWatchSettings() reconcilerOption {
 	}
 }
 
-func WithWatchDependency(t v1beta1.Dependent) reconcilerOption {
-	return func(options *reconcilerOptions) {
-		options.watchers[t] = reconcilerOptionsWatch{
-			handler: func(mgr Manager, builder *builder.Builder, target client.Object) handler.EventHandler {
+func WithWatchDependency[T client.Object](t v1beta1.Dependent) ReconcilerOption[T] {
+	return func(options *ReconcilerOptions[T]) {
+		options.Watchers[t] = ReconcilerOptionsWatch{
+			Handler: func(mgr Manager, builder *builder.Builder, target client.Object) handler.EventHandler {
 				return handler.EnqueueRequestsFromMapFunc(WatchDependents(mgr, target))
 			},
 		}
 	}
 }
 
-func WithWatchStack() reconcilerOption {
-	return func(options *reconcilerOptions) {
-		options.watchers[&v1beta1.Stack{}] = reconcilerOptionsWatch{
-			handler: func(mgr Manager, builder *builder.Builder, target client.Object) handler.EventHandler {
+func WithWatchStack[T client.Object]() ReconcilerOption[T] {
+	return func(options *ReconcilerOptions[T]) {
+		options.Watchers[&v1beta1.Stack{}] = ReconcilerOptionsWatch{
+			Handler: func(mgr Manager, builder *builder.Builder, target client.Object) handler.EventHandler {
 				return handler.EnqueueRequestsFromMapFunc(Watch(mgr, target))
 			},
 		}
 	}
 }
 
-func WithWatch[T client.Object](fn func(ctx Context, object T) []reconcile.Request) reconcilerOption {
-	var t T
-	t = reflect.New(reflect.TypeOf(t).Elem()).Interface().(T)
-	return func(options *reconcilerOptions) {
-		options.watchers[t] = reconcilerOptionsWatch{
-			handler: func(mgr Manager, builder *builder.Builder, target client.Object) handler.EventHandler {
+func WithWatch[T client.Object, WATCHED client.Object](fn func(ctx Context, object WATCHED) []reconcile.Request) ReconcilerOption[T] {
+	var watched WATCHED
+	watched = reflect.New(reflect.TypeOf(watched).Elem()).Interface().(WATCHED)
+	return func(options *ReconcilerOptions[T]) {
+		options.Watchers[watched] = ReconcilerOptionsWatch{
+			Handler: func(mgr Manager, builder *builder.Builder, target client.Object) handler.EventHandler {
 				return handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, object client.Object) []reconcile.Request {
-					return fn(NewContext(mgr.GetClient(), mgr.GetScheme(), mgr.GetPlatform(), ctx), object.(T))
+					return fn(NewContext(mgr.GetClient(), mgr.GetScheme(), mgr.GetPlatform(), ctx), object.(WATCHED))
 				})
 			},
 		}
 	}
 }
 
-func WithReconciler[T client.Object](controller ObjectController[T], opts ...reconcilerOption) Initializer {
+func WithReconciler[T client.Object](controller ObjectController[T], opts ...ReconcilerOption[T]) Initializer {
 	return func(mgr Manager) error {
 
-		options := reconcilerOptions{
-			owns:     map[client.Object][]builder.OwnsOption{},
-			watchers: map[client.Object]reconcilerOptionsWatch{},
+		options := ReconcilerOptions[T]{
+			Owns:       map[client.Object][]builder.OwnsOption{},
+			Watchers:   map[client.Object]ReconcilerOptionsWatch{},
+			Finalizers: map[string]Finalizer[T]{},
 		}
 		for _, opt := range opts {
 			opt(&options)
@@ -201,65 +212,102 @@ func WithReconciler[T client.Object](controller ObjectController[T], opts ...rec
 				},
 			)))
 
-		for object, ownsOptions := range options.owns {
+		for object, ownsOptions := range options.Owns {
 			b = b.Owns(object, ownsOptions...)
 		}
-		for object, watch := range options.watchers {
-			b = b.Watches(object, watch.handler(mgr, b, t))
+		for object, watch := range options.Watchers {
+			b = b.Watches(object, watch.Handler(mgr, b, t))
 		}
 
-		return b.Complete(reconcile.Func(func(ctx context.Context, request reconcile.Request) (reconcile.Result, error) {
-
-			var object T
-			object = reflect.New(reflect.TypeOf(object).Elem()).Interface().(T)
-			if err := mgr.GetClient().Get(ctx, types.NamespacedName{
-				Name: request.Name,
-			}, object); err != nil {
-				if errors.IsNotFound(err) {
-					return ctrl.Result{}, nil
-				}
-				return ctrl.Result{}, err
-			}
-
-			cp := object.DeepCopyObject().(T)
-			patch := client.MergeFrom(cp)
-
-			var reconcilerError error
-			err := controller(struct {
-				context.Context
-				Manager
-			}{
-				Context: ctx,
-				Manager: mgr,
-			}, object)
-			if err != nil {
-				reconcilerError = err
-			}
-
-			if err := mgr.GetClient().Status().Patch(ctx, object, patch); err != nil {
-				return ctrl.Result{}, err
-			}
-
-			return ctrl.Result{}, reconcilerError
-		}))
+		return b.Complete(reconcile.Func(reconcileObject(mgr, controller, options.Finalizers)))
 	}
 }
 
-func WithStdReconciler[T v1beta1.Object](ctrl func(ctx Context, t T) error, opts ...reconcilerOption) Initializer {
+func reconcileObject[T client.Object](mgr Manager, controller ObjectController[T], finalizers map[string]Finalizer[T]) func(ctx context.Context, request reconcile.Request) (reconcile.Result, error) {
+	return func(ctx context.Context, request reconcile.Request) (reconcile.Result, error) {
+		var object T
+		object = reflect.New(reflect.TypeOf(object).Elem()).Interface().(T)
+		if err := mgr.GetClient().Get(ctx, types.NamespacedName{
+			Name: request.Name,
+		}, object); err != nil {
+			if apierrors.IsNotFound(err) {
+				return ctrl.Result{}, nil
+			}
+			return ctrl.Result{}, err
+		}
+
+		reconcileContext := NewContext(mgr.GetClient(), mgr.GetScheme(), mgr.GetPlatform(), ctx)
+		if !object.GetDeletionTimestamp().IsZero() {
+			for name, f := range finalizers {
+
+				if !Contains(object.GetFinalizers(), name) {
+					continue
+				}
+
+				if err := f(reconcileContext, object); err != nil {
+					return reconcile.Result{}, errors.Wrapf(err, "executing finalizer '%s'", name)
+				}
+
+				patch := client.MergeFrom(object.DeepCopyObject().(T))
+				if controllerutil.RemoveFinalizer(object, name) {
+					if err := mgr.GetClient().Patch(ctx, object, patch); err != nil {
+						return reconcile.Result{}, errors.Wrapf(err, "patching resource to remove finalizer '%s'", name)
+					}
+				}
+			}
+
+			return reconcile.Result{}, nil
+		}
+
+		missingFinalizers := make([]string, 0)
+		for name := range finalizers {
+			if !Contains(object.GetFinalizers(), name) {
+				missingFinalizers = append(missingFinalizers, name)
+			}
+		}
+		if len(missingFinalizers) > 0 {
+			patch := client.MergeFrom(object.DeepCopyObject().(T))
+			finalizers := object.GetFinalizers()
+			finalizers = append(finalizers, missingFinalizers...)
+			object.SetFinalizers(finalizers)
+
+			if err := mgr.GetClient().Patch(ctx, object, patch); err != nil {
+				return reconcile.Result{}, errors.Wrap(err, "patching missing finalizers")
+			}
+		}
+
+		cp := object.DeepCopyObject().(T)
+		patch := client.MergeFrom(cp)
+
+		var reconcilerError error
+		err := controller(reconcileContext, object)
+		if err != nil {
+			reconcilerError = err
+		}
+
+		if err := mgr.GetClient().Status().Patch(ctx, object, patch); err != nil {
+			return ctrl.Result{}, err
+		}
+
+		return ctrl.Result{}, reconcilerError
+	}
+}
+
+func WithStdReconciler[T v1beta1.Object](ctrl ObjectController[T], opts ...ReconcilerOption[T]) Initializer {
 	return WithReconciler(ForObjectController(ctrl), opts...)
 }
 
-func WithStackDependencyReconciler[T v1beta1.Dependent](fn func(ctx Context, stack *v1beta1.Stack, t T) error, opts ...reconcilerOption) Initializer {
-	opts = append(opts, WithWatchStack())
+func WithStackDependencyReconciler[T v1beta1.Dependent](fn StackDependentObjectController[T], opts ...ReconcilerOption[T]) Initializer {
+	opts = append(opts, WithWatchStack[T]())
 	return WithStdReconciler(ForStackDependency(fn), opts...)
 }
 
-func WithModuleReconciler[T v1beta1.Module](fn func(ctx Context, stack *v1beta1.Stack, t T, version string) error, opts ...reconcilerOption) Initializer {
-	opts = append(opts, WithWatchVersions)
+func WithModuleReconciler[T v1beta1.Module](fn ModuleController[T], opts ...ReconcilerOption[T]) Initializer {
+	opts = append(opts, WithWatchVersions[T])
 	return WithStackDependencyReconciler(ForModule(fn), opts...)
 }
 
-func WithWatchVersions(options *reconcilerOptions) {
+func WithWatchVersions[T client.Object](options *ReconcilerOptions[T]) {
 
 	reconcileModule := func(ctx context.Context, mgr Manager, target client.Object, versionFileName string, limitingInterface workqueue.RateLimitingInterface) {
 		stackList := &v1beta1.StackList{}
@@ -293,8 +341,8 @@ func WithWatchVersions(options *reconcilerOptions) {
 		}
 	}
 
-	options.watchers[&v1beta1.Versions{}] = reconcilerOptionsWatch{
-		handler: func(mgr Manager, builder *builder.Builder, target client.Object) handler.EventHandler {
+	options.Watchers[&v1beta1.Versions{}] = ReconcilerOptionsWatch{
+		Handler: func(mgr Manager, builder *builder.Builder, target client.Object) handler.EventHandler {
 			return handler.Funcs{
 				CreateFunc: func(ctx context.Context, createEvent event.CreateEvent, limitingInterface workqueue.RateLimitingInterface) {
 					reconcileModule(ctx, mgr, target, createEvent.Object.GetName(), limitingInterface)

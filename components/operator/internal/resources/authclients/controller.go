@@ -52,7 +52,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, authClient *v1beta1.AuthClient
 func init() {
 	Init(
 		WithStackDependencyReconciler(Reconcile,
-			WithOwn(&corev1.Secret{}),
+			WithOwn[*v1beta1.AuthClient](&corev1.Secret{}),
 		),
 	)
 }

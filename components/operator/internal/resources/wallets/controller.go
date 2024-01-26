@@ -58,11 +58,11 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, wallets *v1beta1.Wallets, vers
 func init() {
 	Init(
 		WithModuleReconciler(Reconcile,
-			WithWatchSettings(),
-			WithWatchDependency(&v1beta1.Auth{}),
-			WithOwn(&v1beta1.AuthClient{}),
-			WithOwn(&appsv1.Deployment{}),
-			WithOwn(&v1beta1.HTTPAPI{}),
+			WithWatchSettings[*v1beta1.Wallets](),
+			WithWatchDependency[*v1beta1.Wallets](&v1beta1.Auth{}),
+			WithOwn[*v1beta1.Wallets](&v1beta1.AuthClient{}),
+			WithOwn[*v1beta1.Wallets](&appsv1.Deployment{}),
+			WithOwn[*v1beta1.Wallets](&v1beta1.HTTPAPI{}),
 		),
 	)
 }

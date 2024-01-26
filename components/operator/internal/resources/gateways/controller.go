@@ -97,14 +97,14 @@ func createAuditTopic(ctx Context, stack *v1beta1.Stack, gateway *v1beta1.Gatewa
 func init() {
 	Init(
 		WithModuleReconciler(Reconcile,
-			WithOwn(&corev1.ConfigMap{}),
-			WithOwn(&appsv1.Deployment{}),
-			WithOwn(&corev1.Service{}),
-			WithOwn(&networkingv1.Ingress{}),
-			WithWatchSettings(),
-			WithWatchDependency(&v1beta1.HTTPAPI{}),
-			WithWatchDependency(&v1beta1.Auth{}),
-			WithWatch[*v1beta1.BrokerTopic](brokertopics.Watch[*v1beta1.Gateway]("gateway")),
+			WithOwn[*v1beta1.Gateway](&corev1.ConfigMap{}),
+			WithOwn[*v1beta1.Gateway](&appsv1.Deployment{}),
+			WithOwn[*v1beta1.Gateway](&corev1.Service{}),
+			WithOwn[*v1beta1.Gateway](&networkingv1.Ingress{}),
+			WithWatchSettings[*v1beta1.Gateway](),
+			WithWatchDependency[*v1beta1.Gateway](&v1beta1.HTTPAPI{}),
+			WithWatchDependency[*v1beta1.Gateway](&v1beta1.Auth{}),
+			brokertopics.Watch[*v1beta1.Gateway]("gateway"),
 		),
 	)
 }

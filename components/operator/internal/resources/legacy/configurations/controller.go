@@ -417,7 +417,7 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 func init() {
 	Init(
 		WithReconciler[*v1beta3.Configuration](Reconcile,
-			WithWatch[*v1beta3.Stack](func(ctx Context, object *v1beta3.Stack) []reconcile.Request {
+			WithWatch[*v1beta3.Configuration, *v1beta3.Stack](func(ctx Context, object *v1beta3.Stack) []reconcile.Request {
 				return []reconcile.Request{{
 					NamespacedName: types.NamespacedName{
 						Name: object.Spec.Seed,

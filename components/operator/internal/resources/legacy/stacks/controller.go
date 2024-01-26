@@ -464,18 +464,8 @@ func watch[T client.Object](field string) func(ctx Context, object T) []reconcil
 func init() {
 	Init(
 		WithStdReconciler(Reconcile,
-			WithOwn(&v1beta1.Settings{}),
-			WithOwn(&v1beta1.Ledger{}),
-			WithOwn(&v1beta1.Payments{}),
-			WithOwn(&v1beta1.Orchestration{}),
-			WithOwn(&v1beta1.Wallets{}),
-			WithOwn(&v1beta1.Webhooks{}),
-			WithOwn(&v1beta1.Auth{}),
-			WithOwn(&v1beta1.Gateway{}),
-			WithOwn(&v1beta1.Stargate{}),
-			WithOwn(&v1beta1.Stack{}),
-			WithWatch(watch[*v1beta3.Configuration](".spec.seed")),
-			WithWatch(watch[*v1beta3.Versions](".spec.seed")),
+			WithWatch[*v1beta3.Stack, *v1beta3.Configuration](watch[*v1beta3.Configuration](".spec.seed")),
+			WithWatch[*v1beta3.Stack, *v1beta3.Versions](watch[*v1beta3.Versions](".spec.seed")),
 		),
 		WithSimpleIndex[*v1beta3.Stack](".spec.seed", func(t *v1beta3.Stack) string {
 			return t.Spec.Seed

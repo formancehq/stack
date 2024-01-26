@@ -39,8 +39,8 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, httpAPI *v1beta1.HTTPAPI) erro
 func init() {
 	Init(
 		WithStackDependencyReconciler(Reconcile,
-			WithOwn(&corev1.Service{}),
-			WithWatchSettings(),
+			WithOwn[*v1beta1.HTTPAPI](&corev1.Service{}),
+			WithWatchSettings[*v1beta1.HTTPAPI](),
 		),
 	)
 }

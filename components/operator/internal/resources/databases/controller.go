@@ -20,17 +20,15 @@ import (
 	"fmt"
 	"github.com/formancehq/operator/internal/resources/secrets"
 	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/types"
 	"reflect"
 
+	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/settings"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
-	"github.com/pkg/errors"
-
-	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	batchv1 "k8s.io/api/batch/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
 
 const (
@@ -42,28 +40,6 @@ const (
 //+kubebuilder:rbac:groups=formance.com,resources=databases/finalizers,verbs=update
 
 func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Database) error {
-
-	if !database.DeletionTimestamp.IsZero() {
-		if database.Status.Configuration != nil {
-			job, err := deleteJob(ctx, database)
-			if err != nil {
-				return err
-			}
-
-			if job.Status.Succeeded == 0 {
-				return core.NewPendingError()
-			}
-		}
-
-		patch := client.MergeFrom(database.DeepCopy())
-		if updated := controllerutil.RemoveFinalizer(database, databaseFinalizer); updated {
-			if err := ctx.GetClient().Patch(ctx, database, patch); err != nil {
-				return errors.Wrap(err, "removing finalizer")
-			}
-		}
-
-		return core.NewDeletedError()
-	}
 
 	databaseConfiguration, err := settings.FindDatabaseConfiguration(ctx, database)
 	if err != nil {
@@ -83,6 +59,7 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 	}
 
 	switch {
+	// TODO: We have multiple occurrences of this type of code, we need to factorize
 	case !database.Status.Ready:
 		// Some job fields are immutable (env vars for example)
 		// So, if the configuration has changed, wee need to delete the job,
@@ -104,16 +81,9 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 		}
 
 		dbName := core.GetObjectName(database.Spec.Stack, database.Spec.Service)
-		job, err := createJob(ctx, *databaseConfiguration, database, dbName)
+		job, err := createDatabase(ctx, *databaseConfiguration, database, dbName)
 		if err != nil {
 			return err
-		}
-
-		patch := client.MergeFrom(database.DeepCopy())
-		if updated := controllerutil.AddFinalizer(database, databaseFinalizer); updated {
-			if err := ctx.GetClient().Patch(ctx, database, patch); err != nil {
-				return err
-			}
 		}
 
 		database.Status.Configuration = &v1beta1.CreatedDatabase{
@@ -132,13 +102,91 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 	return nil
 }
 
+func Delete(ctx core.Context, database *v1beta1.Database) error {
+	if database.Status.Configuration == nil {
+		return nil
+	}
+	job, _, err := core.CreateOrUpdate[*batchv1.Job](ctx, types.NamespacedName{
+		Namespace: database.Spec.Stack,
+		Name:      fmt.Sprintf("%s-drop-database", database.Spec.Service),
+	},
+		func(t *batchv1.Job) error {
+			dropDBCommand := `psql -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USERNAME} -c "DROP DATABASE \"${POSTGRES_DATABASE}\""`
+			if database.Status.Configuration.DisableSSLMode {
+				dropDBCommand += ` "sslmode=disable"`
+			}
+
+			t.Spec.BackoffLimit = pointer.For(int32(10000))
+			t.Spec.TTLSecondsAfterFinished = pointer.For(int32(30))
+			t.Spec.Template.Spec.RestartPolicy = v1.RestartPolicyOnFailure
+			t.Spec.Template.Spec.Containers = []v1.Container{{
+				Name:  "drop-database",
+				Image: "postgres:15-alpine",
+				Args:  []string{"sh", "-c", dropDBCommand},
+				Env: append(PostgresEnvVars(database.Status.Configuration.DatabaseConfiguration,
+					database.Status.Configuration.Database),
+					// psql use PGPASSWORD env var
+					core.Env("PGPASSWORD", "$(POSTGRES_PASSWORD)"),
+				),
+			}}
+
+			return nil
+		},
+		core.WithController[*batchv1.Job](ctx.GetScheme(), database),
+	)
+	if err != nil {
+		return err
+	}
+
+	if job.Status.Succeeded == 0 {
+		return core.NewPendingError()
+	}
+
+	return nil
+}
+
+func createDatabase(ctx core.Context, databaseConfiguration v1beta1.DatabaseConfiguration,
+	database *v1beta1.Database, dbName string) (*batchv1.Job, error) {
+
+	job, _, err := core.CreateOrUpdate[*batchv1.Job](ctx, types.NamespacedName{
+		Namespace: database.Spec.Stack,
+		Name:      fmt.Sprintf("%s-create-database", database.Spec.Service),
+	},
+		func(t *batchv1.Job) error {
+			// PG does not support 'CREATE IF NOT EXISTS ' construct, emulate it with the above query
+			createDBCommand := `echo SELECT \'CREATE DATABASE \"${POSTGRES_DATABASE}\"\' WHERE NOT EXISTS \(SELECT FROM pg_database WHERE datname = \'${POSTGRES_DATABASE}\'\)\\gexec | psql -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USERNAME}`
+			if databaseConfiguration.DisableSSLMode {
+				createDBCommand += ` "sslmode=disable"`
+			}
+
+			t.Spec.BackoffLimit = pointer.For(int32(10000))
+			t.Spec.TTLSecondsAfterFinished = pointer.For(int32(30))
+			t.Spec.Template.Spec.RestartPolicy = v1.RestartPolicyOnFailure
+			t.Spec.Template.Spec.Containers = []v1.Container{{
+				Name:  "create-database",
+				Image: "postgres:15-alpine",
+				Args:  []string{"sh", "-c", createDBCommand},
+				Env: append(PostgresEnvVars(databaseConfiguration, dbName),
+					// psql use PGPASSWORD env var
+					core.Env("PGPASSWORD", "$(POSTGRES_PASSWORD)"),
+				),
+			}}
+
+			return nil
+		},
+		core.WithController[*batchv1.Job](ctx.GetScheme(), database),
+	)
+	return job, err
+}
+
 func init() {
 	core.Init(
 		core.WithStackDependencyReconciler(Reconcile,
-			core.WithOwn(&batchv1.Job{}),
-			core.WithOwn(&v1.Secret{}),
-			core.WithWatchSettings(),
-			core.WithWatchSecrets(),
+			core.WithOwn[*v1beta1.Database](&batchv1.Job{}),
+			core.WithOwn[*v1beta1.Database](&v1.Secret{}),
+			core.WithWatchSettings[*v1beta1.Database](),
+			core.WithWatchSecrets[*v1beta1.Database](),
+			core.WithFinalizer(databaseFinalizer, Delete),
 		),
 	)
 }

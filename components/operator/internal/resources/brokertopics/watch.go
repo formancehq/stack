@@ -9,8 +9,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-func Watch[T client.Object](service string) func(ctx core.Context, object *v1beta1.BrokerTopic) []reconcile.Request {
-	return func(ctx core.Context, topic *v1beta1.BrokerTopic) []reconcile.Request {
+func Watch[T client.Object](service string) core.ReconcilerOption[T] {
+	return core.WithWatch[T, *v1beta1.BrokerTopic](func(ctx core.Context, topic *v1beta1.BrokerTopic) []reconcile.Request {
 		if topic.Spec.Service != service {
 			return []reconcile.Request{}
 		}
@@ -29,5 +29,5 @@ func Watch[T client.Object](service string) func(ctx core.Context, object *v1bet
 		}
 
 		return core.MapObjectToReconcileRequests(objects...)
-	}
+	})
 }

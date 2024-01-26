@@ -110,16 +110,16 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, versio
 func init() {
 	Init(
 		WithModuleReconciler(Reconcile,
-			WithOwn(&appsv1.Deployment{}),
-			WithOwn(&batchv1.Job{}),
-			WithOwn(&corev1.Service{}),
-			WithOwn(&v1beta1.HTTPAPI{}),
-			WithOwn(&v1beta1.Database{}),
-			WithOwn(&batchv1.CronJob{}),
-			WithWatchSettings(),
-			WithWatch[*v1beta1.BrokerTopic](brokertopics.Watch[*v1beta1.Ledger]("ledger")),
-			WithWatch(databases.Watch("ledger", &v1beta1.Ledger{})),
-			WithWatchDependency(&v1beta1.Search{}),
+			WithOwn[*v1beta1.Ledger](&appsv1.Deployment{}),
+			WithOwn[*v1beta1.Ledger](&batchv1.Job{}),
+			WithOwn[*v1beta1.Ledger](&corev1.Service{}),
+			WithOwn[*v1beta1.Ledger](&v1beta1.HTTPAPI{}),
+			WithOwn[*v1beta1.Ledger](&v1beta1.Database{}),
+			WithOwn[*v1beta1.Ledger](&batchv1.CronJob{}),
+			WithWatchSettings[*v1beta1.Ledger](),
+			WithWatchDependency[*v1beta1.Ledger](&v1beta1.Search{}),
+			brokertopics.Watch[*v1beta1.Ledger]("ledger"),
+			databases.Watch[*v1beta1.Ledger](),
 		),
 	)
 }
