@@ -10,13 +10,17 @@ import (
 type PaymentStatus string
 
 const (
-	PaymentStatusPending   PaymentStatus = "PENDING"
-	PaymentStatusSucceeded PaymentStatus = "SUCCEEDED"
-	PaymentStatusCancelled PaymentStatus = "CANCELLED"
-	PaymentStatusFailed    PaymentStatus = "FAILED"
-	PaymentStatusExpired   PaymentStatus = "EXPIRED"
-	PaymentStatusRefunded  PaymentStatus = "REFUNDED"
-	PaymentStatusOther     PaymentStatus = "OTHER"
+	PaymentStatusPending         PaymentStatus = "PENDING"
+	PaymentStatusSucceeded       PaymentStatus = "SUCCEEDED"
+	PaymentStatusCancelled       PaymentStatus = "CANCELLED"
+	PaymentStatusFailed          PaymentStatus = "FAILED"
+	PaymentStatusExpired         PaymentStatus = "EXPIRED"
+	PaymentStatusRefunded        PaymentStatus = "REFUNDED"
+	PaymentStatusRefundedFailure PaymentStatus = "REFUNDED_FAILURE"
+	PaymentStatusDispute         PaymentStatus = "DISPUTE"
+	PaymentStatusDisputeWon      PaymentStatus = "DISPUTE_WON"
+	PaymentStatusDisputeLost     PaymentStatus = "DISPUTE_LOST"
+	PaymentStatusOther           PaymentStatus = "OTHER"
 )
 
 func (e PaymentStatus) ToPointer() *PaymentStatus {
@@ -40,6 +44,14 @@ func (e *PaymentStatus) UnmarshalJSON(data []byte) error {
 	case "EXPIRED":
 		fallthrough
 	case "REFUNDED":
+		fallthrough
+	case "REFUNDED_FAILURE":
+		fallthrough
+	case "DISPUTE":
+		fallthrough
+	case "DISPUTE_WON":
+		fallthrough
+	case "DISPUTE_LOST":
 		fallthrough
 	case "OTHER":
 		*e = PaymentStatus(v)

@@ -12,11 +12,11 @@ type PaymentAdjustmentRaw struct {
 }
 
 type PaymentAdjustment struct {
-	Absolute bool                 `json:"absolute"`
-	Amount   *big.Int             `json:"amount"`
-	Date     time.Time            `json:"date"`
-	Raw      PaymentAdjustmentRaw `json:"raw"`
-	Status   PaymentStatus        `json:"status"`
+	Amount    *big.Int             `json:"amount"`
+	CreatedAt time.Time            `json:"createdAt"`
+	Raw       PaymentAdjustmentRaw `json:"raw"`
+	Reference string               `json:"reference"`
+	Status    PaymentStatus        `json:"status"`
 }
 
 func (p PaymentAdjustment) MarshalJSON() ([]byte, error) {
@@ -30,13 +30,6 @@ func (p *PaymentAdjustment) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (o *PaymentAdjustment) GetAbsolute() bool {
-	if o == nil {
-		return false
-	}
-	return o.Absolute
-}
-
 func (o *PaymentAdjustment) GetAmount() *big.Int {
 	if o == nil {
 		return big.NewInt(0)
@@ -44,11 +37,11 @@ func (o *PaymentAdjustment) GetAmount() *big.Int {
 	return o.Amount
 }
 
-func (o *PaymentAdjustment) GetDate() time.Time {
+func (o *PaymentAdjustment) GetCreatedAt() time.Time {
 	if o == nil {
 		return time.Time{}
 	}
-	return o.Date
+	return o.CreatedAt
 }
 
 func (o *PaymentAdjustment) GetRaw() PaymentAdjustmentRaw {
@@ -56,6 +49,13 @@ func (o *PaymentAdjustment) GetRaw() PaymentAdjustmentRaw {
 		return PaymentAdjustmentRaw{}
 	}
 	return o.Raw
+}
+
+func (o *PaymentAdjustment) GetReference() string {
+	if o == nil {
+		return ""
+	}
+	return o.Reference
 }
 
 func (o *PaymentAdjustment) GetStatus() PaymentStatus {

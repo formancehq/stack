@@ -16,6 +16,7 @@ func (tl *Timeline) doTransactionsRequest(ctx context.Context, queryParams url.V
 	options := make([]client.ClientOption, 0)
 	options = append(options, client.QueryParam("limit", fmt.Sprintf("%d", tl.config.PageSize)))
 	options = append(options, client.QueryParam("expand[]", "data.source"))
+	options = append(options, client.QueryParam("expand[]", "data.source.charge"))
 
 	for k, v := range queryParams {
 		options = append(options, client.QueryParam(k, v[0]))

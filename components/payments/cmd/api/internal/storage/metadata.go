@@ -8,10 +8,10 @@ import (
 )
 
 func (s *Storage) UpdatePaymentMetadata(ctx context.Context, paymentID models.PaymentID, metadata map[string]string) error {
-	var metadataToInsert []models.Metadata // nolint:prealloc // it's against a map
+	var metadataToInsert []models.PaymentMetadata // nolint:prealloc // it's against a map
 
 	for key, value := range metadata {
-		metadataToInsert = append(metadataToInsert, models.Metadata{
+		metadataToInsert = append(metadataToInsert, models.PaymentMetadata{
 			PaymentID: paymentID,
 			Key:       key,
 			Value:     value,

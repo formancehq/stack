@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/gibson042/canonicaljson-go"
+	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
 
@@ -107,9 +108,10 @@ type Payment struct {
 	SourceAccountID      *AccountID `bun:",type:character varying,nullzero"`
 	DestinationAccountID *AccountID `bun:",type:character varying,nullzero"`
 
-	Adjustments []*Adjustment `bun:"rel:has-many,join:id=payment_id"`
-	Metadata    []*Metadata   `bun:"rel:has-many,join:id=payment_id"`
-	Connector   *Connector    `bun:"rel:has-one,join:connector_id=id"`
+	// Read only fields
+	Adjustments []*PaymentAdjustment `bun:"rel:has-many,join:id=payment_id"`
+	Metadata    []*PaymentMetadata   `bun:"rel:has-many,join:id=payment_id"`
+	Connector   *Connector           `bun:"rel:has-one,join:connector_id=id"`
 }
 
 type (
@@ -127,13 +129,17 @@ const (
 )
 
 const (
-	PaymentStatusPending   PaymentStatus = "PENDING"
-	PaymentStatusSucceeded PaymentStatus = "SUCCEEDED"
-	PaymentStatusCancelled PaymentStatus = "CANCELLED"
-	PaymentStatusFailed    PaymentStatus = "FAILED"
-	PaymentStatusExpired   PaymentStatus = "EXPIRED"
-	PaymentStatusRefunded  PaymentStatus = "REFUNDED"
-	PaymentStatusOther     PaymentStatus = "OTHER"
+	PaymentStatusPending         PaymentStatus = "PENDING"
+	PaymentStatusSucceeded       PaymentStatus = "SUCCEEDED"
+	PaymentStatusCancelled       PaymentStatus = "CANCELLED"
+	PaymentStatusFailed          PaymentStatus = "FAILED"
+	PaymentStatusExpired         PaymentStatus = "EXPIRED"
+	PaymentStatusRefunded        PaymentStatus = "REFUNDED"
+	PaymentStatusRefundedFailure PaymentStatus = "REFUNDED_FAILURE"
+	PaymentStatusDispute         PaymentStatus = "DISPUTE"
+	PaymentStatusDisputeWon      PaymentStatus = "DISPUTE_WON"
+	PaymentStatusDisputeLost     PaymentStatus = "DISPUTE_LOST"
+	PaymentStatusOther           PaymentStatus = "OTHER"
 )
 
 const (
@@ -201,6 +207,18 @@ func PaymentStatusFromString(value string) (PaymentStatus, error) {
 		return PaymentStatusCancelled, nil
 	case "FAILED":
 		return PaymentStatusFailed, nil
+	case "EXPIRED":
+		return PaymentStatusExpired, nil
+	case "REFUNDED":
+		return PaymentStatusRefunded, nil
+	case "REFUNDED_FAILURE":
+		return PaymentStatusRefundedFailure, nil
+	case "DISPUTE":
+		return PaymentStatusDispute, nil
+	case "DISPUTE_WON":
+		return PaymentStatusDisputeWon, nil
+	case "DISPUTE_LOST":
+		return PaymentStatusDisputeLost, nil
 	case "OTHER":
 		return PaymentStatusOther, nil
 	default:
@@ -271,4 +289,33 @@ func GetCurrencyAndPrecisionFromAsset(asset Asset) (string, int64, error) {
 	}
 
 	return parts[0], precision, nil
+}
+
+type PaymentAdjustment struct {
+	bun.BaseModel `bun:"payments.adjustment"`
+
+	ID        uuid.UUID `bun:",pk,nullzero"`
+	PaymentID PaymentID `bun:",pk,nullzero"`
+	CreatedAt time.Time `bun:",nullzero"`
+	Reference string
+	Amount    *big.Int
+	Status    PaymentStatus
+
+	RawData json.RawMessage
+}
+
+type PaymentMetadata struct {
+	bun.BaseModel `bun:"payments.metadata"`
+
+	PaymentID PaymentID `bun:",pk,nullzero"`
+	CreatedAt time.Time `bun:",nullzero"`
+	Key       string    `bun:",pk,nullzero"`
+	Value     string
+
+	Changelog []MetadataChangelog `bun:",nullzero"`
+}
+
+type MetadataChangelog struct {
+	CreatedAt time.Time `json:"createdAt"`
+	Value     string    `json:"value"`
 }

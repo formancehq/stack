@@ -166,7 +166,6 @@ func handlePayment(connectorID models.ConnectorID, paymentElement *payment) (ing
 			Asset:         models.Asset(paymentElement.Asset),
 			RawData:       raw,
 		},
-		Update: true,
 	}}
 
 	return ingestionPayload, nil

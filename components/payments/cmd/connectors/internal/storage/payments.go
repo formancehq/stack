@@ -153,53 +153,39 @@ func (s *Storage) UpsertPayments(ctx context.Context, payments []*models.Payment
 		res = append(res, models.MustPaymentIDFromString(id))
 	}
 
-	var adjustments []*models.Adjustment
-	var metadata []*models.Metadata
-
-	for i := range payments {
-		for _, adjustment := range payments[i].Adjustments {
-			if adjustment.Reference == "" {
-				continue
-			}
-
-			adjustment.PaymentID = payments[i].ID
-
-			adjustments = append(adjustments, adjustment)
-		}
-
-		for _, data := range payments[i].Metadata {
-			data.PaymentID = payments[i].ID
-			data.Changelog = append(data.Changelog,
-				models.MetadataChangelog{
-					CreatedAt: time.Now(),
-					Value:     data.Value,
-				})
-
-			metadata = append(metadata, data)
-		}
-	}
-
-	if len(adjustments) > 0 {
-		_, err = s.db.NewInsert().
-			Model(&adjustments).
-			On("CONFLICT (reference) DO NOTHING").
-			Exec(ctx)
-		if err != nil {
-			return nil, e("failed to create adjustments", err)
-		}
-	}
-
-	if len(metadata) > 0 {
-		_, err = s.db.NewInsert().
-			Model(&metadata).
-			On("CONFLICT (payment_id, key) DO UPDATE").
-			Set("value = EXCLUDED.value").
-			Set("changelog = metadata.changelog || EXCLUDED.changelog").
-			Exec(ctx)
-		if err != nil {
-			return nil, e("failed to create metadata", err)
-		}
-	}
-
 	return res, nil
+}
+
+func (s *Storage) UpsertPaymentsAdjustments(ctx context.Context, adjustments []*models.PaymentAdjustment) error {
+	if len(adjustments) == 0 {
+		return nil
+	}
+
+	_, err := s.db.NewInsert().
+		Model(&adjustments).
+		On("CONFLICT (reference) DO NOTHING").
+		Exec(ctx)
+	if err != nil {
+		return e("failed to create adjustments", err)
+	}
+
+	return nil
+}
+
+func (s *Storage) UpsertPaymentsMetadata(ctx context.Context, metadata []*models.PaymentMetadata) error {
+	if len(metadata) == 0 {
+		return nil
+	}
+
+	_, err := s.db.NewInsert().
+		Model(&metadata).
+		On("CONFLICT (payment_id, key) DO UPDATE").
+		Set("value = EXCLUDED.value").
+		Set("changelog = metadata.changelog || EXCLUDED.changelog").
+		Exec(ctx)
+	if err != nil {
+		return e("failed to create metadata", err)
+	}
+
+	return nil
 }

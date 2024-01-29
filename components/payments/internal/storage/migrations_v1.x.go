@@ -296,6 +296,23 @@ func registerMigrationsV1(ctx context.Context, migrator *migrations.Migrator) {
 				return nil
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				_, err := tx.Exec(`
+					ALTER TYPE "public".payment_status ADD VALUE IF NOT EXISTS 'EXPIRED';
+					ALTER TYPE "public".payment_status ADD VALUE IF NOT EXISTS 'REFUNDED';
+					ALTER TYPE "public".payment_status ADD VALUE IF NOT EXISTS 'REFUNDED_FAILURE';
+					ALTER TYPE "public".payment_status ADD VALUE IF NOT EXISTS 'DISPUTE';
+					ALTER TYPE "public".payment_status ADD VALUE IF NOT EXISTS 'DISPUTE_WON';
+					ALTER TYPE "public".payment_status ADD VALUE IF NOT EXISTS 'DISPUTE_LOST';
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
 	)
 }
 
@@ -772,7 +789,7 @@ func migratePaymentID(ctx context.Context, tx bun.Tx) error {
 		}
 
 		_, err = tx.NewUpdate().
-			Model((*models.Adjustment)(nil)).
+			Model((*models.PaymentAdjustment)(nil)).
 			Set("payment_id = ?", migration.NewPaymentID).
 			Where("payment_id = ?", migration.PreviousPaymentID).
 			Exec(ctx)
@@ -781,7 +798,7 @@ func migratePaymentID(ctx context.Context, tx bun.Tx) error {
 		}
 
 		_, err = tx.NewUpdate().
-			Model((*models.Metadata)(nil)).
+			Model((*models.PaymentMetadata)(nil)).
 			Set("payment_id = ?", migration.NewPaymentID).
 			Where("payment_id = ?", migration.PreviousPaymentID).
 			Exec(ctx)

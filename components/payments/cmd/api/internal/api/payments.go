@@ -33,11 +33,11 @@ type paymentResponse struct {
 }
 
 type paymentAdjustment struct {
-	Status   models.PaymentStatus `json:"status" bson:"status"`
-	Amount   int64                `json:"amount" bson:"amount"`
-	Date     time.Time            `json:"date" bson:"date"`
-	Raw      interface{}          `json:"raw" bson:"raw"`
-	Absolute bool                 `json:"absolute" bson:"absolute"`
+	Reference string               `json:"reference" bson:"reference"`
+	CreatedAt time.Time            `json:"createdAt" bson:"createdAt"`
+	Status    models.PaymentStatus `json:"status" bson:"status"`
+	Amount    *big.Int             `json:"amount" bson:"amount"`
+	Raw       interface{}          `json:"raw" bson:"raw"`
 }
 
 func createPaymentHandler(b backend.Backend) http.HandlerFunc {
@@ -145,11 +145,11 @@ func listPaymentsHandler(b backend.Backend) http.HandlerFunc {
 
 			for adjustmentIdx := range ret[i].Adjustments {
 				data[i].Adjustments[adjustmentIdx] = paymentAdjustment{
-					Status:   ret[i].Adjustments[adjustmentIdx].Status,
-					Amount:   ret[i].Adjustments[adjustmentIdx].Amount,
-					Date:     ret[i].Adjustments[adjustmentIdx].CreatedAt,
-					Raw:      ret[i].Adjustments[adjustmentIdx].RawData,
-					Absolute: ret[i].Adjustments[adjustmentIdx].Absolute,
+					Reference: ret[i].Adjustments[adjustmentIdx].Reference,
+					Status:    ret[i].Adjustments[adjustmentIdx].Status,
+					Amount:    ret[i].Adjustments[adjustmentIdx].Amount,
+					CreatedAt: ret[i].Adjustments[adjustmentIdx].CreatedAt,
+					Raw:       ret[i].Adjustments[adjustmentIdx].RawData,
 				}
 			}
 
@@ -219,11 +219,11 @@ func readPaymentHandler(b backend.Backend) http.HandlerFunc {
 
 		for i := range payment.Adjustments {
 			data.Adjustments[i] = paymentAdjustment{
-				Status:   payment.Adjustments[i].Status,
-				Amount:   payment.Adjustments[i].Amount,
-				Date:     payment.Adjustments[i].CreatedAt,
-				Raw:      payment.Adjustments[i].RawData,
-				Absolute: payment.Adjustments[i].Absolute,
+				Reference: payment.Adjustments[i].Reference,
+				Status:    payment.Adjustments[i].Status,
+				Amount:    payment.Adjustments[i].Amount,
+				CreatedAt: payment.Adjustments[i].CreatedAt,
+				Raw:       payment.Adjustments[i].RawData,
 			}
 		}
 
