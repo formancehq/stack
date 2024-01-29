@@ -19,7 +19,7 @@ package benthos
 import (
 	"embed"
 	"fmt"
-	"github.com/formancehq/operator/internal/resources/secrets"
+	"github.com/formancehq/operator/internal/resources/secretreferences"
 	"github.com/formancehq/operator/internal/resources/services"
 	"github.com/formancehq/operator/internal/resources/settings"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -91,7 +91,8 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 		return errors.Wrap(err, "searching elasticsearch configuration")
 	}
 
-	if err := secrets.SyncFromURLs(ctx, b, b.Status.ElasticSearchURI, elasticSearchURI); err != nil {
+	secretReference, err := secretreferences.Sync(ctx, b, "elasticsearch", elasticSearchURI)
+	if err != nil {
 		return err
 	}
 
@@ -276,6 +277,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 	})
 
 	_, err = deployments.CreateOrUpdate(ctx, b, "benthos",
+		secretreferences.Annotate[*appsv1.Deployment](secretReference),
 		deployments.WithMatchingLabels("benthos"),
 		deployments.WithInitContainers(b.Spec.InitContainers...),
 		deployments.WithContainers(corev1.Container{
@@ -329,11 +331,10 @@ func init() {
 	Init(
 		WithStackDependencyReconciler(Reconcile,
 			WithWatchSettings[*v1beta1.Benthos](),
-			WithWatchSecrets[*v1beta1.Benthos](),
 			WithWatchDependency[*v1beta1.Benthos](&v1beta1.BenthosStream{}),
-			WithOwn[*v1beta1.Benthos](&corev1.Secret{}),
 			WithOwn[*v1beta1.Benthos](&corev1.ConfigMap{}),
 			WithOwn[*v1beta1.Benthos](&appsv1.Deployment{}),
+			WithOwn[*v1beta1.Benthos](&v1beta1.SecretReference{}),
 		),
 	)
 }

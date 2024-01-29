@@ -27,7 +27,7 @@ func PostgresEnvVarsWithPrefix(database *v1beta1.Database, prefix string) []core
 				core.Env(fmt.Sprintf("%sPOSTGRES_PASSWORD", prefix), password),
 			)
 		} else {
-			secret := fmt.Sprintf("%s-%s", database.Name, database.Status.URI.Query().Get("secret"))
+			secret := database.Status.URI.Query().Get("secret")
 			ret = append(ret,
 				core.EnvFromSecret(fmt.Sprintf("%sPOSTGRES_USERNAME", prefix), secret, "username"),
 				core.EnvFromSecret(fmt.Sprintf("%sPOSTGRES_PASSWORD", prefix), secret, "password"),

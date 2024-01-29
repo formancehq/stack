@@ -2,7 +2,8 @@ package orchestrations
 
 import (
 	"fmt"
-	"github.com/formancehq/operator/internal/resources/secrets"
+	"github.com/formancehq/operator/internal/resources/secretreferences"
+	appsv1 "k8s.io/api/apps/v1"
 	"strings"
 
 	"github.com/formancehq/operator/internal/resources/settings"
@@ -71,7 +72,8 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 		return err
 	}
 
-	if err := secrets.SyncFromURLs(ctx, orchestration, orchestration.Status.TemporalURI, temporalURI); err != nil {
+	secretReference, err := secretreferences.Sync(ctx, orchestration, "temporal", temporalURI)
+	if err != nil {
 		return err
 	}
 
@@ -131,6 +133,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 	}
 
 	_, err = deployments.CreateOrUpdate(ctx, orchestration, "orchestration",
+		secretreferences.Annotate[*appsv1.Deployment](secretReference),
 		deployments.WithMatchingLabels("orchestration"),
 		deployments.WithContainers(v1.Container{
 			Name:          "api",

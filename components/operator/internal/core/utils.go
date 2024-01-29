@@ -30,6 +30,16 @@ func HashFromConfigMaps(configMaps ...*corev1.ConfigMap) string {
 	return base64.StdEncoding.EncodeToString(digest.Sum(nil))
 }
 
+func HashFromSecrets(secrets ...*corev1.Secret) string {
+	digest := sha256.New()
+	for _, secret := range secrets {
+		if err := json.NewEncoder(digest).Encode(secret.Data); err != nil {
+			panic(err)
+		}
+	}
+	return base64.StdEncoding.EncodeToString(digest.Sum(nil))
+}
+
 func CopyDir(f fs.FS, root, path string, ret *map[string]string) {
 	dirEntries, err := fs.ReadDir(f, path)
 	if err != nil {

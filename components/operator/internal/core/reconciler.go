@@ -3,7 +3,7 @@ package core
 import (
 	"context"
 	"github.com/pkg/errors"
-	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	"reflect"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"strings"
@@ -64,44 +64,21 @@ func WithOwn[T client.Object](v client.Object, opts ...builder.OwnsOption) Recon
 	}
 }
 
-func buildReconcileRequests(ctx context.Context, mgr Manager, target client.Object, opts ...client.ListOption) []reconcile.Request {
-	kinds, _, err := mgr.GetScheme().ObjectKinds(target)
+func BuildReconcileRequests(ctx context.Context, client client.Client, scheme *runtime.Scheme, target client.Object, opts ...client.ListOption) []reconcile.Request {
+	kinds, _, err := scheme.ObjectKinds(target)
 	if err != nil {
 		return []reconcile.Request{}
 	}
 
 	us := &unstructured.UnstructuredList{}
 	us.SetGroupVersionKind(kinds[0])
-	if err := mgr.GetClient().List(ctx, us, opts...); err != nil {
+	if err := client.List(ctx, us, opts...); err != nil {
 		return []reconcile.Request{}
 	}
 
 	return MapObjectToReconcileRequests(
 		Map(us.Items, ToPointer[unstructured.Unstructured])...,
 	)
-}
-
-func WithWatchSecrets[T client.Object]() ReconcilerOption[T] {
-	return func(options *ReconcilerOptions[T]) {
-		options.Watchers[&corev1.Secret{}] = ReconcilerOptionsWatch{
-			Handler: func(mgr Manager, builder *builder.Builder, target client.Object) handler.EventHandler {
-				return handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, object client.Object) []reconcile.Request {
-					ret := make([]reconcile.Request, 0)
-					if object.GetLabels()[StackLabel] != "any" {
-						for _, stack := range strings.Split(object.GetLabels()[StackLabel], ",") {
-							ret = append(ret, buildReconcileRequests(ctx, mgr, target, client.MatchingFields{
-								"stack": stack,
-							})...)
-						}
-					} else {
-						ret = append(ret, buildReconcileRequests(ctx, mgr, target)...)
-					}
-
-					return ret
-				})
-			},
-		}
-	}
 }
 
 func WithFinalizer[T client.Object](name string, callback Finalizer[T]) ReconcilerOption[T] {
@@ -120,12 +97,12 @@ func WithWatchSettings[T client.Object]() ReconcilerOption[T] {
 					ret := make([]reconcile.Request, 0)
 					if !settings.IsWildcard() {
 						for _, stack := range settings.GetStacks() {
-							ret = append(ret, buildReconcileRequests(ctx, mgr, target, client.MatchingFields{
+							ret = append(ret, BuildReconcileRequests(ctx, mgr.GetClient(), mgr.GetScheme(), target, client.MatchingFields{
 								"stack": stack,
 							})...)
 						}
 					} else {
-						ret = append(ret, buildReconcileRequests(ctx, mgr, target)...)
+						ret = append(ret, BuildReconcileRequests(ctx, mgr.GetClient(), mgr.GetScheme(), target)...)
 					}
 
 					return ret

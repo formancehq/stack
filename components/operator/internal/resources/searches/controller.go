@@ -18,7 +18,7 @@ package searches
 
 import (
 	"fmt"
-	"github.com/formancehq/operator/internal/resources/secrets"
+	"github.com/formancehq/operator/internal/resources/secretreferences"
 	"strconv"
 
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -43,7 +43,8 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 		return err
 	}
 
-	if err := secrets.SyncFromURLs(ctx, search, search.Status.ElasticSearchURI, elasticSearchURI); err != nil {
+	secretReference, err := secretreferences.Sync(ctx, search, "elasticsearch", elasticSearchURI)
+	if err != nil {
 		return err
 	}
 
@@ -132,6 +133,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 	}
 
 	_, err = deployments.CreateOrUpdate(ctx, search, "search",
+		secretreferences.Annotate[*appsv1.Deployment](secretReference),
 		deployments.WithMatchingLabels("search"),
 		deployments.WithContainers(corev1.Container{
 			Name:          "search",
@@ -153,8 +155,7 @@ func init() {
 	Init(
 		WithModuleReconciler(Reconcile,
 			WithWatchSettings[*v1beta1.Search](),
-			WithWatchSecrets[*v1beta1.Search](),
-			WithOwn[*v1beta1.Search](&corev1.Secret{}),
+			WithOwn[*v1beta1.Search](&v1beta1.SecretReference{}),
 			WithOwn[*v1beta1.Search](&v1beta1.Benthos{}),
 			WithOwn[*v1beta1.Search](&v1beta1.HTTPAPI{}),
 			WithOwn[*v1beta1.Search](&appsv1.Deployment{}),

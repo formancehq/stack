@@ -23,7 +23,6 @@ import (
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/httpapis"
 	appsv1 "k8s.io/api/apps/v1"
-	corev1 "k8s.io/api/core/v1"
 )
 
 //+kubebuilder:rbac:groups=formance.com,resources=orchestrations,verbs=get;list;watch;create;update;patch;delete
@@ -67,9 +66,8 @@ func init() {
 			WithOwn[*v1beta1.Orchestration](&v1beta1.AuthClient{}),
 			WithOwn[*v1beta1.Orchestration](&appsv1.Deployment{}),
 			WithOwn[*v1beta1.Orchestration](&v1beta1.HTTPAPI{}),
-			WithOwn[*v1beta1.Orchestration](&corev1.Secret{}),
+			WithOwn[*v1beta1.Orchestration](&v1beta1.SecretReference{}),
 			WithWatchSettings[*v1beta1.Orchestration](),
-			WithWatchSecrets[*v1beta1.Orchestration](),
 			WithWatchDependency[*v1beta1.Orchestration](&v1beta1.Ledger{}),
 			WithWatchDependency[*v1beta1.Orchestration](&v1beta1.Auth{}),
 			WithWatchDependency[*v1beta1.Orchestration](&v1beta1.Payments{}),

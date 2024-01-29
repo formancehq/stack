@@ -18,8 +18,7 @@ package databases
 
 import (
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
-	"github.com/formancehq/operator/internal/resources/secrets"
+	"github.com/formancehq/operator/internal/resources/secretreferences"
 	"github.com/pkg/errors"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -34,7 +33,7 @@ import (
 )
 
 const (
-	databaseFinalizer = "finalize.databases.formance.com"
+	databaseFinalizer = "delete-database"
 )
 
 //+kubebuilder:rbac:groups=formance.com,resources=databases,verbs=get;list;watch;create;update;patch;delete
@@ -48,9 +47,6 @@ func Reconcile(ctx core.Context, _ *v1beta1.Stack, database *v1beta1.Database) e
 		return errors.Wrap(err, "retrieving database configuration")
 	}
 
-	spew.Dump(database.Status)
-	spew.Dump(databaseURL)
-	fmt.Println("after")
 	switch {
 	// TODO: We have multiple occurrences of this type of code, we need to factorize
 	case !database.Status.Ready || database.Status.URI.Host == databaseURL.Host:
@@ -69,7 +65,8 @@ func Reconcile(ctx core.Context, _ *v1beta1.Stack, database *v1beta1.Database) e
 			}
 		}
 
-		if err := secrets.SyncFromURLs(ctx, database, database.Status.URI, databaseURL); err != nil {
+		secretReference, err := secretreferences.Sync(ctx, database, "postgres", databaseURL)
+		if err != nil {
 			return err
 		}
 
@@ -77,7 +74,7 @@ func Reconcile(ctx core.Context, _ *v1beta1.Stack, database *v1beta1.Database) e
 		database.Status.URI = databaseURL
 		database.Status.Database = dbName
 
-		job, err := createDatabase(ctx, database)
+		job, err := createDatabase(ctx, database, secretReference)
 		if err != nil {
 			return err
 		}
@@ -96,6 +93,18 @@ func Delete(ctx core.Context, database *v1beta1.Database) error {
 	if database.Status.URI == nil {
 		return nil
 	}
+
+	annotations := make(map[string]string)
+	if secret := database.Status.URI.Query().Get("secret"); secret != "" {
+		secretReference := &v1beta1.SecretReference{}
+		if err := ctx.GetClient().Get(ctx, types.NamespacedName{
+			Name: fmt.Sprintf("%s-postgres", database.Name),
+		}, secretReference); err != nil {
+			return err
+		}
+		annotations["secret-hash"] = secretReference.Status.Hash
+	}
+
 	job, _, err := core.CreateOrUpdate[*batchv1.Job](ctx, types.NamespacedName{
 		Namespace: database.Spec.Stack,
 		Name:      fmt.Sprintf("%s-drop-database", database.Spec.Service),
@@ -119,6 +128,7 @@ func Delete(ctx core.Context, database *v1beta1.Database) error {
 			return nil
 		},
 		core.WithController[*batchv1.Job](ctx.GetScheme(), database),
+		core.WithAnnotations[*batchv1.Job](annotations),
 	)
 	if err != nil {
 		return err
@@ -131,7 +141,12 @@ func Delete(ctx core.Context, database *v1beta1.Database) error {
 	return nil
 }
 
-func createDatabase(ctx core.Context, database *v1beta1.Database) (*batchv1.Job, error) {
+func createDatabase(ctx core.Context, database *v1beta1.Database, secretReference *v1beta1.SecretReference) (*batchv1.Job, error) {
+
+	annotations := make(map[string]string)
+	if secretReference != nil {
+		annotations["secret-hash"] = secretReference.Status.Hash
+	}
 
 	job, _, err := core.CreateOrUpdate[*batchv1.Job](ctx, types.NamespacedName{
 		Namespace: database.Spec.Stack,
@@ -157,6 +172,7 @@ func createDatabase(ctx core.Context, database *v1beta1.Database) (*batchv1.Job,
 			return nil
 		},
 		core.WithController[*batchv1.Job](ctx.GetScheme(), database),
+		core.WithAnnotations[*batchv1.Job](annotations),
 	)
 	return job, err
 }
@@ -172,9 +188,8 @@ func init() {
 	core.Init(
 		core.WithStackDependencyReconciler(Reconcile,
 			core.WithOwn[*v1beta1.Database](&batchv1.Job{}),
-			core.WithOwn[*v1beta1.Database](&v1.Secret{}),
+			core.WithOwn[*v1beta1.Database](&v1beta1.SecretReference{}),
 			core.WithWatchSettings[*v1beta1.Database](),
-			core.WithWatchSecrets[*v1beta1.Database](),
 			core.WithFinalizer(databaseFinalizer, Delete),
 		),
 	)

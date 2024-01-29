@@ -2,9 +2,9 @@ package tests_test
 
 import (
 	"fmt"
-	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
+	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
-	"github.com/formancehq/operator/internal/resources/secrets"
+	"github.com/formancehq/operator/internal/resources/secretreferences"
 	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/operator/internal/tests/internal"
 	"github.com/google/uuid"
@@ -105,7 +105,7 @@ var _ = Describe("DatabaseController", func() {
 							core.StackLabel: stack.Name,
 						},
 						Annotations: map[string]string{
-							secrets.RewrittenSecretName: "postgres",
+							secretreferences.RewrittenSecretName: "postgres",
 						},
 					},
 					Data: map[string][]byte{
@@ -116,19 +116,17 @@ var _ = Describe("DatabaseController", func() {
 				Expect(Create(secret1)).To(Succeed())
 				databaseSettings.Spec.Value = "postgresql://xxx?secret=postgres"
 			})
-			shouldCreateSecret := func(name string) {
-				secret := &v1.Secret{}
+			shouldCreateSecretReference := func() {
+				secretReference := &v1beta1.SecretReference{}
 				Eventually(func(g Gomega) error {
-					return LoadResource(stack.Name, name, secret)
+					return LoadResource("", fmt.Sprintf("%s-postgres", database.Name), secretReference)
 				}).Should(Succeed())
 			}
-			It("Should create a secret", func() {
-				shouldCreateSecret(fmt.Sprintf("%s-postgres", database.Name))
-			})
+			It("Should create a secret reference", shouldCreateSecretReference)
 			Context("Then changing the secret", func() {
 				var secret2 *v1.Secret
 				JustBeforeEach(func() {
-					shouldCreateSecret(fmt.Sprintf("%s-postgres", database.Name))
+					shouldCreateSecretReference()
 					secret2 = &v1.Secret{
 						ObjectMeta: metav1.ObjectMeta{
 							Name:      uuid.NewString(),
@@ -137,7 +135,7 @@ var _ = Describe("DatabaseController", func() {
 								core.StackLabel: stack.Name,
 							},
 							Annotations: map[string]string{
-								secrets.RewrittenSecretName: "postgres2",
+								secretreferences.RewrittenSecretName: "postgres2",
 							},
 						},
 						Data: map[string][]byte{
@@ -151,7 +149,7 @@ var _ = Describe("DatabaseController", func() {
 					Expect(Patch(databaseSettings, patch)).To(Succeed())
 				})
 				It("Should create the new secret and remove the old one", func() {
-					shouldCreateSecret(fmt.Sprintf("%s-postgres2", database.Name))
+					shouldCreateSecretReference()
 					Eventually(func() error {
 						return LoadResource(stack.Name, fmt.Sprintf("%s-postgres", database.Name), secret1)
 					}).Should(BeNotFound())
