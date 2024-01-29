@@ -251,8 +251,8 @@ func createBatchElement(
 			Amount:        big.NewInt(balanceTransaction.Source.Refund.Charge.Amount - balanceTransaction.Source.Refund.Charge.AmountRefunded),
 			InitialAmount: big.NewInt(balanceTransaction.Source.Refund.Charge.Amount),
 			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, transactionCurrency),
+			Scheme:        models.PaymentSchemeOther,
 			RawData:       rawData,
-			Scheme:        models.PaymentScheme(balanceTransaction.Source.Refund.Charge.PaymentMethodDetails.Card.Brand),
 			CreatedAt:     time.Unix(balanceTransaction.Source.Refund.Charge.Created, 0),
 		}
 
@@ -306,8 +306,8 @@ func createBatchElement(
 			Amount:        big.NewInt(balanceTransaction.Source.Refund.Charge.Amount - balanceTransaction.Source.Refund.Charge.AmountRefunded),
 			InitialAmount: big.NewInt(balanceTransaction.Source.Refund.Charge.Amount),
 			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, transactionCurrency),
+			Scheme:        models.PaymentSchemeOther,
 			RawData:       rawData,
-			Scheme:        models.PaymentScheme(balanceTransaction.Source.Refund.Charge.PaymentMethodDetails.Card.Brand),
 			CreatedAt:     time.Unix(balanceTransaction.Source.Refund.Charge.Created, 0),
 		}
 
