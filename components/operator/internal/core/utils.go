@@ -4,12 +4,13 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
-	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"io/fs"
-	"k8s.io/apimachinery/pkg/api/equality"
 	"path/filepath"
 	"reflect"
 	"strings"
+
+	"github.com/formancehq/stack/libs/go-libs/pointer"
+	"k8s.io/apimachinery/pkg/api/equality"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"

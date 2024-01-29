@@ -71,7 +71,7 @@ spec:
           status:
             description: HTTPAPIStatus defines the observed state of HTTPAPI
             properties:
-              error:
+              info:
                 type: string
               ready:
                 type: boolean

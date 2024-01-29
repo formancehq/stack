@@ -1,6 +1,7 @@
 package core
 
 import (
+	"github.com/davecgh/go-spew/spew"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/pkg/errors"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -29,6 +30,7 @@ func ForObjectController[T v1beta1.Object](controller ObjectController[T]) Objec
 		if err != nil {
 			setStatus(err)
 			if !IsApplicationError(err) {
+				spew.Dump(err)
 				reconcilerError = err
 			}
 		} else {

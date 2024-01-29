@@ -18,9 +18,10 @@ package v1beta1
 
 import (
 	"fmt"
+	"net/url"
+
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"net/url"
 )
 
 // DatabaseSpec defines the desired state of Database

@@ -1,12 +1,14 @@
 package tests_test
 
 import (
+	"github.com/davecgh/go-spew/spew"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	. "github.com/formancehq/operator/internal/tests/internal"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 var _ = Describe("StackController", func() {
@@ -24,7 +26,7 @@ var _ = Describe("StackController", func() {
 			Expect(Create(stack)).To(Succeed())
 		})
 		JustAfterEach(func() {
-			Expect(Delete(stack)).To(Succeed())
+			Expect(client.IgnoreNotFound(Delete(stack))).To(Succeed())
 		})
 		It("Should create a new namespace", func() {
 			Eventually(func() error {
@@ -76,6 +78,41 @@ var _ = Describe("StackController", func() {
 					version, err := core.GetModuleVersion(TestContext(), stack, &v1beta1.Ledger{})
 					Expect(err).To(Succeed())
 					Expect(version).To(Equal("5678"))
+				})
+			})
+		})
+		Context("with a module", func() {
+			var ledger *v1beta1.Ledger
+			JustBeforeEach(func() {
+				ledger = &v1beta1.Ledger{
+					ObjectMeta: RandObjectMeta(),
+					Spec: v1beta1.LedgerSpec{
+						StackDependency: v1beta1.StackDependency{
+							Stack: stack.Name,
+						},
+					},
+				}
+				Expect(Create(ledger)).To(Succeed())
+				Eventually(func(g Gomega) *v1beta1.Ledger {
+					g.Expect(LoadResource("", ledger.Name, ledger)).To(Succeed())
+					spew.Dump(ledger.OwnerReferences)
+					return ledger
+				}).Should(BeOwnedBy(stack))
+			})
+			JustAfterEach(func() {
+				Expect(client.IgnoreNotFound(Delete(ledger))).To(Succeed())
+			})
+			When("deleting the stack", func() {
+				JustBeforeEach(func() {
+					Expect(Delete(stack)).To(Succeed())
+				})
+				It("Should also delete the module", func() {
+					Eventually(func(g Gomega) error {
+						return LoadResource("", ledger.Name, ledger)
+					}).Should(BeNotFound())
+					Eventually(func(g Gomega) error {
+						return LoadResource("", stack.Name, stack)
+					}).Should(BeNotFound())
 				})
 			})
 		})

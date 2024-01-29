@@ -1,43 +1,53 @@
 package core
 
+import (
+	"fmt"
+
+	"github.com/pkg/errors"
+)
+
 const (
-	CodePending       = "pending"
-	CodeDeleted       = "object deleted"
-	CodeStackDisabled = "stack disabled"
-	CodeStackNotFound = "stack not found"
+	CodePending         = "pending"
+	CodeStackNotFound   = "stack not found"
+	CodeMissingSettings = "missing settings"
 )
 
 type ApplicationError struct {
-	code string
+	code    string
+	message interface{}
 }
 
 func (e *ApplicationError) Error() string {
-	return e.code
+	if e.message == "" {
+		return e.code
+	}
+	return fmt.Sprintf("%s: %s", e.code, e.message)
 }
 
-func NewApplicationError(code string) *ApplicationError {
+func (e *ApplicationError) Is(err error) bool {
+	_, ok := err.(*ApplicationError)
+	return ok
+}
+
+func NewApplicationError(code string, msg string) *ApplicationError {
 	return &ApplicationError{
-		code: code,
+		code:    code,
+		message: msg,
 	}
 }
 
-func NewDeletedError() *ApplicationError {
-	return NewApplicationError(CodeDeleted)
-}
-
-func NewStackDisabledError() *ApplicationError {
-	return NewApplicationError(CodeStackDisabled)
-}
-
 func NewStackNotFoundError() *ApplicationError {
-	return NewApplicationError(CodeStackNotFound)
+	return NewApplicationError(CodeStackNotFound, "")
 }
 
 func NewPendingError() *ApplicationError {
-	return NewApplicationError(CodePending)
+	return NewApplicationError(CodePending, "")
+}
+
+func NewMissingSettingsError(msg string) *ApplicationError {
+	return NewApplicationError(CodeMissingSettings, msg)
 }
 
 func IsApplicationError(err error) bool {
-	_, ok := err.(*ApplicationError)
-	return ok
+	return errors.Is(err, &ApplicationError{})
 }

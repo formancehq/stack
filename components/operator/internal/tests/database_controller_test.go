@@ -2,6 +2,7 @@ package tests_test
 
 import (
 	"fmt"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/secretreferences"
@@ -47,7 +48,7 @@ var _ = Describe("DatabaseController", func() {
 		JustAfterEach(func() {
 			Expect(client.IgnoreNotFound(Delete(database))).To(Succeed())
 			Expect(Delete(databaseSettings)).To(Succeed())
-			Expect(Delete(stack)).To(Succeed())
+			Expect(client.IgnoreNotFound(Delete(stack))).To(Succeed())
 		})
 		shouldBeReady := func() {
 			d := &v1beta1.Database{}
@@ -56,7 +57,15 @@ var _ = Describe("DatabaseController", func() {
 				return d.Status.Ready
 			}).Should(BeTrue())
 		}
+		shouldHaveOwnerReferenceOnStack := func() {
+			d := &v1beta1.Database{}
+			Eventually(func(g Gomega) *v1beta1.Database {
+				g.Expect(LoadResource("", database.Name, d)).To(Succeed())
+				return d
+			}).Should(BeOwnedBy(stack, WithBlockOwnerDeletion()))
+		}
 		It("Should be set to ready status", shouldBeReady)
+		It("Should add the stack in owner references", shouldHaveOwnerReferenceOnStack)
 		Context("Then when deleting the Database object", func() {
 			JustBeforeEach(func() {
 				shouldBeReady()

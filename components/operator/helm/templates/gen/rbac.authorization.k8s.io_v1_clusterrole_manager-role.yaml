@@ -194,7 +194,7 @@ rules:
 - apiGroups:
   - formance.com
   resources:
-  - brokerconfigurations
+  - benthosstreams
   verbs:
   - create
   - delete
@@ -206,13 +206,13 @@ rules:
 - apiGroups:
   - formance.com
   resources:
-  - brokerconfigurations/finalizers
+  - benthosstreams/finalizers
   verbs:
   - update
 - apiGroups:
   - formance.com
   resources:
-  - brokerconfigurations/status
+  - benthosstreams/status
   verbs:
   - get
   - patch
@@ -272,32 +272,6 @@ rules:
 - apiGroups:
   - formance.com
   resources:
-  - databaseconfigurations
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - formance.com
-  resources:
-  - databaseconfigurations/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - formance.com
-  resources:
-  - databaseconfigurations/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - formance.com
-  resources:
   - databases
   verbs:
   - create
@@ -317,32 +291,6 @@ rules:
   - formance.com
   resources:
   - databases/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - formance.com
-  resources:
-  - elasticsearchconfigurations
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - formance.com
-  resources:
-  - elasticsearchconfigurations/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - formance.com
-  resources:
-  - elasticsearchconfigurations/status
   verbs:
   - get
   - patch
@@ -428,32 +376,6 @@ rules:
 - apiGroups:
   - formance.com
   resources:
-  - opentelemetryconfigurations
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - formance.com
-  resources:
-  - opentelemetryconfigurations/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - formance.com
-  resources:
-  - opentelemetryconfigurations/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - formance.com
-  resources:
   - orchestrations
   verbs:
   - create
@@ -532,32 +454,6 @@ rules:
 - apiGroups:
   - formance.com
   resources:
-  - registriesconfigurations
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - formance.com
-  resources:
-  - registriesconfigurations/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - formance.com
-  resources:
-  - registriesconfigurations/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - formance.com
-  resources:
   - searches
   verbs:
   - create
@@ -577,6 +473,32 @@ rules:
   - formance.com
   resources:
   - searches/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - settings
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - settings/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - settings/status
   verbs:
   - get
   - patch
@@ -629,58 +551,6 @@ rules:
   - formance.com
   resources:
   - stargates/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - formance.com
-  resources:
-  - streams
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - formance.com
-  resources:
-  - streams/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - formance.com
-  resources:
-  - streams/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - formance.com
-  resources:
-  - temporalconfigurations
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - formance.com
-  resources:
-  - temporalconfigurations/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - formance.com
-  resources:
-  - temporalconfigurations/status
   verbs:
   - get
   - patch

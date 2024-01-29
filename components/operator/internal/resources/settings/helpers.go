@@ -73,7 +73,7 @@ func RequireString(ctx core.Context, stack string, keys ...string) (string, erro
 		return "", err
 	}
 	if value == nil {
-		return "", fmt.Errorf("settings '%s' not found for stack '%s'", strings.Join(keys, "."), stack)
+		return "", core.NewMissingSettingsError(fmt.Sprintf("settings '%s' not found for stack '%s'", strings.Join(keys, "."), stack))
 	}
 	return *value, nil
 }
@@ -93,9 +93,6 @@ func RequireURL(ctx core.Context, stack string, keys ...string) (*v1beta1.URI, e
 	value, err := RequireString(ctx, stack, keys...)
 	if err != nil {
 		return nil, err
-	}
-	if value == "" {
-		return nil, fmt.Errorf("settings '%s' not found for stack '%s'", strings.Join(keys, "."), stack)
 	}
 	return v1beta1.ParseURL(value)
 }

@@ -12,6 +12,7 @@ Package v1beta1 contains API Schema definitions for the formance v1beta1 API gro
 - [Auth](#auth)
 - [AuthClient](#authclient)
 - [Benthos](#benthos)
+- [BenthosStream](#benthosstream)
 - [BrokerTopic](#brokertopic)
 - [BrokerTopicConsumer](#brokertopicconsumer)
 - [Database](#database)
@@ -22,12 +23,11 @@ Package v1beta1 contains API Schema definitions for the formance v1beta1 API gro
 - [Payments](#payments)
 - [Reconciliation](#reconciliation)
 - [Search](#search)
+- [SecretReference](#secretreference)
 - [Settings](#settings)
 - [Stack](#stack)
 - [Stargate](#stargate)
-- [Stream](#stream)
 - [Versions](#versions)
-- [VersionsHistory](#versionshistory)
 - [Wallets](#wallets)
 - [Webhooks](#webhooks)
 
@@ -185,69 +185,38 @@ _Appears in:_
 
 
 
-#### BrokerConfiguration
+#### BenthosStream
 
 
 
-BrokerConfiguration defines the desired state of BrokerConfig
+BenthosStream is the Schema for the benthosstreams API
 
-_Appears in:_
-- [BrokerTopicStatus](#brokertopicstatus)
+
 
 | Field | Description |
 | --- | --- |
-| `stacks` _string array_ |  |
-| `applyOnAllStacks` _boolean_ |  |
-| `kafka` _[BrokerKafkaConfig](#brokerkafkaconfig)_ |  |
-| `nats` _[BrokerNatsConfig](#brokernatsconfig)_ |  |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `BenthosStream`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[BenthosStreamSpec](#benthosstreamspec)_ |  |
 
 
-#### BrokerKafkaConfig
+#### BenthosStreamSpec
 
 
 
-
+BenthosStreamSpec defines the desired state of BenthosStream
 
 _Appears in:_
-- [BrokerConfiguration](#brokerconfiguration)
+- [BenthosStream](#benthosstream)
 
 | Field | Description |
 | --- | --- |
-| `brokers` _string array_ |  |
-| `tls` _boolean_ |  |
-| `sasl` _[BrokerKafkaSASLConfig](#brokerkafkasaslconfig)_ |  |
+| `stack` _string_ |  |
+| `data` _string_ |  |
+| `name` _string_ |  |
 
 
-#### BrokerKafkaSASLConfig
-
-
-
-
-
-_Appears in:_
-- [BrokerKafkaConfig](#brokerkafkaconfig)
-
-| Field | Description |
-| --- | --- |
-| `username` _string_ |  |
-| `password` _string_ |  |
-| `mechanism` _string_ |  |
-| `scramSHASize` _string_ |  |
-
-
-#### BrokerNatsConfig
-
-
-
-
-
-_Appears in:_
-- [BrokerConfiguration](#brokerconfiguration)
-
-| Field | Description |
-| --- | --- |
-| `url` _string_ |  |
-| `replicas` _integer_ |  |
 
 
 #### BrokerTopic
@@ -327,8 +296,10 @@ _Appears in:_
 - [AuthClientStatus](#authclientstatus)
 - [AuthStatus](#authstatus)
 - [BenthosStatus](#benthosstatus)
+- [BenthosStreamStatus](#benthosstreamstatus)
 - [BrokerTopicConsumerStatus](#brokertopicconsumerstatus)
 - [BrokerTopicStatus](#brokertopicstatus)
+- [DatabaseStatus](#databasestatus)
 - [GatewayStatus](#gatewaystatus)
 - [HTTPAPIStatus](#httpapistatus)
 - [LedgerStatus](#ledgerstatus)
@@ -337,16 +308,17 @@ _Appears in:_
 - [PaymentsStatus](#paymentsstatus)
 - [ReconciliationStatus](#reconciliationstatus)
 - [SearchStatus](#searchstatus)
+- [SecretReferenceStatus](#secretreferencestatus)
 - [StackStatus](#stackstatus)
 - [StargateStatus](#stargatestatus)
-- [StreamStatus](#streamstatus)
+- [StatusWithConditions](#statuswithconditions)
 - [WalletsStatus](#walletsstatus)
 - [WebhooksStatus](#webhooksstatus)
 
 | Field | Description |
 | --- | --- |
 | `ready` _boolean_ |  |
-| `error` _string_ |  |
+| `info` _string_ |  |
 
 
 #### Condition
@@ -359,6 +331,7 @@ Condition contains details for one aspect of the current state of this API Resou
 
 _Appears in:_
 - [AuthStatus](#authstatus)
+- [BenthosStatus](#benthosstatus)
 - [GatewayStatus](#gatewaystatus)
 - [LedgerStatus](#ledgerstatus)
 - [ModuleStatus](#modulestatus)
@@ -367,6 +340,7 @@ _Appears in:_
 - [ReconciliationStatus](#reconciliationstatus)
 - [SearchStatus](#searchstatus)
 - [StargateStatus](#stargatestatus)
+- [StatusWithConditions](#statuswithconditions)
 - [WalletsStatus](#walletsstatus)
 - [WebhooksStatus](#webhooksstatus)
 
@@ -377,45 +351,6 @@ _Appears in:_
 | `lastTransitionTime` _[Time](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#time-v1-meta)_ | lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable. |
 | `message` _string_ | message is a human readable message indicating details about the transition. This may be an empty string. |
 | `reason` _string_ | reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty. |
-
-
-
-
-#### ConfigurationProperties
-
-
-
-
-
-_Appears in:_
-- [BrokerConfiguration](#brokerconfiguration)
-- [SettingsSpec](#settingsspec)
-- [TemporalConfiguration](#temporalconfiguration)
-
-| Field | Description |
-| --- | --- |
-| `stacks` _string array_ |  |
-| `applyOnAllStacks` _boolean_ |  |
-
-
-#### CreatedDatabase
-
-
-
-
-
-_Appears in:_
-- [DatabaseStatus](#databasestatus)
-
-| Field | Description |
-| --- | --- |
-| `port` _integer_ |  |
-| `host` _string_ |  |
-| `username` _string_ |  |
-| `password` _string_ |  |
-| `credentialsFromSecret` _string_ |  |
-| `disableSSLMode` _boolean_ |  |
-| `database` _string_ |  |
 
 
 #### Database
@@ -432,25 +367,6 @@ Database is the Schema for the databases API
 | `kind` _string_ | `Database`
 | `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
 | `spec` _[DatabaseSpec](#databasespec)_ |  |
-
-
-#### DatabaseConfiguration
-
-
-
-
-
-_Appears in:_
-- [CreatedDatabase](#createddatabase)
-
-| Field | Description |
-| --- | --- |
-| `port` _integer_ |  |
-| `host` _string_ |  |
-| `username` _string_ |  |
-| `password` _string_ |  |
-| `credentialsFromSecret` _string_ |  |
-| `disableSSLMode` _boolean_ |  |
 
 
 #### DatabaseSpec
@@ -524,39 +440,6 @@ _Appears in:_
 | --- | --- |
 | `debug` _boolean_ |  |
 | `dev` _boolean_ |  |
-
-
-#### ElasticSearchBasicAuthConfig
-
-
-
-
-
-_Appears in:_
-- [ElasticSearchConfiguration](#elasticsearchconfiguration)
-
-| Field | Description |
-| --- | --- |
-| `username` _string_ |  |
-| `password` _string_ |  |
-| `secretName` _string_ |  |
-
-
-
-
-#### ElasticSearchTLSConfig
-
-
-
-
-
-_Appears in:_
-- [ElasticSearchConfiguration](#elasticsearchconfiguration)
-
-| Field | Description |
-| --- | --- |
-| `enabled` _boolean_ |  |
-| `skipCertVerify` _boolean_ |  |
 
 
 
@@ -749,20 +632,6 @@ _Appears in:_
 | `retry` _[Duration](#duration)_ |  |
 
 
-#### MetricsSpec
-
-
-
-
-
-_Appears in:_
-- [OpenTelemetryConfiguration](#opentelemetryconfiguration)
-
-| Field | Description |
-| --- | --- |
-| `otlp` _[OtlpSpec](#otlpspec)_ |  |
-
-
 
 
 #### ModuleProperties
@@ -811,11 +680,9 @@ _Appears in:_
 | Field | Description |
 | --- | --- |
 | `ready` _boolean_ |  |
-| `error` _string_ |  |
+| `info` _string_ |  |
 | `conditions` _[Condition](#condition) array_ |  |
 | `version` _string_ |  |
-
-
 
 
 
@@ -854,25 +721,6 @@ _Appears in:_
 | `auth` _[AuthConfig](#authconfig)_ |  |
 
 
-
-
-#### OtlpSpec
-
-
-
-
-
-_Appears in:_
-- [MetricsSpec](#metricsspec)
-- [TracesSpec](#tracesspec)
-
-| Field | Description |
-| --- | --- |
-| `endpoint` _string_ |  |
-| `port` _integer_ |  |
-| `insecure` _boolean_ |  |
-| `mode` _string_ |  |
-| `resourceAttributes` _object (keys:string, values:string)_ |  |
 
 
 #### Payments
@@ -985,6 +833,39 @@ _Appears in:_
 
 
 
+#### SecretReference
+
+
+
+SecretReference is the Schema for the secretreferences API
+
+
+
+| Field | Description |
+| --- | --- |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `SecretReference`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[SecretReferenceSpec](#secretreferencespec)_ |  |
+
+
+#### SecretReferenceSpec
+
+
+
+SecretReferenceSpec defines the desired state of SecretReference
+
+_Appears in:_
+- [SecretReference](#secretreference)
+
+| Field | Description |
+| --- | --- |
+| `stack` _string_ |  |
+| `secretName` _string_ |  |
+
+
+
+
 #### Settings
 
 
@@ -1013,7 +894,6 @@ _Appears in:_
 | Field | Description |
 | --- | --- |
 | `stacks` _string array_ |  |
-| `applyOnAllStacks` _boolean_ |  |
 | `key` _string_ |  |
 | `value` _string_ |  |
 
@@ -1046,6 +926,7 @@ _Appears in:_
 - [AuthClientSpec](#authclientspec)
 - [AuthSpec](#authspec)
 - [BenthosSpec](#benthosspec)
+- [BenthosStreamSpec](#benthosstreamspec)
 - [BrokerTopicConsumerSpec](#brokertopicconsumerspec)
 - [BrokerTopicSpec](#brokertopicspec)
 - [DatabaseSpec](#databasespec)
@@ -1056,9 +937,8 @@ _Appears in:_
 - [PaymentsSpec](#paymentsspec)
 - [ReconciliationSpec](#reconciliationspec)
 - [SearchSpec](#searchspec)
+- [SecretReferenceSpec](#secretreferencespec)
 - [StargateSpec](#stargatespec)
-- [StreamSpec](#streamspec)
-- [VersionsHistorySpec](#versionshistoryspec)
 - [WalletsSpec](#walletsspec)
 - [WebhooksSpec](#webhooksspec)
 
@@ -1143,69 +1023,46 @@ _Appears in:_
 
 
 
-#### Stream
-
-
-
-Stream is the Schema for the streams API
-
-
-
-| Field | Description |
-| --- | --- |
-| `apiVersion` _string_ | `formance.com/v1beta1`
-| `kind` _string_ | `Stream`
-| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
-| `spec` _[StreamSpec](#streamspec)_ |  |
-
-
-#### StreamSpec
-
-
-
-StreamSpec defines the desired state of Stream
-
-_Appears in:_
-- [Stream](#stream)
-
-| Field | Description |
-| --- | --- |
-| `stack` _string_ |  |
-| `data` _string_ |  |
-
-
-
-
-
-
-#### TemporalTLSConfig
+#### StatusWithConditions
 
 
 
 
 
 _Appears in:_
-- [TemporalConfiguration](#temporalconfiguration)
+- [AuthStatus](#authstatus)
+- [BenthosStatus](#benthosstatus)
+- [GatewayStatus](#gatewaystatus)
+- [LedgerStatus](#ledgerstatus)
+- [ModuleStatus](#modulestatus)
+- [OrchestrationStatus](#orchestrationstatus)
+- [PaymentsStatus](#paymentsstatus)
+- [ReconciliationStatus](#reconciliationstatus)
+- [SearchStatus](#searchstatus)
+- [StargateStatus](#stargatestatus)
+- [WalletsStatus](#walletsstatus)
+- [WebhooksStatus](#webhooksstatus)
 
 | Field | Description |
 | --- | --- |
-| `crt` _string_ |  |
-| `key` _string_ |  |
-| `secretName` _string_ |  |
+| `ready` _boolean_ |  |
+| `info` _string_ |  |
+| `conditions` _[Condition](#condition) array_ |  |
 
 
-#### TracesSpec
+#### URI
 
 
 
 
 
 _Appears in:_
-- [OpenTelemetryConfiguration](#opentelemetryconfiguration)
+- [BenthosStatus](#benthosstatus)
+- [BrokerTopicStatus](#brokertopicstatus)
+- [DatabaseStatus](#databasestatus)
+- [OrchestrationStatus](#orchestrationstatus)
+- [SearchStatus](#searchstatus)
 
-| Field | Description |
-| --- | --- |
-| `otlp` _[OtlpSpec](#otlpspec)_ |  |
 
 
 #### Versions
@@ -1222,40 +1079,6 @@ Versions is the Schema for the versions API
 | `kind` _string_ | `Versions`
 | `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
 | `spec` _object (keys:string, values:string)_ |  |
-
-
-#### VersionsHistory
-
-
-
-VersionsHistory is the Schema for the versionshistories API
-
-
-
-| Field | Description |
-| --- | --- |
-| `apiVersion` _string_ | `formance.com/v1beta1`
-| `kind` _string_ | `VersionsHistory`
-| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
-| `spec` _[VersionsHistorySpec](#versionshistoryspec)_ |  |
-
-
-#### VersionsHistorySpec
-
-
-
-VersionsHistorySpec defines the desired state of VersionsHistory
-
-_Appears in:_
-- [VersionsHistory](#versionshistory)
-
-| Field | Description |
-| --- | --- |
-| `stack` _string_ |  |
-| `module` _string_ |  |
-| `version` _string_ |  |
-
-
 
 
 #### Wallets

@@ -2,7 +2,7 @@ package databases
 
 import (
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/settings"
@@ -64,6 +64,5 @@ func PostgresEnvVarsWithPrefix(database *v1beta1.Database, prefix string) []core
 }
 
 func isDisabledSSLMode(url *v1beta1.URI) bool {
-	spew.Dump(url)
 	return settings.IsTrue(url.Query().Get("disableSSLMode"))
 }

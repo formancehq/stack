@@ -18,18 +18,20 @@ package databases
 
 import (
 	"fmt"
-	"github.com/formancehq/operator/internal/resources/secretreferences"
-	"github.com/pkg/errors"
-	v1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/types"
 	"reflect"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
+	"github.com/formancehq/operator/internal/resources/secretreferences"
 	"github.com/formancehq/operator/internal/resources/settings"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
+	"github.com/pkg/errors"
 	batchv1 "k8s.io/api/batch/v1"
+	v1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
 )
 
 const (
@@ -40,11 +42,39 @@ const (
 //+kubebuilder:rbac:groups=formance.com,resources=databases/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=databases/finalizers,verbs=update
 
-func Reconcile(ctx core.Context, _ *v1beta1.Stack, database *v1beta1.Database) error {
+func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Database) error {
 
 	databaseURL, err := settings.RequireURL(ctx, database.Spec.Stack, "postgres", database.Spec.Service, "uri")
 	if err != nil {
 		return errors.Wrap(err, "retrieving database configuration")
+	}
+
+	// notes(gfyrag): We attach the database object to the stack as owner
+	// this way, even if the controller is removed, the Database object will not be removed until
+	// the stack is removed. This allows us to remove a module and re-add it later if we wants.
+	hasOwnerReferenceOnStack, err := core.HasOwnerReference(ctx, stack, database)
+	if err != nil {
+		return err
+	}
+	if !hasOwnerReferenceOnStack {
+		patch := client.MergeFrom(database.DeepCopy())
+
+		gvk, err := apiutil.GVKForObject(stack, ctx.GetScheme())
+		if err != nil {
+			return err
+		}
+
+		database.OwnerReferences = append(database.OwnerReferences, metav1.OwnerReference{
+			APIVersion:         gvk.GroupVersion().String(),
+			Kind:               gvk.Kind,
+			UID:                stack.GetUID(),
+			Name:               stack.GetName(),
+			BlockOwnerDeletion: pointer.For(true),
+		})
+
+		if err := ctx.GetClient().Patch(ctx, database, patch); err != nil {
+			return err
+		}
 	}
 
 	switch {

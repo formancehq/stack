@@ -124,7 +124,7 @@ spec:
                   - type
                   type: object
                 type: array
-              error:
+              info:
                 type: string
               ready:
                 type: boolean

@@ -2,11 +2,12 @@ package webhooks
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
 	"golang.org/x/mod/semver"
-	"strings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"

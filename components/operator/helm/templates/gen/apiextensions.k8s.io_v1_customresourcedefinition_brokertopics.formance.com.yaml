@@ -23,9 +23,9 @@ spec:
       jsonPath: .status.ready
       name: Ready
       type: string
-    - description: Error
-      jsonPath: .status.error
-      name: Error
+    - description: Info
+      jsonPath: .status.info
+      name: Info
       type: string
     name: v1beta1
     schema:
@@ -57,54 +57,12 @@ spec:
           status:
             description: BrokerTopicStatus defines the observed state of BrokerTopic
             properties:
-              configuration:
-                description: BrokerConfiguration defines the desired state of BrokerConfig
-                properties:
-                  applyOnAllStacks:
-                    type: boolean
-                  kafka:
-                    properties:
-                      brokers:
-                        items:
-                          type: string
-                        type: array
-                      sasl:
-                        properties:
-                          mechanism:
-                            type: string
-                          password:
-                            type: string
-                          scramSHASize:
-                            type: string
-                          username:
-                            type: string
-                        required:
-                        - mechanism
-                        - scramSHASize
-                        type: object
-                      tls:
-                        type: boolean
-                    required:
-                    - brokers
-                    type: object
-                  nats:
-                    properties:
-                      replicas:
-                        type: integer
-                      url:
-                        type: string
-                    required:
-                    - url
-                    type: object
-                  stacks:
-                    items:
-                      type: string
-                    type: array
-                type: object
-              error:
+              info:
                 type: string
               ready:
                 type: boolean
+              uri:
+                type: string
             type: object
         type: object
     served: true

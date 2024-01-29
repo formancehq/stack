@@ -2,6 +2,8 @@ package secretreferences
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
@@ -13,7 +15,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
-	"strings"
 )
 
 func init() {

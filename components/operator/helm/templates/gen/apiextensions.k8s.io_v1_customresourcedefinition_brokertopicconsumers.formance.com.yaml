@@ -23,9 +23,9 @@ spec:
       jsonPath: .status.ready
       name: Ready
       type: string
-    - description: Error
-      jsonPath: .status.error
-      name: Error
+    - description: Info
+      jsonPath: .status.info
+      name: Info
       type: string
     name: v1beta1
     schema:
@@ -61,7 +61,7 @@ spec:
           status:
             description: BrokerTopicConsumerStatus defines the observed state of BrokerTopicConsumer
             properties:
-              error:
+              info:
                 type: string
               ready:
                 type: boolean

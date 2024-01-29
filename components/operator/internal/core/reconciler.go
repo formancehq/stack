@@ -2,11 +2,12 @@ package core
 
 import (
 	"context"
+	"reflect"
+	"strings"
+
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/runtime"
-	"reflect"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
-	"strings"
 
 	"k8s.io/client-go/util/workqueue"
 
@@ -54,6 +55,7 @@ type ReconcilerOptions[T client.Object] struct {
 	Owns       map[client.Object][]builder.OwnsOption
 	Watchers   map[client.Object]ReconcilerOptionsWatch
 	Finalizers map[string]Finalizer[T]
+	Raws       []func(Context, *builder.Builder) error
 }
 
 type ReconcilerOption[T client.Object] func(*ReconcilerOptions[T])
@@ -61,6 +63,12 @@ type ReconcilerOption[T client.Object] func(*ReconcilerOptions[T])
 func WithOwn[T client.Object](v client.Object, opts ...builder.OwnsOption) ReconcilerOption[T] {
 	return func(options *ReconcilerOptions[T]) {
 		options.Owns[v] = opts
+	}
+}
+
+func WithRaw[T client.Object](fn func(Context, *builder.Builder) error) ReconcilerOption[T] {
+	return func(options *ReconcilerOptions[T]) {
+		options.Raws = append(options.Raws, fn)
 	}
 }
 
@@ -195,6 +203,11 @@ func WithReconciler[T client.Object](controller ObjectController[T], opts ...Rec
 		for object, watch := range options.Watchers {
 			b = b.Watches(object, watch.Handler(mgr, b, t))
 		}
+		for _, raw := range options.Raws {
+			if err := raw(NewContext(mgr.GetClient(), mgr.GetScheme(), mgr.GetPlatform(), context.Background()), b); err != nil {
+				return err
+			}
+		}
 
 		return b.Complete(reconcile.Func(reconcileObject(mgr, controller, options.Finalizers)))
 	}
@@ -222,6 +235,9 @@ func reconcileObject[T client.Object](mgr Manager, controller ObjectController[T
 				}
 
 				if err := f(reconcileContext, object); err != nil {
+					if IsApplicationError(err) {
+						return reconcile.Result{}, nil
+					}
 					return reconcile.Result{}, errors.Wrapf(err, "executing finalizer '%s'", name)
 				}
 
@@ -259,7 +275,9 @@ func reconcileObject[T client.Object](mgr Manager, controller ObjectController[T
 		var reconcilerError error
 		err := controller(reconcileContext, object)
 		if err != nil {
-			reconcilerError = err
+			if !IsApplicationError(err) {
+				reconcilerError = err
+			}
 		}
 
 		if err := mgr.GetClient().Status().Patch(ctx, object, patch); err != nil {

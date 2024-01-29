@@ -79,12 +79,8 @@ var _ = Describe("OrchestrationController", func() {
 			Expect(Create(orchestration)).To(Succeed())
 		})
 		AfterEach(func() {
-			Expect(Delete(auth)).To(Succeed())
-			Expect(Delete(gateway)).To(Succeed())
-			Expect(Delete(databaseSettings)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
-			Expect(Delete(ledger)).To(Succeed())
-			Expect(Delete(orchestration)).To(Succeed())
+			Expect(Delete(databaseSettings)).To(Succeed())
 			Expect(Delete(brokerDSNSettings)).To(Succeed())
 			Expect(Delete(temporalDSNSettings)).To(Succeed())
 		})

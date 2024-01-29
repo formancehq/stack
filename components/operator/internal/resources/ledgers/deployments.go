@@ -2,9 +2,10 @@ package ledgers
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/api/equality"
-	"strconv"
 
 	"github.com/formancehq/operator/internal/resources/settings"
 

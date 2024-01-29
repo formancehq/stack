@@ -74,10 +74,7 @@ var _ = Describe("WalletsController", func() {
 			)).To(Succeed())
 		})
 		AfterEach(func() {
-			Expect(Delete(
-				stack, databaseSettings, resourceLimitsSettings, resourceRequestsSettings,
-				auth, gateway, ledger, wallets,
-			)).To(Succeed())
+			Expect(Delete(stack, databaseSettings, resourceLimitsSettings, resourceRequestsSettings)).To(Succeed())
 		})
 		It("Should add an owner reference on the stack", func() {
 			Eventually(func(g Gomega) bool {

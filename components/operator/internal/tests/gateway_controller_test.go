@@ -2,6 +2,7 @@ package tests_test
 
 import (
 	"fmt"
+
 	"github.com/formancehq/operator/internal/core"
 
 	"github.com/formancehq/operator/internal/resources/settings"
@@ -62,7 +63,6 @@ var _ = Describe("GatewayController", func() {
 		AfterEach(func() {
 			Expect(Delete(stack)).To(BeNil())
 			Expect(Delete(httpAPI)).To(Succeed())
-			Expect(Delete(gateway)).To(Succeed())
 		})
 		It("Should add an owner reference on the stack", func() {
 			Eventually(func(g Gomega) bool {

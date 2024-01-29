@@ -23,17 +23,13 @@ spec:
       jsonPath: .status.ready
       name: Ready
       type: string
-    - description: Bound to database configuration
-      jsonPath: .status.boundTo
-      name: Bound to
-      type: string
     - description: Is the databse configuration out of sync
       jsonPath: .status.outOfSync
       name: Out of sync
       type: string
-    - description: Error
-      jsonPath: .status.error
-      name: Error
+    - description: Info
+      jsonPath: .status.info
+      name: Info
       type: string
     name: v1beta1
     schema:
@@ -65,33 +61,16 @@ spec:
           status:
             description: DatabaseStatus defines the observed state of Database
             properties:
-              configuration:
-                properties:
-                  credentialsFromSecret:
-                    type: string
-                  database:
-                    type: string
-                  disableSSLMode:
-                    type: boolean
-                  host:
-                    type: string
-                  password:
-                    type: string
-                  port:
-                    type: integer
-                  username:
-                    type: string
-                required:
-                - database
-                - host
-                - port
-                type: object
-              error:
+              database:
+                type: string
+              info:
                 type: string
               outOfSync:
                 type: boolean
               ready:
                 type: boolean
+              uri:
+                type: string
             type: object
         type: object
     served: true

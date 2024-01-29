@@ -40,7 +40,6 @@ var _ = Describe("AuthController", func() {
 			Expect(Create(auth)).To(Succeed())
 		})
 		AfterEach(func() {
-			Expect(Delete(auth)).To(Succeed())
 			Expect(Delete(databaseSettings)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 		})

@@ -2,9 +2,10 @@ package orchestrations
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/formancehq/operator/internal/resources/secretreferences"
 	appsv1 "k8s.io/api/apps/v1"
-	"strings"
 
 	"github.com/formancehq/operator/internal/resources/settings"
 

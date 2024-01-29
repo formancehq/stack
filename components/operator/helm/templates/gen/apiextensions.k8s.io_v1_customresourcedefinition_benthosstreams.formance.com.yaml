@@ -4,14 +4,14 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.9.2
   creationTimestamp: null
-  name: versionshistories.formance.com
+  name: benthosstreams.formance.com
 spec:
   group: formance.com
   names:
-    kind: VersionsHistory
-    listKind: VersionsHistoryList
-    plural: versionshistories
-    singular: versionshistory
+    kind: BenthosStream
+    listKind: BenthosStreamList
+    plural: benthosstreams
+    singular: benthosstream
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -22,7 +22,7 @@ spec:
     name: v1beta1
     schema:
       openAPIV3Schema:
-        description: VersionsHistory is the Schema for the versionshistories API
+        description: BenthosStream is the Schema for the benthosstreams API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -37,20 +37,25 @@ spec:
           metadata:
             type: object
           spec:
-            description: VersionsHistorySpec defines the desired state of VersionsHistory
+            description: BenthosStreamSpec defines the desired state of BenthosStream
             properties:
-              module:
+              data:
+                type: string
+              name:
                 type: string
               stack:
                 type: string
-              version:
-                type: string
             required:
-            - module
-            - version
+            - data
+            - name
             type: object
           status:
-            description: VersionsHistoryStatus defines the observed state of VersionsHistory
+            description: BenthosStreamStatus defines the observed state of BenthosStream
+            properties:
+              info:
+                type: string
+              ready:
+                type: boolean
             type: object
         type: object
     served: true

@@ -13,6 +13,12 @@ import (
 
 type beOwnedByOption func(matcher *beOwnedByMatcher)
 
+func WithBlockOwnerDeletion() beOwnedByOption {
+	return func(matcher *beOwnedByMatcher) {
+		matcher.blockOwnerDeletion = true
+	}
+}
+
 type beOwnedByMatcher struct {
 	owner              client.Object
 	controller         bool
