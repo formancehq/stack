@@ -8,7 +8,6 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // +kubebuilder:rbac:groups=networking.k8s.io,resources=ingresses,verbs=get;list;watch;create;update;patch;delete
@@ -23,18 +22,8 @@ import (
 // +kubebuilder:rbac:groups=formance.com,resources=stacks,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=formance.com,resources=stacks/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=formance.com,resources=stacks/finalizers,verbs=update
-// +kubebuilder:rbac:groups=formance.com,resources=settings,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=formance.com,resources=settings/status,verbs=get;update;patch
-// +kubebuilder:rbac:groups=formance.com,resources=settings/finalizers,verbs=update
 
 func Reconcile(ctx Context, stack *v1beta1.Stack) error {
-
-	if stack.Spec.Disabled {
-		ns := &corev1.Namespace{}
-		ns.SetName(stack.Name)
-		return client.IgnoreNotFound(ctx.GetClient().Delete(ctx, ns))
-	}
-
 	_, _, err := CreateOrUpdate(ctx, types.NamespacedName{
 		Name: stack.Name,
 	},

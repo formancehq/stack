@@ -72,7 +72,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, dat
 		return nil, err
 	}
 
-	return deployments.CreateOrUpdate(ctx, auth, "auth",
+	return deployments.CreateOrUpdate(ctx, stack, auth, "auth",
 		deployments.WithMatchingLabels("auth"),
 		func(t *appsv1.Deployment) error {
 			t.Spec.Template.Annotations = MergeMaps(t.Spec.Template.Annotations, map[string]string{

@@ -8,7 +8,6 @@ import (
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"k8s.io/apimachinery/pkg/api/errors"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -109,12 +108,9 @@ var _ = Describe("BrokerTopicConsumer", func() {
 							Expect(Delete(brokerTopicConsumer2)).To(Succeed())
 						})
 						It("Should completely remove the BrokerTopic object", func() {
-							Eventually(func(g Gomega) bool {
-								t := &v1beta1.BrokerTopic{}
-								err := Get(core.GetResourceName(core.GetObjectName(stack.Name, brokerTopicConsumer.Spec.Service)), t)
-
-								return errors.IsNotFound(err)
-							}).Should(BeTrue())
+							Eventually(func(g Gomega) error {
+								return LoadResource("", core.GetObjectName(stack.Name, brokerTopicConsumer.Spec.Service), t)
+							}).Should(BeNotFound())
 						})
 					})
 				})

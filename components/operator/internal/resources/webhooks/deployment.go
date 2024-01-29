@@ -3,7 +3,7 @@ package webhooks
 import (
 	"fmt"
 	"github.com/formancehq/operator/internal/resources/settings"
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
 	"golang.org/x/mod/semver"
 	"strings"
@@ -74,12 +74,12 @@ func createAPIDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1bet
 	}
 	if withWorker {
 		env = append(env, core.Env("WORKER", "true"))
-		env = append(env, core.Env("KAFKA_TOPICS", strings.Join(collectionutils.Map(consumers, func(from *v1beta1.BrokerTopicConsumer) string {
+		env = append(env, core.Env("KAFKA_TOPICS", strings.Join(Map(consumers, func(from *v1beta1.BrokerTopicConsumer) string {
 			return fmt.Sprintf("%s-%s", stack.Name, from.Spec.Service)
 		}), " ")))
 	}
 
-	_, err = deployments.CreateOrUpdate(ctx, webhooks, "webhooks",
+	_, err = deployments.CreateOrUpdate(ctx, stack, webhooks, "webhooks",
 		deployments.WithMatchingLabels("webhooks"),
 		deployments.WithContainers(v1.Container{
 			Name:          "api",
@@ -106,11 +106,11 @@ func createWorkerDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1
 	}
 
 	env = append(env, core.Env("WORKER", "true"))
-	env = append(env, core.Env("KAFKA_TOPICS", strings.Join(collectionutils.Map(consumers, func(from *v1beta1.BrokerTopicConsumer) string {
+	env = append(env, core.Env("KAFKA_TOPICS", strings.Join(Map(consumers, func(from *v1beta1.BrokerTopicConsumer) string {
 		return fmt.Sprintf("%s-%s", stack.Name, from.Spec.Service)
 	}), " ")))
 
-	_, err = deployments.CreateOrUpdate(ctx, webhooks, "webhooks-worker",
+	_, err = deployments.CreateOrUpdate(ctx, stack, webhooks, "webhooks-worker",
 		deployments.WithMatchingLabels("webhooks-worker"),
 		deployments.WithContainers(v1.Container{
 			Name:  "worker",

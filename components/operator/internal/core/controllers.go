@@ -53,9 +53,6 @@ func ForStackDependency[T v1beta1.Dependent](ctrl StackDependentObjectController
 				return err
 			}
 		} else {
-			if stack.Spec.Disabled {
-				return NewStackDisabledError()
-			}
 			if stack.GetLabels()[SkipLabel] == "true" {
 				return nil
 			}

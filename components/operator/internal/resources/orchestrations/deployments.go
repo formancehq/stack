@@ -132,7 +132,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 		return err
 	}
 
-	_, err = deployments.CreateOrUpdate(ctx, orchestration, "orchestration",
+	_, err = deployments.CreateOrUpdate(ctx, stack, orchestration, "orchestration",
 		secretreferences.Annotate[*appsv1.Deployment](secretReference),
 		deployments.WithMatchingLabels("orchestration"),
 		deployments.WithContainers(v1.Container{

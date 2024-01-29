@@ -42,7 +42,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, wallets *v1beta1.W
 		return err
 	}
 
-	_, err = deployments.CreateOrUpdate(ctx, wallets, "wallets",
+	_, err = deployments.CreateOrUpdate(ctx, stack, wallets, "wallets",
 		deployments.WithContainers(v1.Container{
 			Name:          "wallets",
 			Args:          []string{"serve"},

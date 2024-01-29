@@ -11,6 +11,10 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 )
 
+// +kubebuilder:rbac:groups=formance.com,resources=settings,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=formance.com,resources=settings/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=formance.com,resources=settings/finalizers,verbs=update
+
 func init() {
 	core.Init(
 		core.WithSimpleIndex[*v1beta1.Settings]("keylen", func(t *v1beta1.Settings) string {

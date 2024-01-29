@@ -81,7 +81,7 @@ func createFullDeployment(ctx core.Context, stack *v1beta1.Stack,
 		env = append(env, core.Env("PUBLISHER_TOPIC_MAPPING", "*:"+core.GetObjectName(stack.Name, "payments")))
 	}
 
-	_, err = deployments.CreateOrUpdate(ctx, payments, "payments",
+	_, err = deployments.CreateOrUpdate(ctx, stack, payments, "payments",
 		deployments.WithMatchingLabels("payments"),
 		deployments.WithContainers(v1.Container{
 			Name:          "api",
@@ -118,7 +118,7 @@ func createReadDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1be
 		return err
 	}
 
-	_, err = deployments.CreateOrUpdate(ctx, payments, "payments-read",
+	_, err = deployments.CreateOrUpdate(ctx, stack, payments, "payments-read",
 		deployments.WithMatchingLabels("payments-read"),
 		deployments.WithContainers(v1.Container{
 			Name:          "api",
@@ -168,7 +168,7 @@ func createConnectorsDeployment(ctx core.Context, stack *v1beta1.Stack, payments
 		return err
 	}
 
-	_, err = deployments.CreateOrUpdate(ctx, payments, "payments-connectors",
+	_, err = deployments.CreateOrUpdate(ctx, stack, payments, "payments-connectors",
 		deployments.WithMatchingLabels("payments-connectors"),
 		deployments.WithContainers(v1.Container{
 			Name:  "connectors",
@@ -210,7 +210,7 @@ func createGateway(ctx core.Context, stack *v1beta1.Stack, p *v1beta1.Payments) 
 	env = append(env, otlpEnv...)
 	env = append(env, core.GetDevEnvVars(stack, p)...)
 
-	_, err = deployments.CreateOrUpdate(ctx, p, "payments",
+	_, err = deployments.CreateOrUpdate(ctx, stack, p, "payments",
 		settings.ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", env),
 		deployments.WithMatchingLabels("payments"),
 	)

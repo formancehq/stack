@@ -71,7 +71,7 @@ func installLedgerSingleInstance(ctx core.Context, stack *v1beta1.Stack,
 		}
 	}
 
-	if err := createDeployment(ctx, ledger, "ledger", *container,
+	if err := createDeployment(ctx, stack, ledger, "ledger", *container,
 		deployments.WithReplicas(1),
 		setInitContainer(database, version, v2),
 	); err != nil {
@@ -112,7 +112,7 @@ func installLedgerMonoWriterMultipleReader(ctx core.Context, stack *v1beta1.Stac
 			return err
 		}
 
-		if err := createDeployment(ctx, ledger, name, container, mutators...); err != nil {
+		if err := createDeployment(ctx, stack, ledger, name, container, mutators...); err != nil {
 			return err
 		}
 
@@ -174,14 +174,14 @@ func uninstallLedgerMonoWriterMultipleReader(ctx core.Context, stack *v1beta1.St
 	return nil
 }
 
-func createDeployment(ctx core.Context, ledger *v1beta1.Ledger,
+func createDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger,
 	name string, container corev1.Container, mutators ...core.ObjectMutator[*v1.Deployment]) error {
 	mutators = append([]core.ObjectMutator[*v1.Deployment]{
 		deployments.WithContainers(container),
 		deployments.WithMatchingLabels(name),
 	}, mutators...)
 
-	_, err := deployments.CreateOrUpdate(ctx, ledger, name, mutators...)
+	_, err := deployments.CreateOrUpdate(ctx, stack, ledger, name, mutators...)
 	return err
 }
 
@@ -286,7 +286,7 @@ func createGatewayDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1b
 	env = append(env, otlpEnv...)
 	env = append(env, core.GetDevEnvVars(stack, ledger)...)
 
-	_, err = deployments.CreateOrUpdate(ctx, ledger, "ledger-gateway",
+	_, err = deployments.CreateOrUpdate(ctx, stack, ledger, "ledger-gateway",
 		settings.ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", env),
 		deployments.WithMatchingLabels("ledger"),
 	)

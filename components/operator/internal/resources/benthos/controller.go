@@ -276,7 +276,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 		return streams[i].Name < streams[j].Name
 	})
 
-	_, err = deployments.CreateOrUpdate(ctx, b, "benthos",
+	_, err = deployments.CreateOrUpdate(ctx, stack, b, "benthos",
 		secretreferences.Annotate[*appsv1.Deployment](secretReference),
 		deployments.WithMatchingLabels("benthos"),
 		deployments.WithInitContainers(b.Spec.InitContainers...),

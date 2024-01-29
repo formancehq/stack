@@ -2,6 +2,7 @@ package deployments
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/formancehq/operator/internal/resources/settings"
 
@@ -63,7 +64,7 @@ func WithVolumes(volumes ...corev1.Volume) func(t *appsv1.Deployment) error {
 	}
 }
 
-func CreateOrUpdate(ctx core.Context, owner interface {
+func CreateOrUpdate(ctx core.Context, stack *v1beta1.Stack, owner interface {
 	client.Object
 	GetStack() string
 	SetCondition(condition v1beta1.Condition)
@@ -98,6 +99,23 @@ func CreateOrUpdate(ctx core.Context, owner interface {
 			}
 			container.Resources = mergeResourceRequirements(container.Resources, *resourceRequirements)
 			t.Spec.Template.Spec.Containers[ind] = container
+		}
+		if stack.Spec.Disabled {
+			if t.Spec.Replicas != nil {
+				// Store the number of replicas to be able to restore it
+				// if the stack is re-enabled
+				t.Annotations["replicas"] = fmt.Sprint(*t.Spec.Replicas)
+			}
+			t.Spec.Replicas = pointer.For(int32(0))
+		} else {
+			// Restore the number of replicas previously stored if the stack was disabled
+			if replicasStr := t.Annotations["replicas"]; replicasStr != "" {
+				replicas, err := strconv.ParseInt(replicasStr, 10, 32)
+				if err != nil {
+					return err
+				}
+				t.Spec.Replicas = pointer.For(int32(replicas))
+			}
 		}
 
 		return nil
