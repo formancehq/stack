@@ -296,6 +296,23 @@ func registerMigrationsV1(ctx context.Context, migrator *migrations.Migrator) {
 				return nil
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				_, err := tx.Exec(`
+					ALTER TYPE "public".payment_status ADD VALUE IF NOT EXISTS 'EXPIRED';
+					ALTER TYPE "public".payment_status ADD VALUE IF NOT EXISTS 'REFUNDED';
+					ALTER TYPE "public".payment_status ADD VALUE IF NOT EXISTS 'REFUNDED_FAILURE';
+					ALTER TYPE "public".payment_status ADD VALUE IF NOT EXISTS 'DISPUTE';
+					ALTER TYPE "public".payment_status ADD VALUE IF NOT EXISTS 'DISPUTE_WON';
+					ALTER TYPE "public".payment_status ADD VALUE IF NOT EXISTS 'DISPUTE_LOST';
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
 	)
 }
 

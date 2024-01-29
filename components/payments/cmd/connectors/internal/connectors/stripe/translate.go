@@ -2,6 +2,7 @@ package stripe
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"math/big"
 	"runtime/debug"
@@ -683,7 +684,7 @@ func createBatchElement(
 			return ingestion.PaymentBatchElement{}, false
 		}
 
-		transactionCurrency := strings.ToUpper(string(balanceTransaction.Source.Refund.Charge.Currency))
+		transactionCurrency := strings.ToUpper(string(balanceTransaction.Source.Dispute.Charge.Currency))
 		_, ok := supportedCurrenciesWithDecimal[transactionCurrency]
 		if !ok {
 			return ingestion.PaymentBatchElement{}, false
@@ -700,6 +701,10 @@ func createBatchElement(
 			paymentStatus = models.PaymentStatusPending
 		}
 
+		fmt.Println("TOTO")
+		fmt.Println(balanceTransaction.ID, balanceTransaction.Source.Dispute.Status)
+		fmt.Println("TOTO 2")
+
 		payment = &models.Payment{
 			ID: models.PaymentID{
 				PaymentReference: models.PaymentReference{
@@ -712,7 +717,7 @@ func createBatchElement(
 			ConnectorID:   connectorID,
 			Type:          models.PaymentTypePayIn,
 			Status:        paymentStatus, // Dispute is occuring, we don't know the outcome yet
-			Amount:        big.NewInt(balanceTransaction.Source.Dispute.Charge.Amount - balanceTransaction.Source.Refund.Charge.AmountRefunded),
+			Amount:        big.NewInt(balanceTransaction.Source.Dispute.Charge.Amount - balanceTransaction.Source.Dispute.Charge.AmountRefunded),
 			InitialAmount: big.NewInt(balanceTransaction.Source.Dispute.Charge.Amount),
 			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, transactionCurrency),
 			RawData:       rawData,
