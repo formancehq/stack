@@ -15,6 +15,7 @@ import (
 
 type bankAccountResponse struct {
 	ID            string            `json:"id"`
+	Name          string            `json:"name"`
 	CreatedAt     time.Time         `json:"createdAt"`
 	Country       string            `json:"country"`
 	ConnectorID   string            `json:"connectorID"`
@@ -63,6 +64,7 @@ func createBankAccountHandler(
 
 		data := &bankAccountResponse{
 			ID:          bankAccount.ID.String(),
+			Name:        bankAccount.Name,
 			CreatedAt:   bankAccount.CreatedAt,
 			Country:     bankAccount.Country,
 			ConnectorID: bankAccountRequest.ConnectorID,
