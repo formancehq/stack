@@ -1612,11 +1612,14 @@ components:
       type: object
       required:
         - id
+        - name
         - createdAt
         - country
         - connectorID
       properties:
         id:
+          type: string
+        name:
           type: string
         createdAt:
           type: string

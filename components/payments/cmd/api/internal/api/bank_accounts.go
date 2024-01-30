@@ -13,6 +13,7 @@ import (
 
 type bankAccountResponse struct {
 	ID            string            `json:"id"`
+	Name          string            `json:"name"`
 	CreatedAt     time.Time         `json:"createdAt"`
 	Country       string            `json:"country"`
 	ConnectorID   string            `json:"connectorID"`
@@ -45,6 +46,7 @@ func listBankAccountsHandler(b backend.Backend) http.HandlerFunc {
 		for i := range ret {
 			data[i] = &bankAccountResponse{
 				ID:          ret[i].ID.String(),
+				Name:        ret[i].Name,
 				CreatedAt:   ret[i].CreatedAt,
 				Country:     ret[i].Country,
 				ConnectorID: ret[i].ConnectorID.String(),
@@ -93,6 +95,7 @@ func readBankAccountHandler(b backend.Backend) http.HandlerFunc {
 
 		data := &bankAccountResponse{
 			ID:            account.ID.String(),
+			Name:          account.Name,
 			CreatedAt:     account.CreatedAt,
 			Country:       account.Country,
 			ConnectorID:   account.ConnectorID.String(),

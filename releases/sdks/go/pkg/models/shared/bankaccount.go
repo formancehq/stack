@@ -16,6 +16,7 @@ type BankAccount struct {
 	Iban          *string           `json:"iban,omitempty"`
 	ID            string            `json:"id"`
 	Metadata      map[string]string `json:"metadata,omitempty"`
+	Name          string            `json:"name"`
 	Provider      *string           `json:"provider,omitempty"`
 	SwiftBicCode  *string           `json:"swiftBicCode,omitempty"`
 }
@@ -85,6 +86,13 @@ func (o *BankAccount) GetMetadata() map[string]string {
 		return nil
 	}
 	return o.Metadata
+}
+
+func (o *BankAccount) GetName() string {
+	if o == nil {
+		return ""
+	}
+	return o.Name
 }
 
 func (o *BankAccount) GetProvider() *string {

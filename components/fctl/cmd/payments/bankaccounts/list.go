@@ -113,6 +113,7 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 	tableData := fctl.Map(c.store.Cursor.Data, func(bc shared.BankAccount) []string {
 		return []string{
 			bc.ID,
+			bc.Name,
 			bc.CreatedAt.Format(time.RFC3339),
 			bc.Country,
 			string(bc.ConnectorID),
@@ -125,7 +126,7 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 			}(),
 		}
 	})
-	tableData = fctl.Prepend(tableData, []string{"ID", "CreatedAt", "Country", "ConnectorID", "Provider"})
+	tableData = fctl.Prepend(tableData, []string{"ID", "Name", "CreatedAt", "Country", "ConnectorID", "Provider"})
 	return pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).

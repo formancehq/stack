@@ -184,6 +184,7 @@ func TestListBankAccounts(t *testing.T) {
 			expectedBankAccountsResponse := []*bankAccountResponse{
 				{
 					ID:          listBankAccountsResponse[0].ID.String(),
+					Name:        listBankAccountsResponse[0].Name,
 					CreatedAt:   listBankAccountsResponse[0].CreatedAt,
 					Country:     listBankAccountsResponse[0].Country,
 					ConnectorID: listBankAccountsResponse[0].ConnectorID.String(),
@@ -192,6 +193,7 @@ func TestListBankAccounts(t *testing.T) {
 				},
 				{
 					ID:          listBankAccountsResponse[1].ID.String(),
+					Name:        listBankAccountsResponse[1].Name,
 					CreatedAt:   listBankAccountsResponse[1].CreatedAt,
 					Country:     listBankAccountsResponse[1].Country,
 					ConnectorID: listBankAccountsResponse[1].ConnectorID.String(),
@@ -333,6 +335,7 @@ func TestGetBankAccount(t *testing.T) {
 
 			expectedBankAccountResponse := &bankAccountResponse{
 				ID:            getBankAccountResponse.ID.String(),
+				Name:          getBankAccountResponse.Name,
 				CreatedAt:     getBankAccountResponse.CreatedAt,
 				Country:       getBankAccountResponse.Country,
 				ConnectorID:   getBankAccountResponse.ConnectorID.String(),
