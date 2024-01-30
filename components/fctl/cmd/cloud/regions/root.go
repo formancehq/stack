@@ -1,6 +1,7 @@
 package regions
 
 import (
+	"github.com/formancehq/fctl/cmd/cloud/regions/versions"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
 )
@@ -14,6 +15,7 @@ func NewCommand() *cobra.Command {
 			NewShowCommand(),
 			NewCreateCommand(),
 			NewDeleteCommand(),
+			versions.NewCommand(),
 		),
 	)
 }
