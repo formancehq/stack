@@ -2,8 +2,6 @@ package gateways
 
 import (
 	"fmt"
-	"sort"
-
 	"github.com/formancehq/operator/internal/resources/settings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -13,10 +11,6 @@ import (
 
 func CreateCaddyfile(ctx core.Context, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway, httpAPIs []*v1beta1.HTTPAPI, auth *v1beta1.Auth, auditTopic *v1beta1.BrokerTopic) (string, error) {
-
-	sort.Slice(httpAPIs, func(i, j int) bool {
-		return httpAPIs[i].Spec.Name < httpAPIs[j].Spec.Name
-	})
 
 	data := map[string]any{
 		"Services": collectionutils.Map(httpAPIs, func(from *v1beta1.HTTPAPI) v1beta1.HTTPAPISpec {

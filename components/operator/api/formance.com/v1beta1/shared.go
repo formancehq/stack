@@ -3,11 +3,12 @@ package v1beta1
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
+
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"golang.org/x/mod/semver"
 	"k8s.io/apimachinery/pkg/api/equality"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"net/url"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -191,6 +192,12 @@ type Object interface {
 	SetReady(bool)
 	IsReady() bool
 	SetError(string)
+}
+
+// +kubebuilder:object:generate=false
+type Resource interface {
+	Dependent
+	isResource()
 }
 
 // +k8s:openapi-gen=true

@@ -3,10 +3,12 @@ package stacks
 import (
 	"context"
 	"fmt"
+	"reflect"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
+	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"reflect"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
@@ -31,6 +33,9 @@ import (
 // +kubebuilder:rbac:groups=formance.com,resources=stacks,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=formance.com,resources=stacks/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=formance.com,resources=stacks/finalizers,verbs=update
+// +kubebuilder:rbac:groups=formance.com,resources=versions,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=formance.com,resources=versions/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=formance.com,resources=versions/finalizers,verbs=update
 
 func Reconcile(ctx Context, stack *v1beta1.Stack) error {
 	_, _, err := CreateOrUpdate[*corev1.Namespace](ctx, types.NamespacedName{
@@ -48,6 +53,27 @@ func Clean(ctx Context, t *v1beta1.Stack) error {
 	logger = logger.WithValues("stack", t.Name)
 	logger.Info("Clean stack")
 
+	if err := deleteModules(ctx, t, logger); err != nil {
+		return err
+	}
+
+	if err := deleteResources(ctx, t, logger); err != nil {
+		return err
+	}
+
+	logger.Info("All dependencies removed, remove namespace")
+	ns := &corev1.Namespace{}
+	ns.SetName(t.Name)
+	if err := ctx.GetClient().Delete(ctx, ns); err != nil {
+		return err
+	}
+
+	logger.Info("Stack cleaned.")
+
+	return nil
+}
+
+func deleteModules(ctx Context, stack *v1beta1.Stack, logger logr.Logger) error {
 	stillExistingModules := false
 	for _, rtype := range ctx.GetScheme().AllKnownTypes() {
 		v := reflect.New(rtype).Interface()
@@ -64,7 +90,7 @@ func Clean(ctx Context, t *v1beta1.Stack) error {
 		l := &unstructured.UnstructuredList{}
 		l.SetGroupVersionKind(gvk)
 		if err := ctx.GetClient().List(ctx, l, client.MatchingFields{
-			"stack": t.Name,
+			"stack": stack.Name,
 		}); err != nil {
 			return err
 		}
@@ -74,7 +100,7 @@ func Clean(ctx Context, t *v1beta1.Stack) error {
 		for _, item := range l.Items {
 			if item.GetDeletionTimestamp().IsZero() {
 				logger.Info(fmt.Sprintf("Delete module %s", item.GetName()))
-				if err := ctx.GetClient().Delete(ctx, &item); err != nil {
+				if err := ctx.GetClient().Delete(ctx, &item); client.IgnoreNotFound(err) != nil {
 					return err
 				}
 			}
@@ -86,14 +112,43 @@ func Clean(ctx Context, t *v1beta1.Stack) error {
 		return NewPendingError()
 	}
 
-	logger.Info("All modules dropped, delete namespace")
-	ns := &corev1.Namespace{}
-	ns.SetName(t.Name)
-	if err := ctx.GetClient().Delete(ctx, ns); err != nil {
-		return err
+	return nil
+}
+
+func deleteResources(ctx Context, stack *v1beta1.Stack, logger logr.Logger) error {
+	stillExistingResources := false
+	for _, rtype := range ctx.GetScheme().AllKnownTypes() {
+		v := reflect.New(rtype).Interface()
+		resource, ok := v.(v1beta1.Resource)
+		if !ok {
+			continue
+		}
+		gvk, err := apiutil.GVKForObject(resource, ctx.GetScheme())
+		if err != nil {
+			return err
+		}
+
+		l := &unstructured.UnstructuredList{}
+		l.SetGroupVersionKind(gvk)
+		if err := ctx.GetClient().List(ctx, l, client.MatchingFields{
+			"stack": stack.Name,
+		}); err != nil {
+			return err
+		}
+
+		stillExistingResources = stillExistingResources || len(l.Items) > 0
+
+		for _, item := range l.Items {
+			if err := ctx.GetClient().Delete(ctx, &item); client.IgnoreNotFound(err) != nil {
+				return err
+			}
+		}
 	}
 
-	logger.Info("Stack cleaned.")
+	if stillExistingResources {
+		logger.Info("Still pending resources")
+		return NewPendingError()
+	}
 
 	return nil
 }
@@ -108,18 +163,26 @@ func init() {
 			WithRaw[*v1beta1.Stack](func(ctx Context, b *builder.Builder) error {
 				for _, rtype := range ctx.GetScheme().AllKnownTypes() {
 					v := reflect.New(rtype).Interface()
-					module, ok := v.(v1beta1.Module)
-					if !ok {
-						continue
-					}
 
-					b.Watches(module, handler.EnqueueRequestsFromMapFunc(func(watchContext context.Context, object client.Object) []reconcile.Request {
-						return []reconcile.Request{{
-							NamespacedName: types.NamespacedName{
-								Name: object.(v1beta1.Module).GetStack(),
-							},
-						}}
-					}))
+					switch v.(type) {
+					case v1beta1.Module:
+						b.Watches(v.(v1beta1.Module), handler.EnqueueRequestsFromMapFunc(func(watchContext context.Context, object client.Object) []reconcile.Request {
+							return []reconcile.Request{{
+								NamespacedName: types.NamespacedName{
+									Name: object.(v1beta1.Module).GetStack(),
+								},
+							}}
+						}))
+					case v1beta1.Resource:
+						b.Watches(v.(v1beta1.Resource), handler.EnqueueRequestsFromMapFunc(func(watchContext context.Context, object client.Object) []reconcile.Request {
+							return []reconcile.Request{{
+								NamespacedName: types.NamespacedName{
+									Name: object.(v1beta1.Resource).GetStack(),
+								},
+							}}
+						}))
+
+					}
 				}
 
 				return nil

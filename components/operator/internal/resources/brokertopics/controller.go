@@ -30,7 +30,7 @@ import (
 
 func Reconcile(ctx core.Context, stack *v1beta1.Stack, topic *v1beta1.BrokerTopic) error {
 
-	if len(topic.GetOwnerReferences()) == 0 {
+	if len(topic.GetOwnerReferences()) == 1 { // Remains only the stack
 		return ctx.GetClient().Delete(ctx, topic)
 	}
 
@@ -83,7 +83,7 @@ func clear(ctx core.Context, topic *v1beta1.BrokerTopic) error {
 
 func init() {
 	core.Init(
-		core.WithStackDependencyReconciler(Reconcile,
+		core.WithResourceReconciler(Reconcile,
 			core.WithOwn[*v1beta1.BrokerTopic](&batchv1.Job{}),
 			core.WithWatchSettings[*v1beta1.BrokerTopic](),
 			core.WithFinalizer[*v1beta1.BrokerTopic]("clear", clear),

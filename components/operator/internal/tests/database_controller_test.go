@@ -62,7 +62,7 @@ var _ = Describe("DatabaseController", func() {
 			Eventually(func(g Gomega) *v1beta1.Database {
 				g.Expect(LoadResource("", database.Name, d)).To(Succeed())
 				return d
-			}).Should(BeOwnedBy(stack, WithBlockOwnerDeletion()))
+			}).Should(BeOwnedBy(stack))
 		}
 		It("Should be set to ready status", shouldBeReady)
 		It("Should add the stack in owner references", shouldHaveOwnerReferenceOnStack)

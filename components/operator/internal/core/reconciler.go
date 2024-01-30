@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"strings"
 
+	"sigs.k8s.io/controller-runtime/pkg/log"
+
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -229,6 +231,7 @@ func reconcileObject[T client.Object](mgr Manager, controller ObjectController[T
 
 		reconcileContext := NewContext(mgr.GetClient(), mgr.GetScheme(), mgr.GetPlatform(), ctx)
 		if !object.GetDeletionTimestamp().IsZero() {
+			log.FromContext(ctx).Info("Resource " + request.Name + " deleted, calling finalizers...")
 			for name, f := range finalizers {
 
 				if !Contains(object.GetFinalizers(), name) {
@@ -245,6 +248,9 @@ func reconcileObject[T client.Object](mgr Manager, controller ObjectController[T
 				patch := client.MergeFrom(object.DeepCopyObject().(T))
 				if controllerutil.RemoveFinalizer(object, name) {
 					if err := mgr.GetClient().Patch(ctx, object, patch); err != nil {
+						if apierrors.IsConflict(err) {
+							return reconcile.Result{Requeue: true}, nil
+						}
 						return reconcile.Result{}, errors.Wrapf(err, "patching resource to remove finalizer '%s'", name)
 					}
 				}
@@ -253,6 +259,7 @@ func reconcileObject[T client.Object](mgr Manager, controller ObjectController[T
 			return reconcile.Result{}, nil
 		}
 
+		log.FromContext(ctx).Info("Reconcile " + request.Name)
 		missingFinalizers := make([]string, 0)
 		for name := range finalizers {
 			if !Contains(object.GetFinalizers(), name) {
@@ -282,6 +289,10 @@ func reconcileObject[T client.Object](mgr Manager, controller ObjectController[T
 		}
 
 		if err := mgr.GetClient().Status().Patch(ctx, object, patch); err != nil {
+			if apierrors.IsNotFound(err) {
+				// Ignore resource deleted
+				return ctrl.Result{}, nil
+			}
 			return ctrl.Result{}, errors.Wrap(err, "patching resource to update status")
 		}
 
@@ -302,6 +313,10 @@ func WithStdReconciler[T v1beta1.Object](ctrl ObjectController[T], opts ...Recon
 func WithStackDependencyReconciler[T v1beta1.Dependent](fn StackDependentObjectController[T], opts ...ReconcilerOption[T]) Initializer {
 	opts = append(opts, WithWatchStack[T]())
 	return WithStdReconciler(ForStackDependency(fn), opts...)
+}
+
+func WithResourceReconciler[T v1beta1.Dependent](fn StackDependentObjectController[T], opts ...ReconcilerOption[T]) Initializer {
+	return WithStackDependencyReconciler(ForResource(fn), opts...)
 }
 
 func WithModuleReconciler[T v1beta1.Module](fn ModuleController[T], opts ...ReconcilerOption[T]) Initializer {

@@ -46,7 +46,8 @@ var _ = Describe("BrokerTopicController", func() {
 					Service: "ledger",
 				},
 			}
-			Expect(controllerutil.SetOwnerReference(stack, brokerTopic, GetScheme())).To(Succeed())
+			// notes(gfyrag): add a "fake" owner reference to prevent automatic deletion
+			Expect(controllerutil.SetOwnerReference(brokerDSNSettings, brokerTopic, GetScheme())).To(Succeed())
 			Expect(Create(brokerTopic)).To(Succeed())
 		})
 		AfterEach(func() {
@@ -75,7 +76,7 @@ var _ = Describe("BrokerTopicController", func() {
 				}).Should(BeTrue())
 
 				patch := client.MergeFrom(brokerTopic.DeepCopy())
-				Expect(controllerutil.RemoveOwnerReference(stack, brokerTopic, GetScheme())).To(Succeed())
+				Expect(controllerutil.RemoveOwnerReference(brokerDSNSettings, brokerTopic, GetScheme())).To(Succeed())
 				Expect(Patch(brokerTopic, patch)).To(Succeed())
 			})
 			It("Should trigger the deletion of the brokerTopic object", func() {

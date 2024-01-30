@@ -66,9 +66,11 @@ func (in *Database) SetError(s string) {
 	in.Status.SetError(s)
 }
 
-func (a Database) GetStack() string {
+func (a *Database) GetStack() string {
 	return a.Spec.Stack
 }
+
+func (a *Database) isResource() {}
 
 //+kubebuilder:object:root=true
 

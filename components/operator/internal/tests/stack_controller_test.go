@@ -1,7 +1,6 @@
 package tests_test
 
 import (
-	"github.com/davecgh/go-spew/spew"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	. "github.com/formancehq/operator/internal/tests/internal"
@@ -95,7 +94,6 @@ var _ = Describe("StackController", func() {
 				Expect(Create(ledger)).To(Succeed())
 				Eventually(func(g Gomega) *v1beta1.Ledger {
 					g.Expect(LoadResource("", ledger.Name, ledger)).To(Succeed())
-					spew.Dump(ledger.OwnerReferences)
 					return ledger
 				}).Should(BeOwnedBy(stack))
 			})

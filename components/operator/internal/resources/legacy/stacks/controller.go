@@ -466,6 +466,13 @@ func init() {
 		WithStdReconciler(Reconcile,
 			WithWatch[*v1beta3.Stack, *v1beta3.Configuration](watch[*v1beta3.Configuration](".spec.seed")),
 			WithWatch[*v1beta3.Stack, *v1beta3.Versions](watch[*v1beta3.Versions](".spec.seed")),
+			WithWatch[*v1beta3.Stack, *v1beta1.Stack](func(ctx Context, object *v1beta1.Stack) []reconcile.Request {
+				return []reconcile.Request{{
+					NamespacedName: types.NamespacedName{
+						Name: object.GetName(),
+					},
+				}}
+			}),
 		),
 		WithSimpleIndex[*v1beta3.Stack](".spec.seed", func(t *v1beta3.Stack) string {
 			return t.Spec.Seed

@@ -1,13 +1,13 @@
 package core
 
 import (
-	"github.com/davecgh/go-spew/spew"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/pkg/errors"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
 
@@ -30,7 +30,6 @@ func ForObjectController[T v1beta1.Object](controller ObjectController[T]) Objec
 		if err != nil {
 			setStatus(err)
 			if !IsApplicationError(err) {
-				spew.Dump(err)
 				reconcilerError = err
 			}
 		} else {
@@ -61,6 +60,41 @@ func ForStackDependency[T v1beta1.Dependent](ctrl StackDependentObjectController
 		}
 
 		return ctrl(ctx, stack, t)
+	}
+}
+
+func ForResource[T v1beta1.Dependent](ctrl StackDependentObjectController[T]) StackDependentObjectController[T] {
+	return func(ctx Context, stack *v1beta1.Stack, req T) error {
+		// notes(gfyrag): We attach the database object to the stack as owner
+		// this way, even if the controller is removed, the Database object will not be removed until
+		// the stack is removed. This allows us to remove a module and re-add it later if we wants.
+		hasOwnerReferenceOnStack, err := HasOwnerReference(ctx, stack, req)
+		if err != nil {
+			return err
+		}
+		if !hasOwnerReferenceOnStack {
+			patch := client.MergeFrom(req.DeepCopyObject().(T))
+
+			gvk, err := apiutil.GVKForObject(stack, ctx.GetScheme())
+			if err != nil {
+				return err
+			}
+
+			ownerReferences := req.GetOwnerReferences()
+			ownerReferences = append(ownerReferences, metav1.OwnerReference{
+				APIVersion: gvk.GroupVersion().String(),
+				Kind:       gvk.Kind,
+				UID:        stack.GetUID(),
+				Name:       stack.GetName(),
+			})
+			req.SetOwnerReferences(ownerReferences)
+
+			if err := ctx.GetClient().Patch(ctx, req, patch); err != nil {
+				return err
+			}
+		}
+
+		return ctrl(ctx, stack, req)
 	}
 }
 

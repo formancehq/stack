@@ -480,6 +480,32 @@ rules:
 - apiGroups:
   - formance.com
   resources:
+  - secretreferences
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - secretreferences/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - secretreferences/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
   - settings
   verbs:
   - create
@@ -551,6 +577,32 @@ rules:
   - formance.com
   resources:
   - stargates/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - versions
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - versions/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - versions/status
   verbs:
   - get
   - patch

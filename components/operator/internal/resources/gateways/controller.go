@@ -18,6 +18,7 @@ package gateways
 
 import (
 	_ "embed"
+	"sort"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
@@ -40,6 +41,10 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, gateway *v1beta1.Gateway, vers
 	if err != nil {
 		return err
 	}
+
+	sort.Slice(httpAPIs, func(i, j int) bool {
+		return httpAPIs[i].Spec.Name < httpAPIs[j].Spec.Name
+	})
 
 	auth := &v1beta1.Auth{}
 	ok, err := GetIfExists(ctx, stack.Name, auth)

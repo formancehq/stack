@@ -62,9 +62,11 @@ func (in *BrokerTopic) SetError(s string) {
 	in.Status.Info = s
 }
 
-func (a BrokerTopic) GetStack() string {
+func (a *BrokerTopic) GetStack() string {
 	return a.Spec.Stack
 }
+
+func (a *BrokerTopic) isResource() {}
 
 //+kubebuilder:object:root=true
 

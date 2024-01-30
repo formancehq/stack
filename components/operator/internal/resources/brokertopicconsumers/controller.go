@@ -29,10 +29,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-const (
-	gcFinalizer = "gc"
-)
-
 //+kubebuilder:rbac:groups=formance.com,resources=brokertopicconsumers,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=formance.com,resources=brokertopicconsumers/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=brokertopicconsumers/finalizers,verbs=update
@@ -81,25 +77,25 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, topicQuery *v1beta1.BrokerTopi
 	return nil
 }
 
-func Delete(ctx Context, topicQuery *v1beta1.BrokerTopicConsumer) error {
-	topic := &v1beta1.BrokerTopic{}
-	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
-		Name: GetObjectName(topicQuery.Spec.Stack, topicQuery.Spec.Service),
-	}, topic); err != nil {
-		if !errors.IsNotFound(err) {
-			return err
-		}
-	} else {
-		if err := controllerutil.RemoveOwnerReference(topicQuery, topic, ctx.GetScheme()); err != nil {
-			return err
-		}
-		if err := ctx.GetClient().Update(ctx, topic); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
+//func Delete(ctx Context, topicQuery *v1beta1.BrokerTopicConsumer) error {
+//	topic := &v1beta1.BrokerTopic{}
+//	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
+//		Name: GetObjectName(topicQuery.Spec.Stack, topicQuery.Spec.Service),
+//	}, topic); err != nil {
+//		if !errors.IsNotFound(err) {
+//			return err
+//		}
+//	} else {
+//		if err := controllerutil.RemoveOwnerReference(topicQuery, topic, ctx.GetScheme()); err != nil {
+//			return err
+//		}
+//		if err := ctx.GetClient().Update(ctx, topic); err != nil {
+//			return err
+//		}
+//	}
+//
+//	return nil
+//}
 
 func init() {
 	Init(
@@ -118,7 +114,7 @@ func init() {
 					Map(list.Items, ToPointer[v1beta1.BrokerTopicConsumer])...,
 				)
 			}),
-			WithFinalizer[*v1beta1.BrokerTopicConsumer](gcFinalizer, Delete),
+			//WithFinalizer[*v1beta1.BrokerTopicConsumer](gcFinalizer, Delete),
 		),
 		WithSimpleIndex[*v1beta1.BrokerTopicConsumer](".spec.service", func(t *v1beta1.BrokerTopicConsumer) string {
 			return t.Spec.Service

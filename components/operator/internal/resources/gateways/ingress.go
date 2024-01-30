@@ -28,6 +28,7 @@ func createIngress(ctx core.Context, stack *v1beta1.Stack,
 				}
 				return []v1.IngressTLS{{
 					SecretName: gateway.Spec.Ingress.TLS.SecretName,
+					Hosts:      []string{gateway.Spec.Ingress.Host},
 				}}
 			}()
 			ingress.Spec.Rules = []v1.IngressRule{

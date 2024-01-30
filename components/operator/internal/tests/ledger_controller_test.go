@@ -122,7 +122,8 @@ var _ = Describe("LedgerController", func() {
 						Service: "ledger",
 					},
 				}
-				Expect(controllerutil.SetOwnerReference(stack, brokerTopic, GetScheme()))
+				// notes(gfyrag): add "fake" owner reference to prevent auto deletion of topics
+				Expect(controllerutil.SetOwnerReference(databaseSettings, brokerTopic, GetScheme()))
 				Expect(Create(brokerTopic)).To(Succeed())
 			})
 			AfterEach(func() {

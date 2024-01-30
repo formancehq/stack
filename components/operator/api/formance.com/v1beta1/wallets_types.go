@@ -37,6 +37,8 @@ type WalletsStatus struct {
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:printcolumn:name="Stack",type=string,JSONPath=".spec.stack",description="Stack"
+//+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
+//+kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
 
 // Wallets is the Schema for the wallets API
 type Wallets struct {

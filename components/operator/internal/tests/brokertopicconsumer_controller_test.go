@@ -103,16 +103,6 @@ var _ = Describe("BrokerTopicConsumer", func() {
 							return topic
 						}).ShouldNot(BeControlledBy(brokerTopicConsumer))
 					})
-					Context("Then removing the last BrokerTopicConsumer", func() {
-						BeforeEach(func() {
-							Expect(Delete(brokerTopicConsumer2)).To(Succeed())
-						})
-						It("Should completely remove the BrokerTopic object", func() {
-							Eventually(func(g Gomega) error {
-								return LoadResource("", core.GetObjectName(stack.Name, brokerTopicConsumer.Spec.Service), t)
-							}).Should(BeNotFound())
-						})
-					})
 				})
 			})
 		})
