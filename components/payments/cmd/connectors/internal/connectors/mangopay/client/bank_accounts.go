@@ -123,6 +123,7 @@ func (c *Client) createBankAccount(ctx context.Context, endpoint string, req any
 	if err != nil {
 		return nil, fmt.Errorf("failed to create bank account request: %w", err)
 	}
+	httpReq.Header.Set("Content-Type", "application/json")
 
 	resp, err := c.httpClient.Do(httpReq)
 	if err != nil {
