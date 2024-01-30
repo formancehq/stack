@@ -215,6 +215,7 @@ func WithReconciler[T client.Object](controller ObjectController[T], opts ...Rec
 
 func reconcileObject[T client.Object](mgr Manager, controller ObjectController[T], finalizers map[string]Finalizer[T]) func(ctx context.Context, request reconcile.Request) (reconcile.Result, error) {
 	return func(ctx context.Context, request reconcile.Request) (reconcile.Result, error) {
+
 		var object T
 		object = reflect.New(reflect.TypeOf(object).Elem()).Interface().(T)
 		if err := mgr.GetClient().Get(ctx, types.NamespacedName{
@@ -276,12 +277,18 @@ func reconcileObject[T client.Object](mgr Manager, controller ObjectController[T
 		err := controller(reconcileContext, object)
 		if err != nil {
 			if !IsApplicationError(err) {
-				reconcilerError = err
+				reconcilerError = errors.Wrap(err, "reconciling resource")
 			}
 		}
 
 		if err := mgr.GetClient().Status().Patch(ctx, object, patch); err != nil {
-			return ctrl.Result{}, err
+			return ctrl.Result{}, errors.Wrap(err, "patching resource to update status")
+		}
+
+		if apierrors.IsConflict(reconcilerError) {
+			return ctrl.Result{
+				Requeue: true,
+			}, nil
 		}
 
 		return ctrl.Result{}, reconcilerError

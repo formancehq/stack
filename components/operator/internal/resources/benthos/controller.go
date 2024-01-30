@@ -143,7 +143,6 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 				Env("BASIC_AUTH_PASSWORD", password),
 			)
 		} else {
-			secret := fmt.Sprintf("%s-%s", b.Name, secret)
 			env = append(env,
 				EnvFromSecret("BASIC_AUTH_USERNAME", secret, "username"),
 				EnvFromSecret("BASIC_AUTH_PASSWORD", secret, "password"),

@@ -17,10 +17,6 @@ limitations under the License.
 package v1beta1
 
 import (
-	"fmt"
-	"net/url"
-
-	"github.com/formancehq/stack/libs/go-libs/pointer"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -28,65 +24,6 @@ import (
 type DatabaseSpec struct {
 	StackDependency `json:",inline"`
 	Service         string `json:"service"`
-}
-
-// +k8s:openapi-gen=true
-// +kubebuilder:validation:Type=string
-type URI struct {
-	*url.URL `json:"-"`
-}
-
-func (u URI) String() string {
-	if u.URL == nil {
-		return "nil"
-	}
-	return u.URL.String()
-}
-
-func (u URI) IsZero() bool {
-	return u.URL == nil
-}
-
-func (u *URI) DeepCopyInto(v *URI) {
-	cp := *u.URL
-	if u.User != nil {
-		cp.User = pointer.For(*u.User)
-	}
-	v.URL = pointer.For(cp)
-}
-
-func (u *URI) MarshalJSON() ([]byte, error) {
-	return []byte(fmt.Sprintf(`"%s"`, u.String())), nil
-}
-
-func (u *URI) UnmarshalJSON(data []byte) error {
-	v, err := url.Parse(string(data[1 : len(data)-1]))
-	if err != nil {
-		panic(err)
-	}
-
-	*u = URI{
-		URL: v,
-	}
-	return nil
-}
-
-func (in *URI) WithoutQuery() *URI {
-	cp := *in.URL
-	in.URL.RawQuery = ""
-	return &URI{
-		URL: &cp,
-	}
-}
-
-func ParseURL(v string) (*URI, error) {
-	ret, err := url.Parse(v)
-	if err != nil {
-		return nil, err
-	}
-	return &URI{
-		URL: ret,
-	}, nil
 }
 
 // DatabaseStatus defines the observed state of Database

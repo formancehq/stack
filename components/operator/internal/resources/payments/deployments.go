@@ -1,8 +1,6 @@
 package payments
 
 import (
-	"fmt"
-
 	"github.com/formancehq/operator/internal/resources/settings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -74,7 +72,7 @@ func createFullDeployment(ctx core.Context, stack *v1beta1.Stack,
 
 	if topic != nil {
 		if !topic.Status.Ready {
-			return fmt.Errorf("topic %s is not yet ready", topic.Name)
+			return core.NewApplicationError("topic %s is not yet ready", topic.Name)
 		}
 
 		env = append(env, settings.GetBrokerEnvVars(topic.Status.URI, stack.Name, "payments")...)
@@ -156,7 +154,7 @@ func createConnectorsDeployment(ctx core.Context, stack *v1beta1.Stack, payments
 
 	if topic != nil {
 		if !topic.Status.Ready {
-			return fmt.Errorf("topic %s is not yet ready", topic.Name)
+			return core.NewApplicationError("topic %s is not yet ready", topic.Name)
 		}
 
 		env = append(env, settings.GetBrokerEnvVars(topic.Status.URI, stack.Name, "payments")...)

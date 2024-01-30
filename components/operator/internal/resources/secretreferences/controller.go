@@ -17,6 +17,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
+//+kubebuilder:rbac:groups=formance.com,resources=secretreferences,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=formance.com,resources=secretreferences/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=formance.com,resources=secretreferences/finalizers,verbs=update
+
 func init() {
 	Init(
 		WithStackDependencyReconciler[*v1beta1.SecretReference](Reconcile,

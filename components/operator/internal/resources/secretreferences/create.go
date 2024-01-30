@@ -20,7 +20,7 @@ func Sync(ctx core.Context, owner v1beta1.Dependent, name string, u *v1beta1.URI
 			t.Spec.SecretName = secret
 
 			return nil
-		}, core.WithOwner[*v1beta1.SecretReference](ctx.GetScheme(), owner))
+		}, core.WithController[*v1beta1.SecretReference](ctx.GetScheme(), owner))
 		if err != nil {
 			return nil, err
 		}

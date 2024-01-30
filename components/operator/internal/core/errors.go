@@ -2,26 +2,15 @@ package core
 
 import (
 	"fmt"
-
 	"github.com/pkg/errors"
 )
 
-const (
-	CodePending         = "pending"
-	CodeStackNotFound   = "stack not found"
-	CodeMissingSettings = "missing settings"
-)
-
 type ApplicationError struct {
-	code    string
-	message interface{}
+	message string
 }
 
 func (e *ApplicationError) Error() string {
-	if e.message == "" {
-		return e.code
-	}
-	return fmt.Sprintf("%s: %s", e.code, e.message)
+	return e.message
 }
 
 func (e *ApplicationError) Is(err error) bool {
@@ -29,23 +18,22 @@ func (e *ApplicationError) Is(err error) bool {
 	return ok
 }
 
-func NewApplicationError(code string, msg string) *ApplicationError {
+func NewApplicationError(msg string, args ...any) *ApplicationError {
 	return &ApplicationError{
-		code:    code,
-		message: msg,
+		message: fmt.Sprintf(msg, args...),
 	}
 }
 
 func NewStackNotFoundError() *ApplicationError {
-	return NewApplicationError(CodeStackNotFound, "")
+	return NewApplicationError("stack not found")
 }
 
 func NewPendingError() *ApplicationError {
-	return NewApplicationError(CodePending, "")
+	return NewApplicationError("pending")
 }
 
 func NewMissingSettingsError(msg string) *ApplicationError {
-	return NewApplicationError(CodeMissingSettings, msg)
+	return NewApplicationError(msg)
 }
 
 func IsApplicationError(err error) bool {

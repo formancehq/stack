@@ -17,7 +17,6 @@ limitations under the License.
 package searches
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/formancehq/operator/internal/resources/secretreferences"
@@ -70,7 +69,6 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 				Env("OPEN_SEARCH_PASSWORD", password),
 			)
 		} else {
-			secret := fmt.Sprintf("%s-%s", search.Name, secret)
 			env = append(env,
 				EnvFromSecret("OPEN_SEARCH_USERNAME", secret, "username"),
 				EnvFromSecret("OPEN_SEARCH_PASSWORD", secret, "password"),

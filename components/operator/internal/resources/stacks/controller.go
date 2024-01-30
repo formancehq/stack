@@ -2,15 +2,16 @@ package stacks
 
 import (
 	"context"
-	"reflect"
-
+	"fmt"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"reflect"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
+	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
@@ -32,11 +33,9 @@ import (
 // +kubebuilder:rbac:groups=formance.com,resources=stacks/finalizers,verbs=update
 
 func Reconcile(ctx Context, stack *v1beta1.Stack) error {
-	_, _, err := CreateOrUpdate(ctx, types.NamespacedName{
+	_, _, err := CreateOrUpdate[*corev1.Namespace](ctx, types.NamespacedName{
 		Name: stack.Name,
-	},
-		WithController[*corev1.Namespace](ctx.GetScheme(), stack),
-	)
+	})
 	if err != nil {
 		return err
 	}
@@ -45,7 +44,11 @@ func Reconcile(ctx Context, stack *v1beta1.Stack) error {
 }
 
 func Clean(ctx Context, t *v1beta1.Stack) error {
-	stillModules := false
+	logger := log.FromContext(ctx)
+	logger = logger.WithValues("stack", t.Name)
+	logger.Info("Clean stack")
+
+	stillExistingModules := false
 	for _, rtype := range ctx.GetScheme().AllKnownTypes() {
 		v := reflect.New(rtype).Interface()
 		module, ok := v.(v1beta1.Module)
@@ -66,17 +69,31 @@ func Clean(ctx Context, t *v1beta1.Stack) error {
 			return err
 		}
 
-		stillModules = stillModules || len(l.Items) > 0
+		stillExistingModules = stillExistingModules || len(l.Items) > 0
+
 		for _, item := range l.Items {
-			if err := ctx.GetClient().Delete(ctx, &item); err != nil {
-				return err
+			if item.GetDeletionTimestamp().IsZero() {
+				logger.Info(fmt.Sprintf("Delete module %s", item.GetName()))
+				if err := ctx.GetClient().Delete(ctx, &item); err != nil {
+					return err
+				}
 			}
 		}
 	}
 
-	if stillModules {
+	if stillExistingModules {
+		logger.Info("Still pending modules")
 		return NewPendingError()
 	}
+
+	logger.Info("All modules dropped, delete namespace")
+	ns := &corev1.Namespace{}
+	ns.SetName(t.Name)
+	if err := ctx.GetClient().Delete(ctx, ns); err != nil {
+		return err
+	}
+
+	logger.Info("Stack cleaned.")
 
 	return nil
 }

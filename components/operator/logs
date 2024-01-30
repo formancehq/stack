@@ -1,0 +1,7 @@
+test -s /Users/geoffrey/work/formancehq/stack/worktrees/operator-rework/components/operator/bin/controller-gen && /Users/geoffrey/work/formancehq/stack/worktrees/operator-rework/components/operator/bin/controller-gen --version | grep -q v0.13.0 || \
+	GOBIN=/Users/geoffrey/work/formancehq/stack/worktrees/operator-rework/components/operator/bin go install sigs.k8s.io/controller-tools/cmd/controller-gen@v0.13.0
+/Users/geoffrey/work/formancehq/stack/worktrees/operator-rework/components/operator/bin/controller-gen rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
+/Users/geoffrey/work/formancehq/stack/worktrees/operator-rework/components/operator/bin/controller-gen object:headerFile="hack/boilerplate.go.txt" paths="./..."
+go fmt ./...
+go vet ./...
+go run ./cmd/main.go

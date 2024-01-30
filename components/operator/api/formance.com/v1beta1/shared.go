@@ -1,8 +1,13 @@
 package v1beta1
 
 import (
+	"encoding/json"
+	"fmt"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"golang.org/x/mod/semver"
+	"k8s.io/apimachinery/pkg/api/equality"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"net/url"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -186,4 +191,85 @@ type Object interface {
 	SetReady(bool)
 	IsReady() bool
 	SetError(string)
+}
+
+// +k8s:openapi-gen=true
+// +kubebuilder:validation:Type=string
+type URI struct {
+	*url.URL `json:"-"`
+}
+
+func (u URI) String() string {
+	if u.URL == nil {
+		return "nil"
+	}
+	return u.URL.String()
+}
+
+func (u URI) IsZero() bool {
+	return u.URL == nil
+}
+
+func (u *URI) DeepCopyInto(v *URI) {
+	cp := *u.URL
+	if u.User != nil {
+		cp.User = pointer.For(*u.User)
+	}
+	v.URL = pointer.For(cp)
+}
+
+func (u *URI) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf(`"%s"`, u.String())), nil
+}
+
+func (u *URI) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return nil
+	}
+
+	v, err := url.Parse(s)
+	if err != nil {
+		panic(err)
+	}
+
+	*u = URI{
+		URL: v,
+	}
+	return nil
+}
+
+func (in *URI) WithoutQuery() *URI {
+	cp := *in.URL
+	in.URL.RawQuery = ""
+	return &URI{
+		URL: &cp,
+	}
+}
+
+func ParseURL(v string) (*URI, error) {
+	ret, err := url.Parse(v)
+	if err != nil {
+		return nil, err
+	}
+	return &URI{
+		URL: ret,
+	}, nil
+}
+
+func init() {
+	if err := equality.Semantic.AddFunc(func(a, b *URI) bool {
+		if a == nil && b != nil {
+			return false
+		}
+		if a != nil && b == nil {
+			return false
+		}
+		if a == nil && b == nil {
+			return true
+		}
+		return a.String() == b.String()
+	}); err != nil {
+		panic(err)
+	}
 }

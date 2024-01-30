@@ -115,7 +115,6 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 			Env("TEMPORAL_SSL_CLIENT_CERT", temporalTLSCrt),
 		)
 	} else {
-		secret := fmt.Sprintf("%s-%s", orchestration.Name, secret)
 		env = append(env,
 			EnvFromSecret("TEMPORAL_SSL_CLIENT_KEY", secret, "tls.key"),
 			EnvFromSecret("TEMPORAL_SSL_CLIENT_CERT", secret, "tls.crt"),

@@ -2,7 +2,6 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  creationTimestamp: null
   name: manager-role
 rules:
 - apiGroups:
@@ -474,6 +473,32 @@ rules:
   - formance.com
   resources:
   - searches/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - secretreferences
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - secretreferences/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - secretreferences/status
   verbs:
   - get
   - patch

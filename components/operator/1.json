@@ -1,0 +1,222 @@
+{
+  "kind": "Job",
+  "apiVersion": "batch/v1",
+  "metadata": {
+    "name": "ledger-drop-database",
+    "namespace": "stack0",
+    "uid": "8aee96cb-d6fb-418f-8538-1d2f9c02ce35",
+    "resourceVersion": "3436",
+    "generation": 2,
+    "creationTimestamp": "2024-01-30T10:55:22Z",
+    "deletionTimestamp": "2024-01-30T10:55:23Z",
+    "deletionGracePeriodSeconds": 0,
+    "labels": {
+      "batch.kubernetes.io/controller-uid": "8aee96cb-d6fb-418f-8538-1d2f9c02ce35",
+      "batch.kubernetes.io/job-name": "ledger-drop-database",
+      "controller-uid": "8aee96cb-d6fb-418f-8538-1d2f9c02ce35",
+      "job-name": "ledger-drop-database"
+    },
+    "annotations": {
+      "batch.kubernetes.io/job-tracking": ""
+    },
+    "ownerReferences": [
+      {
+        "apiVersion": "formance.com/v1beta1",
+        "kind": "Database",
+        "name": "stack0-ledger",
+        "uid": "fce3629d-21b8-4b84-b4c6-77b0f63fffe8",
+        "controller": true,
+        "blockOwnerDeletion": true
+      }
+    ],
+    "finalizers": [
+      "foregroundDeletion"
+    ],
+    "managedFields": [
+      {
+        "manager": "k3s",
+        "operation": "Update",
+        "apiVersion": "batch/v1",
+        "time": "2024-01-30T10:55:22Z",
+        "fieldsType": "FieldsV1",
+        "fieldsV1": {
+          "f:status": {
+            "f:ready": {},
+            "f:startTime": {},
+            "f:uncountedTerminatedPods": {}
+          }
+        },
+        "subresource": "status"
+      },
+      {
+        "manager": "main",
+        "operation": "Update",
+        "apiVersion": "batch/v1",
+        "time": "2024-01-30T10:55:22Z",
+        "fieldsType": "FieldsV1",
+        "fieldsV1": {
+          "f:metadata": {
+            "f:ownerReferences": {
+              ".": {},
+              "k:{\"uid\":\"fce3629d-21b8-4b84-b4c6-77b0f63fffe8\"}": {}
+            }
+          },
+          "f:spec": {
+            "f:backoffLimit": {},
+            "f:completionMode": {},
+            "f:completions": {},
+            "f:parallelism": {},
+            "f:suspend": {},
+            "f:template": {
+              "f:spec": {
+                "f:containers": {
+                  "k:{\"name\":\"drop-database\"}": {
+                    ".": {},
+                    "f:args": {},
+                    "f:env": {
+                      ".": {},
+                      "k:{\"name\":\"PGPASSWORD\"}": {
+                        ".": {},
+                        "f:name": {},
+                        "f:value": {}
+                      },
+                      "k:{\"name\":\"POSTGRES_DATABASE\"}": {
+                        ".": {},
+                        "f:name": {},
+                        "f:value": {}
+                      },
+                      "k:{\"name\":\"POSTGRES_HOST\"}": {
+                        ".": {},
+                        "f:name": {},
+                        "f:value": {}
+                      },
+                      "k:{\"name\":\"POSTGRES_NO_DATABASE_URI\"}": {
+                        ".": {},
+                        "f:name": {},
+                        "f:value": {}
+                      },
+                      "k:{\"name\":\"POSTGRES_PASSWORD\"}": {
+                        ".": {},
+                        "f:name": {},
+                        "f:value": {}
+                      },
+                      "k:{\"name\":\"POSTGRES_PORT\"}": {
+                        ".": {},
+                        "f:name": {},
+                        "f:value": {}
+                      },
+                      "k:{\"name\":\"POSTGRES_URI\"}": {
+                        ".": {},
+                        "f:name": {},
+                        "f:value": {}
+                      },
+                      "k:{\"name\":\"POSTGRES_USERNAME\"}": {
+                        ".": {},
+                        "f:name": {},
+                        "f:value": {}
+                      }
+                    },
+                    "f:image": {},
+                    "f:imagePullPolicy": {},
+                    "f:name": {},
+                    "f:resources": {},
+                    "f:terminationMessagePath": {},
+                    "f:terminationMessagePolicy": {}
+                  }
+                },
+                "f:dnsPolicy": {},
+                "f:restartPolicy": {},
+                "f:schedulerName": {},
+                "f:securityContext": {},
+                "f:terminationGracePeriodSeconds": {}
+              }
+            },
+            "f:ttlSecondsAfterFinished": {}
+          }
+        }
+      }
+    ]
+  },
+  "spec": {
+    "parallelism": 1,
+    "completions": 1,
+    "backoffLimit": 10000,
+    "selector": {
+      "matchLabels": {
+        "batch.kubernetes.io/controller-uid": "8aee96cb-d6fb-418f-8538-1d2f9c02ce35"
+      }
+    },
+    "template": {
+      "metadata": {
+        "creationTimestamp": null,
+        "labels": {
+          "batch.kubernetes.io/controller-uid": "8aee96cb-d6fb-418f-8538-1d2f9c02ce35",
+          "batch.kubernetes.io/job-name": "ledger-drop-database",
+          "controller-uid": "8aee96cb-d6fb-418f-8538-1d2f9c02ce35",
+          "job-name": "ledger-drop-database"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": "drop-database",
+            "image": "postgres:15-alpine",
+            "args": [
+              "sh",
+              "-c",
+              "psql -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USERNAME} -c \"DROP DATABASE \\\"${POSTGRES_DATABASE}\\\"\" \"sslmode=disable\""
+            ],
+            "env": [
+              {
+                "name": "POSTGRES_HOST",
+                "value": "postgres-postgresql.default"
+              },
+              {
+                "name": "POSTGRES_PORT",
+                "value": "5432"
+              },
+              {
+                "name": "POSTGRES_DATABASE",
+                "value": "stack0-ledger"
+              },
+              {
+                "name": "POSTGRES_USERNAME",
+                "value": "formance"
+              },
+              {
+                "name": "POSTGRES_PASSWORD",
+                "value": "formance"
+              },
+              {
+                "name": "POSTGRES_NO_DATABASE_URI",
+                "value": "postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)"
+              },
+              {
+                "name": "POSTGRES_URI",
+                "value": "$(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable"
+              },
+              {
+                "name": "PGPASSWORD",
+                "value": "$(POSTGRES_PASSWORD)"
+              }
+            ],
+            "resources": {}
+          }
+        ],
+        "restartPolicy": "OnFailure",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "securityContext": {},
+        "schedulerName": "default-scheduler"
+      }
+    },
+    "ttlSecondsAfterFinished": 30,
+    "completionMode": "NonIndexed",
+    "suspend": false
+  },
+  "status": {
+    "startTime": "2024-01-30T10:55:22Z",
+    "uncountedTerminatedPods": {},
+    "ready": 0
+  }
+}

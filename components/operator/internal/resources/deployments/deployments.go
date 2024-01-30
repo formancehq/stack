@@ -104,6 +104,9 @@ func CreateOrUpdate(ctx core.Context, stack *v1beta1.Stack, owner interface {
 			if t.Spec.Replicas != nil {
 				// Store the number of replicas to be able to restore it
 				// if the stack is re-enabled
+				if t.Annotations == nil {
+					t.Annotations = map[string]string{}
+				}
 				t.Annotations["replicas"] = fmt.Sprint(*t.Spec.Replicas)
 			}
 			t.Spec.Replicas = pointer.For(int32(0))

@@ -245,7 +245,7 @@ func createLedgerContainerFull(ctx core.Context, stack *v1beta1.Stack, v2 bool) 
 
 	if topic != nil {
 		if !topic.Status.Ready {
-			return nil, fmt.Errorf("topic %s is not yet ready", topic.Name)
+			return nil, core.NewApplicationError("topic %s is not yet ready", topic.Name)
 		}
 
 		prefix := ""
