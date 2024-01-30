@@ -209,6 +209,7 @@ func TestCreateBankAccounts(t *testing.T) {
 
 			expectedCreateBankAccountResponse := &bankAccountResponse{
 				ID:          createBankAccountResponse.ID.String(),
+				Name:        createBankAccountResponse.Name,
 				CreatedAt:   createBankAccountResponse.CreatedAt,
 				Country:     createBankAccountResponse.Country,
 				ConnectorID: createBankAccountResponse.ConnectorID.String(),
