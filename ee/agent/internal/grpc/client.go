@@ -163,11 +163,12 @@ func (client *client) createStack(stack *generated.Stack) *v1beta3.Stack {
 				}
 			}(),
 			Disabled: stack.Disabled,
+			Versions: stack.Versions,
 		},
 	}
 }
 
-func (client *client) mergeStack(currentStack *v1beta3.Stack, into *v1beta3.Stack) *v1beta3.Stack {
+func mergeStack(currentStack *v1beta3.Stack, into *v1beta3.Stack) *v1beta3.Stack {
 	into.SetResourceVersion(currentStack.GetResourceVersion())
 	into.Spec.Services = currentStack.Spec.Services
 	into.Spec.Seed = currentStack.Spec.Seed
@@ -355,7 +356,7 @@ func (client *client) Start(ctx context.Context) error {
 					continue
 				}
 
-				newStack := client.mergeStack(existingStack, createStack)
+				newStack := mergeStack(existingStack, createStack)
 				if _, err := client.k8sClient.Stacks().Update(ctx, newStack); err != nil {
 					sharedlogging.FromContext(ctx).Errorf("Updating stack cluster side: %s", err)
 					continue
