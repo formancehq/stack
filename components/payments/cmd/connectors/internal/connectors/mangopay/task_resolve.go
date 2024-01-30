@@ -7,16 +7,18 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/mangopay/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/google/uuid"
 )
 
 const (
-	taskNameMain                = "main"
-	taskNameFetchUsers          = "fetch-users"
-	taskNameFetchTransactions   = "fetch-transactions"
-	taskNameFetchWallets        = "fetch-wallets"
-	taskNameFetchBankAccounts   = "fetch-bank-accounts"
-	taskNameInitiatePayment     = "initiate-payment"
-	taskNameUpdatePaymentStatus = "update-payment-status"
+	taskNameMain                      = "main"
+	taskNameFetchUsers                = "fetch-users"
+	taskNameFetchTransactions         = "fetch-transactions"
+	taskNameFetchWallets              = "fetch-wallets"
+	taskNameFetchBankAccounts         = "fetch-bank-accounts"
+	taskNameInitiatePayment           = "initiate-payment"
+	taskNameUpdatePaymentStatus       = "update-payment-status"
+	taskNameCreateExternalBankAccount = "create-external-bank-account"
 )
 
 // TaskDescriptor is the definition of a task.
@@ -28,6 +30,7 @@ type TaskDescriptor struct {
 	TransferID    string              `json:"transferID" yaml:"transferID" bson:"transferID"`
 	PaymentID     string              `json:"paymentID" yaml:"paymentID" bson:"paymentID"`
 	Attempt       int                 `json:"attempt" yaml:"attempt" bson:"attempt"`
+	BankAccountID uuid.UUID           `json:"bankAccountID,omitempty" yaml:"bankAccountID" bson:"bankAccountID"`
 	PollingPeriod connectors.Duration `json:"pollingPeriod" yaml:"pollingPeriod" bson:"pollingPeriod"`
 }
 
@@ -65,6 +68,8 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 			return taskUpdatePaymentStatus(mangopayClient, taskDescriptor.TransferID, taskDescriptor.PaymentID, taskDescriptor.Attempt)
 		case taskNameFetchWallets:
 			return taskFetchWallets(mangopayClient, &config, taskDescriptor.UserID)
+		case taskNameCreateExternalBankAccount:
+			return taskCreateExternalBankAccount(mangopayClient, taskDescriptor.BankAccountID)
 		}
 
 		// This should never happen.

@@ -130,7 +130,21 @@ func (c *Connector) ReversePayment(ctx task.ConnectorContext, transferReversal *
 }
 
 func (c *Connector) CreateExternalBankAccount(ctx task.ConnectorContext, bankAccount *models.BankAccount) error {
-	return connectors.ErrNotImplemented
+	descriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
+		Name:          "Create external bank account",
+		Key:           taskNameCreateExternalBankAccount,
+		BankAccountID: bankAccount.ID,
+	})
+	if err != nil {
+		return err
+	}
+	if err := ctx.Scheduler().Schedule(ctx.Context(), descriptor, models.TaskSchedulerOptions{
+		ScheduleOption: models.OPTIONS_RUN_NOW_SYNC,
+	}); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 var _ connectors.Connector = &Connector{}
