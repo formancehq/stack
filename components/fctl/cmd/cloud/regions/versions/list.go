@@ -7,6 +7,7 @@ import (
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
+	"golang.org/x/mod/semver"
 )
 
 type ListStore struct {
@@ -32,6 +33,28 @@ func NewListCommand() *cobra.Command {
 	return fctl.NewCommand("list <region-id>",
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithAliases("ls", "l"),
+		fctl.WithPreRunE(func(cmd *cobra.Command, args []string) error {
+			cfg, err := fctl.GetConfig(cmd)
+			if err != nil {
+				return err
+			}
+
+			apiClient, err := fctl.NewMembershipClient(cmd, cfg)
+			if err != nil {
+				return err
+			}
+
+			version := fctl.MembershipServerInfo(cmd.Context(), apiClient)
+			if !semver.IsValid(version) {
+				return nil
+			}
+
+			if semver.Compare(version, "v0.26.1") >= 0 {
+				return nil
+			}
+
+			return fmt.Errorf("unsupported membership server version: %s", version)
+		}),
 		fctl.WithShortDescription("List all versions installed on a region"),
 		fctl.WithController[*ListStore](NewListController()),
 	)
