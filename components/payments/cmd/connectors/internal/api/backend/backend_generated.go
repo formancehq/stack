@@ -83,6 +83,21 @@ func (mr *MockServiceMockRecorder) DeleteTransferInitiation(ctx, id interface{})
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTransferInitiation", reflect.TypeOf((*MockService)(nil).DeleteTransferInitiation), ctx, id)
 }
 
+// ForwardBankAccountToConnector mocks base method.
+func (m *MockService) ForwardBankAccountToConnector(ctx context.Context, id string, req *service.ForwardBankAccountToConnectorRequest) (*models.BankAccount, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ForwardBankAccountToConnector", ctx, id, req)
+	ret0, _ := ret[0].(*models.BankAccount)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ForwardBankAccountToConnector indicates an expected call of ForwardBankAccountToConnector.
+func (mr *MockServiceMockRecorder) ForwardBankAccountToConnector(ctx, id, req interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ForwardBankAccountToConnector", reflect.TypeOf((*MockService)(nil).ForwardBankAccountToConnector), ctx, id, req)
+}
+
 // ListConnectors mocks base method.
 func (m *MockService) ListConnectors(ctx context.Context) ([]*models.Connector, error) {
 	m.ctrl.T.Helper()

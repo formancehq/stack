@@ -9,19 +9,6 @@ import (
 	"github.com/google/uuid"
 )
 
-func (s *Storage) LinkBankAccountWithAccount(ctx context.Context, id uuid.UUID, accountID *models.AccountID) error {
-	_, err := s.db.NewUpdate().
-		Model((*models.BankAccount)(nil)).
-		Set("account_id = ?", accountID).
-		Where("id = ?", id).
-		Exec(ctx)
-	if err != nil {
-		return e("update bank account information", err)
-	}
-
-	return nil
-}
-
 func (s *Storage) ListBankAccounts(ctx context.Context, pagination PaginatorQuery) ([]*models.BankAccount, PaginationDetails, error) {
 	var bankAccounts []*models.BankAccount
 

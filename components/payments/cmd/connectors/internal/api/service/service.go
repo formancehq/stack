@@ -24,7 +24,7 @@ type Store interface {
 
 	CreateBankAccount(ctx context.Context, account *models.BankAccount) error
 	GetBankAccount(ctx context.Context, id uuid.UUID, expand bool) (*models.BankAccount, error)
-	LinkBankAccountWithAccount(ctx context.Context, id uuid.UUID, accountID *models.AccountID) error
+	GetBankAccountAdjustments(ctx context.Context, id uuid.UUID) ([]*models.BankAccountAdjustment, error)
 
 	ListConnectorsByProvider(ctx context.Context, provider models.ConnectorProvider) ([]*models.Connector, error)
 	IsInstalledByConnectorID(ctx context.Context, connectorID models.ConnectorID) (bool, error)

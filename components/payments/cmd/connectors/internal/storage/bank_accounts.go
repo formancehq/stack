@@ -136,3 +136,16 @@ func (s *Storage) GetBankAccount(ctx context.Context, id uuid.UUID, expand bool)
 
 	return &account, nil
 }
+
+func (s *Storage) GetBankAccountAdjustments(ctx context.Context, id uuid.UUID) ([]*models.BankAccountAdjustment, error) {
+	var adjustments []*models.BankAccountAdjustment
+	err := s.db.NewSelect().
+		Model(&adjustments).
+		Where("bank_account_id = ?", id).
+		Scan(ctx)
+	if err != nil {
+		return nil, e("get bank account adjustments", err)
+	}
+
+	return adjustments, nil
+}
