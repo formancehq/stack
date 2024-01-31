@@ -1,0 +1,17 @@
+apiVersion: stack.formance.com/v1beta3
+kind: Migration
+metadata:
+    generation: 1
+    labels:
+        stack: "true"
+    name: wallets-v0.5.0-post-upgrade
+    namespace: multipod-tls
+spec:
+    configuration: multipod-tls
+    currentVersion: ""
+    module: wallets
+    postUpgrade: true
+    targetedVersion: v0.5.0
+    version: multipod-tls
+status:
+    terminated: true
