@@ -13,6 +13,8 @@ type GetBalancesAggregatedRequest struct {
 	Address *string `queryParam:"style=form,explode=true,name=address"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
+	// Use insertion date instead of effective date
+	UseInsertionDate *bool `queryParam:"style=form,explode=true,name=use_insertion_date"`
 }
 
 func (o *GetBalancesAggregatedRequest) GetAddress() *string {
@@ -27,6 +29,13 @@ func (o *GetBalancesAggregatedRequest) GetLedger() string {
 		return ""
 	}
 	return o.Ledger
+}
+
+func (o *GetBalancesAggregatedRequest) GetUseInsertionDate() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.UseInsertionDate
 }
 
 type GetBalancesAggregatedResponse struct {
