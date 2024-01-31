@@ -52,7 +52,7 @@ tests:
 
     WITH DOCKER --pull=jeffail/benthos:4.11 \
         --load temporalite=+temporalite \
-        --pull public.ecr.aws/formance-internal/jeffail/benthos:v4.23.0-es \
+        --pull public.ecr.aws/formance-internal/jeffail/benthos:v4.23.1-es \
         --compose docker-compose.yml
         RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
             --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
