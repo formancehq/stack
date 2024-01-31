@@ -364,6 +364,20 @@ paths:
         '200':
           $ref: '#/components/responses/BankAccount'
 
+  /bank-accounts/{bankAccountId}/forward:
+    post:
+      summary: Forward a bank account to a connector
+      tags:
+        - Payments
+      operationId: forwardBankAccount
+      parameters:
+        - $ref: '#/components/parameters/BankAccountId'
+      requestBody:
+        $ref: '#/components/requestBodies/ForwardBankAccount'
+      responses:
+        '200':
+          $ref: '#/components/responses/BankAccount'
+
   /connectors:
     get:
       summary: List all installed connectors
@@ -851,6 +865,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/TransferInitiationRequest'
+    ForwardBankAccount:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ForwardBankAccountRequest'
     BankAccount:
       required: true
       content:
@@ -2046,6 +2066,13 @@ components:
         source:
           type: string
           example: acct_1Gqj58KZcSIg2N2q
+    ForwardBankAccountRequest:
+      type: object
+      required:
+        - connectorID
+      properties:
+        connectorID:
+          type: string
     BankAccountRequest:
       type: object
       required:

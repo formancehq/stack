@@ -1,7 +1,7 @@
 lockVersion: 2.0.0
-id: c56be78d-fcd6-41b2-b096-927ae7bb1be1
+id: 5edddd06-814b-489a-8f4c-60900baeed6d
 management:
-  docChecksum: 5621ab22157be1824690d0a2dc5234c2
+  docChecksum: e64f058f8ed1617c198d1fe84ea95670
   docVersion: INTERNAL
   speakeasyVersion: internal
   generationVersion: 2.237.2
@@ -142,6 +142,7 @@ generatedFiles:
   - /pkg/models/operations/createtransferinitiation.go
   - /pkg/models/operations/deletepool.go
   - /pkg/models/operations/deletetransferinitiation.go
+  - /pkg/models/operations/forwardbankaccount.go
   - /pkg/models/operations/getaccountbalances.go
   - /pkg/models/operations/getbankaccount.go
   - /pkg/models/operations/getconnectortask.go
@@ -458,6 +459,7 @@ generatedFiles:
   - /pkg/models/shared/transferinitiationpayments.go
   - /pkg/models/shared/transferinitiationadjusments.go
   - /pkg/models/shared/transferinitiationrequest.go
+  - /pkg/models/shared/forwardbankaccountrequest.go
   - /pkg/models/shared/balancescursor.go
   - /pkg/models/shared/accountbalance.go
   - /pkg/models/shared/taskresponse.go
@@ -713,6 +715,8 @@ generatedFiles:
   - docs/pkg/models/operations/deletepoolresponse.md
   - docs/pkg/models/operations/deletetransferinitiationrequest.md
   - docs/pkg/models/operations/deletetransferinitiationresponse.md
+  - docs/pkg/models/operations/forwardbankaccountrequest.md
+  - docs/pkg/models/operations/forwardbankaccountresponse.md
   - docs/pkg/models/operations/getaccountbalancesrequest.md
   - docs/pkg/models/operations/getaccountbalancesresponse.md
   - docs/pkg/models/operations/getbankaccountrequest.md
@@ -1136,6 +1140,7 @@ generatedFiles:
   - docs/pkg/models/shared/transferinitiationadjusments.md
   - docs/pkg/models/shared/transferinitiationrequesttype.md
   - docs/pkg/models/shared/transferinitiationrequest.md
+  - docs/pkg/models/shared/forwardbankaccountrequest.md
   - docs/pkg/models/shared/balancescursorcursor.md
   - docs/pkg/models/shared/balancescursor.md
   - docs/pkg/models/shared/accountbalance.md

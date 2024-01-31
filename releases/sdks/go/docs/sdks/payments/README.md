@@ -11,6 +11,7 @@
 * [CreateTransferInitiation](#createtransferinitiation) - Create a TransferInitiation
 * [DeletePool](#deletepool) - Delete a Pool
 * [DeleteTransferInitiation](#deletetransferinitiation) - Delete a transfer initiation
+* [ForwardBankAccount](#forwardbankaccount) - Forward a bank account to a connector
 * [GetAccountBalances](#getaccountbalances) - Get account balances
 * [GetBankAccount](#getbankaccount) - Get a bank account created by user on Formance
 * [~~GetConnectorTask~~](#getconnectortask) - Read a specific task of the connector :warning: **Deprecated**
@@ -503,6 +504,62 @@ func main() {
 ### Response
 
 **[*operations.DeleteTransferInitiationResponse](../../pkg/models/operations/deletetransferinitiationresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
+
+## ForwardBankAccount
+
+Forward a bank account to a connector
+
+### Example Usage
+
+```go
+package main
+
+import(
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
+	"context"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"log"
+)
+
+func main() {
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
+
+    ctx := context.Background()
+    res, err := s.Payments.ForwardBankAccount(ctx, operations.ForwardBankAccountRequest{
+        ForwardBankAccountRequest: shared.ForwardBankAccountRequest{
+            ConnectorID: "string",
+        },
+        BankAccountID: "string",
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    if res.BankAccountResponse != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                                                        | Type                                                                                             | Required                                                                                         | Description                                                                                      |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `ctx`                                                                                            | [context.Context](https://pkg.go.dev/context#Context)                                            | :heavy_check_mark:                                                                               | The context to use for the request.                                                              |
+| `request`                                                                                        | [operations.ForwardBankAccountRequest](../../pkg/models/operations/forwardbankaccountrequest.md) | :heavy_check_mark:                                                                               | The request object to use for the request.                                                       |
+
+
+### Response
+
+**[*operations.ForwardBankAccountResponse](../../pkg/models/operations/forwardbankaccountresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
 | sdkerrors.SDKError | 4xx-5xx            | */*                |
