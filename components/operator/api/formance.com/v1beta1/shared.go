@@ -280,3 +280,8 @@ func init() {
 		panic(err)
 	}
 }
+
+const (
+	StackLabel = "formance.com/stack"
+	SkipLabel  = "formance.com/skip"
+)

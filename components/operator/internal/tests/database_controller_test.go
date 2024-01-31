@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
-	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/secretreferences"
 	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/operator/internal/tests/internal"
@@ -111,7 +110,7 @@ var _ = Describe("DatabaseController", func() {
 						Name:      uuid.NewString(),
 						Namespace: "default",
 						Labels: map[string]string{
-							core.StackLabel: stack.Name,
+							v1beta1.StackLabel: stack.Name,
 						},
 						Annotations: map[string]string{
 							secretreferences.RewrittenSecretName: "postgres",
@@ -141,7 +140,7 @@ var _ = Describe("DatabaseController", func() {
 							Name:      uuid.NewString(),
 							Namespace: "default",
 							Labels: map[string]string{
-								core.StackLabel: stack.Name,
+								v1beta1.StackLabel: stack.Name,
 							},
 							Annotations: map[string]string{
 								secretreferences.RewrittenSecretName: "postgres2",

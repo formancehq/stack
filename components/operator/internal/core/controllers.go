@@ -54,7 +54,7 @@ func ForStackDependency[T v1beta1.Dependent](ctrl StackDependentObjectController
 				return err
 			}
 		} else {
-			if stack.GetLabels()[SkipLabel] == "true" {
+			if stack.GetAnnotations()[v1beta1.SkipLabel] == "true" {
 				return nil
 			}
 		}

@@ -27,8 +27,8 @@ func init() {
 			WithOwn[*v1beta1.SecretReference](&v1.Secret{}),
 			WithWatch[*v1beta1.SecretReference, *v1.Secret](func(ctx Context, object *v1.Secret) []reconcile.Request {
 				ret := make([]reconcile.Request, 0)
-				if object.GetLabels()[StackLabel] != "any" {
-					for _, stack := range strings.Split(object.GetLabels()[StackLabel], ",") {
+				if object.GetLabels()[v1beta1.StackLabel] != "any" {
+					for _, stack := range strings.Split(object.GetLabels()[v1beta1.StackLabel], ",") {
 						ret = append(ret, BuildReconcileRequests(
 							ctx,
 							ctx.GetClient(),
@@ -120,7 +120,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, req *v1beta1.SecretReference) 
 }
 
 func findMatchingSecret(ctx Context, stack, name string) (*v1.Secret, error) {
-	requirement, err := labels.NewRequirement(StackLabel, selection.In, []string{stack, AnyValue})
+	requirement, err := labels.NewRequirement(v1beta1.StackLabel, selection.In, []string{stack, AnyValue})
 	if err != nil {
 		return nil, err
 	}

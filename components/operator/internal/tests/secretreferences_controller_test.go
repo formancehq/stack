@@ -2,7 +2,6 @@ package tests
 
 import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
-	"github.com/formancehq/operator/internal/core"
 	. "github.com/formancehq/operator/internal/tests/internal"
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
@@ -28,7 +27,7 @@ var _ = Describe("SecretReferenceController", func() {
 					Name:      uuid.NewString(),
 					Namespace: "default",
 					Labels: map[string]string{
-						core.StackLabel: stack.Name,
+						v1beta1.StackLabel: stack.Name,
 					},
 				},
 			}
@@ -64,7 +63,7 @@ var _ = Describe("SecretReferenceController", func() {
 							Name:      uuid.NewString(),
 							Namespace: "default",
 							Labels: map[string]string{
-								core.StackLabel: stack.Name,
+								v1beta1.StackLabel: stack.Name,
 							},
 						},
 					}
