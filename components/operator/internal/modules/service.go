@@ -679,6 +679,7 @@ func (r *serviceReconciler) createIngress(ctx context.Context) error {
 			}
 			return []networkingv1.IngressTLS{{
 				SecretName: r.Configuration.Spec.Ingress.TLS.SecretName,
+				Hosts:      []string{r.Stack.Spec.Host},
 			}}
 		}()
 		ingress.Spec.Rules = []networkingv1.IngressRule{
