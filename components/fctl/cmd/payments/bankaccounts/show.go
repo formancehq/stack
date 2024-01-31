@@ -119,6 +119,12 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 	if c.store.BankAccount.SwiftBicCode != nil {
 		tableData = append(tableData, []string{pterm.LightCyan("SwiftBicCode"), *c.store.BankAccount.SwiftBicCode})
 	}
+	tableData = append(tableData, []string{pterm.LightCyan("AccountID"), func() string {
+		if c.store.BankAccount.AccountID != nil {
+			return *c.store.BankAccount.AccountID
+		}
+		return ""
+	}()})
 
 	if err := pterm.DefaultTable.
 		WithWriter(cmd.OutOrStdout()).

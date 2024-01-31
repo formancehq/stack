@@ -124,9 +124,16 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 
 				return string(*bc.Provider)
 			}(),
+			func() string {
+				if bc.AccountID == nil {
+					return ""
+				}
+
+				return string(*bc.AccountID)
+			}(),
 		}
 	})
-	tableData = fctl.Prepend(tableData, []string{"ID", "Name", "CreatedAt", "Country", "ConnectorID", "Provider"})
+	tableData = fctl.Prepend(tableData, []string{"ID", "Name", "CreatedAt", "Country", "ConnectorID", "Provider", "AccountID"})
 	return pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).
