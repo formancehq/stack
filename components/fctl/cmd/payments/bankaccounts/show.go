@@ -103,13 +103,6 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 	tableData = append(tableData, []string{pterm.LightCyan("Name"), c.store.BankAccount.Name})
 	tableData = append(tableData, []string{pterm.LightCyan("CreatedAt"), c.store.BankAccount.CreatedAt.Format(time.RFC3339)})
 	tableData = append(tableData, []string{pterm.LightCyan("Country"), c.store.BankAccount.Country})
-	tableData = append(tableData, []string{pterm.LightCyan("ConnectorID"), string(c.store.BankAccount.ConnectorID)})
-	tableData = append(tableData, []string{pterm.LightCyan("Provider"), func() string {
-		if c.store.BankAccount.Provider != nil {
-			return *c.store.BankAccount.Provider
-		}
-		return ""
-	}()})
 	if c.store.BankAccount.AccountNumber != nil {
 		tableData = append(tableData, []string{pterm.LightCyan("AccountNumber"), *c.store.BankAccount.AccountNumber})
 	}
@@ -119,12 +112,6 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 	if c.store.BankAccount.SwiftBicCode != nil {
 		tableData = append(tableData, []string{pterm.LightCyan("SwiftBicCode"), *c.store.BankAccount.SwiftBicCode})
 	}
-	tableData = append(tableData, []string{pterm.LightCyan("AccountID"), func() string {
-		if c.store.BankAccount.AccountID != nil {
-			return *c.store.BankAccount.AccountID
-		}
-		return ""
-	}()})
 
 	if err := pterm.DefaultTable.
 		WithWriter(cmd.OutOrStdout()).

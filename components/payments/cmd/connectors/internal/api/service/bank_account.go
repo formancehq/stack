@@ -161,5 +161,5 @@ func (s *Service) ForwardBankAccountToConnector(ctx context.Context, id string, 
 	}
 	bankAccount.Adjustments = adjustments
 
-	return nil, err
+	return bankAccount, err
 }
