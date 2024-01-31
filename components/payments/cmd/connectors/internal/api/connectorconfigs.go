@@ -13,6 +13,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/mangopay"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/modulr"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/moneycorp"
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors/paypal"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/stripe"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/wise"
 	"github.com/formancehq/stack/libs/go-libs/api"
@@ -34,6 +35,7 @@ func connectorConfigsHandler() http.HandlerFunc {
 			wise.Config{},
 			mangopay.Config{},
 			moneycorp.Config{},
+			paypal.Config{},
 		)
 
 		err := json.NewEncoder(w).Encode(api.BaseResponse[configtemplate.Configs]{
