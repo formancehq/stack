@@ -36,6 +36,11 @@ func TestCreateBankAccounts(t *testing.T) {
 		Provider:  models.ConnectorProviderDummyPay,
 	}
 
+	acc1 := models.AccountID{
+		Reference:   "acc1",
+		ConnectorID: connectorID,
+	}
+
 	testCases := []testCase{
 		{
 			name: "nominal",
@@ -196,15 +201,23 @@ func TestCreateBankAccounts(t *testing.T) {
 				testCase.expectedStatusCode = http.StatusOK
 			}
 
+			bankAccountID := uuid.New()
 			createBankAccountResponse := models.BankAccount{
-				ID:            uuid.New(),
+				ID:            bankAccountID,
 				CreatedAt:     time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
-				ConnectorID:   connectorID,
 				Name:          "test_nominal",
 				AccountNumber: "0112345678",
 				IBAN:          "FR7630006000011234567890189",
 				SwiftBicCode:  "HBUKGB4B",
 				Country:       "FR",
+				Adjustments: []*models.BankAccountAdjustment{
+					{
+						ID:            uuid.New(),
+						BankAccountID: bankAccountID,
+						ConnectorID:   connectorID,
+						AccountID:     acc1,
+					},
+				},
 			}
 
 			expectedCreateBankAccountResponse := &bankAccountResponse{
@@ -212,9 +225,17 @@ func TestCreateBankAccounts(t *testing.T) {
 				Name:        createBankAccountResponse.Name,
 				CreatedAt:   createBankAccountResponse.CreatedAt,
 				Country:     createBankAccountResponse.Country,
-				ConnectorID: createBankAccountResponse.ConnectorID.String(),
-				AccountID:   createBankAccountResponse.AccountID.String(),
-				Provider:    createBankAccountResponse.ConnectorID.Provider.String(),
+				ConnectorID: createBankAccountResponse.Adjustments[0].ConnectorID.String(),
+				AccountID:   createBankAccountResponse.Adjustments[0].AccountID.String(),
+				Provider:    createBankAccountResponse.Adjustments[0].ConnectorID.Provider.String(),
+				Adjustments: []*bankAccountAdjusmtentsResponse{
+					{
+						ID:          createBankAccountResponse.Adjustments[0].ID.String(),
+						AccountID:   createBankAccountResponse.Adjustments[0].AccountID.String(),
+						ConnectorID: createBankAccountResponse.Adjustments[0].ConnectorID.String(),
+						Provider:    createBankAccountResponse.Adjustments[0].ConnectorID.Provider.String(),
+					},
+				},
 			}
 
 			backend, mockService := newServiceTestingBackend(t)

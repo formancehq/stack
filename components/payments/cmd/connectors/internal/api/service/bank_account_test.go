@@ -141,7 +141,7 @@ func TestCreateBankAccounts(t *testing.T) {
 			if !tc.noBankAccountCreateHandler {
 				handlers = map[models.ConnectorProvider]*ConnectorHandlers{
 					models.ConnectorProviderDummyPay: {
-						BankAccountHandler: func(ctx context.Context, bankAccount *models.BankAccount) error {
+						BankAccountHandler: func(ctx context.Context, connectorID models.ConnectorID, bankAccount *models.BankAccount) error {
 							if tc.errorBankAccountCreateHandler != nil {
 								return tc.errorBankAccountCreateHandler
 							}

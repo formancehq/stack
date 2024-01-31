@@ -313,6 +313,55 @@ func registerMigrationsV1(ctx context.Context, migrator *migrations.Migrator) {
 				return nil
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				_, err := tx.Exec(`
+				CREATE TABLE IF NOT EXISTS accounts.bank_account_adjustments (
+					id uuid NOT NULL,
+					created_at timestamp with time zone  NOT NULL,
+					bank_account_id uuid NOT NULL,
+					connector_id CHARACTER VARYING NOT NULL,
+					account_id CHARACTER VARYING NOT NULL,
+					CONSTRAINT transfer_initiation_adjustments_pk PRIMARY KEY (id)
+				);
+
+				ALTER TABLE accounts.bank_account_adjustments ADD CONSTRAINT bank_account_adjustments_bank_account_id
+				FOREIGN KEY (bank_account_id)
+				REFERENCES accounts.bank_account (id)
+				ON DELETE CASCADE
+				NOT DEFERRABLE
+				INITIALLY IMMEDIATE
+				;
+
+				ALTER TABLE accounts.bank_account_adjustments ADD CONSTRAINT bank_account_adjustments_connector_id
+				FOREIGN KEY (connector_id)
+				REFERENCES connectors.connector (id)
+				ON DELETE CASCADE
+				NOT DEFERRABLE
+				INITIALLY IMMEDIATE
+				;
+
+				ALTER TABLE accounts.bank_account_adjustments ADD CONSTRAINT bank_account_adjustments_account_id
+				FOREIGN KEY (account_id)
+				REFERENCES accounts.account (id)
+				ON DELETE CASCADE
+				NOT DEFERRABLE
+				INITIALLY IMMEDIATE
+				;
+
+				INSERT INTO accounts.bank_account_adjustments (id, created_at, bank_account_id, connector_id, account_id)
+				SELECT gen_random_uuid(), created_at, id, connector_id, account_id FROM accounts.bank_account WHERE account_id IS NOT NULL;
+
+				ALTER TABLE accounts.bank_account DROP COLUMN IF EXISTS account_id;
+				ALTER TABLE accounts.bank_account DROP COLUMN IF EXISTS connector_id;
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
 	)
 }
 

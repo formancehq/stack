@@ -8,7 +8,6 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/google/uuid"
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 )
 
@@ -26,7 +25,6 @@ func TestBankAccounts(t *testing.T) {
 	testInstallConnectors(t, store)
 	testCreateAccounts(t, store)
 	testCreateBankAccounts(t, store)
-	testFetchLinkedAccountForBankAccount(t, store)
 	testListBankAccounts(t, store)
 	testUninstallConnectors(t, store)
 	testBankAccountsDeletedAfterConnectorUninstall(t, store)
@@ -35,7 +33,6 @@ func TestBankAccounts(t *testing.T) {
 func testCreateBankAccounts(t *testing.T, store *storage.Storage) {
 	bankAccount1 := &models.BankAccount{
 		CreatedAt:    bankAccount1T,
-		ConnectorID:  connectorID,
 		Name:         "test1",
 		IBAN:         "FR7630006000011234567890189",
 		SwiftBicCode: "BNPAFRPPXXX",
@@ -49,11 +46,9 @@ func testCreateBankAccounts(t *testing.T, store *storage.Storage) {
 
 	bankAccount2 := &models.BankAccount{
 		CreatedAt:     bankAccount2T,
-		ConnectorID:   connectorID,
 		Name:          "test2",
 		AccountNumber: "123456789",
 		Country:       "FR",
-		AccountID:     &acc1ID,
 	}
 
 	err = store.CreateBankAccount(context.Background(), bankAccount2)
@@ -61,19 +56,27 @@ func testCreateBankAccounts(t *testing.T, store *storage.Storage) {
 	require.NotEqual(t, uuid.Nil, bankAccount2.ID)
 	bankAccount2ID = bankAccount2.ID
 
-	bankAccountFail := &models.BankAccount{
+	adjustment := &models.BankAccountAdjustment{
+		ID:            uuid.New(),
 		CreatedAt:     bankAccount2T,
+		BankAccountID: bankAccount2ID,
 		ConnectorID:   connectorID,
-		Name:          "test2",
-		AccountNumber: "123456789",
-		Country:       "FR",
-		AccountID: &models.AccountID{
+		AccountID:     acc1ID,
+	}
+	err = store.AddBankAccountAdjustment(context.Background(), adjustment)
+	require.NoError(t, err)
+	bankAccount2.Adjustments = append(bankAccount2.Adjustments, adjustment)
+
+	err = store.AddBankAccountAdjustment(context.Background(), &models.BankAccountAdjustment{
+		ID:            uuid.New(),
+		CreatedAt:     bankAccount2T,
+		BankAccountID: bankAccount2ID,
+		ConnectorID:   connectorID,
+		AccountID: models.AccountID{
 			Reference:   "not_existing",
 			ConnectorID: connectorID,
 		},
-	}
-
-	err = store.CreateBankAccount(context.Background(), bankAccountFail)
+	})
 	require.Error(t, err)
 
 	testGetBankAccount(t, store, bankAccount1ID, true, bankAccount1, nil)
@@ -96,30 +99,23 @@ func testGetBankAccount(
 		require.NoError(t, err)
 	}
 
-	require.Equal(t, bankAccount.AccountID, expectedBankAccount.AccountID)
 	require.Equal(t, bankAccount.Country, expectedBankAccount.Country)
 	require.Equal(t, bankAccount.CreatedAt.UTC(), expectedBankAccount.CreatedAt.UTC())
 	require.Equal(t, bankAccount.Name, expectedBankAccount.Name)
-	require.Equal(t, bankAccount.ConnectorID, expectedBankAccount.ConnectorID)
 
 	if expand {
 		require.Equal(t, bankAccount.SwiftBicCode, expectedBankAccount.SwiftBicCode)
 		require.Equal(t, bankAccount.IBAN, expectedBankAccount.IBAN)
 		require.Equal(t, bankAccount.AccountNumber, expectedBankAccount.AccountNumber)
 	}
-}
 
-func testFetchLinkedAccountForBankAccount(
-	t *testing.T,
-	store *storage.Storage,
-) {
-	accountID, err := store.FetchLinkedAccountForBankAccount(context.Background(), bankAccount2ID)
-	require.NoError(t, err)
-	require.Equal(t, &acc1ID, accountID)
-
-	accountID, err = store.FetchLinkedAccountForBankAccount(context.Background(), bankAccount1ID)
-	require.True(t, errors.Is(err, storage.ErrNotFound))
-	require.Nil(t, accountID)
+	require.Len(t, bankAccount.Adjustments, len(expectedBankAccount.Adjustments))
+	for i, adj := range bankAccount.Adjustments {
+		require.Equal(t, adj.BankAccountID, expectedBankAccount.Adjustments[i].BankAccountID)
+		require.Equal(t, adj.CreatedAt.UTC(), expectedBankAccount.Adjustments[i].CreatedAt.UTC())
+		require.Equal(t, adj.ConnectorID, expectedBankAccount.Adjustments[i].ConnectorID)
+		require.Equal(t, adj.AccountID, expectedBankAccount.Adjustments[i].AccountID)
+	}
 }
 
 func testListBankAccounts(t *testing.T, store *storage.Storage) {
@@ -163,6 +159,23 @@ func testListBankAccounts(t *testing.T, store *storage.Storage) {
 }
 
 func testBankAccountsDeletedAfterConnectorUninstall(t *testing.T, store *storage.Storage) {
-	testGetBankAccount(t, store, bankAccount1ID, false, nil, storage.ErrNotFound)
-	testGetBankAccount(t, store, bankAccount2ID, false, nil, storage.ErrNotFound)
+	// Connector has been uninstalled, related adjustments are deleted, but not the bank
+	// accounts themselves.
+	bankAccount1 := &models.BankAccount{
+		CreatedAt:    bankAccount1T,
+		Name:         "test1",
+		IBAN:         "FR7630006000011234567890189",
+		SwiftBicCode: "BNPAFRPPXXX",
+		Country:      "FR",
+	}
+
+	bankAccount2 := &models.BankAccount{
+		CreatedAt:     bankAccount2T,
+		Name:          "test2",
+		AccountNumber: "123456789",
+		Country:       "FR",
+	}
+
+	testGetBankAccount(t, store, bankAccount1ID, true, bankAccount1, nil)
+	testGetBankAccount(t, store, bankAccount2ID, true, bankAccount2, nil)
 }

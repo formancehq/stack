@@ -134,11 +134,15 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 		}
 	})
 	tableData = fctl.Prepend(tableData, []string{"ID", "Name", "CreatedAt", "Country", "ConnectorID", "Provider", "AccountID"})
-	return pterm.DefaultTable.
+	if err := pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).
 		WithData(tableData).
-		Render()
+		Render(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func NewListCommand() *cobra.Command {

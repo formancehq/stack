@@ -446,13 +446,13 @@ func (l *ConnectorsManager[ConnectorConfig]) ReversePayment(ctx context.Context,
 	return nil
 }
 
-func (l *ConnectorsManager[ConnectorConfig]) CreateExternalBankAccount(ctx context.Context, bankAccount *models.BankAccount) error {
-	connectorManager, err := l.getManager(bankAccount.ConnectorID)
+func (l *ConnectorsManager[ConnectorConfig]) CreateExternalBankAccount(ctx context.Context, connectorID models.ConnectorID, bankAccount *models.BankAccount) error {
+	connectorManager, err := l.getManager(connectorID)
 	if err != nil {
 		return ErrConnectorNotFound
 	}
 
-	detachedCtx, span := detachedCtxWithSpan(ctx, trace.SpanFromContext(ctx), "connectorManager.CreateExternalBankAccount", bankAccount.ConnectorID)
+	detachedCtx, span := detachedCtxWithSpan(ctx, trace.SpanFromContext(ctx), "connectorManager.CreateExternalBankAccount", connectorID)
 	defer span.End()
 	err = connectorManager.connector.CreateExternalBankAccount(task.NewConnectorContext(detachedCtx, connectorManager.scheduler), bankAccount)
 	if err != nil {

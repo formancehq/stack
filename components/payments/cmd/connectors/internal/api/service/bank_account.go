@@ -64,7 +64,6 @@ func (s *Service) CreateBankAccount(ctx context.Context, req *CreateBankAccountR
 		IBAN:          req.IBAN,
 		SwiftBicCode:  req.SwiftBicCode,
 		Country:       req.Country,
-		ConnectorID:   connectorID,
 		Name:          req.Name,
 		Metadata:      req.Metadata,
 	}
@@ -73,7 +72,7 @@ func (s *Service) CreateBankAccount(ctx context.Context, req *CreateBankAccountR
 		return nil, newStorageError(err, "creating bank account")
 	}
 
-	if err := handlers.BankAccountHandler(ctx, bankAccount); err != nil {
+	if err := handlers.BankAccountHandler(ctx, connectorID, bankAccount); err != nil {
 		switch {
 		case errors.Is(err, manager.ErrValidation):
 			return nil, errors.Wrap(ErrValidation, err.Error())
@@ -84,16 +83,9 @@ func (s *Service) CreateBankAccount(ctx context.Context, req *CreateBankAccountR
 		}
 	}
 
-	linkedAccountID, err := s.store.FetchLinkedAccountForBankAccount(ctx, bankAccount.ID)
+	bankAccount, err = s.store.GetBankAccount(ctx, bankAccount.ID, true)
 	if err != nil {
-		switch {
-		case errors.Is(err, storage.ErrNotFound):
-			// Nothing to do
-		default:
-			return nil, newStorageError(err, "fetching linked account for bank account")
-		}
-	} else {
-		bankAccount.AccountID = linkedAccountID
+		return nil, newStorageError(err, "fetching bank account")
 	}
 
 	return bankAccount, nil

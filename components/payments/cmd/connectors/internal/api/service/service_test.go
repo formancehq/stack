@@ -157,7 +157,7 @@ func (m *MockStore) LinkBankAccountWithAccount(ctx context.Context, id uuid.UUID
 	return nil
 }
 
-func (m *MockStore) FetchLinkedAccountForBankAccount(ctx context.Context, bankAccountID uuid.UUID) (*models.AccountID, error) {
+func (m *MockStore) GetBankAccount(ctx context.Context, id uuid.UUID, expand bool) (*models.BankAccount, error) {
 	return nil, nil
 }
 

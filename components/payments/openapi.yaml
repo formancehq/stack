@@ -1638,8 +1638,32 @@ components:
           type: string
         swiftBicCode:
           type: string
+        adjustments:
+          type: array
+          items:
+            $ref: '#/components/schemas/BankAccountAdjustment'
         metadata:
           $ref: '#/components/schemas/BankAccountMetadata'
+    BankAccountAdjustment:
+      type: object
+      required:
+        - id
+        - createdAt
+        - connectorID
+        - provider
+        - accountID
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        provider:
+          type: string
+        connectorID:
+          type: string
+        accountID:
+          type: string
     BankAccountMetadata:
       type: object
       additionalProperties:

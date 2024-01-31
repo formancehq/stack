@@ -133,5 +133,24 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Adjustments")
+	tableData = fctl.Map(c.store.BankAccount.Adjustments, func(ba shared.BankAccountAdjustment) []string {
+		return []string{
+			ba.ID,
+			ba.CreatedAt.Format(time.RFC3339),
+			ba.ConnectorID,
+			ba.Provider,
+			ba.AccountID,
+		}
+	})
+	tableData = fctl.Prepend(tableData, []string{"ID", "CreatedAt", "ConnectorID", "Provider", "AccountID"})
+	if err := pterm.DefaultTable.
+		WithHasHeader().
+		WithWriter(cmd.OutOrStdout()).
+		WithData(tableData).
+		Render(); err != nil {
+		return err
+	}
+
 	return fctl.PrintMetadata(cmd.OutOrStdout(), c.store.BankAccount.Metadata)
 }
