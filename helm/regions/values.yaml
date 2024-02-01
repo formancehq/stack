@@ -4,7 +4,7 @@ operator:
   nameOverride: "operator"
   image:
     repository: "ghcr.io/formancehq/operator"
-    tag: "v0.22.2"
+    tag: "v2.0.0-rc.2"
   operator:
     disableWebhooks: false
     region: "private"
@@ -15,7 +15,7 @@ operator:
 agent:
   enabled: true
   image:
-    tag: v0.6.0
+    tag: "v2.0.0-rc.2"
   server:
     address: "app.formance.cloud:443"
     tls:
@@ -29,54 +29,3 @@ agent:
         issuer: https://app.formance.cloud/api
         clientID: "REGION_ID"
         clientSecret: ""
-
-
-# External Services
-nats:
-  fullnameOverride: nats
-  config:
-    cluster:
-      enabled: true
-      replicas: 3
-    jetstream:
-      enabled: true
-      fileStore:
-        enabled: true
-        dir: /data
-        pvc:
-          enabled: false
-          size: 20Gi
-
-postgresql:
-  fullnameOverride: postgresql
-  architecture: standalone
-  global:
-    postgresql:
-      auth:
-        username: formance
-        password: formance
-        database: formance
-        postgresPassword: formance
-  primary:
-    persistence:
-      enabled: false
-
-opensearch:
-  fullnameOverride: opensearch
-  security:
-    enabled: false
-  master:
-    replicaCount: 1
-    persistence:
-      enabled: false
-  data:
-    replicaCount: 2
-    persistence:
-      enabled: false
-  coordinating:
-    replicaCount: 0
-  ingest:
-    enabled: false
-    replicaCount: 0
-  dashboards:
-    enabled: true
