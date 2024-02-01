@@ -277,7 +277,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 	})
 
 	_, err = deployments.CreateOrUpdate(ctx, stack, b, "benthos",
-		secretreferences.Annotate[*appsv1.Deployment](secretReference),
+		secretreferences.Annotate[*appsv1.Deployment]("elasticsearch-secret-hash", secretReference),
 		deployments.WithMatchingLabels("benthos"),
 		deployments.WithInitContainers(b.Spec.InitContainers...),
 		deployments.WithContainers(corev1.Container{

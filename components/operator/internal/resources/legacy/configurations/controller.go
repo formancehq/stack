@@ -84,6 +84,9 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 			continue
 		}
 		var computeResourceList = func(resource *v1beta3.Resource) string {
+			if resource == nil {
+				return ""
+			}
 			limits := ""
 			if resource.Cpu != "" {
 				limits = limits + "cpu=" + resource.Cpu

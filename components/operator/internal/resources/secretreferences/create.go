@@ -41,20 +41,20 @@ func Sync(ctx core.Context, owner v1beta1.Dependent, name string, u *v1beta1.URI
 	}
 }
 
-func Annotate[T client.Object](ref *v1beta1.SecretReference) core.ObjectMutator[T] {
+func Annotate[T client.Object](key string, ref *v1beta1.SecretReference) core.ObjectMutator[T] {
 	return func(t T) error {
 		annotations := t.GetAnnotations()
 		if ref == nil {
 			if annotations == nil || len(annotations) == 0 {
 				return nil
 			}
-			delete(annotations, ref.Name)
+			delete(annotations, key)
 			return nil
 		} else {
 			if annotations == nil {
 				annotations = map[string]string{}
 			}
-			annotations[ref.Name] = ref.Status.Hash
+			annotations[key] = ref.Status.Hash
 		}
 
 		return nil

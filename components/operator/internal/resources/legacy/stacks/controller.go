@@ -44,18 +44,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		return err
 	}
 
-	versions := &v1beta3.Versions{}
-	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
-		Name: func() string {
-			if stack.Spec.Versions == "" {
-				return "default"
-			}
-			return stack.Spec.Versions
-		}(),
-	}, versions); err != nil {
-		return err
-	}
-
 	for _, object := range []client.Object{
 		&corev1.ConfigMap{},
 		&corev1.Secret{},
@@ -121,7 +109,7 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			t.Spec.EnableAudit = *configuration.Spec.Services.Gateway.EnableAuditPlugin
 		}
 		t.Spec.Disabled = stack.Spec.Disabled
-		t.Spec.VersionsFromFile = versions.Name
+		t.Spec.VersionsFromFile = stack.Spec.Versions
 
 		return nil
 	})
