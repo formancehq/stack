@@ -15,6 +15,8 @@ type V2GetBalancesAggregatedRequest struct {
 	// Name of the ledger.
 	Ledger string     `pathParam:"style=simple,explode=false,name=ledger"`
 	Pit    *time.Time `queryParam:"style=form,explode=true,name=pit"`
+	// Use insertion date instead of effective date
+	UseInsertionDate *bool `queryParam:"style=form,explode=true,name=use_insertion_date"`
 }
 
 func (v V2GetBalancesAggregatedRequest) MarshalJSON() ([]byte, error) {
@@ -47,6 +49,13 @@ func (o *V2GetBalancesAggregatedRequest) GetPit() *time.Time {
 		return nil
 	}
 	return o.Pit
+}
+
+func (o *V2GetBalancesAggregatedRequest) GetUseInsertionDate() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.UseInsertionDate
 }
 
 type V2GetBalancesAggregatedResponse struct {
