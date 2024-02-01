@@ -14,7 +14,6 @@ import (
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/alitto/pond"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/formancehq/webhooks/pkg/storage"
@@ -26,7 +25,6 @@ import (
 func StartModule(serviceName string, retriesCron time.Duration, retryPolicy webhooks.BackoffPolicy) fx.Option {
 	var options []fx.Option
 
-	options = append(options, otlptraces.CLITracesModule(viper.GetViper()))
 	options = append(options, fx.Invoke(func(r *message.Router, subscriber message.Subscriber, store storage.Store, httpClient *http.Client) {
 		configureMessageRouter(r, subscriber, viper.GetStringSlice(flag.KafkaTopics), store, httpClient, retryPolicy, pond.New(50, 50))
 	}))
