@@ -20,7 +20,7 @@ import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/databases"
-	"github.com/formancehq/operator/internal/resources/httpapis"
+	"github.com/formancehq/operator/internal/resources/gatewayhttpapis"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
@@ -56,7 +56,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, version st
 		}
 	}
 
-	if err := httpapis.Create(ctx, auth, httpapis.WithRules(httpapis.RuleUnsecured())); err != nil {
+	if err := gatewayhttpapis.Create(ctx, auth, gatewayhttpapis.WithRules(gatewayhttpapis.RuleUnsecured())); err != nil {
 		return errors.Wrap(err, "creating http api")
 	}
 
@@ -69,7 +69,7 @@ func init() {
 	Init(
 		WithModuleReconciler(Reconcile,
 			WithOwn[*v1beta1.Auth](&appsv1.Deployment{}),
-			WithOwn[*v1beta1.Auth](&v1beta1.HTTPAPI{}),
+			WithOwn[*v1beta1.Auth](&v1beta1.GatewayHTTPAPI{}),
 			WithOwn[*v1beta1.Auth](&v1beta1.Database{}),
 			WithOwn[*v1beta1.Auth](&corev1.ConfigMap{}),
 			WithWatchSettings[*v1beta1.Auth](),

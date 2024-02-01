@@ -87,8 +87,8 @@ var _ = Describe("PaymentsController", func() {
 			}).Should(Succeed())
 			Expect(deployment).To(BeControlledBy(payments))
 		})
-		It("Should create a new HTTPAPI object", func() {
-			httpService := &v1beta1.HTTPAPI{}
+		It("Should create a new GatewayHTTPAPI object", func() {
+			httpService := &v1beta1.GatewayHTTPAPI{}
 			Eventually(func() error {
 				return LoadResource("", core.GetObjectName(stack.Name, "payments"), httpService)
 			}).Should(Succeed())

@@ -108,6 +108,13 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 	_, _, err := CreateOrUpdate[*v1beta1.Stack](ctx, types.NamespacedName{
 		Name: stack.Name,
 	}, func(t *v1beta1.Stack) error {
+		if t.Annotations == nil {
+			t.Annotations = map[string]string{}
+		}
+		// Automatically set skip label on creation
+		if t.ResourceVersion == "" {
+			t.Annotations[v1beta1.SkipLabel] = "true"
+		}
 		t.Spec.Dev = stack.Spec.Dev
 		t.Spec.Debug = stack.Spec.Debug
 		if configuration.Spec.Services.Gateway.EnableAuditPlugin != nil {

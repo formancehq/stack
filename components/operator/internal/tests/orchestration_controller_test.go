@@ -103,8 +103,8 @@ var _ = Describe("OrchestrationController", func() {
 				core.Env("TOPICS", fmt.Sprintf("%s-ledger", stack.Name)),
 			))
 		})
-		It("Should create a new HTTPAPI object", func() {
-			httpService := &v1beta1.HTTPAPI{}
+		It("Should create a new GatewayHTTPAPI object", func() {
+			httpService := &v1beta1.GatewayHTTPAPI{}
 			Eventually(func() error {
 				return LoadResource("", core.GetObjectName(stack.Name, "orchestration"), httpService)
 			}).Should(Succeed())

@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package httpapis
+package gatewayhttpapis
 
 import (
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -23,11 +23,11 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
-//+kubebuilder:rbac:groups=formance.com,resources=httpapis,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=formance.com,resources=httpapis/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=formance.com,resources=httpapis/finalizers,verbs=update
+//+kubebuilder:rbac:groups=formance.com,resources=gatewayhttpapis,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=formance.com,resources=gatewayhttpapis/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=formance.com,resources=gatewayhttpapis/finalizers,verbs=update
 
-func Reconcile(ctx Context, stack *v1beta1.Stack, httpAPI *v1beta1.HTTPAPI) error {
+func Reconcile(ctx Context, stack *v1beta1.Stack, httpAPI *v1beta1.GatewayHTTPAPI) error {
 	_, err := services.Create(ctx, httpAPI, httpAPI.Spec.Name, services.WithDefault(httpAPI.Spec.Name))
 	if err != nil {
 		return err
@@ -39,8 +39,8 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, httpAPI *v1beta1.HTTPAPI) erro
 func init() {
 	Init(
 		WithStackDependencyReconciler(Reconcile,
-			WithOwn[*v1beta1.HTTPAPI](&corev1.Service{}),
-			WithWatchSettings[*v1beta1.HTTPAPI](),
+			WithOwn[*v1beta1.GatewayHTTPAPI](&corev1.Service{}),
+			WithWatchSettings[*v1beta1.GatewayHTTPAPI](),
 		),
 	)
 }

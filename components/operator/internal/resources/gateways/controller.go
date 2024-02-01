@@ -36,7 +36,7 @@ import (
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, gateway *v1beta1.Gateway, version string) error {
 
-	httpAPIs := make([]*v1beta1.HTTPAPI, 0)
+	httpAPIs := make([]*v1beta1.GatewayHTTPAPI, 0)
 	err := GetAllStackDependencies(ctx, gateway.Spec.Stack, &httpAPIs)
 	if err != nil {
 		return err
@@ -77,7 +77,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, gateway *v1beta1.Gateway, vers
 		return err
 	}
 
-	gateway.Status.SyncHTTPAPIs = Map(httpAPIs, func(from *v1beta1.HTTPAPI) string {
+	gateway.Status.SyncHTTPAPIs = Map(httpAPIs, func(from *v1beta1.GatewayHTTPAPI) string {
 		return from.Spec.Name
 	})
 	gateway.Status.AuthEnabled = auth != nil
@@ -107,7 +107,7 @@ func init() {
 			WithOwn[*v1beta1.Gateway](&corev1.Service{}),
 			WithOwn[*v1beta1.Gateway](&networkingv1.Ingress{}),
 			WithWatchSettings[*v1beta1.Gateway](),
-			WithWatchDependency[*v1beta1.Gateway](&v1beta1.HTTPAPI{}),
+			WithWatchDependency[*v1beta1.Gateway](&v1beta1.GatewayHTTPAPI{}),
 			WithWatchDependency[*v1beta1.Gateway](&v1beta1.Auth{}),
 			brokertopics.Watch[*v1beta1.Gateway]("gateway"),
 		),

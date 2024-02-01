@@ -1,4 +1,4 @@
-package httpapis
+package gatewayhttpapis
 
 import (
 	"strings"
@@ -8,7 +8,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 )
 
-type option func(spec *v1beta1.HTTPAPI)
+type option func(spec *v1beta1.GatewayHTTPAPI)
 
 var defaultOptions = []option{
 	WithRules(RuleSecured()),
@@ -16,11 +16,11 @@ var defaultOptions = []option{
 
 func Create(ctx core.Context, owner v1beta1.Module, options ...option) error {
 	objectName := strings.ToLower(owner.GetObjectKind().GroupVersionKind().Kind)
-	_, _, err := core.CreateOrUpdate[*v1beta1.HTTPAPI](ctx, types.NamespacedName{
+	_, _, err := core.CreateOrUpdate[*v1beta1.GatewayHTTPAPI](ctx, types.NamespacedName{
 		Name: core.GetObjectName(owner.GetStack(), core.LowerCamelCaseName(ctx, owner)),
 	},
-		func(t *v1beta1.HTTPAPI) error {
-			t.Spec = v1beta1.HTTPAPISpec{
+		func(t *v1beta1.GatewayHTTPAPI) error {
+			t.Spec = v1beta1.GatewayHTTPAPISpec{
 				StackDependency: v1beta1.StackDependency{
 					Stack: owner.GetStack(),
 				},
@@ -32,23 +32,23 @@ func Create(ctx core.Context, owner v1beta1.Module, options ...option) error {
 
 			return nil
 		},
-		core.WithController[*v1beta1.HTTPAPI](ctx.GetScheme(), owner),
+		core.WithController[*v1beta1.GatewayHTTPAPI](ctx.GetScheme(), owner),
 	)
 	return err
 }
 
-func WithRules(rules ...v1beta1.HTTPAPIRule) func(httpapi *v1beta1.HTTPAPI) {
-	return func(httpapi *v1beta1.HTTPAPI) {
+func WithRules(rules ...v1beta1.GatewayHTTPAPIRule) func(httpapi *v1beta1.GatewayHTTPAPI) {
+	return func(httpapi *v1beta1.GatewayHTTPAPI) {
 		httpapi.Spec.Rules = rules
 	}
 }
 
-func RuleSecured() v1beta1.HTTPAPIRule {
-	return v1beta1.HTTPAPIRule{}
+func RuleSecured() v1beta1.GatewayHTTPAPIRule {
+	return v1beta1.GatewayHTTPAPIRule{}
 }
 
-func RuleUnsecured() v1beta1.HTTPAPIRule {
-	return v1beta1.HTTPAPIRule{
+func RuleUnsecured() v1beta1.GatewayHTTPAPIRule {
+	return v1beta1.GatewayHTTPAPIRule{
 		Secured: true,
 	}
 }

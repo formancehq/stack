@@ -298,6 +298,32 @@ rules:
 - apiGroups:
   - formance.com
   resources:
+  - gatewayhttpapis
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - gatewayhttpapis/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - gatewayhttpapis/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
   - gateways
   verbs:
   - create
@@ -317,32 +343,6 @@ rules:
   - formance.com
   resources:
   - gateways/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - formance.com
-  resources:
-  - httpapis
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - formance.com
-  resources:
-  - httpapis/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - formance.com
-  resources:
-  - httpapis/status
   verbs:
   - get
   - patch

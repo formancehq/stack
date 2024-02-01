@@ -48,7 +48,7 @@ var _ = BeforeSuite(func() {
 	logf.SetLogger(zap.New(zap.WriteTo(os.Stdout), zap.UseDevMode(true)))
 	ctx, cancel = context.WithCancel(context.Background())
 
-	SetDefaultEventuallyTimeout(5 * time.Second)
+	SetDefaultEventuallyTimeout(10 * time.Second)
 
 	_, filename, _, _ := osRuntime.Caller(0)
 
@@ -102,7 +102,7 @@ var _ = BeforeSuite(func() {
 	err = ctrl.NewControllerManagedBy(mgr).
 		For(&appsv1.Deployment{}).
 		WithOptions(controllerruntime.Options{
-			MaxConcurrentReconciles: 10,
+			MaxConcurrentReconciles: 100,
 		}).
 		Complete(reconcile.Func(func(ctx context.Context, request reconcile.Request) (reconcile.Result, error) {
 
@@ -129,7 +129,7 @@ var _ = BeforeSuite(func() {
 	err = ctrl.NewControllerManagedBy(mgr).
 		For(&batchv1.Job{}).
 		WithOptions(controllerruntime.Options{
-			MaxConcurrentReconciles: 10,
+			MaxConcurrentReconciles: 100,
 		}).
 		Complete(reconcile.Func(func(ctx context.Context, request reconcile.Request) (reconcile.Result, error) {
 

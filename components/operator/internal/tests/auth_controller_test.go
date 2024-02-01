@@ -53,8 +53,8 @@ var _ = Describe("AuthController", func() {
 				core.Env("BASE_URL", "http://auth:8080"),
 			))
 		})
-		It("Should create a new HTTPAPI object", func() {
-			httpService := &v1beta1.HTTPAPI{}
+		It("Should create a new GatewayHTTPAPI object", func() {
+			httpService := &v1beta1.GatewayHTTPAPI{}
 			Eventually(func() error {
 				return LoadResource("", core.GetObjectName(stack.Name, "auth"), httpService)
 			}).Should(Succeed())

@@ -11,7 +11,7 @@ import (
 	. "github.com/formancehq/operator/internal/tests/internal"
 
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
-	"github.com/formancehq/operator/internal/resources/httpapis"
+	"github.com/formancehq/operator/internal/resources/gatewayhttpapis"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
@@ -25,7 +25,7 @@ var _ = Describe("GatewayController", func() {
 		var (
 			stack   *v1beta1.Stack
 			gateway *v1beta1.Gateway
-			httpAPI *v1beta1.HTTPAPI
+			httpAPI *v1beta1.GatewayHTTPAPI
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -44,14 +44,14 @@ var _ = Describe("GatewayController", func() {
 					},
 				},
 			}
-			httpAPI = &v1beta1.HTTPAPI{
+			httpAPI = &v1beta1.GatewayHTTPAPI{
 				ObjectMeta: RandObjectMeta(),
-				Spec: v1beta1.HTTPAPISpec{
+				Spec: v1beta1.GatewayHTTPAPISpec{
 					StackDependency: v1beta1.StackDependency{
 						Stack: stack.Name,
 					},
 					Name:  "ledger",
-					Rules: []v1beta1.HTTPAPIRule{httpapis.RuleSecured()},
+					Rules: []v1beta1.GatewayHTTPAPIRule{gatewayhttpapis.RuleSecured()},
 				},
 			}
 		})
@@ -127,22 +127,22 @@ var _ = Describe("GatewayController", func() {
 			})
 		})
 		Context("Then adding a new HTTPService", func() {
-			var anotherHttpService *v1beta1.HTTPAPI
+			var anotherHttpService *v1beta1.GatewayHTTPAPI
 			BeforeEach(func() {
-				anotherHttpService = &v1beta1.HTTPAPI{
+				anotherHttpService = &v1beta1.GatewayHTTPAPI{
 					ObjectMeta: RandObjectMeta(),
-					Spec: v1beta1.HTTPAPISpec{
+					Spec: v1beta1.GatewayHTTPAPISpec{
 						StackDependency: v1beta1.StackDependency{
 							Stack: stack.Name,
 						},
 						Name: "another",
-						Rules: []v1beta1.HTTPAPIRule{
+						Rules: []v1beta1.GatewayHTTPAPIRule{
 							{
 								Path:    "/webhooks",
 								Methods: []string{"POST"},
 								Secured: true,
 							},
-							httpapis.RuleSecured(),
+							gatewayhttpapis.RuleSecured(),
 						},
 					},
 				}

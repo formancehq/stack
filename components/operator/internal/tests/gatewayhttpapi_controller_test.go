@@ -2,7 +2,7 @@ package tests_test
 
 import (
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
-	"github.com/formancehq/operator/internal/resources/httpapis"
+	"github.com/formancehq/operator/internal/resources/gatewayhttpapis"
 	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/operator/internal/tests/internal"
 	"github.com/google/uuid"
@@ -11,11 +11,11 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
-var _ = Describe("HTTPAPI", func() {
-	Context("When creating an HTTPAPI", func() {
+var _ = Describe("GatewayHTTPAPI", func() {
+	Context("When creating an GatewayHTTPAPI", func() {
 		var (
 			stack   *v1beta1.Stack
-			httpAPI *v1beta1.HTTPAPI
+			httpAPI *v1beta1.GatewayHTTPAPI
 		)
 		BeforeEach(func() {
 
@@ -23,14 +23,14 @@ var _ = Describe("HTTPAPI", func() {
 				ObjectMeta: RandObjectMeta(),
 				Spec:       v1beta1.StackSpec{},
 			}
-			httpAPI = &v1beta1.HTTPAPI{
+			httpAPI = &v1beta1.GatewayHTTPAPI{
 				ObjectMeta: RandObjectMeta(),
-				Spec: v1beta1.HTTPAPISpec{
+				Spec: v1beta1.GatewayHTTPAPISpec{
 					StackDependency: v1beta1.StackDependency{
 						Stack: stack.Name,
 					},
 					Name:  "ledger",
-					Rules: []v1beta1.HTTPAPIRule{httpapis.RuleSecured()},
+					Rules: []v1beta1.GatewayHTTPAPIRule{gatewayhttpapis.RuleSecured()},
 				},
 			}
 		})

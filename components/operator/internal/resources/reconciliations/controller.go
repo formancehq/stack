@@ -21,7 +21,7 @@ import (
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/authclients"
 	"github.com/formancehq/operator/internal/resources/databases"
-	"github.com/formancehq/operator/internal/resources/httpapis"
+	"github.com/formancehq/operator/internal/resources/gatewayhttpapis"
 	appsv1 "k8s.io/api/apps/v1"
 )
 
@@ -47,7 +47,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, reconciliation *v1beta1.Reconc
 		}
 	}
 
-	if err := httpapis.Create(ctx, reconciliation); err != nil {
+	if err := gatewayhttpapis.Create(ctx, reconciliation); err != nil {
 		return err
 	}
 
@@ -60,7 +60,7 @@ func init() {
 			WithOwn[*v1beta1.Reconciliation](&v1beta1.Database{}),
 			WithOwn[*v1beta1.Reconciliation](&appsv1.Deployment{}),
 			WithOwn[*v1beta1.Reconciliation](&v1beta1.AuthClient{}),
-			WithOwn[*v1beta1.Reconciliation](&v1beta1.HTTPAPI{}),
+			WithOwn[*v1beta1.Reconciliation](&v1beta1.GatewayHTTPAPI{}),
 			WithWatchSettings[*v1beta1.Reconciliation](),
 			WithWatchDependency[*v1beta1.Reconciliation](&v1beta1.Ledger{}),
 			WithWatchDependency[*v1beta1.Reconciliation](&v1beta1.Payments{}),

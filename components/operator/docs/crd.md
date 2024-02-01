@@ -17,7 +17,7 @@ Package v1beta1 contains API Schema definitions for the formance v1beta1 API gro
 - [BrokerTopicConsumer](#brokertopicconsumer)
 - [Database](#database)
 - [Gateway](#gateway)
-- [HTTPAPI](#httpapi)
+- [GatewayHTTPAPI](#gatewayhttpapi)
 - [Ledger](#ledger)
 - [Orchestration](#orchestration)
 - [Payments](#payments)
@@ -300,8 +300,8 @@ _Appears in:_
 - [BrokerTopicConsumerStatus](#brokertopicconsumerstatus)
 - [BrokerTopicStatus](#brokertopicstatus)
 - [DatabaseStatus](#databasestatus)
+- [GatewayHTTPAPIStatus](#gatewayhttpapistatus)
 - [GatewayStatus](#gatewaystatus)
-- [HTTPAPIStatus](#httpapistatus)
 - [LedgerStatus](#ledgerstatus)
 - [ModuleStatus](#modulestatus)
 - [OrchestrationStatus](#orchestrationstatus)
@@ -460,6 +460,56 @@ Gateway is the Schema for the gateways API
 | `spec` _[GatewaySpec](#gatewayspec)_ |  |
 
 
+#### GatewayHTTPAPI
+
+
+
+GatewayHTTPAPI is the Schema for the HTTPAPIs API
+
+
+
+| Field | Description |
+| --- | --- |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `GatewayHTTPAPI`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[GatewayHTTPAPISpec](#gatewayhttpapispec)_ |  |
+
+
+#### GatewayHTTPAPIRule
+
+
+
+
+
+_Appears in:_
+- [GatewayHTTPAPISpec](#gatewayhttpapispec)
+
+| Field | Description |
+| --- | --- |
+| `path` _string_ |  |
+| `methods` _string array_ |  |
+| `secured` _boolean_ |  |
+
+
+#### GatewayHTTPAPISpec
+
+
+
+GatewayHTTPAPISpec defines the desired state of GatewayHTTPAPI
+
+_Appears in:_
+- [GatewayHTTPAPI](#gatewayhttpapi)
+
+| Field | Description |
+| --- | --- |
+| `stack` _string_ |  |
+| `name` _string_ | Name indicates prefix api |
+| `rules` _[GatewayHTTPAPIRule](#gatewayhttpapirule) array_ | Rules |
+
+
+
+
 #### GatewayIngress
 
 
@@ -507,56 +557,6 @@ _Appears in:_
 | `dev` _boolean_ |  |
 | `version` _string_ |  |
 | `ingress` _[GatewayIngress](#gatewayingress)_ |  |
-
-
-
-
-#### HTTPAPI
-
-
-
-HTTPAPI is the Schema for the HTTPAPIs API
-
-
-
-| Field | Description |
-| --- | --- |
-| `apiVersion` _string_ | `formance.com/v1beta1`
-| `kind` _string_ | `HTTPAPI`
-| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
-| `spec` _[HTTPAPISpec](#httpapispec)_ |  |
-
-
-#### HTTPAPIRule
-
-
-
-
-
-_Appears in:_
-- [HTTPAPISpec](#httpapispec)
-
-| Field | Description |
-| --- | --- |
-| `path` _string_ |  |
-| `methods` _string array_ |  |
-| `secured` _boolean_ |  |
-
-
-#### HTTPAPISpec
-
-
-
-HTTPAPISpec defines the desired state of HTTPAPI
-
-_Appears in:_
-- [HTTPAPI](#httpapi)
-
-| Field | Description |
-| --- | --- |
-| `stack` _string_ |  |
-| `name` _string_ | Name indicates prefix api |
-| `rules` _[HTTPAPIRule](#httpapirule) array_ | Rules |
 
 
 
@@ -932,8 +932,8 @@ _Appears in:_
 - [BrokerTopicConsumerSpec](#brokertopicconsumerspec)
 - [BrokerTopicSpec](#brokertopicspec)
 - [DatabaseSpec](#databasespec)
+- [GatewayHTTPAPISpec](#gatewayhttpapispec)
 - [GatewaySpec](#gatewayspec)
-- [HTTPAPISpec](#httpapispec)
 - [LedgerSpec](#ledgerspec)
 - [OrchestrationSpec](#orchestrationspec)
 - [PaymentsSpec](#paymentsspec)

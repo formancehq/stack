@@ -29,7 +29,7 @@ import (
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/brokertopics"
 	"github.com/formancehq/operator/internal/resources/databases"
-	"github.com/formancehq/operator/internal/resources/httpapis"
+	"github.com/formancehq/operator/internal/resources/gatewayhttpapis"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 )
@@ -81,14 +81,14 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, p *v1beta1.Payments, version s
 		}
 	}
 
-	if err := httpapis.Create(ctx, p,
-		httpapis.WithRules(
-			v1beta1.HTTPAPIRule{
+	if err := gatewayhttpapis.Create(ctx, p,
+		gatewayhttpapis.WithRules(
+			v1beta1.GatewayHTTPAPIRule{
 				Path:    "/connectors/webhooks",
 				Methods: []string{http.MethodPost},
 				Secured: true,
 			},
-			httpapis.RuleSecured(),
+			gatewayhttpapis.RuleSecured(),
 		)); err != nil {
 		return err
 	}
@@ -101,7 +101,7 @@ func init() {
 		WithModuleReconciler(Reconcile,
 			WithOwn[*v1beta1.Payments](&appsv1.Deployment{}),
 			WithOwn[*v1beta1.Payments](&corev1.Service{}),
-			WithOwn[*v1beta1.Payments](&v1beta1.HTTPAPI{}),
+			WithOwn[*v1beta1.Payments](&v1beta1.GatewayHTTPAPI{}),
 			WithWatchSettings[*v1beta1.Payments](),
 			WithWatchDependency[*v1beta1.Payments](&v1beta1.Search{}),
 			databases.Watch[*v1beta1.Payments](),

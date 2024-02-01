@@ -1,4 +1,4 @@
-# permissions for end users to view httpapis.
+# permissions for end users to view gatewayhttpapis.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -14,7 +14,7 @@ rules:
 - apiGroups:
   - formance.com
   resources:
-  - httpapis
+  - gatewayhttpapis
   verbs:
   - get
   - list
@@ -22,6 +22,6 @@ rules:
 - apiGroups:
   - formance.com
   resources:
-  - httpapis/status
+  - gatewayhttpapis/status
   verbs:
   - get

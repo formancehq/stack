@@ -11,10 +11,10 @@ import (
 )
 
 func CreateCaddyfile(ctx core.Context, stack *v1beta1.Stack,
-	gateway *v1beta1.Gateway, httpAPIs []*v1beta1.HTTPAPI, auth *v1beta1.Auth, auditTopic *v1beta1.BrokerTopic) (string, error) {
+	gateway *v1beta1.Gateway, httpAPIs []*v1beta1.GatewayHTTPAPI, auth *v1beta1.Auth, auditTopic *v1beta1.BrokerTopic) (string, error) {
 
 	data := map[string]any{
-		"Services": collectionutils.Map(httpAPIs, func(from *v1beta1.HTTPAPI) v1beta1.HTTPAPISpec {
+		"Services": collectionutils.Map(httpAPIs, func(from *v1beta1.GatewayHTTPAPI) v1beta1.GatewayHTTPAPISpec {
 			return from.Spec
 		}),
 		"Platform": ctx.GetPlatform(),

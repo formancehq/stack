@@ -21,7 +21,7 @@ import (
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/brokertopicconsumers"
 	"github.com/formancehq/operator/internal/resources/databases"
-	"github.com/formancehq/operator/internal/resources/httpapis"
+	"github.com/formancehq/operator/internal/resources/gatewayhttpapis"
 	"golang.org/x/mod/semver"
 	appsv1 "k8s.io/api/apps/v1"
 )
@@ -41,7 +41,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, ve
 		return err
 	}
 
-	if err := httpapis.Create(ctx, webhooks); err != nil {
+	if err := gatewayhttpapis.Create(ctx, webhooks); err != nil {
 		return err
 	}
 
@@ -64,7 +64,7 @@ func init() {
 	Init(
 		WithModuleReconciler(Reconcile,
 			WithOwn[*v1beta1.Webhooks](&appsv1.Deployment{}),
-			WithOwn[*v1beta1.Webhooks](&v1beta1.HTTPAPI{}),
+			WithOwn[*v1beta1.Webhooks](&v1beta1.GatewayHTTPAPI{}),
 			WithWatchSettings[*v1beta1.Webhooks](),
 			WithWatchDependency[*v1beta1.Webhooks](&v1beta1.Ledger{}),
 			WithWatchDependency[*v1beta1.Webhooks](&v1beta1.Payments{}),

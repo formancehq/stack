@@ -95,8 +95,8 @@ var _ = Describe("WalletsController", func() {
 				Expect(deployment.Spec.Template.Spec.Containers[0].Resources.Requests).NotTo(BeEmpty())
 			})
 		})
-		It("Should create a new HTTPAPI object", func() {
-			httpService := &v1beta1.HTTPAPI{}
+		It("Should create a new GatewayHTTPAPI object", func() {
+			httpService := &v1beta1.GatewayHTTPAPI{}
 			Eventually(func() error {
 				return LoadResource("", core.GetObjectName(stack.Name, "wallets"), httpService)
 			}).Should(Succeed())

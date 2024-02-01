@@ -25,7 +25,7 @@ import (
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/auths"
 	deployments "github.com/formancehq/operator/internal/resources/deployments"
-	"github.com/formancehq/operator/internal/resources/httpapis"
+	"github.com/formancehq/operator/internal/resources/gatewayhttpapis"
 	. "github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/settings"
 	appsv1 "k8s.io/api/apps/v1"
@@ -143,7 +143,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 		}),
 	)
 
-	if err := httpapis.Create(ctx, search); err != nil {
+	if err := gatewayhttpapis.Create(ctx, search); err != nil {
 		return err
 	}
 
@@ -156,7 +156,7 @@ func init() {
 			WithWatchSettings[*v1beta1.Search](),
 			WithOwn[*v1beta1.Search](&v1beta1.SecretReference{}),
 			WithOwn[*v1beta1.Search](&v1beta1.Benthos{}),
-			WithOwn[*v1beta1.Search](&v1beta1.HTTPAPI{}),
+			WithOwn[*v1beta1.Search](&v1beta1.GatewayHTTPAPI{}),
 			WithOwn[*v1beta1.Search](&appsv1.Deployment{}),
 		),
 	)

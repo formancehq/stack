@@ -8,7 +8,7 @@ import (
 )
 
 func createConfigMap(ctx core.Context, stack *v1beta1.Stack,
-	gateway *v1beta1.Gateway, httpAPIs []*v1beta1.HTTPAPI, auth *v1beta1.Auth, auditTopic *v1beta1.BrokerTopic) (*v1.ConfigMap, error) {
+	gateway *v1beta1.Gateway, httpAPIs []*v1beta1.GatewayHTTPAPI, auth *v1beta1.Auth, auditTopic *v1beta1.BrokerTopic) (*v1.ConfigMap, error) {
 
 	caddyfile, err := CreateCaddyfile(ctx, stack, gateway, httpAPIs, auth, auditTopic)
 	if err != nil {

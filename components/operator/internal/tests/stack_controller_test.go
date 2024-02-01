@@ -7,6 +7,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -103,6 +104,10 @@ var _ = Describe("StackController", func() {
 			When("deleting the stack", func() {
 				JustBeforeEach(func() {
 					Expect(Delete(stack)).To(Succeed())
+					Eventually(func(g Gomega) *metav1.Time {
+						g.Expect(LoadResource("", stack.Name, stack)).To(Succeed())
+						return stack.DeletionTimestamp
+					}).ShouldNot(BeZero())
 				})
 				It("Should also delete the module", func() {
 					Eventually(func(g Gomega) error {

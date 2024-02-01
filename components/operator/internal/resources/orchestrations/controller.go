@@ -21,7 +21,7 @@ import (
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/brokertopicconsumers"
 	"github.com/formancehq/operator/internal/resources/databases"
-	"github.com/formancehq/operator/internal/resources/httpapis"
+	"github.com/formancehq/operator/internal/resources/gatewayhttpapis"
 	appsv1 "k8s.io/api/apps/v1"
 )
 
@@ -46,7 +46,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, o *v1beta1.Orchestration, vers
 		return err
 	}
 
-	if err := httpapis.Create(ctx, o); err != nil {
+	if err := gatewayhttpapis.Create(ctx, o); err != nil {
 		return err
 	}
 
@@ -65,7 +65,7 @@ func init() {
 			WithOwn[*v1beta1.Orchestration](&v1beta1.BrokerTopicConsumer{}),
 			WithOwn[*v1beta1.Orchestration](&v1beta1.AuthClient{}),
 			WithOwn[*v1beta1.Orchestration](&appsv1.Deployment{}),
-			WithOwn[*v1beta1.Orchestration](&v1beta1.HTTPAPI{}),
+			WithOwn[*v1beta1.Orchestration](&v1beta1.GatewayHTTPAPI{}),
 			WithOwn[*v1beta1.Orchestration](&v1beta1.SecretReference{}),
 			WithWatchSettings[*v1beta1.Orchestration](),
 			WithWatchDependency[*v1beta1.Orchestration](&v1beta1.Ledger{}),

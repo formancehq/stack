@@ -3,14 +3,14 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.13.0
-  name: httpapis.formance.com
+  name: gatewayhttpapis.formance.com
 spec:
   group: formance.com
   names:
-    kind: HTTPAPI
-    listKind: HTTPAPIList
-    plural: httpapis
-    singular: httpapi
+    kind: GatewayHTTPAPI
+    listKind: GatewayHTTPAPIList
+    plural: gatewayhttpapis
+    singular: gatewayhttpapi
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -25,7 +25,7 @@ spec:
     name: v1beta1
     schema:
       openAPIV3Schema:
-        description: HTTPAPI is the Schema for the HTTPAPIs API
+        description: GatewayHTTPAPI is the Schema for the HTTPAPIs API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -40,7 +40,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: HTTPAPISpec defines the desired state of HTTPAPI
+            description: GatewayHTTPAPISpec defines the desired state of GatewayHTTPAPI
             properties:
               name:
                 description: Name indicates prefix api
@@ -68,7 +68,7 @@ spec:
             - rules
             type: object
           status:
-            description: HTTPAPIStatus defines the observed state of HTTPAPI
+            description: GatewayHTTPAPIStatus defines the observed state of GatewayHTTPAPI
             properties:
               info:
                 type: string

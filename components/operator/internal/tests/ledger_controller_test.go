@@ -62,8 +62,8 @@ var _ = Describe("LedgerController", func() {
 			}).Should(Succeed())
 			Expect(deployment).To(BeControlledBy(ledger))
 		})
-		It("Should create a new HTTPAPI object", func() {
-			httpService := &v1beta1.HTTPAPI{}
+		It("Should create a new GatewayHTTPAPI object", func() {
+			httpService := &v1beta1.GatewayHTTPAPI{}
 			Eventually(func() error {
 				return LoadResource("", core.GetObjectName(stack.Name, "ledger"), httpService)
 			}).Should(Succeed())

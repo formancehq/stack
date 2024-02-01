@@ -25,7 +25,7 @@ import (
 	"github.com/formancehq/operator/internal/resources/benthosstreams"
 	"github.com/formancehq/operator/internal/resources/brokertopics"
 	"github.com/formancehq/operator/internal/resources/databases"
-	"github.com/formancehq/operator/internal/resources/httpapis"
+	"github.com/formancehq/operator/internal/resources/gatewayhttpapis"
 	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/search/benthos"
 	"golang.org/x/mod/semver"
@@ -52,7 +52,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, versio
 		return err
 	}
 
-	if err := httpapis.Create(ctx, ledger); err != nil {
+	if err := gatewayhttpapis.Create(ctx, ledger); err != nil {
 		return err
 	}
 
@@ -114,7 +114,7 @@ func init() {
 			WithOwn[*v1beta1.Ledger](&appsv1.Deployment{}),
 			WithOwn[*v1beta1.Ledger](&batchv1.Job{}),
 			WithOwn[*v1beta1.Ledger](&corev1.Service{}),
-			WithOwn[*v1beta1.Ledger](&v1beta1.HTTPAPI{}),
+			WithOwn[*v1beta1.Ledger](&v1beta1.GatewayHTTPAPI{}),
 			WithOwn[*v1beta1.Ledger](&v1beta1.Database{}),
 			WithOwn[*v1beta1.Ledger](&batchv1.CronJob{}),
 			WithWatchSettings[*v1beta1.Ledger](),

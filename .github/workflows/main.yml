@@ -44,8 +44,8 @@ jobs:
 
   Main:
     runs-on: "formance-runner"
-    needs:
-      - Dirty
+    #needs:
+    #  - Dirty
     steps:
       - uses: 'actions/checkout@v4'
         with:

@@ -20,7 +20,7 @@ import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/authclients"
-	"github.com/formancehq/operator/internal/resources/httpapis"
+	"github.com/formancehq/operator/internal/resources/gatewayhttpapis"
 	appsv1 "k8s.io/api/apps/v1"
 )
 
@@ -48,7 +48,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, wallets *v1beta1.Wallets, vers
 		return err
 	}
 
-	if err := httpapis.Create(ctx, wallets); err != nil {
+	if err := gatewayhttpapis.Create(ctx, wallets); err != nil {
 		return err
 	}
 
@@ -62,7 +62,7 @@ func init() {
 			WithWatchDependency[*v1beta1.Wallets](&v1beta1.Auth{}),
 			WithOwn[*v1beta1.Wallets](&v1beta1.AuthClient{}),
 			WithOwn[*v1beta1.Wallets](&appsv1.Deployment{}),
-			WithOwn[*v1beta1.Wallets](&v1beta1.HTTPAPI{}),
+			WithOwn[*v1beta1.Wallets](&v1beta1.GatewayHTTPAPI{}),
 		),
 	)
 }
