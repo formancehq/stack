@@ -81,43 +81,93 @@ func CreateOrUpdate(ctx core.Context, stack *v1beta1.Stack, owner interface {
 	}()
 
 	mutators = append(mutators, core.WithController[*appsv1.Deployment](ctx.GetScheme(), owner))
-	mutators = append(mutators, func(t *appsv1.Deployment) error {
-		for ind, container := range t.Spec.Template.Spec.InitContainers {
-			resourceRequirements, err := settings.GetResourceRequirements(ctx, owner.GetStack(),
-				"deployments", t.Name, "init-containers", container.Name, "resource-requirements")
-			if err != nil {
-				return err
-			}
-			container.Resources = mergeResourceRequirements(container.Resources, *resourceRequirements)
-			t.Spec.Template.Spec.InitContainers[ind] = container
+	mutators = append(mutators, func(deployment *appsv1.Deployment) error {
+		deployment.Spec.Template.Spec.SecurityContext = &corev1.PodSecurityContext{
+			RunAsNonRoot: pointer.For(true),
+			SeccompProfile: &corev1.SeccompProfile{
+				Type: corev1.SeccompProfileTypeRuntimeDefault,
+			},
 		}
-		for ind, container := range t.Spec.Template.Spec.Containers {
+
+		type runAs struct {
+			User  *int64 `json:"user"`
+			Group *int64 `json:"group"`
+		}
+
+		for ind, container := range deployment.Spec.Template.Spec.InitContainers {
 			resourceRequirements, err := settings.GetResourceRequirements(ctx, owner.GetStack(),
-				"deployments", t.Name, "containers", container.Name, "resource-requirements")
+				"deployments", deployment.Name, "init-containers", container.Name, "resource-requirements")
 			if err != nil {
 				return err
 			}
 			container.Resources = mergeResourceRequirements(container.Resources, *resourceRequirements)
-			t.Spec.Template.Spec.Containers[ind] = container
+
+			runAs, err := settings.GetAs[runAs](ctx, owner.GetStack(),
+				"deployments", deployment.Name, "init-containers", container.Name, "run-as")
+			if err != nil {
+				return err
+			}
+
+			container.SecurityContext = &corev1.SecurityContext{
+				Capabilities: &corev1.Capabilities{
+					Drop: []corev1.Capability{"all"},
+				},
+				Privileged:               pointer.For(false),
+				ReadOnlyRootFilesystem:   pointer.For(true),
+				AllowPrivilegeEscalation: pointer.For(false),
+				RunAsUser:                runAs.User,
+				RunAsGroup:               runAs.Group,
+				RunAsNonRoot:             pointer.For(runAs.User != nil || runAs.Group != nil),
+			}
+
+			deployment.Spec.Template.Spec.InitContainers[ind] = container
+		}
+		for ind, container := range deployment.Spec.Template.Spec.Containers {
+			resourceRequirements, err := settings.GetResourceRequirements(ctx, owner.GetStack(),
+				"deployments", deployment.Name, "containers", container.Name, "resource-requirements")
+			if err != nil {
+				return err
+			}
+			container.Resources = mergeResourceRequirements(container.Resources, *resourceRequirements)
+
+			runAs, err := settings.GetAs[runAs](ctx, owner.GetStack(),
+				"deployments", deployment.Name, "containers", container.Name, "run-as")
+			if err != nil {
+				return err
+			}
+
+			container.SecurityContext = &corev1.SecurityContext{
+				Capabilities: &corev1.Capabilities{
+					Drop: []corev1.Capability{"all"},
+				},
+				Privileged:               pointer.For(false),
+				ReadOnlyRootFilesystem:   pointer.For(true),
+				AllowPrivilegeEscalation: pointer.For(false),
+				RunAsUser:                runAs.User,
+				RunAsGroup:               runAs.Group,
+				RunAsNonRoot:             pointer.For(runAs.User != nil || runAs.Group != nil),
+			}
+
+			deployment.Spec.Template.Spec.Containers[ind] = container
 		}
 		if stack.Spec.Disabled {
-			if t.Spec.Replicas != nil {
+			if deployment.Spec.Replicas != nil {
 				// Store the number of replicas to be able to restore it
 				// if the stack is re-enabled
-				if t.Annotations == nil {
-					t.Annotations = map[string]string{}
+				if deployment.Annotations == nil {
+					deployment.Annotations = map[string]string{}
 				}
-				t.Annotations["replicas"] = fmt.Sprint(*t.Spec.Replicas)
+				deployment.Annotations["replicas"] = fmt.Sprint(*deployment.Spec.Replicas)
 			}
-			t.Spec.Replicas = pointer.For(int32(0))
+			deployment.Spec.Replicas = pointer.For(int32(0))
 		} else {
 			// Restore the number of replicas previously stored if the stack was disabled
-			if replicasStr := t.Annotations["replicas"]; replicasStr != "" {
+			if replicasStr := deployment.Annotations["replicas"]; replicasStr != "" {
 				replicas, err := strconv.ParseInt(replicasStr, 10, 32)
 				if err != nil {
 					return err
 				}
-				t.Spec.Replicas = pointer.For(int32(replicas))
+				deployment.Spec.Replicas = pointer.For(int32(replicas))
 			}
 		}
 

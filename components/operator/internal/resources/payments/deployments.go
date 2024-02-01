@@ -208,8 +208,13 @@ func createGateway(ctx core.Context, stack *v1beta1.Stack, p *v1beta1.Payments) 
 	env = append(env, otlpEnv...)
 	env = append(env, core.GetDevEnvVars(stack, p)...)
 
+	image, err := registries.GetImage(ctx, stack, "gateway", "latest")
+	if err != nil {
+		return err
+	}
+
 	_, err = deployments.CreateOrUpdate(ctx, stack, p, "payments",
-		settings.ConfigureCaddy(caddyfileConfigMap, "caddy:2.7.6-alpine", env),
+		settings.ConfigureCaddy(caddyfileConfigMap, image, env),
 		deployments.WithMatchingLabels("payments"),
 	)
 	return err

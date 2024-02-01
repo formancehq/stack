@@ -1,7 +1,9 @@
 package settings
 
 import (
+	"encoding/json"
 	"fmt"
+	"reflect"
 	"slices"
 	"strconv"
 	"strings"
@@ -261,6 +263,30 @@ func GetMap(ctx core.Context, stack string, keys ...string) (map[string]string, 
 	}
 
 	return ret, nil
+}
+
+func GetAs[T any](ctx core.Context, stack string, keys ...string) (*T, error) {
+	m, err := GetMap(ctx, stack, keys...)
+	if err != nil {
+		return nil, err
+	}
+
+	var ret T
+	ret = reflect.New(reflect.TypeOf(ret)).Elem().Interface().(T)
+	if m == nil {
+		return &ret, nil
+	}
+
+	data, err := json.Marshal(m)
+	if err != nil {
+		panic(err)
+	}
+
+	if err := json.Unmarshal(data, &ret); err != nil {
+		return nil, err
+	}
+
+	return &ret, nil
 }
 
 func GetMapOrEmpty(ctx core.Context, stack string, keys ...string) (map[string]string, error) {
