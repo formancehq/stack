@@ -114,11 +114,17 @@ var (
 )
 
 type MockStore struct {
-	listConnectorsNB int
+	listConnectorsNB       int
+	bankAccountAdjustments []*models.BankAccountAdjustment
 }
 
 func (m *MockStore) WithListConnectorsNB(nb int) *MockStore {
 	m.listConnectorsNB = nb
+	return m
+}
+
+func (m *MockStore) WithBankAccountAdjustments(adjustments []*models.BankAccountAdjustment) *MockStore {
+	m.bankAccountAdjustments = adjustments
 	return m
 }
 
@@ -153,11 +159,20 @@ func (m *MockStore) CreateBankAccount(ctx context.Context, account *models.BankA
 	return nil
 }
 
-func (m *MockStore) LinkBankAccountWithAccount(ctx context.Context, id uuid.UUID, accountID *models.AccountID) error {
-	return nil
+func (m *MockStore) GetBankAccount(ctx context.Context, id uuid.UUID, expand bool) (*models.BankAccount, error) {
+	return &models.BankAccount{
+		ID:           id,
+		CreatedAt:    time.Now().UTC(),
+		Name:         "test",
+		IBAN:         "FR7630006000011234567890189",
+		SwiftBicCode: "HBUKGB4B",
+		Country:      "FR",
+		Metadata:     map[string]string{},
+		Adjustments:  m.bankAccountAdjustments,
+	}, nil
 }
 
-func (m *MockStore) FetchLinkedAccountForBankAccount(ctx context.Context, bankAccountID uuid.UUID) (*models.AccountID, error) {
+func (m *MockStore) GetBankAccountAdjustments(ctx context.Context, id uuid.UUID) ([]*models.BankAccountAdjustment, error) {
 	return nil, nil
 }
 

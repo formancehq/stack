@@ -11,18 +11,30 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type bankAccountAdjusmtentsResponse struct {
+	ID          string    `json:"id"`
+	CreatedAt   time.Time `json:"createdAt"`
+	AccountID   string    `json:"accountID"`
+	ConnectorID string    `json:"connectorID"`
+	Provider    string    `json:"provider"`
+}
+
 type bankAccountResponse struct {
-	ID            string            `json:"id"`
-	Name          string            `json:"name"`
-	CreatedAt     time.Time         `json:"createdAt"`
-	Country       string            `json:"country"`
-	ConnectorID   string            `json:"connectorID"`
-	Provider      string            `json:"provider,omitempty"`
-	AccountID     string            `json:"accountId,omitempty"`
-	Iban          string            `json:"iban,omitempty"`
-	AccountNumber string            `json:"accountNumber,omitempty"`
-	SwiftBicCode  string            `json:"swiftBicCode,omitempty"`
-	Metadata      map[string]string `json:"metadata,omitempty"`
+	ID            string                            `json:"id"`
+	Name          string                            `json:"name"`
+	CreatedAt     time.Time                         `json:"createdAt"`
+	Country       string                            `json:"country"`
+	Iban          string                            `json:"iban,omitempty"`
+	AccountNumber string                            `json:"accountNumber,omitempty"`
+	SwiftBicCode  string                            `json:"swiftBicCode,omitempty"`
+	Metadata      map[string]string                 `json:"metadata,omitempty"`
+	Adjustments   []*bankAccountAdjusmtentsResponse `json:"adjustments,omitempty"`
+
+	// Deprecated fields, but clients still use them
+	// They correspond to the first bank account adjustment now.
+	ConnectorID string `json:"connectorID"`
+	Provider    string `json:"provider,omitempty"`
+	AccountID   string `json:"accountID,omitempty"`
 }
 
 func listBankAccountsHandler(b backend.Backend) http.HandlerFunc {
@@ -45,14 +57,28 @@ func listBankAccountsHandler(b backend.Backend) http.HandlerFunc {
 
 		for i := range ret {
 			data[i] = &bankAccountResponse{
-				ID:          ret[i].ID.String(),
-				Name:        ret[i].Name,
-				CreatedAt:   ret[i].CreatedAt,
-				Country:     ret[i].Country,
-				ConnectorID: ret[i].ConnectorID.String(),
-				AccountID:   ret[i].AccountID.String(),
-				Provider:    ret[i].ConnectorID.Provider.String(),
-				Metadata:    ret[i].Metadata,
+				ID:        ret[i].ID.String(),
+				Name:      ret[i].Name,
+				CreatedAt: ret[i].CreatedAt,
+				Country:   ret[i].Country,
+				Metadata:  ret[i].Metadata,
+			}
+
+			// Deprecated fields, but clients still use them
+			if len(ret[i].Adjustments) > 0 {
+				data[i].ConnectorID = ret[i].Adjustments[0].ConnectorID.String()
+				data[i].AccountID = ret[i].Adjustments[0].AccountID.String()
+				data[i].Provider = ret[i].Adjustments[0].ConnectorID.Provider.String()
+			}
+
+			for _, adjustment := range ret[i].Adjustments {
+				data[i].Adjustments = append(data[i].Adjustments, &bankAccountAdjusmtentsResponse{
+					ID:          adjustment.ID.String(),
+					CreatedAt:   adjustment.CreatedAt,
+					AccountID:   adjustment.AccountID.String(),
+					ConnectorID: adjustment.ConnectorID.String(),
+					Provider:    adjustment.ConnectorID.Provider.String(),
+				})
 			}
 		}
 
@@ -98,13 +124,27 @@ func readBankAccountHandler(b backend.Backend) http.HandlerFunc {
 			Name:          account.Name,
 			CreatedAt:     account.CreatedAt,
 			Country:       account.Country,
-			ConnectorID:   account.ConnectorID.String(),
-			AccountID:     account.AccountID.String(),
-			Provider:      account.ConnectorID.Provider.String(),
 			Iban:          account.IBAN,
 			AccountNumber: account.AccountNumber,
 			SwiftBicCode:  account.SwiftBicCode,
 			Metadata:      account.Metadata,
+		}
+
+		// Deprecated fields, but clients still use them
+		if len(account.Adjustments) > 0 {
+			data.ConnectorID = account.Adjustments[0].ConnectorID.String()
+			data.AccountID = account.Adjustments[0].AccountID.String()
+			data.Provider = account.Adjustments[0].ConnectorID.Provider.String()
+		}
+
+		for _, adjustment := range account.Adjustments {
+			data.Adjustments = append(data.Adjustments, &bankAccountAdjusmtentsResponse{
+				ID:          adjustment.ID.String(),
+				CreatedAt:   adjustment.CreatedAt,
+				AccountID:   adjustment.AccountID.String(),
+				ConnectorID: adjustment.ConnectorID.String(),
+				Provider:    adjustment.ConnectorID.Provider.String(),
+			})
 		}
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[bankAccountResponse]{

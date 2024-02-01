@@ -11,7 +11,7 @@ import (
 
 type InitiatePaymentHandler func(ctx context.Context, transfer *models.TransferInitiation) error
 type ReversePaymentHandler func(ctx context.Context, transfer *models.TransferReversal) error
-type BankAccountHandler func(ctx context.Context, bankAccount *models.BankAccount) error
+type BankAccountHandler func(ctx context.Context, connectorID models.ConnectorID, bankAccount *models.BankAccount) error
 
 type Store interface {
 	Ping() error
@@ -23,8 +23,8 @@ type Store interface {
 	GetAccount(ctx context.Context, id string) (*models.Account, error)
 
 	CreateBankAccount(ctx context.Context, account *models.BankAccount) error
-	LinkBankAccountWithAccount(ctx context.Context, id uuid.UUID, accountID *models.AccountID) error
-	FetchLinkedAccountForBankAccount(ctx context.Context, id uuid.UUID) (*models.AccountID, error)
+	GetBankAccount(ctx context.Context, id uuid.UUID, expand bool) (*models.BankAccount, error)
+	GetBankAccountAdjustments(ctx context.Context, id uuid.UUID) ([]*models.BankAccountAdjustment, error)
 
 	ListConnectorsByProvider(ctx context.Context, provider models.ConnectorProvider) ([]*models.Connector, error)
 	IsInstalledByConnectorID(ctx context.Context, connectorID models.ConnectorID) (bool, error)

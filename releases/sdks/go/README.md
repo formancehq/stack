@@ -172,6 +172,7 @@ func main() {
 * [CreateTransferInitiation](docs/sdks/payments/README.md#createtransferinitiation) - Create a TransferInitiation
 * [DeletePool](docs/sdks/payments/README.md#deletepool) - Delete a Pool
 * [DeleteTransferInitiation](docs/sdks/payments/README.md#deletetransferinitiation) - Delete a transfer initiation
+* [ForwardBankAccount](docs/sdks/payments/README.md#forwardbankaccount) - Forward a bank account to a connector
 * [GetAccountBalances](docs/sdks/payments/README.md#getaccountbalances) - Get account balances
 * [GetBankAccount](docs/sdks/payments/README.md#getbankaccount) - Get a bank account created by user on Formance
 * [~~GetConnectorTask~~](docs/sdks/payments/README.md#getconnectortask) - Read a specific task of the connector :warning: **Deprecated**

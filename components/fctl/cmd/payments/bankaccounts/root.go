@@ -11,6 +11,7 @@ func NewBankAccountsCommand() *cobra.Command {
 		fctl.WithShortDescription("Bank Accounts management"),
 		fctl.WithChildCommands(
 			NewCreateCommand(),
+			NewForwardCommand(),
 			NewShowCommand(),
 			NewListCommand(),
 		),

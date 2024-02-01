@@ -87,15 +87,12 @@ pipeline:
                     "indexed": {
                         "id": this.payload.id,
                         "createdAt": this.payload.createdAt,
-                        "connectorId": this.payload.connectorId,
                         "provider": this.payload.provider,
                         "name": this.payload.name,
                         "accountNumber": this.payload.accountNumber,
                         "iban": this.payload.iban,
                         "swiftBicCode": this.payload.swiftBicCode,
-                        "country": this.payload.country,
-                        "provider": this.payload.provider,
-                        "accountId": this.payload.accountID
+                        "country": this.payload.country
                     },
                     "kind": "PAYMENT_BANK_ACCOUNT",
                     "when": this.date

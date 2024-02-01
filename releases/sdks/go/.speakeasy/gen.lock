@@ -1,7 +1,7 @@
 lockVersion: 2.0.0
-id: 34abab14-a13c-4924-b4ed-df044c27007d
+id: 5edddd06-814b-489a-8f4c-60900baeed6d
 management:
-  docChecksum: 54a038753b02507b18ec7cc3eaac3e12
+  docChecksum: e64f058f8ed1617c198d1fe84ea95670
   docVersion: INTERNAL
   speakeasyVersion: internal
   generationVersion: 2.237.2
@@ -142,6 +142,7 @@ generatedFiles:
   - /pkg/models/operations/createtransferinitiation.go
   - /pkg/models/operations/deletepool.go
   - /pkg/models/operations/deletetransferinitiation.go
+  - /pkg/models/operations/forwardbankaccount.go
   - /pkg/models/operations/getaccountbalances.go
   - /pkg/models/operations/getbankaccount.go
   - /pkg/models/operations/getconnectortask.go
@@ -440,6 +441,7 @@ generatedFiles:
   - /pkg/models/shared/transferrequest.go
   - /pkg/models/shared/bankaccountresponse.go
   - /pkg/models/shared/bankaccount.go
+  - /pkg/models/shared/bankaccountadjustment.go
   - /pkg/models/shared/bankaccountrequest.go
   - /pkg/models/shared/paymentresponse.go
   - /pkg/models/shared/payment.go
@@ -457,6 +459,7 @@ generatedFiles:
   - /pkg/models/shared/transferinitiationpayments.go
   - /pkg/models/shared/transferinitiationadjusments.go
   - /pkg/models/shared/transferinitiationrequest.go
+  - /pkg/models/shared/forwardbankaccountrequest.go
   - /pkg/models/shared/balancescursor.go
   - /pkg/models/shared/accountbalance.go
   - /pkg/models/shared/taskresponse.go
@@ -712,6 +715,8 @@ generatedFiles:
   - docs/pkg/models/operations/deletepoolresponse.md
   - docs/pkg/models/operations/deletetransferinitiationrequest.md
   - docs/pkg/models/operations/deletetransferinitiationresponse.md
+  - docs/pkg/models/operations/forwardbankaccountrequest.md
+  - docs/pkg/models/operations/forwardbankaccountresponse.md
   - docs/pkg/models/operations/getaccountbalancesrequest.md
   - docs/pkg/models/operations/getaccountbalancesresponse.md
   - docs/pkg/models/operations/getbankaccountrequest.md
@@ -1113,6 +1118,7 @@ generatedFiles:
   - docs/pkg/models/shared/transferrequest.md
   - docs/pkg/models/shared/bankaccountresponse.md
   - docs/pkg/models/shared/bankaccount.md
+  - docs/pkg/models/shared/bankaccountadjustment.md
   - docs/pkg/models/shared/bankaccountrequest.md
   - docs/pkg/models/shared/paymentresponse.md
   - docs/pkg/models/shared/raw.md
@@ -1134,6 +1140,7 @@ generatedFiles:
   - docs/pkg/models/shared/transferinitiationadjusments.md
   - docs/pkg/models/shared/transferinitiationrequesttype.md
   - docs/pkg/models/shared/transferinitiationrequest.md
+  - docs/pkg/models/shared/forwardbankaccountrequest.md
   - docs/pkg/models/shared/balancescursorcursor.md
   - docs/pkg/models/shared/balancescursor.md
   - docs/pkg/models/shared/accountbalance.md

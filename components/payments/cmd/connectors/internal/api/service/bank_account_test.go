@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"testing"
+	"time"
 
 	manager "github.com/formancehq/payments/cmd/connectors/internal/api/connectors_manager"
 	"github.com/formancehq/payments/internal/messages"
@@ -51,6 +52,16 @@ func TestCreateBankAccounts(t *testing.T) {
 				ConnectorID:   connectorDummyPay.ID.String(),
 				Name:          "test_nominal_metadata",
 				Metadata:      map[string]string{"test": "metadata"},
+			},
+		},
+		{
+			name: "nominal without connectorID",
+			req: &CreateBankAccountRequest{
+				AccountNumber: "0112345678",
+				IBAN:          "FR7630006000011234567890189",
+				SwiftBicCode:  "HBUKGB4B",
+				Country:       "FR",
+				Name:          "test_nominal",
 			},
 		},
 		{
@@ -141,7 +152,7 @@ func TestCreateBankAccounts(t *testing.T) {
 			if !tc.noBankAccountCreateHandler {
 				handlers = map[models.ConnectorProvider]*ConnectorHandlers{
 					models.ConnectorProviderDummyPay: {
-						BankAccountHandler: func(ctx context.Context, bankAccount *models.BankAccount) error {
+						BankAccountHandler: func(ctx context.Context, connectorID models.ConnectorID, bankAccount *models.BankAccount) error {
 							if tc.errorBankAccountCreateHandler != nil {
 								return tc.errorBankAccountCreateHandler
 							}
@@ -155,6 +166,163 @@ func TestCreateBankAccounts(t *testing.T) {
 			service := New(&MockStore{}, &MockPublisher{}, messages.NewMessages(""), handlers)
 
 			_, err := service.CreateBankAccount(context.Background(), tc.req)
+			if tc.expectedError != nil {
+				require.True(t, errors.Is(err, tc.expectedError))
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestForwardBankAccountToConnector(t *testing.T) {
+	t.Parallel()
+
+	type testCase struct {
+		name                           string
+		bankAccountID                  string
+		req                            *ForwardBankAccountToConnectorRequest
+		withBankAccountAdjustments     []*models.BankAccountAdjustment
+		expectedError                  error
+		noBankAccountForwardHandler    bool
+		errorBankAccountForwardHandler error
+	}
+
+	connectorNotFound := models.ConnectorID{
+		Reference: uuid.New(),
+		Provider:  models.ConnectorProviderCurrencyCloud,
+	}
+
+	var ErrOther = errors.New("other error")
+	bankAccountID := uuid.New()
+	testCases := []testCase{
+		{
+			name:          "nominal",
+			bankAccountID: uuid.New().String(),
+			req: &ForwardBankAccountToConnectorRequest{
+				ConnectorID: connectorDummyPay.ID.String(),
+			},
+		},
+		{
+			name:          "already forwarded to connector",
+			bankAccountID: bankAccountID.String(),
+			req: &ForwardBankAccountToConnectorRequest{
+				ConnectorID: connectorDummyPay.ID.String(),
+			},
+			withBankAccountAdjustments: []*models.BankAccountAdjustment{
+				{
+					ID:            uuid.New(),
+					CreatedAt:     time.Now().UTC(),
+					BankAccountID: bankAccountID,
+					ConnectorID:   connectorDummyPay.ID,
+					AccountID: models.AccountID{
+						Reference:   "test",
+						ConnectorID: connectorDummyPay.ID,
+					},
+				},
+			},
+			expectedError: ErrValidation,
+		},
+		{
+			name: "empty bank account id",
+			req: &ForwardBankAccountToConnectorRequest{
+				ConnectorID: connectorDummyPay.ID.String(),
+			},
+			expectedError: ErrInvalidID,
+		},
+		{
+			name:          "invalid bank account id",
+			bankAccountID: "invalid",
+			req: &ForwardBankAccountToConnectorRequest{
+				ConnectorID: connectorDummyPay.ID.String(),
+			},
+			expectedError: ErrInvalidID,
+		},
+		{
+			name:          "missing connectorID",
+			bankAccountID: uuid.New().String(),
+			req:           &ForwardBankAccountToConnectorRequest{},
+			expectedError: ErrValidation,
+		},
+		{
+			name:          "invalid connector id",
+			bankAccountID: uuid.New().String(),
+			req: &ForwardBankAccountToConnectorRequest{
+				ConnectorID: "invalid",
+			},
+			expectedError: ErrValidation,
+		},
+		{
+			name:          "connector not found",
+			bankAccountID: uuid.New().String(),
+			req: &ForwardBankAccountToConnectorRequest{
+				ConnectorID: connectorNotFound.String(),
+			},
+			expectedError: ErrValidation,
+		},
+		{
+			name:          "no connector handler",
+			bankAccountID: uuid.New().String(),
+			req: &ForwardBankAccountToConnectorRequest{
+				ConnectorID: connectorDummyPay.ID.String(),
+			},
+			noBankAccountForwardHandler: true,
+			expectedError:               ErrValidation,
+		},
+		{
+			name:          "connector handler error validation",
+			bankAccountID: uuid.New().String(),
+			req: &ForwardBankAccountToConnectorRequest{
+				ConnectorID: connectorDummyPay.ID.String(),
+			},
+			errorBankAccountForwardHandler: manager.ErrValidation,
+			expectedError:                  ErrValidation,
+		},
+		{
+			name:          "connector handler error connector not found",
+			bankAccountID: uuid.New().String(),
+			req: &ForwardBankAccountToConnectorRequest{
+				ConnectorID: connectorDummyPay.ID.String(),
+			},
+			errorBankAccountForwardHandler: manager.ErrConnectorNotFound,
+			expectedError:                  ErrValidation,
+		},
+		{
+			name:          "connector handler other error",
+			bankAccountID: uuid.New().String(),
+			req: &ForwardBankAccountToConnectorRequest{
+				ConnectorID: connectorDummyPay.ID.String(),
+			},
+			errorBankAccountForwardHandler: ErrOther,
+			expectedError:                  ErrOther,
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			var handlers map[models.ConnectorProvider]*ConnectorHandlers
+			if !tc.noBankAccountForwardHandler {
+				handlers = map[models.ConnectorProvider]*ConnectorHandlers{
+					models.ConnectorProviderDummyPay: {
+						BankAccountHandler: func(ctx context.Context, connectorID models.ConnectorID, bankAccount *models.BankAccount) error {
+							if tc.errorBankAccountForwardHandler != nil {
+								return tc.errorBankAccountForwardHandler
+							}
+
+							return nil
+						},
+					},
+				}
+			}
+
+			store := &MockStore{}
+			service := New(store.WithBankAccountAdjustments(tc.withBankAccountAdjustments), &MockPublisher{}, messages.NewMessages(""), handlers)
+
+			_, err := service.ForwardBankAccountToConnector(context.Background(), tc.bankAccountID, tc.req)
 			if tc.expectedError != nil {
 				require.True(t, errors.Is(err, tc.expectedError))
 			} else {

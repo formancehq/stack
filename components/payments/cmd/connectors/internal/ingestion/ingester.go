@@ -8,7 +8,6 @@ import (
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/google/uuid"
 )
 
 type Ingester interface {
@@ -41,7 +40,7 @@ type Store interface {
 	UpdateTransferInitiationPaymentsStatus(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, adjustment *models.TransferInitiationAdjustment) error
 	UpdateTransferReversalStatus(ctx context.Context, transfer *models.TransferInitiation, transferReversal *models.TransferReversal, adjustment *models.TransferInitiationAdjustment) error
 	AddTransferInitiationPaymentID(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, updatedAt time.Time, metadata map[string]string) error
-	LinkBankAccountWithAccount(ctx context.Context, id uuid.UUID, accountID *models.AccountID) error
+	AddBankAccountAdjustment(ctx context.Context, adjustment *models.BankAccountAdjustment) error
 }
 
 func NewDefaultIngester(

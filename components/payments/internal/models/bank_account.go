@@ -12,9 +12,8 @@ import (
 type BankAccount struct {
 	bun.BaseModel `bun:"accounts.bank_account"`
 
-	ID            uuid.UUID   `bun:",pk,nullzero"`
-	CreatedAt     time.Time   `bun:",nullzero"`
-	ConnectorID   ConnectorID `bun:",nullzero"`
+	ID            uuid.UUID `bun:",pk,nullzero"`
+	CreatedAt     time.Time `bun:",nullzero"`
 	Name          string
 	AccountNumber string `bun:"decrypted_account_number,scanonly"`
 	IBAN          string `bun:"decrypted_iban,scanonly"`
@@ -22,7 +21,7 @@ type BankAccount struct {
 	Country       string `bun:"country"`
 	Metadata      map[string]string
 
-	AccountID *AccountID
+	Adjustments []*BankAccountAdjustment `bun:"rel:has-many,join:id=bank_account_id"`
 }
 
 func (a *BankAccount) Offuscate() error {
@@ -45,4 +44,14 @@ func (a *BankAccount) Offuscate() error {
 	}
 
 	return nil
+}
+
+type BankAccountAdjustment struct {
+	bun.BaseModel `bun:"accounts.bank_account_adjustments"`
+
+	ID            uuid.UUID   `bun:",pk,nullzero"`
+	CreatedAt     time.Time   `bun:",nullzero"`
+	BankAccountID uuid.UUID   `bun:",nullzero"`
+	ConnectorID   ConnectorID `bun:",nullzero"`
+	AccountID     AccountID   `bun:",nullzero"`
 }

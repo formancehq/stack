@@ -116,22 +116,18 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 			bc.Name,
 			bc.CreatedAt.Format(time.RFC3339),
 			bc.Country,
-			string(bc.ConnectorID),
-			func() string {
-				if bc.Provider == nil {
-					return ""
-				}
-
-				return string(*bc.Provider)
-			}(),
 		}
 	})
-	tableData = fctl.Prepend(tableData, []string{"ID", "Name", "CreatedAt", "Country", "ConnectorID", "Provider"})
-	return pterm.DefaultTable.
+	tableData = fctl.Prepend(tableData, []string{"ID", "Name", "CreatedAt", "Country"})
+	if err := pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).
 		WithData(tableData).
-		Render()
+		Render(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func NewListCommand() *cobra.Command {

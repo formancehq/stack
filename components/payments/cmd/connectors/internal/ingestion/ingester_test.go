@@ -7,7 +7,6 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/google/uuid"
 )
 
 type MockStore struct {
@@ -70,7 +69,7 @@ func (m *MockStore) AddTransferInitiationPaymentID(ctx context.Context, id model
 	return nil
 }
 
-func (m *MockStore) LinkBankAccountWithAccount(ctx context.Context, id uuid.UUID, accountID *models.AccountID) error {
+func (m *MockStore) AddBankAccountAdjustment(ctx context.Context, adjustment *models.BankAccountAdjustment) error {
 	return nil
 }
 

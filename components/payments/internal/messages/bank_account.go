@@ -10,16 +10,22 @@ import (
 )
 
 type bankAccountMessagePayload struct {
-	ID            string    `json:"id"`
-	CreatedAt     time.Time `json:"createdAt"`
-	ConnectorID   string    `json:"connectorId"`
-	Provider      string    `json:"provider"`
-	Name          string    `json:"name"`
-	AccountNumber string    `json:"accountNumber"`
-	IBAN          string    `json:"iban"`
-	SwiftBicCode  string    `json:"swiftBicCode"`
-	Country       string    `json:"country"`
-	AccountID     string    `json:"accountId"`
+	ID            string                         `json:"id"`
+	CreatedAt     time.Time                      `json:"createdAt"`
+	Name          string                         `json:"name"`
+	AccountNumber string                         `json:"accountNumber"`
+	IBAN          string                         `json:"iban"`
+	SwiftBicCode  string                         `json:"swiftBicCode"`
+	Country       string                         `json:"country"`
+	Adjustments   []bankAccountAdjustmentPayload `json:"adjustments"`
+}
+
+type bankAccountAdjustmentPayload struct {
+	ID          string    `json:"id"`
+	CreatedAt   time.Time `json:"createdAt"`
+	AccountID   string    `json:"accountID"`
+	ConnectorID string    `json:"connectorID"`
+	Provider    string    `json:"provider"`
 }
 
 func (m *Messages) NewEventSavedBankAccounts(bankAccount *models.BankAccount) publish.EventMessage {
@@ -28,14 +34,23 @@ func (m *Messages) NewEventSavedBankAccounts(bankAccount *models.BankAccount) pu
 	payload := bankAccountMessagePayload{
 		ID:            bankAccount.ID.String(),
 		CreatedAt:     bankAccount.CreatedAt,
-		ConnectorID:   bankAccount.ConnectorID.String(),
-		Provider:      bankAccount.ConnectorID.Provider.String(),
 		Name:          bankAccount.Name,
 		AccountNumber: bankAccount.AccountNumber,
 		IBAN:          bankAccount.IBAN,
 		SwiftBicCode:  bankAccount.SwiftBicCode,
 		Country:       bankAccount.Country,
-		AccountID:     bankAccount.AccountID.String(),
+	}
+
+	for _, adjustment := range bankAccount.Adjustments {
+		adjustment := bankAccountAdjustmentPayload{
+			ID:          adjustment.ID.String(),
+			CreatedAt:   adjustment.CreatedAt,
+			AccountID:   adjustment.AccountID.String(),
+			Provider:    adjustment.ConnectorID.Provider.String(),
+			ConnectorID: adjustment.ConnectorID.String(),
+		}
+
+		payload.Adjustments = append(payload.Adjustments, adjustment)
 	}
 
 	return publish.EventMessage{

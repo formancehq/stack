@@ -103,13 +103,6 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 	tableData = append(tableData, []string{pterm.LightCyan("Name"), c.store.BankAccount.Name})
 	tableData = append(tableData, []string{pterm.LightCyan("CreatedAt"), c.store.BankAccount.CreatedAt.Format(time.RFC3339)})
 	tableData = append(tableData, []string{pterm.LightCyan("Country"), c.store.BankAccount.Country})
-	tableData = append(tableData, []string{pterm.LightCyan("ConnectorID"), string(c.store.BankAccount.ConnectorID)})
-	tableData = append(tableData, []string{pterm.LightCyan("Provider"), func() string {
-		if c.store.BankAccount.Provider != nil {
-			return *c.store.BankAccount.Provider
-		}
-		return ""
-	}()})
 	if c.store.BankAccount.AccountNumber != nil {
 		tableData = append(tableData, []string{pterm.LightCyan("AccountNumber"), *c.store.BankAccount.AccountNumber})
 	}
@@ -121,6 +114,25 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 	}
 
 	if err := pterm.DefaultTable.
+		WithWriter(cmd.OutOrStdout()).
+		WithData(tableData).
+		Render(); err != nil {
+		return err
+	}
+
+	fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Adjustments")
+	tableData = fctl.Map(c.store.BankAccount.Adjustments, func(ba shared.BankAccountAdjustment) []string {
+		return []string{
+			ba.ID,
+			ba.CreatedAt.Format(time.RFC3339),
+			ba.ConnectorID,
+			ba.Provider,
+			ba.AccountID,
+		}
+	})
+	tableData = fctl.Prepend(tableData, []string{"ID", "CreatedAt", "ConnectorID", "Provider", "AccountID"})
+	if err := pterm.DefaultTable.
+		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).
 		WithData(tableData).
 		Render(); err != nil {
