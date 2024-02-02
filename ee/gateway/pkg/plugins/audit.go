@@ -10,9 +10,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Shopify/sarama"
+	"github.com/IBM/sarama"
 	"github.com/ThreeDotsLabs/watermill"
-	"github.com/ThreeDotsLabs/watermill-kafka/v2/pkg/kafka"
+	"github.com/ThreeDotsLabs/watermill-kafka/v3/pkg/kafka"
 	wNats "github.com/ThreeDotsLabs/watermill-nats/v2/pkg/nats"
 	"github.com/nats-io/nats.go"
 	"github.com/pkg/errors"

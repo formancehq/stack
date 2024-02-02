@@ -1,6 +1,6 @@
 VERSION --pass-args --arg-scope-and-set 0.7
 
-ARG core=github.com/formancehq/earthly:v0.6.0
+ARG core=github.com/formancehq/earthly:v0.9.0
 IMPORT $core AS core
 IMPORT ../.. AS stack
 IMPORT ../../releases AS releases
@@ -62,7 +62,9 @@ lint:
     SAVE ARTIFACT main.go AS LOCAL main.go
 
 pre-commit:
-    BUILD --pass-args +tidy
+    WAIT
+      BUILD --pass-args +tidy
+    END
     BUILD --pass-args +lint
 
 openapi:

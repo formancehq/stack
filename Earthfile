@@ -1,6 +1,6 @@
 VERSION --arg-scope-and-set --pass-args --use-function-keyword 0.7
 
-ARG core=github.com/formancehq/earthly:v0.6.0
+ARG core=github.com/formancehq/earthly:v0.9.0
 IMPORT $core AS core
 
 sources:
@@ -147,6 +147,16 @@ pre-commit: # Generate the final spec and run all the pre-commit hooks
         BUILD --pass-args ./ee/${component}+pre-commit
     END
     BUILD --pass-args ./tests/integration+pre-commit
+
+tidy: # Run tidy on all the components
+    LOCALLY
+    FOR component IN $(cd ./components && ls -d */)
+        BUILD --pass-args ./components/${component}+tidy
+    END
+    FOR component IN $(cd ./ee && ls -d */)
+        BUILD --pass-args ./ee/${component}+tidy
+    END
+    BUILD --pass-args ./tests/integration+tidy
 
 pr:
     LOCALLY
