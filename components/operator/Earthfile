@@ -13,7 +13,7 @@ sources:
     COPY (stack+sources/out --LOCATION=ee/search) ee/search
     COPY (stack+sources/out --LOCATION=libs/go-libs) libs/go-libs
     WORKDIR /src/components/operator
-    COPY --dir api internal cmd pkg .
+    COPY --dir api internal pkg .
     COPY go.* .
     SAVE ARTIFACT /src
 
@@ -21,7 +21,7 @@ compile:
     FROM core+builder-image
     COPY (+sources/*) /src
     COPY --pass-args (+generate/*) /src/components/operator
-    WORKDIR /src/components/operator/cmd
+    WORKDIR /src/components/operator
 	DO --pass-args core+GO_COMPILE
 
 build-image:
@@ -104,7 +104,6 @@ lint:
     DO --pass-args stack+GO_LINT
     SAVE ARTIFACT api AS LOCAL api
     SAVE ARTIFACT internal AS LOCAL internal
-    SAVE ARTIFACT cmd AS LOCAL cmd
 
 tests:
     FROM core+builder-image
