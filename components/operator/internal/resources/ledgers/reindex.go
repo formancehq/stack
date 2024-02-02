@@ -28,7 +28,7 @@ func createReindexCronJob(ctx core.Context, ledger *v1beta1.Ledger) (*batchv1.Cr
 							Containers: []corev1.Container{{
 								Image: "curlimages/curl:8.2.1",
 								Name:  "reindex-ledger",
-								Command: core.ShellCommand(`
+								Command: core.ShellScript(`
 					curl http://benthos.%s.svc.cluster.local:4195/ledger_reindex_all -X POST -H 'Content-Type: application/json' -d '{}'`, ledger.Spec.Stack),
 							}},
 						},

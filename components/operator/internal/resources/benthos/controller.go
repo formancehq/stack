@@ -282,7 +282,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 		deployments.WithInitContainers(b.Spec.InitContainers...),
 		deployments.WithContainers(corev1.Container{
 			Name:    "benthos",
-			Image:   "public.ecr.aws/formance-internal/jeffail/benthos:v4.23.0-es",
+			Image:   "public.ecr.aws/formance-internal/jeffail/benthos:v4.23.1-es",
 			Env:     env,
 			Command: cmd,
 			Ports: []corev1.ContainerPort{{

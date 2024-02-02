@@ -83,7 +83,6 @@ var _ = Describe("StackController (legacy)", func() {
 			Eventually(func(g Gomega) error {
 				return LoadResource("", stack.Name, s)
 			}).Should(Succeed())
-			Expect(s.Annotations).To(HaveKey(v1beta1.SkipLabel))
 		})
 		It("Should create the Ledger object", func() {
 			Eventually(func(g Gomega) error {

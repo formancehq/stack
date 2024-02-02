@@ -2,20 +2,19 @@ package stacks
 
 import (
 	"fmt"
-	"strings"
-
-	"github.com/pkg/errors"
-	appsv1 "k8s.io/api/apps/v1"
-	batchv1 "k8s.io/api/batch/v1"
-	networkingv1 "k8s.io/api/networking/v1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"strings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/api/stack.formance.com/v1beta3"
 	. "github.com/formancehq/operator/internal/core"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/pkg/errors"
+	appsv1 "k8s.io/api/apps/v1"
+	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
+	networkingv1 "k8s.io/api/networking/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -93,14 +92,18 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}
 	}
 
-	_, _, err := CreateOrUpdate[*v1beta1.Stack](ctx, types.NamespacedName{
+	newStack, _, err := CreateOrUpdate[*v1beta1.Stack](ctx, types.NamespacedName{
 		Name: stack.Name,
 	}, func(t *v1beta1.Stack) error {
 		if t.Annotations == nil {
 			t.Annotations = map[string]string{}
 		}
 		// Automatically set skip label on creation
-		if t.ResourceVersion == "" {
+		// if the new object stack does not exists actually (we're upgrading)
+		// and if the actual stack (old object) is already ready
+		// this way, creating with the agent works as expected
+		// and old stacks will not be automatically upgraded
+		if t.ResourceVersion == "" && stack.Status.Ready {
 			t.Annotations[v1beta1.SkipLabel] = "true"
 		}
 		t.Spec.Dev = stack.Spec.Dev
@@ -361,7 +364,7 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}
 	}
 
-	if ready {
+	if ready && newStack.Annotations[v1beta1.SkipLabel] != "true" {
 		for _, object := range []client.Object{
 			&corev1.ConfigMap{},
 			&corev1.Secret{},
@@ -411,6 +414,19 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		for _, item := range list.Items {
 			if err := ctx.GetClient().Delete(ctx, &item); err != nil {
 				return err
+			}
+		}
+
+		pods := &corev1.PodList{}
+		if err := ctx.GetClient().List(ctx, pods, client.InNamespace(stack.Name)); err != nil {
+			return err
+		}
+
+		for _, item := range pods.Items {
+			if item.Status.Phase == "Succeeded" {
+				if err := ctx.GetClient().Delete(ctx, &item); err != nil {
+					return err
+				}
 			}
 		}
 	}

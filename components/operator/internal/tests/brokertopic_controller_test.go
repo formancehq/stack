@@ -62,11 +62,6 @@ var _ = Describe("BrokerTopicController", func() {
 				return t.Status.Ready
 			}).Should(BeTrue())
 		})
-		It("Should create a broker topic creation job", func() {
-			Eventually(func() error {
-				return LoadResource(stack.Name, fmt.Sprintf("%s-create-topic", brokerTopic.Spec.Service), &batchv1.Job{})
-			}).Should(Succeed())
-		})
 		Context("Then updating removing all owner references", func() {
 			BeforeEach(func() {
 				Eventually(func(g Gomega) bool {

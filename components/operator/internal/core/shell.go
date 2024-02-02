@@ -2,7 +2,7 @@ package core
 
 import "fmt"
 
-func ShellCommand(cmd string, args ...any) []string {
+func ShellScript(cmd string, args ...any) []string {
 	return []string{"sh", "-c",
 		fmt.Sprintf(`/bin/sh <<'EOF'
 
