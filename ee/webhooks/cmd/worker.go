@@ -3,11 +3,11 @@ package cmd
 import (
 	"net/http"
 
-	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
-
 	"github.com/formancehq/webhooks/pkg/storage/postgres"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+
+	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/service"

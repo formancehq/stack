@@ -1,0 +1,27 @@
+package resources
+
+import (
+	_ "github.com/formancehq/operator/internal/resources/authclients"
+	_ "github.com/formancehq/operator/internal/resources/auths"
+	_ "github.com/formancehq/operator/internal/resources/benthos"
+	_ "github.com/formancehq/operator/internal/resources/benthosstreams"
+	_ "github.com/formancehq/operator/internal/resources/brokertopicconsumers"
+	_ "github.com/formancehq/operator/internal/resources/brokertopics"
+	_ "github.com/formancehq/operator/internal/resources/databases"
+	_ "github.com/formancehq/operator/internal/resources/gatewayhttpapis"
+	_ "github.com/formancehq/operator/internal/resources/gateways"
+	_ "github.com/formancehq/operator/internal/resources/ledgers"
+	_ "github.com/formancehq/operator/internal/resources/legacy/configurations"
+	_ "github.com/formancehq/operator/internal/resources/legacy/stacks"
+	_ "github.com/formancehq/operator/internal/resources/legacy/versions"
+	_ "github.com/formancehq/operator/internal/resources/orchestrations"
+	_ "github.com/formancehq/operator/internal/resources/payments"
+	_ "github.com/formancehq/operator/internal/resources/reconciliations"
+	_ "github.com/formancehq/operator/internal/resources/searches"
+	_ "github.com/formancehq/operator/internal/resources/secretreferences"
+	_ "github.com/formancehq/operator/internal/resources/settings"
+	_ "github.com/formancehq/operator/internal/resources/stacks"
+	_ "github.com/formancehq/operator/internal/resources/stargates"
+	_ "github.com/formancehq/operator/internal/resources/wallets"
+	_ "github.com/formancehq/operator/internal/resources/webhooks"
+)

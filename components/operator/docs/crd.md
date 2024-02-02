@@ -1,44 +1,91 @@
 # API Reference
 
 ## Packages
-- [stack.formance.com/v1beta3](#stackformancecomv1beta3)
+- [formance.com/v1beta1](#formancecomv1beta1)
 
 
-## stack.formance.com/v1beta3
+## formance.com/v1beta1
 
-Package v1beta3 contains API Schema definitions for the stack v1beta3 API group
-
+Package v1beta1 contains API Schema definitions for the formance v1beta1 API group
 
 ### Resource Types
-- [Configuration](#configuration)
-- [Migration](#migration)
+- [Auth](#auth)
+- [AuthClient](#authclient)
+- [Benthos](#benthos)
+- [BenthosStream](#benthosstream)
+- [BrokerTopic](#brokertopic)
+- [BrokerTopicConsumer](#brokertopicconsumer)
+- [Database](#database)
+- [Gateway](#gateway)
+- [GatewayHTTPAPI](#gatewayhttpapi)
+- [Ledger](#ledger)
+- [Orchestration](#orchestration)
+- [Payments](#payments)
+- [Reconciliation](#reconciliation)
+- [Search](#search)
+- [SecretReference](#secretreference)
+- [Settings](#settings)
 - [Stack](#stack)
+- [Stargate](#stargate)
 - [Versions](#versions)
+- [Wallets](#wallets)
+- [Webhooks](#webhooks)
 
 
 
-#### AnnotationsServicesSpec
+#### Auth
 
 
 
+Auth is the Schema for the auths API
 
 
-_Appears in:_
-- [AuthSpec](#authspec)
-- [ControlSpec](#controlspec)
-- [GatewaySpec](#gatewayspec)
-- [LedgerSpec](#ledgerspec)
-- [OrchestrationSpec](#orchestrationspec)
-- [PaymentsSpec](#paymentsspec)
-- [ReconciliationSpec](#reconciliationspec)
-- [SearchSpec](#searchspec)
-- [StargateSpec](#stargatespec)
-- [WalletsSpec](#walletsspec)
-- [WebhooksSpec](#webhooksspec)
 
 | Field | Description |
 | --- | --- |
-| `service` _object (keys:string, values:string)_ |  |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `Auth`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[AuthSpec](#authspec)_ |  |
+
+
+#### AuthClient
+
+
+
+AuthClient is the Schema for the authclients API
+
+
+
+| Field | Description |
+| --- | --- |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `AuthClient`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[AuthClientSpec](#authclientspec)_ |  |
+
+
+#### AuthClientSpec
+
+
+
+AuthClientSpec defines the desired state of AuthClient
+
+_Appears in:_
+- [AuthClient](#authclient)
+
+| Field | Description |
+| --- | --- |
+| `stack` _string_ |  |
+| `id` _string_ |  |
+| `public` _boolean_ |  |
+| `description` _string_ |  |
+| `redirectUris` _string array_ |  |
+| `postLogoutRedirectUris` _string array_ |  |
+| `scopes` _string array_ |  |
+| `secret` _string_ |  |
+
+
 
 
 #### AuthConfig
@@ -48,7 +95,13 @@ _Appears in:_
 
 
 _Appears in:_
-- [ConfigurationSpec](#configurationspec)
+- [LedgerSpec](#ledgerspec)
+- [OrchestrationSpec](#orchestrationspec)
+- [PaymentsSpec](#paymentsspec)
+- [ReconciliationSpec](#reconciliationspec)
+- [SearchSpec](#searchspec)
+- [WalletsSpec](#walletsspec)
+- [WebhooksSpec](#webhooksspec)
 
 | Field | Description |
 | --- | --- |
@@ -60,19 +113,23 @@ _Appears in:_
 
 
 
-
+AuthSpec defines the desired state of Auth
 
 _Appears in:_
-- [ConfigurationServicesSpec](#configurationservicesspec)
+- [Auth](#auth)
 
 | Field | Description |
 | --- | --- |
-| `postgres` _[PostgresConfig](#postgresconfig)_ |  |
-| `staticClients` _[StaticClient](#staticclient) array_ |  |
 | `debug` _boolean_ |  |
 | `dev` _boolean_ |  |
-| `resourceProperties` _[ResourceProperties](#resourceproperties)_ |  |
-| `annotations` _[AnnotationsServicesSpec](#annotationsservicesspec)_ |  |
+| `version` _string_ |  |
+| `stack` _string_ |  |
+| `delegatedOIDCServer` _[DelegatedOIDCServerConfiguration](#delegatedoidcserverconfiguration)_ |  |
+| `signingKey` _string_ |  |
+| `signingKeyFromSecret` _[SecretKeySelector](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#secretkeyselector-v1-core)_ |  |
+| `enableScopes` _boolean_ |  |
+
+
 
 
 #### Batching
@@ -82,6 +139,7 @@ _Appears in:_
 
 
 _Appears in:_
+- [BenthosSpec](#benthosspec)
 - [SearchSpec](#searchspec)
 
 | Field | Description |
@@ -90,73 +148,201 @@ _Appears in:_
 | `period` _string_ |  |
 
 
-#### Broker
+#### Benthos
 
 
 
+Benthos is the Schema for the benthos API
 
 
-_Appears in:_
-- [CollectorConfig](#collectorconfig)
-- [ConfigurationSpec](#configurationspec)
 
 | Field | Description |
 | --- | --- |
-| `kafka` _[KafkaConfig](#kafkaconfig)_ |  |
-| `nats` _[NatsConfig](#natsconfig)_ |  |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `Benthos`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[BenthosSpec](#benthosspec)_ |  |
 
 
-#### ClientConfiguration
+#### BenthosSpec
 
 
 
-
+BenthosSpec defines the desired state of Benthos
 
 _Appears in:_
-- [StaticClient](#staticclient)
+- [Benthos](#benthos)
 
 | Field | Description |
 | --- | --- |
-| `public` _boolean_ |  |
-| `description` _string_ |  |
-| `redirectUris` _string array_ |  |
-| `postLogoutRedirectUris` _string array_ |  |
-| `scopes` _string array_ |  |
-
-
-
-
-#### CommonServiceProperties
-
-
-
-
-
-_Appears in:_
-- [ControlSpec](#controlspec)
-- [LedgerSpec](#ledgerspec)
-- [OrchestrationSpec](#orchestrationspec)
-- [PaymentsSpec](#paymentsspec)
-- [ReconciliationSpec](#reconciliationspec)
-- [SearchSpec](#searchspec)
-- [WalletsSpec](#walletsspec)
-- [WebhooksSpec](#webhooksspec)
-
-| Field | Description |
-| --- | --- |
+| `stack` _string_ |  |
 | `debug` _boolean_ |  |
 | `dev` _boolean_ |  |
-| `disabled` _boolean_ |  |
+| `resourceRequirements` _[ResourceRequirements](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#resourcerequirements-v1-core)_ |  |
+| `batching` _[Batching](#batching)_ |  |
+| `initContainers` _[Container](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#container-v1-core) array_ |  |
+
+
+
+
+#### BenthosStream
+
+
+
+BenthosStream is the Schema for the benthosstreams API
+
+
+
+| Field | Description |
+| --- | --- |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `BenthosStream`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[BenthosStreamSpec](#benthosstreamspec)_ |  |
+
+
+#### BenthosStreamSpec
+
+
+
+BenthosStreamSpec defines the desired state of BenthosStream
+
+_Appears in:_
+- [BenthosStream](#benthosstream)
+
+| Field | Description |
+| --- | --- |
+| `stack` _string_ |  |
+| `data` _string_ |  |
+| `name` _string_ |  |
+
+
+
+
+#### BrokerTopic
+
+
+
+BrokerTopic is the Schema for the brokertopics API
+
+
+
+| Field | Description |
+| --- | --- |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `BrokerTopic`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[BrokerTopicSpec](#brokertopicspec)_ |  |
+
+
+#### BrokerTopicConsumer
+
+
+
+BrokerTopicConsumer is the Schema for the brokertopicconsumers API
+
+
+
+| Field | Description |
+| --- | --- |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `BrokerTopicConsumer`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[BrokerTopicConsumerSpec](#brokertopicconsumerspec)_ |  |
+
+
+#### BrokerTopicConsumerSpec
+
+
+
+BrokerTopicConsumerSpec defines the desired state of BrokerTopicConsumer
+
+_Appears in:_
+- [BrokerTopicConsumer](#brokertopicconsumer)
+
+| Field | Description |
+| --- | --- |
+| `stack` _string_ |  |
+| `service` _string_ |  |
+| `queriedBy` _string_ |  |
+
+
+
+
+#### BrokerTopicSpec
+
+
+
+BrokerTopicSpec defines the desired state of BrokerTopic
+
+_Appears in:_
+- [BrokerTopic](#brokertopic)
+
+| Field | Description |
+| --- | --- |
+| `stack` _string_ |  |
+| `service` _string_ |  |
+
+
+
+
+#### CommonStatus
+
+
+
+
+
+_Appears in:_
+- [AuthClientStatus](#authclientstatus)
+- [AuthStatus](#authstatus)
+- [BenthosStatus](#benthosstatus)
+- [BenthosStreamStatus](#benthosstreamstatus)
+- [BrokerTopicConsumerStatus](#brokertopicconsumerstatus)
+- [BrokerTopicStatus](#brokertopicstatus)
+- [DatabaseStatus](#databasestatus)
+- [GatewayHTTPAPIStatus](#gatewayhttpapistatus)
+- [GatewayStatus](#gatewaystatus)
+- [LedgerStatus](#ledgerstatus)
+- [ModuleStatus](#modulestatus)
+- [OrchestrationStatus](#orchestrationstatus)
+- [PaymentsStatus](#paymentsstatus)
+- [ReconciliationStatus](#reconciliationstatus)
+- [SearchStatus](#searchstatus)
+- [SecretReferenceStatus](#secretreferencestatus)
+- [StackStatus](#stackstatus)
+- [StargateStatus](#stargatestatus)
+- [StatusWithConditions](#statuswithconditions)
+- [WalletsStatus](#walletsstatus)
+- [WebhooksStatus](#webhooksstatus)
+
+| Field | Description |
+| --- | --- |
+| `ready` _boolean_ |  |
+| `info` _string_ |  |
 
 
 #### Condition
 
 
 
-
+Condition contains details for one aspect of the current state of this API Resource. --- This struct is intended for direct use as an array at the field path .status.conditions.  For example, 
+ type FooStatus struct{ // Represents the observations of a foo's current state. // Known .status.conditions.type are: "Available", "Progressing", and "Degraded" // +patchMergeKey=type // +patchStrategy=merge // +listType=map // +listMapKey=type CommonStatus []metav1.Condition `json:"conditions,omitempty" patchStrategy:"merge" patchMergeKey:"type" protobuf:"bytes,1,rep,name=conditions"` 
+ // other fields }
 
 _Appears in:_
-- [Conditions](#conditions)
+- [AuthStatus](#authstatus)
+- [BenthosStatus](#benthosstatus)
+- [GatewayStatus](#gatewaystatus)
+- [LedgerStatus](#ledgerstatus)
+- [ModuleStatus](#modulestatus)
+- [OrchestrationStatus](#orchestrationstatus)
+- [PaymentsStatus](#paymentsstatus)
+- [ReconciliationStatus](#reconciliationstatus)
+- [SearchStatus](#searchstatus)
+- [StargateStatus](#stargatestatus)
+- [StatusWithConditions](#statuswithconditions)
+- [WalletsStatus](#walletsstatus)
+- [WebhooksStatus](#webhooksstatus)
 
 | Field | Description |
 | --- | --- |
@@ -164,105 +350,38 @@ _Appears in:_
 | `observedGeneration` _integer_ | observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance. |
 | `lastTransitionTime` _[Time](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#time-v1-meta)_ | lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable. |
 | `message` _string_ | message is a human readable message indicating details about the transition. This may be an empty string. |
+| `reason` _string_ | reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty. |
 
 
-#### Conditions
-
-_Underlying type:_ _[Condition](#condition)_
-
-
-
-_Appears in:_
-- [StackStatus](#stackstatus)
-- [Status](#status)
-
-| Field | Description |
-| --- | --- |
-| `type` _string_ | type of condition in CamelCase or in foo.example.com/CamelCase. --- Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be useful (see .node.status.conditions), the ability to deconflict is important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt) |
-| `observedGeneration` _integer_ | observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance. |
-| `lastTransitionTime` _[Time](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#time-v1-meta)_ | lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable. |
-| `message` _string_ | message is a human readable message indicating details about the transition. This may be an empty string. |
-
-
-#### Configuration
+#### Database
 
 
 
-Configuration is the Schema for the configurations API
+Database is the Schema for the databases API
 
 
 
 | Field | Description |
 | --- | --- |
-| `apiVersion` _string_ | `stack.formance.com/v1beta3`
-| `kind` _string_ | `Configuration`
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `Database`
 | `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
-| `spec` _[ConfigurationSpec](#configurationspec)_ |  |
+| `spec` _[DatabaseSpec](#databasespec)_ |  |
 
 
-#### ConfigurationServicesSpec
+#### DatabaseSpec
 
 
 
-ConfigurationServicesSpec define all existing services for a stack. Fields order is important. For example, auth must be defined later as other services create static auth clients which must be used by auth.
+DatabaseSpec defines the desired state of Database
 
 _Appears in:_
-- [ConfigurationSpec](#configurationspec)
+- [Database](#database)
 
 | Field | Description |
 | --- | --- |
-| `control` _[ControlSpec](#controlspec)_ |  |
-| `ledger` _[LedgerSpec](#ledgerspec)_ |  |
-| `payments` _[PaymentsSpec](#paymentsspec)_ |  |
-| `reconciliation` _[ReconciliationSpec](#reconciliationspec)_ |  |
-| `webhooks` _[WebhooksSpec](#webhooksspec)_ |  |
-| `wallets` _[WalletsSpec](#walletsspec)_ |  |
-| `orchestration` _[OrchestrationSpec](#orchestrationspec)_ |  |
-| `search` _[SearchSpec](#searchspec)_ |  |
-| `auth` _[AuthSpec](#authspec)_ |  |
-| `gateway` _[GatewaySpec](#gatewayspec)_ |  |
-| `stargate` _[StargateSpec](#stargatespec)_ |  |
-
-
-#### ConfigurationSpec
-
-
-
-
-
-_Appears in:_
-- [Configuration](#configuration)
-
-| Field | Description |
-| --- | --- |
-| `services` _[ConfigurationServicesSpec](#configurationservicesspec)_ |  |
-| `broker` _[Broker](#broker)_ |  |
-| `monitoring` _[MonitoringSpec](#monitoringspec)_ |  |
-| `auth` _[AuthConfig](#authconfig)_ |  |
-| `ingress` _[IngressGlobalConfig](#ingressglobalconfig)_ |  |
-| `temporal` _[TemporalConfig](#temporalconfig)_ |  |
-| `light` _boolean_ | LightMode is experimental and indicate we want monopods |
-| `registries` _object (keys:string, values:[RegistryConfig](#registryconfig))_ |  |
-
-
-
-
-#### ControlSpec
-
-
-
-
-
-_Appears in:_
-- [ConfigurationServicesSpec](#configurationservicesspec)
-
-| Field | Description |
-| --- | --- |
-| `debug` _boolean_ |  |
-| `dev` _boolean_ |  |
-| `disabled` _boolean_ |  |
-| `resourceProperties` _[ResourceProperties](#resourceproperties)_ |  |
-| `annotations` _[AnnotationsServicesSpec](#annotationsservicesspec)_ |  |
+| `stack` _string_ |  |
+| `service` _string_ |  |
 
 
 
@@ -274,13 +393,15 @@ _Appears in:_
 
 
 _Appears in:_
-- [StackAuthSpec](#stackauthspec)
+- [AuthSpec](#authspec)
 
 | Field | Description |
 | --- | --- |
 | `issuer` _string_ |  |
 | `clientID` _string_ |  |
 | `clientSecret` _string_ |  |
+
+
 
 
 #### DeploymentStrategy
@@ -302,9 +423,10 @@ _Appears in:_
 
 _Appears in:_
 - [AuthSpec](#authspec)
-- [CommonServiceProperties](#commonserviceproperties)
-- [ControlSpec](#controlspec)
+- [BenthosSpec](#benthosspec)
+- [GatewaySpec](#gatewayspec)
 - [LedgerSpec](#ledgerspec)
+- [ModuleProperties](#moduleproperties)
 - [OrchestrationSpec](#orchestrationspec)
 - [PaymentsSpec](#paymentsspec)
 - [ReconciliationSpec](#reconciliationspec)
@@ -320,174 +442,161 @@ _Appears in:_
 | `dev` _boolean_ |  |
 
 
-#### ElasticSearchBasicAuthConfig
+
+
+#### Gateway
+
+
+
+Gateway is the Schema for the gateways API
+
+
+
+| Field | Description |
+| --- | --- |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `Gateway`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[GatewaySpec](#gatewayspec)_ |  |
+
+
+#### GatewayHTTPAPI
+
+
+
+GatewayHTTPAPI is the Schema for the HTTPAPIs API
+
+
+
+| Field | Description |
+| --- | --- |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `GatewayHTTPAPI`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[GatewayHTTPAPISpec](#gatewayhttpapispec)_ |  |
+
+
+#### GatewayHTTPAPIRule
 
 
 
 
 
 _Appears in:_
-- [ElasticSearchConfig](#elasticsearchconfig)
+- [GatewayHTTPAPISpec](#gatewayhttpapispec)
 
 | Field | Description |
 | --- | --- |
-| `username` _string_ |  |
-| `password` _string_ |  |
-| `secretName` _string_ |  |
+| `path` _string_ |  |
+| `methods` _string array_ |  |
+| `secured` _boolean_ |  |
 
 
-#### ElasticSearchConfig
+#### GatewayHTTPAPISpec
+
+
+
+GatewayHTTPAPISpec defines the desired state of GatewayHTTPAPI
+
+_Appears in:_
+- [GatewayHTTPAPI](#gatewayhttpapi)
+
+| Field | Description |
+| --- | --- |
+| `stack` _string_ |  |
+| `name` _string_ | Name indicates prefix api |
+| `rules` _[GatewayHTTPAPIRule](#gatewayhttpapirule) array_ | Rules |
+
+
+
+
+#### GatewayIngress
 
 
 
 
 
 _Appears in:_
-- [SearchSpec](#searchspec)
+- [GatewaySpec](#gatewayspec)
 
 | Field | Description |
 | --- | --- |
-| `scheme` _string_ |  |
 | `host` _string_ |  |
-| `port` _integer_ |  |
-| `tls` _[ElasticSearchTLSConfig](#elasticsearchtlsconfig)_ |  |
-| `basicAuth` _[ElasticSearchBasicAuthConfig](#elasticsearchbasicauthconfig)_ |  |
-| `pathPrefix` _string_ |  |
-| `useZinc` _boolean_ |  |
+| `scheme` _string_ |  |
+| `annotations` _object (keys:string, values:string)_ |  |
+| `tls` _[GatewayIngressTLS](#gatewayingresstls)_ |  |
 
 
-#### ElasticSearchTLSConfig
+#### GatewayIngressTLS
 
 
 
 
 
 _Appears in:_
-- [ElasticSearchConfig](#elasticsearchconfig)
+- [GatewayIngress](#gatewayingress)
 
 | Field | Description |
 | --- | --- |
-| `enabled` _boolean_ |  |
-| `skipCertVerify` _boolean_ |  |
+| `secretName` _string_ |  |
 
 
 #### GatewaySpec
 
 
 
-
+GatewaySpec defines the desired state of Gateway
 
 _Appears in:_
-- [ConfigurationServicesSpec](#configurationservicesspec)
+- [Gateway](#gateway)
 
 | Field | Description |
 | --- | --- |
-| `resourceProperties` _[ResourceProperties](#resourceproperties)_ |  |
-| `annotations` _[AnnotationsServicesSpec](#annotationsservicesspec)_ |  |
-| `fallback` _string_ |  |
-| `enableAuditPlugin` _boolean_ |  |
-| `livenessEndpoint` _string_ |  |
-| `enableScopes` _boolean_ |  |
-
-
-#### IngressConfig
+| `stack` _string_ |  |
+| `debug` _boolean_ |  |
+| `dev` _boolean_ |  |
+| `version` _string_ |  |
+| `ingress` _[GatewayIngress](#gatewayingress)_ |  |
 
 
 
 
+#### Ledger
 
-_Appears in:_
-- [IngressGlobalConfig](#ingressglobalconfig)
+
+
+Ledger is the Schema for the ledgers API
+
+
 
 | Field | Description |
 | --- | --- |
-| `annotations` _object (keys:string, values:string)_ |  |
-
-
-#### IngressGlobalConfig
-
-
-
-
-
-_Appears in:_
-- [ConfigurationSpec](#configurationspec)
-
-| Field | Description |
-| --- | --- |
-| `annotations` _object (keys:string, values:string)_ |  |
-| `tls` _[IngressTLS](#ingresstls)_ |  |
-
-
-#### IngressTLS
-
-
-
-
-
-_Appears in:_
-- [IngressGlobalConfig](#ingressglobalconfig)
-
-| Field | Description |
-| --- | --- |
-| `secretName` _string_ | SecretName is the name of the secret used to terminate TLS traffic on port 443. Field is left optional to allow TLS routing based on SNI hostname alone. If the SNI host in a listener conflicts with the "Host" header field used by an IngressRule, the SNI host is used for termination and value of the Host header is used for routing. |
-
-
-#### KafkaConfig
-
-
-
-
-
-_Appears in:_
-- [Broker](#broker)
-- [CollectorConfig](#collectorconfig)
-
-| Field | Description |
-| --- | --- |
-| `brokers` _string array_ |  |
-| `tls` _boolean_ |  |
-| `sasl` _[KafkaSASLConfig](#kafkasaslconfig)_ |  |
-
-
-#### KafkaSASLConfig
-
-
-
-
-
-_Appears in:_
-- [KafkaConfig](#kafkaconfig)
-
-| Field | Description |
-| --- | --- |
-| `username` _string_ |  |
-| `password` _string_ |  |
-| `mechanism` _string_ |  |
-| `scramSHASize` _string_ |  |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `Ledger`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[LedgerSpec](#ledgerspec)_ |  |
 
 
 #### LedgerSpec
 
 
 
-
+LedgerSpec defines the desired state of Ledger
 
 _Appears in:_
-- [ConfigurationServicesSpec](#configurationservicesspec)
+- [Ledger](#ledger)
 
 | Field | Description |
 | --- | --- |
 | `debug` _boolean_ |  |
 | `dev` _boolean_ |  |
-| `disabled` _boolean_ |  |
-| `postgres` _[PostgresConfig](#postgresconfig)_ |  |
-| `locking` _[LockingStrategy](#lockingstrategy)_ |  |
-| `allowPastTimestamps` _boolean_ |  |
-| `resourceProperties` _[ResourceProperties](#resourceproperties)_ |  |
-| `annotations` _[AnnotationsServicesSpec](#annotationsservicesspec)_ |  |
+| `version` _string_ |  |
+| `stack` _string_ |  |
+| `auth` _[AuthConfig](#authconfig)_ |  |
 | `deploymentStrategy` _[DeploymentStrategy](#deploymentstrategy)_ |  |
-| `disabled` _boolean_ |  |
+| `locking` _[LockingStrategy](#lockingstrategy)_ | Locking is intended for ledger v1 only |
+
+
 
 
 #### LockingStrategy
@@ -523,147 +632,9 @@ _Appears in:_
 | `retry` _[Duration](#duration)_ |  |
 
 
-#### MetricsSpec
 
 
-
-
-
-_Appears in:_
-- [MonitoringSpec](#monitoringspec)
-
-| Field | Description |
-| --- | --- |
-| `otlp` _[OtlpSpec](#otlpspec)_ |  |
-
-
-#### Migration
-
-
-
-Migration is the Schema for the migrations API
-
-
-
-| Field | Description |
-| --- | --- |
-| `apiVersion` _string_ | `stack.formance.com/v1beta3`
-| `kind` _string_ | `Migration`
-| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
-| `spec` _[MigrationSpec](#migrationspec)_ |  |
-
-
-#### MigrationSpec
-
-
-
-MigrationSpec defines the desired state of Migration
-
-_Appears in:_
-- [Migration](#migration)
-
-| Field | Description |
-| --- | --- |
-| `configuration` _string_ |  |
-| `currentVersion` _string_ |  |
-| `version` _string_ |  |
-| `module` _string_ |  |
-| `targetedVersion` _string_ |  |
-| `postUpgrade` _boolean_ |  |
-
-
-
-
-#### MonitoringSpec
-
-
-
-
-
-_Appears in:_
-- [ConfigurationSpec](#configurationspec)
-
-| Field | Description |
-| --- | --- |
-| `traces` _[TracesSpec](#tracesspec)_ |  |
-| `metrics` _[MetricsSpec](#metricsspec)_ |  |
-
-
-#### NatsConfig
-
-
-
-
-
-_Appears in:_
-- [Broker](#broker)
-- [CollectorConfig](#collectorconfig)
-
-| Field | Description |
-| --- | --- |
-| `url` _string_ |  |
-| `replicas` _integer_ |  |
-
-
-#### OrchestrationSpec
-
-
-
-
-
-_Appears in:_
-- [ConfigurationServicesSpec](#configurationservicesspec)
-
-| Field | Description |
-| --- | --- |
-| `debug` _boolean_ |  |
-| `dev` _boolean_ |  |
-| `disabled` _boolean_ |  |
-| `postgres` _[PostgresConfig](#postgresconfig)_ |  |
-| `resourceProperties` _[ResourceProperties](#resourceproperties)_ |  |
-| `annotations` _[AnnotationsServicesSpec](#annotationsservicesspec)_ |  |
-
-
-#### OtlpSpec
-
-
-
-
-
-_Appears in:_
-- [MetricsSpec](#metricsspec)
-- [TracesSpec](#tracesspec)
-
-| Field | Description |
-| --- | --- |
-| `endpoint` _string_ |  |
-| `port` _integer_ |  |
-| `insecure` _boolean_ |  |
-| `mode` _string_ |  |
-| `resourceAttributes` _string_ |  |
-
-
-#### PaymentsSpec
-
-
-
-
-
-_Appears in:_
-- [ConfigurationServicesSpec](#configurationservicesspec)
-
-| Field | Description |
-| --- | --- |
-| `debug` _boolean_ |  |
-| `dev` _boolean_ |  |
-| `disabled` _boolean_ |  |
-| `encryptionKey` _string_ |  |
-| `postgres` _[PostgresConfig](#postgresconfig)_ |  |
-| `resourceProperties` _[ResourceProperties](#resourceproperties)_ |  |
-| `annotations` _[AnnotationsServicesSpec](#annotationsservicesspec)_ |  |
-
-
-#### PostgresConfig
+#### ModuleProperties
 
 
 
@@ -671,65 +642,6 @@ _Appears in:_
 
 _Appears in:_
 - [AuthSpec](#authspec)
-- [LedgerSpec](#ledgerspec)
-- [OrchestrationSpec](#orchestrationspec)
-- [PaymentsSpec](#paymentsspec)
-- [ReconciliationSpec](#reconciliationspec)
-- [WebhooksSpec](#webhooksspec)
-
-| Field | Description |
-| --- | --- |
-| `port` _integer_ |  |
-| `host` _string_ |  |
-| `username` _string_ |  |
-| `password` _string_ |  |
-| `debug` _boolean_ |  |
-| `credentialsFromSecret` _string_ |  |
-| `disableSSLMode` _boolean_ |  |
-
-
-#### ReconciliationSpec
-
-
-
-
-
-_Appears in:_
-- [ConfigurationServicesSpec](#configurationservicesspec)
-
-| Field | Description |
-| --- | --- |
-| `debug` _boolean_ |  |
-| `dev` _boolean_ |  |
-| `disabled` _boolean_ |  |
-| `postgres` _[PostgresConfig](#postgresconfig)_ |  |
-| `resourceProperties` _[ResourceProperties](#resourceproperties)_ |  |
-| `annotations` _[AnnotationsServicesSpec](#annotationsservicesspec)_ |  |
-
-
-#### RegistryConfig
-
-
-
-
-
-_Appears in:_
-- [ConfigurationSpec](#configurationspec)
-
-| Field | Description |
-| --- | --- |
-| `endpoint` _string_ |  |
-
-
-#### ResourceProperties
-
-
-
-
-
-_Appears in:_
-- [AuthSpec](#authspec)
-- [ControlSpec](#controlspec)
 - [GatewaySpec](#gatewayspec)
 - [LedgerSpec](#ledgerspec)
 - [OrchestrationSpec](#orchestrationspec)
@@ -742,29 +654,250 @@ _Appears in:_
 
 | Field | Description |
 | --- | --- |
-| `request` _[resource](#resource)_ |  |
-| `limits` _[resource](#resource)_ |  |
+| `debug` _boolean_ |  |
+| `dev` _boolean_ |  |
+| `version` _string_ |  |
 
 
-#### SearchSpec
+#### ModuleStatus
 
 
 
 
 
 _Appears in:_
-- [ConfigurationServicesSpec](#configurationservicesspec)
+- [AuthStatus](#authstatus)
+- [GatewayStatus](#gatewaystatus)
+- [LedgerStatus](#ledgerstatus)
+- [OrchestrationStatus](#orchestrationstatus)
+- [PaymentsStatus](#paymentsstatus)
+- [ReconciliationStatus](#reconciliationstatus)
+- [SearchStatus](#searchstatus)
+- [StargateStatus](#stargatestatus)
+- [WalletsStatus](#walletsstatus)
+- [WebhooksStatus](#webhooksstatus)
 
 | Field | Description |
 | --- | --- |
+| `ready` _boolean_ |  |
+| `info` _string_ |  |
+| `conditions` _[Condition](#condition) array_ |  |
+| `version` _string_ |  |
+
+
+
+
+#### Orchestration
+
+
+
+Orchestration is the Schema for the orchestrations API
+
+
+
+| Field | Description |
+| --- | --- |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `Orchestration`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[OrchestrationSpec](#orchestrationspec)_ |  |
+
+
+#### OrchestrationSpec
+
+
+
+OrchestrationSpec defines the desired state of Orchestration
+
+_Appears in:_
+- [Orchestration](#orchestration)
+
+| Field | Description |
+| --- | --- |
+| `stack` _string_ |  |
 | `debug` _boolean_ |  |
 | `dev` _boolean_ |  |
-| `disabled` _boolean_ |  |
-| `elasticSearch` _[ElasticSearchConfig](#elasticsearchconfig)_ |  |
+| `version` _string_ |  |
+| `auth` _[AuthConfig](#authconfig)_ |  |
+
+
+
+
+#### Payments
+
+
+
+Payments is the Schema for the payments API
+
+
+
+| Field | Description |
+| --- | --- |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `Payments`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[PaymentsSpec](#paymentsspec)_ |  |
+
+
+#### PaymentsSpec
+
+
+
+PaymentsSpec defines the desired state of Payments
+
+_Appears in:_
+- [Payments](#payments)
+
+| Field | Description |
+| --- | --- |
+| `stack` _string_ |  |
+| `debug` _boolean_ |  |
+| `dev` _boolean_ |  |
+| `version` _string_ |  |
+| `encryptionKey` _string_ |  |
+| `auth` _[AuthConfig](#authconfig)_ |  |
+
+
+
+
+#### Reconciliation
+
+
+
+Reconciliation is the Schema for the reconciliations API
+
+
+
+| Field | Description |
+| --- | --- |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `Reconciliation`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[ReconciliationSpec](#reconciliationspec)_ |  |
+
+
+#### ReconciliationSpec
+
+
+
+ReconciliationSpec defines the desired state of Reconciliation
+
+_Appears in:_
+- [Reconciliation](#reconciliation)
+
+| Field | Description |
+| --- | --- |
+| `stack` _string_ |  |
+| `debug` _boolean_ |  |
+| `dev` _boolean_ |  |
+| `version` _string_ |  |
+| `auth` _[AuthConfig](#authconfig)_ |  |
+
+
+
+
+
+
+#### Search
+
+
+
+Search is the Schema for the searches API
+
+
+
+| Field | Description |
+| --- | --- |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `Search`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[SearchSpec](#searchspec)_ |  |
+
+
+#### SearchSpec
+
+
+
+SearchSpec defines the desired state of Search
+
+_Appears in:_
+- [Search](#search)
+
+| Field | Description |
+| --- | --- |
+| `stack` _string_ |  |
+| `debug` _boolean_ |  |
+| `dev` _boolean_ |  |
+| `version` _string_ |  |
 | `batching` _[Batching](#batching)_ |  |
-| `searchResourceProperties` _[ResourceProperties](#resourceproperties)_ |  |
-| `benthosResourceProperties` _[ResourceProperties](#resourceproperties)_ |  |
-| `annotations` _[AnnotationsServicesSpec](#annotationsservicesspec)_ |  |
+| `auth` _[AuthConfig](#authconfig)_ |  |
+
+
+
+
+#### SecretReference
+
+
+
+SecretReference is the Schema for the secretreferences API
+
+
+
+| Field | Description |
+| --- | --- |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `SecretReference`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[SecretReferenceSpec](#secretreferencespec)_ |  |
+
+
+#### SecretReferenceSpec
+
+
+
+SecretReferenceSpec defines the desired state of SecretReference
+
+_Appears in:_
+- [SecretReference](#secretreference)
+
+| Field | Description |
+| --- | --- |
+| `stack` _string_ |  |
+| `secretName` _string_ |  |
+
+
+
+
+#### Settings
+
+
+
+Settings is the Schema for the settings API
+
+
+
+| Field | Description |
+| --- | --- |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `Settings`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[SettingsSpec](#settingsspec)_ |  |
+
+
+#### SettingsSpec
+
+
+
+SettingsSpec defines the desired state of Settings
+
+_Appears in:_
+- [Settings](#settings)
+
+| Field | Description |
+| --- | --- |
+| `stacks` _string array_ |  |
+| `key` _string_ |  |
+| `value` _string_ |  |
 
 
 
@@ -779,66 +912,48 @@ Stack is the Schema for the stacks API
 
 | Field | Description |
 | --- | --- |
-| `apiVersion` _string_ | `stack.formance.com/v1beta3`
+| `apiVersion` _string_ | `formance.com/v1beta1`
 | `kind` _string_ | `Stack`
 | `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
 | `spec` _[StackSpec](#stackspec)_ |  |
 
 
-#### StackAuthSpec
+#### StackDependency
 
 
 
 
 
 _Appears in:_
-- [StackSpec](#stackspec)
+- [AuthClientSpec](#authclientspec)
+- [AuthSpec](#authspec)
+- [BenthosSpec](#benthosspec)
+- [BenthosStreamSpec](#benthosstreamspec)
+- [BrokerTopicConsumerSpec](#brokertopicconsumerspec)
+- [BrokerTopicSpec](#brokertopicspec)
+- [DatabaseSpec](#databasespec)
+- [GatewayHTTPAPISpec](#gatewayhttpapispec)
+- [GatewaySpec](#gatewayspec)
+- [LedgerSpec](#ledgerspec)
+- [OrchestrationSpec](#orchestrationspec)
+- [PaymentsSpec](#paymentsspec)
+- [ReconciliationSpec](#reconciliationspec)
+- [SearchSpec](#searchspec)
+- [SecretReferenceSpec](#secretreferencespec)
+- [StargateSpec](#stargatespec)
+- [WalletsSpec](#walletsspec)
+- [WebhooksSpec](#webhooksspec)
 
 | Field | Description |
 | --- | --- |
-| `delegatedOIDCServer` _[DelegatedOIDCServerConfiguration](#delegatedoidcserverconfiguration)_ |  |
-| `staticClients` _[StaticClient](#staticclient) array_ |  |
-
-
-#### StackServicePropertiesSpec
-
-
-
-
-
-_Appears in:_
-- [StackServicesSpec](#stackservicesspec)
-
-| Field | Description |
-| --- | --- |
-| `disabled` _boolean_ |  |
-
-
-#### StackServicesSpec
-
-
-
-
-
-_Appears in:_
-- [StackSpec](#stackspec)
-
-| Field | Description |
-| --- | --- |
-| `ledger` _[StackServicePropertiesSpec](#stackservicepropertiesspec)_ |  |
-| `orchestration` _[StackServicePropertiesSpec](#stackservicepropertiesspec)_ |  |
-| `reconciliation` _[StackServicePropertiesSpec](#stackservicepropertiesspec)_ |  |
-| `payments` _[StackServicePropertiesSpec](#stackservicepropertiesspec)_ |  |
-| `wallets` _[StackServicePropertiesSpec](#stackservicepropertiesspec)_ |  |
-| `webhooks` _[StackServicePropertiesSpec](#stackservicepropertiesspec)_ |  |
-| `control` _[StackServicePropertiesSpec](#stackservicepropertiesspec)_ |  |
+| `stack` _string_ |  |
 
 
 #### StackSpec
 
 
 
-StackSpec defines the desired state of Stack
+StackSpec defines the desired state of Stack The version of the stack can be specified using either the field `version` or the `versionsFromFile` field. The `version` field will have priority over `versionFromFile` If `versions` and `versionsFromFile` are not specified, "latest" will be used.
 
 _Appears in:_
 - [Stack](#stack)
@@ -847,130 +962,108 @@ _Appears in:_
 | --- | --- |
 | `debug` _boolean_ |  |
 | `dev` _boolean_ |  |
-| `seed` _string_ |  |
-| `host` _string_ |  |
-| `auth` _[StackAuthSpec](#stackauthspec)_ |  |
-| `stargate` _[StackStargateConfig](#stackstargateconfig)_ |  |
-| `versions` _string_ |  |
-| `scheme` _string_ |  |
+| `version` _string_ | Version allow to specify the version of the components Must be a valid docker tag |
+| `versionsFromFile` _string_ | VersionsFromFile allow to specify a formance.com/Versions object which contains individual versions for each component. Must reference a valid formance.com/Versions object |
+| `enableAudit` _boolean_ |  |
 | `disabled` _boolean_ |  |
-| `services` _[StackServicesSpec](#stackservicesspec)_ |  |
 
 
-#### StackStargateConfig
+
+
+#### Stargate
+
+
+
+Stargate is the Schema for the stargates API
+
+
+
+| Field | Description |
+| --- | --- |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `Stargate`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[StargateSpec](#stargatespec)_ |  |
+
+
+#### StargateAuthSpec
 
 
 
 
 
 _Appears in:_
-- [StackSpec](#stackspec)
+- [StargateSpec](#stargatespec)
 
 | Field | Description |
 | --- | --- |
-| `stargateServerURL` _string_ |  |
-
-
+| `clientID` _string_ |  |
+| `clientSecret` _string_ |  |
+| `issuer` _string_ |  |
 
 
 #### StargateSpec
 
 
 
-
+StargateSpec defines the desired state of Stargate
 
 _Appears in:_
-- [ConfigurationServicesSpec](#configurationservicesspec)
+- [Stargate](#stargate)
 
 | Field | Description |
 | --- | --- |
 | `debug` _boolean_ |  |
 | `dev` _boolean_ |  |
-| `resourceProperties` _[ResourceProperties](#resourceproperties)_ |  |
-| `annotations` _[AnnotationsServicesSpec](#annotationsservicesspec)_ |  |
+| `version` _string_ |  |
+| `stack` _string_ |  |
+| `serverURL` _string_ |  |
+| `organizationID` _string_ |  |
+| `stackID` _string_ |  |
+| `auth` _[StargateAuthSpec](#stargateauthspec)_ |  |
 
 
-#### StaticClient
 
 
-
-
-
-_Appears in:_
-- [AuthSpec](#authspec)
-- [StackAuthSpec](#stackauthspec)
-- [StackStatus](#stackstatus)
-
-| Field | Description |
-| --- | --- |
-| `public` _boolean_ |  |
-| `description` _string_ |  |
-| `redirectUris` _string array_ |  |
-| `postLogoutRedirectUris` _string array_ |  |
-| `scopes` _string array_ |  |
-| `id` _string_ |  |
-| `secrets` _string array_ |  |
-
-
-#### Status
+#### StatusWithConditions
 
 
 
 
 
 _Appears in:_
-- [StackStatus](#stackstatus)
+- [AuthStatus](#authstatus)
+- [BenthosStatus](#benthosstatus)
+- [GatewayStatus](#gatewaystatus)
+- [LedgerStatus](#ledgerstatus)
+- [ModuleStatus](#modulestatus)
+- [OrchestrationStatus](#orchestrationstatus)
+- [PaymentsStatus](#paymentsstatus)
+- [ReconciliationStatus](#reconciliationstatus)
+- [SearchStatus](#searchstatus)
+- [StargateStatus](#stargatestatus)
+- [WalletsStatus](#walletsstatus)
+- [WebhooksStatus](#webhooksstatus)
 
 | Field | Description |
 | --- | --- |
-| `conditions` _[Conditions](#conditions)_ |  |
+| `ready` _boolean_ |  |
+| `info` _string_ |  |
+| `conditions` _[Condition](#condition) array_ |  |
 
 
-#### TemporalConfig
+#### URI
 
 
 
 
 
 _Appears in:_
-- [ConfigurationSpec](#configurationspec)
-
-| Field | Description |
-| --- | --- |
-| `address` _string_ |  |
-| `namespace` _string_ |  |
-| `tls` _[TemporalTLSConfig](#temporaltlsconfig)_ |  |
-
-
-#### TemporalTLSConfig
-
-
-
-TODO: Handle validation
-
-_Appears in:_
-- [TemporalConfig](#temporalconfig)
-
-| Field | Description |
-| --- | --- |
-| `crt` _string_ |  |
-| `key` _string_ |  |
-| `secretName` _string_ |  |
-
-
-#### TracesSpec
-
-
-
-
-
-_Appears in:_
-- [MonitoringSpec](#monitoringspec)
-
-| Field | Description |
-| --- | --- |
-| `otlp` _[OtlpSpec](#otlpspec)_ |  |
-
+- [BenthosStatus](#benthosstatus)
+- [BrokerTopicStatus](#brokertopicstatus)
+- [DatabaseStatus](#databasestatus)
+- [OrchestrationStatus](#orchestrationstatus)
+- [SearchStatus](#searchstatus)
 
 
 
@@ -984,74 +1077,81 @@ Versions is the Schema for the versions API
 
 | Field | Description |
 | --- | --- |
-| `apiVersion` _string_ | `stack.formance.com/v1beta3`
+| `apiVersion` _string_ | `formance.com/v1beta1`
 | `kind` _string_ | `Versions`
 | `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
-| `spec` _[VersionsSpec](#versionsspec)_ |  |
+| `spec` _object (keys:string, values:string)_ |  |
 
 
-#### VersionsSpec
+#### Wallets
 
 
 
-VersionsSpec defines the desired state of Versions
+Wallets is the Schema for the wallets API
 
-_Appears in:_
-- [Versions](#versions)
+
 
 | Field | Description |
 | --- | --- |
-| `control` _string_ |  |
-| `ledger` _string_ |  |
-| `payments` _string_ |  |
-| `search` _string_ |  |
-| `auth` _string_ |  |
-| `webhooks` _string_ |  |
-| `wallets` _string_ |  |
-| `orchestration` _string_ |  |
-| `gateway` _string_ |  |
-| `stargate` _string_ |  |
-| `reconciliation` _string_ |  |
-
-
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `Wallets`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[WalletsSpec](#walletsspec)_ |  |
 
 
 #### WalletsSpec
 
 
 
-
+WalletsSpec defines the desired state of Wallets
 
 _Appears in:_
-- [ConfigurationServicesSpec](#configurationservicesspec)
+- [Wallets](#wallets)
 
 | Field | Description |
 | --- | --- |
 | `debug` _boolean_ |  |
 | `dev` _boolean_ |  |
-| `disabled` _boolean_ |  |
-| `resourceProperties` _[ResourceProperties](#resourceproperties)_ |  |
-| `annotations` _[AnnotationsServicesSpec](#annotationsservicesspec)_ |  |
+| `version` _string_ |  |
+| `stack` _string_ |  |
+| `auth` _[AuthConfig](#authconfig)_ |  |
+
+
+
+
+#### Webhooks
+
+
+
+Webhooks is the Schema for the webhooks API
+
+
+
+| Field | Description |
+| --- | --- |
+| `apiVersion` _string_ | `formance.com/v1beta1`
+| `kind` _string_ | `Webhooks`
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |
+| `spec` _[WebhooksSpec](#webhooksspec)_ |  |
 
 
 #### WebhooksSpec
 
 
 
-
+WebhooksSpec defines the desired state of Webhooks
 
 _Appears in:_
-- [ConfigurationServicesSpec](#configurationservicesspec)
+- [Webhooks](#webhooks)
 
 | Field | Description |
 | --- | --- |
+| `stack` _string_ |  |
 | `debug` _boolean_ |  |
 | `dev` _boolean_ |  |
-| `disabled` _boolean_ |  |
-| `postgres` _[PostgresConfig](#postgresconfig)_ |  |
-| `debug` _boolean_ |  |
-| `dev` _boolean_ |  |
-| `resourceProperties` _[ResourceProperties](#resourceproperties)_ |  |
-| `annotations` _[AnnotationsServicesSpec](#annotationsservicesspec)_ |  |
+| `version` _string_ |  |
+| `auth` _[AuthConfig](#authconfig)_ |  |
+
+
 
 

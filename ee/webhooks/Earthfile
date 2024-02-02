@@ -47,7 +47,7 @@ deploy:
         BUILD --pass-args +build-image --tag=$tag
     END
     FROM --pass-args core+vcluster-deployer-image
-    RUN kubectl patch Versions default -p "{\"spec\":{\"webhooks\": \"${tag}\"}}" --type=merge
+    RUN kubectl patch Versions.stack.formance.com default -p "{\"spec\":{\"webhooks\": \"${tag}\"}}" --type=merge
 
 lint:
     FROM core+builder-image
@@ -60,9 +60,7 @@ lint:
     SAVE ARTIFACT main.go AS LOCAL main.go
 
 pre-commit:
-    WAIT
-      BUILD --pass-args +tidy
-    END
+    BUILD --pass-args +tidy
     BUILD --pass-args +lint
 
 openapi:

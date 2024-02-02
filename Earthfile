@@ -158,7 +158,7 @@ tidy: # Run tidy on all the components
     END
     BUILD --pass-args ./tests/integration+tidy
 
-pr:
+tests:
     LOCALLY
     BUILD --pass-args +tests-all
     BUILD --pass-args +tests-integration

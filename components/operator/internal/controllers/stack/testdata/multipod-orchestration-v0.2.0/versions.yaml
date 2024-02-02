@@ -1,7 +1,0 @@
-apiVersion: stack.formance.com/v1beta3
-kind: Versions
-metadata:
-  name: default
-spec:
-  orchestration: v0.2.0
-  gateway: v0.2.0

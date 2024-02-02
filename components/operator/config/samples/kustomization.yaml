@@ -1,0 +1,21 @@
+## Append samples of your project ##
+resources:
+- stack.formance.com_v1beta3_stack.yaml
+- stack.formance.com_v1beta3_configuration.yaml
+- stack.formance.com_v1beta3_versions.yaml
+- formance.com_v1beta1_database.yaml
+- formance.com_v1beta1_stack.yaml
+- formance.com_v1beta1_ledger.yaml
+- formance.com_v1beta1_opentelemetryconfigurations.yaml
+- formance.com_v1beta1_gateway.yaml
+- formance.com_v1beta1_auth.yaml
+- formance.com_v1beta1_authclient.yaml
+- formance.com_v1beta1_wallets.yaml
+- formance.com_v1beta1_orchestration.yaml
+- formance.com_v1beta1_webhooks.yaml
+- formance.com_v1beta1_reconciliation.yaml
+- formance.com_v1beta1_payments.yaml
+- formance.com_v1beta1_search.yaml
+- formance.com_v1beta1_stargate.yaml
+- formance.com_v1beta1_secretreference.yaml
+#+kubebuilder:scaffold:manifestskustomizesamples

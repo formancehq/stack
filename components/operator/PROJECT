@@ -2,187 +2,174 @@
 # This file is used to track the info used to scaffold your project
 # and allow the plugins properly work.
 # More info: https://book.kubebuilder.io/reference/project-config.html
-domain: formance.com
 layout:
-- go.kubebuilder.io/v3
+- go.kubebuilder.io/v4
 multigroup: true
-projectName: formance-operator
+projectName: operatorv2
 repo: github.com/formancehq/operator
 resources:
 - api:
     crdVersion: v1
   controller: true
-  domain: formance.com
-  group: stack
-  kind: Stack
-  path: github.com/formancehq/operator/apis/stack/v1beta3
-  version: v1beta3
-  webhooks:
-    conversion: true
-    webhookVersion: v1
+  group: formance.com
+  kind: Database
+  path: github.com/formancehq/operator/api/v1beta1
+  version: v1beta1
 - api:
     crdVersion: v1
-    namespaced: true
   controller: true
-  domain: formance.com
-  group: components
+  group: formance.com
+  kind: Stack
+  path: github.com/formancehq/operator/api/v1beta1
+  version: v1beta1
+- api:
+    crdVersion: v1
+  controller: true
+  group: formance.com
+  kind: Topic
+  path: github.com/formancehq/operator/api/v1beta1
+  version: v1beta1
+- api:
+    crdVersion: v1
+  controller: true
+  group: formance.com
+  kind: TopicQuery
+  path: github.com/formancehq/operator/api/v1beta1
+  version: v1beta1
+- api:
+    crdVersion: v1
+  controller: true
+  group: formance.com
+  kind: HTTPAPI
+  path: github.com/formancehq/operator/api/v1beta1
+  version: v1beta1
+- api:
+    crdVersion: v1
+  controller: true
+  group: formance.com
+  kind: Ledger
+  path: github.com/formancehq/operator/api/v1beta1
+  version: v1beta1
+- api:
+    crdVersion: v1
+  controller: true
+  group: formance.com
+  kind: Gateway
+  path: github.com/formancehq/operator/api/v1beta1
+  version: v1beta1
+- api:
+    crdVersion: v1
+  controller: true
+  group: formance.com
   kind: Auth
-  path: github.com/formancehq/operator/apis/components/v1beta3
-  version: v1beta3
+  path: github.com/formancehq/operator/api/v1beta1
+  version: v1beta1
 - api:
     crdVersion: v1
-    namespaced: true
-  controller: true
-  domain: formance.com
-  group: components
-  kind: Ledger
-  path: github.com/formancehq/operator/apis/components/v1beta3
-  version: v1beta3
-- api:
-    crdVersion: v1
-    namespaced: true
-  controller: true
-  domain: formance.com
-  group: components
-  kind: Ledger
-  path: github.com/formancehq/operator/apis/components/v1beta3
-  version: v1beta3
-- api:
-    crdVersion: v1
-    namespaced: true
-  controller: true
-  domain: formance.com
-  group: components
-  kind: Stargate
-  path: github.com/formancehq/operator/apis/components/v1beta3
-  version: v1beta3
-- api:
-    crdVersion: v1
-    namespaced: true
-  controller: true
-  domain: formance.com
-  group: components
-  kind: Search
-  path: github.com/formancehq/operator/apis/components/v1beta3
-  version: v1beta3
-- api:
-    crdVersion: v1
-    namespaced: true
-  controller: true
-  domain: formance.com
-  group: components
-  kind: Control
-  path: github.com/formancehq/operator/apis/components/v1beta3
-  version: v1beta3
-- api:
-    crdVersion: v1
-    namespaced: true
-  controller: true
-  domain: formance.com
-  group: auth
-  kind: Client
-  path: github.com/formancehq/operator/apis/auth.components/v1beta2
-  version: v1beta2
-- api:
-    crdVersion: v1
-    namespaced: true
-  controller: true
-  domain: formance.com
-  group: auth
-  kind: Scope
-  path: github.com/formancehq/operator/apis/auth.components/v1beta2
-  version: v1beta2
-- api:
-    crdVersion: v1
-    namespaced: true
-  controller: true
-  domain: formance.com
-  group: benthos.components.formance.com
-  kind: Server
-  path: github.com/formancehq/operator/apis/benthos.components/v1beta2
-  version: v1beta2
-- api:
-    crdVersion: v1
-    namespaced: true
-  controller: true
-  domain: formance.com
-  group: benthos.components.formance.com
-  kind: Stream
-  path: github.com/formancehq/operator/apis/benthos.components/v1beta2
-  version: v1beta2
+  group: formance.com
+  kind: AuthClient
+  path: github.com/formancehq/operator/api/v1beta1
+  version: v1beta1
 - api:
     crdVersion: v1
   controller: true
-  domain: formance.com
-  group: stack
-  kind: Configuration
-  path: github.com/formancehq/operator/apis/stack/v1beta3
-  version: v1beta3
-  webhooks:
-    conversion: true
-    webhookVersion: v1
-- api:
-    crdVersion: v1
-    namespaced: true
-  controller: true
-  domain: formance.com
-  group: components
-  kind: Webhooks
-  path: github.com/formancehq/operator/apis/components/v1beta3
-  version: v1beta3
-- api:
-    crdVersion: v1
-    namespaced: true
-  controller: true
-  domain: formance.com
-  group: components
-  kind: Wallets
-  path: github.com/formancehq/operator/apis/components/v1beta3
-  version: v1beta3
-- api:
-    crdVersion: v1
-    namespaced: true
-  controller: true
-  domain: formance.com
-  group: components
-  kind: Counterparties
-  path: github.com/formancehq/operator/apis/components/v1beta3
-  version: v1beta3
+  group: formance.com
+  kind: Wallet
+  path: github.com/formancehq/operator/api/v1beta1
+  version: v1beta1
 - api:
     crdVersion: v1
   controller: true
-  domain: formance.com
-  group: stack
-  kind: Versions
-  path: github.com/formancehq/operator/apis/stack/v1beta3
-  version: v1beta3
-  webhooks:
-    defaulting: true
-    webhookVersion: v1
-- api:
-    crdVersion: v1
-    namespaced: true
-  domain: formance.com
-  group: stack
-  kind: Stack
-  path: github.com/formancehq/operator/apis/stack/v1beta3
-  version: v1beta3
-- api:
-    crdVersion: v1
-    namespaced: true
-  controller: true
-  domain: formance.com
-  group: components
+  group: formance.com
   kind: Orchestration
-  path: github.com/formancehq/operator/apis/components/v1beta3
+  path: github.com/formancehq/operator/api/v1beta1
+  version: v1beta1
+- api:
+    crdVersion: v1
+  controller: true
+  group: formance.com
+  kind: Webhooks
+  path: github.com/formancehq/operator/api/v1beta1
+  version: v1beta1
+- api:
+    crdVersion: v1
+  controller: true
+  group: formance.com
+  kind: Reconciliation
+  path: github.com/formancehq/operator/api/v1beta1
+  version: v1beta1
+- api:
+    crdVersion: v1
+  controller: true
+  group: formance.com
+  kind: Payments
+  path: github.com/formancehq/operator/api/v1beta1
+  version: v1beta1
+- api:
+    crdVersion: v1
+  controller: true
+  group: formance.com
+  kind: Search
+  path: github.com/formancehq/operator/api/v1beta1
+  version: v1beta1
+- api:
+    crdVersion: v1
+  group: formance.com
+  kind: BenthosStream
+  path: github.com/formancehq/operator/api/v1beta1
+  version: v1beta1
+- api:
+    crdVersion: v1
+  group: formance.com
+  kind: Benthos
+  path: github.com/formancehq/operator/api/v1beta1
+  version: v1beta1
+- api:
+    crdVersion: v1
+  group: formance.com
+  kind: Registries
+  path: github.com/formancehq/operator/api/v1beta1
+  version: v1beta1
+- api:
+    crdVersion: v1
+  group: formance.com
+  kind: Stargate
+  path: github.com/formancehq/operator/api/v1beta1
+  version: v1beta1
+- api:
+    crdVersion: v1
+  group: stack.formance.com
+  kind: Stack
+  path: github.com/formancehq/operator/api/stack.formance.com/v1beta3
   version: v1beta3
 - api:
     crdVersion: v1
-    namespaced: true
-  controller: true
-  domain: formance.com
-  group: stack
-  kind: Migration
-  path: github.com/formancehq/operator/apis/stack/v1beta3
+  group: stack.formance.com
+  kind: Configuration
+  path: github.com/formancehq/operator/api/stack.formance.com/v1beta3
   version: v1beta3
+- api:
+    crdVersion: v1
+  group: stack.formance.com
+  kind: Versions
+  path: github.com/formancehq/operator/api/stack.formance.com/v1beta3
+  version: v1beta3
+- api:
+    crdVersion: v1
+  group: formance.com
+  kind: Versions
+  path: github.com/formancehq/operator/api/formance.com/v1beta1
+  version: v1beta1
+- api:
+    crdVersion: v1
+  group: formance.com
+  kind: Settings
+  path: github.com/formancehq/operator/api/formance.com/v1beta1
+  version: v1beta1
+- api:
+    crdVersion: v1
+  group: formance.com
+  kind: SecretReference
+  path: github.com/formancehq/operator/api/formance.com/v1beta1
+  version: v1beta1
 version: "3"

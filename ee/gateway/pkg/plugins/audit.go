@@ -194,6 +194,7 @@ func (a *Audit) Provision(ctx caddy.Context) error {
 		},
 	}
 
+	// TODO(gfyrag): do not use env var directly!
 	a.TopicName = os.Getenv("STACK") + "-audit"
 
 	if a.PublisherKafkaEnabled {

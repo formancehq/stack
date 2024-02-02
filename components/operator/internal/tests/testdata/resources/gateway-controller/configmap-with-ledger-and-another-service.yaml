@@ -1,0 +1,60 @@
+(cors) {
+	header {
+		Access-Control-Allow-Methods "GET,OPTIONS,PUT,POST,DELETE,HEAD,PATCH"
+		Access-Control-Allow-Headers content-type
+		Access-Control-Max-Age 100
+		Access-Control-Allow-Origin *
+	}
+}
+
+{
+	
+	# Many directives manipulate the HTTP handler chain and the order in which
+	# those directives are evaluated matters. So the jwtauth directive must be
+	# ordered.
+	# c.f. https://caddyserver.com/docs/caddyfile/directives#directive-order
+	order versions after metrics
+}
+
+:8080 {
+	log {
+		output stdout
+	}
+	handle /api/another/webhooks* {
+		method POST
+		uri strip_prefix /api/another
+        import cors
+		reverse_proxy another:8080
+    }
+	handle /api/another* {
+		uri strip_prefix /api/another
+        import cors
+		reverse_proxy another:8080
+    }
+	handle /api/ledger* {
+		uri strip_prefix /api/ledger
+        import cors
+		reverse_proxy ledger:8080
+    }
+
+	handle /versions {
+		versions {
+			region "us-west-1"
+			env "staging"
+			endpoints {
+				another {
+                    http://another:8080/_info http://another:8080/_healthcheck
+                }
+				ledger {
+                    http://ledger:8080/_info http://ledger:8080/_healthcheck
+                }
+
+			}
+		}
+	}
+
+	# Respond 502 if service does not exists
+	handle /api/* {
+		respond "Bad Gateway" 502
+	}
+}

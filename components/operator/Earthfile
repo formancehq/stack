@@ -13,15 +13,15 @@ sources:
     COPY (stack+sources/out --LOCATION=ee/search) ee/search
     COPY (stack+sources/out --LOCATION=libs/go-libs) libs/go-libs
     WORKDIR /src/components/operator
-    COPY --dir apis internal pkg .
-    COPY main.go go.* .
+    COPY --dir api internal cmd pkg .
+    COPY go.* .
     SAVE ARTIFACT /src
 
 compile:
     FROM core+builder-image
     COPY (+sources/*) /src
     COPY --pass-args (+generate/*) /src/components/operator
-    WORKDIR /src/components/operator
+    WORKDIR /src/components/operator/cmd
 	DO --pass-args core+GO_COMPILE
 
 build-image:
@@ -34,7 +34,7 @@ build-image:
 
 controller-gen:
     FROM core+builder-image
-    DO --pass-args core+GO_INSTALL --package=sigs.k8s.io/controller-tools/cmd/controller-gen@v0.9.2
+    DO --pass-args core+GO_INSTALL --package=sigs.k8s.io/controller-tools/cmd/controller-gen@v0.13.0
 
 manifests:
     FROM --pass-args +controller-gen
@@ -43,10 +43,7 @@ manifests:
     COPY --dir config .
     RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
         --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
-        controller-gen rbac:roleName=manager-role crd webhook paths="./apis/..." output:crd:artifacts:config=config/crd/bases
-    RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
-        --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
-        controller-gen rbac:roleName=manager-role crd webhook paths="./internal/controllers/..." output:crd:artifacts:config=config/crd/bases
+        controller-gen rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
 
     SAVE ARTIFACT config AS LOCAL config
 
@@ -57,12 +54,9 @@ generate:
     COPY --dir hack .
     RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
         --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
-        controller-gen object:headerFile="hack/boilerplate.go.txt" paths="./apis/..."
-    RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
-        --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
-        controller-gen object:headerFile="hack/boilerplate.go.txt" paths="./internal/..."
+        controller-gen object:headerFile="hack/boilerplate.go.txt" paths="./..."
     SAVE ARTIFACT internal AS LOCAL internal
-    SAVE ARTIFACT apis AS LOCAL apis
+    SAVE ARTIFACT api AS LOCAL api
 
 helm-update:
     FROM core+builder-image
@@ -76,7 +70,6 @@ helm-update:
     RUN kustomize build config/default --output helm/templates/gen
     RUN rm -f helm/templates/gen/v1_namespace*.yaml
     RUN rm -f helm/templates/gen/apps_v1_deployment_*.yaml
-    RUN rm -f helm/templates/gen/apiextensions.k8s.io_v1_customresourcedefinition_*.components.formance.com.yaml
 
     SAVE ARTIFACT helm AS LOCAL helm
 
@@ -88,13 +81,11 @@ deploy:
     END
     FROM --pass-args core+vcluster-deployer-image
     COPY --pass-args (+helm-update/helm) helm
-    RUN rm -rf helm/templates/gen/admissionregistration.k8s.io_v1_mutatingwebhookconfiguration_mutating-webhook-configuration.yaml
     WORKDIR helm
     RUN helm upgrade --namespace formance-system --install formance-operator \
         --wait \
         --create-namespace \
         --create-namespace \
-        --set operator.disableWebhooks=true \
         --set image.tag=$tag .
     WORKDIR /
     COPY .earthly .earthly
@@ -111,23 +102,22 @@ lint:
     COPY --pass-args +tidy/go.* .
     WORKDIR /src/components/operator
     DO --pass-args stack+GO_LINT
-    SAVE ARTIFACT apis AS LOCAL apis
+    SAVE ARTIFACT api AS LOCAL api
     SAVE ARTIFACT internal AS LOCAL internal
-    SAVE ARTIFACT pkg AS LOCAL pkg
-    SAVE ARTIFACT main.go AS LOCAL main.go
+    SAVE ARTIFACT cmd AS LOCAL cmd
 
 tests:
     FROM core+builder-image
     RUN apk update && apk add bash
     DO --pass-args core+GO_INSTALL --package=sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
-    ENV ENVTEST_VERSION 1.24.1
+    ENV ENVTEST_VERSION 1.28.0
     RUN setup-envtest use $ENVTEST_VERSION -p path
     ENV KUBEBUILDER_ASSETS /root/.local/share/kubebuilder-envtest/k8s/$ENVTEST_VERSION-linux-$(go env GOHOSTARCH)
-    DO --pass-args core+GO_INSTALL --package=github.com/onsi/ginkgo/v2/ginkgo@v2.6.0
+    DO --pass-args core+GO_INSTALL --package=github.com/onsi/ginkgo/v2/ginkgo@v2.13.2
     COPY (+sources/*) /src
     COPY --pass-args (+manifests/config) /src/components/operator/config
     COPY --pass-args (+generate/internal) /src/components/operator/internal
-    COPY --pass-args (+generate/apis) /src/components/operator/apis
+    COPY --pass-args (+generate/api) /src/components/operator/api
     WORKDIR /src/components/operator
     COPY --dir hack .
     ARG GOPROXY
@@ -146,9 +136,9 @@ generate-docs:
     COPY (+sources/*) /src
     RUN go install github.com/elastic/crd-ref-docs@latest
     WORKDIR /src/components/operator
-    COPY docs.config.yaml /src/components/operator/docs.config.yaml
+    COPY docs.config.yaml .
     COPY --dir docs .
-    RUN crd-ref-docs --source-path=apis/stack/v1beta3 --renderer=markdown --output-path=./docs/crd.md --config=./docs.config.yaml
+    RUN crd-ref-docs --source-path=api/formance.com/v1beta1 --renderer=markdown --output-path=./docs/crd.md --config=./docs.config.yaml
     SAVE ARTIFACT docs/crd.md AS LOCAL docs/crd.md
 
 pre-commit:

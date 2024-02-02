@@ -6,8 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/golang-jwt/jwt/v5"
+
+	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
@@ -59,17 +60,19 @@ func NewAuditMessagePayload(
 	identity := ""
 
 	if request.Header != nil {
-		tokenString := strings.Replace(strings.Replace(request.Header.Get("Authorization"), "Bearer ", "", 1), "bearer ", "", 1)
-		token, _, err := new(jwt.Parser).ParseUnverified(tokenString, jwt.MapClaims{})
-		if err != nil {
-			logger.Error(fmt.Sprintf("error for Parse %s", err))
-		}
-		if token != nil {
-			if claims, ok := token.Claims.(jwt.MapClaims); ok {
-				identity = fmt.Sprint(claims["sub"])
-			} else {
-				fmt.Printf("error get claims JWT token: %s", err)
-				fmt.Printf("\n")
+		if authorizationHeader := request.Header.Get("Authorization"); authorizationHeader != "" && strings.HasPrefix(strings.ToLower(authorizationHeader), "bearer ") {
+
+			tokenString := strings.Replace(strings.Replace(authorizationHeader, "Bearer ", "", 1), "bearer ", "", 1)
+			token, _, err := new(jwt.Parser).ParseUnverified(tokenString, jwt.MapClaims{})
+			if err != nil {
+				logger.Error(fmt.Sprintf("error for Parse %s", err))
+			}
+			if token != nil {
+				if claims, ok := token.Claims.(jwt.MapClaims); ok {
+					identity = fmt.Sprint(claims["sub"])
+				} else {
+					logger.Error(fmt.Sprintf("error get claims JWT token: %s", err))
+				}
 			}
 		}
 

@@ -3,69 +3,99 @@
 # It should be run by config/default
 resources:
 - bases/stack.formance.com_stacks.yaml
-- bases/components.formance.com_auths.yaml
-- bases/components.formance.com_ledgers.yaml
-- bases/components.formance.com_payments.yaml
-- bases/components.formance.com_searches.yaml
-- bases/components.formance.com_controls.yaml
-- bases/components.formance.com_wallets.yaml
-- bases/components.formance.com_stargates.yaml
-- bases/components.formance.com_counterparties.yaml
-- bases/auth.components.formance.com_clients.yaml
-- bases/auth.components.formance.com_scopes.yaml
-- bases/benthos.components.formance.com_servers.yaml
-- bases/benthos.components.formance.com_streams.yaml
 - bases/stack.formance.com_configurations.yaml
-- bases/components.formance.com_webhooks.yaml
 - bases/stack.formance.com_versions.yaml
-- bases/components.formance.com_orchestrations.yaml
 - bases/stack.formance.com_migrations.yaml
+- bases/formance.com_databases.yaml
+- bases/formance.com_stacks.yaml
+- bases/formance.com_brokertopics.yaml
+- bases/formance.com_brokertopicconsumers.yaml
+- bases/formance.com_gatewayhttpapis.yaml
+- bases/formance.com_ledgers.yaml
+- bases/formance.com_gateways.yaml
+- bases/formance.com_auths.yaml
+- bases/formance.com_authclients.yaml
+- bases/formance.com_wallets.yaml
+- bases/formance.com_orchestrations.yaml
+- bases/formance.com_webhooks.yaml
+- bases/formance.com_reconciliations.yaml
+- bases/formance.com_payments.yaml
+- bases/formance.com_searches.yaml
+- bases/formance.com_benthosstreams.yaml
+- bases/formance.com_benthos.yaml
+- bases/formance.com_stargates.yaml
+- bases/formance.com_versions.yaml
+- bases/formance.com_settings.yaml
+- bases/formance.com_secretreferences.yaml
 #+kubebuilder:scaffold:crdkustomizeresource
 
-patchesStrategicMerge:
-#- patches/webhook_in_stack_stacks.yaml
-#- patches/cainjection_in_stack_stacks.yaml
+patches:
 # [WEBHOOK] To enable webhook, uncomment all the sections with [WEBHOOK] prefix.
 # patches here are for enabling the conversion webhook for each CRD
-#- patches/webhook_in_licenses.yaml
-#- patches/webhook_in_ledgers.yaml
-#- patches/webhook_in_payments.yaml
-#- patches/webhook_in_searches.yaml
-#- patches/webhook_in_controls.yaml
-#- patches/webhook_in_scopes.yaml
-#- patches/webhook_in_auth.components_clients.yaml
-#- patches/webhook_in_auth.components_scopes.yaml
-#- patches/webhook_in_components_auths.yaml
-#- patches/webhook_in_servers.yaml
-#- patches/webhook_in_streams.yaml
-- patches/webhook_in_stack_configurations.yaml
-#- patches/webhook_in_webhooks.yaml
-#- patches/webhook_in_versions.yaml
-- patches/webhook_in_stack_stacks.yaml
-#- patches/webhook_in_orchestrations.yaml
-- patches/webhook_in_stack_migrations.yaml
+#- path: patches/webhook_in_databases.yaml
+#- path: patches/webhook_in_stacks.yaml
+#- path: patches/webhook_in_topics.yaml
+#- path: patches/webhook_in_topicqueries.yaml
+#- path: patches/webhook_in_httpapis.yaml
+#- path: patches/webhook_in_ledgers.yaml
+#- path: patches/webhook_in_opentelemetryconfigurations.yaml
+#- path: patches/webhook_in_gateways.yaml
+#- path: patches/webhook_in_auths.yaml
+#- path: patches/webhook_in_authclients.yaml
+#- path: patches/webhook_in_wallets.yaml
+#- path: patches/webhook_in_orchestrations.yaml
+#- path: patches/webhook_in_webhooks.yaml
+#- path: patches/webhook_in_reconciliations.yaml
+#- path: patches/webhook_in_payments.yaml
+#- path: patches/webhook_in_searches.yaml
+#- path: patches/webhook_in_streams.yaml
+#- path: patches/webhook_in_benthos.yaml
+#- path: patches/webhook_in_stargates.yaml
+#- path: patches/webhook_in_stack.formance.com_stacks.yaml
+#- path: patches/webhook_in_stack.formance.com_configurations.yaml
+#- path: patches/webhook_in_stack.formance.com_versions.yaml
+#- path: patches/webhook_in_formance.com_versions.yaml
+#- path: patches/webhook_in_formance.com_settings.yaml
+#- path: patches/webhook_in_formance.com_secretreferences.yaml
 #+kubebuilder:scaffold:crdkustomizewebhookpatch
 
 # [CERTMANAGER] To enable cert-manager, uncomment all the sections with [CERTMANAGER] prefix.
 # patches here are for enabling the CA injection for each CRD
-#- patches/cainjection_in_licenses.yaml
-#- patches/cainjection_in_auths.yaml
-#- patches/cainjection_in_ledgers.yaml
-#- patches/cainjection_in_payments.yaml
-#- patches/cainjection_in_searches.yaml
-#- patches/cainjection_in_controls.yaml
-#- patches/cainjection_in_oauths.yaml
-#- patches/cainjection_in_scopes.yaml
-#- patches/cainjection_in_servers.yaml
-#- patches/cainjection_in_streams.yaml
-- patches/cainjection_in_stack_configurations.yaml
-#- patches/cainjection_in_webhooks.yaml
-#- patches/cainjection_in_versions.yaml
-- patches/cainjection_in_stack_stacks.yaml
-#- patches/cainjection_in_orchestrations.yaml
-- patches/cainjection_in_stack_migrations.yaml
+#- path: patches/cainjection_in_databases.yaml
+#- path: patches/cainjection_in_databaseconfigurations.yaml
+#- path: patches/cainjection_in_stacks.yaml
+#- path: patches/cainjection_in_topics.yaml
+#- path: patches/cainjection_in_brokerconfigurations.yaml
+#- path: patches/cainjection_in_topicqueries.yaml
+#- path: patches/cainjection_in_httpapis.yaml
+#- path: patches/cainjection_in_ledgers.yaml
+#- path: patches/cainjection_in_opentelemetryconfigurations.yaml
+#- path: patches/cainjection_in_gateways.yaml
+#- path: patches/cainjection_in_auths.yaml
+#- path: patches/cainjection_in_authclients.yaml
+#- path: patches/cainjection_in_wallets.yaml
+#- path: patches/cainjection_in_orchestrations.yaml
+#- path: patches/cainjection_in_webhooks.yaml
+#- path: patches/cainjection_in_reconciliations.yaml
+#- path: patches/cainjection_in_payments.yaml
+#- path: patches/cainjection_in_searches.yaml
+#- path: patches/cainjection_in_benthosstreams.yaml
+#- path: patches/cainjection_in_benthos.yaml
+#- path: patches/cainjection_in_elasticsearchconfigurations.yaml
+#- path: patches/cainjection_in_registriesconfigurations.yaml
+#- path: patches/cainjection_in_stargates.yaml
+#- path: patches/cainjection_in_stack.formance.com_stacks.yaml
+#- path: patches/cainjection_in_stack.formance.com_configurations.yaml
+#- path: patches/cainjection_in_stack.formance.com_versions.yaml
+#- path: patches/cainjection_in_formance.com_temporalconfigurations.yaml
+#- path: patches/cainjection_in_formance.com_versions.yaml
+#- path: patches/cainjection_in_formance.com_searchbatchingconfigurations.yaml
+#- path: patches/cainjection_in_formance.com_settings.yaml
+#- path: patches/cainjection_in_formance.com_secretreferences.yaml
 #+kubebuilder:scaffold:crdkustomizecainjectionpatch
 
+# [WEBHOOK] To enable webhook, uncomment the following section
 # the following config is for teaching kustomize how to do kustomization for CRDs.
-configurations:
-- kustomizeconfig.yaml
+
+#configurations:
+#- kustomizeconfig.yaml

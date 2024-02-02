@@ -62,13 +62,12 @@ tests:
 
 sources:
     WORKDIR src
-    COPY --pass-args (stack+sources/out --LOCATION=go.mod) /src/go.mod
-    COPY --pass-args (stack+sources/out --LOCATION=go.sum) /src/go.sum
     COPY --pass-args (stack+sources/out --LOCATION=libs) /src/libs
+    COPY --pass-args (releases+sdk-generate/go) /src/releases/sdks/go
     COPY --pass-args (stack+sources/out --LOCATION=components) /src/components
     COPY --pass-args (stack+sources/out --LOCATION=ee) /src/ee
-    COPY --pass-args (stack+build-final-spec/latest.json) /src/libs/clients/build/generate.json
-    COPY --pass-args (releases+sdk-generate/go) /src/releases/sdks/go
+    COPY --pass-args (stack+sources/out --LOCATION=go.mod) /src/go.mod
+    COPY --pass-args (stack+sources/out --LOCATION=go.sum) /src/go.sum
     COPY . /src/tests/integration
     WORKDIR /src/tests/integration
     SAVE ARTIFACT /src

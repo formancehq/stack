@@ -1,0 +1,26 @@
+{
+	{{ if .Debug }}debug{{ end }}
+}
+
+:8080 {
+    {{- if .EnableOpenTelemetry }}
+    tracing {
+        span gateway
+    }
+    {{- end }}
+    log {
+		output stdout
+		{{- if .Debug }}
+		level  DEBUG
+		{{- end }}
+	}
+
+    handle {
+        method GET
+        reverse_proxy ledger-read:8080
+    }
+
+    handle {
+        reverse_proxy ledger-write:8080
+    }
+}

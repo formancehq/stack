@@ -10,10 +10,10 @@ import (
 	"reflect"
 	"strings"
 
-	clientv1beta3 "github.com/formancehq/operator/pkg/client/v1beta3"
+	clientv1beta3 "github.com/formancehq/operator/pkg/client/stack.formance.com/v1beta3"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 
-	"github.com/formancehq/operator/apis/stack/v1beta3"
+	"github.com/formancehq/operator/api/stack.formance.com/v1beta3"
 	"github.com/formancehq/stack/components/agent/internal/grpc/generated"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
@@ -148,8 +148,7 @@ func (client *client) createStack(stack *generated.Stack) *v1beta3.Stack {
 					ClientConfiguration: v1beta3.ClientConfiguration{
 						Public: true,
 					},
-					ID:      "fctl",
-					Secrets: []string{},
+					ID: "fctl",
 				}},
 			},
 			Host:   fmt.Sprintf("%s.%s", stack.ClusterName, client.clientInfo.BaseUrl.Host),
@@ -260,7 +259,7 @@ func (client *client) Start(ctx context.Context) error {
 				switch {
 				case stack.Spec.Disabled:
 					status = generated.StackStatus_Disabled
-				case stack.IsReady():
+				case stack.Status.Ready:
 					status = generated.StackStatus_Ready
 				default:
 					status = generated.StackStatus_Progressing

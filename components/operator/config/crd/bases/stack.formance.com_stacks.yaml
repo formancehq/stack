@@ -3,8 +3,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.9.2
-  creationTimestamp: null
+    controller-gen.kubebuilder.io/version: v0.13.0
   name: stacks.stack.formance.com
 spec:
   group: stack.formance.com
@@ -828,15 +827,16 @@ spec:
                                     of a object,such as kind,name apiVersion
                                   properties:
                                     apiVersion:
-                                      description: API version of the referent
+                                      description: apiVersion is the API version of
+                                        the referent
                                       type: string
                                     kind:
-                                      description: 'Kind of the referent; More info:
-                                        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+                                      description: 'kind is the kind of the referent;
+                                        More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
                                       type: string
                                     name:
-                                      description: 'Name of the referent; More info:
-                                        http://kubernetes.io/docs/user-guide/identifiers#names'
+                                      description: 'name is the name of the referent;
+                                        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
                                       type: string
                                   required:
                                   - kind
@@ -2028,6 +2028,8 @@ spec:
                   - type
                   type: object
                 type: array
+              error:
+                type: string
               light:
                 type: boolean
               ports:
@@ -2037,6 +2039,8 @@ spec:
                     type: integer
                   type: object
                 type: object
+              ready:
+                type: boolean
               staticAuthClients:
                 additionalProperties:
                   properties:

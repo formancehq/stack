@@ -4,7 +4,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: controller-manager
-  namespace: formance-operator
+  namespace: system
 spec:
   template:
     spec:
@@ -14,8 +14,8 @@ spec:
           allowPrivilegeEscalation: false
           capabilities:
             drop:
-              - "ALL"
-        image: gcr.io/kubebuilder/kube-rbac-proxy:v0.12.0
+            - "ALL"
+        image: gcr.io/kubebuilder/kube-rbac-proxy:v0.15.0
         args:
         - "--secure-listen-address=0.0.0.0:8443"
         - "--upstream=http://127.0.0.1:8080/"
@@ -37,5 +37,3 @@ spec:
         - "--health-probe-bind-address=:8081"
         - "--metrics-bind-address=127.0.0.1:8080"
         - "--leader-elect"
-        - "--issuer-ref-name=r53-letsencrypt-prod"
-        - "--issuer-ref-kind=ClusterIssuer"

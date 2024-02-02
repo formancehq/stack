@@ -33,7 +33,7 @@ spec:
   services:
     gateway:
       enableAuditPlugin: true
-      # enableScopes: true
+      #enableScopes: true
       fallback: {{ .Values.gateway.fallback }}
     control:
       disabled: true

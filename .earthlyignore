@@ -46,8 +46,11 @@ gateway
 ledger
 operator
 orchestration
-payements
+payments
 search
 stargate
 wallets
 webhooks
+
+# Operator tooling
+components/operator/bin

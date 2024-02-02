@@ -8,12 +8,12 @@ import (
 	"testing"
 	"time"
 
-	clientv1beta3 "github.com/formancehq/operator/pkg/client/v1beta3"
+	clientv1beta3 "github.com/formancehq/operator/pkg/client/stack.formance.com/v1beta3"
 	"github.com/pkg/errors"
 
 	"google.golang.org/grpc/metadata"
 
-	"github.com/formancehq/operator/apis/stack/v1beta3"
+	"github.com/formancehq/operator/api/stack.formance.com/v1beta3"
 	"github.com/formancehq/stack/components/agent/internal/grpc/generated"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
