@@ -25,6 +25,9 @@ import (
 // +kubebuilder:rbac:groups=stack.formance.com,resources=stacks/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=stack.formance.com,resources=stacks/finalizers,verbs=update
 // +kubebuilder:rbac:groups=stack.formance.com,resources=configurations,verbs=get;list;watch
+// +kubebuilder:rbac:groups=stack.formance.com,resources=migrations,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=stack.formance.com,resources=migrations/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=stack.formance.com,resources=migrations/finalizers,verbs=update
 
 func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 	if stack.Spec.Versions == "" {
