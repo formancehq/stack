@@ -17,7 +17,7 @@ require (
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.46.1
 	go.uber.org/fx v1.20.1
 	golang.org/x/oauth2 v0.16.0
-	google.golang.org/grpc v1.60.1
+	google.golang.org/grpc v1.61.0
 	google.golang.org/protobuf v1.32.0
 	k8s.io/apimachinery v0.29.0
 	k8s.io/client-go v0.29.0
