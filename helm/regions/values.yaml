@@ -29,3 +29,5 @@ agent:
         issuer: https://app.formance.cloud/api
         clientID: "REGION_ID"
         clientSecret: ""
+versions:
+  create: true

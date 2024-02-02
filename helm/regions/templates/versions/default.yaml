@@ -1,4 +1,4 @@
-{{ if .Capabilities.APIVersions.Has "stack.formance.com/v1beta3/Versions" }}
+{{ if and .Values.versions.create (.Capabilities.APIVersions.Has "stack.formance.com/v1beta3/Versions") }}
 apiVersion: stack.formance.com/v1beta3
 kind: Versions
 metadata:
