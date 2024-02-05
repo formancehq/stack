@@ -7,7 +7,7 @@ import (
 	"k8s.io/client-go/tools/cache"
 )
 
-func StacksEventHandler(logger sharedlogging.Logger, membershipClient *membershipClient) cache.ResourceEventHandlerFuncs {
+func StacksEventHandler(logger sharedlogging.Logger, membershipClient MembershipClient) cache.ResourceEventHandlerFuncs {
 	return cache.ResourceEventHandlerFuncs{
 		UpdateFunc: func(oldObj, newObj interface{}) {
 
@@ -20,7 +20,7 @@ func StacksEventHandler(logger sharedlogging.Logger, membershipClient *membershi
 
 			logger.Infof("Stack '%s' updated", newStack.Name)
 
-			if err := membershipClient.connectClient.SendMsg(&generated.Message{
+			if err := membershipClient.Send(&generated.Message{
 				Message: &generated.Message_StatusChanged{
 					StatusChanged: &generated.StatusChanged{
 						ClusterName: newStack.Name,
@@ -42,7 +42,7 @@ func StacksEventHandler(logger sharedlogging.Logger, membershipClient *membershi
 
 			logger.Infof("Stack '%s' deleted", stack.Name)
 
-			if err := membershipClient.connectClient.SendMsg(&generated.Message{
+			if err := membershipClient.Send(&generated.Message{
 				Message: &generated.Message_StatusChanged{
 					StatusChanged: &generated.StatusChanged{
 						ClusterName: stack.Name,

@@ -18,15 +18,15 @@ import (
 
 var _ = Describe("Membership listener", func() {
 	var (
-		orders     internal.OrdersChan
-		clientInfo internal.ClientInfo
+		membershipClient *internal.MembershipClientMock
+		clientInfo       internal.ClientInfo
 	)
 	BeforeEach(func() {
-		orders = make(internal.OrdersChan)
+		membershipClient = internal.NewMembershipClientMock()
 		clientInfo = internal.ClientInfo{
 			BaseUrl: &url.URL{},
 		}
-		listener := internal.NewMembershipListener(k8sClient, clientInfo, mapper, orders)
+		listener := internal.NewMembershipListener(k8sClient, clientInfo, mapper, membershipClient)
 		done := make(chan struct{})
 		DeferCleanup(func() {
 			<-done
@@ -37,7 +37,7 @@ var _ = Describe("Membership listener", func() {
 		}()
 
 		DeferCleanup(func() {
-			close(orders)
+			close(membershipClient.Orders())
 		})
 	})
 	Context("When sending an existing stack from membership", func() {
@@ -50,7 +50,7 @@ var _ = Describe("Membership listener", func() {
 					Issuer:       "http://example.net",
 				},
 			}
-			orders <- &generated.Order{
+			membershipClient.Orders() <- &generated.Order{
 				Message: &generated.Order_ExistingStack{
 					ExistingStack: membershipStack,
 				},

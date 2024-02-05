@@ -73,6 +73,10 @@ func (c *membershipClient) connect(ctx context.Context) error {
 	return nil
 }
 
+func (c *membershipClient) Send(message *generated.Message) error {
+	return c.connectClient.SendMsg(message)
+}
+
 func (c *membershipClient) Start(ctx context.Context) error {
 
 	var (

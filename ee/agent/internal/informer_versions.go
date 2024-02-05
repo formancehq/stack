@@ -21,14 +21,14 @@ func convertUnstructured[T client.Object](v any) T {
 	return t
 }
 
-func VersionsEventHandler(logger sharedlogging.Logger, membershipClient *membershipClient) cache.ResourceEventHandler {
+func VersionsEventHandler(logger sharedlogging.Logger, membershipClient MembershipClient) cache.ResourceEventHandler {
 	return cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 
 			version := convertUnstructured[*v1beta1.Versions](obj)
 
 			logger.Infof("Detect versions '%s' added", version.Name)
-			if err := membershipClient.connectClient.SendMsg(&generated.Message{
+			if err := membershipClient.Send(&generated.Message{
 				Message: &generated.Message_AddedVersion{
 					AddedVersion: &generated.AddedVersion{
 						Name:     version.Name,
@@ -49,7 +49,7 @@ func VersionsEventHandler(logger sharedlogging.Logger, membershipClient *members
 			}
 
 			logger.Infof("Detect versions '%s' modified", newVersions.Name)
-			if err := membershipClient.connectClient.SendMsg(&generated.Message{
+			if err := membershipClient.Send(&generated.Message{
 				Message: &generated.Message_UpdatedVersion{
 					UpdatedVersion: &generated.UpdatedVersion{
 						Name:     newVersions.Name,
@@ -64,7 +64,7 @@ func VersionsEventHandler(logger sharedlogging.Logger, membershipClient *members
 			version := convertUnstructured[*v1beta1.Versions](obj)
 
 			logger.Infof("Detect versions '%s' as deleted", version.Name)
-			if err := membershipClient.connectClient.SendMsg(&generated.Message{
+			if err := membershipClient.Send(&generated.Message{
 				Message: &generated.Message_DeletedVersion{
 					DeletedVersion: &generated.DeletedVersion{
 						Name: version.Name,

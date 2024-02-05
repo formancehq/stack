@@ -6,7 +6,6 @@ import (
 	"go.uber.org/fx"
 	"google.golang.org/grpc"
 	"k8s.io/apimachinery/pkg/api/meta"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/dynamic"
@@ -17,13 +16,8 @@ import (
 	"time"
 )
 
-func newDynamicClient(restClient *rest.RESTClient) (*dynamic.DynamicClient, error) {
-	return dynamic.New(restClient), nil
-}
-
-func newDynamicSharedInformerFactory(client *dynamic.DynamicClient) dynamicinformer.DynamicSharedInformerFactory {
-	return dynamicinformer.NewFilteredDynamicSharedInformerFactory(
-		client, time.Second, v1.NamespaceNone, nil)
+func NewDynamicSharedInformerFactory(client *dynamic.DynamicClient) dynamicinformer.DynamicSharedInformerFactory {
+	return dynamicinformer.NewDynamicSharedInformerFactory(client, time.Second)
 }
 
 func runInformers(lc fx.Lifecycle, informers []cache.SharedIndexInformer) {
@@ -59,13 +53,13 @@ func createInformer(factory dynamicinformer.DynamicSharedInformerFactory, resour
 	return informer, nil
 }
 
-func createVersionsInformer(factory dynamicinformer.DynamicSharedInformerFactory,
-	logger logging.Logger, client *membershipClient) (cache.SharedIndexInformer, error) {
+func CreateVersionsInformer(factory dynamicinformer.DynamicSharedInformerFactory,
+	logger logging.Logger, client MembershipClient) (cache.SharedIndexInformer, error) {
 	return createInformer(factory, "versions", VersionsEventHandler(logger, client))
 }
 
-func createStacksInformer(factory dynamicinformer.DynamicSharedInformerFactory,
-	logger logging.Logger, client *membershipClient) (cache.SharedIndexInformer, error) {
+func CreateStacksInformer(factory dynamicinformer.DynamicSharedInformerFactory,
+	logger logging.Logger, client MembershipClient) (cache.SharedIndexInformer, error) {
 	return createInformer(factory, "stacks", StacksEventHandler(logger, client))
 }
 
@@ -110,18 +104,18 @@ func NewModule(serverAddress string, authenticator Authenticator, clientInfo Cli
 	return fx.Options(
 		fx.Supply(clientInfo),
 		fx.Provide(rest.RESTClientFor),
-		fx.Provide(newDynamicClient),
-		fx.Provide(newDynamicSharedInformerFactory),
+		fx.Provide(dynamic.NewForConfig),
+		fx.Provide(NewDynamicSharedInformerFactory),
 		fx.Provide(CreateRestMapper),
 		fx.Provide(func() *membershipClient {
 			return NewMembershipClient(authenticator, clientInfo, serverAddress, opts...)
 		}),
-		fx.Provide(func(membershipClient *membershipClient) Orders {
+		fx.Provide(func(membershipClient *membershipClient) MembershipClient {
 			return membershipClient
 		}),
 		fx.Provide(NewMembershipListener),
-		fx.Provide(fx.Annotate(createVersionsInformer, fx.ResultTags(`group:"informers"`))),
-		fx.Provide(fx.Annotate(createStacksInformer, fx.ResultTags(`group:"informers"`))),
+		fx.Provide(fx.Annotate(CreateVersionsInformer, fx.ResultTags(`group:"informers"`))),
+		fx.Provide(fx.Annotate(CreateStacksInformer, fx.ResultTags(`group:"informers"`))),
 		fx.Invoke(runMembershipClient),
 		fx.Invoke(runMembershipListener),
 		fx.Invoke(fx.Annotate(runInformers, fx.ParamTags(``, `group:"informers"`))),

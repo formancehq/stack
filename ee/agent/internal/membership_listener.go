@@ -23,14 +23,33 @@ import (
 	"strings"
 )
 
-type Orders interface {
+type MembershipClient interface {
 	Orders() chan *generated.Order
+	Send(message *generated.Message) error
 }
 
-type OrdersChan chan *generated.Order
+type MembershipClientMock struct {
+	orders   chan *generated.Order
+	messages []*generated.Message
+}
 
-func (ch OrdersChan) Orders() chan *generated.Order {
-	return ch
+func (m MembershipClientMock) Orders() chan *generated.Order {
+	return m.orders
+}
+
+func (m *MembershipClientMock) Send(message *generated.Message) error {
+	m.messages = append(m.messages, message)
+	return nil
+}
+
+func (m *MembershipClientMock) GetMessages() []*generated.Message {
+	return m.messages
+}
+
+func NewMembershipClientMock() *MembershipClientMock {
+	return &MembershipClientMock{
+		orders: make(chan *generated.Order),
+	}
 }
 
 type ClientInfo struct {
@@ -44,7 +63,7 @@ type membershipListener struct {
 	clientInfo ClientInfo
 	restClient *rest.RESTClient
 	restMapper meta.RESTMapper
-	orders     Orders
+	orders     MembershipClient
 }
 
 func (c *membershipListener) Start(ctx context.Context) {
@@ -338,7 +357,7 @@ func (c *membershipListener) createOrUpdateStackDependency(ctx context.Context, 
 }
 
 func NewMembershipListener(restClient *rest.RESTClient, clientInfo ClientInfo, mapper meta.RESTMapper,
-	orders Orders) *membershipListener {
+	orders MembershipClient) *membershipListener {
 	return &membershipListener{
 		restClient: restClient,
 		clientInfo: clientInfo,
