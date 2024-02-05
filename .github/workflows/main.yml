@@ -168,7 +168,7 @@ jobs:
       - run: kubectl config use-context arn:aws:eks:eu-west-1:955332203423:cluster/staging-eu-west-1-hosting
       - name: Deploy in staging
         run: |
-          kubectl set image deployment -n formance-system agent agent=ghcr.io/formancehq/agent:${GITHUB_SHA}-scratch
+          #kubectl set image deployment -n formance-system agent agent=ghcr.io/formancehq/agent:${GITHUB_SHA}-scratch
           kubectl set image deployment -n formance-system operator operator=ghcr.io/formancehq/operator:${GITHUB_SHA}-scratch
           kubectl patch Versions.stack.formance.com default -p "{\"spec\":{\"ledger\": \"${GITHUB_SHA}-scratch\"}}" --type=merge
           kubectl patch Versions.stack.formance.com default -p "{\"spec\":{\"payments\": \"${GITHUB_SHA}-scratch\"}}" --type=merge
