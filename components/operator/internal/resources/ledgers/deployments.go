@@ -73,7 +73,7 @@ func installLedgerSingleInstance(ctx core.Context, stack *v1beta1.Stack,
 		}
 	}
 
-	if err := createDeployment(ctx, stack, ledger, "ledger", *container,
+	if err := createDeployment(ctx, stack, ledger, "ledger", *container, v2,
 		deployments.WithReplicas(1),
 		setInitContainer(database, version, v2),
 	); err != nil {
@@ -114,7 +114,7 @@ func installLedgerMonoWriterMultipleReader(ctx core.Context, stack *v1beta1.Stac
 			return err
 		}
 
-		if err := createDeployment(ctx, stack, ledger, name, container, mutators...); err != nil {
+		if err := createDeployment(ctx, stack, ledger, name, container, v2, mutators...); err != nil {
 			return err
 		}
 
@@ -177,10 +177,21 @@ func uninstallLedgerMonoWriterMultipleReader(ctx core.Context, stack *v1beta1.St
 }
 
 func createDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger,
-	name string, container corev1.Container, mutators ...core.ObjectMutator[*v1.Deployment]) error {
+	name string, container corev1.Container, v2 bool, mutators ...core.ObjectMutator[*v1.Deployment]) error {
 	mutators = append([]core.ObjectMutator[*v1.Deployment]{
 		deployments.WithContainers(container),
 		deployments.WithMatchingLabels(name),
+		func(t *v1.Deployment) error {
+			if !v2 {
+				t.Spec.Template.Spec.Volumes = []corev1.Volume{{
+					Name: "config",
+					VolumeSource: corev1.VolumeSource{
+						EmptyDir: &corev1.EmptyDirVolumeSource{},
+					},
+				}}
+			}
+			return nil
+		},
 	}, mutators...)
 
 	_, err := deployments.CreateOrUpdate(ctx, stack, ledger, name, mutators...)
@@ -233,6 +244,13 @@ func createBaseLedgerContainer(v2 bool) *corev1.Container {
 		bindFlag = "NUMARY_SERVER_HTTP_BIND_ADDRESS"
 	}
 	ret.Env = append(ret.Env, core.Env(bindFlag, ":8080"))
+	if !v2 {
+		ret.VolumeMounts = []corev1.VolumeMount{{
+			Name:      "config",
+			ReadOnly:  false,
+			MountPath: "/root/.numary",
+		}}
+	}
 
 	return ret
 }

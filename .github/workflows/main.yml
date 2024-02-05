@@ -169,7 +169,7 @@ jobs:
       - name: Deploy in staging
         run: |
           kubectl set image deployment -n formance-system agent agent=ghcr.io/formancehq/agent:${GITHUB_SHA}-scratch
-          #kubectl set image deployment -n formance-system operator operator=ghcr.io/formancehq/operator:${GITHUB_SHA}-scratch
+          kubectl set image deployment -n formance-system operator operator=ghcr.io/formancehq/operator:${GITHUB_SHA}-scratch
           kubectl patch Versions.stack.formance.com default -p "{\"spec\":{\"ledger\": \"${GITHUB_SHA}-scratch\"}}" --type=merge
           kubectl patch Versions.stack.formance.com default -p "{\"spec\":{\"payments\": \"${GITHUB_SHA}-scratch\"}}" --type=merge
           kubectl patch Versions.stack.formance.com default -p "{\"spec\":{\"auth\": \"${GITHUB_SHA}-scratch\"}}" --type=merge

@@ -112,8 +112,8 @@ func CreateOrUpdate(ctx core.Context, stack *v1beta1.Stack, owner interface {
 				Capabilities: &corev1.Capabilities{
 					Drop: []corev1.Capability{"all"},
 				},
-				Privileged: pointer.For(false),
-				//ReadOnlyRootFilesystem:   pointer.For(true),
+				Privileged:               pointer.For(false),
+				ReadOnlyRootFilesystem:   pointer.For(true),
 				AllowPrivilegeEscalation: pointer.For(false),
 				RunAsUser:                runAs.User,
 				RunAsGroup:               runAs.Group,
@@ -140,8 +140,8 @@ func CreateOrUpdate(ctx core.Context, stack *v1beta1.Stack, owner interface {
 				Capabilities: &corev1.Capabilities{
 					Drop: []corev1.Capability{"all"},
 				},
-				Privileged: pointer.For(false),
-				//ReadOnlyRootFilesystem:   pointer.For(true),
+				Privileged:               pointer.For(false),
+				ReadOnlyRootFilesystem:   pointer.For(true),
 				AllowPrivilegeEscalation: pointer.For(false),
 				RunAsUser:                runAs.User,
 				RunAsGroup:               runAs.Group,
