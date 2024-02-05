@@ -39,7 +39,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		return NewPendingError()
 	}
 
-	fmt.Println("get configuration")
 	configuration := &v1beta3.Configuration{}
 	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
 		Name: stack.Spec.Seed,
@@ -56,7 +55,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		&batchv1.Job{},
 		&batchv1.CronJob{},
 	} {
-		fmt.Println("list objects", object)
 		kinds, _, err := ctx.GetScheme().ObjectKinds(object)
 		if err != nil {
 			return err
@@ -70,7 +68,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 
 	l:
 		for _, item := range list.Items {
-			fmt.Println("check item ownership", item.GetName())
 			ownerReferences := item.GetOwnerReferences()
 			for i, reference := range ownerReferences {
 				if reference.APIVersion != "stack.formance.com/v1beta3" {
@@ -89,7 +86,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 				labels["formance.com/migrate"] = "true"
 				item.SetLabels(labels)
 
-				fmt.Println("patching item to remove ownership", item.GetName())
 				if err := ctx.GetClient().Patch(ctx, &item, patch); err != nil {
 					return err
 				}
@@ -127,7 +123,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		return errors.Wrap(err, "creating stack")
 	}
 
-	fmt.Println("create namespace")
 	ns := &corev1.Namespace{}
 	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
 		Name: stack.Name,
@@ -136,7 +131,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 	} else if err == nil {
 		ownerReferences := ns.GetOwnerReferences()
 		for i, reference := range ownerReferences {
-			fmt.Println("check owner references", reference)
 			if reference.APIVersion != "stack.formance.com/v1beta3" {
 				continue
 			}
@@ -149,7 +143,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			}
 			ns.SetOwnerReferences(ownerReferences)
 
-			fmt.Println("remove owner reference for namespace")
 			if err := ctx.GetClient().Patch(ctx, ns, patch); err != nil {
 				return err
 			}
@@ -158,7 +151,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 
 	ready := true
 
-	fmt.Println("create ledger")
 	if !isDisabled(stack, configuration, false, "ledger") {
 		ledger, _, err := CreateOrUpdate[*v1beta1.Ledger](ctx, types.NamespacedName{
 			Name: stack.Name,
@@ -190,7 +182,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		ready = ready && ledger.Status.Ready
 	}
 
-	fmt.Println("create payments")
 	if !isDisabled(stack, configuration, false, "payments") {
 		payments, _, err := CreateOrUpdate[*v1beta1.Payments](ctx, types.NamespacedName{
 			Name: stack.Name,
@@ -204,7 +195,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		ready = ready && payments.Status.Ready
 	}
 
-	fmt.Println("create wallets")
 	if !isDisabled(stack, configuration, false, "wallets") {
 		wallets, _, err := CreateOrUpdate[*v1beta1.Wallets](ctx, types.NamespacedName{
 			Name: stack.Name,
@@ -218,7 +208,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		ready = ready && wallets.Status.Ready
 	}
 
-	fmt.Println("create orchestration")
 	if !isDisabled(stack, configuration, false, "orchestration") {
 		orchestration, _, err := CreateOrUpdate[*v1beta1.Orchestration](ctx, types.NamespacedName{
 			Name: stack.Name,
@@ -232,7 +221,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		ready = ready && orchestration.Status.Ready
 	}
 
-	fmt.Println("create webhooks")
 	if !isDisabled(stack, configuration, false, "webhooks") {
 		webhooks, _, err := CreateOrUpdate[*v1beta1.Webhooks](ctx, types.NamespacedName{
 			Name: stack.Name,
@@ -249,7 +237,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 	// note(gfyrag): reconciliation declared as EE.
 	// We should also declare some other services EE but to keep compatibility, today, we just configuration
 	// reconciliation as EE
-	fmt.Println("create reconciliation")
 	if !isDisabled(stack, configuration, true, "reconciliation") {
 		reconciliation, _, err := CreateOrUpdate[*v1beta1.Reconciliation](ctx, types.NamespacedName{
 			Name: stack.Name,
@@ -263,7 +250,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		ready = ready && reconciliation.Status.Ready
 	}
 
-	fmt.Println("create search")
 	if !isDisabled(stack, configuration, false, "search") {
 		search, _, err := CreateOrUpdate[*v1beta1.Search](ctx, types.NamespacedName{
 			Name: stack.Name,
@@ -277,7 +263,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		ready = ready && search.Status.Ready
 	}
 
-	fmt.Println("create auth")
 	if !isDisabled(stack, configuration, false, "auth") {
 		auth, _, err := CreateOrUpdate[*v1beta1.Auth](ctx, types.NamespacedName{
 			Name: stack.Name,
@@ -297,7 +282,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		ready = ready && auth.Status.Ready
 	}
 
-	fmt.Println("create gateway")
 	if !isDisabled(stack, configuration, false, "gateway") {
 		gateway, _, err := CreateOrUpdate[*v1beta1.Gateway](ctx, types.NamespacedName{
 			Name: stack.Name,
@@ -325,7 +309,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		ready = ready && gateway.Status.Ready
 	}
 
-	fmt.Println("create stargate")
 	if !isDisabled(stack, configuration, false, "stargate") && stack.Spec.Stargate != nil {
 		parts := strings.Split(stack.Name, "-")
 		if len(parts) == 2 {
@@ -352,9 +335,7 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}
 	}
 
-	fmt.Println("create auth clients")
 	for _, client := range stack.Spec.Auth.StaticClients {
-		fmt.Println("create auth client", client.ID)
 		_, _, err = CreateOrUpdate[*v1beta1.AuthClient](ctx, types.NamespacedName{
 			Name: fmt.Sprintf("%s-%s", stack.Name, client.ID),
 		}, func(t *v1beta1.AuthClient) error {
@@ -396,7 +377,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			&batchv1.Job{},
 			&batchv1.CronJob{},
 		} {
-			fmt.Println("clean object kind", object)
 			kinds, _, err := ctx.GetScheme().ObjectKinds(object)
 			if err != nil {
 				return err
@@ -410,7 +390,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 
 		l2:
 			for _, item := range list.Items {
-				fmt.Println("check object if need clean", item.GetName())
 				ownerReferences := item.GetOwnerReferences()
 				for _, reference := range ownerReferences {
 					if reference.APIVersion == "formance.com/v1beta1" {
@@ -418,7 +397,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 					}
 				}
 				if item.GetLabels()["formance.com/migrate"] == "true" {
-					fmt.Println("clean object", item.GetName())
 					if err := ctx.GetClient().Delete(ctx, &item); err != nil {
 						return err
 					}
@@ -426,7 +404,6 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 			}
 		}
 
-		fmt.Println("cleaning migration")
 		list := &unstructured.UnstructuredList{}
 		list.SetGroupVersionKind(schema.GroupVersionKind{
 			Group:   "stack.formance.com",
@@ -438,22 +415,18 @@ func Reconcile(ctx Context, stack *v1beta3.Stack) error {
 		}
 
 		for _, item := range list.Items {
-			fmt.Println("cleaning migration", item.GetName())
 			if err := ctx.GetClient().Delete(ctx, &item); err != nil {
 				return err
 			}
 		}
 
-		fmt.Println("cleaning pods")
 		pods := &corev1.PodList{}
 		if err := ctx.GetClient().List(ctx, pods, client.InNamespace(stack.Name)); err != nil {
 			return err
 		}
 
 		for _, item := range pods.Items {
-			fmt.Println("check if pod need clean", item.GetName())
 			if item.Status.Phase == "Succeeded" {
-				fmt.Println("cleaning pod", item.GetName())
 				if err := ctx.GetClient().Delete(ctx, &item); err != nil {
 					return err
 				}
