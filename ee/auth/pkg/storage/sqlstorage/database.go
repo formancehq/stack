@@ -146,6 +146,9 @@ func Migrate(ctx context.Context, db *bun.DB) error {
 				}
 				_, err := tx.Exec(
 					`
+						ALTER TABLE clients
+						ADD COLUMN IF NOT EXISTS scopes TEXT;
+
 						UPDATE clients
 						SET scopes = ?;
 					`, scopes)
