@@ -216,6 +216,8 @@ func createGateway(ctx core.Context, stack *v1beta1.Stack, p *v1beta1.Payments) 
 	_, err = deployments.CreateOrUpdate(ctx, stack, p, "payments",
 		settings.ConfigureCaddy(caddyfileConfigMap, image, env),
 		deployments.WithMatchingLabels("payments"),
+		// notes(gfyrag): reset init containers in case of upgrading from v1 to v2
+		deployments.WithInitContainers(),
 	)
 	return err
 }
