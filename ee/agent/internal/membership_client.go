@@ -2,14 +2,15 @@ package internal
 
 import (
 	"context"
+	"io"
+	"time"
+
 	"github.com/formancehq/stack/components/agent/internal/generated"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
-	"io"
-	"time"
 )
 
 const (

@@ -2,10 +2,11 @@ package internal
 
 import (
 	"context"
+	"net/http"
+
 	oidcclient "github.com/zitadel/oidc/v2/pkg/client"
 	"golang.org/x/oauth2/clientcredentials"
 	"google.golang.org/grpc/metadata"
-	"net/http"
 )
 
 type Authenticator interface {

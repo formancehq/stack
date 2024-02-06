@@ -5,6 +5,10 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"net/url"
+	"os"
+	"path/filepath"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/components/agent/internal"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
@@ -21,9 +25,6 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
-	"net/url"
-	"os"
-	"path/filepath"
 )
 
 var (

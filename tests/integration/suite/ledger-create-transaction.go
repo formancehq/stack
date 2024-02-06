@@ -388,6 +388,43 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			Expect(err.(*sdkerrors.V2ErrorResponse).Details).To(Equal(pointer.For("https://play.numscript.org/?payload=eyJlcnJvciI6ImludmFsaWQgSlNPTiB2YWx1ZSBmb3IgdmFyaWFibGUgJGFtb3VudCBvZiB0eXBlIG1vbmV0YXJ5OiB2YWx1ZSBbVVNEIC0xMDBdOiBuZWdhdGl2ZSBhbW91bnQifQ==")))
 		})
 	})
+	When("creating a transaction on the ledger v1 with old variable format", func() {
+		var (
+			err      error
+			response *operations.CreateTransactionResponse
+		)
+		BeforeEach(func() {
+			v, _ := big.NewInt(0).SetString("1320000000000000000000000000000000000000000000000001", 10)
+			response, err = Client().Ledger.CreateTransaction(
+				TestContext(),
+				operations.CreateTransactionRequest{
+					PostTransaction: shared.PostTransaction{
+						Metadata: map[string]any{},
+						Script: &shared.PostTransactionScript{
+							Plain: `vars {
+								monetary $amount
+							}
+							send $amount (
+								source = @world
+								destination = @bob
+							)`,
+							Vars: map[string]interface{}{
+								"amount": map[string]any{
+									"asset":  "EUR/12",
+									"amount": v,
+								},
+							},
+						},
+					},
+					Ledger: "default",
+				},
+			)
+		})
+		It("should be ok", func() {
+			Expect(err).To(Succeed())
+			Expect(response.TransactionsResponse.Data[0].Txid).To(Equal(big.NewInt(0)))
+		})
+	})
 	When("creating a transaction on a ledger with error on script", func() {
 		var (
 			err error
