@@ -17,6 +17,7 @@ limitations under the License.
 package searches
 
 import (
+	"github.com/formancehq/operator/internal/resources/gateways"
 	"strconv"
 
 	"github.com/formancehq/operator/internal/resources/secretreferences"
@@ -55,6 +56,12 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 	}
 	env = append(env, otlpEnv...)
 	env = append(env, GetDevEnvVars(stack, search)...)
+
+	gatewayEnvVars, err := gateways.EnvVarsIfEnabled(ctx, stack.Name)
+	if err != nil {
+		return err
+	}
+	env = append(env, gatewayEnvVars...)
 
 	env = append(env,
 		Env("OPEN_SEARCH_SERVICE", elasticSearchURI.Host),
