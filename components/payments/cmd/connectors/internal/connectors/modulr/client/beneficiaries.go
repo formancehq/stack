@@ -17,7 +17,7 @@ type Beneficiary struct {
 	Created string `json:"created"`
 }
 
-func (m *Client) GetBeneficiaries(ctx context.Context, page, pageSize int) (*responseWrapper[[]*Beneficiary], error) {
+func (m *Client) GetBeneficiaries(ctx context.Context, page, pageSize int, modifiedSince string) (*responseWrapper[[]*Beneficiary], error) {
 	f := connectors.ClientMetrics(ctx, "modulr", "list_beneficiaries")
 	now := time.Now()
 	defer f(ctx, now)
@@ -30,6 +30,9 @@ func (m *Client) GetBeneficiaries(ctx context.Context, page, pageSize int) (*res
 	q := req.URL.Query()
 	q.Add("page", strconv.Itoa(page))
 	q.Add("size", strconv.Itoa(pageSize))
+	if modifiedSince != "" {
+		q.Add("modifiedSince", modifiedSince)
+	}
 	req.URL.RawQuery = q.Encode()
 
 	resp, err := m.httpClient.Do(req)

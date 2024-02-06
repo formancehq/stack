@@ -15,6 +15,22 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 )
 
+type fetchBeneficiariesState struct {
+	LastCreated string `json:"last_created"`
+}
+
+func (s *fetchBeneficiariesState) SetLatest(latest *client.Beneficiary) error {
+	lastCreatedTime, err := time.Parse("2006-01-02T15:04:05.999-0700", latest.Created)
+	if err != nil {
+		return err
+	}
+	creationDate := lastCreatedTime.Format("2006-01-02T15:04:05-0700")
+	if s.LastCreated == "" || creationDate > s.LastCreated {
+		s.LastCreated = creationDate
+	}
+	return nil
+}
+
 func taskFetchBeneficiaries(config Config, client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
@@ -22,6 +38,7 @@ func taskFetchBeneficiaries(config Config, client *client.Client) task.Task {
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
+		resolver task.StateResolver,
 	) error {
 		ctx, span := connectors.StartSpan(
 			ctx,
@@ -31,7 +48,16 @@ func taskFetchBeneficiaries(config Config, client *client.Client) task.Task {
 		)
 		defer span.End()
 
-		if err := fetchBeneficiaries(ctx, config, client, connectorID, ingester, scheduler); err != nil {
+		state := task.MustResolveTo(ctx, resolver, fetchBeneficiariesState{})
+		state, err := fetchBeneficiaries(
+			ctx, config, client, connectorID, ingester, scheduler, state,
+		)
+		if err != nil {
+			otel.RecordError(span, err)
+			return err
+		}
+
+		if err := ingester.UpdateTaskState(ctx, state); err != nil {
 			otel.RecordError(span, err)
 			return err
 		}
@@ -47,19 +73,26 @@ func fetchBeneficiaries(
 	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	scheduler task.Scheduler,
-) error {
+	state fetchBeneficiariesState,
+) (fetchBeneficiariesState, error) {
 	for page := 0; ; page++ {
-		pagedBeneficiaries, err := client.GetBeneficiaries(ctx, page, config.PageSize)
+		pagedBeneficiaries, err := client.GetBeneficiaries(ctx, page, config.PageSize, state.LastCreated)
 		if err != nil {
-			return err
+			return state, err
 		}
 
 		if len(pagedBeneficiaries.Content) == 0 {
 			break
 		}
 
+		for _, beneficiary := range pagedBeneficiaries.Content {
+			if err := state.SetLatest(beneficiary); err != nil {
+				return state, err
+			}
+		}
+
 		if err := ingestBeneficiariesAccountsBatch(ctx, connectorID, ingester, pagedBeneficiaries.Content); err != nil {
-			return err
+			return state, err
 		}
 
 		if len(pagedBeneficiaries.Content) < config.PageSize {
@@ -72,7 +105,7 @@ func fetchBeneficiaries(
 		}
 	}
 
-	return nil
+	return state, nil
 }
 
 func ingestBeneficiariesAccountsBatch(
