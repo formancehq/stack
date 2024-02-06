@@ -41,8 +41,9 @@ func NewStackUpdateController() *StackUpdateController {
 
 func NewUpdateCommand() *cobra.Command {
 	return fctl.NewMembershipCommand("update <stack-id> [name]",
-		fctl.WithShortDescription("Update a created stack"),
+		fctl.WithShortDescription("Update a created stack, name, or version"),
 		fctl.WithArgs(cobra.ExactArgs(2)),
+		fctl.WithBoolFlag(unprotectFlag, false, "Unprotect stacks (no confirmation on write commands)"),
 		fctl.WithStringFlag(versionFlag, "", "Version of the stack"),
 		fctl.WithController[*StackUpdateStore](NewStackUpdateController()),
 	)
@@ -81,9 +82,14 @@ func (c *StackUpdateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 			return nil, err
 		}
 	}
+	protected := !fctl.GetBool(cmd, unprotectFlag)
+	metadata := map[string]string{
+		fctl.ProtectedStackMetadata: fctl.BoolPointerToString(&protected),
+	}
 
 	req := membershipclient.UpdateStackRequest{
-		Name: name,
+		Name:     name,
+		Metadata: metadata,
 	}
 
 	//Retrieve region from the stack
@@ -129,6 +135,11 @@ func (c *StackUpdateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 	}
 
 	if specifiedVersion != "" {
+		if specifiedVersion != *stack.Data.Version {
+			if !fctl.CheckStackApprobation(cmd, stack.Data, "Disclaimer: You are about to migrate the stack '%s' from '%s' to '%s'. It might take some time to fully migrate", stack.Data.Name, *stack.Data.Version, specifiedVersion) {
+				return nil, fctl.ErrMissingApproval
+			}
+		}
 		req.Version = pointer.For(specifiedVersion)
 	}
 
