@@ -30,7 +30,8 @@ tests:
     COPY --pass-args (stack+sources/out --LOCATION=go.mod) /src/go.mod
     COPY --pass-args (stack+sources/out --LOCATION=go.sum) /src/go.sum
     COPY --pass-args (stack+sources/out --LOCATION=libs) /src/libs
-    COPY --pass-args (stack+sources/out --LOCATION=components) /src/components
+    COPY --pass-args (stack+sources/out --LOCATION=components/ledger) /src/components/ledger
+    COPY --pass-args (stack+sources/out --LOCATION=components/payments) /src/components/payments
     COPY --pass-args (stack+sources/out --LOCATION=ee) /src/ee
     COPY --pass-args (stack+build-final-spec/latest.json) /src/releases/build/latest.json
     COPY --pass-args (releases+sdk-generate/go) /src/releases/sdks/go
@@ -64,7 +65,8 @@ sources:
     WORKDIR src
     COPY --pass-args (stack+sources/out --LOCATION=libs) /src/libs
     COPY --pass-args (releases+sdk-generate/go) /src/releases/sdks/go
-    COPY --pass-args (stack+sources/out --LOCATION=components) /src/components
+    COPY --pass-args (stack+sources/out --LOCATION=components/ledger) /src/components/ledger
+    COPY --pass-args (stack+sources/out --LOCATION=components/payments) /src/components/payments
     COPY --pass-args (stack+sources/out --LOCATION=ee) /src/ee
     COPY --pass-args (stack+sources/out --LOCATION=go.mod) /src/go.mod
     COPY --pass-args (stack+sources/out --LOCATION=go.sum) /src/go.sum
