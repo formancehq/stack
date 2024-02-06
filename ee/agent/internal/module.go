@@ -2,6 +2,8 @@ package internal
 
 import (
 	"context"
+	"time"
+
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.uber.org/fx"
 	"google.golang.org/grpc"
@@ -13,7 +15,6 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/restmapper"
 	"k8s.io/client-go/tools/cache"
-	"time"
 )
 
 func NewDynamicSharedInformerFactory(client *dynamic.DynamicClient) dynamicinformer.DynamicSharedInformerFactory {
