@@ -387,11 +387,16 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 
 	err = container.Provide(func() StateResolver {
 		return StateResolverFn(func(ctx context.Context, v any) error {
-			if task.State == nil || len(task.State) == 0 {
+			t, err := s.store.GetTask(ctx, task.ID)
+			if err != nil {
+				return err
+			}
+
+			if t.State == nil || len(t.State) == 0 {
 				return nil
 			}
 
-			return json.Unmarshal(task.State, v)
+			return json.Unmarshal(t.State, v)
 		})
 	})
 	if err != nil {

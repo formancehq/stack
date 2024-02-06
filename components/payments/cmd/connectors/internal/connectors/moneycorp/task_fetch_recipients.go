@@ -91,8 +91,10 @@ func fetchRecipients(
 				return fetchRecipientsState{}, fmt.Errorf("failed to parse transaction date: %w", err)
 			}
 
-			if createdAt.Before(state.LastCreatedAt) {
+			switch createdAt.Compare(state.LastCreatedAt) {
+			case -1, 0:
 				continue
+			default:
 			}
 
 			raw, err := json.Marshal(recipient)

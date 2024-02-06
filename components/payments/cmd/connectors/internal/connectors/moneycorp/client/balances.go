@@ -50,6 +50,10 @@ func (c *Client) GetAccountBalances(ctx context.Context, accountID string) ([]*B
 		}
 	}()
 
+	if resp.StatusCode == http.StatusNotFound {
+		return []*Balance{}, nil
+	}
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
 	}

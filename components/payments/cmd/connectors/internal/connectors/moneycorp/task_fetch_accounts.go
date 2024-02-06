@@ -22,7 +22,7 @@ type fetchAccountsState struct {
 	LastIDCreated string `json:"last_id_created"`
 }
 
-func taskFetchAccounts(client *client.Client) task.Task {
+func taskFetchAccounts(client *client.Client, config *Config) task.Task {
 	return func(
 		ctx context.Context,
 		taskID models.TaskID,
@@ -41,7 +41,7 @@ func taskFetchAccounts(client *client.Client) task.Task {
 
 		state := task.MustResolveTo(ctx, resolver, fetchAccountsState{})
 
-		newState, err := fetchAccounts(ctx, client, connectorID, ingester, scheduler, state)
+		newState, err := fetchAccounts(ctx, config, client, connectorID, ingester, scheduler, state)
 		if err != nil {
 			otel.RecordError(span, err)
 			return err
@@ -58,6 +58,7 @@ func taskFetchAccounts(client *client.Client) task.Task {
 
 func fetchAccounts(
 	ctx context.Context,
+	config *Config,
 	client *client.Client,
 	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
@@ -148,7 +149,8 @@ func fetchAccounts(
 
 		for _, transactionTask := range transactionTasks {
 			if err := scheduler.Schedule(ctx, transactionTask, models.TaskSchedulerOptions{
-				ScheduleOption: models.OPTIONS_RUN_NOW,
+				ScheduleOption: models.OPTIONS_RUN_PERIODICALLY,
+				Duration:       config.PollingPeriod.Duration,
 				RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 			}); err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
 				return fetchAccountsState{}, err
@@ -157,7 +159,8 @@ func fetchAccounts(
 
 		for _, balanceTask := range balanceTasks {
 			if err := scheduler.Schedule(ctx, balanceTask, models.TaskSchedulerOptions{
-				ScheduleOption: models.OPTIONS_RUN_NOW,
+				ScheduleOption: models.OPTIONS_RUN_PERIODICALLY,
+				Duration:       config.PollingPeriod.Duration,
 				RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 			}); err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
 				return fetchAccountsState{}, err
@@ -166,7 +169,8 @@ func fetchAccounts(
 
 		for _, recipientTask := range recipientTasks {
 			if err := scheduler.Schedule(ctx, recipientTask, models.TaskSchedulerOptions{
-				ScheduleOption: models.OPTIONS_RUN_NOW,
+				ScheduleOption: models.OPTIONS_RUN_PERIODICALLY,
+				Duration:       config.PollingPeriod.Duration,
 				RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 			}); err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
 				return fetchAccountsState{}, err

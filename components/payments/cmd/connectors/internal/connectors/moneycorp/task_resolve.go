@@ -51,7 +51,7 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 		case taskNameMain:
 			return taskMain()
 		case taskNameFetchAccounts:
-			return taskFetchAccounts(moneycorpClient)
+			return taskFetchAccounts(moneycorpClient, &config)
 		case taskNameFetchRecipients:
 			return taskFetchRecipients(moneycorpClient, taskDescriptor.AccountID)
 		case taskNameFetchTransactions:
