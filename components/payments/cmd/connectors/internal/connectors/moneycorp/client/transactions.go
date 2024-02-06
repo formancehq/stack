@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 	"time"
@@ -44,27 +45,34 @@ func (c *Client) GetTransactions(ctx context.Context, accountID string, page, pa
 	now := time.Now()
 	defer f(ctx, now)
 
-	reqBody := fetchTransactionRequest{
-		Data: struct {
-			Attributes struct {
-				TransactionDateTimeFrom string "json:\"transactionDateTimeFrom\""
-			} "json:\"attributes\""
-		}{
-			Attributes: struct {
-				TransactionDateTimeFrom string "json:\"transactionDateTimeFrom\""
+	var body io.Reader
+	if !lastCreatedAt.IsZero() {
+		reqBody := fetchTransactionRequest{
+			Data: struct {
+				Attributes struct {
+					TransactionDateTimeFrom string "json:\"transactionDateTimeFrom\""
+				} "json:\"attributes\""
 			}{
-				TransactionDateTimeFrom: lastCreatedAt.Format("2006-01-02T15:04:05.999999999"),
+				Attributes: struct {
+					TransactionDateTimeFrom string "json:\"transactionDateTimeFrom\""
+				}{
+					TransactionDateTimeFrom: lastCreatedAt.Format("2006-01-02T15:04:05.999999999"),
+				},
 			},
-		},
-	}
+		}
 
-	body, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal transfer request: %w", err)
+		raw, err := json.Marshal(reqBody)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal transfer request: %w", err)
+		}
+
+		body = bytes.NewBuffer(raw)
+	} else {
+		body = http.NoBody
 	}
 
 	endpoint := fmt.Sprintf("%s/accounts/%s/transactions/find", c.endpoint, accountID)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, bytes.NewBuffer(body))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create login request: %w", err)
 	}
