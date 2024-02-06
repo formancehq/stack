@@ -31,7 +31,7 @@ func ProtectedAPIEnvVarsWithPrefix(ctx Context, stack *v1beta1.Stack, moduleName
 
 	ret = append(ret,
 		Env(fmt.Sprintf("%sAUTH_ENABLED", prefix), "true"),
-		Env(fmt.Sprintf("%sAUTH_ISSUER", prefix), fmt.Sprintf(fmt.Sprintf("%s/api/auth", url))),
+		Env(fmt.Sprintf("%sAUTH_ISSUER", prefix), url),
 	)
 
 	if auth != nil {
