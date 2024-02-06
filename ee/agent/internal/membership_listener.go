@@ -294,8 +294,6 @@ func (c *membershipListener) createOrUpdate(ctx context.Context, gvk schema.Grou
 		"formance.com/create-by-agent": "true",
 	}
 	content["metadata"].(map[string]any)["name"] = name
-	//content["kind"] = gvk.GroupKind().Kind
-	//content["apiVersion"] = gvk.GroupVersion().String()
 
 	restMapping, err := c.restMapper.RESTMapping(gvk.GroupKind())
 	if err != nil {
