@@ -57,6 +57,7 @@ docs/StackUserAccess.md
 docs/StackUserAccessAllOf.md
 docs/StackUserAccessResponse.md
 docs/UpdateOrganizationUserRequest.md
+docs/UpdateStackRequest.md
 docs/UpdateStackUserRequest.md
 docs/User.md
 docs/UserAllOf.md
@@ -116,6 +117,7 @@ model_stack_user_access.go
 model_stack_user_access_all_of.go
 model_stack_user_access_response.go
 model_update_organization_user_request.go
+model_update_stack_request.go
 model_update_stack_user_request.go
 model_user.go
 model_user_all_of.go

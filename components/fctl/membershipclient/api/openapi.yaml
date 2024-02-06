@@ -443,6 +443,48 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: Not Authorized
       summary: Find stack
+    put:
+      operationId: updateStack
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: stackId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStackRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadStackResponse'
+          description: Updated stack
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not Authorized
+      summary: Update stack
   /organizations/{organizationId}/stacks/{stackId}/users:
     get:
       operationId: listStackUsersAccesses
@@ -1450,6 +1492,9 @@ components:
       allOf:
       - $ref: '#/components/schemas/StackData'
       - $ref: '#/components/schemas/CreateStackRequest_allOf'
+    UpdateStackRequest:
+      allOf:
+      - $ref: '#/components/schemas/StackData'
     CreateStackResponse:
       example:
         data: null
