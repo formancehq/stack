@@ -1,4 +1,3 @@
-//go:generate protoc --go_out=internal/grpc/generated --go_opt=paths=source_relative --go-grpc_out=internal/grpc/generated --go-grpc_opt=paths=source_relative server.proto
 package main
 
 import (
