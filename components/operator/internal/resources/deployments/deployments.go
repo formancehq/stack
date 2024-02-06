@@ -151,7 +151,7 @@ func CreateOrUpdate(ctx core.Context, stack *v1beta1.Stack, owner interface {
 			deployment.Spec.Template.Spec.Containers[ind] = container
 		}
 		if stack.Spec.Disabled {
-			if deployment.Spec.Replicas != nil {
+			if deployment.Spec.Replicas != nil && *deployment.Spec.Replicas != 0 {
 				// Store the number of replicas to be able to restore it
 				// if the stack is re-enabled
 				if deployment.Annotations == nil {
@@ -162,12 +162,15 @@ func CreateOrUpdate(ctx core.Context, stack *v1beta1.Stack, owner interface {
 			deployment.Spec.Replicas = pointer.For(int32(0))
 		} else {
 			// Restore the number of replicas previously stored if the stack was disabled
-			if replicasStr := deployment.Annotations["replicas"]; replicasStr != "" {
+			replicasStr := deployment.Annotations["replicas"]
+			if replicasStr != "0" && replicasStr != "" {
 				replicas, err := strconv.ParseInt(replicasStr, 10, 32)
 				if err != nil {
 					return err
 				}
 				deployment.Spec.Replicas = pointer.For(int32(replicas))
+			} else {
+				deployment.Spec.Replicas = pointer.For(int32(1))
 			}
 		}
 
