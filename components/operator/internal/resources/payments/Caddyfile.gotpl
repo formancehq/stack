@@ -25,8 +25,12 @@
         reverse_proxy payments-connectors:8080
     }
 
-    handle /bank-accounts* {
+    @bank-accounts {
+        path /bank-accounts*
         method POST
+    }
+
+    handle @bank-accounts {
         reverse_proxy payments-connectors:8080
     }
 
@@ -34,6 +38,7 @@
         path /transfer-initiations*
         method DELETE POST
     }
+
     handle @transfer-initiations {
         reverse_proxy payments-connectors:8080
     }
