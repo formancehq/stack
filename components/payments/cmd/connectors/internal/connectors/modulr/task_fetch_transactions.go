@@ -19,12 +19,29 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 )
 
+type fetchTransactionsState struct {
+	LastTransactionDate string `json:"last_transaction_date"`
+}
+
+func (s *fetchTransactionsState) SetLatest(latest *client.Transaction) error {
+	lastTransactionTime, err := time.Parse("2006-01-02T15:04:05.999-0700", latest.TransactionDate)
+	if err != nil {
+		return err
+	}
+	tnDate := lastTransactionTime.Format("2006-01-02T15:04:05-0700")
+	if s.LastTransactionDate == "" || tnDate > s.LastTransactionDate {
+		s.LastTransactionDate = tnDate
+	}
+	return nil
+}
+
 func taskFetchTransactions(config Config, client *client.Client, accountID string) task.Task {
 	return func(
 		ctx context.Context,
 		taskID models.TaskID,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
+		resolver task.StateResolver,
 	) error {
 		ctx, span := connectors.StartSpan(
 			ctx,
@@ -35,7 +52,16 @@ func taskFetchTransactions(config Config, client *client.Client, accountID strin
 		)
 		defer span.End()
 
-		if err := fetchTransactions(ctx, config, client, accountID, connectorID, ingester); err != nil {
+		state := task.MustResolveTo(ctx, resolver, fetchTransactionsState{})
+		state, err := fetchTransactions(
+			ctx, config, client, accountID, connectorID, ingester, state,
+		)
+		if err != nil {
+			otel.RecordError(span, err)
+			return err
+		}
+
+		if err := ingester.UpdateTaskState(ctx, state); err != nil {
 			otel.RecordError(span, err)
 			return err
 		}
@@ -51,11 +77,12 @@ func fetchTransactions(
 	accountID string,
 	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
-) error {
+	state fetchTransactionsState,
+) (fetchTransactionsState, error) {
 	for page := 0; ; page++ {
-		pagedTransactions, err := client.GetTransactions(ctx, accountID, page, config.PageSize)
+		pagedTransactions, err := client.GetTransactions(ctx, accountID, page, config.PageSize, state.LastTransactionDate)
 		if err != nil {
-			return err
+			return state, err
 		}
 
 		if len(pagedTransactions.Content) == 0 {
@@ -64,11 +91,17 @@ func fetchTransactions(
 
 		batch, err := toBatch(connectorID, accountID, pagedTransactions.Content)
 		if err != nil {
-			return err
+			return state, err
+		}
+
+		for _, transaction := range pagedTransactions.Content {
+			if err := state.SetLatest(transaction); err != nil {
+				return state, err
+			}
 		}
 
 		if err := ingester.IngestPayments(ctx, batch); err != nil {
-			return err
+			return state, err
 		}
 
 		if len(pagedTransactions.Content) < config.PageSize {
@@ -81,7 +114,7 @@ func fetchTransactions(
 		}
 	}
 
-	return nil
+	return state, nil
 }
 
 func toBatch(

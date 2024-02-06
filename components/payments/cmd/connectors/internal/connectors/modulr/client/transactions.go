@@ -25,7 +25,7 @@ type Transaction struct {
 	AdditionalInfo  interface{} `json:"additionalInfo"`
 }
 
-func (m *Client) GetTransactions(ctx context.Context, accountID string, page, pageSize int) (*responseWrapper[[]*Transaction], error) {
+func (m *Client) GetTransactions(ctx context.Context, accountID string, page, pageSize int, fromTransactionDate string) (*responseWrapper[[]*Transaction], error) {
 	f := connectors.ClientMetrics(ctx, "modulr", "list_transactions")
 	now := time.Now()
 	defer f(ctx, now)
@@ -38,6 +38,9 @@ func (m *Client) GetTransactions(ctx context.Context, accountID string, page, pa
 	q := req.URL.Query()
 	q.Add("page", strconv.Itoa(page))
 	q.Add("size", strconv.Itoa(pageSize))
+	if fromTransactionDate != "" {
+		q.Add("fromTransactionDate", fromTransactionDate)
+	}
 	req.URL.RawQuery = q.Encode()
 
 	resp, err := m.httpClient.Do(req)
