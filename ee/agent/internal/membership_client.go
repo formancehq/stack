@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"io"
+	"time"
 )
 
 const (
@@ -77,6 +78,16 @@ func (c *membershipClient) Send(message *generated.Message) error {
 	return c.connectClient.SendMsg(message)
 }
 
+func (c *membershipClient) sendPong(ctx context.Context) {
+	if err := c.connectClient.SendMsg(&generated.Message{
+		Message: &generated.Message_Pong{
+			Pong: &generated.Pong{},
+		},
+	}); err != nil {
+		sharedlogging.FromContext(ctx).Errorf("Unable to send pong to server: %s", err)
+	}
+}
+
 func (c *membershipClient) Start(ctx context.Context) error {
 
 	var (
@@ -98,18 +109,22 @@ func (c *membershipClient) Start(ctx context.Context) error {
 			}
 
 			if msg.GetPing() != nil {
-				if err := c.connectClient.SendMsg(&generated.Message{
-					Message: &generated.Message_Pong{
-						Pong: &generated.Pong{},
-					},
-				}); err != nil {
-					sharedlogging.FromContext(ctx).Errorf("Unable to send pong to server: %s", err)
-				}
+				c.sendPong(ctx)
 				continue
 			}
 
 			select {
 			case c.orders <- msg:
+			case <-ctx.Done():
+				return
+			}
+		}
+	}()
+	go func() {
+		for {
+			select {
+			case <-time.After(5 * time.Second):
+				c.sendPong(ctx)
 			case <-ctx.Done():
 				return
 			}

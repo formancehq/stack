@@ -17,7 +17,7 @@ import (
 )
 
 func NewDynamicSharedInformerFactory(client *dynamic.DynamicClient) dynamicinformer.DynamicSharedInformerFactory {
-	return dynamicinformer.NewDynamicSharedInformerFactory(client, time.Second)
+	return dynamicinformer.NewDynamicSharedInformerFactory(client, 5*time.Second)
 }
 
 func runInformers(lc fx.Lifecycle, informers []cache.SharedIndexInformer) {

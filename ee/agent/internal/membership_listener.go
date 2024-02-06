@@ -5,10 +5,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/alitto/pond"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/components/agent/internal/generated"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
+	"k8s.io/apimachinery/pkg/api/equality"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -64,26 +66,31 @@ type membershipListener struct {
 	restClient *rest.RESTClient
 	restMapper meta.RESTMapper
 	orders     MembershipClient
+	wp         *pond.WorkerPool
 }
 
 func (c *membershipListener) Start(ctx context.Context) {
+	defer c.wp.StopAndWait()
 	for {
 		select {
 		case msg, ok := <-c.orders.Orders():
 			if !ok {
 				return
 			}
-			sharedlogging.FromContext(ctx).Infof("Got message from membership: %T", msg.GetMessage())
-			switch msg := msg.Message.(type) {
-			case *generated.Order_ExistingStack:
-				c.syncExistingStack(ctx, msg.ExistingStack)
-			case *generated.Order_DeletedStack:
-				c.deleteStack(ctx, msg.DeletedStack)
-			case *generated.Order_DisabledStack:
-				c.disableStack(ctx, msg.DisabledStack)
-			case *generated.Order_EnabledStack:
-				c.enableStack(ctx, msg.EnabledStack)
-			}
+
+			c.wp.Submit(func() {
+				sharedlogging.FromContext(ctx).Infof("Got message from membership: %T", msg.GetMessage())
+				switch msg := msg.Message.(type) {
+				case *generated.Order_ExistingStack:
+					c.syncExistingStack(ctx, msg.ExistingStack)
+				case *generated.Order_DeletedStack:
+					c.deleteStack(ctx, msg.DeletedStack)
+				case *generated.Order_DisabledStack:
+					c.disableStack(ctx, msg.DisabledStack)
+				case *generated.Order_EnabledStack:
+					c.enableStack(ctx, msg.EnabledStack)
+				}
+			})
 		}
 	}
 }
@@ -276,9 +283,10 @@ func (c *membershipListener) enableStack(ctx context.Context, stack *generated.E
 
 func (c *membershipListener) createOrUpdate(ctx context.Context, gvk schema.GroupVersionKind, name string, owner *metav1.OwnerReference, content map[string]any) (*unstructured.Unstructured, error) {
 
-	sharedlogging.WithFields(map[string]any{
+	logger := sharedlogging.WithFields(map[string]any{
 		"gvk": gvk,
-	}).Infof("creating object '%s'", name)
+	})
+	logger.Infof("creating object '%s'", name)
 	if content["metadata"] == nil {
 		content["metadata"] = map[string]any{}
 	}
@@ -286,8 +294,8 @@ func (c *membershipListener) createOrUpdate(ctx context.Context, gvk schema.Grou
 		"formance.com/create-by-agent": "true",
 	}
 	content["metadata"].(map[string]any)["name"] = name
-	content["kind"] = gvk.GroupKind().Kind
-	content["apiVersion"] = gvk.GroupVersion().String()
+	//content["kind"] = gvk.GroupKind().Kind
+	//content["apiVersion"] = gvk.GroupVersion().String()
 
 	restMapping, err := c.restMapper.RESTMapping(gvk.GroupKind())
 	if err != nil {
@@ -303,6 +311,8 @@ func (c *membershipListener) createOrUpdate(ctx context.Context, gvk schema.Grou
 		if !apierrors.IsNotFound(err) {
 			return nil, errors.Wrap(err, "reading object")
 		}
+
+		logger.Infof("Object not found, create a new one")
 
 		u.SetUnstructuredContent(content)
 		u.SetGroupVersionKind(gvk)
@@ -323,6 +333,12 @@ func (c *membershipListener) createOrUpdate(ctx context.Context, gvk schema.Grou
 		return u, nil
 	}
 
+	if equality.Semantic.DeepDerivative(content, u.Object) {
+		logger.Infof("Object found and has expected content, skip it")
+		return u, nil
+	}
+
+	logger.Infof("Object exists and content differ, patch it")
 	contentData, err := json.Marshal(content)
 	if err != nil {
 		return nil, err
@@ -363,5 +379,6 @@ func NewMembershipListener(restClient *rest.RESTClient, clientInfo ClientInfo, m
 		clientInfo: clientInfo,
 		restMapper: mapper,
 		orders:     orders,
+		wp:         pond.New(5, 5),
 	}
 }
