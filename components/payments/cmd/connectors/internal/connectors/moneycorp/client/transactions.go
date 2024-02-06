@@ -1,9 +1,11 @@
 package client
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 	"time"
@@ -13,6 +15,14 @@ import (
 
 type transactionsResponse struct {
 	Transactions []*Transaction `json:"data"`
+}
+
+type fetchTransactionRequest struct {
+	Data struct {
+		Attributes struct {
+			TransactionDateTimeFrom string `json:"transactionDateTimeFrom"`
+		} `json:"attributes"`
+	} `json:"data"`
 }
 
 type Transaction struct {
@@ -30,13 +40,39 @@ type Transaction struct {
 	} `json:"attributes"`
 }
 
-func (c *Client) GetTransactions(ctx context.Context, accountID string, page, pageSize int) ([]*Transaction, error) {
+func (c *Client) GetTransactions(ctx context.Context, accountID string, page, pageSize int, lastCreatedAt time.Time) ([]*Transaction, error) {
 	f := connectors.ClientMetrics(ctx, "moneycorp", "list_transactions")
 	now := time.Now()
 	defer f(ctx, now)
 
+	var body io.Reader
+	if !lastCreatedAt.IsZero() {
+		reqBody := fetchTransactionRequest{
+			Data: struct {
+				Attributes struct {
+					TransactionDateTimeFrom string "json:\"transactionDateTimeFrom\""
+				} "json:\"attributes\""
+			}{
+				Attributes: struct {
+					TransactionDateTimeFrom string "json:\"transactionDateTimeFrom\""
+				}{
+					TransactionDateTimeFrom: lastCreatedAt.Format("2006-01-02T15:04:05.999999999"),
+				},
+			},
+		}
+
+		raw, err := json.Marshal(reqBody)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal transfer request: %w", err)
+		}
+
+		body = bytes.NewBuffer(raw)
+	} else {
+		body = http.NoBody
+	}
+
 	endpoint := fmt.Sprintf("%s/accounts/%s/transactions/find", c.endpoint, accountID)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, http.NoBody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create login request: %w", err)
 	}
@@ -44,8 +80,9 @@ func (c *Client) GetTransactions(ctx context.Context, accountID string, page, pa
 	req.Header.Set("Content-Type", "application/json")
 
 	q := req.URL.Query()
-	q.Add("pagesize", strconv.Itoa(pageSize))
-	q.Add("pagenumber", fmt.Sprint(page))
+	q.Add("page[size]", strconv.Itoa(pageSize))
+	q.Add("page[number]", fmt.Sprint(page))
+	q.Add("sortBy", "createdAt.asc")
 	req.URL.RawQuery = q.Encode()
 
 	resp, err := c.httpClient.Do(req)
@@ -59,6 +96,10 @@ func (c *Client) GetTransactions(ctx context.Context, accountID string, page, pa
 			c.logger.Error(err)
 		}
 	}()
+
+	if resp.StatusCode == http.StatusNotFound {
+		return []*Transaction{}, nil
+	}
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()

@@ -2,7 +2,6 @@ package stripe
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"math/big"
 	"runtime/debug"
@@ -700,10 +699,6 @@ func createBatchElement(
 		default:
 			paymentStatus = models.PaymentStatusPending
 		}
-
-		fmt.Println("TOTO")
-		fmt.Println(balanceTransaction.ID, balanceTransaction.Source.Dispute.Status)
-		fmt.Println("TOTO 2")
 
 		payment = &models.Payment{
 			ID: models.PaymentID{

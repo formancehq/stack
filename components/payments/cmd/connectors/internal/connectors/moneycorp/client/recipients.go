@@ -38,8 +38,9 @@ func (c *Client) GetRecipients(ctx context.Context, accountID string, page int, 
 	req.Header.Set("Content-Type", "application/json")
 
 	q := req.URL.Query()
-	q.Add("pagesize", strconv.Itoa(pageSize))
-	q.Add("pagenumber", fmt.Sprint(page))
+	q.Add("page[size]", strconv.Itoa(pageSize))
+	q.Add("page[number]", fmt.Sprint(page))
+	q.Add("sortBy", "createdAt.asc")
 	req.URL.RawQuery = q.Encode()
 
 	resp, err := c.httpClient.Do(req)
@@ -53,6 +54,10 @@ func (c *Client) GetRecipients(ctx context.Context, accountID string, page int, 
 			c.logger.Error(err)
 		}
 	}()
+
+	if resp.StatusCode == http.StatusNotFound {
+		return []*Recipient{}, nil
+	}
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()

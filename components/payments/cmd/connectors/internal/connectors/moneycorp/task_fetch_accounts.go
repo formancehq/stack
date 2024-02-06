@@ -15,13 +15,21 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 )
 
-func taskFetchAccounts(client *client.Client) task.Task {
+type fetchAccountsState struct {
+	LastPage int `json:"last_page"`
+	// Moneycorp does not send the creation date for accounts, but we can still
+	// sort by ID created (which is incremental when creating accounts).
+	LastIDCreated string `json:"last_id_created"`
+}
+
+func taskFetchAccounts(client *client.Client, config *Config) task.Task {
 	return func(
 		ctx context.Context,
 		taskID models.TaskID,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
+		resolver task.StateResolver,
 	) error {
 		ctx, span := connectors.StartSpan(
 			ctx,
@@ -31,7 +39,15 @@ func taskFetchAccounts(client *client.Client) task.Task {
 		)
 		defer span.End()
 
-		if err := fetchAccounts(ctx, client, connectorID, ingester, scheduler); err != nil {
+		state := task.MustResolveTo(ctx, resolver, fetchAccountsState{})
+
+		newState, err := fetchAccounts(ctx, config, client, connectorID, ingester, scheduler, state)
+		if err != nil {
+			otel.RecordError(span, err)
+			return err
+		}
+
+		if err := ingester.UpdateTaskState(ctx, newState); err != nil {
 			otel.RecordError(span, err)
 			return err
 		}
@@ -42,75 +58,122 @@ func taskFetchAccounts(client *client.Client) task.Task {
 
 func fetchAccounts(
 	ctx context.Context,
+	config *Config,
 	client *client.Client,
 	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	scheduler task.Scheduler,
-) error {
-	for page := 1; ; page++ {
+	state fetchAccountsState,
+) (fetchAccountsState, error) {
+	newState := fetchAccountsState{
+		LastPage:      state.LastPage,
+		LastIDCreated: state.LastIDCreated,
+	}
+
+	for page := state.LastPage; ; page++ {
+		newState.LastPage = page
+
 		pagedAccounts, err := client.GetAccounts(ctx, page, pageSize)
 		if err != nil {
-			return err
+			return fetchAccountsState{}, err
 		}
 
 		if len(pagedAccounts) == 0 {
 			break
 		}
 
-		if err := ingestAccountsBatch(ctx, connectorID, ingester, pagedAccounts); err != nil {
-			return err
-		}
-
+		batch := ingestion.AccountBatch{}
+		transactionTasks := []models.TaskDescriptor{}
+		balanceTasks := []models.TaskDescriptor{}
+		recipientTasks := []models.TaskDescriptor{}
 		for _, account := range pagedAccounts {
-			transactionsTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
+			if account.ID <= state.LastIDCreated {
+				continue
+			}
+
+			raw, err := json.Marshal(account)
+			if err != nil {
+				return fetchAccountsState{}, err
+			}
+
+			batch = append(batch, &models.Account{
+				ID: models.AccountID{
+					Reference:   account.ID,
+					ConnectorID: connectorID,
+				},
+				// Moneycorp does not send the opening date of the account
+				CreatedAt:   time.Now().UTC(),
+				Reference:   account.ID,
+				ConnectorID: connectorID,
+				AccountName: account.Attributes.AccountName,
+				Type:        models.AccountTypeInternal,
+				RawData:     raw,
+			})
+
+			transactionTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
 				Name:      "Fetch transactions from client by account",
 				Key:       taskNameFetchTransactions,
 				AccountID: account.ID,
 			})
 			if err != nil {
-				return err
+				return fetchAccountsState{}, err
 			}
+			transactionTasks = append(transactionTasks, transactionTask)
 
-			err = scheduler.Schedule(ctx, transactionsTask, models.TaskSchedulerOptions{
-				ScheduleOption: models.OPTIONS_RUN_NOW,
-				RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
-			})
-			if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
-				return err
-			}
-
-			balancesTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
+			balanceTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
 				Name:      "Fetch balances from client by account",
 				Key:       taskNameFetchBalances,
 				AccountID: account.ID,
 			})
-
 			if err != nil {
-				return err
+				return fetchAccountsState{}, err
 			}
-			err = scheduler.Schedule(ctx, balancesTask, models.TaskSchedulerOptions{
-				ScheduleOption: models.OPTIONS_RUN_NOW,
-				RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
-			})
-			if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
-				return err
-			}
+			balanceTasks = append(balanceTasks, balanceTask)
 
-			taskRecipients, err := models.EncodeTaskDescriptor(TaskDescriptor{
+			recipientTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
 				Name:      "Fetch recipients from client",
 				Key:       taskNameFetchRecipients,
 				AccountID: account.ID,
 			})
 			if err != nil {
-				return err
+				return fetchAccountsState{}, err
 			}
+			recipientTasks = append(recipientTasks, recipientTask)
 
-			err = scheduler.Schedule(ctx, taskRecipients, models.TaskSchedulerOptions{
-				ScheduleOption: models.OPTIONS_RUN_NOW,
+			newState.LastIDCreated = account.ID
+		}
+
+		if err := ingester.IngestAccounts(ctx, batch); err != nil {
+			return fetchAccountsState{}, err
+		}
+
+		for _, transactionTask := range transactionTasks {
+			if err := scheduler.Schedule(ctx, transactionTask, models.TaskSchedulerOptions{
+				ScheduleOption: models.OPTIONS_RUN_PERIODICALLY,
+				Duration:       config.PollingPeriod.Duration,
 				RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
-			})
-			if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
-				return err
+			}); err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+				return fetchAccountsState{}, err
+			}
+		}
+
+		for _, balanceTask := range balanceTasks {
+			if err := scheduler.Schedule(ctx, balanceTask, models.TaskSchedulerOptions{
+				ScheduleOption: models.OPTIONS_RUN_PERIODICALLY,
+				Duration:       config.PollingPeriod.Duration,
+				RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
+			}); err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+				return fetchAccountsState{}, err
+			}
+		}
+
+		for _, recipientTask := range recipientTasks {
+			if err := scheduler.Schedule(ctx, recipientTask, models.TaskSchedulerOptions{
+				ScheduleOption: models.OPTIONS_RUN_PERIODICALLY,
+				Duration:       config.PollingPeriod.Duration,
+				RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
+			}); err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
+				return fetchAccountsState{}, err
 			}
 		}
 
@@ -119,40 +182,5 @@ func fetchAccounts(
 		}
 	}
 
-	return nil
-}
-
-func ingestAccountsBatch(
-	ctx context.Context,
-	connectorID models.ConnectorID,
-	ingester ingestion.Ingester,
-	accounts []*client.Account,
-) error {
-	batch := ingestion.AccountBatch{}
-	for _, account := range accounts {
-		raw, err := json.Marshal(account)
-		if err != nil {
-			return err
-		}
-
-		batch = append(batch, &models.Account{
-			ID: models.AccountID{
-				Reference:   account.ID,
-				ConnectorID: connectorID,
-			},
-			// Moneycorp does not send the opening date of the account
-			CreatedAt:   time.Now(),
-			Reference:   account.ID,
-			ConnectorID: connectorID,
-			AccountName: account.Attributes.AccountName,
-			Type:        models.AccountTypeInternal,
-			RawData:     raw,
-		})
-	}
-
-	if err := ingester.IngestAccounts(ctx, batch); err != nil {
-		return err
-	}
-
-	return nil
+	return newState, nil
 }

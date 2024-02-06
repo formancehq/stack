@@ -16,6 +16,13 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 )
 
+type fetchRecipientsState struct {
+	LastPage int `json:"last_page"`
+	// Moneycorp does not allow us to sort by , but we can still
+	// sort by ID created (which is incremental when creating accounts).
+	LastCreatedAt time.Time `json:"last_created_at"`
+}
+
 func taskFetchRecipients(client *client.Client, accountID string) task.Task {
 	return func(
 		ctx context.Context,
@@ -23,6 +30,7 @@ func taskFetchRecipients(client *client.Client, accountID string) task.Task {
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
+		resolver task.StateResolver,
 	) error {
 		ctx, span := connectors.StartSpan(
 			ctx,
@@ -33,7 +41,15 @@ func taskFetchRecipients(client *client.Client, accountID string) task.Task {
 		)
 		defer span.End()
 
-		if err := fetchRecipients(ctx, client, accountID, connectorID, ingester, scheduler); err != nil {
+		state := task.MustResolveTo(ctx, resolver, fetchRecipientsState{})
+
+		newState, err := fetchRecipients(ctx, client, accountID, connectorID, ingester, scheduler, state)
+		if err != nil {
+			otel.RecordError(span, err)
+			return err
+		}
+
+		if err := ingester.UpdateTaskState(ctx, newState); err != nil {
 			otel.RecordError(span, err)
 			return err
 		}
@@ -49,19 +65,63 @@ func fetchRecipients(
 	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	scheduler task.Scheduler,
-) error {
-	for page := 1; ; page++ {
+	state fetchRecipientsState,
+) (fetchRecipientsState, error) {
+	newState := fetchRecipientsState{
+		LastPage:      state.LastPage,
+		LastCreatedAt: state.LastCreatedAt,
+	}
+
+	for page := 0; ; page++ {
+		newState.LastPage = page
+
 		pagedRecipients, err := client.GetRecipients(ctx, accountID, page, pageSize)
 		if err != nil {
-			return err
+			return fetchRecipientsState{}, err
 		}
 
 		if len(pagedRecipients) == 0 {
 			break
 		}
 
-		if err := ingestRecipientsBatch(ctx, connectorID, ingester, pagedRecipients); err != nil {
-			return err
+		batch := ingestion.AccountBatch{}
+		for _, recipient := range pagedRecipients {
+			createdAt, err := time.Parse("2006-01-02T15:04:05.999999999", recipient.Attributes.CreatedAt)
+			if err != nil {
+				return fetchRecipientsState{}, fmt.Errorf("failed to parse transaction date: %w", err)
+			}
+
+			switch createdAt.Compare(state.LastCreatedAt) {
+			case -1, 0:
+				continue
+			default:
+			}
+
+			raw, err := json.Marshal(recipient)
+			if err != nil {
+				return fetchRecipientsState{}, err
+			}
+
+			batch = append(batch, &models.Account{
+				ID: models.AccountID{
+					Reference:   recipient.ID,
+					ConnectorID: connectorID,
+				},
+				// Moneycorp does not send the opening date of the account
+				CreatedAt:    createdAt,
+				Reference:    recipient.ID,
+				ConnectorID:  connectorID,
+				DefaultAsset: currency.FormatAsset(supportedCurrenciesWithDecimal, recipient.Attributes.BankAccountCurrency),
+				AccountName:  recipient.Attributes.BankAccountName,
+				Type:         models.AccountTypeExternal,
+				RawData:      raw,
+			})
+
+			newState.LastCreatedAt = createdAt
+		}
+
+		if err := ingester.IngestAccounts(ctx, batch); err != nil {
+			return fetchRecipientsState{}, err
 		}
 
 		if len(pagedRecipients) < pageSize {
@@ -69,46 +129,5 @@ func fetchRecipients(
 		}
 	}
 
-	return nil
-}
-
-func ingestRecipientsBatch(
-	ctx context.Context,
-	connectorID models.ConnectorID,
-	ingester ingestion.Ingester,
-	recipients []*client.Recipient,
-) error {
-	batch := ingestion.AccountBatch{}
-	for _, recipient := range recipients {
-		raw, err := json.Marshal(recipient)
-		if err != nil {
-			return err
-		}
-
-		createdAt, err := time.Parse("2006-01-02T15:04:05.999999999", recipient.Attributes.CreatedAt)
-		if err != nil {
-			return fmt.Errorf("failed to parse transaction date: %w", err)
-		}
-
-		batch = append(batch, &models.Account{
-			ID: models.AccountID{
-				Reference:   recipient.ID,
-				ConnectorID: connectorID,
-			},
-			// Moneycorp does not send the opening date of the account
-			CreatedAt:    createdAt,
-			Reference:    recipient.ID,
-			ConnectorID:  connectorID,
-			DefaultAsset: currency.FormatAsset(supportedCurrenciesWithDecimal, recipient.Attributes.BankAccountCurrency),
-			AccountName:  recipient.Attributes.BankAccountName,
-			Type:         models.AccountTypeExternal,
-			RawData:      raw,
-		})
-	}
-
-	if err := ingester.IngestAccounts(ctx, batch); err != nil {
-		return err
-	}
-
-	return nil
+	return newState, nil
 }
