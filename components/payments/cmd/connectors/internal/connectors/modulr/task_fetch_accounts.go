@@ -19,6 +19,19 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 )
 
+type fetchAccountsState struct {
+	LastCreatedDate string `json:"last_created_date"`
+}
+
+func (s *fetchAccountsState) SetLatest(latest *client.Account) error {
+	lastCreatedTime, err := time.Parse("2006-01-02T15:04:05.999-0700", latest.CreatedDate)
+	if err != nil {
+		return err
+	}
+	s.LastCreatedDate = lastCreatedTime.Format("2006-01-02T15:04:05-0700")
+	return nil
+}
+
 func taskFetchAccounts(config Config, client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
@@ -26,6 +39,7 @@ func taskFetchAccounts(config Config, client *client.Client) task.Task {
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
+		resolver task.StateResolver,
 	) error {
 		ctx, span := connectors.StartSpan(
 			ctx,
@@ -35,7 +49,15 @@ func taskFetchAccounts(config Config, client *client.Client) task.Task {
 		)
 		defer span.End()
 
-		if err := fetchAccounts(ctx, config, client, connectorID, ingester, scheduler); err != nil {
+		state := task.MustResolveTo(ctx, resolver, fetchAccountsState{})
+
+		newState, err := fetchAccounts(ctx, config, client, connectorID, ingester, scheduler, state)
+		if err != nil {
+			otel.RecordError(span, err)
+			return err
+		}
+
+		if err := ingester.UpdateTaskState(ctx, newState); err != nil {
 			otel.RecordError(span, err)
 			return err
 		}
@@ -51,11 +73,12 @@ func fetchAccounts(
 	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	scheduler task.Scheduler,
-) error {
+	state fetchAccountsState,
+) (fetchAccountsState, error) {
 	for page := 0; ; page++ {
-		pagedAccounts, err := client.GetAccounts(ctx, page, config.PageSize)
+		pagedAccounts, err := client.GetAccounts(ctx, page, config.PageSize, state.LastCreatedDate)
 		if err != nil {
-			return err
+			return state, err
 		}
 
 		if len(pagedAccounts.Content) == 0 {
@@ -63,17 +86,20 @@ func fetchAccounts(
 		}
 
 		if err := ingestAccountsBatch(ctx, connectorID, ingester, pagedAccounts.Content); err != nil {
-			return err
+			return state, err
 		}
 
 		for _, account := range pagedAccounts.Content {
+			if err := state.SetLatest(account); err != nil {
+				return state, err
+			}
 			transactionsTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
 				Name:      "Fetch transactions from client by account",
 				Key:       taskNameFetchTransactions,
 				AccountID: account.ID,
 			})
 			if err != nil {
-				return err
+				return state, err
 			}
 
 			err = scheduler.Schedule(ctx, transactionsTask, models.TaskSchedulerOptions{
@@ -81,7 +107,7 @@ func fetchAccounts(
 				RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 			})
 			if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
-				return err
+				return state, err
 			}
 		}
 
@@ -95,7 +121,7 @@ func fetchAccounts(
 		}
 	}
 
-	return nil
+	return state, nil
 }
 
 func ingestAccountsBatch(
@@ -134,7 +160,7 @@ func ingestAccountsBatch(
 
 		// No need to check if the currency is supported for accounts and
 		// balances.
-		precision, _ := supportedCurrenciesWithDecimal[account.Currency]
+		precision := supportedCurrenciesWithDecimal[account.Currency]
 
 		var amount big.Float
 		_, ok := amount.SetString(account.Balance)
