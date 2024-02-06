@@ -103,7 +103,8 @@ func fetchAccounts(
 			}
 
 			err = scheduler.Schedule(ctx, transactionsTask, models.TaskSchedulerOptions{
-				ScheduleOption: models.OPTIONS_RUN_NOW,
+				ScheduleOption: models.OPTIONS_RUN_PERIODICALLY,
+				Duration:       config.PollingPeriod.Duration,
 				RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 			})
 			if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
