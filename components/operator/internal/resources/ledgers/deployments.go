@@ -2,11 +2,9 @@ package ledgers
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/jobs"
 	"github.com/formancehq/operator/internal/resources/registries"
 	"strconv"
-
-	"github.com/pkg/errors"
-	"k8s.io/apimachinery/pkg/api/equality"
 
 	"github.com/formancehq/operator/internal/resources/settings"
 
@@ -18,12 +16,9 @@ import (
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
 	"github.com/formancehq/operator/internal/resources/services"
-	"github.com/formancehq/stack/libs/go-libs/pointer"
 	v1 "k8s.io/api/apps/v1"
-	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -205,7 +200,7 @@ func setCommonContainerConfiguration(ctx core.Context, stack *v1beta1.Stack, led
 		prefix = "NUMARY_"
 	}
 	env := make([]corev1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVarsWithPrefix(ctx, stack.Name, core.LowerCamelCaseName(ctx, ledger), prefix)
+	otlpEnv, err := settings.GetOTELEnvVarsWithPrefix(ctx, stack.Name, core.LowerCamelCaseKind(ctx, ledger), prefix)
 	if err != nil {
 		return err
 	}
@@ -299,7 +294,7 @@ func createGatewayDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1b
 	}
 
 	env := make([]corev1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseName(ctx, ledger))
+	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseKind(ctx, ledger))
 	if err != nil {
 		return err
 	}
@@ -318,66 +313,21 @@ func createGatewayDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1b
 	return err
 }
 
-func migrateToLedgerV2(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, database *v1beta1.Database, image string) error {
+func migrate(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, database *v1beta1.Database, image string) error {
+	return jobs.Handle(ctx, ledger, "migrate-v2", getUpgradeContainer(database, image),
+		jobs.PreCreate(func() error {
+			list := &v1.DeploymentList{}
+			if err := ctx.GetClient().List(ctx, list, client.InNamespace(stack.Name)); err != nil {
+				return err
+			}
 
-	expectedSpec := batchv1.JobSpec{
-		BackoffLimit:            pointer.For(int32(10000)),
-		TTLSecondsAfterFinished: pointer.For(int32(30)),
-		Template: corev1.PodTemplateSpec{
-			Spec: corev1.PodSpec{
-				RestartPolicy: corev1.RestartPolicyOnFailure,
-				Containers:    []corev1.Container{getUpgradeContainer(database, image)},
-			},
-		},
-	}
-
-	job := &batchv1.Job{}
-	err := ctx.GetClient().Get(ctx, types.NamespacedName{
-		Namespace: stack.Name,
-		Name:      "migrate-v2",
-	}, job)
-	if client.IgnoreNotFound(err) != nil {
-		return err
-	}
-	if err == nil {
-		if job.Status.Succeeded > 0 {
-			return nil
-		}
-
-		if equality.Semantic.DeepDerivative(expectedSpec, job.Spec) {
-			return nil
-		}
-
-		if err := ctx.GetClient().Delete(ctx, job, &client.DeleteOptions{
-			GracePeriodSeconds: pointer.For(int64(0)),
-		}); err != nil {
-			return errors.Wrap(err, "deleting old v2 migration job")
-		}
-	} else {
-		list := &v1.DeploymentList{}
-		if err := ctx.GetClient().List(ctx, list, client.InNamespace(stack.Name)); err != nil {
-			return err
-		}
-
-		for _, item := range list.Items {
-			if controller := metav1.GetControllerOf(&item); controller != nil && controller.UID == ledger.GetUID() {
-				if err := ctx.GetClient().Delete(ctx, &item); err != nil {
-					return err
+			for _, item := range list.Items {
+				if controller := metav1.GetControllerOf(&item); controller != nil && controller.UID == ledger.GetUID() {
+					if err := ctx.GetClient().Delete(ctx, &item); err != nil {
+						return err
+					}
 				}
 			}
-		}
-	}
-
-	if _, _, err := core.CreateOrUpdate[*batchv1.Job](ctx, types.NamespacedName{
-		Namespace: stack.Name,
-		Name:      "migrate-v2",
-	}, core.WithController[*batchv1.Job](ctx.GetScheme(), ledger), func(t *batchv1.Job) error {
-		t.Spec = expectedSpec
-
-		return nil
-	}); err != nil {
-		return err
-	}
-
-	return core.NewPendingError()
+			return nil
+		}))
 }

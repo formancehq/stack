@@ -33,6 +33,8 @@ type PaymentsSpec struct {
 // PaymentsStatus defines the observed state of Payments
 type PaymentsStatus struct {
 	ModuleStatus `json:",inline"`
+	//+optional
+	Version string `json:"version,omitempty"`
 }
 
 //+kubebuilder:object:root=true

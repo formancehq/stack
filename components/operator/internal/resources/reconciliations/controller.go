@@ -22,7 +22,11 @@ import (
 	"github.com/formancehq/operator/internal/resources/authclients"
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/gatewayhttpapis"
+	"github.com/formancehq/operator/internal/resources/jobs"
+	"github.com/formancehq/operator/internal/resources/registries"
+	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
+	batchv1 "k8s.io/api/batch/v1"
 )
 
 //+kubebuilder:rbac:groups=formance.com,resources=reconciliations,verbs=get;list;watch;create;update;patch;delete
@@ -42,7 +46,20 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, reconciliation *v1beta1.Reconc
 	}
 
 	if database.Status.Ready {
-		if err := createDeployment(ctx, stack, reconciliation, database, authClient, version); err != nil {
+
+		image, err := registries.GetImage(ctx, stack, "reconciliation", version)
+		if err != nil {
+			return errors.Wrap(err, "resolving image")
+		}
+
+		if IsGreaterOrEqual(version, "v2.0.0-rc.5") && reconciliation.Status.Version != version {
+			if err := jobs.Handle(ctx, reconciliation, "migrate", databases.MigrateDatabaseContainer(image, database)); err != nil {
+				return err
+			}
+			reconciliation.Status.Version = version
+		}
+
+		if err := createDeployment(ctx, stack, reconciliation, database, authClient, image); err != nil {
 			return err
 		}
 	}
@@ -61,6 +78,7 @@ func init() {
 			WithOwn[*v1beta1.Reconciliation](&appsv1.Deployment{}),
 			WithOwn[*v1beta1.Reconciliation](&v1beta1.AuthClient{}),
 			WithOwn[*v1beta1.Reconciliation](&v1beta1.GatewayHTTPAPI{}),
+			WithOwn[*v1beta1.Reconciliation](&batchv1.Job{}),
 			WithWatchSettings[*v1beta1.Reconciliation](),
 			WithWatchDependency[*v1beta1.Reconciliation](&v1beta1.Ledger{}),
 			WithWatchDependency[*v1beta1.Reconciliation](&v1beta1.Payments{}),

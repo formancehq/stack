@@ -67,7 +67,7 @@ type LedgerSpec struct {
 type LedgerStatus struct {
 	ModuleStatus `json:",inline"`
 	//+optional
-	IsMigratedOnV2 bool `json:"isMigratedOnV2,omitempty"`
+	Version string `json:"version,omitempty"`
 }
 
 //+kubebuilder:object:root=true

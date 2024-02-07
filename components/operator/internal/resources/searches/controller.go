@@ -50,7 +50,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 	}
 
 	env := make([]corev1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, LowerCamelCaseName(ctx, search))
+	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, LowerCamelCaseKind(ctx, search))
 	if err != nil {
 		return err
 	}
