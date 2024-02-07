@@ -20,19 +20,25 @@ import (
 )
 
 type fetchTransactionsState struct {
-	LastTransactionDate string `json:"last_transaction_date"`
+	LastTransactionTime time.Time `json:"last_transaction_time"`
 }
 
-func (s *fetchTransactionsState) SetLatest(latest *client.Transaction) error {
-	lastTransactionTime, err := time.Parse("2006-01-02T15:04:05.999-0700", latest.TransactionDate)
+func (s *fetchTransactionsState) SetLatestTransaction(latest *client.Transaction) error {
+	transactionTime, err := time.Parse("2006-01-02T15:04:05.999-0700", latest.TransactionDate)
 	if err != nil {
 		return err
 	}
-	tnDate := lastTransactionTime.Format("2006-01-02T15:04:05-0700")
-	if s.LastTransactionDate == "" || tnDate > s.LastTransactionDate {
-		s.LastTransactionDate = tnDate
+	if transactionTime.After(s.LastTransactionTime) {
+		s.LastTransactionTime = transactionTime
 	}
 	return nil
+}
+
+func (s *fetchTransactionsState) GetLastTransactionDate() string {
+	if s.LastTransactionTime.IsZero() {
+		return ""
+	}
+	return s.LastTransactionTime.Format("2006-01-02T15:04:05-0700")
 }
 
 func taskFetchTransactions(config Config, client *client.Client, accountID string) task.Task {
@@ -52,9 +58,14 @@ func taskFetchTransactions(config Config, client *client.Client, accountID strin
 		)
 		defer span.End()
 
-		state := task.MustResolveTo(ctx, resolver, fetchTransactionsState{})
 		state, err := fetchTransactions(
-			ctx, config, client, accountID, connectorID, ingester, state,
+			ctx,
+			config,
+			client,
+			accountID,
+			connectorID,
+			ingester,
+			task.MustResolveTo(ctx, resolver, fetchTransactionsState{}),
 		)
 		if err != nil {
 			otel.RecordError(span, err)
@@ -79,8 +90,9 @@ func fetchTransactions(
 	ingester ingestion.Ingester,
 	state fetchTransactionsState,
 ) (fetchTransactionsState, error) {
+	fromTransactionDate := state.GetLastTransactionDate()
 	for page := 0; ; page++ {
-		pagedTransactions, err := client.GetTransactions(ctx, accountID, page, config.PageSize, state.LastTransactionDate)
+		pagedTransactions, err := client.GetTransactions(ctx, accountID, page, config.PageSize, fromTransactionDate)
 		if err != nil {
 			return state, err
 		}
@@ -95,7 +107,7 @@ func fetchTransactions(
 		}
 
 		for _, transaction := range pagedTransactions.Content {
-			if err := state.SetLatest(transaction); err != nil {
+			if err := state.SetLatestTransaction(transaction); err != nil {
 				return state, err
 			}
 		}

@@ -16,19 +16,25 @@ import (
 )
 
 type fetchBeneficiariesState struct {
-	LastCreated string `json:"last_created"`
+	LastCreated time.Time `json:"last_created"`
 }
 
-func (s *fetchBeneficiariesState) SetLatest(latest *client.Beneficiary) error {
-	lastCreatedTime, err := time.Parse("2006-01-02T15:04:05.999-0700", latest.Created)
+func (s *fetchBeneficiariesState) SetLatestBeneficiary(latest *client.Beneficiary) error {
+	createdTime, err := time.Parse("2006-01-02T15:04:05.999-0700", latest.Created)
 	if err != nil {
 		return err
 	}
-	creationDate := lastCreatedTime.Format("2006-01-02T15:04:05-0700")
-	if s.LastCreated == "" || creationDate > s.LastCreated {
-		s.LastCreated = creationDate
+	if createdTime.After(s.LastCreated) {
+		s.LastCreated = createdTime
 	}
 	return nil
+}
+
+func (s *fetchBeneficiariesState) GetLastCreated() string {
+	if s.LastCreated.IsZero() {
+		return ""
+	}
+	return s.LastCreated.Format("2006-01-02T15:04:05-0700")
 }
 
 func taskFetchBeneficiaries(config Config, client *client.Client) task.Task {
@@ -48,9 +54,14 @@ func taskFetchBeneficiaries(config Config, client *client.Client) task.Task {
 		)
 		defer span.End()
 
-		state := task.MustResolveTo(ctx, resolver, fetchBeneficiariesState{})
 		state, err := fetchBeneficiaries(
-			ctx, config, client, connectorID, ingester, scheduler, state,
+			ctx,
+			config,
+			client,
+			connectorID,
+			ingester,
+			scheduler,
+			task.MustResolveTo(ctx, resolver, fetchBeneficiariesState{}),
 		)
 		if err != nil {
 			otel.RecordError(span, err)
@@ -75,8 +86,9 @@ func fetchBeneficiaries(
 	scheduler task.Scheduler,
 	state fetchBeneficiariesState,
 ) (fetchBeneficiariesState, error) {
+	fromCreateTime := state.GetLastCreated()
 	for page := 0; ; page++ {
-		pagedBeneficiaries, err := client.GetBeneficiaries(ctx, page, config.PageSize, state.LastCreated)
+		pagedBeneficiaries, err := client.GetBeneficiaries(ctx, page, config.PageSize, fromCreateTime)
 		if err != nil {
 			return state, err
 		}
@@ -86,7 +98,7 @@ func fetchBeneficiaries(
 		}
 
 		for _, beneficiary := range pagedBeneficiaries.Content {
-			if err := state.SetLatest(beneficiary); err != nil {
+			if err := state.SetLatestBeneficiary(beneficiary); err != nil {
 				return state, err
 			}
 		}

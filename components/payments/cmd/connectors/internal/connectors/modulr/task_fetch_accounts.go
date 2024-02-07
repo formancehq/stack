@@ -20,16 +20,25 @@ import (
 )
 
 type fetchAccountsState struct {
-	LastCreatedDate string `json:"last_created_date"`
+	LastCreatedTime time.Time `json:"last_created_date"`
 }
 
-func (s *fetchAccountsState) SetLatest(latest *client.Account) error {
-	lastCreatedTime, err := time.Parse("2006-01-02T15:04:05.999-0700", latest.CreatedDate)
+func (s *fetchAccountsState) SetLatestAccount(latest *client.Account) error {
+	createdTime, err := time.Parse("2006-01-02T15:04:05.999-0700", latest.CreatedDate)
 	if err != nil {
 		return err
 	}
-	s.LastCreatedDate = lastCreatedTime.Format("2006-01-02T15:04:05-0700")
+	if createdTime.After(s.LastCreatedTime) {
+		s.LastCreatedTime = createdTime
+	}
 	return nil
+}
+
+func (s *fetchAccountsState) GetLastCreatedDate() string {
+	if s.LastCreatedTime.IsZero() {
+		return ""
+	}
+	return s.LastCreatedTime.Format("2006-01-02T15:04:05-0700")
 }
 
 func taskFetchAccounts(config Config, client *client.Client) task.Task {
@@ -49,15 +58,21 @@ func taskFetchAccounts(config Config, client *client.Client) task.Task {
 		)
 		defer span.End()
 
-		state := task.MustResolveTo(ctx, resolver, fetchAccountsState{})
-
-		newState, err := fetchAccounts(ctx, config, client, connectorID, ingester, scheduler, state)
+		state, err := fetchAccounts(
+			ctx,
+			config,
+			client,
+			connectorID,
+			ingester,
+			scheduler,
+			task.MustResolveTo(ctx, resolver, fetchAccountsState{}),
+		)
 		if err != nil {
 			otel.RecordError(span, err)
 			return err
 		}
 
-		if err := ingester.UpdateTaskState(ctx, newState); err != nil {
+		if err := ingester.UpdateTaskState(ctx, state); err != nil {
 			otel.RecordError(span, err)
 			return err
 		}
@@ -75,8 +90,9 @@ func fetchAccounts(
 	scheduler task.Scheduler,
 	state fetchAccountsState,
 ) (fetchAccountsState, error) {
+	fromCreatedDate := state.GetLastCreatedDate()
 	for page := 0; ; page++ {
-		pagedAccounts, err := client.GetAccounts(ctx, page, config.PageSize, state.LastCreatedDate)
+		pagedAccounts, err := client.GetAccounts(ctx, page, config.PageSize, fromCreatedDate)
 		if err != nil {
 			return state, err
 		}
@@ -90,7 +106,7 @@ func fetchAccounts(
 		}
 
 		for _, account := range pagedAccounts.Content {
-			if err := state.SetLatest(account); err != nil {
+			if err := state.SetLatestAccount(account); err != nil {
 				return state, err
 			}
 			transactionsTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
