@@ -37,7 +37,7 @@ func NewUpgradeController() *UpgradeController {
 func NewUpgradeCommand() *cobra.Command {
 	return fctl.NewMembershipCommand("upgrade <stack-id> <version>",
 		fctl.WithShortDescription("Upgrade a stack to specified version"),
-		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithArgs(cobra.RangeArgs(1, 2)),
 		fctl.WithController[*UpgradeStore](NewUpgradeController()),
 	)
 }
