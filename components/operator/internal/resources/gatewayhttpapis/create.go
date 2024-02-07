@@ -43,6 +43,12 @@ func WithRules(rules ...v1beta1.GatewayHTTPAPIRule) func(httpapi *v1beta1.Gatewa
 	}
 }
 
+func WithHealthCheckEndpoint(v string) func(httpapi *v1beta1.GatewayHTTPAPI) {
+	return func(httpapi *v1beta1.GatewayHTTPAPI) {
+		httpapi.Spec.HealthCheckEndpoint = v
+	}
+}
+
 func RuleSecured() v1beta1.GatewayHTTPAPIRule {
 	return v1beta1.GatewayHTTPAPIRule{}
 }

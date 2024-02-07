@@ -82,6 +82,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, p *v1beta1.Payments, version s
 	}
 
 	if err := gatewayhttpapis.Create(ctx, p,
+		gatewayhttpapis.WithHealthCheckEndpoint("_health"),
 		gatewayhttpapis.WithRules(
 			v1beta1.GatewayHTTPAPIRule{
 				Path:    "/connectors/webhooks",

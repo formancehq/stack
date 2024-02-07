@@ -35,6 +35,8 @@ type GatewayHTTPAPISpec struct {
 	Name string `json:"name"`
 	// Rules
 	Rules []GatewayHTTPAPIRule `json:"rules"`
+	// Health check endpoint
+	HealthCheckEndpoint string `json:"healthCheckEndpoint,omitempty"`
 }
 
 // GatewayHTTPAPIStatus defines the observed state of GatewayHTTPAPI
