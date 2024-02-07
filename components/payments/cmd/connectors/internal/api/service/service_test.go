@@ -111,6 +111,21 @@ var (
 			},
 		},
 	}
+
+	sourceAccountID = models.AccountID{
+		Reference:   "acc1",
+		ConnectorID: connectorDummyPay.ID,
+	}
+
+	destinationAccountID = models.AccountID{
+		Reference:   "acc2",
+		ConnectorID: connectorDummyPay.ID,
+	}
+
+	destinationExternalAccountID = models.AccountID{
+		Reference:   "acc3",
+		ConnectorID: connectorDummyPay.ID,
+	}
 )
 
 type MockStore struct {
@@ -151,6 +166,24 @@ func (m *MockStore) UpsertAccounts(ctx context.Context, accounts []*models.Accou
 }
 
 func (m *MockStore) GetAccount(ctx context.Context, id string) (*models.Account, error) {
+	switch id {
+	case sourceAccountID.String():
+		return &models.Account{
+			ID:   sourceAccountID,
+			Type: models.AccountTypeInternal,
+		}, nil
+	case destinationAccountID.String():
+		return &models.Account{
+			ID:   destinationAccountID,
+			Type: models.AccountTypeInternal,
+		}, nil
+	case destinationExternalAccountID.String():
+		return &models.Account{
+			ID:   destinationAccountID,
+			Type: models.AccountTypeExternal,
+		}, nil
+	}
+
 	return nil, nil
 }
 
