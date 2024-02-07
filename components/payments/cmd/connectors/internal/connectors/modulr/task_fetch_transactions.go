@@ -23,7 +23,7 @@ type fetchTransactionsState struct {
 	LastTransactionTime time.Time `json:"last_transaction_time"`
 }
 
-func (s *fetchTransactionsState) SetLatestTransaction(latest *client.Transaction) error {
+func (s *fetchTransactionsState) UpdateLatest(latest *client.Transaction) error {
 	transactionTime, err := time.Parse("2006-01-02T15:04:05.999-0700", latest.TransactionDate)
 	if err != nil {
 		return err
@@ -34,7 +34,39 @@ func (s *fetchTransactionsState) SetLatestTransaction(latest *client.Transaction
 	return nil
 }
 
-func (s *fetchTransactionsState) GetLastTransactionDate() string {
+func (s *fetchTransactionsState) FindLatest(transactions []*client.Transaction) error {
+	for _, transaction := range transactions {
+		if err := s.UpdateLatest(transaction); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s *fetchTransactionsState) IsNew(transaction *client.Transaction) (bool, error) {
+	transactionTime, err := time.Parse("2006-01-02T15:04:05.999-0700", transaction.TransactionDate)
+	if err != nil {
+		return false, err
+	}
+	return transactionTime.After(s.LastTransactionTime), nil
+}
+
+func (s *fetchTransactionsState) FilterNew(transactions []*client.Transaction) ([]*client.Transaction, error) {
+	result := make([]*client.Transaction, 0, len(transactions))
+	for _, transaction := range transactions {
+		isNew, err := s.IsNew(transaction)
+		if err != nil {
+			return nil, err
+		}
+		if !isNew {
+			continue
+		}
+		result = append(result, transaction)
+	}
+	return result, nil
+}
+
+func (s *fetchTransactionsState) GetFilterValue() string {
 	if s.LastTransactionTime.IsZero() {
 		return ""
 	}
@@ -90,30 +122,39 @@ func fetchTransactions(
 	ingester ingestion.Ingester,
 	state fetchTransactionsState,
 ) (fetchTransactionsState, error) {
-	fromTransactionDate := state.GetLastTransactionDate()
+	newState := state
 	for page := 0; ; page++ {
-		pagedTransactions, err := client.GetTransactions(ctx, accountID, page, config.PageSize, fromTransactionDate)
+		pagedTransactions, err := client.GetTransactions(
+			ctx,
+			accountID,
+			page,
+			config.PageSize,
+			state.GetFilterValue(),
+		)
 		if err != nil {
-			return state, err
+			return newState, err
 		}
 
 		if len(pagedTransactions.Content) == 0 {
 			break
 		}
 
-		batch, err := toBatch(connectorID, accountID, pagedTransactions.Content)
+		transactions, err := state.FilterNew(pagedTransactions.Content)
 		if err != nil {
-			return state, err
+			return newState, err
 		}
 
-		for _, transaction := range pagedTransactions.Content {
-			if err := state.SetLatestTransaction(transaction); err != nil {
-				return state, err
-			}
+		batch, err := toBatch(connectorID, accountID, transactions)
+		if err != nil {
+			return newState, err
 		}
 
 		if err := ingester.IngestPayments(ctx, batch); err != nil {
-			return state, err
+			return newState, err
+		}
+
+		if err := newState.FindLatest(transactions); err != nil {
+			return newState, err
 		}
 
 		if len(pagedTransactions.Content) < config.PageSize {
@@ -126,7 +167,7 @@ func fetchTransactions(
 		}
 	}
 
-	return state, nil
+	return newState, nil
 }
 
 func toBatch(
