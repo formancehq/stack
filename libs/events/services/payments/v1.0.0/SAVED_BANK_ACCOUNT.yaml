@@ -21,7 +21,7 @@ properties:
   swiftBicCode:
     type: string
   adjustments:
-    type: array
+    type: ["array", "null"]
     items:
       type: object
       required:

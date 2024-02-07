@@ -72,7 +72,7 @@ properties:
   destinationAccountId:
     type: string
   links:
-    type: array
+    type: ["array", "null"]
     items:
       type: object
       properties:

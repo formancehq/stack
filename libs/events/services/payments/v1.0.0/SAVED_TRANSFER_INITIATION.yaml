@@ -62,7 +62,7 @@ properties:
   error:
     type: string
   relatedPayments:
-    type: array
+    type: ["array", "null"]
     items:
       type: object
       required:
