@@ -60,7 +60,7 @@ deploy:
         BUILD --pass-args +build-image --tag=$tag
     END
     FROM --pass-args core+vcluster-deployer-image
-    RUN kubectl patch Versions.stack.formance.com default -p "{\"spec\":{\"orchestration\": \"${tag}\"}}" --type=merge
+    RUN kubectl patch Versions.formance.com default -p "{\"spec\":{\"orchestration\": \"${tag}\"}}" --type=merge
 
 lint:
     FROM core+builder-image

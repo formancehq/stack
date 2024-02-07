@@ -47,7 +47,7 @@ deploy:
         BUILD --pass-args +build-image --tag=$tag
     END
     FROM --pass-args core+vcluster-deployer-image
-    RUN kubectl patch Versions.stack.formance.com default -p "{\"spec\":{\"stargate\": \"${tag}\"}}" --type=merge
+    RUN kubectl patch Versions.formance.com default -p "{\"spec\":{\"stargate\": \"${tag}\"}}" --type=merge
     COPY .earthly/stargate-values.yaml stargate-values.yaml
     COPY helm helm
     ARG --required user
