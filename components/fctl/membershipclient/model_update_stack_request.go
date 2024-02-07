@@ -22,8 +22,6 @@ type UpdateStackRequest struct {
 	// Stack name
 	Name string `json:"name"`
 	Metadata map[string]string `json:"metadata"`
-	// Supported only with agent version >= v0.7.0
-	Version *string `json:"version,omitempty"`
 }
 
 // NewUpdateStackRequest instantiates a new UpdateStackRequest object
@@ -93,38 +91,6 @@ func (o *UpdateStackRequest) SetMetadata(v map[string]string) {
 	o.Metadata = v
 }
 
-// GetVersion returns the Version field value if set, zero value otherwise.
-func (o *UpdateStackRequest) GetVersion() string {
-	if o == nil || IsNil(o.Version) {
-		var ret string
-		return ret
-	}
-	return *o.Version
-}
-
-// GetVersionOk returns a tuple with the Version field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *UpdateStackRequest) GetVersionOk() (*string, bool) {
-	if o == nil || IsNil(o.Version) {
-		return nil, false
-	}
-	return o.Version, true
-}
-
-// HasVersion returns a boolean if a field has been set.
-func (o *UpdateStackRequest) HasVersion() bool {
-	if o != nil && !IsNil(o.Version) {
-		return true
-	}
-
-	return false
-}
-
-// SetVersion gets a reference to the given string and assigns it to the Version field.
-func (o *UpdateStackRequest) SetVersion(v string) {
-	o.Version = &v
-}
-
 func (o UpdateStackRequest) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -137,9 +103,6 @@ func (o UpdateStackRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["name"] = o.Name
 	toSerialize["metadata"] = o.Metadata
-	if !IsNil(o.Version) {
-		toSerialize["version"] = o.Version
-	}
 	return toSerialize, nil
 }
 

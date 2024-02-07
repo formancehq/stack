@@ -39,6 +39,7 @@ Method | HTTP request | Description
 [**RestoreStack**](DefaultApi.md#RestoreStack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
 [**UpdateOrganization**](DefaultApi.md#UpdateOrganization) | **Put** /organizations/{organizationId} | Update organization
 [**UpdateStack**](DefaultApi.md#UpdateStack) | **Put** /organizations/{organizationId}/stacks/{stackId} | Update stack
+[**UpgradeStack**](DefaultApi.md#UpgradeStack) | **Put** /organizations/{organizationId}/stacks/{stackId}/upgrade | Upgrade stack
 [**UpsertOrganizationUser**](DefaultApi.md#UpsertOrganizationUser) | **Put** /organizations/{organizationId}/users/{userId} | Update user within an organization
 [**UpsertStackUserAccess**](DefaultApi.md#UpsertStackUserAccess) | **Put** /organizations/{organizationId}/stacks/{stackId}/users/{userId} | Update stack user access role within an organization
 
@@ -2423,6 +2424,79 @@ Name | Type | Description  | Notes
 
 
  **updateStackRequest** | [**UpdateStackRequest**](UpdateStackRequest.md) |  | 
+
+### Return type
+
+[**CreateStackResponse**](CreateStackResponse.md)
+
+### Authorization
+
+[oauth2](../README.md#oauth2)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## UpgradeStack
+
+> CreateStackResponse UpgradeStack(ctx, organizationId, stackId).StackVersion(stackVersion).Execute()
+
+Upgrade stack
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
+)
+
+func main() {
+    organizationId := "organizationId_example" // string | 
+    stackId := "stackId_example" // string | 
+    stackVersion := *openapiclient.NewStackVersion() // StackVersion |  (optional)
+
+    configuration := openapiclient.NewConfiguration()
+    apiClient := openapiclient.NewAPIClient(configuration)
+    resp, r, err := apiClient.DefaultApi.UpgradeStack(context.Background(), organizationId, stackId).StackVersion(stackVersion).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.UpgradeStack``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `UpgradeStack`: CreateStackResponse
+    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.UpgradeStack`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**organizationId** | **string** |  | 
+**stackId** | **string** |  | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiUpgradeStackRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+ **stackVersion** | [**StackVersion**](StackVersion.md) |  | 
 
 ### Return type
 

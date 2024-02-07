@@ -297,12 +297,51 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateStackRequest'
       responses:
-        200:
-          description: Created stack
+        202:
+          description: Stack created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateStackResponse'
+        400:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /organizations/{organizationId}/stacks/{stackId}/upgrade:
+    put:
+      summary: Upgrade stack
+      operationId: upgradeStack
+      parameters:
+        - name: organizationId
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: stackId
+          in: path
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StackVersion'
+      responses:
+        202:
+          description: Stack upgrade accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadStackResponse'
         400:
           description: Error
           content:
@@ -591,7 +630,7 @@ paths:
             type: string
           required: true
       responses:
-        204:
+        202:
           description: Stack disabled
         400:
           description: Bad request
@@ -627,7 +666,7 @@ paths:
             type: string
           required: true
       responses:
-        204:
+        202:
           description: Stack enabled
         400:
           description: Bad request
@@ -663,7 +702,7 @@ paths:
             type: string
           required: true
       responses:
-        200:
+        202:
           description: OK
           content:
             application/json:
@@ -703,7 +742,7 @@ paths:
       summary: Enable stargate on a stack
       operationId: enableStargate
       responses:
-        204:
+        202:
           description: OK
         400:
           description: Bad request
@@ -733,7 +772,7 @@ paths:
       summary: Disable stargate on a stack
       operationId: disableStargate
       responses:
-        204:
+        202:
           description: OK
         400:
           description: Bad request
@@ -1235,6 +1274,9 @@ components:
           type: object
           additionalProperties:
             type: string
+    StackVersion:
+      type: object
+      properties:
         version:
           type: string
           description: Supported only with agent version >= v0.7.0
@@ -1282,6 +1324,7 @@ components:
     Stack:
       allOf:
         - $ref: '#/components/schemas/StackData'
+        - $ref: '#/components/schemas/StackVersion'
         - $ref: '#/components/schemas/StackLifeCycle'
         - type: object
           required:
@@ -1432,6 +1475,7 @@ components:
     CreateStackRequest:
       allOf:
         - $ref: '#/components/schemas/StackData'
+        - $ref: '#/components/schemas/StackVersion'
         - type: object
           properties:
             regionID:
