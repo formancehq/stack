@@ -14,7 +14,7 @@ sources:
     COPY (stack+sources/out --LOCATION=libs/go-libs) libs/go-libs
     WORKDIR /src/components/operator
     COPY --dir api internal pkg .
-    COPY go.* .
+    COPY go.* main.go .
     SAVE ARTIFACT /src
 
 compile:
