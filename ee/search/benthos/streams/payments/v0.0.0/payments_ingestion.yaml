@@ -130,7 +130,6 @@ pipeline:
                         "id": this.payload.id,
                         "createdAt": this.payload.createdAt,
                         "scheduledAt": this.payload.scheduledAt,
-                        "updatedAt": this.payload.updatedAt,
                         "connectorId": this.payload.connectorId,
                         "description": this.payload.description,
                         "type": this.payload.type,

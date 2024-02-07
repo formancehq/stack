@@ -32,6 +32,10 @@ func (m *Messages) NewEventSavedAccounts(provider models.ConnectorProvider, acco
 		Provider:     provider.String(),
 	}
 
+	if account.Type == models.AccountTypeExternalFormance {
+		payload.Type = models.AccountTypeExternal.String()
+	}
+
 	return publish.EventMessage{
 		Date:    time.Now().UTC(),
 		App:     events.EventApp,

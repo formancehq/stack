@@ -22,7 +22,6 @@ type transferInitiationsMessagePayload struct {
 	ID                   string                                       `json:"id"`
 	CreatedAt            time.Time                                    `json:"createdAt"`
 	ScheduleAt           time.Time                                    `json:"scheduledAt"`
-	UpdatedAt            time.Time                                    `json:"updatedAt"`
 	ConnectorID          string                                       `json:"connectorId"`
 	Provider             string                                       `json:"provider"`
 	Description          string                                       `json:"description"`
