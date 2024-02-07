@@ -19,7 +19,7 @@ type fetchBeneficiariesState struct {
 	LastCreated time.Time `json:"last_created"`
 }
 
-func (s *fetchBeneficiariesState) SetLatestBeneficiary(latest *client.Beneficiary) error {
+func (s *fetchBeneficiariesState) UpdateLatest(latest *client.Beneficiary) error {
 	createdTime, err := time.Parse("2006-01-02T15:04:05.999-0700", latest.Created)
 	if err != nil {
 		return err
@@ -30,7 +30,40 @@ func (s *fetchBeneficiariesState) SetLatestBeneficiary(latest *client.Beneficiar
 	return nil
 }
 
-func (s *fetchBeneficiariesState) GetLastCreated() string {
+func (s *fetchBeneficiariesState) FindLatest(beneficiaries []*client.Beneficiary) error {
+	for _, beneficiary := range beneficiaries {
+		if err := s.UpdateLatest(beneficiary); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s *fetchBeneficiariesState) IsNew(beneficiary *client.Beneficiary) (bool, error) {
+	createdTime, err := time.Parse("2006-01-02T15:04:05.999-0700", beneficiary.Created)
+	if err != nil {
+		return false, err
+	}
+	return createdTime.After(s.LastCreated), nil
+}
+
+func (s *fetchBeneficiariesState) FilterNew(beneficiaries []*client.Beneficiary) ([]*client.Beneficiary, error) {
+	// beneficiaries are not assumed to be sorted by creation date.
+	result := make([]*client.Beneficiary, 0, len(beneficiaries))
+	for _, beneficiary := range beneficiaries {
+		isNew, err := s.IsNew(beneficiary)
+		if err != nil {
+			return nil, err
+		}
+		if !isNew {
+			continue
+		}
+		result = append(result, beneficiary)
+	}
+	return result, nil
+}
+
+func (s *fetchBeneficiariesState) GetFilterValue() string {
 	if s.LastCreated.IsZero() {
 		return ""
 	}
@@ -86,25 +119,29 @@ func fetchBeneficiaries(
 	scheduler task.Scheduler,
 	state fetchBeneficiariesState,
 ) (fetchBeneficiariesState, error) {
-	fromCreateTime := state.GetLastCreated()
+	newState := state
 	for page := 0; ; page++ {
-		pagedBeneficiaries, err := client.GetBeneficiaries(ctx, page, config.PageSize, fromCreateTime)
+		pagedBeneficiaries, err := client.GetBeneficiaries(
+			ctx,
+			page,
+			config.PageSize,
+			state.GetFilterValue(),
+		)
 		if err != nil {
-			return state, err
+			return newState, err
 		}
-
 		if len(pagedBeneficiaries.Content) == 0 {
 			break
 		}
-
-		for _, beneficiary := range pagedBeneficiaries.Content {
-			if err := state.SetLatestBeneficiary(beneficiary); err != nil {
-				return state, err
-			}
+		beneficiaries, err := state.FilterNew(pagedBeneficiaries.Content)
+		if err != nil {
+			return newState, err
 		}
-
-		if err := ingestBeneficiariesAccountsBatch(ctx, connectorID, ingester, pagedBeneficiaries.Content); err != nil {
-			return state, err
+		if err := newState.FindLatest(beneficiaries); err != nil {
+			return newState, err
+		}
+		if err := ingestBeneficiariesAccountsBatch(ctx, connectorID, ingester, beneficiaries); err != nil {
+			return newState, err
 		}
 
 		if len(pagedBeneficiaries.Content) < config.PageSize {
@@ -117,7 +154,7 @@ func fetchBeneficiaries(
 		}
 	}
 
-	return state, nil
+	return newState, nil
 }
 
 func ingestBeneficiariesAccountsBatch(
@@ -127,7 +164,6 @@ func ingestBeneficiariesAccountsBatch(
 	beneficiaries []*client.Beneficiary,
 ) error {
 	accountsBatch := ingestion.AccountBatch{}
-
 	for _, beneficiary := range beneficiaries {
 		raw, err := json.Marshal(beneficiary)
 		if err != nil {
