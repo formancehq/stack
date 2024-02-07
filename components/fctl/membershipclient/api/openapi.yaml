@@ -391,10 +391,6 @@ paths:
               $ref: '#/components/schemas/StackVersion'
       responses:
         "202":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ReadStackResponse'
           description: Stack upgrade accepted
         "400":
           content:

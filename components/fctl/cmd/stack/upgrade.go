@@ -3,7 +3,6 @@ package stack
 import (
 	"net/http"
 
-	"github.com/formancehq/fctl/cmd/stack/internal"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
@@ -65,8 +64,8 @@ func (c *UpgradeController) Run(cmd *cobra.Command, args []string) (fctl.Rendera
 		return nil, err
 	}
 
-	if len(args) < 2 {
-		return nil, errors.New("missing name or stack-id argument")
+	if len(args) < 1 {
+		return nil, errors.New("stack-id is required")
 	}
 
 	stack, res, err := apiClient.DefaultApi.GetStack(cmd.Context(), organization, args[0]).Execute()
@@ -121,18 +120,21 @@ func (c *UpgradeController) Run(cmd *cobra.Command, args []string) (fctl.Rendera
 		req.Version = pointer.For(specifiedVersion)
 	}
 
-	stackResponse, _, err := apiClient.DefaultApi.
+	res, err = apiClient.DefaultApi.
 		UpgradeStack(cmd.Context(), organization, args[0]).StackVersion(req).
 		Execute()
 	if err != nil {
 		return nil, errors.Wrap(err, "upgrading stack")
 	}
 
-	c.store.Stack = stackResponse.Data
+	if res.StatusCode > 300 {
+		return nil, err
+	}
 
 	return c, nil
 }
 
 func (c *UpgradeController) Render(cmd *cobra.Command, args []string) error {
-	return internal.PrintStackInformation(cmd.OutOrStdout(), c.profile, c.store.Stack, nil)
+	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Stack upgrade progressing.")
+	return nil
 }

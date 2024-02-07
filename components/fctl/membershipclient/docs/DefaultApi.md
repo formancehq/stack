@@ -2445,7 +2445,7 @@ Name | Type | Description  | Notes
 
 ## UpgradeStack
 
-> CreateStackResponse UpgradeStack(ctx, organizationId, stackId).StackVersion(stackVersion).Execute()
+> UpgradeStack(ctx, organizationId, stackId).StackVersion(stackVersion).Execute()
 
 Upgrade stack
 
@@ -2468,13 +2468,11 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.UpgradeStack(context.Background(), organizationId, stackId).StackVersion(stackVersion).Execute()
+    r, err := apiClient.DefaultApi.UpgradeStack(context.Background(), organizationId, stackId).StackVersion(stackVersion).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.UpgradeStack``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `UpgradeStack`: CreateStackResponse
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.UpgradeStack`: %v\n", resp)
 }
 ```
 
@@ -2500,7 +2498,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**CreateStackResponse**](CreateStackResponse.md)
+ (empty response body)
 
 ### Authorization
 

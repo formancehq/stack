@@ -338,10 +338,6 @@ paths:
       responses:
         202:
           description: Stack upgrade accepted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ReadStackResponse'
         400:
           description: Error
           content:
