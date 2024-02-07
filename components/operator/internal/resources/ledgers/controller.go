@@ -92,11 +92,11 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, versio
 	}
 
 	if database.Status.Ready {
-		if isV2 && !ledger.Status.IsMigratedOnV2 {
-			if err := migrateToLedgerV2(ctx, stack, ledger, database, image); err != nil {
+		if isV2 && ledger.Status.Version != version {
+			if err := migrate(ctx, stack, ledger, database, image); err != nil {
 				return err
 			}
-			ledger.Status.IsMigratedOnV2 = true
+			ledger.Status.Version = version
 		}
 
 		err = installLedger(ctx, stack, ledger, database, image, isV2)

@@ -166,8 +166,6 @@ spec:
                 type: array
               info:
                 type: string
-              isMigratedOnV2:
-                type: boolean
               ready:
                 type: boolean
               version:
