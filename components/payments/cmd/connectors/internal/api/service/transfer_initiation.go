@@ -109,9 +109,26 @@ func (s *Service) CreateTransferInitiation(ctx context.Context, req *CreateTrans
 		}
 	}
 
-	_, err := s.store.GetAccount(ctx, req.DestinationAccountID)
+	destinationAccount, err := s.store.GetAccount(ctx, req.DestinationAccountID)
 	if err != nil {
 		return nil, newStorageError(err, "getting destination account")
+	}
+
+	transferType := models.MustTransferInitiationTypeFromString(req.Type)
+
+	switch transferType {
+	case models.TransferInitiationTypeTransfer:
+		if destinationAccount.Type != models.AccountTypeInternal {
+			// account should be internal when doing a transfer, return an error
+			return nil, errors.Wrap(ErrValidation, "destination account must be internal when doing a transfer")
+		}
+	case models.TransferInitiationTypePayout:
+		switch destinationAccount.Type {
+		case models.AccountTypeExternal, models.AccountTypeExternalFormance:
+		default:
+			// account should be external when doing a payout, return an error
+			return nil, errors.Wrap(ErrValidation, "destination account must be external when doing a payout")
+		}
 	}
 
 	id := models.TransferInitiationID{
@@ -129,7 +146,7 @@ func (s *Service) CreateTransferInitiation(ctx context.Context, req *CreateTrans
 		DestinationAccountID: models.MustAccountIDFromString(req.DestinationAccountID),
 		ConnectorID:          connectorID,
 		Provider:             connectorID.Provider,
-		Type:                 models.MustTransferInitiationTypeFromString(req.Type),
+		Type:                 transferType,
 		Amount:               req.Amount,
 		InitialAmount:        req.Amount,
 		Asset:                models.Asset(req.Asset),
