@@ -23,7 +23,7 @@ type fetchAccountsState struct {
 	LastCreatedTime time.Time `json:"last_created_date"`
 }
 
-func (s *fetchAccountsState) SetLatestAccount(latest *client.Account) error {
+func (s *fetchAccountsState) UpdateLatest(latest *client.Account) error {
 	createdTime, err := time.Parse("2006-01-02T15:04:05.999-0700", latest.CreatedDate)
 	if err != nil {
 		return err
@@ -34,7 +34,31 @@ func (s *fetchAccountsState) SetLatestAccount(latest *client.Account) error {
 	return nil
 }
 
-func (s *fetchAccountsState) GetLastCreatedDate() string {
+func (s *fetchAccountsState) IsNew(account *client.Account) (bool, error) {
+	createdTime, err := time.Parse("2006-01-02T15:04:05.999-0700", account.CreatedDate)
+	if err != nil {
+		return false, err
+	}
+	return createdTime.After(s.LastCreatedTime), nil
+}
+
+func (s *fetchAccountsState) FilterNew(accounts []*client.Account) ([]*client.Account, error) {
+	// accounts are assumed to be sorted by creation date.
+	var firstNewIdx int
+	for idx, account := range accounts {
+		isNew, err := s.IsNew(account)
+		if err != nil {
+			return nil, err
+		}
+		if isNew {
+			firstNewIdx = idx
+			break
+		}
+	}
+	return accounts[firstNewIdx:], nil
+}
+
+func (s *fetchAccountsState) GetFilterValue() string {
 	if s.LastCreatedTime.IsZero() {
 		return ""
 	}
@@ -90,24 +114,31 @@ func fetchAccounts(
 	scheduler task.Scheduler,
 	state fetchAccountsState,
 ) (fetchAccountsState, error) {
-	fromCreatedDate := state.GetLastCreatedDate()
+	newState := state
 	for page := 0; ; page++ {
-		pagedAccounts, err := client.GetAccounts(ctx, page, config.PageSize, fromCreatedDate)
+		pagedAccounts, err := client.GetAccounts(
+			ctx,
+			page,
+			config.PageSize,
+			state.GetFilterValue(),
+		)
 		if err != nil {
-			return state, err
+			return newState, err
 		}
-
-		if len(pagedAccounts.Content) == 0 {
+		accounts, err := state.FilterNew(pagedAccounts.Content)
+		if err != nil {
+			return newState, err
+		}
+		if len(accounts) == 0 {
 			break
 		}
-
-		if err := ingestAccountsBatch(ctx, connectorID, ingester, pagedAccounts.Content); err != nil {
-			return state, err
+		if err := ingestAccountsBatch(ctx, connectorID, ingester, accounts); err != nil {
+			return newState, err
 		}
 
-		for _, account := range pagedAccounts.Content {
-			if err := state.SetLatestAccount(account); err != nil {
-				return state, err
+		for _, account := range accounts {
+			if err := newState.UpdateLatest(account); err != nil {
+				return newState, err
 			}
 			transactionsTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
 				Name:      "Fetch transactions from client by account",
@@ -115,7 +146,7 @@ func fetchAccounts(
 				AccountID: account.ID,
 			})
 			if err != nil {
-				return state, err
+				return newState, err
 			}
 
 			err = scheduler.Schedule(ctx, transactionsTask, models.TaskSchedulerOptions{
@@ -124,7 +155,7 @@ func fetchAccounts(
 				RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 			})
 			if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
-				return state, err
+				return newState, err
 			}
 		}
 
@@ -138,7 +169,7 @@ func fetchAccounts(
 		}
 	}
 
-	return state, nil
+	return newState, nil
 }
 
 func ingestAccountsBatch(
