@@ -251,7 +251,7 @@ func (c *membershipListener) deleteStack(ctx context.Context, stack *generated.D
 func (c *membershipListener) disableStack(ctx context.Context, stack *generated.DisabledStack) {
 	if err := c.restClient.Patch(types.JSONPatchType).
 		Name(stack.ClusterName).
-		Body(`{"spec": {"disabled": true}}`).
+		Body([]byte(`{"spec": {"disabled": true}}`)).
 		Do(ctx).
 		Error(); err != nil {
 		if apierrors.IsNotFound(err) {
@@ -268,7 +268,7 @@ func (c *membershipListener) disableStack(ctx context.Context, stack *generated.
 func (c *membershipListener) enableStack(ctx context.Context, stack *generated.EnabledStack) {
 	if err := c.restClient.Patch(types.JSONPatchType).
 		Name(stack.ClusterName).
-		Body(`{"spec": {"disabled": false}}`).
+		Body([]byte(`{"spec": {"disabled": false}}`)).
 		Do(ctx).
 		Error(); err != nil {
 		if apierrors.IsNotFound(err) {
