@@ -1,7 +1,7 @@
 lockVersion: 2.0.0
-id: 7eac0a45-60a2-40bb-9e85-26bd77ec2a6d
+id: 099713fd-1d36-4781-be9e-747a8a6bcfe2
 management:
-  docChecksum: e64f058f8ed1617c198d1fe84ea95670
+  docChecksum: cd56345df44c1e643e02cc348f36bb9c
   docVersion: INTERNAL
   speakeasyVersion: internal
   generationVersion: 2.237.2
@@ -173,6 +173,7 @@ generatedFiles:
   - /pkg/models/operations/udpatetransferinitiationstatus.go
   - /pkg/models/operations/uninstallconnector.go
   - /pkg/models/operations/uninstallconnectorv1.go
+  - /pkg/models/operations/updatebankaccountmetadata.go
   - /pkg/models/operations/updateconnectorconfigv1.go
   - /pkg/models/operations/updatemetadata.go
   - /pkg/models/operations/createpolicy.go
@@ -499,6 +500,7 @@ generatedFiles:
   - /pkg/models/shared/connectorconfigresponse.go
   - /pkg/models/shared/reversetransferinitiationrequest.go
   - /pkg/models/shared/updatetransferinitiationstatusrequest.go
+  - /pkg/models/shared/updatebankaccountmetadatarequest.go
   - /pkg/models/shared/reconciliationerrorresponse.go
   - /pkg/models/shared/policyresponse.go
   - /pkg/models/shared/policy.go
@@ -774,6 +776,8 @@ generatedFiles:
   - docs/pkg/models/operations/uninstallconnectorresponse.md
   - docs/pkg/models/operations/uninstallconnectorv1request.md
   - docs/pkg/models/operations/uninstallconnectorv1response.md
+  - docs/pkg/models/operations/updatebankaccountmetadatarequest.md
+  - docs/pkg/models/operations/updatebankaccountmetadataresponse.md
   - docs/pkg/models/operations/updateconnectorconfigv1request.md
   - docs/pkg/models/operations/updateconnectorconfigv1response.md
   - docs/pkg/models/operations/updatemetadatarequest.md
@@ -1212,6 +1216,7 @@ generatedFiles:
   - docs/pkg/models/shared/reversetransferinitiationrequest.md
   - docs/pkg/models/shared/status.md
   - docs/pkg/models/shared/updatetransferinitiationstatusrequest.md
+  - docs/pkg/models/shared/updatebankaccountmetadatarequest.md
   - docs/pkg/models/shared/reconciliationerrorresponse.md
   - docs/pkg/models/shared/policyresponse.md
   - docs/pkg/models/shared/policy.md

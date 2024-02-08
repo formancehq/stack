@@ -1,6 +1,7 @@
 package core
 
 import (
+	"golang.org/x/mod/semver"
 	"strings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -35,4 +36,24 @@ func GetModuleVersion(ctx Context, stack *v1beta1.Stack, module v1beta1.Module) 
 	}
 
 	return "latest", nil
+}
+
+func IsGreaterOrEqual(version string, than string) bool {
+	if !semver.IsValid(than) {
+		return !semver.IsValid(version) // Any semver version is considered lower
+	}
+	if !semver.IsValid(version) {
+		return true
+	}
+	return semver.Compare(version, than) >= 0
+}
+
+func IsLower(version string, than string) bool {
+	if !semver.IsValid(than) {
+		return semver.IsValid(version) // Any semver version is considered higher
+	}
+	if !semver.IsValid(version) {
+		return false
+	}
+	return semver.Compare(version, than) < 0
 }

@@ -12,6 +12,7 @@ func NewBankAccountsCommand() *cobra.Command {
 		fctl.WithChildCommands(
 			NewCreateCommand(),
 			NewForwardCommand(),
+			NewUpdateMetadataCommand(),
 			NewShowCommand(),
 			NewListCommand(),
 		),

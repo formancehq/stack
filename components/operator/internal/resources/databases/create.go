@@ -1,6 +1,7 @@
 package databases
 
 import (
+	"github.com/pkg/errors"
 	"strings"
 
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -50,4 +51,19 @@ func Create(ctx core.Context, owner interface {
 	}
 
 	return database, err
+}
+
+const ServiceVersion = "formance.com/module-version"
+
+func SaveModuleVersion(ctx core.Context, database *v1beta1.Database, version string) error {
+	patch := client.MergeFrom(database.DeepCopy())
+	if database.Annotations == nil {
+		database.Annotations = make(map[string]string)
+	}
+	database.Annotations[ServiceVersion] = version
+	return errors.Wrap(ctx.GetClient().Patch(ctx, database, patch), "patching database")
+}
+
+func GetSavedModuleVersion(database *v1beta1.Database) string {
+	return database.Annotations[ServiceVersion]
 }

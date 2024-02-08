@@ -8,16 +8,15 @@ import (
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
-	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/settings"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 )
 
 func createDeployment(ctx core.Context, stack *v1beta1.Stack, reconciliation *v1beta1.Reconciliation,
-	database *v1beta1.Database, authClient *v1beta1.AuthClient, version string) error {
+	database *v1beta1.Database, authClient *v1beta1.AuthClient, image string) error {
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseName(ctx, reconciliation))
+	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseKind(ctx, reconciliation))
 	if err != nil {
 		return err
 	}
@@ -38,11 +37,6 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, reconciliation *v1
 		return err
 	}
 	env = append(env, authEnvVars...)
-
-	image, err := registries.GetImage(ctx, stack, "reconciliation", version)
-	if err != nil {
-		return err
-	}
 
 	_, err = deployments.CreateOrUpdate(ctx, stack, reconciliation, "reconciliation",
 		func(t *appsv1.Deployment) error {

@@ -22,8 +22,11 @@ import (
 	"github.com/formancehq/operator/internal/resources/brokertopicconsumers"
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/gatewayhttpapis"
-	"golang.org/x/mod/semver"
+	"github.com/formancehq/operator/internal/resources/jobs"
+	"github.com/formancehq/operator/internal/resources/registries"
+	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
+	batchv1 "k8s.io/api/batch/v1"
 )
 
 //+kubebuilder:rbac:groups=formance.com,resources=webhooks,verbs=get;list;watch;create;update;patch;delete
@@ -45,14 +48,30 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, ve
 		return err
 	}
 
-	if database.Status.Ready && consumers.Ready() {
-		if !semver.IsValid(version) || semver.Compare(version, "v0.7.1") > 0 {
-			if err := createSingleDeployment(ctx, stack, webhooks, database, consumers, version); err != nil {
+	if database.Status.Ready {
+		image, err := registries.GetImage(ctx, stack, "webhooks", version)
+		if err != nil {
+			return errors.Wrap(err, "resolving image")
+		}
+
+		if IsGreaterOrEqual(version, "v2.0.0-rc.5") && databases.GetSavedModuleVersion(database) != version {
+			if err := jobs.Handle(ctx, webhooks, "migrate", databases.MigrateDatabaseContainer(image, database)); err != nil {
 				return err
 			}
-		} else {
-			if err := createDualDeployment(ctx, stack, webhooks, database, consumers, version); err != nil {
-				return err
+			if err := databases.SaveModuleVersion(ctx, database, version); err != nil {
+				return errors.Wrap(err, "saving module version in database object")
+			}
+		}
+
+		if consumers.Ready() {
+			if IsGreaterOrEqual(version, "v0.7.1") {
+				if err := createSingleDeployment(ctx, stack, webhooks, database, consumers, version); err != nil {
+					return err
+				}
+			} else {
+				if err := createDualDeployment(ctx, stack, webhooks, database, consumers, version); err != nil {
+					return err
+				}
 			}
 		}
 	}
@@ -65,6 +84,7 @@ func init() {
 		WithModuleReconciler(Reconcile,
 			WithOwn[*v1beta1.Webhooks](&appsv1.Deployment{}),
 			WithOwn[*v1beta1.Webhooks](&v1beta1.GatewayHTTPAPI{}),
+			WithOwn[*v1beta1.Webhooks](&batchv1.Job{}),
 			WithWatchSettings[*v1beta1.Webhooks](),
 			WithWatchDependency[*v1beta1.Webhooks](&v1beta1.Ledger{}),
 			WithWatchDependency[*v1beta1.Webhooks](&v1beta1.Payments{}),

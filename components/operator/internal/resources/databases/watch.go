@@ -13,7 +13,7 @@ func Watch[T client.Object]() core.ReconcilerOption[T] {
 	var t T
 	t = reflect.New(reflect.TypeOf(t).Elem()).Interface().(T)
 	return core.WithWatch[T, *v1beta1.Database](func(ctx core.Context, database *v1beta1.Database) []reconcile.Request {
-		if database.Spec.Service != core.LowerCamelCaseName(ctx, t) {
+		if database.Spec.Service != core.LowerCamelCaseKind(ctx, t) {
 			return []reconcile.Request{}
 		}
 

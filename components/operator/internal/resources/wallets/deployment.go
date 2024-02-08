@@ -15,7 +15,7 @@ import (
 func createDeployment(ctx core.Context, stack *v1beta1.Stack, wallets *v1beta1.Wallets,
 	authClient *v1beta1.AuthClient, version string) error {
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseName(ctx, wallets))
+	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseKind(ctx, wallets))
 	if err != nil {
 		return err
 	}

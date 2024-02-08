@@ -19,6 +19,7 @@ package ledgers
 import (
 	_ "embed"
 	"fmt"
+	"github.com/pkg/errors"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
@@ -92,11 +93,14 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, versio
 	}
 
 	if database.Status.Ready {
-		if isV2 && !ledger.Status.IsMigratedOnV2 {
-			if err := migrateToLedgerV2(ctx, stack, ledger, database, image); err != nil {
+		if isV2 && databases.GetSavedModuleVersion(database) != version {
+			if err := migrate(ctx, stack, ledger, database, image); err != nil {
 				return err
 			}
-			ledger.Status.IsMigratedOnV2 = true
+
+			if err := databases.SaveModuleVersion(ctx, database, version); err != nil {
+				return errors.Wrap(err, "saving module version in database object")
+			}
 		}
 
 		err = installLedger(ctx, stack, ledger, database, image, isV2)

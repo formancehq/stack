@@ -21,9 +21,12 @@ import (
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/gatewayhttpapis"
+	"github.com/formancehq/operator/internal/resources/jobs"
+	"github.com/formancehq/operator/internal/resources/registries"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
+	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -50,7 +53,23 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, version st
 	}
 
 	if database.Status.Ready {
-		_, err := createDeployment(ctx, stack, auth, database, configMap, version)
+
+		image, err := registries.GetImage(ctx, stack, "auth", version)
+		if err != nil {
+			return errors.Wrap(err, "resolving image")
+		}
+
+		if IsGreaterOrEqual(version, "v2.0.0-rc.5") && databases.GetSavedModuleVersion(database) != version {
+			if err := jobs.Handle(ctx, auth, "migrate", databases.MigrateDatabaseContainer(image, database)); err != nil {
+				return err
+			}
+
+			if err := databases.SaveModuleVersion(ctx, database, version); err != nil {
+				return errors.Wrap(err, "saving module version in database object")
+			}
+		}
+
+		_, err = createDeployment(ctx, stack, auth, database, configMap, image)
 		if err != nil {
 			return errors.Wrap(err, "creating deployment")
 		}
@@ -72,6 +91,7 @@ func init() {
 			WithOwn[*v1beta1.Auth](&v1beta1.GatewayHTTPAPI{}),
 			WithOwn[*v1beta1.Auth](&v1beta1.Database{}),
 			WithOwn[*v1beta1.Auth](&corev1.ConfigMap{}),
+			WithOwn[*v1beta1.Auth](&batchv1.Job{}),
 			WithWatchSettings[*v1beta1.Auth](),
 			WithWatchDependency[*v1beta1.Auth](&v1beta1.AuthClient{}),
 			databases.Watch[*v1beta1.Auth](),
