@@ -23,6 +23,7 @@ type Store interface {
 	GetAccount(ctx context.Context, id string) (*models.Account, error)
 
 	CreateBankAccount(ctx context.Context, account *models.BankAccount) error
+	UpdateBankAccountMetadata(ctx context.Context, id uuid.UUID, metadata map[string]string) error
 	GetBankAccount(ctx context.Context, id uuid.UUID, expand bool) (*models.BankAccount, error)
 	GetBankAccountAdjustments(ctx context.Context, id uuid.UUID) ([]*models.BankAccountAdjustment, error)
 

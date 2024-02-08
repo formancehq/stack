@@ -15,6 +15,7 @@ type Service interface {
 	Ping() error
 	CreateBankAccount(ctx context.Context, req *service.CreateBankAccountRequest) (*models.BankAccount, error)
 	ForwardBankAccountToConnector(ctx context.Context, id string, req *service.ForwardBankAccountToConnectorRequest) (*models.BankAccount, error)
+	UpdateBankAccountMetadata(ctx context.Context, id string, req *service.UpdateBankAccountMetadataRequest) error
 	ListConnectors(ctx context.Context) ([]*models.Connector, error)
 	CreateTransferInitiation(ctx context.Context, req *service.CreateTransferInitiationRequest) (*models.TransferInitiation, error)
 	UpdateTransferInitiationStatus(ctx context.Context, transferID string, req *service.UpdateTransferInitiationStatusRequest) error

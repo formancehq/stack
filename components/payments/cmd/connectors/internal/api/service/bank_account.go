@@ -163,3 +163,28 @@ func (s *Service) ForwardBankAccountToConnector(ctx context.Context, id string, 
 
 	return bankAccount, err
 }
+
+type UpdateBankAccountMetadataRequest struct {
+	Metadata map[string]string `json:"metadata"`
+}
+
+func (u *UpdateBankAccountMetadataRequest) Validate() error {
+	if len(u.Metadata) == 0 {
+		return errors.New("metadata must be provided")
+	}
+
+	return nil
+}
+
+func (s *Service) UpdateBankAccountMetadata(ctx context.Context, id string, req *UpdateBankAccountMetadataRequest) error {
+	bankAccountID, err := uuid.Parse(id)
+	if err != nil {
+		return errors.Wrap(ErrInvalidID, err.Error())
+	}
+
+	if err := s.store.UpdateBankAccountMetadata(ctx, bankAccountID, req.Metadata); err != nil {
+		return newStorageError(err, "updating bank account metadata")
+	}
+
+	return nil
+}

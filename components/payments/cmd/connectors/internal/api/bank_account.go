@@ -186,6 +186,51 @@ func forwardBankAccountToConnector(
 	}
 }
 
+func updateBankAccountMetadataHandler(
+	b backend.ServiceBackend,
+) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := otel.Tracer().Start(r.Context(), "updateBankAccountMetadataHandler")
+		defer span.End()
+
+		payload := &service.UpdateBankAccountMetadataRequest{}
+		err := json.NewDecoder(r.Body).Decode(payload)
+		if err != nil {
+			otel.RecordError(span, err)
+			api.BadRequest(w, ErrMissingOrInvalidBody, err)
+			return
+		}
+
+		for k, v := range payload.Metadata {
+			span.SetAttributes(attribute.String(k, v))
+		}
+
+		if err := payload.Validate(); err != nil {
+			otel.RecordError(span, err)
+			api.BadRequest(w, ErrValidation, err)
+			return
+		}
+
+		bankAccountID, ok := mux.Vars(r)["bankAccountID"]
+		if !ok {
+			otel.RecordError(span, err)
+			api.BadRequest(w, ErrInvalidID, err)
+			return
+		}
+
+		span.SetAttributes(attribute.String("bankAccount.id", bankAccountID))
+
+		err = b.GetService().UpdateBankAccountMetadata(ctx, bankAccountID, payload)
+		if err != nil {
+			otel.RecordError(span, err)
+			handleServiceErrors(w, r, err)
+			return
+		}
+
+		api.NoContent(w)
+	}
+}
+
 func setAttributesFromRequest(span trace.Span, request *service.CreateBankAccountRequest) {
 	span.SetAttributes(
 		attribute.String("request.name", request.Name),

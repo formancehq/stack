@@ -42,6 +42,7 @@
 * [UdpateTransferInitiationStatus](#udpatetransferinitiationstatus) - Update the status of a transfer initiation
 * [~~UninstallConnector~~](#uninstallconnector) - Uninstall a connector :warning: **Deprecated**
 * [UninstallConnectorV1](#uninstallconnectorv1) - Uninstall a connector
+* [UpdateBankAccountMetadata](#updatebankaccountmetadata) - Update metadata of a bank account
 * [UpdateConnectorConfigV1](#updateconnectorconfigv1) - Update the config of a connector
 * [UpdateMetadata](#updatemetadata) - Update metadata
 
@@ -2211,6 +2212,65 @@ func main() {
 ### Response
 
 **[*operations.UninstallConnectorV1Response](../../pkg/models/operations/uninstallconnectorv1response.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
+
+## UpdateBankAccountMetadata
+
+Update metadata of a bank account
+
+### Example Usage
+
+```go
+package main
+
+import(
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
+	"context"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"log"
+	"net/http"
+)
+
+func main() {
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
+
+    ctx := context.Background()
+    res, err := s.Payments.UpdateBankAccountMetadata(ctx, operations.UpdateBankAccountMetadataRequest{
+        UpdateBankAccountMetadataRequest: shared.UpdateBankAccountMetadataRequest{
+            Metadata: map[string]string{
+                "key": "string",
+            },
+        },
+        BankAccountID: "string",
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    if res.StatusCode == http.StatusOK {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                                                                      | Type                                                                                                           | Required                                                                                                       | Description                                                                                                    |
+| -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                          | [context.Context](https://pkg.go.dev/context#Context)                                                          | :heavy_check_mark:                                                                                             | The context to use for the request.                                                                            |
+| `request`                                                                                                      | [operations.UpdateBankAccountMetadataRequest](../../pkg/models/operations/updatebankaccountmetadatarequest.md) | :heavy_check_mark:                                                                                             | The request object to use for the request.                                                                     |
+
+
+### Response
+
+**[*operations.UpdateBankAccountMetadataResponse](../../pkg/models/operations/updatebankaccountmetadataresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
 | sdkerrors.SDKError | 4xx-5xx            | */*                |

@@ -129,8 +129,14 @@ var (
 )
 
 type MockStore struct {
+	errorToSend            error
 	listConnectorsNB       int
 	bankAccountAdjustments []*models.BankAccountAdjustment
+}
+
+func (m *MockStore) WithError(err error) *MockStore {
+	m.errorToSend = err
+	return m
 }
 
 func (m *MockStore) WithListConnectorsNB(nb int) *MockStore {
@@ -190,6 +196,10 @@ func (m *MockStore) GetAccount(ctx context.Context, id string) (*models.Account,
 func (m *MockStore) CreateBankAccount(ctx context.Context, account *models.BankAccount) error {
 	account.ID = uuid.New()
 	return nil
+}
+
+func (m *MockStore) UpdateBankAccountMetadata(ctx context.Context, id uuid.UUID, metadata map[string]string) error {
+	return m.errorToSend
 }
 
 func (m *MockStore) GetBankAccount(ctx context.Context, id uuid.UUID, expand bool) (*models.BankAccount, error) {

@@ -471,3 +471,150 @@ func TestForwardBankAccountToConnector(t *testing.T) {
 		})
 	}
 }
+
+func TestUpdateBankAccountMetadata(t *testing.T) {
+	t.Parallel()
+
+	type testCase struct {
+		name               string
+		req                *service.UpdateBankAccountMetadataRequest
+		expectedStatusCode int
+		expectedErrorCode  string
+		serviceError       error
+	}
+
+	testCases := []testCase{
+		{
+			name: "nominal",
+			req: &service.UpdateBankAccountMetadataRequest{
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+		},
+		{
+			name:               "empty metadata",
+			req:                &service.UpdateBankAccountMetadataRequest{},
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name:               "no body",
+			req:                nil,
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrMissingOrInvalidBody,
+		},
+		{
+			name: "service error duplicate key",
+			req: &service.UpdateBankAccountMetadataRequest{
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+			serviceError:       storage.ErrDuplicateKeyValue,
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrUniqueReference,
+		},
+		{
+			name: "service error not found",
+			req: &service.UpdateBankAccountMetadataRequest{
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+			serviceError:       storage.ErrNotFound,
+			expectedStatusCode: http.StatusNotFound,
+			expectedErrorCode:  ErrNotFound,
+		},
+		{
+			name: "service error validation",
+			req: &service.UpdateBankAccountMetadataRequest{
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+			serviceError:       service.ErrValidation,
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name: "service error invalid ID",
+			req: &service.UpdateBankAccountMetadataRequest{
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+			serviceError:       service.ErrInvalidID,
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrInvalidID,
+		},
+		{
+			name: "service error publish",
+			req: &service.UpdateBankAccountMetadataRequest{
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+			serviceError:       service.ErrPublish,
+			expectedStatusCode: http.StatusInternalServerError,
+			expectedErrorCode:  sharedapi.ErrorInternal,
+		},
+		{
+			name: "service error other errors",
+			req: &service.UpdateBankAccountMetadataRequest{
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+			serviceError:       errors.New("some error"),
+			expectedStatusCode: http.StatusInternalServerError,
+			expectedErrorCode:  sharedapi.ErrorInternal,
+		},
+	}
+
+	for _, testCase := range testCases {
+		testCase := testCase
+		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
+			if testCase.expectedStatusCode == 0 {
+				testCase.expectedStatusCode = http.StatusNoContent
+			}
+
+			bankAccountID := uuid.New()
+
+			backend, mockService := newServiceTestingBackend(t)
+			if testCase.expectedStatusCode < 300 && testCase.expectedStatusCode >= 200 {
+				mockService.EXPECT().
+					UpdateBankAccountMetadata(gomock.Any(), bankAccountID.String(), testCase.req).
+					Return(nil)
+			}
+			if testCase.serviceError != nil {
+				mockService.EXPECT().
+					UpdateBankAccountMetadata(gomock.Any(), bankAccountID.String(), testCase.req).
+					Return(testCase.serviceError)
+			}
+
+			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
+
+			var body []byte
+			if testCase.req != nil {
+				var err error
+				body, err = json.Marshal(testCase.req)
+				require.NoError(t, err)
+			}
+
+			req := httptest.NewRequest(http.MethodPatch, fmt.Sprintf("/bank-accounts/%s/metadata", bankAccountID), bytes.NewReader(body))
+			rec := httptest.NewRecorder()
+
+			router.ServeHTTP(rec, req)
+
+			require.Equal(t, testCase.expectedStatusCode, rec.Code)
+			if testCase.expectedStatusCode >= 300 || testCase.expectedStatusCode < 200 {
+				err := sharedapi.ErrorResponse{}
+				sharedapi.Decode(t, rec.Body, &err)
+				require.EqualValues(t, testCase.expectedErrorCode, err.ErrorCode)
+			}
+		})
+	}
+}

@@ -8,6 +8,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/google/uuid"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 )
 
@@ -26,6 +27,7 @@ func TestBankAccounts(t *testing.T) {
 	testCreateAccounts(t, store)
 	testCreateBankAccounts(t, store)
 	testListBankAccounts(t, store)
+	testUpdateBankAccountMetadata(t, store)
 	testUninstallConnectors(t, store)
 	testBankAccountsDeletedAfterConnectorUninstall(t, store)
 }
@@ -155,7 +157,23 @@ func testListBankAccounts(t *testing.T, store *storage.Storage) {
 	require.False(t, paginationDetails.HasMore)
 	require.Equal(t, bankAccount1ID, bankAccounts[0].ID)
 	require.Equal(t, bankAccount2ID, bankAccounts[1].ID)
+}
 
+func testUpdateBankAccountMetadata(t *testing.T, store *storage.Storage) {
+	metadata := map[string]string{
+		"key": "value",
+	}
+
+	err := store.UpdateBankAccountMetadata(context.Background(), bankAccount1ID, metadata)
+	require.NoError(t, err)
+
+	bankAccount, err := store.GetBankAccount(context.Background(), bankAccount1ID, false)
+	require.NoError(t, err)
+	require.Equal(t, metadata, bankAccount.Metadata)
+
+	// Bank account not existing
+	err = store.UpdateBankAccountMetadata(context.Background(), uuid.New(), metadata)
+	require.True(t, errors.Is(err, storage.ErrNotFound))
 }
 
 func testBankAccountsDeletedAfterConnectorUninstall(t *testing.T, store *storage.Storage) {

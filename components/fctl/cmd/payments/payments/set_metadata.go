@@ -70,7 +70,7 @@ func (c *SetMetadataController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		return nil, fctl.ErrMissingApproval
 	}
 
-	ledgerClient, err := fctl.NewStackClient(cmd, cfg, stack)
+	client, err := fctl.NewStackClient(cmd, cfg, stack)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func (c *SetMetadataController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		PaymentID:   paymentID,
 	}
 
-	response, err := ledgerClient.Payments.UpdateMetadata(cmd.Context(), request)
+	response, err := client.Payments.UpdateMetadata(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}
