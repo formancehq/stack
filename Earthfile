@@ -41,9 +41,9 @@ build-final-spec:
 
     RUN npm run build
     RUN jq -s '.[0] * .[1]' build/generate.json openapi-overlay.json > build/latest.json
-    ARG version=INTERNAL
-    IF [ "$version" = "INTERNAL" ]
-        RUN sed -i 's/SDK_VERSION/INTERNAL/g' build/latest.json
+    ARG version=v0.0.0
+    IF [ "$version" = "v0.0.0" ]
+        RUN sed -i 's/SDK_VERSION/v0.0.0/g' build/latest.json
         SAVE ARTIFACT build/latest.json AS LOCAL releases/build/latest.json
     ELSE
         RUN sed -i 's/SDK_VERSION/'$version'/g' build/latest.json

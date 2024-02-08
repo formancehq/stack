@@ -10,7 +10,7 @@ sources:
   SAVE ARTIFACT /src
 
 sdk-generate:
-  ARG version=INTERNAL
+  ARG version=v0.0.0
   ARG LANG=go
   FROM node:20-alpine
   RUN apk update && apk add yq git
@@ -18,6 +18,7 @@ sdk-generate:
   COPY (stack+speakeasy/speakeasy) /bin/speakeasy
   COPY (stack+build-final-spec/latest.json --version=$version) /src/releases/build/latest.json
   WORKDIR /src/releases
+  COPY ./sdks/${LANG} ./sdks/${LANG}
   RUN rm -rf ./sdks/${LANG}/gen.yaml ./sdks/${LANG}/LICENSE ./sdks/${LANG}/.github/workflows
   COPY --dir templates/sdk/${LANG}/* ./sdks/${LANG}/
   ENV key ".${LANG}.version"
