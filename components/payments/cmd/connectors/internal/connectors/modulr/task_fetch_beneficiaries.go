@@ -15,6 +15,61 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 )
 
+type fetchBeneficiariesState struct {
+	LastCreated time.Time `json:"last_created"`
+}
+
+func (s *fetchBeneficiariesState) UpdateLatest(latest *client.Beneficiary) error {
+	createdTime, err := time.Parse("2006-01-02T15:04:05.999-0700", latest.Created)
+	if err != nil {
+		return err
+	}
+	if createdTime.After(s.LastCreated) {
+		s.LastCreated = createdTime
+	}
+	return nil
+}
+
+func (s *fetchBeneficiariesState) FindLatest(beneficiaries []*client.Beneficiary) error {
+	for _, beneficiary := range beneficiaries {
+		if err := s.UpdateLatest(beneficiary); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s *fetchBeneficiariesState) IsNew(beneficiary *client.Beneficiary) (bool, error) {
+	createdTime, err := time.Parse("2006-01-02T15:04:05.999-0700", beneficiary.Created)
+	if err != nil {
+		return false, err
+	}
+	return createdTime.After(s.LastCreated), nil
+}
+
+func (s *fetchBeneficiariesState) FilterNew(beneficiaries []*client.Beneficiary) ([]*client.Beneficiary, error) {
+	// beneficiaries are not assumed to be sorted by creation date.
+	result := make([]*client.Beneficiary, 0, len(beneficiaries))
+	for _, beneficiary := range beneficiaries {
+		isNew, err := s.IsNew(beneficiary)
+		if err != nil {
+			return nil, err
+		}
+		if !isNew {
+			continue
+		}
+		result = append(result, beneficiary)
+	}
+	return result, nil
+}
+
+func (s *fetchBeneficiariesState) GetFilterValue() string {
+	if s.LastCreated.IsZero() {
+		return ""
+	}
+	return s.LastCreated.Format("2006-01-02T15:04:05-0700")
+}
+
 func taskFetchBeneficiaries(config Config, client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
@@ -22,6 +77,7 @@ func taskFetchBeneficiaries(config Config, client *client.Client) task.Task {
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
+		resolver task.StateResolver,
 	) error {
 		ctx, span := connectors.StartSpan(
 			ctx,
@@ -31,7 +87,21 @@ func taskFetchBeneficiaries(config Config, client *client.Client) task.Task {
 		)
 		defer span.End()
 
-		if err := fetchBeneficiaries(ctx, config, client, connectorID, ingester, scheduler); err != nil {
+		state, err := fetchBeneficiaries(
+			ctx,
+			config,
+			client,
+			connectorID,
+			ingester,
+			scheduler,
+			task.MustResolveTo(ctx, resolver, fetchBeneficiariesState{}),
+		)
+		if err != nil {
+			otel.RecordError(span, err)
+			return err
+		}
+
+		if err := ingester.UpdateTaskState(ctx, state); err != nil {
 			otel.RecordError(span, err)
 			return err
 		}
@@ -47,19 +117,31 @@ func fetchBeneficiaries(
 	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	scheduler task.Scheduler,
-) error {
+	state fetchBeneficiariesState,
+) (fetchBeneficiariesState, error) {
+	newState := state
 	for page := 0; ; page++ {
-		pagedBeneficiaries, err := client.GetBeneficiaries(ctx, page, config.PageSize)
+		pagedBeneficiaries, err := client.GetBeneficiaries(
+			ctx,
+			page,
+			config.PageSize,
+			state.GetFilterValue(),
+		)
 		if err != nil {
-			return err
+			return newState, err
 		}
-
 		if len(pagedBeneficiaries.Content) == 0 {
 			break
 		}
-
-		if err := ingestBeneficiariesAccountsBatch(ctx, connectorID, ingester, pagedBeneficiaries.Content); err != nil {
-			return err
+		beneficiaries, err := state.FilterNew(pagedBeneficiaries.Content)
+		if err != nil {
+			return newState, err
+		}
+		if err := newState.FindLatest(beneficiaries); err != nil {
+			return newState, err
+		}
+		if err := ingestBeneficiariesAccountsBatch(ctx, connectorID, ingester, beneficiaries); err != nil {
+			return newState, err
 		}
 
 		if len(pagedBeneficiaries.Content) < config.PageSize {
@@ -72,7 +154,7 @@ func fetchBeneficiaries(
 		}
 	}
 
-	return nil
+	return newState, nil
 }
 
 func ingestBeneficiariesAccountsBatch(
@@ -82,7 +164,6 @@ func ingestBeneficiariesAccountsBatch(
 	beneficiaries []*client.Beneficiary,
 ) error {
 	accountsBatch := ingestion.AccountBatch{}
-
 	for _, beneficiary := range beneficiaries {
 		raw, err := json.Marshal(beneficiary)
 		if err != nil {

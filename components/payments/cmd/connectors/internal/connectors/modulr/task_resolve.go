@@ -45,7 +45,7 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 	return func(taskDefinition TaskDescriptor) task.Task {
 		switch taskDefinition.Key {
 		case taskNameMain:
-			return taskMain()
+			return taskMain(config)
 		case taskNameFetchAccounts:
 			return taskFetchAccounts(config, modulrClient)
 		case taskNameFetchBeneficiaries:

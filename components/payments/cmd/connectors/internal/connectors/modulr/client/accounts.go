@@ -28,7 +28,7 @@ type Account struct {
 	CreatedDate string `json:"createdDate"`
 }
 
-func (m *Client) GetAccounts(ctx context.Context, page, pageSize int) (*responseWrapper[[]*Account], error) {
+func (m *Client) GetAccounts(ctx context.Context, page, pageSize int, fromCreatedDate string) (*responseWrapper[[]*Account], error) {
 	f := connectors.ClientMetrics(ctx, "modulr", "list_accounts")
 	now := time.Now()
 	defer f(ctx, now)
@@ -41,6 +41,11 @@ func (m *Client) GetAccounts(ctx context.Context, page, pageSize int) (*response
 	q := req.URL.Query()
 	q.Add("page", strconv.Itoa(page))
 	q.Add("size", strconv.Itoa(pageSize))
+	q.Add("sortField", "createdDate")
+	q.Add("sortOrder", "asc")
+	if fromCreatedDate != "" {
+		q.Add("fromCreatedDate", fromCreatedDate)
+	}
 	req.URL.RawQuery = q.Encode()
 
 	resp, err := m.httpClient.Do(req)

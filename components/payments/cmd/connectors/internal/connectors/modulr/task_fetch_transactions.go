@@ -19,12 +19,67 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 )
 
+type fetchTransactionsState struct {
+	LastTransactionTime time.Time `json:"last_transaction_time"`
+}
+
+func (s *fetchTransactionsState) UpdateLatest(latest *client.Transaction) error {
+	transactionTime, err := time.Parse("2006-01-02T15:04:05.999-0700", latest.TransactionDate)
+	if err != nil {
+		return err
+	}
+	if transactionTime.After(s.LastTransactionTime) {
+		s.LastTransactionTime = transactionTime
+	}
+	return nil
+}
+
+func (s *fetchTransactionsState) FindLatest(transactions []*client.Transaction) error {
+	for _, transaction := range transactions {
+		if err := s.UpdateLatest(transaction); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s *fetchTransactionsState) IsNew(transaction *client.Transaction) (bool, error) {
+	transactionTime, err := time.Parse("2006-01-02T15:04:05.999-0700", transaction.TransactionDate)
+	if err != nil {
+		return false, err
+	}
+	return transactionTime.After(s.LastTransactionTime), nil
+}
+
+func (s *fetchTransactionsState) FilterNew(transactions []*client.Transaction) ([]*client.Transaction, error) {
+	result := make([]*client.Transaction, 0, len(transactions))
+	for _, transaction := range transactions {
+		isNew, err := s.IsNew(transaction)
+		if err != nil {
+			return nil, err
+		}
+		if !isNew {
+			continue
+		}
+		result = append(result, transaction)
+	}
+	return result, nil
+}
+
+func (s *fetchTransactionsState) GetFilterValue() string {
+	if s.LastTransactionTime.IsZero() {
+		return ""
+	}
+	return s.LastTransactionTime.Format("2006-01-02T15:04:05-0700")
+}
+
 func taskFetchTransactions(config Config, client *client.Client, accountID string) task.Task {
 	return func(
 		ctx context.Context,
 		taskID models.TaskID,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
+		resolver task.StateResolver,
 	) error {
 		ctx, span := connectors.StartSpan(
 			ctx,
@@ -35,7 +90,21 @@ func taskFetchTransactions(config Config, client *client.Client, accountID strin
 		)
 		defer span.End()
 
-		if err := fetchTransactions(ctx, config, client, accountID, connectorID, ingester); err != nil {
+		state, err := fetchTransactions(
+			ctx,
+			config,
+			client,
+			accountID,
+			connectorID,
+			ingester,
+			task.MustResolveTo(ctx, resolver, fetchTransactionsState{}),
+		)
+		if err != nil {
+			otel.RecordError(span, err)
+			return err
+		}
+
+		if err := ingester.UpdateTaskState(ctx, state); err != nil {
 			otel.RecordError(span, err)
 			return err
 		}
@@ -51,24 +120,41 @@ func fetchTransactions(
 	accountID string,
 	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
-) error {
+	state fetchTransactionsState,
+) (fetchTransactionsState, error) {
+	newState := state
 	for page := 0; ; page++ {
-		pagedTransactions, err := client.GetTransactions(ctx, accountID, page, config.PageSize)
+		pagedTransactions, err := client.GetTransactions(
+			ctx,
+			accountID,
+			page,
+			config.PageSize,
+			state.GetFilterValue(),
+		)
 		if err != nil {
-			return err
+			return newState, err
 		}
 
 		if len(pagedTransactions.Content) == 0 {
 			break
 		}
 
-		batch, err := toBatch(connectorID, accountID, pagedTransactions.Content)
+		transactions, err := state.FilterNew(pagedTransactions.Content)
 		if err != nil {
-			return err
+			return newState, err
+		}
+
+		batch, err := toBatch(connectorID, accountID, transactions)
+		if err != nil {
+			return newState, err
 		}
 
 		if err := ingester.IngestPayments(ctx, batch); err != nil {
-			return err
+			return newState, err
+		}
+
+		if err := newState.FindLatest(transactions); err != nil {
+			return newState, err
 		}
 
 		if len(pagedTransactions.Content) < config.PageSize {
@@ -81,7 +167,7 @@ func fetchTransactions(
 		}
 	}
 
-	return nil
+	return newState, nil
 }
 
 func toBatch(
