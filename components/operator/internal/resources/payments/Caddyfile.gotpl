@@ -27,7 +27,7 @@
 
     @bank-accounts {
         path /bank-accounts*
-        method POST
+        method POST PATCH
     }
 
     handle @bank-accounts {
