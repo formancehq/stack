@@ -2,12 +2,13 @@ package client
 
 const (
 	mangopayMetadataSpecNamespace = "com.mangopay.spec/"
-)
 
-func ExtractNamespacedMetadata(metadata map[string]string, key string) string {
-	value, ok := metadata[mangopayMetadataSpecNamespace+key]
-	if !ok {
-		return ""
-	}
-	return value
-}
+	MangopayUserIDMetadataKey             = mangopayMetadataSpecNamespace + "userID"
+	MangopayTagMetadataKey                = mangopayMetadataSpecNamespace + "tag"
+	MangopayABAMetadataKey                = mangopayMetadataSpecNamespace + "aba"
+	MangopayDepositAccountTypeMetadataKey = mangopayMetadataSpecNamespace + "depositAccountType"
+	MangopayInstitutionNumberMetadataKey  = mangopayMetadataSpecNamespace + "institutionNumber"
+	MangopayBranchCodeMetadataKey         = mangopayMetadataSpecNamespace + "branchCode"
+	MangopayBankNameMetadataKey           = mangopayMetadataSpecNamespace + "bankName"
+	MangopaySortCodeMetadataKey           = mangopayMetadataSpecNamespace + "sortCode"
+)

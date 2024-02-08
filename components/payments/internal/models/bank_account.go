@@ -55,3 +55,13 @@ type BankAccountAdjustment struct {
 	ConnectorID   ConnectorID `bun:",nullzero"`
 	AccountID     AccountID   `bun:",nullzero"`
 }
+
+const (
+	bankAccountOwnerNamespace = formanceMetadataSpecNamespace + "owner/"
+
+	BankAccountOwnerAddressLine1MetadataKey = bankAccountOwnerNamespace + "addressLine1"
+	BankAccountOwnerAddressLine2MetadataKey = bankAccountOwnerNamespace + "addressLine2"
+	BankAccountOwnerCityMetadataKey         = bankAccountOwnerNamespace + "city"
+	BankAccountOwnerRegionMetadataKey       = bankAccountOwnerNamespace + "region"
+	BankAccountOwnerPostalCodeMetadataKey   = bankAccountOwnerNamespace + "postalCode"
+)

@@ -56,17 +56,17 @@ func createExternalBankAccount(
 	bankAccount *models.BankAccount,
 	ingester ingestion.Ingester,
 ) error {
-	userID := client.ExtractNamespacedMetadata(bankAccount.Metadata, "userID")
+	userID := models.ExtractNamespacedMetadata(bankAccount.Metadata, client.MangopayUserIDMetadataKey)
 	if userID == "" {
 		return fmt.Errorf("missing userID in bank account metadata")
 	}
 
 	ownerAddress := client.OwnerAddress{
-		AddressLine1: client.ExtractNamespacedMetadata(bankAccount.Metadata, "owner/addressLine1"),
-		AddressLine2: client.ExtractNamespacedMetadata(bankAccount.Metadata, "owner/addressLine2"),
-		City:         client.ExtractNamespacedMetadata(bankAccount.Metadata, "owner/city"),
-		Region:       client.ExtractNamespacedMetadata(bankAccount.Metadata, "owner/region"),
-		PostalCode:   client.ExtractNamespacedMetadata(bankAccount.Metadata, "owner/postalCode"),
+		AddressLine1: models.ExtractNamespacedMetadata(bankAccount.Metadata, models.BankAccountOwnerAddressLine1MetadataKey),
+		AddressLine2: models.ExtractNamespacedMetadata(bankAccount.Metadata, models.BankAccountOwnerAddressLine2MetadataKey),
+		City:         models.ExtractNamespacedMetadata(bankAccount.Metadata, models.BankAccountOwnerCityMetadataKey),
+		Region:       models.ExtractNamespacedMetadata(bankAccount.Metadata, models.BankAccountOwnerRegionMetadataKey),
+		PostalCode:   models.ExtractNamespacedMetadata(bankAccount.Metadata, models.BankAccountOwnerPostalCodeMetadataKey),
 		Country:      bankAccount.Country,
 	}
 
@@ -77,7 +77,7 @@ func createExternalBankAccount(
 			OwnerAddress: &ownerAddress,
 			IBAN:         bankAccount.IBAN,
 			BIC:          bankAccount.SwiftBicCode,
-			Tag:          client.ExtractNamespacedMetadata(bankAccount.Metadata, "tag"),
+			Tag:          models.ExtractNamespacedMetadata(bankAccount.Metadata, client.MangopayTagMetadataKey),
 		}
 
 		var err error
@@ -92,9 +92,9 @@ func createExternalBankAccount(
 				OwnerName:          bankAccount.Name,
 				OwnerAddress:       &ownerAddress,
 				AccountNumber:      bankAccount.AccountNumber,
-				ABA:                client.ExtractNamespacedMetadata(bankAccount.Metadata, "aba"),
-				DepositAccountType: client.ExtractNamespacedMetadata(bankAccount.Metadata, "depositAccountType"),
-				Tag:                client.ExtractNamespacedMetadata(bankAccount.Metadata, "tag"),
+				ABA:                models.ExtractNamespacedMetadata(bankAccount.Metadata, client.MangopayABAMetadataKey),
+				DepositAccountType: models.ExtractNamespacedMetadata(bankAccount.Metadata, client.MangopayDepositAccountTypeMetadataKey),
+				Tag:                models.ExtractNamespacedMetadata(bankAccount.Metadata, client.MangopayTagMetadataKey),
 			}
 
 			var err error
@@ -108,10 +108,10 @@ func createExternalBankAccount(
 				OwnerName:         bankAccount.Name,
 				OwnerAddress:      &ownerAddress,
 				AccountNumber:     bankAccount.AccountNumber,
-				InstitutionNumber: client.ExtractNamespacedMetadata(bankAccount.Metadata, "institutionNumber"),
-				BranchCode:        client.ExtractNamespacedMetadata(bankAccount.Metadata, "branchCode"),
-				BankName:          client.ExtractNamespacedMetadata(bankAccount.Metadata, "bankName"),
-				Tag:               client.ExtractNamespacedMetadata(bankAccount.Metadata, "tag"),
+				InstitutionNumber: models.ExtractNamespacedMetadata(bankAccount.Metadata, client.MangopayInstitutionNumberMetadataKey),
+				BranchCode:        models.ExtractNamespacedMetadata(bankAccount.Metadata, client.MangopayBranchCodeMetadataKey),
+				BankName:          models.ExtractNamespacedMetadata(bankAccount.Metadata, client.MangopayBankNameMetadataKey),
+				Tag:               models.ExtractNamespacedMetadata(bankAccount.Metadata, client.MangopayTagMetadataKey),
 			}
 
 			var err error
@@ -125,8 +125,8 @@ func createExternalBankAccount(
 				OwnerName:     bankAccount.Name,
 				OwnerAddress:  &ownerAddress,
 				AccountNumber: bankAccount.AccountNumber,
-				SortCode:      client.ExtractNamespacedMetadata(bankAccount.Metadata, "sortCode"),
-				Tag:           client.ExtractNamespacedMetadata(bankAccount.Metadata, "tag"),
+				SortCode:      models.ExtractNamespacedMetadata(bankAccount.Metadata, client.MangopaySortCodeMetadataKey),
+				Tag:           models.ExtractNamespacedMetadata(bankAccount.Metadata, client.MangopayTagMetadataKey),
 			}
 
 			var err error
@@ -142,7 +142,7 @@ func createExternalBankAccount(
 				AccountNumber: bankAccount.AccountNumber,
 				BIC:           bankAccount.SwiftBicCode,
 				Country:       bankAccount.Country,
-				Tag:           client.ExtractNamespacedMetadata(bankAccount.Metadata, "tag"),
+				Tag:           models.ExtractNamespacedMetadata(bankAccount.Metadata, client.MangopayTagMetadataKey),
 			}
 
 			var err error
