@@ -7,6 +7,10 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/formancehq/orchestration/internal/storage"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunmigrate"
+	"github.com/uptrace/bun"
+
 	"github.com/formancehq/stack/libs/go-libs/aws/iam"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 
@@ -69,7 +73,14 @@ func NewRootCommand() *cobra.Command {
 	cmd.PersistentFlags().String(temporalTaskQueueFlag, "default", "Temporal task queue name")
 	cmd.PersistentFlags().StringSlice(topicsFlag, []string{}, "Topics to listen")
 	cmd.PersistentFlags().String(stackFlag, "", "Stack")
-	cmd.AddCommand(newServeCommand(), newVersionCommand(), newWorkerCommand())
+	cmd.AddCommand(
+		newServeCommand(),
+		newVersionCommand(),
+		newWorkerCommand(),
+		bunmigrate.NewDefaultCommand(func(cmd *cobra.Command, args []string, db *bun.DB) error {
+			return storage.Migrate(cmd.Context(), db)
+		}),
+	)
 
 	publish.InitCLIFlags(cmd)
 	auth.InitAuthFlags(cmd.PersistentFlags())

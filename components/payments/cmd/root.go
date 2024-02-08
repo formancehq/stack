@@ -3,8 +3,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/formancehq/stack/libs/go-libs/bun/bunmigrate"
 	"os"
+
+	"github.com/formancehq/stack/libs/go-libs/bun/bunmigrate"
 
 	_ "github.com/bombsimon/logrusr/v3"
 	"github.com/formancehq/payments/cmd/api"

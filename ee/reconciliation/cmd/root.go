@@ -52,7 +52,6 @@ func NewRootCommand() *cobra.Command {
 	cmd.AddCommand(versionCmd)
 	migrate := newMigrate()
 	cmd.AddCommand(migrate)
-
 	return cmd
 }
 

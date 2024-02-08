@@ -4,6 +4,10 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/formancehq/auth/pkg/storage/sqlstorage"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunmigrate"
+	"github.com/uptrace/bun"
+
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
 )
@@ -22,7 +26,12 @@ func NewRootCommand() *cobra.Command {
 	}
 	cmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	cmd.PersistentFlags().BoolP(service.DebugFlag, "d", false, "Debug mode")
-	cmd.AddCommand(newServeCommand(), newVersionCommand())
+	cmd.AddCommand(
+		newServeCommand(),
+		newVersionCommand(),
+		bunmigrate.NewDefaultCommand(func(cmd *cobra.Command, args []string, db *bun.DB) error {
+			return sqlstorage.Migrate(cmd.Context(), db)
+		}))
 
 	return cmd
 }

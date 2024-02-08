@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/uptrace/bun"
+
 	// Import the postgres driver.
 	_ "github.com/lib/pq"
 )
