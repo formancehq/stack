@@ -52,11 +52,14 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, reconciliation *v1beta1.Reconc
 			return errors.Wrap(err, "resolving image")
 		}
 
-		if IsGreaterOrEqual(version, "v2.0.0-rc.5") && reconciliation.Status.Version != version {
+		if IsGreaterOrEqual(version, "v2.0.0-rc.5") && databases.GetSavedModuleVersion(database) != version {
 			if err := jobs.Handle(ctx, reconciliation, "migrate", databases.MigrateDatabaseContainer(image, database)); err != nil {
 				return err
 			}
-			reconciliation.Status.Version = version
+
+			if err := databases.SaveModuleVersion(ctx, database, version); err != nil {
+				return errors.Wrap(err, "saving module version in database object")
+			}
 		}
 
 		if err := createDeployment(ctx, stack, reconciliation, database, authClient, image); err != nil {
