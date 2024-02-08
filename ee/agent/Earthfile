@@ -14,7 +14,7 @@ sources:
     COPY (../../components/operator+sources/*) /src
     WORKDIR /src/ee/agent
     COPY go.* .
-    COPY --dir cmd internal .
+    COPY --dir cmd internal tests .
     COPY main.go .
     SAVE ARTIFACT /src
 
