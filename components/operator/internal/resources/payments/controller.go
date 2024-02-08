@@ -20,6 +20,7 @@ import (
 	_ "embed"
 	"github.com/formancehq/operator/internal/resources/jobs"
 	"github.com/formancehq/operator/internal/resources/registries"
+	"github.com/pkg/errors"
 	batchv1 "k8s.io/api/batch/v1"
 	"net/http"
 
@@ -54,7 +55,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, p *v1beta1.Payments, version s
 			return err
 		}
 
-		if p.Status.Version != version {
+		if databases.GetSavedModuleVersion(database) != version {
 			if err := jobs.Handle(ctx, p, "migrate", databases.MigrateDatabaseContainer(image, database,
 				func(m *databases.MigrationConfiguration) {
 					m.AdditionalEnv = []corev1.EnvVar{
@@ -64,7 +65,10 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, p *v1beta1.Payments, version s
 			)); err != nil {
 				return err
 			}
-			p.Status.Version = version
+
+			if err := databases.SaveModuleVersion(ctx, database, version); err != nil {
+				return errors.Wrap(err, "saving module version in database object")
+			}
 		}
 
 		if semver.IsValid(version) && semver.Compare(version, "v1.0.0-alpha") < 0 {

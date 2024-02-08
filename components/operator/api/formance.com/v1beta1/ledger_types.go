@@ -66,8 +66,6 @@ type LedgerSpec struct {
 // LedgerStatus defines the observed state of Ledger
 type LedgerStatus struct {
 	ModuleStatus `json:",inline"`
-	//+optional
-	Version string `json:"version,omitempty"`
 }
 
 //+kubebuilder:object:root=true
