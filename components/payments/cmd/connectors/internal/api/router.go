@@ -51,6 +51,7 @@ func httpRouter(
 
 	authGroup.Path("/bank-accounts").Methods(http.MethodPost).Handler(createBankAccountHandler(b))
 	authGroup.Path("/bank-accounts/{bankAccountID}/forward").Methods(http.MethodPost).Handler(forwardBankAccountToConnector(b))
+	authGroup.Path("/bank-accounts/{bankAccountID}/metadata").Methods(http.MethodPatch).Handler(updateBankAccountMetadataHandler(b))
 
 	authGroup.Path("/transfer-initiations").Methods(http.MethodPost).Handler(createTransferInitiationHandler(b))
 	authGroup.Path("/transfer-initiations/{transferID}/status").Methods(http.MethodPost).Handler(updateTransferInitiationStatusHandler(b))

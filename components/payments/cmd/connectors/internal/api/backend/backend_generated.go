@@ -156,6 +156,20 @@ func (mr *MockServiceMockRecorder) ReverseTransferInitiation(ctx, transferID, re
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReverseTransferInitiation", reflect.TypeOf((*MockService)(nil).ReverseTransferInitiation), ctx, transferID, req)
 }
 
+// UpdateBankAccountMetadata mocks base method.
+func (m *MockService) UpdateBankAccountMetadata(ctx context.Context, id string, req *service.UpdateBankAccountMetadataRequest) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateBankAccountMetadata", ctx, id, req)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateBankAccountMetadata indicates an expected call of UpdateBankAccountMetadata.
+func (mr *MockServiceMockRecorder) UpdateBankAccountMetadata(ctx, id, req interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateBankAccountMetadata", reflect.TypeOf((*MockService)(nil).UpdateBankAccountMetadata), ctx, id, req)
+}
+
 // UpdateTransferInitiationStatus mocks base method.
 func (m *MockService) UpdateTransferInitiationStatus(ctx context.Context, transferID string, req *service.UpdateTransferInitiationStatusRequest) error {
 	m.ctrl.T.Helper()

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	manager "github.com/formancehq/payments/cmd/connectors/internal/api/connectors_manager"
+	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/google/uuid"
@@ -323,6 +324,83 @@ func TestForwardBankAccountToConnector(t *testing.T) {
 			service := New(store.WithBankAccountAdjustments(tc.withBankAccountAdjustments), &MockPublisher{}, messages.NewMessages(""), handlers)
 
 			_, err := service.ForwardBankAccountToConnector(context.Background(), tc.bankAccountID, tc.req)
+			if tc.expectedError != nil {
+				require.True(t, errors.Is(err, tc.expectedError))
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestUpdateBankAccountMetadata(t *testing.T) {
+	t.Parallel()
+
+	type testCase struct {
+		name          string
+		bankAccountID string
+		req           *UpdateBankAccountMetadataRequest
+		storageError  error
+		expectedError error
+	}
+
+	testCases := []testCase{
+		{
+			name:          "nominal",
+			bankAccountID: uuid.New().String(),
+			req: &UpdateBankAccountMetadataRequest{
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+		},
+		{
+			name:          "err not found from storage",
+			bankAccountID: uuid.New().String(),
+			req: &UpdateBankAccountMetadataRequest{
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+			storageError:  storage.ErrNotFound,
+			expectedError: storage.ErrNotFound,
+		},
+		{
+			name: "empty bank account id",
+			req: &UpdateBankAccountMetadataRequest{
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+			expectedError: ErrInvalidID,
+		},
+		{
+			name:          "invalid bank account id",
+			bankAccountID: "invalid",
+			req: &UpdateBankAccountMetadataRequest{
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+			expectedError: ErrInvalidID,
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			var handlers map[models.ConnectorProvider]*ConnectorHandlers
+
+			store := &MockStore{}
+			if tc.storageError != nil {
+				store = store.WithError(tc.storageError)
+			}
+			service := New(store, &MockPublisher{}, messages.NewMessages(""), handlers)
+
+			err := service.UpdateBankAccountMetadata(context.Background(), tc.bankAccountID, tc.req)
 			if tc.expectedError != nil {
 				require.True(t, errors.Is(err, tc.expectedError))
 			} else {

@@ -51,6 +51,43 @@ func (s *Storage) updateBankAccountInformation(ctx context.Context, id uuid.UUID
 	return nil
 }
 
+func (s *Storage) UpdateBankAccountMetadata(ctx context.Context, id uuid.UUID, metadata map[string]string) error {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return e("update bank account metadata", err)
+	}
+	defer tx.Rollback()
+
+	var account models.BankAccount
+	err = tx.NewSelect().
+		Model(&account).
+		Column("id", "metadata").
+		Where("id = ?", id).
+		Scan(ctx)
+	if err != nil {
+		return e("update bank account metadata", err)
+	}
+
+	if account.Metadata == nil {
+		account.Metadata = make(map[string]string)
+	}
+
+	for k, v := range metadata {
+		account.Metadata[k] = v
+	}
+
+	_, err = s.db.NewUpdate().
+		Model(&account).
+		Column("metadata").
+		Where("id = ?", id).
+		Exec(ctx)
+	if err != nil {
+		return e("update bank account metadata", err)
+	}
+
+	return e("failed to commit transaction", tx.Commit())
+}
+
 func (s *Storage) LinkBankAccountWithAccount(ctx context.Context, id uuid.UUID, accountID *models.AccountID) error {
 	adjustment := &models.BankAccountAdjustment{
 		ID:            uuid.New(),
