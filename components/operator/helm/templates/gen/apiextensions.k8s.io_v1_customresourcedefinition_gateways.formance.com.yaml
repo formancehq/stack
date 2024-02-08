@@ -165,8 +165,6 @@ spec:
                 items:
                   type: string
                 type: array
-              version:
-                type: string
             required:
             - authEnabled
             type: object

@@ -136,7 +136,7 @@ generate-docs:
     RUN go install github.com/elastic/crd-ref-docs@latest
     WORKDIR /src/components/operator
     COPY docs.config.yaml .
-    COPY --dir docs .
+    COPY --dir docs api .
     RUN crd-ref-docs --source-path=api/formance.com/v1beta1 --renderer=markdown --output-path=./docs/crd.md --config=./docs.config.yaml
     SAVE ARTIFACT docs/crd.md AS LOCAL docs/crd.md
 
