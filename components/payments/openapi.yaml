@@ -378,6 +378,20 @@ paths:
         '200':
           $ref: '#/components/responses/BankAccount'
 
+  /bank-accounts/{bankAccountId}/metadata:
+    patch:
+      summary: Update metadata of a bank account
+      tags:
+        - Payments
+      operationId: updateBankAccountMetadata
+      parameters:
+        - $ref: '#/components/parameters/BankAccountId'
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateBankAccountMetadata'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+
   /connectors:
     get:
       summary: List all installed connectors
@@ -871,6 +885,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ForwardBankAccountRequest'
+    UpdateBankAccountMetadata:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateBankAccountMetadataRequest'
     BankAccount:
       required: true
       content:
@@ -2073,6 +2093,13 @@ components:
       properties:
         connectorID:
           type: string
+    UpdateBankAccountMetadataRequest:
+      type: object
+      required:
+        - metadata
+      properties:
+        metadata:
+          $ref: '#/components/schemas/BankAccountMetadata'
     BankAccountRequest:
       type: object
       required:
