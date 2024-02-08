@@ -20,28 +20,28 @@ speakeasy:
     SAVE ARTIFACT speakeasy
 
 build-final-spec:
-    ARG version=INTERNAL
     FROM core+base-image
     RUN apk update && apk add yarn nodejs npm jq
     WORKDIR /src/releases
     COPY releases/package.* .
     RUN npm install
-    WORKDIR /src/components
-    FOR c IN payments ledger
-        COPY (./components/$c+openapi/openapi.yaml) /src/components/$c/
-    END
-    WORKDIR /src/ee
-    FOR c IN auth webhooks search wallets reconciliation orchestration
-        COPY (./ee/$c+openapi/openapi.yaml) /src/ee/$c/
-    END
 
     WORKDIR /src/releases
     COPY releases/base.yaml .
     COPY releases/openapi-overlay.json .
     COPY releases/openapi-merge.json .
     RUN mkdir ./build
+
+    FOR c IN payments ledger
+        COPY (./components/$c+openapi/openapi.yaml) /src/components/$c/
+    END
+    FOR c IN auth webhooks search wallets reconciliation orchestration
+        COPY (./ee/$c+openapi/openapi.yaml) /src/ee/$c/
+    END
+
     RUN npm run build
     RUN jq -s '.[0] * .[1]' build/generate.json openapi-overlay.json > build/latest.json
+    ARG version=INTERNAL
     IF [ "$version" = "INTERNAL" ]
         RUN sed -i 's/SDK_VERSION/INTERNAL/g' build/latest.json
         SAVE ARTIFACT build/latest.json AS LOCAL releases/build/latest.json
