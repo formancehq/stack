@@ -506,6 +506,7 @@ _Appears in:_
 | `stack` _string_ |  |
 | `name` _string_ | Name indicates prefix api |
 | `rules` _[GatewayHTTPAPIRule](#gatewayhttpapirule) array_ | Rules |
+| `healthCheckEndpoint` _string_ | Health check endpoint |
 
 
 
