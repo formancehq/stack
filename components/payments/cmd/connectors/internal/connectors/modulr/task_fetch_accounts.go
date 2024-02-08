@@ -44,7 +44,7 @@ func (s *fetchAccountsState) IsNew(account *client.Account) (bool, error) {
 
 func (s *fetchAccountsState) FilterNew(accounts []*client.Account) ([]*client.Account, error) {
 	// accounts are assumed to be sorted by creation date.
-	var firstNewIdx int
+	firstNewIdx := len(accounts)
 	for idx, account := range accounts {
 		isNew, err := s.IsNew(account)
 		if err != nil {
