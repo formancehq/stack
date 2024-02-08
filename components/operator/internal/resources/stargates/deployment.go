@@ -13,7 +13,7 @@ import (
 func createDeployment(ctx core.Context, stack *v1beta1.Stack, stargate *v1beta1.Stargate, version string) error {
 
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseName(ctx, stargate))
+	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseKind(ctx, stargate))
 	if err != nil {
 		return err
 	}

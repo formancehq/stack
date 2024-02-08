@@ -133,8 +133,6 @@ func (c *StatusWithConditions) SetCondition(condition Condition) {
 
 type ModuleStatus struct {
 	StatusWithConditions `json:",inline"`
-	//+optional
-	Version string `json:"version,omitempty"`
 }
 
 type AuthConfig struct {

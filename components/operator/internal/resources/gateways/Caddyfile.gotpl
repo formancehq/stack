@@ -114,7 +114,6 @@
 					{{ $service.Name }} http://{{ $service.Name }}:8080/_info http://{{ $service.Name }}:8080/{{ $service.HealthCheckEndpoint }}
 				{{- end }}
 				{{- end }}
-
 			}
 		}
 	}

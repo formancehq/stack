@@ -4,11 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/formancehq/operator/internal/resources/settings"
-	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
-	"github.com/pkg/errors"
-	"golang.org/x/mod/semver"
-
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/auths"
@@ -17,6 +12,9 @@ import (
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
 	"github.com/formancehq/operator/internal/resources/registries"
+	"github.com/formancehq/operator/internal/resources/settings"
+	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/pkg/errors"
 	v1 "k8s.io/api/core/v1"
 )
 
@@ -31,7 +29,7 @@ func deploymentEnvVars(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1
 	}
 
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseName(ctx, webhooks))
+	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseKind(ctx, webhooks))
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +68,9 @@ func createAPIDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1bet
 	}
 
 	args := []string{"serve"}
-	if !semver.IsValid(version) || semver.Compare(version, "v2.0.0-alpha") >= 0 {
+
+	// notes(gfyrag): upgrade command introduced in version v2.0.0-rc.5
+	if core.IsGreaterOrEqual(version, "v2.0.0-alpha") && core.IsLower(version, "v2.0.0-rc.5") {
 		args = append(args, "--auto-migrate")
 	}
 	if withWorker {

@@ -12,13 +12,12 @@ import (
 	"github.com/formancehq/operator/internal/resources/gateways"
 	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/services"
-	corev1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 )
 
 func commonEnvVars(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) ([]v1.EnvVar, error) {
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseName(ctx, payments))
+	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseKind(ctx, payments))
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +46,7 @@ func commonEnvVars(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Pay
 }
 
 func createFullDeployment(ctx core.Context, stack *v1beta1.Stack,
-	payments *v1beta1.Payments, database *v1beta1.Database, version string) error {
+	payments *v1beta1.Payments, database *v1beta1.Database, image string) error {
 
 	env, err := commonEnvVars(ctx, stack, payments, database)
 	if err != nil {
@@ -59,11 +58,6 @@ func createFullDeployment(ctx core.Context, stack *v1beta1.Stack,
 		return err
 	}
 	env = append(env, authEnvVars...)
-
-	image, err := registries.GetImage(ctx, stack, "payments", version)
-	if err != nil {
-		return err
-	}
 
 	topic, err := brokertopics.Find(ctx, stack, "payments")
 	if err != nil {
@@ -89,7 +83,8 @@ func createFullDeployment(ctx core.Context, stack *v1beta1.Stack,
 			LivenessProbe: deployments.DefaultLiveness("http", deployments.WithProbePath("/_health")),
 			Ports:         []v1.ContainerPort{deployments.StandardHTTPPort()},
 		}),
-		setInitContainer(payments, database, image),
+		// Ensure empty
+		deployments.WithInitContainers(),
 	)
 	if err != nil {
 		return err
@@ -98,7 +93,7 @@ func createFullDeployment(ctx core.Context, stack *v1beta1.Stack,
 	return nil
 }
 
-func createReadDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database, version string) error {
+func createReadDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database, image string) error {
 
 	env, err := commonEnvVars(ctx, stack, payments, database)
 	if err != nil {
@@ -111,11 +106,6 @@ func createReadDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1be
 	}
 	env = append(env, authEnvVars...)
 
-	image, err := registries.GetImage(ctx, stack, "payments", version)
-	if err != nil {
-		return err
-	}
-
 	_, err = deployments.CreateOrUpdate(ctx, stack, payments, "payments-read",
 		deployments.WithMatchingLabels("payments-read"),
 		deployments.WithContainers(v1.Container{
@@ -126,6 +116,8 @@ func createReadDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1be
 			LivenessProbe: deployments.DefaultLiveness("http", deployments.WithProbePath("/_health")),
 			Ports:         []v1.ContainerPort{deployments.StandardHTTPPort()},
 		}),
+		// Ensure empty
+		deployments.WithInitContainers(),
 	)
 	if err != nil {
 		return err
@@ -140,7 +132,7 @@ func createReadDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1be
 }
 
 func createConnectorsDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Payments,
-	database *v1beta1.Database, version string) error {
+	database *v1beta1.Database, image string) error {
 
 	env, err := commonEnvVars(ctx, stack, payments, database)
 	if err != nil {
@@ -161,11 +153,6 @@ func createConnectorsDeployment(ctx core.Context, stack *v1beta1.Stack, payments
 		env = append(env, core.Env("PUBLISHER_TOPIC_MAPPING", "*:"+core.GetObjectName(stack.Name, "payments")))
 	}
 
-	image, err := registries.GetImage(ctx, stack, "payments", version)
-	if err != nil {
-		return err
-	}
-
 	_, err = deployments.CreateOrUpdate(ctx, stack, payments, "payments-connectors",
 		deployments.WithMatchingLabels("payments-connectors"),
 		deployments.WithContainers(v1.Container{
@@ -177,7 +164,8 @@ func createConnectorsDeployment(ctx core.Context, stack *v1beta1.Stack, payments
 			LivenessProbe: deployments.DefaultLiveness("http",
 				deployments.WithProbePath("/_health")),
 		}),
-		setInitContainer(payments, database, image),
+		// Ensure empty
+		deployments.WithInitContainers(),
 	)
 	if err != nil {
 		return err
@@ -201,7 +189,7 @@ func createGateway(ctx core.Context, stack *v1beta1.Stack, p *v1beta1.Payments) 
 	}
 
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseName(ctx, p))
+	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseKind(ctx, p))
 	if err != nil {
 		return err
 	}
@@ -220,20 +208,4 @@ func createGateway(ctx core.Context, stack *v1beta1.Stack, p *v1beta1.Payments) 
 		deployments.WithInitContainers(),
 	)
 	return err
-}
-
-func setInitContainer(payments *v1beta1.Payments, database *v1beta1.Database, image string) func(t *corev1.Deployment) error {
-	return func(t *corev1.Deployment) error {
-		t.Spec.Template.Spec.InitContainers = []v1.Container{
-			databases.MigrateDatabaseContainer(image, database,
-				func(m *databases.MigrationConfiguration) {
-					m.AdditionalEnv = []v1.EnvVar{
-						core.Env("CONFIG_ENCRYPTION_KEY", payments.Spec.EncryptionKey),
-					}
-				},
-			),
-		}
-
-		return nil
-	}
 }

@@ -14,7 +14,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack,
 	auditTopic *v1beta1.BrokerTopic, version string) error {
 
 	env := GetEnvVars(gateway)
-	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseName(ctx, gateway))
+	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseKind(ctx, gateway))
 	if err != nil {
 		return err
 	}

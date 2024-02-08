@@ -66,8 +66,6 @@ type LedgerSpec struct {
 // LedgerStatus defines the observed state of Ledger
 type LedgerStatus struct {
 	ModuleStatus `json:",inline"`
-	//+optional
-	IsMigratedOnV2 bool `json:"isMigratedOnV2,omitempty"`
 }
 
 //+kubebuilder:object:root=true

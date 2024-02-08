@@ -37,7 +37,7 @@ func LoadFromFileSystem(ctx Context, fs embed.FS,
 				return nil
 			},
 			WithLabels[*v1beta1.BenthosStream](map[string]string{
-				"service": LowerCamelCaseName(ctx, owner),
+				"service": LowerCamelCaseKind(ctx, owner),
 			}),
 			WithController[*v1beta1.BenthosStream](ctx.GetScheme(), owner))
 		_, _, err = CreateOrUpdate[*v1beta1.BenthosStream](ctx, types.NamespacedName{
