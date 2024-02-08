@@ -3,6 +3,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunmigrate"
 	"os"
 
 	_ "github.com/bombsimon/logrusr/v3"
@@ -56,7 +57,7 @@ func addAutoMigrateCommand(cmd *cobra.Command) {
 	cmd.Flags().Bool(autoMigrateFlag, false, "Auto migrate database")
 	cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
 		if viper.GetBool(autoMigrateFlag) {
-			return runMigrate(cmd, []string{"up"})
+			return bunmigrate.Run(cmd, args, Migrate)
 		}
 		return nil
 	}
