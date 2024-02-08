@@ -78,10 +78,12 @@ func installLedgerSingleInstance(ctx core.Context, stack *v1beta1.Stack,
 	return nil
 }
 
-func getUpgradeContainer(database *v1beta1.Database, image string) corev1.Container {
+func getUpgradeContainer(database *v1beta1.Database, image, version string) corev1.Container {
 	return databases.MigrateDatabaseContainer(image, database,
 		func(m *databases.MigrationConfiguration) {
-			m.Command = []string{"buckets", "upgrade-all"}
+			if core.IsLower(version, "v2.0.0-rc.6") {
+				m.Command = []string{"buckets", "upgrade-all"}
+			}
 			m.AdditionalEnv = []corev1.EnvVar{
 				core.Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"),
 			}
