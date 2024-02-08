@@ -8,7 +8,36 @@ import (
 )
 
 func StacksEventHandler(logger sharedlogging.Logger, membershipClient MembershipClient) cache.ResourceEventHandlerFuncs {
+
+	sendStatus := func(stack string, status generated.StackStatus) {
+		if err := membershipClient.Send(&generated.Message{
+			Message: &generated.Message_StatusChanged{
+				StatusChanged: &generated.StatusChanged{
+					ClusterName: stack,
+					Status:      status,
+				},
+			},
+		}); err != nil {
+			logger.Errorf("Unable to send stack status to server: %s", err)
+		}
+	}
+
+	sendStatusFromStack := func(stack *v1beta1.Stack) {
+		sendStatus(stack.Name, func() generated.StackStatus {
+			if stack.Status.Ready {
+				return generated.StackStatus_Ready
+			} else {
+				return generated.StackStatus_Progressing
+			}
+		}())
+	}
+
 	return cache.ResourceEventHandlerFuncs{
+		AddFunc: func(obj interface{}) {
+			stack := convertUnstructured[*v1beta1.Stack](obj)
+			logger.Infof("Stack '%s' added", stack.Name)
+			sendStatusFromStack(stack)
+		},
 		UpdateFunc: func(oldObj, newObj interface{}) {
 
 			oldStack := convertUnstructured[*v1beta1.Stack](oldObj)
@@ -19,39 +48,13 @@ func StacksEventHandler(logger sharedlogging.Logger, membershipClient Membership
 			}
 
 			logger.Infof("Stack '%s' updated", newStack.Name)
-
-			if err := membershipClient.Send(&generated.Message{
-				Message: &generated.Message_StatusChanged{
-					StatusChanged: &generated.StatusChanged{
-						ClusterName: newStack.Name,
-						Status: func() generated.StackStatus {
-							if newStack.Status.Ready {
-								return generated.StackStatus_Ready
-							} else {
-								return generated.StackStatus_Progressing
-							}
-						}(),
-					},
-				},
-			}); err != nil {
-				logger.Errorf("Unable to send stack status to server: %s", err)
-			}
+			sendStatusFromStack(newStack)
 		},
 		DeleteFunc: func(obj interface{}) {
 			stack := convertUnstructured[*v1beta1.Stack](obj)
 
 			logger.Infof("Stack '%s' deleted", stack.Name)
-
-			if err := membershipClient.Send(&generated.Message{
-				Message: &generated.Message_StatusChanged{
-					StatusChanged: &generated.StatusChanged{
-						ClusterName: stack.Name,
-						Status:      generated.StackStatus_Deleted,
-					},
-				},
-			}); err != nil {
-				logger.Errorf("Unable to send stack status to server: %s", err)
-			}
+			sendStatus(stack.Name, generated.StackStatus_Deleted)
 		},
 	}
 }
