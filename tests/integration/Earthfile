@@ -51,7 +51,7 @@ tests:
         SET cmd="$cmd --skip-file=$skipFile"
     END
 
-    WITH DOCKER --pull=jeffail/benthos:4.11 \
+    WITH DOCKER \
         --load temporalite=+temporalite \
         --pull public.ecr.aws/formance-internal/jeffail/benthos:v4.23.1-es \
         --compose docker-compose.yml
