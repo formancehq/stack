@@ -189,7 +189,7 @@ func ingestAccountsBatch(
 				Reference:   account.ID,
 				ConnectorID: connectorID,
 			},
-			CreatedAt:    time.Unix(account.Created, 0),
+			CreatedAt:    time.Unix(account.Created, 0).UTC(),
 			Reference:    account.ID,
 			ConnectorID:  connectorID,
 			DefaultAsset: currency.FormatAsset(supportedCurrenciesWithDecimal, string(account.DefaultCurrency)),

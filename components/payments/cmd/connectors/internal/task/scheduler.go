@@ -138,8 +138,9 @@ func (s *DefaultTaskScheduler) schedule(ctx context.Context, descriptor models.T
 
 func (s *DefaultTaskScheduler) Shutdown(ctx context.Context) error {
 	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	s.stopped = true
-	s.mu.Unlock()
 
 	s.logger(ctx).Infof("Stopping scheduler...")
 	s.workerPool.Stop()
