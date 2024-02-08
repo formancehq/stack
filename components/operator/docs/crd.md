@@ -683,7 +683,6 @@ _Appears in:_
 | `ready` _boolean_ |  |
 | `info` _string_ |  |
 | `conditions` _[Condition](#condition) array_ |  |
-| `version` _string_ |  |
 
 
 
