@@ -8,18 +8,18 @@ import (
 )
 
 type BankAccount struct {
-	AccountID     *string                 `json:"accountID,omitempty"`
-	AccountNumber *string                 `json:"accountNumber,omitempty"`
-	Adjustments   []BankAccountAdjustment `json:"adjustments,omitempty"`
-	ConnectorID   string                  `json:"connectorID"`
-	Country       string                  `json:"country"`
-	CreatedAt     time.Time               `json:"createdAt"`
-	Iban          *string                 `json:"iban,omitempty"`
-	ID            string                  `json:"id"`
-	Metadata      map[string]string       `json:"metadata,omitempty"`
-	Name          string                  `json:"name"`
-	Provider      *string                 `json:"provider,omitempty"`
-	SwiftBicCode  *string                 `json:"swiftBicCode,omitempty"`
+	AccountID       *string                      `json:"accountID,omitempty"`
+	AccountNumber   *string                      `json:"accountNumber,omitempty"`
+	ConnectorID     string                       `json:"connectorID"`
+	Country         string                       `json:"country"`
+	CreatedAt       time.Time                    `json:"createdAt"`
+	Iban            *string                      `json:"iban,omitempty"`
+	ID              string                       `json:"id"`
+	Metadata        map[string]string            `json:"metadata,omitempty"`
+	Name            string                       `json:"name"`
+	Provider        *string                      `json:"provider,omitempty"`
+	RelatedAccounts []BankAccountRelatedAccounts `json:"relatedAccounts,omitempty"`
+	SwiftBicCode    *string                      `json:"swiftBicCode,omitempty"`
 }
 
 func (b BankAccount) MarshalJSON() ([]byte, error) {
@@ -45,13 +45,6 @@ func (o *BankAccount) GetAccountNumber() *string {
 		return nil
 	}
 	return o.AccountNumber
-}
-
-func (o *BankAccount) GetAdjustments() []BankAccountAdjustment {
-	if o == nil {
-		return nil
-	}
-	return o.Adjustments
 }
 
 func (o *BankAccount) GetConnectorID() string {
@@ -108,6 +101,13 @@ func (o *BankAccount) GetProvider() *string {
 		return nil
 	}
 	return o.Provider
+}
+
+func (o *BankAccount) GetRelatedAccounts() []BankAccountRelatedAccounts {
+	if o == nil {
+		return nil
+	}
+	return o.RelatedAccounts
 }
 
 func (o *BankAccount) GetSwiftBicCode() *string {

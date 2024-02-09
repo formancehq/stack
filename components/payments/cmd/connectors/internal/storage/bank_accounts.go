@@ -27,10 +27,10 @@ func (s *Storage) CreateBankAccount(ctx context.Context, bankAccount *models.Ban
 	return s.updateBankAccountInformation(ctx, id, bankAccount.AccountNumber, bankAccount.IBAN, bankAccount.SwiftBicCode)
 }
 
-func (s *Storage) AddBankAccountAdjustment(ctx context.Context, adjustment *models.BankAccountAdjustment) error {
-	_, err := s.db.NewInsert().Model(adjustment).Exec(ctx)
+func (s *Storage) AddBankAccountRelatedAccount(ctx context.Context, relatedAccount *models.BankAccountRelatedAccount) error {
+	_, err := s.db.NewInsert().Model(relatedAccount).Exec(ctx)
 	if err != nil {
-		return e("add bank account adjustment", err)
+		return e("add bank account related account", err)
 	}
 
 	return nil
@@ -89,14 +89,14 @@ func (s *Storage) UpdateBankAccountMetadata(ctx context.Context, id uuid.UUID, m
 }
 
 func (s *Storage) LinkBankAccountWithAccount(ctx context.Context, id uuid.UUID, accountID *models.AccountID) error {
-	adjustment := &models.BankAccountAdjustment{
+	relatedAccount := &models.BankAccountRelatedAccount{
 		ID:            uuid.New(),
 		BankAccountID: id,
 		ConnectorID:   accountID.ConnectorID,
 		AccountID:     *accountID,
 	}
 
-	return s.AddBankAccountAdjustment(ctx, adjustment)
+	return s.AddBankAccountRelatedAccount(ctx, relatedAccount)
 }
 
 func (s *Storage) ListBankAccounts(ctx context.Context, pagination PaginatorQuery) ([]*models.BankAccount, PaginationDetails, error) {
@@ -104,7 +104,7 @@ func (s *Storage) ListBankAccounts(ctx context.Context, pagination PaginatorQuer
 
 	query := s.db.NewSelect().
 		Model(&bankAccounts).
-		Relation("Adjustments")
+		Relation("RelatedAccounts")
 
 	query = pagination.apply(query, "bank_account.created_at")
 
@@ -135,7 +135,7 @@ func (s *Storage) ListBankAccounts(ctx context.Context, pagination PaginatorQuer
 		firstReference = bankAccounts[0].CreatedAt.Format(time.RFC3339Nano)
 		lastReference = bankAccounts[len(bankAccounts)-1].CreatedAt.Format(time.RFC3339Nano)
 
-		query = s.db.NewSelect().Model(&bankAccounts).Relation("Adjustments")
+		query = s.db.NewSelect().Model(&bankAccounts).Relation("RelatedAccounts")
 
 		hasPrevious, err = pagination.hasPrevious(ctx, query, "bank_account.created_at", firstReference)
 		if err != nil {
@@ -155,7 +155,7 @@ func (s *Storage) GetBankAccount(ctx context.Context, id uuid.UUID, expand bool)
 	var account models.BankAccount
 	query := s.db.NewSelect().
 		Model(&account).
-		Relation("Adjustments").
+		Relation("RelatedAccounts").
 		Column("id", "created_at", "name", "created_at", "country", "metadata")
 
 	if expand {
@@ -174,15 +174,15 @@ func (s *Storage) GetBankAccount(ctx context.Context, id uuid.UUID, expand bool)
 	return &account, nil
 }
 
-func (s *Storage) GetBankAccountAdjustments(ctx context.Context, id uuid.UUID) ([]*models.BankAccountAdjustment, error) {
-	var adjustments []*models.BankAccountAdjustment
+func (s *Storage) GetBankAccountRelatedAccounts(ctx context.Context, id uuid.UUID) ([]*models.BankAccountRelatedAccount, error) {
+	var relatedAccounts []*models.BankAccountRelatedAccount
 	err := s.db.NewSelect().
-		Model(&adjustments).
+		Model(&relatedAccounts).
 		Where("bank_account_id = ?", id).
 		Scan(ctx)
 	if err != nil {
-		return nil, e("get bank account adjustments", err)
+		return nil, e("get bank account related accounts", err)
 	}
 
-	return adjustments, nil
+	return relatedAccounts, nil
 }

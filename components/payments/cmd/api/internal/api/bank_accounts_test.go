@@ -161,7 +161,7 @@ func TestListBankAccounts(t *testing.T) {
 					IBAN:          "FR7630006000011234567890189",
 					SwiftBicCode:  "HBUKGB4B",
 					Country:       "FR",
-					Adjustments: []*models.BankAccountAdjustment{
+					RelatedAccounts: []*models.BankAccountRelatedAccount{
 						{
 							ID:            uuid.New(),
 							BankAccountID: b1ID,
@@ -181,7 +181,7 @@ func TestListBankAccounts(t *testing.T) {
 					IBAN:          "FR7630006000011234567890188",
 					SwiftBicCode:  "ABCDGB4B",
 					Country:       "DE",
-					Adjustments: []*models.BankAccountAdjustment{
+					RelatedAccounts: []*models.BankAccountRelatedAccount{
 						{
 							ID:            uuid.New(),
 							BankAccountID: b2ID,
@@ -201,15 +201,15 @@ func TestListBankAccounts(t *testing.T) {
 					Name:        listBankAccountsResponse[0].Name,
 					CreatedAt:   listBankAccountsResponse[0].CreatedAt,
 					Country:     listBankAccountsResponse[0].Country,
-					ConnectorID: listBankAccountsResponse[0].Adjustments[0].ConnectorID.String(),
-					AccountID:   listBankAccountsResponse[0].Adjustments[0].AccountID.String(),
-					Provider:    listBankAccountsResponse[0].Adjustments[0].ConnectorID.Provider.String(),
-					Adjustments: []*bankAccountAdjusmtentsResponse{
+					ConnectorID: listBankAccountsResponse[0].RelatedAccounts[0].ConnectorID.String(),
+					AccountID:   listBankAccountsResponse[0].RelatedAccounts[0].AccountID.String(),
+					Provider:    listBankAccountsResponse[0].RelatedAccounts[0].ConnectorID.Provider.String(),
+					RelatedAccounts: []*bankAccountRelatedAccountsResponse{
 						{
-							ID:          listBankAccountsResponse[0].Adjustments[0].ID.String(),
-							AccountID:   listBankAccountsResponse[0].Adjustments[0].AccountID.String(),
-							ConnectorID: listBankAccountsResponse[0].Adjustments[0].ConnectorID.String(),
-							Provider:    listBankAccountsResponse[0].Adjustments[0].ConnectorID.Provider.String(),
+							ID:          listBankAccountsResponse[0].RelatedAccounts[0].ID.String(),
+							AccountID:   listBankAccountsResponse[0].RelatedAccounts[0].AccountID.String(),
+							ConnectorID: listBankAccountsResponse[0].RelatedAccounts[0].ConnectorID.String(),
+							Provider:    listBankAccountsResponse[0].RelatedAccounts[0].ConnectorID.Provider.String(),
 						},
 					},
 				},
@@ -218,15 +218,15 @@ func TestListBankAccounts(t *testing.T) {
 					Name:        listBankAccountsResponse[1].Name,
 					CreatedAt:   listBankAccountsResponse[1].CreatedAt,
 					Country:     listBankAccountsResponse[1].Country,
-					ConnectorID: listBankAccountsResponse[1].Adjustments[0].ConnectorID.String(),
-					AccountID:   listBankAccountsResponse[1].Adjustments[0].AccountID.String(),
-					Provider:    listBankAccountsResponse[1].Adjustments[0].ConnectorID.Provider.String(),
-					Adjustments: []*bankAccountAdjusmtentsResponse{
+					ConnectorID: listBankAccountsResponse[1].RelatedAccounts[0].ConnectorID.String(),
+					AccountID:   listBankAccountsResponse[1].RelatedAccounts[0].AccountID.String(),
+					Provider:    listBankAccountsResponse[1].RelatedAccounts[0].ConnectorID.Provider.String(),
+					RelatedAccounts: []*bankAccountRelatedAccountsResponse{
 						{
-							ID:          listBankAccountsResponse[1].Adjustments[0].ID.String(),
-							AccountID:   listBankAccountsResponse[1].Adjustments[0].AccountID.String(),
-							ConnectorID: listBankAccountsResponse[1].Adjustments[0].ConnectorID.String(),
-							Provider:    listBankAccountsResponse[1].Adjustments[0].ConnectorID.Provider.String(),
+							ID:          listBankAccountsResponse[1].RelatedAccounts[0].ID.String(),
+							AccountID:   listBankAccountsResponse[1].RelatedAccounts[0].AccountID.String(),
+							ConnectorID: listBankAccountsResponse[1].RelatedAccounts[0].ConnectorID.String(),
+							Provider:    listBankAccountsResponse[1].RelatedAccounts[0].ConnectorID.Provider.String(),
 						},
 					},
 				},
@@ -356,7 +356,7 @@ func TestGetBankAccount(t *testing.T) {
 				IBAN:          "FR7630006000011234567890188",
 				SwiftBicCode:  "ABCDGB4B",
 				Country:       "FR",
-				Adjustments: []*models.BankAccountAdjustment{
+				RelatedAccounts: []*models.BankAccountRelatedAccount{
 					{
 						ID:            uuid.New(),
 						BankAccountID: uuid1,
@@ -374,18 +374,18 @@ func TestGetBankAccount(t *testing.T) {
 				Name:          getBankAccountResponse.Name,
 				CreatedAt:     getBankAccountResponse.CreatedAt,
 				Country:       getBankAccountResponse.Country,
-				ConnectorID:   getBankAccountResponse.Adjustments[0].ConnectorID.String(),
-				Provider:      getBankAccountResponse.Adjustments[0].ConnectorID.Provider.String(),
-				AccountID:     getBankAccountResponse.Adjustments[0].AccountID.String(),
+				ConnectorID:   getBankAccountResponse.RelatedAccounts[0].ConnectorID.String(),
+				Provider:      getBankAccountResponse.RelatedAccounts[0].ConnectorID.Provider.String(),
+				AccountID:     getBankAccountResponse.RelatedAccounts[0].AccountID.String(),
 				Iban:          "FR76*******************0188",
 				AccountNumber: "13************300",
 				SwiftBicCode:  "ABCDGB4B",
-				Adjustments: []*bankAccountAdjusmtentsResponse{
+				RelatedAccounts: []*bankAccountRelatedAccountsResponse{
 					{
-						ID:          getBankAccountResponse.Adjustments[0].ID.String(),
-						AccountID:   getBankAccountResponse.Adjustments[0].AccountID.String(),
-						ConnectorID: getBankAccountResponse.Adjustments[0].ConnectorID.String(),
-						Provider:    getBankAccountResponse.Adjustments[0].ConnectorID.Provider.String(),
+						ID:          getBankAccountResponse.RelatedAccounts[0].ID.String(),
+						AccountID:   getBankAccountResponse.RelatedAccounts[0].AccountID.String(),
+						ConnectorID: getBankAccountResponse.RelatedAccounts[0].ConnectorID.String(),
+						Provider:    getBankAccountResponse.RelatedAccounts[0].ConnectorID.Provider.String(),
 					},
 				},
 			}

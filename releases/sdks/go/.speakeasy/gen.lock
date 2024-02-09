@@ -1,7 +1,7 @@
 lockVersion: 2.0.0
 id: 7eac0a45-60a2-40bb-9e85-26bd77ec2a6d
 management:
-  docChecksum: e0a80726825baa1c309cb237de99ac37
+  docChecksum: 06f5ca15ca509f990644177d64ed0ec0
   docVersion: v0.0.0
   speakeasyVersion: internal
   generationVersion: 2.237.2
@@ -442,7 +442,7 @@ generatedFiles:
   - /pkg/models/shared/transferrequest.go
   - /pkg/models/shared/bankaccountresponse.go
   - /pkg/models/shared/bankaccount.go
-  - /pkg/models/shared/bankaccountadjustment.go
+  - /pkg/models/shared/bankaccountrelatedaccounts.go
   - /pkg/models/shared/bankaccountrequest.go
   - /pkg/models/shared/paymentresponse.go
   - /pkg/models/shared/payment.go
@@ -1122,7 +1122,7 @@ generatedFiles:
   - docs/pkg/models/shared/transferrequest.md
   - docs/pkg/models/shared/bankaccountresponse.md
   - docs/pkg/models/shared/bankaccount.md
-  - docs/pkg/models/shared/bankaccountadjustment.md
+  - docs/pkg/models/shared/bankaccountrelatedaccounts.md
   - docs/pkg/models/shared/bankaccountrequest.md
   - docs/pkg/models/shared/paymentresponse.md
   - docs/pkg/models/shared/raw.md

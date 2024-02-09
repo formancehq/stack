@@ -11,7 +11,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type bankAccountAdjusmtentsResponse struct {
+type bankAccountRelatedAccountsResponse struct {
 	ID          string    `json:"id"`
 	CreatedAt   time.Time `json:"createdAt"`
 	AccountID   string    `json:"accountID"`
@@ -20,15 +20,15 @@ type bankAccountAdjusmtentsResponse struct {
 }
 
 type bankAccountResponse struct {
-	ID            string                            `json:"id"`
-	Name          string                            `json:"name"`
-	CreatedAt     time.Time                         `json:"createdAt"`
-	Country       string                            `json:"country"`
-	Iban          string                            `json:"iban,omitempty"`
-	AccountNumber string                            `json:"accountNumber,omitempty"`
-	SwiftBicCode  string                            `json:"swiftBicCode,omitempty"`
-	Metadata      map[string]string                 `json:"metadata,omitempty"`
-	Adjustments   []*bankAccountAdjusmtentsResponse `json:"adjustments,omitempty"`
+	ID              string                                `json:"id"`
+	Name            string                                `json:"name"`
+	CreatedAt       time.Time                             `json:"createdAt"`
+	Country         string                                `json:"country"`
+	Iban            string                                `json:"iban,omitempty"`
+	AccountNumber   string                                `json:"accountNumber,omitempty"`
+	SwiftBicCode    string                                `json:"swiftBicCode,omitempty"`
+	Metadata        map[string]string                     `json:"metadata,omitempty"`
+	RelatedAccounts []*bankAccountRelatedAccountsResponse `json:"relatedAccounts,omitempty"`
 
 	// Deprecated fields, but clients still use them
 	// They correspond to the first bank account adjustment now.
@@ -65,14 +65,14 @@ func listBankAccountsHandler(b backend.Backend) http.HandlerFunc {
 			}
 
 			// Deprecated fields, but clients still use them
-			if len(ret[i].Adjustments) > 0 {
-				data[i].ConnectorID = ret[i].Adjustments[0].ConnectorID.String()
-				data[i].AccountID = ret[i].Adjustments[0].AccountID.String()
-				data[i].Provider = ret[i].Adjustments[0].ConnectorID.Provider.String()
+			if len(ret[i].RelatedAccounts) > 0 {
+				data[i].ConnectorID = ret[i].RelatedAccounts[0].ConnectorID.String()
+				data[i].AccountID = ret[i].RelatedAccounts[0].AccountID.String()
+				data[i].Provider = ret[i].RelatedAccounts[0].ConnectorID.Provider.String()
 			}
 
-			for _, adjustment := range ret[i].Adjustments {
-				data[i].Adjustments = append(data[i].Adjustments, &bankAccountAdjusmtentsResponse{
+			for _, adjustment := range ret[i].RelatedAccounts {
+				data[i].RelatedAccounts = append(data[i].RelatedAccounts, &bankAccountRelatedAccountsResponse{
 					ID:          adjustment.ID.String(),
 					CreatedAt:   adjustment.CreatedAt,
 					AccountID:   adjustment.AccountID.String(),
@@ -131,14 +131,14 @@ func readBankAccountHandler(b backend.Backend) http.HandlerFunc {
 		}
 
 		// Deprecated fields, but clients still use them
-		if len(account.Adjustments) > 0 {
-			data.ConnectorID = account.Adjustments[0].ConnectorID.String()
-			data.AccountID = account.Adjustments[0].AccountID.String()
-			data.Provider = account.Adjustments[0].ConnectorID.Provider.String()
+		if len(account.RelatedAccounts) > 0 {
+			data.ConnectorID = account.RelatedAccounts[0].ConnectorID.String()
+			data.AccountID = account.RelatedAccounts[0].AccountID.String()
+			data.Provider = account.RelatedAccounts[0].ConnectorID.Provider.String()
 		}
 
-		for _, adjustment := range account.Adjustments {
-			data.Adjustments = append(data.Adjustments, &bankAccountAdjusmtentsResponse{
+		for _, adjustment := range account.RelatedAccounts {
+			data.RelatedAccounts = append(data.RelatedAccounts, &bankAccountRelatedAccountsResponse{
 				ID:          adjustment.ID.String(),
 				CreatedAt:   adjustment.CreatedAt,
 				AccountID:   adjustment.AccountID.String(),

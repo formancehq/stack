@@ -40,7 +40,7 @@ type Store interface {
 	UpdateTransferInitiationPaymentsStatus(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, adjustment *models.TransferInitiationAdjustment) error
 	UpdateTransferReversalStatus(ctx context.Context, transfer *models.TransferInitiation, transferReversal *models.TransferReversal, adjustment *models.TransferInitiationAdjustment) error
 	AddTransferInitiationPaymentID(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, updatedAt time.Time, metadata map[string]string) error
-	AddBankAccountAdjustment(ctx context.Context, adjustment *models.BankAccountAdjustment) error
+	AddBankAccountRelatedAccount(ctx context.Context, adjustment *models.BankAccountRelatedAccount) error
 }
 
 func NewDefaultIngester(
