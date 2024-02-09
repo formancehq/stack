@@ -5,6 +5,7 @@ package operations
 import (
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/utils"
 	"net/http"
 )
 
@@ -13,7 +14,7 @@ type GetBalancesRequest struct {
 	Address *string `queryParam:"style=form,explode=true,name=address"`
 	// Pagination cursor, will return accounts after given address, in descending order.
 	After *string `queryParam:"style=form,explode=true,name=after"`
-	// Parameter used in pagination requests. Maximum page size is set to 15.
+	// Parameter used in pagination requests. Maximum page size is set to 1000.
 	// Set to the value of next for the next page of results.
 	// Set to the value of previous for the previous page of results.
 	// No other parameters can be set when this parameter is set.
@@ -21,6 +22,20 @@ type GetBalancesRequest struct {
 	Cursor *string `queryParam:"style=form,explode=true,name=cursor"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
+	// The maximum number of results to return per page.
+	//
+	PageSize *int64 `default:"15" queryParam:"style=form,explode=true,name=pageSize"`
+}
+
+func (g GetBalancesRequest) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(g, "", false)
+}
+
+func (g *GetBalancesRequest) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &g, "", false, false); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (o *GetBalancesRequest) GetAddress() *string {
@@ -49,6 +64,13 @@ func (o *GetBalancesRequest) GetLedger() string {
 		return ""
 	}
 	return o.Ledger
+}
+
+func (o *GetBalancesRequest) GetPageSize() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.PageSize
 }
 
 type GetBalancesResponse struct {
