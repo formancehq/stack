@@ -365,7 +365,7 @@ func registerMigrationsV1(ctx context.Context, migrator *migrations.Migrator) {
 		migrations.Migration{
 			Up: func(tx bun.Tx) error {
 				_, err := tx.Exec(`
-				ALTER TABLE accounts.bank_account_adjustments RENAME TO accounts.bank_account_related_accounts;
+				ALTER TABLE accounts.bank_account_adjustments RENAME TO bank_account_related_accounts;
 				`)
 				if err != nil {
 					return err
