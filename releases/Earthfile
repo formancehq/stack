@@ -10,19 +10,19 @@ sources:
   SAVE ARTIFACT /src
 
 sdk-generate:
-  ARG version=v0.0.0
-  ARG LANG=go
   FROM node:20-alpine
   RUN apk update && apk add yq git
   WORKDIR /src
   COPY (stack+speakeasy/speakeasy) /bin/speakeasy
+  ARG version=v0.0.0
   COPY (stack+build-final-spec/latest.json --version=$version) /src/releases/build/latest.json
   WORKDIR /src/releases
+  ARG LANG=go
   COPY --dir ./sdks/${LANG} ./sdks/${LANG}
   RUN rm -rf ./sdks/${LANG}/gen.yaml ./sdks/${LANG}/LICENSE ./sdks/${LANG}/.github/workflows
   COPY --dir templates/sdk/${LANG}/* ./sdks/${LANG}/
   ENV key ".${LANG}.version"
-  RUN yq e -i 'eval(env(key)) = env(version)' ./sdks/${LANG}//gen.yaml
+  RUN yq e -i 'eval(env(key)) = env(version)' ./sdks/${LANG}/gen.yaml
   RUN --secret SPEAKEASY_API_KEY speakeasy generate sdk -s ./build/latest.json -o ./sdks/${LANG} -l ${LANG}
   SAVE ARTIFACT /src/releases/sdks/${LANG} AS LOCAL ./sdks/${LANG}
 
