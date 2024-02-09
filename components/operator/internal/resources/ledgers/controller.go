@@ -94,7 +94,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, versio
 
 	if database.Status.Ready {
 		if isV2 && databases.GetSavedModuleVersion(database) != version {
-			if err := migrate(ctx, stack, ledger, database, image); err != nil {
+			if err := migrate(ctx, stack, ledger, database, image, version); err != nil {
 				return err
 			}
 

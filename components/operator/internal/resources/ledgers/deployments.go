@@ -68,10 +68,7 @@ func installLedgerSingleInstance(ctx core.Context, stack *v1beta1.Stack,
 		}
 	}
 
-	if err := createDeployment(ctx, stack, ledger, "ledger", *container, v2,
-		deployments.WithReplicas(1),
-		setInitContainer(database, version, v2),
-	); err != nil {
+	if err := createDeployment(ctx, stack, ledger, "ledger", *container, v2, deployments.WithReplicas(1)); err != nil {
 		return err
 	}
 
@@ -89,18 +86,6 @@ func getUpgradeContainer(database *v1beta1.Database, image, version string) core
 			}
 		},
 	)
-}
-
-func setInitContainer(database *v1beta1.Database, image string, v2 bool) func(t *v1.Deployment) error {
-	return func(t *v1.Deployment) error {
-		if !v2 {
-			t.Spec.Template.Spec.InitContainers = []corev1.Container{}
-			return nil
-		}
-		t.Spec.Template.Spec.InitContainers = []corev1.Container{getUpgradeContainer(database, image)}
-
-		return nil
-	}
 }
 
 func installLedgerMonoWriterMultipleReader(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, database *v1beta1.Database, image string, v2 bool) error {
@@ -128,7 +113,6 @@ func installLedgerMonoWriterMultipleReader(ctx core.Context, stack *v1beta1.Stac
 	}
 	if err := createDeployment("ledger-write", *container,
 		deployments.WithReplicas(1),
-		setInitContainer(database, image, v2),
 	); err != nil {
 		return err
 	}
@@ -315,8 +299,8 @@ func createGatewayDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1b
 	return err
 }
 
-func migrate(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, database *v1beta1.Database, image string) error {
-	return jobs.Handle(ctx, ledger, "migrate-v2", getUpgradeContainer(database, image),
+func migrate(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, database *v1beta1.Database, image, version string) error {
+	return jobs.Handle(ctx, ledger, "migrate-v2", getUpgradeContainer(database, image, version),
 		jobs.PreCreate(func() error {
 			list := &v1.DeploymentList{}
 			if err := ctx.GetClient().List(ctx, list, client.InNamespace(stack.Name)); err != nil {
