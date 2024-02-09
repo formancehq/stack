@@ -25,10 +25,17 @@ func (c *Client) GetBeneficiaries(ctx context.Context, page int) ([]*Beneficiary
 	defer f(ctx, now)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost,
-		c.buildEndpoint("v2/beneficiaries/find?page=%d&per_page=25", page), http.NoBody)
+		c.buildEndpoint("v2/beneficiaries/find"), http.NoBody)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to create request: %w", err)
 	}
+
+	q := req.URL.Query()
+	q.Add("page", fmt.Sprint(page))
+	q.Add("per_page", "25")
+	q.Add("order", "created_at")
+	q.Add("order_asc_desc", "asc")
+	req.URL.RawQuery = q.Encode()
 
 	req.Header.Add("Accept", "application/json")
 
