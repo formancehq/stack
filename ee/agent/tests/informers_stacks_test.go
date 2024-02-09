@@ -11,7 +11,6 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/dynamic"
 )
 
@@ -33,35 +32,24 @@ var _ = Describe("Stacks informer", func() {
 			close(stopCh)
 		})
 	})
-	When("a stack is created on the cluster then disabling it", func() {
-		stack := &v1beta1.Stack{}
+	When("a stack is created on the cluster disabled", func() {
+		var stack *v1beta1.Stack
 		BeforeEach(func() {
-			stack.ObjectMeta = v1.ObjectMeta{
-				Name: uuid.NewString(),
+			stack = &v1beta1.Stack{
+				ObjectMeta: v1.ObjectMeta{
+					Name: uuid.NewString(),
+				},
+				Spec: v1beta1.StackSpec{
+					Disabled: true,
+				},
 			}
 			Expect(k8sClient.Post().
 				Resource("Stacks").
-				Body(&v1beta1.Stack{
-					ObjectMeta: v1.ObjectMeta{
-						Name: uuid.NewString(),
-					},
-				}).
+				Body(stack).
 				Do(context.Background()).
 				Into(stack)).To(Succeed())
 		})
 		It("Should be disabled and have sent a Status_Progressing", func() {
-			Expect(
-				k8sClient.Patch(types.MergePatchType).
-					Resource("Stacks").
-					Name(stack.Name).
-					Body([]byte(`{"spec": {"disabled": true}}`)).
-					Do(context.Background()).
-					Error(),
-			).To(Succeed())
-
-			Expect(k8sClient.Get().Resource("Stacks").Name(stack.Name).Do(context.Background()).Into(stack)).To(Succeed())
-			Expect(stack.Spec.Disabled).To(BeTrue())
-
 			Eventually(func() []*generated.Message {
 				for _, message := range membershipClientMock.GetMessages() {
 					if message.GetStatusChanged() != nil && message.GetStatusChanged().Status == generated.StackStatus_Progressing {
@@ -71,30 +59,20 @@ var _ = Describe("Stacks informer", func() {
 				return nil
 			}).ShouldNot(BeEmpty())
 		})
-		When("Stack is fully disabled, mean reconcille and ready ", func() {
+		When("Stack is fully disabled and reconcilled", func() {
 			BeforeEach(func() {
-				stack.Spec.Disabled = true
+				stack.Status.Ready = true
 				Expect(
 					k8sClient.Put().
 						Resource("Stacks").
+						SubResource("status").
 						Name(stack.Name).
 						Body(stack).
 						Do(context.Background()).
 						Error(),
 				).To(Succeed())
 			})
-			JustBeforeEach(func() {
-				Expect(
-					k8sClient.Patch(types.MergePatchType).
-						Resource("Stacks").
-						SubResource("status").
-						Name(stack.Name).
-						Body([]byte(`{"status": {"ready": true}}`)).
-						Do(context.Background()).
-						Error(),
-				).To(Succeed())
-			})
-			It("should have sent a Status_disabled", func() {
+			It("should have sent a Status_Disabled", func() {
 				Eventually(func() []*generated.Message {
 					for _, message := range membershipClientMock.GetMessages() {
 						if message.GetStatusChanged() != nil && message.GetStatusChanged().Status == generated.StackStatus_Disabled {
