@@ -34,7 +34,7 @@ func Handle(ctx core.Context, owner v1beta1.Dependent, jobName string, container
 		option(configuration)
 	}
 
-	jobName = fmt.Sprintf("%s-%s-%s", owner.GetName(), core.LowerCamelCaseKind(ctx, owner), jobName)
+	jobName = fmt.Sprintf("%s-%s", owner.GetUID(), jobName)
 	job := &batchv1.Job{}
 	err := ctx.GetClient().Get(ctx, types.NamespacedName{
 		Namespace: owner.GetStack(),

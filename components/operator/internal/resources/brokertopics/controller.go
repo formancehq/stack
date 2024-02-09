@@ -62,13 +62,8 @@ func clear(ctx core.Context, topic *v1beta1.BrokerTopic) error {
 	if topic.Status.Ready && topic.Status.URI != nil {
 		switch {
 		case topic.Status.URI.Scheme == "nats":
-			job, err := deleteJob(ctx, topic)
-			if err != nil {
+			if err := deleteJob(ctx, topic); err != nil {
 				return err
-			}
-
-			if job.Status.Succeeded == 0 {
-				return core.NewPendingError()
 			}
 		}
 	}

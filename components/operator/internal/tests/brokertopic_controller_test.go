@@ -81,7 +81,7 @@ var _ = Describe("BrokerTopicController", func() {
 			})
 			It("Should create a brokerTopic deletion job", func() {
 				Eventually(func() error {
-					return LoadResource(stack.Name, fmt.Sprintf("%s-delete-topic", brokerTopic.Spec.Service), &batchv1.Job{})
+					return LoadResource(stack.Name, fmt.Sprintf("%s-delete-topic", brokerTopic.GetUID()), &batchv1.Job{})
 				}).Should(Succeed())
 			})
 		})
