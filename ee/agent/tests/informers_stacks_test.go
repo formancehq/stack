@@ -2,6 +2,7 @@ package tests
 
 import (
 	"context"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/components/agent/internal"
 	"github.com/formancehq/stack/components/agent/internal/generated"
@@ -31,33 +32,56 @@ var _ = Describe("Stacks informer", func() {
 			close(stopCh)
 		})
 	})
-	Context("When creating a stack on the cluster then updating its status", func() {
-		It("Should trigger a new update of the status on membership client", func() {
-			stack := &v1beta1.Stack{}
+	When("a stack is created on the cluster disabled", func() {
+		var stack *v1beta1.Stack
+		BeforeEach(func() {
+			stack = &v1beta1.Stack{
+				ObjectMeta: v1.ObjectMeta{
+					Name: uuid.NewString(),
+				},
+				Spec: v1beta1.StackSpec{
+					Disabled: true,
+				},
+			}
 			Expect(k8sClient.Post().
 				Resource("Stacks").
-				Body(&v1beta1.Stack{
-					ObjectMeta: v1.ObjectMeta{
-						Name: uuid.NewString(),
-					},
-				}).
+				Body(stack).
 				Do(context.Background()).
 				Into(stack)).To(Succeed())
-
-			stack.Status.Ready = true
-			Expect(
-				k8sClient.Put().
-					Resource("Stacks").
-					SubResource("status").
-					Name(stack.Name).
-					Body(stack).
-					Do(context.Background()).
-					Error(),
-			).To(Succeed())
-
+		})
+		It("Should be disabled and have sent a Status_Progressing", func() {
 			Eventually(func() []*generated.Message {
-				return membershipClientMock.GetMessages()
+				for _, message := range membershipClientMock.GetMessages() {
+					if message.GetStatusChanged() != nil && message.GetStatusChanged().Status == generated.StackStatus_Progressing {
+						return membershipClientMock.GetMessages()
+					}
+				}
+				return nil
 			}).ShouldNot(BeEmpty())
+		})
+		When("Stack is fully disabled and reconcilled", func() {
+			BeforeEach(func() {
+				stack.Status.Ready = true
+				Expect(
+					k8sClient.Put().
+						Resource("Stacks").
+						SubResource("status").
+						Name(stack.Name).
+						Body(stack).
+						Do(context.Background()).
+						Error(),
+				).To(Succeed())
+			})
+			It("should have sent a Status_Disabled", func() {
+				Eventually(func() []*generated.Message {
+					for _, message := range membershipClientMock.GetMessages() {
+						if message.GetStatusChanged() != nil && message.GetStatusChanged().Status == generated.StackStatus_Disabled {
+							return membershipClientMock.GetMessages()
+						}
+					}
+					return nil
+				}).ShouldNot(BeEmpty())
+			})
 		})
 	})
 })

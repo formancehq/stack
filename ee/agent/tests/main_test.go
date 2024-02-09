@@ -1,14 +1,15 @@
 package tests
 
 import (
-	"github.com/formancehq/stack/components/agent/internal"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
-	"k8s.io/apimachinery/pkg/api/meta"
 	"path/filepath"
 	osRuntime "runtime"
 	"testing"
 	"time"
+
+	"github.com/formancehq/stack/components/agent/internal"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+	"k8s.io/apimachinery/pkg/api/meta"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"k8s.io/client-go/kubernetes/scheme"
@@ -60,6 +61,7 @@ var _ = BeforeSuite(func() {
 
 	mapper, err = internal.CreateRestMapper(restConfig)
 	Expect(err).NotTo(HaveOccurred())
+
 })
 
 var _ = AfterSuite(func() {

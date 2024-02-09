@@ -8,7 +8,6 @@ import (
 )
 
 func StacksEventHandler(logger sharedlogging.Logger, membershipClient MembershipClient) cache.ResourceEventHandlerFuncs {
-
 	sendStatus := func(stack string, status generated.StackStatus) {
 		if err := membershipClient.Send(&generated.Message{
 			Message: &generated.Message_StatusChanged{
@@ -25,6 +24,9 @@ func StacksEventHandler(logger sharedlogging.Logger, membershipClient Membership
 	sendStatusFromStack := func(stack *v1beta1.Stack) {
 		sendStatus(stack.Name, func() generated.StackStatus {
 			if stack.Status.Ready {
+				if stack.Spec.Disabled {
+					return generated.StackStatus_Disabled
+				}
 				return generated.StackStatus_Ready
 			} else {
 				return generated.StackStatus_Progressing
@@ -52,7 +54,6 @@ func StacksEventHandler(logger sharedlogging.Logger, membershipClient Membership
 		},
 		DeleteFunc: func(obj interface{}) {
 			stack := convertUnstructured[*v1beta1.Stack](obj)
-
 			logger.Infof("Stack '%s' deleted", stack.Name)
 			sendStatus(stack.Name, generated.StackStatus_Deleted)
 		},
