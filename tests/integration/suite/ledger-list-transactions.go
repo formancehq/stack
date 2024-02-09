@@ -25,7 +25,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				Ledger: "default",
 			})
 			Expect(err).NotTo(BeNil())
-			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(shared.V2ErrorsEnumNotFound))
+			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(shared.V2ErrorsEnumLedgerNotFound))
 		})
 		It("Should fail with a 404", func() {
 		})
