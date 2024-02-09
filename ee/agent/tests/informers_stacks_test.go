@@ -2,6 +2,7 @@ package tests
 
 import (
 	"context"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/components/agent/internal"
 	"github.com/formancehq/stack/components/agent/internal/generated"
@@ -10,6 +11,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/dynamic"
 )
 
@@ -31,9 +33,12 @@ var _ = Describe("Stacks informer", func() {
 			close(stopCh)
 		})
 	})
-	Context("When creating a stack on the cluster then updating its status", func() {
-		It("Should trigger a new update of the status on membership client", func() {
-			stack := &v1beta1.Stack{}
+	When("a stack is created on the cluster then disabling it", func() {
+		stack := &v1beta1.Stack{}
+		BeforeEach(func() {
+			stack.ObjectMeta = v1.ObjectMeta{
+				Name: uuid.NewString(),
+			}
 			Expect(k8sClient.Post().
 				Resource("Stacks").
 				Body(&v1beta1.Stack{
@@ -43,21 +48,62 @@ var _ = Describe("Stacks informer", func() {
 				}).
 				Do(context.Background()).
 				Into(stack)).To(Succeed())
-
-			stack.Status.Ready = true
+		})
+		It("Should be disabled and have sent a Status_Progressing", func() {
 			Expect(
-				k8sClient.Put().
+				k8sClient.Patch(types.MergePatchType).
 					Resource("Stacks").
-					SubResource("status").
 					Name(stack.Name).
-					Body(stack).
+					Body([]byte(`{"spec": {"disabled": true}}`)).
 					Do(context.Background()).
 					Error(),
 			).To(Succeed())
 
+			Expect(k8sClient.Get().Resource("Stacks").Name(stack.Name).Do(context.Background()).Into(stack)).To(Succeed())
+			Expect(stack.Spec.Disabled).To(BeTrue())
+
 			Eventually(func() []*generated.Message {
-				return membershipClientMock.GetMessages()
+				for _, message := range membershipClientMock.GetMessages() {
+					if message.GetStatusChanged() != nil && message.GetStatusChanged().Status == generated.StackStatus_Progressing {
+						return membershipClientMock.GetMessages()
+					}
+				}
+				return nil
 			}).ShouldNot(BeEmpty())
+		})
+		When("Stack is fully disabled, mean reconcille and ready ", func() {
+			BeforeEach(func() {
+				stack.Spec.Disabled = true
+				Expect(
+					k8sClient.Put().
+						Resource("Stacks").
+						Name(stack.Name).
+						Body(stack).
+						Do(context.Background()).
+						Error(),
+				).To(Succeed())
+			})
+			JustBeforeEach(func() {
+				Expect(
+					k8sClient.Patch(types.MergePatchType).
+						Resource("Stacks").
+						SubResource("status").
+						Name(stack.Name).
+						Body([]byte(`{"status": {"ready": true}}`)).
+						Do(context.Background()).
+						Error(),
+				).To(Succeed())
+			})
+			It("should have sent a Status_disabled", func() {
+				Eventually(func() []*generated.Message {
+					for _, message := range membershipClientMock.GetMessages() {
+						if message.GetStatusChanged() != nil && message.GetStatusChanged().Status == generated.StackStatus_Disabled {
+							return membershipClientMock.GetMessages()
+						}
+					}
+					return nil
+				}).ShouldNot(BeEmpty())
+			})
 		})
 	})
 })
