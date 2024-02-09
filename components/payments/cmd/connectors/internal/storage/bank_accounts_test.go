@@ -58,18 +58,18 @@ func testCreateBankAccounts(t *testing.T, store *storage.Storage) {
 	require.NotEqual(t, uuid.Nil, bankAccount2.ID)
 	bankAccount2ID = bankAccount2.ID
 
-	adjustment := &models.BankAccountAdjustment{
+	relatedAccount := &models.BankAccountRelatedAccount{
 		ID:            uuid.New(),
 		CreatedAt:     bankAccount2T,
 		BankAccountID: bankAccount2ID,
 		ConnectorID:   connectorID,
 		AccountID:     acc1ID,
 	}
-	err = store.AddBankAccountAdjustment(context.Background(), adjustment)
+	err = store.AddBankAccountRelatedAccount(context.Background(), relatedAccount)
 	require.NoError(t, err)
-	bankAccount2.Adjustments = append(bankAccount2.Adjustments, adjustment)
+	bankAccount2.RelatedAccounts = append(bankAccount2.RelatedAccounts, relatedAccount)
 
-	err = store.AddBankAccountAdjustment(context.Background(), &models.BankAccountAdjustment{
+	err = store.AddBankAccountRelatedAccount(context.Background(), &models.BankAccountRelatedAccount{
 		ID:            uuid.New(),
 		CreatedAt:     bankAccount2T,
 		BankAccountID: bankAccount2ID,
@@ -111,12 +111,12 @@ func testGetBankAccount(
 		require.Equal(t, bankAccount.AccountNumber, expectedBankAccount.AccountNumber)
 	}
 
-	require.Len(t, bankAccount.Adjustments, len(expectedBankAccount.Adjustments))
-	for i, adj := range bankAccount.Adjustments {
-		require.Equal(t, adj.BankAccountID, expectedBankAccount.Adjustments[i].BankAccountID)
-		require.Equal(t, adj.CreatedAt.UTC(), expectedBankAccount.Adjustments[i].CreatedAt.UTC())
-		require.Equal(t, adj.ConnectorID, expectedBankAccount.Adjustments[i].ConnectorID)
-		require.Equal(t, adj.AccountID, expectedBankAccount.Adjustments[i].AccountID)
+	require.Len(t, bankAccount.RelatedAccounts, len(expectedBankAccount.RelatedAccounts))
+	for i, adj := range bankAccount.RelatedAccounts {
+		require.Equal(t, adj.BankAccountID, expectedBankAccount.RelatedAccounts[i].BankAccountID)
+		require.Equal(t, adj.CreatedAt.UTC(), expectedBankAccount.RelatedAccounts[i].CreatedAt.UTC())
+		require.Equal(t, adj.ConnectorID, expectedBankAccount.RelatedAccounts[i].ConnectorID)
+		require.Equal(t, adj.AccountID, expectedBankAccount.RelatedAccounts[i].AccountID)
 	}
 }
 

@@ -129,9 +129,9 @@ var (
 )
 
 type MockStore struct {
-	errorToSend            error
-	listConnectorsNB       int
-	bankAccountAdjustments []*models.BankAccountAdjustment
+	errorToSend                error
+	listConnectorsNB           int
+	bankAccountRelatedAccounts []*models.BankAccountRelatedAccount
 }
 
 func (m *MockStore) WithError(err error) *MockStore {
@@ -144,8 +144,8 @@ func (m *MockStore) WithListConnectorsNB(nb int) *MockStore {
 	return m
 }
 
-func (m *MockStore) WithBankAccountAdjustments(adjustments []*models.BankAccountAdjustment) *MockStore {
-	m.bankAccountAdjustments = adjustments
+func (m *MockStore) WithBankAccountRelatedAccounts(relatedAccounts []*models.BankAccountRelatedAccount) *MockStore {
+	m.bankAccountRelatedAccounts = relatedAccounts
 	return m
 }
 
@@ -204,18 +204,18 @@ func (m *MockStore) UpdateBankAccountMetadata(ctx context.Context, id uuid.UUID,
 
 func (m *MockStore) GetBankAccount(ctx context.Context, id uuid.UUID, expand bool) (*models.BankAccount, error) {
 	return &models.BankAccount{
-		ID:           id,
-		CreatedAt:    time.Now().UTC(),
-		Name:         "test",
-		IBAN:         "FR7630006000011234567890189",
-		SwiftBicCode: "HBUKGB4B",
-		Country:      "FR",
-		Metadata:     map[string]string{},
-		Adjustments:  m.bankAccountAdjustments,
+		ID:              id,
+		CreatedAt:       time.Now().UTC(),
+		Name:            "test",
+		IBAN:            "FR7630006000011234567890189",
+		SwiftBicCode:    "HBUKGB4B",
+		Country:         "FR",
+		Metadata:        map[string]string{},
+		RelatedAccounts: m.bankAccountRelatedAccounts,
 	}, nil
 }
 
-func (m *MockStore) GetBankAccountAdjustments(ctx context.Context, id uuid.UUID) ([]*models.BankAccountAdjustment, error) {
+func (m *MockStore) GetBankAccountRelatedAccounts(ctx context.Context, id uuid.UUID) ([]*models.BankAccountRelatedAccount, error) {
 	return nil, nil
 }
 

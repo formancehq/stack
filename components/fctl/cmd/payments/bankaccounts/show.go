@@ -120,8 +120,8 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Adjustments")
-	tableData = fctl.Map(c.store.BankAccount.Adjustments, func(ba shared.BankAccountAdjustment) []string {
+	fctl.Section.WithWriter(cmd.OutOrStdout()).Println("RelatedAccounts")
+	tableData = fctl.Map(c.store.BankAccount.RelatedAccounts, func(ba shared.BankAccountRelatedAccounts) []string {
 		return []string{
 			ba.ID,
 			ba.CreatedAt.Format(time.RFC3339),

@@ -11,7 +11,7 @@ import (
 )
 
 func (i *DefaultIngester) LinkBankAccountWithAccount(ctx context.Context, bankAccount *models.BankAccount, accountID *models.AccountID) error {
-	adjustment := &models.BankAccountAdjustment{
+	adjustment := &models.BankAccountRelatedAccount{
 		ID:            uuid.New(),
 		CreatedAt:     time.Now().UTC(),
 		BankAccountID: bankAccount.ID,
@@ -19,11 +19,11 @@ func (i *DefaultIngester) LinkBankAccountWithAccount(ctx context.Context, bankAc
 		AccountID:     *accountID,
 	}
 
-	if err := i.store.AddBankAccountAdjustment(ctx, adjustment); err != nil {
+	if err := i.store.AddBankAccountRelatedAccount(ctx, adjustment); err != nil {
 		return err
 	}
 
-	bankAccount.Adjustments = append(bankAccount.Adjustments, adjustment)
+	bankAccount.RelatedAccounts = append(bankAccount.RelatedAccounts, adjustment)
 
 	if err := i.publisher.Publish(
 		events.TopicPayments,

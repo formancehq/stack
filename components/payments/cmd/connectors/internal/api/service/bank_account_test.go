@@ -183,7 +183,7 @@ func TestForwardBankAccountToConnector(t *testing.T) {
 		name                           string
 		bankAccountID                  string
 		req                            *ForwardBankAccountToConnectorRequest
-		withBankAccountAdjustments     []*models.BankAccountAdjustment
+		withBankAccountRelatedAccounts []*models.BankAccountRelatedAccount
 		expectedError                  error
 		noBankAccountForwardHandler    bool
 		errorBankAccountForwardHandler error
@@ -210,7 +210,7 @@ func TestForwardBankAccountToConnector(t *testing.T) {
 			req: &ForwardBankAccountToConnectorRequest{
 				ConnectorID: connectorDummyPay.ID.String(),
 			},
-			withBankAccountAdjustments: []*models.BankAccountAdjustment{
+			withBankAccountRelatedAccounts: []*models.BankAccountRelatedAccount{
 				{
 					ID:            uuid.New(),
 					CreatedAt:     time.Now().UTC(),
@@ -321,7 +321,7 @@ func TestForwardBankAccountToConnector(t *testing.T) {
 			}
 
 			store := &MockStore{}
-			service := New(store.WithBankAccountAdjustments(tc.withBankAccountAdjustments), &MockPublisher{}, messages.NewMessages(""), handlers)
+			service := New(store.WithBankAccountRelatedAccounts(tc.withBankAccountRelatedAccounts), &MockPublisher{}, messages.NewMessages(""), handlers)
 
 			_, err := service.ForwardBankAccountToConnector(context.Background(), tc.bankAccountID, tc.req)
 			if tc.expectedError != nil {

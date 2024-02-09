@@ -14,7 +14,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-type bankAccountAdjusmtentsResponse struct {
+type bankAccountRelatedAccountsResponse struct {
 	ID          string    `json:"id"`
 	CreatedAt   time.Time `json:"createdAt"`
 	AccountID   string    `json:"accountID"`
@@ -23,15 +23,15 @@ type bankAccountAdjusmtentsResponse struct {
 }
 
 type bankAccountResponse struct {
-	ID            string                            `json:"id"`
-	Name          string                            `json:"name"`
-	CreatedAt     time.Time                         `json:"createdAt"`
-	Country       string                            `json:"country"`
-	Iban          string                            `json:"iban,omitempty"`
-	AccountNumber string                            `json:"accountNumber,omitempty"`
-	SwiftBicCode  string                            `json:"swiftBicCode,omitempty"`
-	Metadata      map[string]string                 `json:"metadata,omitempty"`
-	Adjustments   []*bankAccountAdjusmtentsResponse `json:"adjustments,omitempty"`
+	ID              string                                `json:"id"`
+	Name            string                                `json:"name"`
+	CreatedAt       time.Time                             `json:"createdAt"`
+	Country         string                                `json:"country"`
+	Iban            string                                `json:"iban,omitempty"`
+	AccountNumber   string                                `json:"accountNumber,omitempty"`
+	SwiftBicCode    string                                `json:"swiftBicCode,omitempty"`
+	Metadata        map[string]string                     `json:"metadata,omitempty"`
+	RelatedAccounts []*bankAccountRelatedAccountsResponse `json:"relatedAccounts,omitempty"`
 
 	// Deprecated fields, but clients still use them
 	// They correspond to the first adjustment now.
@@ -83,21 +83,21 @@ func createBankAccountHandler(
 			Metadata:  bankAccount.Metadata,
 		}
 
-		for _, adjustment := range bankAccount.Adjustments {
-			data.Adjustments = append(data.Adjustments, &bankAccountAdjusmtentsResponse{
-				ID:          adjustment.ID.String(),
-				CreatedAt:   adjustment.CreatedAt,
-				AccountID:   adjustment.AccountID.String(),
-				ConnectorID: adjustment.ConnectorID.String(),
-				Provider:    adjustment.ConnectorID.Provider.String(),
+		for _, relatedAccount := range bankAccount.RelatedAccounts {
+			data.RelatedAccounts = append(data.RelatedAccounts, &bankAccountRelatedAccountsResponse{
+				ID:          relatedAccount.ID.String(),
+				CreatedAt:   relatedAccount.CreatedAt,
+				AccountID:   relatedAccount.AccountID.String(),
+				ConnectorID: relatedAccount.ConnectorID.String(),
+				Provider:    relatedAccount.ConnectorID.Provider.String(),
 			})
 		}
 
 		// Keep compatibility with previous api version
 		data.ConnectorID = bankAccountRequest.ConnectorID
-		if len(bankAccount.Adjustments) > 0 {
-			data.AccountID = bankAccount.Adjustments[0].AccountID.String()
-			data.Provider = bankAccount.Adjustments[0].ConnectorID.Provider.String()
+		if len(bankAccount.RelatedAccounts) > 0 {
+			data.AccountID = bankAccount.RelatedAccounts[0].AccountID.String()
+			data.Provider = bankAccount.RelatedAccounts[0].ConnectorID.Provider.String()
 		}
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[bankAccountResponse]{
@@ -158,21 +158,21 @@ func forwardBankAccountToConnector(
 			Metadata:  bankAccount.Metadata,
 		}
 
-		for _, adjustment := range bankAccount.Adjustments {
-			data.Adjustments = append(data.Adjustments, &bankAccountAdjusmtentsResponse{
-				ID:          adjustment.ID.String(),
-				CreatedAt:   adjustment.CreatedAt,
-				AccountID:   adjustment.AccountID.String(),
-				ConnectorID: adjustment.ConnectorID.String(),
-				Provider:    adjustment.ConnectorID.Provider.String(),
+		for _, relatedAccount := range bankAccount.RelatedAccounts {
+			data.RelatedAccounts = append(data.RelatedAccounts, &bankAccountRelatedAccountsResponse{
+				ID:          relatedAccount.ID.String(),
+				CreatedAt:   relatedAccount.CreatedAt,
+				AccountID:   relatedAccount.AccountID.String(),
+				ConnectorID: relatedAccount.ConnectorID.String(),
+				Provider:    relatedAccount.ConnectorID.Provider.String(),
 			})
 		}
 
 		// Keep compatibility with previous api version
 		data.ConnectorID = payload.ConnectorID
-		if len(bankAccount.Adjustments) > 0 {
-			data.AccountID = bankAccount.Adjustments[0].AccountID.String()
-			data.Provider = bankAccount.Adjustments[0].ConnectorID.Provider.String()
+		if len(bankAccount.RelatedAccounts) > 0 {
+			data.AccountID = bankAccount.RelatedAccounts[0].AccountID.String()
+			data.Provider = bankAccount.RelatedAccounts[0].ConnectorID.Provider.String()
 		}
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[bankAccountResponse]{

@@ -87,12 +87,12 @@ func (s *Service) CreateBankAccount(ctx context.Context, req *CreateBankAccountR
 			}
 		}
 
-		adjustments, err := s.store.GetBankAccountAdjustments(ctx, bankAccount.ID)
+		relatedAccounts, err := s.store.GetBankAccountRelatedAccounts(ctx, bankAccount.ID)
 		if err != nil {
 			return nil, newStorageError(err, "fetching bank account")
 		}
 
-		bankAccount.Adjustments = adjustments
+		bankAccount.RelatedAccounts = relatedAccounts
 	}
 
 	return bankAccount, nil
@@ -138,8 +138,8 @@ func (s *Service) ForwardBankAccountToConnector(ctx context.Context, id string, 
 		return nil, newStorageError(err, "fetching bank account")
 	}
 
-	for _, adjustment := range bankAccount.Adjustments {
-		if adjustment.ConnectorID == connectorID {
+	for _, relatedAccount := range bankAccount.RelatedAccounts {
+		if relatedAccount.ConnectorID == connectorID {
 			return nil, errors.Wrap(ErrValidation, "bank account already forwarded to connector")
 		}
 	}
@@ -155,11 +155,11 @@ func (s *Service) ForwardBankAccountToConnector(ctx context.Context, id string, 
 		}
 	}
 
-	adjustments, err := s.store.GetBankAccountAdjustments(ctx, bankAccount.ID)
+	relatedAccounts, err := s.store.GetBankAccountRelatedAccounts(ctx, bankAccount.ID)
 	if err != nil {
 		return nil, newStorageError(err, "fetching bank account")
 	}
-	bankAccount.Adjustments = adjustments
+	bankAccount.RelatedAccounts = relatedAccounts
 
 	return bankAccount, err
 }

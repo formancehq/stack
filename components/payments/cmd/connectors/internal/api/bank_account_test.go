@@ -213,7 +213,7 @@ func TestCreateBankAccounts(t *testing.T) {
 			}
 
 			if testCase.req != nil && testCase.req.ConnectorID != "" {
-				createBankAccountResponse.Adjustments = []*models.BankAccountAdjustment{
+				createBankAccountResponse.RelatedAccounts = []*models.BankAccountRelatedAccount{
 					{
 						ID:            uuid.New(),
 						BankAccountID: bankAccountID,
@@ -231,15 +231,15 @@ func TestCreateBankAccounts(t *testing.T) {
 			}
 
 			if testCase.req != nil && testCase.req.ConnectorID != "" {
-				expectedCreateBankAccountResponse.ConnectorID = createBankAccountResponse.Adjustments[0].ConnectorID.String()
-				expectedCreateBankAccountResponse.AccountID = createBankAccountResponse.Adjustments[0].AccountID.String()
-				expectedCreateBankAccountResponse.Provider = createBankAccountResponse.Adjustments[0].ConnectorID.Provider.String()
-				expectedCreateBankAccountResponse.Adjustments = []*bankAccountAdjusmtentsResponse{
+				expectedCreateBankAccountResponse.ConnectorID = createBankAccountResponse.RelatedAccounts[0].ConnectorID.String()
+				expectedCreateBankAccountResponse.AccountID = createBankAccountResponse.RelatedAccounts[0].AccountID.String()
+				expectedCreateBankAccountResponse.Provider = createBankAccountResponse.RelatedAccounts[0].ConnectorID.Provider.String()
+				expectedCreateBankAccountResponse.RelatedAccounts = []*bankAccountRelatedAccountsResponse{
 					{
-						ID:          createBankAccountResponse.Adjustments[0].ID.String(),
-						AccountID:   createBankAccountResponse.Adjustments[0].AccountID.String(),
-						ConnectorID: createBankAccountResponse.Adjustments[0].ConnectorID.String(),
-						Provider:    createBankAccountResponse.Adjustments[0].ConnectorID.Provider.String(),
+						ID:          createBankAccountResponse.RelatedAccounts[0].ID.String(),
+						AccountID:   createBankAccountResponse.RelatedAccounts[0].AccountID.String(),
+						ConnectorID: createBankAccountResponse.RelatedAccounts[0].ConnectorID.String(),
+						Provider:    createBankAccountResponse.RelatedAccounts[0].ConnectorID.Provider.String(),
 					},
 				}
 			}
@@ -401,7 +401,7 @@ func TestForwardBankAccountToConnector(t *testing.T) {
 			}
 
 			if testCase.req != nil && testCase.req.ConnectorID != "" {
-				forwardBankAccountResponse.Adjustments = []*models.BankAccountAdjustment{
+				forwardBankAccountResponse.RelatedAccounts = []*models.BankAccountRelatedAccount{
 					{
 						ID:            uuid.New(),
 						BankAccountID: bankAccountID,
@@ -419,15 +419,15 @@ func TestForwardBankAccountToConnector(t *testing.T) {
 			}
 
 			if testCase.req != nil && testCase.req.ConnectorID != "" {
-				expectedForwardBankAccountResponse.ConnectorID = forwardBankAccountResponse.Adjustments[0].ConnectorID.String()
-				expectedForwardBankAccountResponse.AccountID = forwardBankAccountResponse.Adjustments[0].AccountID.String()
-				expectedForwardBankAccountResponse.Provider = forwardBankAccountResponse.Adjustments[0].ConnectorID.Provider.String()
-				expectedForwardBankAccountResponse.Adjustments = []*bankAccountAdjusmtentsResponse{
+				expectedForwardBankAccountResponse.ConnectorID = forwardBankAccountResponse.RelatedAccounts[0].ConnectorID.String()
+				expectedForwardBankAccountResponse.AccountID = forwardBankAccountResponse.RelatedAccounts[0].AccountID.String()
+				expectedForwardBankAccountResponse.Provider = forwardBankAccountResponse.RelatedAccounts[0].ConnectorID.Provider.String()
+				expectedForwardBankAccountResponse.RelatedAccounts = []*bankAccountRelatedAccountsResponse{
 					{
-						ID:          forwardBankAccountResponse.Adjustments[0].ID.String(),
-						AccountID:   forwardBankAccountResponse.Adjustments[0].AccountID.String(),
-						ConnectorID: forwardBankAccountResponse.Adjustments[0].ConnectorID.String(),
-						Provider:    forwardBankAccountResponse.Adjustments[0].ConnectorID.Provider.String(),
+						ID:          forwardBankAccountResponse.RelatedAccounts[0].ID.String(),
+						AccountID:   forwardBankAccountResponse.RelatedAccounts[0].AccountID.String(),
+						ConnectorID: forwardBankAccountResponse.RelatedAccounts[0].ConnectorID.String(),
+						Provider:    forwardBankAccountResponse.RelatedAccounts[0].ConnectorID.Provider.String(),
 					},
 				}
 			}

@@ -69,7 +69,7 @@ func (m *MockStore) AddTransferInitiationPaymentID(ctx context.Context, id model
 	return nil
 }
 
-func (m *MockStore) AddBankAccountAdjustment(ctx context.Context, adjustment *models.BankAccountAdjustment) error {
+func (m *MockStore) AddBankAccountRelatedAccount(ctx context.Context, adjustment *models.BankAccountRelatedAccount) error {
 	return nil
 }
 

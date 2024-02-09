@@ -21,7 +21,7 @@ type BankAccount struct {
 	Country       string `bun:"country"`
 	Metadata      map[string]string
 
-	Adjustments []*BankAccountAdjustment `bun:"rel:has-many,join:id=bank_account_id"`
+	RelatedAccounts []*BankAccountRelatedAccount `bun:"rel:has-many,join:id=bank_account_id"`
 }
 
 func (a *BankAccount) Offuscate() error {
@@ -46,8 +46,8 @@ func (a *BankAccount) Offuscate() error {
 	return nil
 }
 
-type BankAccountAdjustment struct {
-	bun.BaseModel `bun:"accounts.bank_account_adjustments"`
+type BankAccountRelatedAccount struct {
+	bun.BaseModel `bun:"accounts.bank_account_related_accounts"`
 
 	ID            uuid.UUID   `bun:",pk,nullzero"`
 	CreatedAt     time.Time   `bun:",nullzero"`

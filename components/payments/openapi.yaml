@@ -1678,13 +1678,13 @@ components:
           type: string
         swiftBicCode:
           type: string
-        adjustments:
+        relatedAccounts:
           type: array
           items:
-            $ref: '#/components/schemas/BankAccountAdjustment'
+            $ref: '#/components/schemas/BankAccountRelatedAccounts'
         metadata:
           $ref: '#/components/schemas/BankAccountMetadata'
-    BankAccountAdjustment:
+    BankAccountRelatedAccounts:
       type: object
       required:
         - id

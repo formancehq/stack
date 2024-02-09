@@ -10,17 +10,17 @@ import (
 )
 
 type bankAccountMessagePayload struct {
-	ID            string                         `json:"id"`
-	CreatedAt     time.Time                      `json:"createdAt"`
-	Name          string                         `json:"name"`
-	AccountNumber string                         `json:"accountNumber"`
-	IBAN          string                         `json:"iban"`
-	SwiftBicCode  string                         `json:"swiftBicCode"`
-	Country       string                         `json:"country"`
-	Adjustments   []bankAccountAdjustmentPayload `json:"adjustments"`
+	ID              string                              `json:"id"`
+	CreatedAt       time.Time                           `json:"createdAt"`
+	Name            string                              `json:"name"`
+	AccountNumber   string                              `json:"accountNumber"`
+	IBAN            string                              `json:"iban"`
+	SwiftBicCode    string                              `json:"swiftBicCode"`
+	Country         string                              `json:"country"`
+	RelatedAccounts []bankAccountRelatedAccountsPayload `json:"adjustments"`
 }
 
-type bankAccountAdjustmentPayload struct {
+type bankAccountRelatedAccountsPayload struct {
 	ID          string    `json:"id"`
 	CreatedAt   time.Time `json:"createdAt"`
 	AccountID   string    `json:"accountID"`
@@ -41,16 +41,16 @@ func (m *Messages) NewEventSavedBankAccounts(bankAccount *models.BankAccount) pu
 		Country:       bankAccount.Country,
 	}
 
-	for _, adjustment := range bankAccount.Adjustments {
-		adjustment := bankAccountAdjustmentPayload{
-			ID:          adjustment.ID.String(),
-			CreatedAt:   adjustment.CreatedAt,
-			AccountID:   adjustment.AccountID.String(),
-			Provider:    adjustment.ConnectorID.Provider.String(),
-			ConnectorID: adjustment.ConnectorID.String(),
+	for _, relatedAccount := range bankAccount.RelatedAccounts {
+		relatedAccount := bankAccountRelatedAccountsPayload{
+			ID:          relatedAccount.ID.String(),
+			CreatedAt:   relatedAccount.CreatedAt,
+			AccountID:   relatedAccount.AccountID.String(),
+			Provider:    relatedAccount.ConnectorID.Provider.String(),
+			ConnectorID: relatedAccount.ConnectorID.String(),
 		}
 
-		payload.Adjustments = append(payload.Adjustments, adjustment)
+		payload.RelatedAccounts = append(payload.RelatedAccounts, relatedAccount)
 	}
 
 	return publish.EventMessage{

@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-type BankAccountAdjustment struct {
+type BankAccountRelatedAccounts struct {
 	AccountID   string    `json:"accountID"`
 	ConnectorID string    `json:"connectorID"`
 	CreatedAt   time.Time `json:"createdAt"`
@@ -15,46 +15,46 @@ type BankAccountAdjustment struct {
 	Provider    string    `json:"provider"`
 }
 
-func (b BankAccountAdjustment) MarshalJSON() ([]byte, error) {
+func (b BankAccountRelatedAccounts) MarshalJSON() ([]byte, error) {
 	return utils.MarshalJSON(b, "", false)
 }
 
-func (b *BankAccountAdjustment) UnmarshalJSON(data []byte) error {
+func (b *BankAccountRelatedAccounts) UnmarshalJSON(data []byte) error {
 	if err := utils.UnmarshalJSON(data, &b, "", false, false); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (o *BankAccountAdjustment) GetAccountID() string {
+func (o *BankAccountRelatedAccounts) GetAccountID() string {
 	if o == nil {
 		return ""
 	}
 	return o.AccountID
 }
 
-func (o *BankAccountAdjustment) GetConnectorID() string {
+func (o *BankAccountRelatedAccounts) GetConnectorID() string {
 	if o == nil {
 		return ""
 	}
 	return o.ConnectorID
 }
 
-func (o *BankAccountAdjustment) GetCreatedAt() time.Time {
+func (o *BankAccountRelatedAccounts) GetCreatedAt() time.Time {
 	if o == nil {
 		return time.Time{}
 	}
 	return o.CreatedAt
 }
 
-func (o *BankAccountAdjustment) GetID() string {
+func (o *BankAccountRelatedAccounts) GetID() string {
 	if o == nil {
 		return ""
 	}
 	return o.ID
 }
 
-func (o *BankAccountAdjustment) GetProvider() string {
+func (o *BankAccountRelatedAccounts) GetProvider() string {
 	if o == nil {
 		return ""
 	}
