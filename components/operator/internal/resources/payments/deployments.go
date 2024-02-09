@@ -15,6 +15,14 @@ import (
 	v1 "k8s.io/api/core/v1"
 )
 
+func getEncryptionKey(ctx core.Context, payments *v1beta1.Payments) (string, error) {
+	encryptionKey := payments.Spec.EncryptionKey
+	if encryptionKey == "" {
+		return settings.GetStringOrEmpty(ctx, payments.Spec.Stack, "payments.encryption-key")
+	}
+	return "", nil
+}
+
 func commonEnvVars(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) ([]v1.EnvVar, error) {
 	env := make([]v1.EnvVar, 0)
 	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseKind(ctx, payments))
@@ -30,12 +38,10 @@ func commonEnvVars(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Pay
 	env = append(env, gatewayEnv...)
 	env = append(env, core.GetDevEnvVars(stack, payments)...)
 	env = append(env, databases.GetPostgresEnvVars(database)...)
-	encryptionKey := payments.Spec.EncryptionKey
-	if encryptionKey == "" {
-		encryptionKey, err = settings.GetStringOrEmpty(ctx, stack.Name, "payments.encryption-key")
-		if err != nil {
-			return nil, err
-		}
+
+	encryptionKey, err := getEncryptionKey(ctx, payments)
+	if err != nil {
+		return nil, err
 	}
 	env = append(env,
 		core.Env("POSTGRES_DATABASE_NAME", "$(POSTGRES_DATABASE)"),

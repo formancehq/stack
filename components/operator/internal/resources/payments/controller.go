@@ -56,10 +56,15 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, p *v1beta1.Payments, version s
 		}
 
 		if databases.GetSavedModuleVersion(database) != version {
+			encryptionKey, err := getEncryptionKey(ctx, p)
+			if err != nil {
+				return err
+			}
+
 			if err := jobs.Handle(ctx, p, "migrate", databases.MigrateDatabaseContainer(image, database,
 				func(m *databases.MigrationConfiguration) {
 					m.AdditionalEnv = []corev1.EnvVar{
-						Env("CONFIG_ENCRYPTION_KEY", p.Spec.EncryptionKey),
+						Env("CONFIG_ENCRYPTION_KEY", encryptionKey),
 					}
 				},
 			)); err != nil {
