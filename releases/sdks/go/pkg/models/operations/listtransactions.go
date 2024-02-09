@@ -15,7 +15,7 @@ type ListTransactionsRequest struct {
 	Account *string `queryParam:"style=form,explode=true,name=account"`
 	// Pagination cursor, will return transactions after given txid (in descending order).
 	After *string `queryParam:"style=form,explode=true,name=after"`
-	// Parameter used in pagination requests. Maximum page size is set to 15.
+	// Parameter used in pagination requests. Maximum page size is set to 1000.
 	// Set to the value of next for the next page of results.
 	// Set to the value of previous for the previous page of results.
 	// No other parameters can be set when this parameter is set.
