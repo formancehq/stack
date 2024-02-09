@@ -18,7 +18,6 @@ package databases
 
 import (
 	"fmt"
-
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/secretreferences"
@@ -140,6 +139,15 @@ func Delete(ctx core.Context, database *v1beta1.Database) error {
 	if database.Status.URI == nil {
 		return nil
 	}
+
+	clearDatabase, err := settings.GetBoolOrTrue(ctx, database.Spec.Stack, "clear-database")
+	if err != nil {
+		return err
+	}
+	if !clearDatabase {
+		return nil
+	}
+
 	logger := log.FromContext(ctx)
 	logger = logger.WithValues("name", database.Name)
 	logger.Info("Deleting database")
