@@ -20,6 +20,7 @@ const (
 	V2ErrorsEnumRevertOccurring   V2ErrorsEnum = "REVERT_OCCURRING"
 	V2ErrorsEnumAlreadyRevert     V2ErrorsEnum = "ALREADY_REVERT"
 	V2ErrorsEnumNoPostings        V2ErrorsEnum = "NO_POSTINGS"
+	V2ErrorsEnumLedgerNotFound    V2ErrorsEnum = "LEDGER_NOT_FOUND"
 )
 
 func (e V2ErrorsEnum) ToPointer() *V2ErrorsEnum {
@@ -51,6 +52,8 @@ func (e *V2ErrorsEnum) UnmarshalJSON(data []byte) error {
 	case "ALREADY_REVERT":
 		fallthrough
 	case "NO_POSTINGS":
+		fallthrough
+	case "LEDGER_NOT_FOUND":
 		*e = V2ErrorsEnum(v)
 		return nil
 	default:
