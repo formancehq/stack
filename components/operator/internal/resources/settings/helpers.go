@@ -247,6 +247,10 @@ func GetBoolOrFalse(ctx core.Context, stack string, keys ...string) (bool, error
 	return GetBoolOrDefault(ctx, stack, false, keys...)
 }
 
+func GetBoolOrTrue(ctx core.Context, stack string, keys ...string) (bool, error) {
+	return GetBoolOrDefault(ctx, stack, true, keys...)
+}
+
 func GetMap(ctx core.Context, stack string, keys ...string) (map[string]string, error) {
 	value, err := GetString(ctx, stack, keys...)
 	if err != nil {

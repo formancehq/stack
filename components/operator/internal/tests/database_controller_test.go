@@ -105,6 +105,28 @@ var _ = Describe("DatabaseController", func() {
 					}).Should(BeNotFound())
 				})
 			})
+			Context("With a settings preventing database cleaning", func() {
+				var clearDatabaseSettings *v1beta1.Settings
+				JustBeforeEach(func() {
+					shouldBeReady()
+					clearDatabaseSettings = settings.New(uuid.NewString(), "clear-database", "false", stack.Name)
+					Expect(Create(clearDatabaseSettings)).To(Succeed())
+					Expect(Delete(database)).To(Succeed())
+					DeferCleanup(func() {
+						Expect(Delete(clearDatabaseSettings)).To(Succeed())
+					})
+				})
+				It("Should not create a deletion job", func() {
+					Consistently(func() error {
+						return LoadResource(stack.Name, fmt.Sprintf("%s-drop-database", database.Spec.Service), &batchv1.Job{})
+					}, "2s").Should(BeNotFound())
+				})
+				It("Should eventually be deleted", func() {
+					Eventually(func() error {
+						return LoadResource(stack.Name, database.Name, &v1beta1.Database{})
+					}).Should(BeNotFound())
+				})
+			})
 			Context("Then when updating the DatabaseConfiguration object", func() {
 				JustBeforeEach(func() {
 					Eventually(func(g Gomega) bool {
