@@ -90,8 +90,7 @@ var _ = Describe("StackController", func() {
 		})
 		Context("with a module", func() {
 			var (
-				ledger           *v1beta1.Ledger
-				databaseSettings *v1beta1.Settings
+				ledger *v1beta1.Ledger
 			)
 			JustBeforeEach(func() {
 				ledger = &v1beta1.Ledger{
@@ -119,10 +118,13 @@ var _ = Describe("StackController", func() {
 				}).Should(BeFalse())
 			})
 			It("should not be ready", func() {
-				Expect(LoadResource("", ledger.Name, ledger)).To(Succeed())
-				Expect(ledger.Status.Ready).To(BeFalse())
+				Eventually(func() bool {
+					Expect(LoadResource("", ledger.Name, ledger)).To(Succeed())
+					return ledger.Status.Ready
+				}).Should(BeFalse())
 			})
 			When("each module are ready", func() {
+				var databaseSettings *v1beta1.Settings
 				BeforeEach(func() {
 					databaseSettings = settings.New(uuid.NewString(), "postgres.*.uri", "postgresql://localhost", stack.Name)
 					Expect(Create(databaseSettings)).Should(Succeed())

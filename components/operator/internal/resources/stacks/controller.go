@@ -41,7 +41,7 @@ import (
 
 func areDependentReady(ctx Context, stack *v1beta1.Stack) error {
 	pendingResources := make([]string, 0)
-
+	setInfo := map[string][]string{}
 	for _, rtype := range ctx.GetScheme().AllKnownTypes() {
 		v := reflect.New(rtype).Interface()
 		var r v1beta1.Dependent
@@ -70,9 +70,16 @@ func areDependentReady(ctx Context, stack *v1beta1.Stack) error {
 				if !ok {
 					return fmt.Errorf("are dependent ready ? failed to cast status to map[string]interface{}")
 				}
-				if status["ready"] == nil {
-					pendingResources = append(pendingResources, fmt.Sprintf("%s: %s", item.GetObjectKind().GroupVersionKind().Kind, item.GetName()))
-				} else {
+
+				if status["info"] != nil {
+					if setInfo[status["info"].(string)] == nil {
+						setInfo[status["info"].(string)] = []string{}
+					}
+					setInfo[status["info"].(string)] = append(setInfo[status["info"].(string)], item.GetKind())
+					continue
+				}
+
+				if status["ready"] != nil {
 					isReady, ok := status["ready"].(bool)
 					if !ok {
 						return fmt.Errorf("are dependent ready ? failed to cast ready to bool")
@@ -80,14 +87,28 @@ func areDependentReady(ctx Context, stack *v1beta1.Stack) error {
 					if !isReady {
 						pendingResources = append(pendingResources, fmt.Sprintf("%s: %s", item.GetObjectKind().GroupVersionKind().Kind, item.GetName()))
 					}
+					continue
 				}
+
+				pendingResources = append(pendingResources, fmt.Sprintf("%s: %s", item.GetObjectKind().GroupVersionKind().Kind, item.GetName()))
 			}
 		}
 
 	}
 
-	if len(pendingResources) > 0 {
-		return NewApplicationError("Still pending dependent: %s ", strings.Join(pendingResources, ", "))
+	if len(pendingResources) > 0 || len(setInfo) > 0 {
+		str := ""
+		for k, v := range setInfo {
+			str += fmt.Sprintf(`"%s" on Kinds(%s)`, k, strings.Join(v, ", "))
+		}
+
+		if len(pendingResources) > 0 {
+			if len(setInfo) > 0 {
+				str += ", "
+			}
+			str += fmt.Sprintf("pending resources: %s", strings.Join(pendingResources, ", "))
+		}
+		return NewApplicationError("Still pending dependent: %s ", str)
 	}
 
 	return nil

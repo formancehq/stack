@@ -19,7 +19,6 @@ package ledgers
 import (
 	_ "embed"
 	"fmt"
-	"github.com/pkg/errors"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
@@ -29,6 +28,7 @@ import (
 	"github.com/formancehq/operator/internal/resources/gatewayhttpapis"
 	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/search/benthos"
+	"github.com/pkg/errors"
 	"golang.org/x/mod/semver"
 	appsv1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"
@@ -42,7 +42,7 @@ import (
 //+kubebuilder:rbac:groups=batch,resources=cronjobs,verbs=get;list;watch;create;update;patch;delete
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, version string) error {
-
+	// return fmt.Errorf("not implemented")
 	database, err := databases.Create(ctx, ledger)
 	if err != nil {
 		return err
