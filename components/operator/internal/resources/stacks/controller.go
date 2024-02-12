@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
@@ -38,10 +39,90 @@ import (
 // +kubebuilder:rbac:groups=formance.com,resources=versions/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=formance.com,resources=versions/finalizers,verbs=update
 
+func areDependentReady(ctx Context, stack *v1beta1.Stack) error {
+	pendingResources := make([]string, 0)
+	setInfo := map[string][]string{}
+	for _, rtype := range ctx.GetScheme().AllKnownTypes() {
+		v := reflect.New(rtype).Interface()
+		var r v1beta1.Dependent
+		r, ok := v.(v1beta1.Dependent)
+		if !ok {
+			continue
+		}
+
+		gvk, err := apiutil.GVKForObject(r, ctx.GetScheme())
+		if err != nil {
+			return err
+		}
+		l := &unstructured.UnstructuredList{}
+		l.SetGroupVersionKind(gvk)
+		if err := ctx.GetClient().List(ctx, l, client.MatchingFields{
+			"stack": stack.Name,
+		}); err != nil {
+
+			return err
+		}
+
+		for _, item := range l.Items {
+			content := item.UnstructuredContent()
+			if content["status"] != nil {
+				status, ok := content["status"].(map[string]interface{})
+				if !ok {
+					return fmt.Errorf("are dependent ready ? failed to cast status to map[string]interface{}")
+				}
+
+				if status["info"] != nil {
+					if setInfo[status["info"].(string)] == nil {
+						setInfo[status["info"].(string)] = []string{}
+					}
+					setInfo[status["info"].(string)] = append(setInfo[status["info"].(string)], item.GetKind())
+					continue
+				}
+
+				if status["ready"] != nil {
+					isReady, ok := status["ready"].(bool)
+					if !ok {
+						return fmt.Errorf("are dependent ready ? failed to cast ready to bool")
+					}
+					if !isReady {
+						pendingResources = append(pendingResources, fmt.Sprintf("%s: %s", item.GetObjectKind().GroupVersionKind().Kind, item.GetName()))
+					}
+					continue
+				}
+
+				pendingResources = append(pendingResources, fmt.Sprintf("%s: %s", item.GetObjectKind().GroupVersionKind().Kind, item.GetName()))
+			}
+		}
+
+	}
+
+	if len(pendingResources) > 0 || len(setInfo) > 0 {
+		str := ""
+		for k, v := range setInfo {
+			str += fmt.Sprintf(`"%s" on Kinds(%s)`, k, strings.Join(v, ", "))
+		}
+
+		if len(pendingResources) > 0 {
+			if len(setInfo) > 0 {
+				str += ", "
+			}
+			str += fmt.Sprintf("pending resources: %s", strings.Join(pendingResources, ", "))
+		}
+		return NewApplicationError("Still pending dependent: %s ", str)
+	}
+
+	return nil
+}
+
 func Reconcile(ctx Context, stack *v1beta1.Stack) error {
 	_, _, err := CreateOrUpdate[*corev1.Namespace](ctx, types.NamespacedName{
 		Name: stack.Name,
 	})
+	if err != nil {
+		return err
+	}
+
+	err = areDependentReady(ctx, stack)
 	if err != nil {
 		return err
 	}
