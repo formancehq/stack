@@ -46,7 +46,7 @@ func StacksEventHandler(logger sharedlogging.Logger, membershipClient Membership
 			oldStack := convertUnstructured[*v1beta1.Stack](oldObj)
 			newStack := convertUnstructured[*v1beta1.Stack](newObj)
 
-			if oldStack.Status.Ready == newStack.Status.Ready {
+			if oldStack.Spec.Disabled == newStack.Spec.Disabled && oldStack.Status.Ready == newStack.Status.Ready {
 				return
 			}
 
