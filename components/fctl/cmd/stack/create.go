@@ -134,14 +134,16 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 	}
 
 	availableVersions, httpResponse, err := apiClient.DefaultApi.GetRegionVersions(cmd.Context(), organization, region).Execute()
-	if httpResponse == nil {
+	if err != nil {
+		return nil, errors.Wrap(err, "retrieving available versions")
+	}
+
+	if httpResponse.StatusCode > 300 {
 		return nil, err
 	}
 
 	specifiedVersion := fctl.GetString(cmd, versionFlag)
-
-	switch {
-	case httpResponse.StatusCode == http.StatusOK && specifiedVersion == "":
+	if specifiedVersion == "" {
 		var options []string
 		for _, version := range availableVersions.Data {
 			options = append(options, version.Name)
@@ -152,23 +154,10 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		if err != nil {
 			return nil, err
 		}
-		for i := 0; i < len(options); i++ {
-			if selectedOption == options[i] {
-				specifiedVersion = availableVersions.Data[i].Name
-				break
-			}
-		}
-	case httpResponse.StatusCode != http.StatusOK && specifiedVersion == "":
-		// nothing to do, we cannot set a specific version for this membership version
-	case httpResponse.StatusCode == http.StatusOK && specifiedVersion != "":
-		// nothing to do, let membership handle the case
-	case httpResponse.StatusCode != http.StatusOK && specifiedVersion != "":
-		return nil, errors.New("--version flag can not be used with the actual membership api")
-	}
 
-	if specifiedVersion != "" {
-		req.Version = pointer.For(specifiedVersion)
+		specifiedVersion = selectedOption
 	}
+	req.Version = pointer.For(specifiedVersion)
 
 	stackResponse, _, err := apiClient.DefaultApi.
 		CreateStack(cmd.Context(), organization).
