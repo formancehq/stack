@@ -175,7 +175,7 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 			return nil, err
 		}
 
-		if err := waitStackReady(cmd, profile, stackResponse.Data); err != nil {
+		if err := waitStackReady(cmd, apiClient, profile, stackResponse.Data); err != nil {
 			return nil, err
 		}
 
