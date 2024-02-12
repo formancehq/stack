@@ -66,10 +66,7 @@ func areDependentReady(ctx Context, stack *v1beta1.Stack) error {
 		for _, item := range l.Items {
 			content := item.UnstructuredContent()
 			if content["status"] != nil {
-				status, ok := content["status"].(map[string]interface{})
-				if !ok {
-					return fmt.Errorf("are dependent ready ? failed to cast status to map[string]interface{}")
-				}
+				status := content["status"].(map[string]interface{})
 
 				if status["info"] != nil {
 					if setInfo[status["info"].(string)] == nil {
@@ -80,10 +77,7 @@ func areDependentReady(ctx Context, stack *v1beta1.Stack) error {
 				}
 
 				if status["ready"] != nil {
-					isReady, ok := status["ready"].(bool)
-					if !ok {
-						return fmt.Errorf("are dependent ready ? failed to cast ready to bool")
-					}
+					isReady := status["ready"].(bool)
 					if !isReady {
 						pendingResources = append(pendingResources, fmt.Sprintf("%s: %s", item.GetObjectKind().GroupVersionKind().Kind, item.GetName()))
 					}
