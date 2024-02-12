@@ -193,6 +193,12 @@ var _ = Describe("LedgerController", func() {
 					return LoadResource(stack.Name, "ledger-gateway", gateway)
 				}).Should(Succeed())
 				Expect(gateway).To(BeControlledBy(ledger))
+				Expect(gateway.Spec.Template.Spec.SecurityContext).NotTo(BeNil())
+				Expect(gateway.Spec.Template.Spec.Containers).To(HaveLen(1))
+				Expect(gateway.Spec.Template.Spec.Containers[0].SecurityContext).NotTo(BeNil())
+				Expect(gateway.Spec.Template.Spec.Containers[0].SecurityContext.Capabilities).NotTo(BeNil())
+				Expect(gateway.Spec.Template.Spec.Containers[0].SecurityContext.Capabilities.Add).To(HaveLen(1))
+				Expect(gateway.Spec.Template.Spec.Containers[0].SecurityContext.Capabilities.Add).To(ContainElements(corev1.Capability("NET_BIND_SERVICE")))
 			})
 		})
 		Context("With Search enabled", func() {

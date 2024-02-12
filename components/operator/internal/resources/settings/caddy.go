@@ -41,6 +41,11 @@ func ConfigureCaddy(caddyfile *v1.ConfigMap, image string, env []v1.EnvVar) core
 					Name:          "http",
 					ContainerPort: 8080,
 				}},
+				SecurityContext: &v1.SecurityContext{
+					Capabilities: &v1.Capabilities{
+						Add: []v1.Capability{"NET_BIND_SERVICE"},
+					},
+				},
 			},
 		}
 
