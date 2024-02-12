@@ -230,6 +230,7 @@ func (a *Audit) provisionNatsPublisher() error {
 				a.logger.Error("failed to stop caddy", zap.Error(err))
 				panic(err)
 			}
+			os.Exit(1)
 		}),
 	}
 
