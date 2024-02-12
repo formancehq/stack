@@ -67,4 +67,4 @@ spec:
   stacks:
     - '*'
   key: clear-database
-  value: true
+  value: "true"
