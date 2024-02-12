@@ -49,7 +49,32 @@ var _ = Describe("Stacks informer", func() {
 				Do(context.Background()).
 				Into(stack)).To(Succeed())
 		})
-		It("Should be disabled and have sent a Status_Progressing", func() {
+		It("Should be disabled and have sent a Status_Disabled", func() {
+			Eventually(func() []*generated.Message {
+				for _, message := range membershipClientMock.GetMessages() {
+					if message.GetStatusChanged() != nil && message.GetStatusChanged().Status == generated.StackStatus_Disabled {
+						return membershipClientMock.GetMessages()
+					}
+				}
+				return nil
+			}).ShouldNot(BeEmpty())
+		})
+	})
+	When("Stack is created", func() {
+		var stack *v1beta1.Stack
+		BeforeEach(func() {
+			stack = &v1beta1.Stack{
+				ObjectMeta: v1.ObjectMeta{
+					Name: uuid.NewString(),
+				},
+			}
+			Expect(k8sClient.Post().
+				Resource("Stacks").
+				Body(stack).
+				Do(context.Background()).
+				Into(stack)).To(Succeed())
+		})
+		It("should have sent a Status_Progressing", func() {
 			Eventually(func() []*generated.Message {
 				for _, message := range membershipClientMock.GetMessages() {
 					if message.GetStatusChanged() != nil && message.GetStatusChanged().Status == generated.StackStatus_Progressing {
@@ -59,7 +84,7 @@ var _ = Describe("Stacks informer", func() {
 				return nil
 			}).ShouldNot(BeEmpty())
 		})
-		When("Stack is fully disabled and reconcilled", func() {
+		When("the stack is reconcilled", func() {
 			BeforeEach(func() {
 				stack.Status.Ready = true
 				Expect(
@@ -72,10 +97,10 @@ var _ = Describe("Stacks informer", func() {
 						Error(),
 				).To(Succeed())
 			})
-			It("should have sent a Status_Disabled", func() {
+			It("should have sent a Status_Ready", func() {
 				Eventually(func() []*generated.Message {
 					for _, message := range membershipClientMock.GetMessages() {
-						if message.GetStatusChanged() != nil && message.GetStatusChanged().Status == generated.StackStatus_Disabled {
+						if message.GetStatusChanged() != nil && message.GetStatusChanged().Status == generated.StackStatus_Ready {
 							return membershipClientMock.GetMessages()
 						}
 					}

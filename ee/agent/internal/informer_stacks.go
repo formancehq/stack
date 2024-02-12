@@ -23,10 +23,11 @@ func StacksEventHandler(logger sharedlogging.Logger, membershipClient Membership
 
 	sendStatusFromStack := func(stack *v1beta1.Stack) {
 		sendStatus(stack.Name, func() generated.StackStatus {
+			if stack.Spec.Disabled {
+				return generated.StackStatus_Disabled
+			}
+
 			if stack.Status.Ready {
-				if stack.Spec.Disabled {
-					return generated.StackStatus_Disabled
-				}
 				return generated.StackStatus_Ready
 			} else {
 				return generated.StackStatus_Progressing
