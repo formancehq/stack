@@ -59,6 +59,52 @@ var _ = Describe("Stacks informer", func() {
 				return nil
 			}).ShouldNot(BeEmpty())
 		})
+		When("the stack is re-enabled", func() {
+			BeforeEach(func() {
+				stack.Spec.Disabled = false
+				Expect(k8sClient.Put().
+					Resource("Stacks").
+					Name(stack.Name).
+					Body(stack).
+					Do(context.Background()).
+					Into(stack)).To(Succeed())
+			})
+			It("should have sent a Status_Progressing", func() {
+				Eventually(func() []*generated.Message {
+					for _, message := range membershipClientMock.GetMessages() {
+						if message.GetStatusChanged() != nil && message.GetStatusChanged().Status == generated.StackStatus_Progressing {
+							return membershipClientMock.GetMessages()
+						}
+					}
+					return []*generated.Message{}
+				}).ShouldNot(BeEmpty())
+			})
+			When("the stack is reconcilled", func() {
+				BeforeEach(func() {
+					stack.Status.Ready = true
+					Expect(
+						k8sClient.Put().
+							Resource("Stacks").
+							SubResource("status").
+							Name(stack.Name).
+							Body(stack).
+							Do(context.Background()).
+							Error(),
+					).To(Succeed())
+				})
+				It("should have sent a Status_Ready", func() {
+					Eventually(func() []*generated.Message {
+						for _, message := range membershipClientMock.GetMessages() {
+							if message.GetStatusChanged() != nil && message.GetStatusChanged().Status == generated.StackStatus_Ready {
+								return membershipClientMock.GetMessages()
+							}
+						}
+						return nil
+					}).ShouldNot(BeEmpty())
+				})
+			})
+		})
+
 	})
 	When("Stack is created", func() {
 		var stack *v1beta1.Stack
