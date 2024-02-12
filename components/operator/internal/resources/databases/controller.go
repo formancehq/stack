@@ -140,7 +140,7 @@ func Delete(ctx core.Context, database *v1beta1.Database) error {
 		return nil
 	}
 
-	clearDatabase, err := settings.GetBoolOrTrue(ctx, database.Spec.Stack, "clear-database")
+	clearDatabase, err := settings.GetBoolOrFalse(ctx, database.Spec.Stack, "clear-database")
 	if err != nil {
 		return err
 	}

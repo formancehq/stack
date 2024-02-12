@@ -92,7 +92,12 @@ var _ = Describe("DatabaseController", func() {
 			Context("Then when deleting the Database object", func() {
 				JustBeforeEach(func() {
 					shouldBeReady()
+					clearDatabaseSettings := settings.New(uuid.NewString(), "clear-database", "true", stack.Name)
+					Expect(Create(clearDatabaseSettings)).To(Succeed())
 					Expect(Delete(database)).To(Succeed())
+					DeferCleanup(func() {
+						Expect(Delete(clearDatabaseSettings)).To(Succeed())
+					})
 				})
 				It("Should create a deletion job", func() {
 					Eventually(func() error {

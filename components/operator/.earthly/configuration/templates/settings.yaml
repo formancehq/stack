@@ -58,3 +58,13 @@ spec:
     - '*'
   key: default-otlp
   value: grpc://otel-collector-opentelemetry-collector.formance.svc.cluster.local:4317?insecure=true
+---
+apiVersion: formance.com/v1beta1
+kind: Settings
+metadata:
+  name: clear-database
+spec:
+  stacks:
+    - '*'
+  key: clear-database
+  value: true
