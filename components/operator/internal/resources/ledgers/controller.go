@@ -42,7 +42,6 @@ import (
 //+kubebuilder:rbac:groups=batch,resources=cronjobs,verbs=get;list;watch;create;update;patch;delete
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, version string) error {
-	// return fmt.Errorf("not implemented")
 	database, err := databases.Create(ctx, ledger)
 	if err != nil {
 		return err
