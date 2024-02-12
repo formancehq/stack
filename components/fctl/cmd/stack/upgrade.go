@@ -172,6 +172,9 @@ func retrieveUpgradableVersion(ctx context.Context, organization string, stack m
 
 	var upgradeOptions []string
 	for _, version := range availableVersions.Data {
+		if version.Name == *stack.Version {
+			continue
+		}
 		if !semver.IsValid(version.Name) || semver.Compare(version.Name, *stack.Version) >= 1 {
 			upgradeOptions = append(upgradeOptions, version.Name)
 		}
