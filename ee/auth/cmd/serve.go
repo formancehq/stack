@@ -127,8 +127,7 @@ func newServeCommand() *cobra.Command {
 
 			zLogging.SetOutput(cmd.OutOrStdout())
 
-			connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(
-				viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag))
+			connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd.OutOrStdout(), viper.GetBool(service.DebugFlag))
 			if err != nil {
 				return err
 			}
@@ -166,7 +165,7 @@ func newServeCommand() *cobra.Command {
 				)
 			}
 
-			options = append(options, otlptraces.CLITracesModule(viper.GetViper()))
+			options = append(options, otlptraces.CLITracesModule())
 
 			return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 		},

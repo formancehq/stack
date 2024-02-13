@@ -48,8 +48,8 @@ func newServeCommand() *cobra.Command {
 				api.Module(sharedapi.ServiceInfo{
 					Version: Version,
 				}, viper.GetString(listenFlag)),
-				otlptraces.CLITracesModule(viper.GetViper()),
-				auth.CLIAuthModule(viper.GetViper()),
+				otlptraces.CLITracesModule(),
+				auth.CLIAuthModule(),
 			}
 
 			return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())

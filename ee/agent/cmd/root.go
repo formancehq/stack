@@ -112,7 +112,7 @@ func runAgent(cmd *cobra.Command, args []string) error {
 			Production: viper.GetBool(productionFlag),
 			Version:    Version,
 		}, dialOptions...),
-		sharedotlptraces.CLITracesModule(viper.GetViper()),
+		sharedotlptraces.CLITracesModule(),
 	}
 
 	return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())

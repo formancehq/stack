@@ -73,7 +73,7 @@ func NewServer() *cobra.Command {
 			options := make([]fx.Option, 0)
 			options = append(options, opensearchClientModule(openSearchServiceHost, !viper.GetBool(esDisableMappingInitFlag), esIndex))
 			options = append(options,
-				auth.CLIAuthModule(viper.GetViper()),
+				auth.CLIAuthModule(),
 				health.Module(),
 				health.ProvideHealthCheck(func(client *opensearch.Client) health.NamedCheck {
 					return health.NewNamedCheck("elasticsearch connection", health.CheckFn(func(ctx context.Context) error {
@@ -83,7 +83,7 @@ func NewServer() *cobra.Command {
 				}),
 			)
 
-			options = append(options, otlptraces.CLITracesModule(viper.GetViper()))
+			options = append(options, otlptraces.CLITracesModule())
 			options = append(options, apiModule("search", bind, viper.GetString(stackFlag), api.ServiceInfo{
 				Version: Version,
 			}, esIndex))

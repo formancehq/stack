@@ -46,8 +46,8 @@ func resolveServerOptions(v *viper.Viper, userOptions ...fx.Option) []fx.Option 
 	options = append(options, fx.NopLogger)
 
 	options = append(options,
-		otlptraces.CLITracesModule(viper.GetViper()),
-		otlpmetrics.CLIMetricsModule(viper.GetViper()),
+		otlptraces.CLITracesModule(),
+		otlpmetrics.CLIMetricsModule(),
 
 		// HTTP and GRPC APIs need to be started with a NATS conn, so we need to
 		// create a NATS conn first.
