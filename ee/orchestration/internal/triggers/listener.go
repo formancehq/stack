@@ -3,6 +3,7 @@ package triggers
 import (
 	"encoding/json"
 	"fmt"
+	"runtime/debug"
 
 	"github.com/formancehq/orchestration/internal/workflow"
 	"go.opentelemetry.io/otel/attribute"
@@ -45,6 +46,14 @@ func getWorkflowIDFromEvent(event publish.EventMessage) *string {
 }
 
 func handleMessage(temporalClient client.Client, taskIDPrefix, taskQueue string, msg *message.Message) error {
+
+	defer func() {
+		if e := recover(); e != nil {
+			fmt.Println(e)
+			debug.PrintStack()
+		}
+	}()
+
 	var event *publish.EventMessage
 	span, event, err := publish.UnmarshalMessage(msg)
 	if err != nil {
