@@ -28,7 +28,7 @@ func StartModule(serviceName string, retriesCron time.Duration, retryPolicy webh
 	options = append(options, fx.Invoke(func(r *message.Router, subscriber message.Subscriber, store storage.Store, httpClient *http.Client) {
 		configureMessageRouter(r, subscriber, viper.GetStringSlice(flag.KafkaTopics), store, httpClient, retryPolicy, pond.New(50, 50))
 	}))
-	options = append(options, publish.CLIPublisherModule(viper.GetViper(), serviceName))
+	options = append(options, publish.CLIPublisherModule(serviceName))
 	options = append(options, fx.Provide(
 		func() (time.Duration, webhooks.BackoffPolicy) {
 			return retriesCron, retryPolicy

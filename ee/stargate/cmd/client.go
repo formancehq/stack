@@ -44,20 +44,18 @@ func newClient() *cobra.Command {
 		Short:        "Launch client",
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return app.New(cmd.OutOrStdout(), resolveClientOptions(
-				viper.GetViper(),
-			)...).Run(cmd.Context())
+			return app.New(cmd.OutOrStdout(), resolveClientOptions()...).Run(cmd.Context())
 		},
 	}
 }
 
-func resolveClientOptions(v *viper.Viper) []fx.Option {
+func resolveClientOptions() []fx.Option {
 	options := make([]fx.Option, 0)
 	options = append(options, fx.NopLogger)
 
 	options = append(options,
-		otlptraces.CLITracesModule(viper.GetViper()),
-		otlpmetrics.CLIMetricsModule(viper.GetViper()),
+		otlptraces.CLITracesModule(),
+		otlpmetrics.CLIMetricsModule(),
 
 		fx.Provide(func() client.WorkerPoolConfig {
 			return client.NewWorkerPoolConfig(

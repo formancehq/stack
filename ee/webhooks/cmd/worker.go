@@ -30,7 +30,7 @@ func newWorkerCommand() *cobra.Command {
 }
 
 func runWorker(cmd *cobra.Command, _ []string) error {
-	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(viper.GetViper(), cmd.OutOrStdout(), viper.GetBool(service.DebugFlag))
+	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd.OutOrStdout(), viper.GetBool(service.DebugFlag))
 	if err != nil {
 		return err
 	}
@@ -43,7 +43,7 @@ func runWorker(cmd *cobra.Command, _ []string) error {
 		fx.Invoke(func(lc fx.Lifecycle, h http.Handler) {
 			lc.Append(httpserver.NewHook(h, httpserver.WithAddress(viper.GetString(flag.Listen))))
 		}),
-		otlptraces.CLITracesModule(viper.GetViper()),
+		otlptraces.CLITracesModule(),
 		worker.StartModule(
 			ServiceName,
 			viper.GetDuration(flag.RetryPeriod),

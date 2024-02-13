@@ -102,12 +102,12 @@ func Execute() {
 }
 
 func commonOptions(output io.Writer) (fx.Option, error) {
-	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(viper.GetViper(), output, viper.GetBool(service.DebugFlag))
+	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(output, viper.GetBool(service.DebugFlag))
 	if err != nil {
 		return nil, err
 	}
 	return fx.Options(
-		otlptraces.CLITracesModule(viper.GetViper()),
+		otlptraces.CLITracesModule(),
 		temporalclient.NewModule(
 			viper.GetString(temporalAddressFlag),
 			viper.GetString(temporalNamespaceFlag),
@@ -115,8 +115,8 @@ func commonOptions(output io.Writer) (fx.Option, error) {
 			viper.GetString(temporalSSLClientKeyFlag),
 		),
 		bunconnect.Module(*connectionOptions),
-		publish.CLIPublisherModule(viper.GetViper(), "orchestration"),
-		auth.CLIAuthModule(viper.GetViper()),
+		publish.CLIPublisherModule("orchestration"),
+		auth.CLIAuthModule(),
 		workflow.NewModule(viper.GetString(temporalTaskQueueFlag)),
 		triggers.NewModule(viper.GetString(temporalTaskQueueFlag)),
 		fx.Provide(func() *http.Client {
