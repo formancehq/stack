@@ -18,11 +18,6 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 )
 
-type fetchWalletsState struct {
-	LastPage         int       `json:"last_page"`
-	LastCreationDate time.Time `json:"last_creation_date"`
-}
-
 func taskFetchWallets(client *client.Client, config *Config, userID string) task.Task {
 	return func(
 		ctx context.Context,
@@ -41,20 +36,8 @@ func taskFetchWallets(client *client.Client, config *Config, userID string) task
 		)
 		defer span.End()
 
-		state := task.MustResolveTo(ctx, resolver, fetchWalletsState{})
-		if state.LastPage == 0 {
-			// If last page is 0, it means we haven't fetched any wallets yet.
-			// Mangopay pages starts at 1.
-			state.LastPage = 1
-		}
-
-		newState, err := ingestWallets(ctx, client, config, userID, connectorID, scheduler, ingester, state)
+		err := ingestWallets(ctx, client, config, userID, connectorID, scheduler, ingester)
 		if err != nil {
-			otel.RecordError(span, err)
-			return err
-		}
-
-		if err := ingester.UpdateTaskState(ctx, newState); err != nil {
 			otel.RecordError(span, err)
 			return err
 		}
@@ -71,25 +54,18 @@ func ingestWallets(
 	connectorID models.ConnectorID,
 	scheduler task.Scheduler,
 	ingester ingestion.Ingester,
-	state fetchWalletsState,
-) (fetchWalletsState, error) {
-	var currentPage int
-
-	newState := fetchWalletsState{
-		LastCreationDate: state.LastCreationDate,
-	}
-
-	for currentPage = state.LastPage; ; currentPage++ {
+) error {
+	for currentPage := 1; ; currentPage++ {
 		pagedWallets, err := client.GetWallets(ctx, userID, currentPage, pageSize)
 		if err != nil {
-			return fetchWalletsState{}, err
+			return err
 		}
 
 		if len(pagedWallets) == 0 {
 			break
 		}
 
-		lastCreationDate, err := handleWallets(
+		if err = handleWallets(
 			ctx,
 			config,
 			userID,
@@ -97,21 +73,16 @@ func ingestWallets(
 			ingester,
 			scheduler,
 			pagedWallets,
-			state,
-		)
-		if err != nil {
-			return fetchWalletsState{}, err
+		); err != nil {
+			return err
 		}
-		newState.LastCreationDate = lastCreationDate
 
 		if len(pagedWallets) < pageSize {
 			break
 		}
 	}
 
-	newState.LastPage = currentPage
-
-	return newState, nil
+	return nil
 }
 
 func handleWallets(
@@ -122,22 +93,11 @@ func handleWallets(
 	ingester ingestion.Ingester,
 	scheduler task.Scheduler,
 	pagedWallets []*client.Wallet,
-	state fetchWalletsState,
-) (time.Time, error) {
+) error {
 	var accountBatch ingestion.AccountBatch
 	var balanceBatch ingestion.BalanceBatch
 	var transactionTasks []models.TaskDescriptor
-	var lastCreationDate time.Time
 	for _, wallet := range pagedWallets {
-		creationDate := time.Unix(wallet.CreationDate, 0)
-		switch creationDate.Compare(state.LastCreationDate) {
-		case -1, 0:
-			// creationDate <= state.LastCreationDate, nothing to do,
-			// we already processed wallets.
-			continue
-		default:
-		}
-
 		transactionTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
 			Name:     "Fetch transactions from client by user and wallets",
 			Key:      taskNameFetchTransactions,
@@ -145,12 +105,12 @@ func handleWallets(
 			WalletID: wallet.ID,
 		})
 		if err != nil {
-			return time.Time{}, err
+			return err
 		}
 
 		buf, err := json.Marshal(wallet)
 		if err != nil {
-			return time.Time{}, err
+			return err
 		}
 
 		transactionTasks = append(transactionTasks, transactionTask)
@@ -176,7 +136,7 @@ func handleWallets(
 		var amount big.Int
 		_, ok := amount.SetString(wallet.Balance.Amount.String(), 10)
 		if !ok {
-			return time.Time{}, fmt.Errorf("failed to parse amount: %s", wallet.Balance.Amount.String())
+			return fmt.Errorf("failed to parse amount: %s", wallet.Balance.Amount.String())
 		}
 
 		now := time.Now()
@@ -191,16 +151,14 @@ func handleWallets(
 			LastUpdatedAt: now,
 			ConnectorID:   connectorID,
 		})
-
-		lastCreationDate = creationDate
 	}
 
 	if err := ingester.IngestAccounts(ctx, accountBatch); err != nil {
-		return time.Time{}, err
+		return err
 	}
 
 	if err := ingester.IngestBalances(ctx, balanceBatch, false); err != nil {
-		return time.Time{}, err
+		return err
 	}
 
 	for _, transactionTask := range transactionTasks {
@@ -210,9 +168,9 @@ func handleWallets(
 			RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 		})
 		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
-			return time.Time{}, err
+			return err
 		}
 	}
 
-	return lastCreationDate, nil
+	return nil
 }
