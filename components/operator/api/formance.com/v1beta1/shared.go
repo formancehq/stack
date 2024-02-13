@@ -246,7 +246,8 @@ func (u *URI) UnmarshalJSON(data []byte) error {
 
 func (in *URI) WithoutQuery() *URI {
 	cp := *in.URL
-	in.URL.RawQuery = ""
+	cp.ForceQuery = false
+	cp.RawQuery = ""
 	return &URI{
 		URL: &cp,
 	}
