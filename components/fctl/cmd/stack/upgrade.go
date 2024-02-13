@@ -143,9 +143,11 @@ func (c *UpgradeController) Run(cmd *cobra.Command, args []string) (fctl.Rendera
 			return nil, err
 		}
 
-		if err := waitStackReady(cmd, apiClient, profile, stack.Data); err != nil {
+		stack, err := waitStackReady(cmd, apiClient, profile, stack.Data)
+		if err != nil {
 			return nil, err
 		}
+		c.store.Stack = stack
 
 		if err := spinner.Stop(); err != nil {
 			return nil, err
