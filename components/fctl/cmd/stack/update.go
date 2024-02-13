@@ -92,10 +92,6 @@ func (c *StackUpdateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		return nil, err
 	}
 
-	if len(args) != 1 {
-		return nil, errors.New("only stack-id is required")
-	}
-
 	protected := !fctl.GetBool(cmd, unprotectFlag)
 	metadata := map[string]string{
 		fctl.ProtectedStackMetadata: fctl.BoolPointerToString(&protected),

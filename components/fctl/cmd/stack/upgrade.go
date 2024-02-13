@@ -89,10 +89,6 @@ func (c *UpgradeController) Run(cmd *cobra.Command, args []string) (fctl.Rendera
 		return nil, err
 	}
 
-	if len(args) < 1 {
-		return nil, errors.New("stack-id is required")
-	}
-
 	stack, res, err := apiClient.DefaultApi.GetStack(cmd.Context(), organization, args[0]).Execute()
 	if err != nil {
 		return nil, errors.Wrap(err, "retrieving stack")
