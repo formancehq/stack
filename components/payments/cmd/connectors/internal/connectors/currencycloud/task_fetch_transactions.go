@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"math/big"
+	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
@@ -17,12 +18,17 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 )
 
+type fetchTransactionsState struct {
+	LastUpdatedAt time.Time
+}
+
 func taskFetchTransactions(client *client.Client, config Config) task.Task {
 	return func(
 		ctx context.Context,
 		taskID models.TaskID,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
+		resolver task.StateResolver,
 	) error {
 		ctx, span := connectors.StartSpan(
 			ctx,
@@ -32,7 +38,15 @@ func taskFetchTransactions(client *client.Client, config Config) task.Task {
 		)
 		defer span.End()
 
-		if err := ingestTransactions(ctx, connectorID, client, ingester); err != nil {
+		state := task.MustResolveTo(ctx, resolver, fetchTransactionsState{})
+
+		newState, err := ingestTransactions(ctx, connectorID, client, ingester, state)
+		if err != nil {
+			otel.RecordError(span, err)
+			return err
+		}
+
+		if err := ingester.UpdateTaskState(ctx, newState); err != nil {
 			otel.RecordError(span, err)
 			return err
 		}
@@ -46,16 +60,21 @@ func ingestTransactions(
 	connectorID models.ConnectorID,
 	client *client.Client,
 	ingester ingestion.Ingester,
-) error {
+	state fetchTransactionsState,
+) (fetchTransactionsState, error) {
+	newState := fetchTransactionsState{
+		LastUpdatedAt: state.LastUpdatedAt,
+	}
+
 	page := 1
 	for {
 		if page < 0 {
 			break
 		}
 
-		transactions, nextPage, err := client.GetTransactions(ctx, page)
+		transactions, nextPage, err := client.GetTransactions(ctx, page, state.LastUpdatedAt)
 		if err != nil {
-			return err
+			return fetchTransactionsState{}, err
 		}
 
 		page = nextPage
@@ -63,6 +82,12 @@ func ingestTransactions(
 		batch := ingestion.PaymentBatch{}
 
 		for _, transaction := range transactions {
+			switch transaction.UpdatedAt.Compare(state.LastUpdatedAt) {
+			case -1, 0:
+				continue
+			default:
+			}
+
 			precision, ok := supportedCurrenciesWithDecimal[transaction.Currency]
 			if !ok {
 				continue
@@ -71,7 +96,7 @@ func ingestTransactions(
 			var amount big.Float
 			_, ok = amount.SetString(transaction.Amount)
 			if !ok {
-				return fmt.Errorf("failed to parse amount %s", transaction.Amount)
+				return fetchTransactionsState{}, fmt.Errorf("failed to parse amount %s", transaction.Amount)
 			}
 			var amountInt big.Int
 			amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
@@ -80,7 +105,7 @@ func ingestTransactions(
 
 			rawData, err = json.Marshal(transaction)
 			if err != nil {
-				return fmt.Errorf("failed to marshal transaction: %w", err)
+				return fetchTransactionsState{}, fmt.Errorf("failed to marshal transaction: %w", err)
 			}
 
 			paymentType := matchTransactionType(transaction.Type)
@@ -95,6 +120,7 @@ func ingestTransactions(
 						ConnectorID: connectorID,
 					},
 					Reference:     transaction.ID,
+					CreatedAt:     transaction.CreatedAt,
 					Type:          paymentType,
 					ConnectorID:   connectorID,
 					Status:        matchTransactionStatus(transaction.Status),
@@ -120,15 +146,17 @@ func ingestTransactions(
 			}
 
 			batch = append(batch, batchElement)
+
+			newState.LastUpdatedAt = transaction.UpdatedAt
 		}
 
 		err = ingester.IngestPayments(ctx, batch)
 		if err != nil {
-			return err
+			return fetchTransactionsState{}, err
 		}
 	}
 
-	return nil
+	return newState, nil
 }
 
 func matchTransactionType(transactionType string) models.PaymentType {

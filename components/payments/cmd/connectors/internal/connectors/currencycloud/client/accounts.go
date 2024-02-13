@@ -14,6 +14,7 @@ type Account struct {
 	ID          string    `json:"id"`
 	AccountName string    `json:"account_name"`
 	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 func (c *Client) GetAccounts(ctx context.Context, page int) ([]*Account, int, error) {
@@ -22,10 +23,17 @@ func (c *Client) GetAccounts(ctx context.Context, page int) ([]*Account, int, er
 	defer f(ctx, now)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost,
-		c.buildEndpoint("v2/accounts/find?page=%d&per_page=25", page), http.NoBody)
+		c.buildEndpoint("v2/accounts/find"), http.NoBody)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to create request: %w", err)
 	}
+
+	q := req.URL.Query()
+	q.Add("per_page", "25")
+	q.Add("page", fmt.Sprint(page))
+	q.Add("order", "updated_at")
+	q.Add("order_asc_desc", "asc")
+	req.URL.RawQuery = q.Encode()
 
 	req.Header.Add("Accept", "application/json")
 

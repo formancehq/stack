@@ -3,6 +3,7 @@ package currencycloud
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currencycloud/client"
@@ -13,6 +14,11 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 )
 
+type fetchBeneficiariesState struct {
+	LastPage      int
+	LastCreatedAt time.Time
+}
+
 func taskFetchBeneficiaries(
 	client *client.Client,
 ) task.Task {
@@ -22,6 +28,7 @@ func taskFetchBeneficiaries(
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
+		resolver task.StateResolver,
 	) error {
 		ctx, span := connectors.StartSpan(
 			ctx,
@@ -31,7 +38,19 @@ func taskFetchBeneficiaries(
 		)
 		defer span.End()
 
-		if err := fetchBeneficiaries(ctx, client, connectorID, ingester, scheduler); err != nil {
+		state := task.MustResolveTo(ctx, resolver, fetchBeneficiariesState{})
+		if state.LastPage == 0 {
+			// First run, the first page for currencycloud starts at 1 and not 0
+			state.LastPage = 1
+		}
+
+		newState, err := fetchBeneficiaries(ctx, client, connectorID, ingester, scheduler, state)
+		if err != nil {
+			otel.RecordError(span, err)
+			return err
+		}
+
+		if err := ingester.UpdateTaskState(ctx, newState); err != nil {
 			otel.RecordError(span, err)
 			return err
 		}
@@ -46,8 +65,14 @@ func fetchBeneficiaries(
 	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	scheduler task.Scheduler,
-) error {
-	page := 1
+	state fetchBeneficiariesState,
+) (fetchBeneficiariesState, error) {
+	newState := fetchBeneficiariesState{
+		LastPage:      state.LastPage,
+		LastCreatedAt: state.LastCreatedAt,
+	}
+
+	page := state.LastPage
 	for {
 		if page < 0 {
 			break
@@ -55,50 +80,48 @@ func fetchBeneficiaries(
 
 		pagedBeneficiaries, nextPage, err := client.GetBeneficiaries(ctx, page)
 		if err != nil {
-			return err
+			return fetchBeneficiariesState{}, err
 		}
 
 		page = nextPage
 
-		if err := ingestBeneficiariesAccountsBatch(ctx, connectorID, ingester, pagedBeneficiaries); err != nil {
-			return err
-		}
-	}
+		batch := ingestion.AccountBatch{}
+		for _, beneficiary := range pagedBeneficiaries {
+			switch beneficiary.CreatedAt.Compare(state.LastCreatedAt) {
+			case -1, 0:
+				// Account already ingested, skip
+				continue
+			default:
+			}
 
-	return nil
-}
+			raw, err := json.Marshal(beneficiary)
+			if err != nil {
+				return fetchBeneficiariesState{}, err
+			}
 
-func ingestBeneficiariesAccountsBatch(
-	ctx context.Context,
-	connectorID models.ConnectorID,
-	ingester ingestion.Ingester,
-	beneficiaries []*client.Beneficiary,
-) error {
-	batch := ingestion.AccountBatch{}
-	for _, beneficiary := range beneficiaries {
-		raw, err := json.Marshal(beneficiary)
-		if err != nil {
-			return err
-		}
-
-		batch = append(batch, &models.Account{
-			ID: models.AccountID{
+			batch = append(batch, &models.Account{
+				ID: models.AccountID{
+					Reference:   beneficiary.ID,
+					ConnectorID: connectorID,
+				},
+				// Moneycorp does not send the opening date of the account
+				CreatedAt:   beneficiary.CreatedAt,
 				Reference:   beneficiary.ID,
 				ConnectorID: connectorID,
-			},
-			// Moneycorp does not send the opening date of the account
-			CreatedAt:   beneficiary.CreatedAt,
-			Reference:   beneficiary.ID,
-			ConnectorID: connectorID,
-			AccountName: beneficiary.Name,
-			Type:        models.AccountTypeExternal,
-			RawData:     raw,
-		})
+				AccountName: beneficiary.Name,
+				Type:        models.AccountTypeExternal,
+				RawData:     raw,
+			})
+
+			newState.LastCreatedAt = beneficiary.CreatedAt
+		}
+
+		if err := ingester.IngestAccounts(ctx, batch); err != nil {
+			return fetchBeneficiariesState{}, err
+		}
 	}
 
-	if err := ingester.IngestAccounts(ctx, batch); err != nil {
-		return err
-	}
+	newState.LastPage = page
 
-	return nil
+	return newState, nil
 }
