@@ -1,11 +1,14 @@
 package stack
 
 import (
+	"fmt"
+
 	"github.com/formancehq/fctl/cmd/stack/internal"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"golang.org/x/mod/semver"
 )
 
 const (
@@ -38,6 +41,28 @@ func NewUpdateCommand() *cobra.Command {
 	return fctl.NewMembershipCommand("update <stack-id>",
 		fctl.WithShortDescription("Update a created stack, name, or metadata"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithPreRunE(func(cmd *cobra.Command, args []string) error {
+			cfg, err := fctl.GetConfig(cmd)
+			if err != nil {
+				return err
+			}
+
+			apiClient, err := fctl.NewMembershipClient(cmd, cfg)
+			if err != nil {
+				return err
+			}
+
+			version := fctl.MembershipServerInfo(cmd.Context(), apiClient)
+			if !semver.IsValid(version) {
+				return nil
+			}
+
+			if semver.Compare(version, "v0.27.1") >= 0 {
+				return nil
+			}
+
+			return fmt.Errorf("unsupported membership server version: %s", version)
+		}),
 		fctl.WithBoolFlag(unprotectFlag, false, "Unprotect stacks (no confirmation on write commands)"),
 		fctl.WithStringFlag(nameFlag, "", "Name of the stack"),
 		fctl.WithController[*StackUpdateStore](NewStackUpdateController()),
