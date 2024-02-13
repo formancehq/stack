@@ -3,7 +3,6 @@ package ledgers
 import (
 	"fmt"
 	"github.com/formancehq/operator/internal/resources/jobs"
-	"github.com/formancehq/operator/internal/resources/registries"
 	"strconv"
 
 	"github.com/formancehq/operator/internal/resources/settings"
@@ -287,13 +286,13 @@ func createGatewayDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1b
 	env = append(env, otlpEnv...)
 	env = append(env, core.GetDevEnvVars(stack, ledger)...)
 
-	image, err := registries.GetImage(ctx, stack, "gateway", "latest")
+	caddyImage, err := settings.GetStringOrDefault(ctx, stack.Name, "caddy:2.7.6-alpine", "caddy.image")
 	if err != nil {
 		return err
 	}
 
 	_, err = deployments.CreateOrUpdate(ctx, stack, ledger, "ledger-gateway",
-		settings.ConfigureCaddy(caddyfileConfigMap, image, env),
+		settings.ConfigureCaddy(caddyfileConfigMap, caddyImage, env),
 		deployments.WithMatchingLabels("ledger"),
 	)
 	return err

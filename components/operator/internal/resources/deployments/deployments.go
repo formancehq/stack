@@ -80,6 +80,41 @@ func CreateOrUpdate(ctx core.Context, stack *v1beta1.Stack, owner interface {
 		owner.SetCondition(condition)
 	}()
 
+	type runAs struct {
+		User  *int64 `json:"user"`
+		Group *int64 `json:"group"`
+	}
+
+	configureSecurityContext := func(container *corev1.Container, runAs *runAs) {
+		if container.SecurityContext == nil {
+			container.SecurityContext = &corev1.SecurityContext{}
+		}
+		if container.SecurityContext.Capabilities == nil {
+			container.SecurityContext.Capabilities = &corev1.Capabilities{}
+		}
+		if container.SecurityContext.Capabilities.Drop == nil {
+			container.SecurityContext.Capabilities.Drop = []corev1.Capability{"all"}
+		}
+		if container.SecurityContext.Privileged == nil {
+			container.SecurityContext.Privileged = pointer.For(false)
+		}
+		if container.SecurityContext.ReadOnlyRootFilesystem == nil {
+			container.SecurityContext.ReadOnlyRootFilesystem = pointer.For(true)
+		}
+		if container.SecurityContext.AllowPrivilegeEscalation == nil {
+			container.SecurityContext.AllowPrivilegeEscalation = pointer.For(false)
+		}
+		if container.SecurityContext.RunAsUser == nil && runAs != nil && runAs.User != nil {
+			container.SecurityContext.RunAsUser = runAs.User
+		}
+		if container.SecurityContext.RunAsGroup == nil && runAs != nil && runAs.Group != nil {
+			container.SecurityContext.RunAsGroup = runAs.Group
+		}
+		if container.SecurityContext.RunAsNonRoot == nil {
+			container.SecurityContext.RunAsNonRoot = pointer.For(runAs.User != nil || runAs.Group != nil)
+		}
+	}
+
 	mutators = append(mutators, core.WithController[*appsv1.Deployment](ctx.GetScheme(), owner))
 	mutators = append(mutators, func(deployment *appsv1.Deployment) error {
 		deployment.Spec.Template.Spec.SecurityContext = &corev1.PodSecurityContext{
@@ -87,11 +122,6 @@ func CreateOrUpdate(ctx core.Context, stack *v1beta1.Stack, owner interface {
 			SeccompProfile: &corev1.SeccompProfile{
 				Type: corev1.SeccompProfileTypeRuntimeDefault,
 			},
-		}
-
-		type runAs struct {
-			User  *int64 `json:"user"`
-			Group *int64 `json:"group"`
 		}
 
 		for ind, container := range deployment.Spec.Template.Spec.InitContainers {
@@ -108,18 +138,7 @@ func CreateOrUpdate(ctx core.Context, stack *v1beta1.Stack, owner interface {
 				return err
 			}
 
-			container.SecurityContext = &corev1.SecurityContext{
-				Capabilities: &corev1.Capabilities{
-					Drop: []corev1.Capability{"all"},
-				},
-				Privileged:               pointer.For(false),
-				ReadOnlyRootFilesystem:   pointer.For(true),
-				AllowPrivilegeEscalation: pointer.For(false),
-				RunAsUser:                runAs.User,
-				RunAsGroup:               runAs.Group,
-				RunAsNonRoot:             pointer.For(runAs.User != nil || runAs.Group != nil),
-			}
-
+			configureSecurityContext(&container, runAs)
 			deployment.Spec.Template.Spec.InitContainers[ind] = container
 		}
 		for ind, container := range deployment.Spec.Template.Spec.Containers {
@@ -136,18 +155,7 @@ func CreateOrUpdate(ctx core.Context, stack *v1beta1.Stack, owner interface {
 				return err
 			}
 
-			container.SecurityContext = &corev1.SecurityContext{
-				Capabilities: &corev1.Capabilities{
-					Drop: []corev1.Capability{"all"},
-				},
-				Privileged:               pointer.For(false),
-				ReadOnlyRootFilesystem:   pointer.For(true),
-				AllowPrivilegeEscalation: pointer.For(false),
-				RunAsUser:                runAs.User,
-				RunAsGroup:               runAs.Group,
-				RunAsNonRoot:             pointer.For(runAs.User != nil || runAs.Group != nil),
-			}
-
+			configureSecurityContext(&container, runAs)
 			deployment.Spec.Template.Spec.Containers[ind] = container
 		}
 		if stack.Spec.Disabled {
