@@ -30,6 +30,10 @@ spec:
       jsonPath: .status.ready
       name: Ready
       type: boolean
+    - description: Info
+      jsonPath: .status.info
+      name: Info
+      type: string
     name: v1beta1
     schema:
       openAPIV3Schema:
