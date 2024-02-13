@@ -92,8 +92,15 @@ func (c *StackRestoreController) Run(cmd *cobra.Command, args []string) (fctl.Re
 
 	profile := fctl.GetCurrentProfile(cmd, cfg)
 
-	if err := waitStackReady(cmd, apiClient, profile, response.Data); err != nil {
-		return nil, err
+	if !fctl.GetBool(cmd, nowaitFlag) {
+		stack, err = waitStackReady(cmd, apiClient, profile, response.Data)
+		if err != nil {
+			return nil, err
+		}
+
+		c.store.Stack = stack
+	} else {
+		c.store.Stack = response.Data
 	}
 
 	stackClient, err := fctl.NewStackClient(cmd, cfg, response.Data)
@@ -110,7 +117,6 @@ func (c *StackRestoreController) Run(cmd *cobra.Command, args []string) (fctl.Re
 		return nil, fmt.Errorf("unexpected status code %d when reading versions", versions.StatusCode)
 	}
 
-	c.store.Stack = response.Data
 	c.store.Versions = versions.GetVersionsResponse
 	c.config = cfg
 

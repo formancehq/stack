@@ -175,13 +175,17 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 			return nil, err
 		}
 
-		if err := waitStackReady(cmd, apiClient, profile, stackResponse.Data); err != nil {
+		stack, err := waitStackReady(cmd, apiClient, profile, stackResponse.Data)
+		if err != nil {
 			return nil, err
 		}
+		c.store.Stack = stack
 
 		if err := spinner.Stop(); err != nil {
 			return nil, err
 		}
+	} else {
+		c.store.Stack = stackResponse.Data
 	}
 
 	fctl.BasicTextCyan.WithWriter(cmd.OutOrStdout()).Println("Your dashboard will be reachable on: https://console.formance.cloud")
@@ -199,7 +203,6 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		return nil, fmt.Errorf("unexpected status code %d when reading versions", versions.StatusCode)
 	}
 
-	c.store.Stack = stackResponse.Data
 	c.store.Versions = versions.GetVersionsResponse
 	c.profile = profile
 
