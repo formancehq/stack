@@ -40,6 +40,10 @@ func taskFetchAccounts(
 		defer span.End()
 
 		state := task.MustResolveTo(ctx, resolver, fetchAccountsState{})
+		if state.LastPage == 0 {
+			// First run, the first page for currencycloud starts at 1 and not 0
+			state.LastPage = 1
+		}
 
 		newState, err := fetchAccount(ctx, client, connectorID, ingester, scheduler, state)
 		if err != nil {

@@ -120,6 +120,7 @@ func ingestTransactions(
 						ConnectorID: connectorID,
 					},
 					Reference:     transaction.ID,
+					CreatedAt:     transaction.CreatedAt,
 					Type:          paymentType,
 					ConnectorID:   connectorID,
 					Status:        matchTransactionStatus(transaction.Status),

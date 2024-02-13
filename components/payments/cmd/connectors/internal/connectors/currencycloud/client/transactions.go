@@ -42,7 +42,9 @@ func (c *Client) GetTransactions(ctx context.Context, page int, updatedAtFrom ti
 	q := req.URL.Query()
 	q.Add("page", fmt.Sprint(page))
 	q.Add("per_page", "25")
-	q.Add("updated_at_from", updatedAtFrom.Format(time.RFC3339))
+	if !updatedAtFrom.IsZero() {
+		q.Add("updated_at_from", updatedAtFrom.Format(time.DateOnly))
+	}
 	q.Add("order", "updated_at")
 	q.Add("order_asc_desc", "asc")
 	req.URL.RawQuery = q.Encode()
