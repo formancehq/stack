@@ -112,6 +112,8 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**ReadUserOfOrganization**](docs/DefaultApi.md#readuseroforganization) | **Get** /organizations/{organizationId}/users/{userId} | Read user of organization
 *DefaultApi* | [**RestoreStack**](docs/DefaultApi.md#restorestack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
 *DefaultApi* | [**UpdateOrganization**](docs/DefaultApi.md#updateorganization) | **Put** /organizations/{organizationId} | Update organization
+*DefaultApi* | [**UpdateStack**](docs/DefaultApi.md#updatestack) | **Put** /organizations/{organizationId}/stacks/{stackId} | Update stack
+*DefaultApi* | [**UpgradeStack**](docs/DefaultApi.md#upgradestack) | **Put** /organizations/{organizationId}/stacks/{stackId}/upgrade | Upgrade stack
 *DefaultApi* | [**UpsertOrganizationUser**](docs/DefaultApi.md#upsertorganizationuser) | **Put** /organizations/{organizationId}/users/{userId} | Update user within an organization
 *DefaultApi* | [**UpsertStackUserAccess**](docs/DefaultApi.md#upsertstackuseraccess) | **Put** /organizations/{organizationId}/stacks/{stackId}/users/{userId} | Update stack user access role within an organization
 
@@ -167,7 +169,9 @@ Class | Method | HTTP request | Description
  - [StackUserAccess](docs/StackUserAccess.md)
  - [StackUserAccessAllOf](docs/StackUserAccessAllOf.md)
  - [StackUserAccessResponse](docs/StackUserAccessResponse.md)
+ - [StackVersion](docs/StackVersion.md)
  - [UpdateOrganizationUserRequest](docs/UpdateOrganizationUserRequest.md)
+ - [UpdateStackRequest](docs/UpdateStackRequest.md)
  - [UpdateStackUserRequest](docs/UpdateStackUserRequest.md)
  - [User](docs/User.md)
  - [UserAllOf](docs/UserAllOf.md)

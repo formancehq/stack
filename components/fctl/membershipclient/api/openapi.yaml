@@ -347,12 +347,12 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateStackRequest'
       responses:
-        "200":
+        "202":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateStackResponse'
-          description: Created stack
+          description: Stack created
         "400":
           content:
             application/json:
@@ -366,6 +366,45 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: Not Authorized
       summary: Create stack
+  /organizations/{organizationId}/stacks/{stackId}/upgrade:
+    put:
+      operationId: upgradeStack
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: stackId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StackVersion'
+      responses:
+        "202":
+          description: Stack upgrade accepted
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not Authorized
+      summary: Upgrade stack
   /organizations/{organizationId}/stacks/{stackId}:
     delete:
       operationId: deleteStack
@@ -443,6 +482,48 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: Not Authorized
       summary: Find stack
+    put:
+      operationId: updateStack
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: stackId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStackRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadStackResponse'
+          description: Updated stack
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not Authorized
+      summary: Update stack
   /organizations/{organizationId}/stacks/{stackId}/users:
     get:
       operationId: listStackUsersAccesses
@@ -636,7 +717,7 @@ paths:
           type: string
         style: simple
       responses:
-        "204":
+        "202":
           description: Stack disabled
         "400":
           content:
@@ -676,7 +757,7 @@ paths:
           type: string
         style: simple
       responses:
-        "204":
+        "202":
           description: Stack enabled
         "400":
           content:
@@ -716,7 +797,7 @@ paths:
           type: string
         style: simple
       responses:
-        "200":
+        "202":
           content:
             application/json:
               schema:
@@ -760,7 +841,7 @@ paths:
           type: string
         style: simple
       responses:
-        "204":
+        "202":
           description: OK
         "400":
           content:
@@ -794,7 +875,7 @@ paths:
           type: string
         style: simple
       responses:
-        "204":
+        "202":
           description: OK
         "400":
           content:
@@ -1280,12 +1361,17 @@ components:
           additionalProperties:
             type: string
           type: object
-        version:
-          description: Supported only with agent version >= v0.7.0
-          type: string
       required:
       - metadata
       - name
+      type: object
+    StackVersion:
+      example:
+        version: version
+      properties:
+        version:
+          description: Supported only with agent version >= v0.7.0
+          type: string
       type: object
     StackLifeCycle:
       properties:
@@ -1331,6 +1417,7 @@ components:
     Stack:
       allOf:
       - $ref: '#/components/schemas/StackData'
+      - $ref: '#/components/schemas/StackVersion'
       - $ref: '#/components/schemas/StackLifeCycle'
       - $ref: '#/components/schemas/Stack_allOf'
     UserData:
@@ -1449,7 +1536,11 @@ components:
     CreateStackRequest:
       allOf:
       - $ref: '#/components/schemas/StackData'
+      - $ref: '#/components/schemas/StackVersion'
       - $ref: '#/components/schemas/CreateStackRequest_allOf'
+    UpdateStackRequest:
+      allOf:
+      - $ref: '#/components/schemas/StackData'
     CreateStackResponse:
       example:
         data: null

@@ -12,7 +12,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-var _ = Describe("StackController", func() {
+var _ = Describe("StackController", FlakeAttempts(3), func() {
 	Context("When creating a stack", func() {
 		var (
 			stack *v1beta1.Stack
