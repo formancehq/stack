@@ -57,17 +57,10 @@ jobs:
           --no-output
           --allow-privileged
           --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY
-          --secret SEGMENT_WRITE_KEY=$SEGMENT_WRITE_KEY
-          --secret GITHUB_TOKEN=$GITHUB_TOKEN
-          --secret FURY_TOKEN=$FURY_TOKEN
-          --secret GORELEASER_KEY=$GORELEASER_KEY
           ${{ contains(github.event.pull_request.labels.*.name, 'no-cache') && '--no-cache' || '' }}
           +tests
         env:
-          GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
-          FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
-          GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
 
   Extract:
     name: Extract
