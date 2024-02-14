@@ -1,0 +1,63 @@
+VERSION --pass-args --arg-scope-and-set 0.7
+
+ARG core=github.com/formancehq/earthly:v0.9.0
+IMPORT $core AS core
+IMPORT ../.. AS stack
+IMPORT .. AS components
+
+FROM core+base-image
+
+sources:
+    FROM core+builder-image
+    WORKDIR /src
+    COPY (stack+sources/out --LOCATION=libs/go-libs) libs/go-libs
+    WORKDIR /src/components/operator-utils
+    COPY --dir cmd .
+    COPY go.* main.go .
+    SAVE ARTIFACT /src
+
+compile:
+    FROM core+builder-image
+    COPY (+sources/*) /src
+    WORKDIR /src/components/operator-utils
+	DO --pass-args core+GO_COMPILE
+
+build-image:
+    FROM core+final-image
+    ENTRYPOINT ["/usr/bin/operator-utils"]
+    COPY --pass-args (+compile/main) /usr/bin/operator-utils
+    ARG REPOSITORY=ghcr.io
+    ARG tag=latest
+    DO --pass-args core+SAVE_IMAGE --COMPONENT=operator-utils --TAG=$tag
+
+lint:
+    FROM core+builder-image
+    COPY (+sources/*) /src
+    COPY --pass-args +tidy/go.* .
+    WORKDIR /src/components/operator-utils
+    DO --pass-args stack+GO_LINT
+    SAVE ARTIFACT cmd AS LOCAL cmd
+
+pre-commit:
+    WAIT
+      BUILD --pass-args +tidy
+    END
+    BUILD --pass-args +lint
+
+openapi:
+    RUN echo "not implemented"
+
+tidy:
+    FROM core+builder-image
+    COPY --pass-args (+sources/src) /src
+    WORKDIR /src/components/operator-utils
+    DO --pass-args stack+GO_TIDY
+
+deploy:
+    COPY (+sources/*) /src
+    LET tag=$(tar cf - /src | sha1sum | awk '{print $1}')
+    WAIT
+        BUILD --pass-args +build-image --tag=$tag
+    END
+    FROM --pass-args core+vcluster-deployer-image
+    RUN kubectl patch Versions.formance.com default -p "{\"spec\":{\"operator-utils\": \"${tag}\"}}" --type=merge
