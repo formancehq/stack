@@ -20,12 +20,12 @@ import (
 func isDatabaseExists(ctx context.Context, db *bun.DB, name string) (bool, error) {
 	row := db.QueryRowContext(ctx, `SELECT datname FROM pg_database WHERE datname = ?`, name)
 	if row.Err() != nil {
-		return false, row.Err()
+		return false, errors.Wrap(row.Err(), "checking database list")
 	}
 
 	if err := row.Scan(pointer.For("")); err != nil {
 		if !errors.Is(err, sql.ErrNoRows) {
-			return false, err
+			return false, errors.Wrap(err, "scanning database row")
 		}
 
 		return false, nil
@@ -37,7 +37,7 @@ func isDatabaseExists(ctx context.Context, db *bun.DB, name string) (bool, error
 func onPostgresDB(ctx context.Context, connectionOptions bunconnect.ConnectionOptions, callback func(db *bun.DB) error) error {
 	url, err := dburl.Parse(connectionOptions.DatabaseSourceName)
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "parsing dsn: %s", connectionOptions.DatabaseSourceName)
 	}
 
 	url.Path = "postgres" // notes(gfyrag): default "postgres" database (most of the time?)
@@ -62,18 +62,18 @@ func EnsureDatabaseNotExists(ctx context.Context, connectionOptions bunconnect.C
 
 		url, err := dburl.Parse(connectionOptions.DatabaseSourceName)
 		if err != nil {
-			return err
+			return errors.Wrapf(err, "parsing dsn: %s", connectionOptions.DatabaseSourceName)
 		}
 
 		databaseExists, err := isDatabaseExists(ctx, db, url.Path[1:])
 		if err != nil {
-			return err
+			return errors.Wrap(err, "checking if database exists")
 		}
 
 		if databaseExists {
 			_, err = db.ExecContext(ctx, fmt.Sprintf(`DROP DATABASE "%s"`, url.Path[1:]))
 			if err != nil {
-				return err
+				return errors.Wrap(err, "dropping database")
 			}
 		}
 
@@ -86,18 +86,18 @@ func EnsureDatabaseExists(ctx context.Context, connectionOptions bunconnect.Conn
 
 		url, err := dburl.Parse(connectionOptions.DatabaseSourceName)
 		if err != nil {
-			return err
+			return errors.Wrapf(err, "parsing dsn: %s", connectionOptions.DatabaseSourceName)
 		}
 
 		databaseExists, err := isDatabaseExists(ctx, db, url.Path[1:])
 		if err != nil {
-			return err
+			return errors.Wrap(err, "checking if database exists")
 		}
 
 		if !databaseExists {
 			_, err = db.ExecContext(ctx, fmt.Sprintf(`CREATE DATABASE "%s"`, url.Path[1:]))
 			if err != nil {
-				return err
+				return errors.Wrap(err, "creating database")
 			}
 		}
 

@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/spf13/viper"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -23,4 +25,9 @@ func Execute() {
 func init() {
 	rootCmd.AddCommand(NewDatabaseCommand())
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	viper.SetEnvKeyReplacer(EnvVarReplacer)
+	viper.AutomaticEnv()
 }
+
+var EnvVarReplacer = strings.NewReplacer(".", "_", "-", "_")

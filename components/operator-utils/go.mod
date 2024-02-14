@@ -3,7 +3,9 @@ module github.com/formancehq/operator/utils
 go 1.21.6
 
 require (
+	github.com/davecgh/go-spew v1.1.1
 	github.com/formancehq/stack/libs/go-libs v0.0.0-00010101000000-000000000000
+	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.15.0
 )
@@ -45,7 +47,6 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/spf13/afero v1.9.3 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
