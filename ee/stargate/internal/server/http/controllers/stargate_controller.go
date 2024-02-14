@@ -10,6 +10,7 @@ import (
 	"github.com/formancehq/stack/components/stargate/internal/opentelemetry"
 	"github.com/formancehq/stack/components/stargate/internal/utils"
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/nats-io/nats.go"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
@@ -55,9 +56,13 @@ func (s *StargateController) HandleCalls(w http.ResponseWriter, r *http.Request)
 	subject := utils.GetNatsSubject(organizationID, stackID)
 	s.logger.Debugf("[HTTP] sending message to %s with path: %s", subject, r.URL.Path)
 	resp, err := s.natsConn.Request(subject, buf, s.config.natsRequestTimeout)
-	if err != nil {
-		s.logger.Errorf("[HTTP] error sending message to %s with path: %s: %v", subject, r.URL.Path, err)
+	if err != nil && errors.Is(err, nats.ErrNoResponders) {
+		s.logger.Errorf("[HTTP] no responders for %s with path: %s: %v", subject, r.URL.Path, err)
 		status = ResponseError(w, r, ErrNoResponders)
+		return
+	} else if err != nil {
+		s.logger.Errorf("[HTTP] error sending message to %s with path: %s: %v", subject, r.URL.Path, err)
+		status = ResponseError(w, r, err)
 		return
 	}
 
