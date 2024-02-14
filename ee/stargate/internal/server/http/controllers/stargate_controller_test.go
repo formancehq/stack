@@ -22,7 +22,7 @@ import (
 func TestStargateController(t *testing.T) {
 	t.Parallel()
 
-	nc, err := nats.Connect(nats.DefaultURL)
+	nc, err := nats.Connect("nats://127.0.0.1:4322")
 	if err != nil {
 		t.Fatal(err)
 	}
