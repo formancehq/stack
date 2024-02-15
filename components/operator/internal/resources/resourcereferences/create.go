@@ -11,7 +11,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func Create(ctx core.Context, owner v1beta1.Dependent, name string, object client.Object) (*v1beta1.ResourceReference, error) {
+func Create(ctx core.Context, owner v1beta1.Dependent, name, resourceName string, object client.Object) (*v1beta1.ResourceReference, error) {
 
 	gvk, err := apiutil.GVKForObject(object, ctx.GetScheme())
 	if err != nil {
@@ -23,7 +23,7 @@ func Create(ctx core.Context, owner v1beta1.Dependent, name string, object clien
 		Name: resourceReferenceName,
 	}, func(t *v1beta1.ResourceReference) error {
 		t.Spec.Stack = owner.GetStack()
-		t.Spec.Name = name
+		t.Spec.Name = resourceName
 		t.Spec.GroupVersionKind = &metav1.GroupVersionKind{
 			Group:   gvk.Group,
 			Version: gvk.Version,

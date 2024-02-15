@@ -94,7 +94,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 
 	var resourceReference *v1beta1.ResourceReference
 	if secret := elasticSearchURI.Query().Get("secret"); secret != "" {
-		resourceReference, err = resourcereferences.Create(ctx, b, "elasticsearch", &corev1.Secret{})
+		resourceReference, err = resourcereferences.Create(ctx, b, "elasticsearch", secret, &corev1.Secret{})
 	} else {
 		err = resourcereferences.Delete(ctx, b, "elasticsearch")
 	}

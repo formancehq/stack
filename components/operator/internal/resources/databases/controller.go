@@ -50,7 +50,7 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 
 	var resourceReference *v1beta1.ResourceReference
 	if secret := databaseURL.Query().Get("secret"); secret != "" {
-		resourceReference, err = resourcereferences.Create(ctx, database, "postgres", &v1.Secret{})
+		resourceReference, err = resourcereferences.Create(ctx, database, "postgres", secret, &v1.Secret{})
 	} else {
 		err = resourcereferences.Delete(ctx, database, "postgres")
 	}

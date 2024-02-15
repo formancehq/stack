@@ -74,7 +74,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 
 	var resourceReference *v1beta1.ResourceReference
 	if secret := temporalURI.Query().Get("secret"); secret != "" {
-		resourceReference, err = resourcereferences.Create(ctx, database, "temporal", &v1.Secret{})
+		resourceReference, err = resourcereferences.Create(ctx, database, "temporal", secret, &v1.Secret{})
 	} else {
 		err = resourcereferences.Delete(ctx, database, "temporal")
 	}

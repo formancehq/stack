@@ -45,7 +45,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 
 	var resourceReference *v1beta1.ResourceReference
 	if secret := elasticSearchURI.Query().Get("secret"); secret != "" {
-		resourceReference, err = resourcereferences.Create(ctx, search, "elasticsearch", &corev1.Secret{})
+		resourceReference, err = resourcereferences.Create(ctx, search, "elasticsearch", secret, &corev1.Secret{})
 	} else {
 		err = resourcereferences.Delete(ctx, search, "elasticsearch")
 	}
