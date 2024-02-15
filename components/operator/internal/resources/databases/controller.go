@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
+	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/secretreferences"
 	"github.com/formancehq/operator/internal/resources/settings"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
@@ -74,7 +75,7 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 		database.Status.URI = databaseURL
 		database.Status.Database = dbName
 
-		if err := createDatabase(ctx, database, secretReference); err != nil {
+		if err := createDatabase(ctx, stack, database, secretReference); err != nil {
 			return err
 		}
 	case database.Status.URI.String() != databaseURL.String():
@@ -84,12 +85,22 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 	return nil
 }
 
-func createDatabase(ctx core.Context, database *v1beta1.Database, secretReference *v1beta1.SecretReference) error {
+func createDatabase(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Database, secretReference *v1beta1.SecretReference) error {
 	log := log.FromContext(ctx)
 	log = log.WithValues("name", database.Name)
 	annotations := make(map[string]string)
 	if secretReference != nil {
 		annotations["secret-hash"] = secretReference.Status.Hash
+	}
+
+	operatorUtilsImageVersion, err := core.GetImageVersionForStack(ctx, stack, "operator-utils")
+	if err != nil {
+		return err
+	}
+
+	operatorUtilsImage, err := registries.GetImage(ctx, stack, "operator-utils", operatorUtilsImageVersion)
+	if err != nil {
+		return err
 	}
 
 	jobName := fmt.Sprintf("%s-create-database", database.Spec.Service)
@@ -98,12 +109,6 @@ func createDatabase(ctx core.Context, database *v1beta1.Database, secretReferenc
 		Name:      jobName,
 	},
 		func(t *batchv1.Job) error {
-			// PG does not support 'CREATE IF NOT EXISTS ' construct, emulate it with the above query
-			createDBCommand := `echo SELECT \'CREATE DATABASE \"${POSTGRES_DATABASE}\"\' WHERE NOT EXISTS \(SELECT FROM pg_database WHERE datname = \'${POSTGRES_DATABASE}\'\)\\gexec | psql -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USERNAME}`
-			if isDisabledSSLMode(database.Status.URI) {
-				createDBCommand += ` "sslmode=disable"`
-			}
-
 			t.Spec.BackoffLimit = pointer.For(int32(10000))
 			t.Spec.Template.Spec.RestartPolicy = v1.RestartPolicyOnFailure
 			t.Spec.TTLSecondsAfterFinished = pointer.For(int32(30))
@@ -111,9 +116,9 @@ func createDatabase(ctx core.Context, database *v1beta1.Database, secretReferenc
 				t.Spec.Template.Spec.Containers = []v1.Container{{}}
 			}
 			t.Spec.Template.Spec.Containers[0].Name = "create-database"
-			t.Spec.Template.Spec.Containers[0].Image = "postgres:15-alpine"
-			t.Spec.Template.Spec.Containers[0].Args = []string{"sh", "-c", createDBCommand}
-			t.Spec.Template.Spec.Containers[0].Env = psqlEnvVars(database)
+			t.Spec.Template.Spec.Containers[0].Image = operatorUtilsImage
+			t.Spec.Template.Spec.Containers[0].Args = []string{"db", "create"}
+			t.Spec.Template.Spec.Containers[0].Env = GetPostgresEnvVars(database)
 
 			return nil
 		},
@@ -163,16 +168,28 @@ func Delete(ctx core.Context, database *v1beta1.Database) error {
 		annotations["secret-hash"] = secretReference.Status.Hash
 	}
 
+	stack := &v1beta1.Stack{}
+	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
+		Name: database.Spec.Stack,
+	}, stack); err != nil {
+		return err
+	}
+
+	operatorUtilsImageVersion, err := core.GetImageVersionForStack(ctx, stack, "operator-utils")
+	if err != nil {
+		return err
+	}
+
+	operatorUtilsImage, err := registries.GetImage(ctx, stack, "operator-utils", operatorUtilsImageVersion)
+	if err != nil {
+		return err
+	}
+
 	job, _, err := core.CreateOrUpdate[*batchv1.Job](ctx, types.NamespacedName{
 		Namespace: database.Spec.Stack,
 		Name:      fmt.Sprintf("%s-drop-database", database.Spec.Service),
 	},
 		func(t *batchv1.Job) error {
-			dropDBCommand := `psql -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USERNAME} -c "DROP DATABASE \"${POSTGRES_DATABASE}\""`
-			if isDisabledSSLMode(database.Status.URI) {
-				dropDBCommand += ` "sslmode=disable"`
-			}
-
 			t.Spec.BackoffLimit = pointer.For(int32(10000))
 			t.Spec.TTLSecondsAfterFinished = pointer.For(int32(30))
 			t.Spec.Template.Spec.RestartPolicy = v1.RestartPolicyOnFailure
@@ -180,9 +197,9 @@ func Delete(ctx core.Context, database *v1beta1.Database) error {
 				t.Spec.Template.Spec.Containers = []v1.Container{{}}
 			}
 			t.Spec.Template.Spec.Containers[0].Name = "drop-database"
-			t.Spec.Template.Spec.Containers[0].Image = "postgres:15-alpine"
-			t.Spec.Template.Spec.Containers[0].Args = []string{"sh", "-c", dropDBCommand}
-			t.Spec.Template.Spec.Containers[0].Env = psqlEnvVars(database)
+			t.Spec.Template.Spec.Containers[0].Image = operatorUtilsImage
+			t.Spec.Template.Spec.Containers[0].Args = []string{"db", "drop"}
+			t.Spec.Template.Spec.Containers[0].Env = GetPostgresEnvVars(database)
 
 			return nil
 		},
@@ -200,13 +217,6 @@ func Delete(ctx core.Context, database *v1beta1.Database) error {
 	logger.Info("Database deleted.")
 
 	return nil
-}
-
-func psqlEnvVars(database *v1beta1.Database) []v1.EnvVar {
-	return append(GetPostgresEnvVars(database),
-		// psql use PGPASSWORD env var
-		core.Env("PGPASSWORD", "$(POSTGRES_PASSWORD)"),
-	)
 }
 
 func init() {

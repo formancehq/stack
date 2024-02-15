@@ -94,6 +94,9 @@ goreleaser:
 
 all-ci-goreleaser:
     LOCALLY
+    FOR component IN $(cd ./tools && ls -d */)
+        BUILD --pass-args +goreleaser --type=components --components=$component --mode=ci
+    END
     FOR component IN $(cd ./components && ls -d */)
         BUILD --pass-args +goreleaser --type=components --components=$component --mode=ci
     END
@@ -103,6 +106,9 @@ all-ci-goreleaser:
 
 build-all:
     LOCALLY
+    FOR component IN $(cd ./tools && ls -d */)
+        BUILD --pass-args ./tools/${component}+build-image
+    END
     FOR component IN $(cd ./components && ls -d */)
         BUILD --pass-args ./components/${component}+build-image
     END
@@ -114,6 +120,9 @@ deploy-all:
     LOCALLY
     WAIT
         BUILD --pass-args ./components/+deploy --components=operator
+    END
+    FOR component IN $(cd ./tools && ls -d */)
+        BUILD --pass-args ./tools/+deploy --components=$component
     END
     FOR component IN $(cd ./components && ls -d */)
         IF [ "$component" != "operator" ]
@@ -140,6 +149,9 @@ tests-integration:
 pre-commit: # Generate the final spec and run all the pre-commit hooks
     LOCALLY
     BUILD --pass-args ./releases+sdk-generate
+    FOR component IN $(cd ./tools && ls -d */)
+        BUILD --pass-args ./tools/${component}+pre-commit
+    END
     FOR component IN $(cd ./components && ls -d */)
         BUILD --pass-args ./components/${component}+pre-commit
     END
@@ -150,6 +162,9 @@ pre-commit: # Generate the final spec and run all the pre-commit hooks
 
 tidy: # Run tidy on all the components
     LOCALLY
+    FOR component IN $(cd ./tools && ls -d */)
+            BUILD --pass-args ./tools/${component}+tidy
+        END
     FOR component IN $(cd ./components && ls -d */)
         BUILD --pass-args ./components/${component}+tidy
     END

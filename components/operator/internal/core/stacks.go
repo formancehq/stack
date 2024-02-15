@@ -1,6 +1,8 @@
 package core
 
 import (
+	"github.com/formancehq/operator/api/formance.com/v1beta1"
+	"k8s.io/apimachinery/pkg/types"
 	"reflect"
 
 	"github.com/pkg/errors"
@@ -88,4 +90,25 @@ func GetIfExists(ctx Context, stackName string, to client.Object) (bool, error) 
 		return false, nil
 	}
 	return true, nil
+}
+
+func GetImageVersionForStack(ctx Context, stack *v1beta1.Stack, name string) (string, error) {
+	if stack.Spec.Version != "" {
+		return stack.Spec.Version, nil
+	}
+	if stack.Spec.VersionsFromFile == "" {
+		return "latest", nil
+	}
+	versions := &v1beta1.Versions{}
+	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
+		Name: stack.Spec.VersionsFromFile,
+	}, versions); err != nil {
+		return "", nil
+	}
+
+	version := versions.Spec[name]
+	if version == "" {
+		return "latest", nil
+	}
+	return version, nil
 }
