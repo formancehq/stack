@@ -48,11 +48,19 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 		return errors.Wrap(err, "retrieving database configuration")
 	}
 
-	var resourceReference *v1beta1.ResourceReference
 	if secret := databaseURL.Query().Get("secret"); secret != "" {
-		resourceReference, err = resourcereferences.Create(ctx, database, "postgres", secret, &v1.Secret{})
+		_, err = resourcereferences.Create(ctx, database, "postgres", secret, &v1.Secret{})
 	} else {
 		err = resourcereferences.Delete(ctx, database, "postgres")
+	}
+	if err != nil {
+		return err
+	}
+
+	if awsRole := databaseURL.Query().Get("awsRole"); awsRole != "" {
+		_, err = resourcereferences.Create(ctx, database, "database", awsRole, &v1.ServiceAccount{})
+	} else {
+		err = resourcereferences.Delete(ctx, database, "database")
 	}
 	if err != nil {
 		return err
@@ -79,46 +87,12 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 		database.Status.URI = databaseURL
 		database.Status.Database = dbName
 
-		if err := createDatabase(ctx, stack, database, resourceReference); err != nil {
+		if err := handleDatabaseJob(ctx, stack, database, "create-database", "db", "create"); err != nil {
 			return err
 		}
 	case database.Status.URI.String() != databaseURL.String():
 		database.Status.OutOfSync = true
 	}
-
-	return nil
-}
-
-func createDatabase(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Database, resourceReference *v1beta1.ResourceReference) error {
-	log := log.FromContext(ctx)
-	log = log.WithValues("name", database.Name)
-	annotations := make(map[string]string)
-	if resourceReference != nil {
-		annotations["secret-hash"] = resourceReference.Status.Hash
-	}
-
-	operatorUtilsImageVersion, err := core.GetImageVersionForStack(ctx, stack, "operator-utils")
-	if err != nil {
-		return err
-	}
-
-	operatorUtilsImage, err := registries.GetImage(ctx, stack, "operator-utils", operatorUtilsImageVersion)
-	if err != nil {
-		return err
-	}
-
-	if err := jobs.Handle(ctx, database, "create-database", v1.Container{
-		Name:  "create-database",
-		Image: operatorUtilsImage,
-		Args:  []string{"db", "create"},
-		Env:   GetPostgresEnvVars(database),
-	},
-		jobs.Mutator(core.WithAnnotations[*batchv1.Job](annotations)),
-	); err != nil {
-		return err
-	}
-
-	log.Info("Database created")
 
 	return nil
 }
@@ -140,23 +114,24 @@ func Delete(ctx core.Context, database *v1beta1.Database) error {
 	logger = logger.WithValues("name", database.Name)
 	logger.Info("Deleting database")
 
-	annotations := make(map[string]string)
-	if secret := database.Status.URI.Query().Get("secret"); secret != "" {
-		secretReference := &v1beta1.ResourceReference{}
-		if err := ctx.GetClient().Get(ctx, types.NamespacedName{
-			Name: fmt.Sprintf("%s-postgres", database.Name),
-		}, secretReference); err != nil {
-			return err
-		}
-		annotations["secret-hash"] = secretReference.Status.Hash
-	}
-
 	stack := &v1beta1.Stack{}
 	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
 		Name: database.Spec.Stack,
 	}, stack); err != nil {
 		return err
 	}
+
+	if err := handleDatabaseJob(ctx, stack, database, "drop-database", "db", "drop"); err != nil {
+		return err
+	}
+
+	database.Status.URI = nil
+	logger.Info("Database deleted.")
+
+	return nil
+}
+
+func handleDatabaseJob(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Database, name string, args ...string) error {
 
 	operatorUtilsImageVersion, err := core.GetImageVersionForStack(ctx, stack, "operator-utils")
 	if err != nil {
@@ -168,21 +143,25 @@ func Delete(ctx core.Context, database *v1beta1.Database) error {
 		return err
 	}
 
-	if err := jobs.Handle(ctx, database, "drop-database", v1.Container{
-		Name:  "drop-database",
+	annotations := make(map[string]string)
+	secretReference := &v1beta1.ResourceReference{}
+	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
+		Name: fmt.Sprintf("%s-postgres", database.Name),
+	}, secretReference); client.IgnoreNotFound(err) != nil {
+		return err
+	} else if err == nil {
+		annotations["secret-hash"] = secretReference.Status.Hash
+	}
+
+	return jobs.Handle(ctx, database, name, v1.Container{
+		Name:  name,
 		Image: operatorUtilsImage,
-		Args:  []string{"db", "drop"},
+		Args:  args,
 		Env:   GetPostgresEnvVars(database),
 	},
 		jobs.Mutator(core.WithAnnotations[*batchv1.Job](annotations)),
-	); err != nil {
-		return err
-	}
-
-	database.Status.URI = nil
-	logger.Info("Database deleted.")
-
-	return nil
+		jobs.WithServiceAccount(database.Status.URI.Query().Get("awsRole")),
+	)
 }
 
 func init() {

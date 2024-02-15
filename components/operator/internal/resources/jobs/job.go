@@ -34,6 +34,13 @@ func Mutator(mutator core.ObjectMutator[*batchv1.Job]) HandleJobOption {
 	}
 }
 
+func WithServiceAccount(serviceAccountName string) HandleJobOption {
+	return Mutator(func(t *batchv1.Job) error {
+		t.Spec.Template.Spec.ServiceAccountName = serviceAccountName
+		return nil
+	})
+}
+
 func Handle(ctx core.Context, owner v1beta1.Dependent, jobName string, container v1.Container, options ...HandleJobOption) error {
 
 	configuration := &handleJobConfiguration{}

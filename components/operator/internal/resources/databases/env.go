@@ -2,7 +2,6 @@ package databases
 
 import (
 	"fmt"
-
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/settings"
@@ -49,9 +48,12 @@ func PostgresEnvVarsWithPrefix(database *v1beta1.Database, prefix string) []core
 			)),
 		)
 	}
+	if awsRole := database.Status.URI.Query().Get("awsRole"); awsRole != "" {
+		ret = append(ret, core.Env(fmt.Sprintf("%sPOSTGRES_AWS_ENABLE_IAM", prefix), "true"))
+	}
 
 	f := "%s/%s"
-	if isDisabledSSLMode(database.Status.URI) {
+	if settings.IsTrue(database.Status.URI.Query().Get("disableSSLMode")) {
 		f += "?sslmode=disable"
 	}
 	ret = append(ret,
@@ -61,8 +63,4 @@ func PostgresEnvVarsWithPrefix(database *v1beta1.Database, prefix string) []core
 	)
 
 	return ret
-}
-
-func isDisabledSSLMode(url *v1beta1.URI) bool {
-	return settings.IsTrue(url.Query().Get("disableSSLMode"))
 }

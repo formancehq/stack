@@ -82,6 +82,7 @@ func createAPIDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1bet
 
 	_, err = deployments.CreateOrUpdate(ctx, stack, webhooks, "webhooks",
 		deployments.WithMatchingLabels("webhooks"),
+		deployments.WithServiceAccountName(database.Status.URI.Query().Get("awsRole")),
 		deployments.WithContainers(v1.Container{
 			Name:          "api",
 			Env:           env,
@@ -113,6 +114,7 @@ func createWorkerDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1
 
 	_, err = deployments.CreateOrUpdate(ctx, stack, webhooks, "webhooks-worker",
 		deployments.WithMatchingLabels("webhooks-worker"),
+		deployments.WithServiceAccountName(database.Status.URI.Query().Get("awsRole")),
 		deployments.WithContainers(v1.Container{
 			Name:  "worker",
 			Env:   env,

@@ -80,6 +80,7 @@ func createFullDeployment(ctx core.Context, stack *v1beta1.Stack,
 
 	_, err = deployments.CreateOrUpdate(ctx, stack, payments, "payments",
 		deployments.WithMatchingLabels("payments"),
+		deployments.WithServiceAccountName(database.Status.URI.Query().Get("awsRole")),
 		deployments.WithContainers(v1.Container{
 			Name:          "api",
 			Args:          []string{"serve"},
@@ -113,6 +114,7 @@ func createReadDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1be
 
 	_, err = deployments.CreateOrUpdate(ctx, stack, payments, "payments-read",
 		deployments.WithMatchingLabels("payments-read"),
+		deployments.WithServiceAccountName(database.Status.URI.Query().Get("awsRole")),
 		deployments.WithContainers(v1.Container{
 			Name:          "api",
 			Args:          []string{"api", "serve"},
@@ -160,6 +162,7 @@ func createConnectorsDeployment(ctx core.Context, stack *v1beta1.Stack, payments
 
 	_, err = deployments.CreateOrUpdate(ctx, stack, payments, "payments-connectors",
 		deployments.WithMatchingLabels("payments-connectors"),
+		deployments.WithServiceAccountName(database.Status.URI.Query().Get("awsRole")),
 		deployments.WithContainers(v1.Container{
 			Name:  "connectors",
 			Args:  []string{"connectors", "serve"},
