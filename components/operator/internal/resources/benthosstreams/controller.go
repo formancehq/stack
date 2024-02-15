@@ -25,7 +25,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 )
 
-//+kubebuilder:rbac:groups=formance.com,resources=benthosstreams,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=formance.com,resources=benthosstreams,verbs=get;list;watch;create;update;patch;delete;deletecollection
 //+kubebuilder:rbac:groups=formance.com,resources=benthosstreams/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=benthosstreams/finalizers,verbs=update
 
