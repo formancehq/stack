@@ -101,7 +101,7 @@ var _ = Describe("DatabaseController", func() {
 				})
 				It("Should create a deletion job", func() {
 					Eventually(func() error {
-						return LoadResource(stack.Name, fmt.Sprintf("%s-drop-database", database.Spec.Service), &batchv1.Job{})
+						return LoadResource(stack.Name, fmt.Sprintf("%s-drop-database", database.UID), &batchv1.Job{})
 					}).Should(Succeed())
 				})
 				It("Should eventually be deleted", func() {

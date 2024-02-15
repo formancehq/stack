@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
+	"github.com/formancehq/operator/internal/resources/jobs"
 	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/resourcereferences"
 	"github.com/formancehq/operator/internal/resources/settings"
@@ -29,7 +30,6 @@ import (
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
@@ -107,36 +107,15 @@ func createDatabase(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Da
 		return err
 	}
 
-	jobName := fmt.Sprintf("%s-create-database", database.Spec.Service)
-	job, result, err := core.CreateOrUpdate[*batchv1.Job](ctx, types.NamespacedName{
-		Namespace: database.Spec.Stack,
-		Name:      jobName,
+	if err := jobs.Handle(ctx, database, "create-database", v1.Container{
+		Name:  "create-database",
+		Image: operatorUtilsImage,
+		Args:  []string{"db", "create"},
+		Env:   GetPostgresEnvVars(database),
 	},
-		func(t *batchv1.Job) error {
-			t.Spec.BackoffLimit = pointer.For(int32(10000))
-			t.Spec.Template.Spec.RestartPolicy = v1.RestartPolicyOnFailure
-			t.Spec.TTLSecondsAfterFinished = pointer.For(int32(30))
-			if len(t.Spec.Template.Spec.Containers) == 0 {
-				t.Spec.Template.Spec.Containers = []v1.Container{{}}
-			}
-			t.Spec.Template.Spec.Containers[0].Name = "create-database"
-			t.Spec.Template.Spec.Containers[0].Image = operatorUtilsImage
-			t.Spec.Template.Spec.Containers[0].Args = []string{"db", "create"}
-			t.Spec.Template.Spec.Containers[0].Env = GetPostgresEnvVars(database)
-
-			return nil
-		},
-		core.WithController[*batchv1.Job](ctx.GetScheme(), database),
-		core.WithAnnotations[*batchv1.Job](annotations),
-	)
-	if err != nil {
+		jobs.Mutator(core.WithAnnotations[*batchv1.Job](annotations)),
+	); err != nil {
 		return err
-	}
-	if result != controllerutil.OperationResultNone {
-		log.Info("Creating database")
-	}
-	if job.Status.Succeeded == 0 {
-		return core.NewPendingError()
 	}
 
 	log.Info("Database created")
@@ -189,34 +168,17 @@ func Delete(ctx core.Context, database *v1beta1.Database) error {
 		return err
 	}
 
-	job, _, err := core.CreateOrUpdate[*batchv1.Job](ctx, types.NamespacedName{
-		Namespace: database.Spec.Stack,
-		Name:      fmt.Sprintf("%s-drop-database", database.Spec.Service),
+	if err := jobs.Handle(ctx, database, "drop-database", v1.Container{
+		Name:  "drop-database",
+		Image: operatorUtilsImage,
+		Args:  []string{"db", "drop"},
+		Env:   GetPostgresEnvVars(database),
 	},
-		func(t *batchv1.Job) error {
-			t.Spec.BackoffLimit = pointer.For(int32(10000))
-			t.Spec.TTLSecondsAfterFinished = pointer.For(int32(30))
-			t.Spec.Template.Spec.RestartPolicy = v1.RestartPolicyOnFailure
-			if len(t.Spec.Template.Spec.Containers) == 0 {
-				t.Spec.Template.Spec.Containers = []v1.Container{{}}
-			}
-			t.Spec.Template.Spec.Containers[0].Name = "drop-database"
-			t.Spec.Template.Spec.Containers[0].Image = operatorUtilsImage
-			t.Spec.Template.Spec.Containers[0].Args = []string{"db", "drop"}
-			t.Spec.Template.Spec.Containers[0].Env = GetPostgresEnvVars(database)
-
-			return nil
-		},
-		core.WithController[*batchv1.Job](ctx.GetScheme(), database),
-		core.WithAnnotations[*batchv1.Job](annotations),
-	)
-	if err != nil {
+		jobs.Mutator(core.WithAnnotations[*batchv1.Job](annotations)),
+	); err != nil {
 		return err
 	}
 
-	if job.Status.Succeeded == 0 {
-		return core.NewPendingError()
-	}
 	database.Status.URI = nil
 	logger.Info("Database deleted.")
 

@@ -122,7 +122,7 @@ deploy-all:
         BUILD --pass-args ./components/+deploy --components=operator
     END
     FOR component IN $(cd ./tools && ls -d */)
-        BUILD --pass-args ./tools/+deploy --components=$component
+        BUILD --pass-args ./tools/$component+deploy
     END
     FOR component IN $(cd ./components && ls -d */)
         IF [ "$component" != "operator" ]
