@@ -87,7 +87,7 @@ func init() {
 			WithOwn[*v1beta1.Orchestration](&v1beta1.AuthClient{}),
 			WithOwn[*v1beta1.Orchestration](&appsv1.Deployment{}),
 			WithOwn[*v1beta1.Orchestration](&v1beta1.GatewayHTTPAPI{}),
-			WithOwn[*v1beta1.Orchestration](&v1beta1.SecretReference{}),
+			WithOwn[*v1beta1.Orchestration](&v1beta1.ResourceReference{}),
 			WithOwn[*v1beta1.Orchestration](&batchv1.Job{}),
 			WithWatchSettings[*v1beta1.Orchestration](),
 			WithWatchDependency[*v1beta1.Orchestration](&v1beta1.Ledger{}),

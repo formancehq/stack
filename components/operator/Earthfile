@@ -13,15 +13,15 @@ sources:
     COPY (stack+sources/out --LOCATION=ee/search) ee/search
     COPY (stack+sources/out --LOCATION=libs/go-libs) libs/go-libs
     WORKDIR /src/components/operator
-    COPY --dir api internal pkg .
-    COPY go.* main.go .
+    COPY --dir api internal pkg cmd .
+    COPY go.* .
     SAVE ARTIFACT /src
 
 compile:
     FROM core+builder-image
     COPY (+sources/*) /src
     COPY --pass-args (+generate/*) /src/components/operator
-    WORKDIR /src/components/operator
+    WORKDIR /src/components/operator/cmd
 	DO --pass-args core+GO_COMPILE
 
 build-image:

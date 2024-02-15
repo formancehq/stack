@@ -1,22 +1,23 @@
+---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.13.0
-  name: secretreferences.formance.com
+  name: resourcereferences.formance.com
 spec:
   group: formance.com
   names:
-    kind: SecretReference
-    listKind: SecretReferenceList
-    plural: secretreferences
-    singular: secretreference
+    kind: ResourceReference
+    listKind: ResourceReferenceList
+    plural: resourcereferences
+    singular: resourcereference
   scope: Cluster
   versions:
   - name: v1beta1
     schema:
       openAPIV3Schema:
-        description: SecretReference is the Schema for the secretreferences API
+        description: ResourceReference is the Schema for the resourcereferences API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -31,28 +32,42 @@ spec:
           metadata:
             type: object
           spec:
-            description: SecretReferenceSpec defines the desired state of SecretReference
+            description: ResourceReferenceSpec defines the desired state of ResourceReference
             properties:
-              secretName:
+              gvk:
+                description: GroupVersionKind unambiguously identifies a kind.  It
+                  doesn't anonymously include GroupVersion to avoid automatic coercion.  It
+                  doesn't use a GroupVersion to avoid custom marshalling
+                properties:
+                  group:
+                    type: string
+                  kind:
+                    type: string
+                  version:
+                    type: string
+                required:
+                - group
+                - kind
+                - version
+                type: object
+              name:
                 type: string
               stack:
                 type: string
             required:
-            - secretName
+            - gvk
+            - name
             type: object
           status:
-            description: SecretReferenceStatus defines the observed state of SecretReference
+            description: ResourceReferenceStatus defines the observed state of ResourceReference
             properties:
               hash:
-                description: Hash of the secret, allow to watch secrets and reload
-                  if needed
                 type: string
               info:
                 type: string
               ready:
                 type: boolean
-              syncedSecret:
-                description: Synced secret at last reconciliation
+              syncedResource:
                 type: string
             type: object
         type: object

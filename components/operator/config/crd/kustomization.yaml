@@ -26,7 +26,7 @@ resources:
 - bases/formance.com_stargates.yaml
 - bases/formance.com_versions.yaml
 - bases/formance.com_settings.yaml
-- bases/formance.com_secretreferences.yaml
+- bases/formance.com_resourcereferences.yaml
 #+kubebuilder:scaffold:crdkustomizeresource
 
 patches:
@@ -57,6 +57,7 @@ patches:
 #- path: patches/webhook_in_formance.com_versions.yaml
 #- path: patches/webhook_in_formance.com_settings.yaml
 #- path: patches/webhook_in_formance.com_secretreferences.yaml
+#- path: patches/webhook_in_formance.com_resourcereferences.yaml
 #+kubebuilder:scaffold:crdkustomizewebhookpatch
 
 # [CERTMANAGER] To enable cert-manager, uncomment all the sections with [CERTMANAGER] prefix.
@@ -92,6 +93,7 @@ patches:
 #- path: patches/cainjection_in_formance.com_searchbatchingconfigurations.yaml
 #- path: patches/cainjection_in_formance.com_settings.yaml
 #- path: patches/cainjection_in_formance.com_secretreferences.yaml
+#- path: patches/cainjection_in_formance.com_resourcereferences.yaml
 #+kubebuilder:scaffold:crdkustomizecainjectionpatch
 
 # [WEBHOOK] To enable webhook, uncomment the following section
