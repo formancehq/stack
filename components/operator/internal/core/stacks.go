@@ -97,7 +97,7 @@ func GetImageVersionForStack(ctx Context, stack *v1beta1.Stack, name string) (st
 		return stack.Spec.Version, nil
 	}
 	if stack.Spec.VersionsFromFile == "" {
-		return "", errors.New("no version defined for stack")
+		return "latest", nil
 	}
 	versions := &v1beta1.Versions{}
 	if err := ctx.GetClient().Get(ctx, types.NamespacedName{

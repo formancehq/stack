@@ -112,7 +112,7 @@ tests:
     ENV ENVTEST_VERSION 1.28.0
     RUN setup-envtest use $ENVTEST_VERSION -p path
     ENV KUBEBUILDER_ASSETS /root/.local/share/kubebuilder-envtest/k8s/$ENVTEST_VERSION-linux-$(go env GOHOSTARCH)
-    DO --pass-args core+GO_INSTALL --package=github.com/onsi/ginkgo/v2/ginkgo@v2.13.2
+    DO --pass-args core+GO_INSTALL --package=github.com/onsi/ginkgo/v2/ginkgo@v2.14.0
     COPY (+sources/*) /src
     COPY --pass-args (+manifests/config) /src/components/operator/config
     COPY --pass-args (+generate/internal) /src/components/operator/internal
