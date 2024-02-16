@@ -43,7 +43,7 @@ func NewBucketUpgrade() *cobra.Command {
 				return err
 			}
 
-			logger := service.GetDefaultLogger(cmd.OutOrStdout(), viper.GetBool(service.DebugFlag), false)
+			logger := service.GetDefaultLogger(cmd.OutOrStdout())
 
 			return bucket.Migrate(logging.ContextWithLogger(cmd.Context(), logger))
 		},
@@ -52,7 +52,7 @@ func NewBucketUpgrade() *cobra.Command {
 }
 
 func upgradeAll(cmd *cobra.Command, args []string) error {
-	logger := service.GetDefaultLogger(cmd.OutOrStdout(), viper.GetBool(service.DebugFlag), false)
+	logger := service.GetDefaultLogger(cmd.OutOrStdout())
 	ctx := logging.ContextWithLogger(cmd.Context(), logger)
 
 	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd.OutOrStdout(), viper.GetBool(service.DebugFlag))

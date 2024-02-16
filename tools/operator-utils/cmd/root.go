@@ -2,9 +2,10 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/formancehq/stack/libs/go-libs/service"
 	"os"
 	"strings"
+
+	"github.com/formancehq/stack/libs/go-libs/service"
 
 	"github.com/spf13/viper"
 

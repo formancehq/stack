@@ -26,6 +26,10 @@ func InitFlags(flags *pflag.FlagSet) {
 	flags.Int(PostgresMaxIdleConnsFlag, 0, "Max Idle connections")
 	flags.Duration(PostgresConnMaxIdleTimeFlag, time.Minute, "Max Idle time for connections")
 	flags.Int(PostgresMaxOpenConnsFlag, 20, "Max opened connections")
+
+	if err := viper.BindPFlags(flags); err != nil {
+		panic(err)
+	}
 }
 
 func ConnectionOptionsFromFlags(output io.Writer, debug bool) (*ConnectionOptions, error) {
