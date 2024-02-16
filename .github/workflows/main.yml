@@ -171,3 +171,4 @@ jobs:
           kubectl patch Versions.formance.com default -p "{\"spec\":{\"stargate\": \"${GITHUB_SHA}-scratch\"}}" --type=merge
           kubectl patch Versions.formance.com default -p "{\"spec\":{\"wallets\": \"${GITHUB_SHA}-scratch\"}}" --type=merge
           kubectl patch Versions.formance.com default -p "{\"spec\":{\"webhooks\": \"${GITHUB_SHA}-scratch\"}}" --type=merge
+          kubectl patch Versions.formance.com default -p "{\"spec\":{\"operator-utils\": \"${GITHUB_SHA}-scratch\"}}" --type=merge
