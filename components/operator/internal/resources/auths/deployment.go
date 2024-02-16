@@ -68,6 +68,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, dat
 
 	return deployments.CreateOrUpdate(ctx, stack, auth, "auth",
 		deployments.WithMatchingLabels("auth"),
+		deployments.WithServiceAccountName(database.Status.URI.Query().Get("awsRole")),
 		func(t *appsv1.Deployment) error {
 			t.Spec.Template.Annotations = MergeMaps(t.Spec.Template.Annotations, map[string]string{
 				"config-hash": HashFromConfigMaps(configMap),

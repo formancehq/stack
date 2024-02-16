@@ -35,7 +35,7 @@ import (
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, o *v1beta1.Orchestration, version string) error {
 
-	database, err := databases.Create(ctx, o)
+	database, err := databases.Create(ctx, stack, o)
 	if err != nil {
 		return err
 	}
@@ -61,7 +61,10 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, o *v1beta1.Orchestration, vers
 		}
 
 		if IsGreaterOrEqual(version, "v2.0.0-rc.5") && databases.GetSavedModuleVersion(database) != version {
-			if err := jobs.Handle(ctx, o, "migrate", databases.MigrateDatabaseContainer(image, database)); err != nil {
+			if err := jobs.Handle(ctx, o, "migrate",
+				databases.MigrateDatabaseContainer(image, database),
+				jobs.WithServiceAccount(database.Status.URI.Query().Get("awsRole")),
+			); err != nil {
 				return err
 			}
 

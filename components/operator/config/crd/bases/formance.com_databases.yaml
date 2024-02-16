@@ -51,6 +51,8 @@ spec:
           spec:
             description: DatabaseSpec defines the desired state of Database
             properties:
+              debug:
+                type: boolean
               service:
                 type: string
               stack:

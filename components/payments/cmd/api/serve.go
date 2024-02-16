@@ -1,7 +1,7 @@
 package api
 
 import (
-	"io"
+	"context"
 
 	"github.com/bombsimon/logrusr/v3"
 	"github.com/formancehq/payments/cmd/api/internal/api"
@@ -49,7 +49,7 @@ func runServer(version string) func(cmd *cobra.Command, args []string) error {
 	return func(cmd *cobra.Command, args []string) error {
 		setLogger()
 
-		databaseOptions, err := prepareDatabaseOptions(cmd.OutOrStdout())
+		databaseOptions, err := prepareDatabaseOptions(cmd.Context())
 		if err != nil {
 			return err
 		}
@@ -77,13 +77,13 @@ func setLogger() {
 	otel.SetLogger(logrusr.New(logrus.New().WithField("component", "otlp")))
 }
 
-func prepareDatabaseOptions(output io.Writer) (fx.Option, error) {
+func prepareDatabaseOptions(ctx context.Context) (fx.Option, error) {
 	configEncryptionKey := viper.GetString(configEncryptionKeyFlag)
 	if configEncryptionKey == "" {
 		return nil, errors.New("missing config encryption key")
 	}
 
-	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(output, viper.GetBool(service.DebugFlag))
+	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(ctx)
 	if err != nil {
 		return nil, err
 	}

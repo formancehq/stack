@@ -50,6 +50,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, reconciliation *v1
 
 			return nil
 		},
+		deployments.WithServiceAccountName(database.Status.URI.Query().Get("awsRole")),
 		deployments.WithMatchingLabels("reconciliation"),
 	)
 	return err

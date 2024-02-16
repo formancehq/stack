@@ -42,7 +42,7 @@ import (
 //+kubebuilder:rbac:groups=batch,resources=cronjobs,verbs=get;list;watch;create;update;patch;delete
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, version string) error {
-	database, err := databases.Create(ctx, ledger)
+	database, err := databases.Create(ctx, stack, ledger)
 	if err != nil {
 		return err
 	}

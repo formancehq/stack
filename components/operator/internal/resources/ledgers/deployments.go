@@ -67,7 +67,7 @@ func installLedgerSingleInstance(ctx core.Context, stack *v1beta1.Stack,
 		}
 	}
 
-	if err := createDeployment(ctx, stack, ledger, "ledger", *container, v2, deployments.WithReplicas(1)); err != nil {
+	if err := createDeployment(ctx, stack, ledger, database, "ledger", *container, v2, deployments.WithReplicas(1)); err != nil {
 		return err
 	}
 
@@ -95,7 +95,7 @@ func installLedgerMonoWriterMultipleReader(ctx core.Context, stack *v1beta1.Stac
 			return err
 		}
 
-		if err := createDeployment(ctx, stack, ledger, name, container, v2, mutators...); err != nil {
+		if err := createDeployment(ctx, stack, ledger, database, name, container, v2, mutators...); err != nil {
 			return err
 		}
 
@@ -156,11 +156,12 @@ func uninstallLedgerMonoWriterMultipleReader(ctx core.Context, stack *v1beta1.St
 	return nil
 }
 
-func createDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger,
+func createDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, database *v1beta1.Database,
 	name string, container corev1.Container, v2 bool, mutators ...core.ObjectMutator[*v1.Deployment]) error {
 	mutators = append([]core.ObjectMutator[*v1.Deployment]{
 		deployments.WithContainers(container),
 		deployments.WithMatchingLabels(name),
+		deployments.WithServiceAccountName(database.Status.URI.Query().Get("awsRole")),
 		func(t *v1.Deployment) error {
 			if !v2 {
 				t.Spec.Template.Spec.Volumes = []corev1.Volume{{
@@ -314,5 +315,6 @@ func migrate(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, dat
 				}
 			}
 			return nil
-		}))
+		}),
+		jobs.WithServiceAccount(database.Status.URI.Query().Get("awsRole")))
 }

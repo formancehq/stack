@@ -34,7 +34,7 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=reconciliations/finalizers,verbs=update
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, reconciliation *v1beta1.Reconciliation, version string) error {
-	database, err := databases.Create(ctx, reconciliation)
+	database, err := databases.Create(ctx, stack, reconciliation)
 	if err != nil {
 		return err
 	}
@@ -53,7 +53,10 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, reconciliation *v1beta1.Reconc
 		}
 
 		if IsGreaterOrEqual(version, "v2.0.0-rc.5") && databases.GetSavedModuleVersion(database) != version {
-			if err := jobs.Handle(ctx, reconciliation, "migrate", databases.MigrateDatabaseContainer(image, database)); err != nil {
+			if err := jobs.Handle(ctx, reconciliation, "migrate",
+				databases.MigrateDatabaseContainer(image, database),
+				jobs.WithServiceAccount(database.Status.URI.Query().Get("awsRole")),
+			); err != nil {
 				return err
 			}
 

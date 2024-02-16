@@ -17,6 +17,7 @@ import (
 
 type handleJobConfiguration struct {
 	preCreate func() error
+	mutators  []core.ObjectMutator[*batchv1.Job]
 }
 
 type HandleJobOption func(configuration *handleJobConfiguration)
@@ -25,6 +26,19 @@ func PreCreate(preCreate func() error) HandleJobOption {
 	return func(configuration *handleJobConfiguration) {
 		configuration.preCreate = preCreate
 	}
+}
+
+func Mutator(mutator core.ObjectMutator[*batchv1.Job]) HandleJobOption {
+	return func(configuration *handleJobConfiguration) {
+		configuration.mutators = append(configuration.mutators, mutator)
+	}
+}
+
+func WithServiceAccount(serviceAccountName string) HandleJobOption {
+	return Mutator(func(t *batchv1.Job) error {
+		t.Spec.Template.Spec.ServiceAccountName = serviceAccountName
+		return nil
+	})
 }
 
 func Handle(ctx core.Context, owner v1beta1.Dependent, jobName string, container v1.Container, options ...HandleJobOption) error {
@@ -84,6 +98,13 @@ func Handle(ctx core.Context, owner v1beta1.Dependent, jobName string, container
 			},
 		},
 	}
+
+	for _, mutator := range configuration.mutators {
+		if err := mutator(job); err != nil {
+			return err
+		}
+	}
+
 	if err := controllerutil.SetControllerReference(owner, job, ctx.GetScheme()); err != nil {
 		return err
 	}

@@ -3,7 +3,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 
@@ -101,8 +100,8 @@ func Execute() {
 	}
 }
 
-func commonOptions(output io.Writer) (fx.Option, error) {
-	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(output, viper.GetBool(service.DebugFlag))
+func commonOptions(cmd *cobra.Command) (fx.Option, error) {
+	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd.Context())
 	if err != nil {
 		return nil, err
 	}

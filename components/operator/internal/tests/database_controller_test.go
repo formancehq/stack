@@ -101,7 +101,7 @@ var _ = Describe("DatabaseController", func() {
 				})
 				It("Should create a deletion job", func() {
 					Eventually(func() error {
-						return LoadResource(stack.Name, fmt.Sprintf("%s-drop-database", database.Spec.Service), &batchv1.Job{})
+						return LoadResource(stack.Name, fmt.Sprintf("%s-drop-database", database.UID), &batchv1.Job{})
 					}).Should(Succeed())
 				})
 				It("Should eventually be deleted", func() {
@@ -175,17 +175,17 @@ var _ = Describe("DatabaseController", func() {
 					Expect(Create(secret1)).To(Succeed())
 					databaseSettings.Spec.Value = "postgresql://xxx?secret=postgres"
 				})
-				shouldCreateSecretReference := func() {
+				shouldCreateResourceReference := func() {
 					resourceReference := &v1beta1.ResourceReference{}
 					Eventually(func(g Gomega) error {
 						return LoadResource("", fmt.Sprintf("%s-postgres", database.Name), resourceReference)
 					}).Should(Succeed())
 				}
-				It("Should create a secret reference", shouldCreateSecretReference)
+				It("Should create a secret reference", shouldCreateResourceReference)
 				Context("Then changing the secret", func() {
 					var secret2 *v1.Secret
 					JustBeforeEach(func() {
-						shouldCreateSecretReference()
+						shouldCreateResourceReference()
 						secret2 = &v1.Secret{
 							ObjectMeta: metav1.ObjectMeta{
 								Name:      uuid.NewString(),
@@ -208,7 +208,7 @@ var _ = Describe("DatabaseController", func() {
 						Expect(Patch(databaseSettings, patch)).To(Succeed())
 					})
 					It("Should create the new secret and remove the old one", func() {
-						shouldCreateSecretReference()
+						shouldCreateResourceReference()
 						Eventually(func() error {
 							return LoadResource(stack.Name, fmt.Sprintf("%s-postgres", database.Name), secret1)
 						}).Should(BeNotFound())

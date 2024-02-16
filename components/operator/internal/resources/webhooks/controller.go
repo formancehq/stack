@@ -34,7 +34,7 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=webhooks/finalizers,verbs=update
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, version string) error {
-	database, err := databases.Create(ctx, webhooks)
+	database, err := databases.Create(ctx, stack, webhooks)
 	if err != nil {
 		return err
 	}
@@ -55,7 +55,10 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, ve
 		}
 
 		if IsGreaterOrEqual(version, "v2.0.0-rc.5") && databases.GetSavedModuleVersion(database) != version {
-			if err := jobs.Handle(ctx, webhooks, "migrate", databases.MigrateDatabaseContainer(image, database)); err != nil {
+			if err := jobs.Handle(ctx, webhooks, "migrate",
+				databases.MigrateDatabaseContainer(image, database),
+				jobs.WithServiceAccount(database.Status.URI.Query().Get("awsRole")),
+			); err != nil {
 				return err
 			}
 			if err := databases.SaveModuleVersion(ctx, database, version); err != nil {

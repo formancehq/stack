@@ -32,6 +32,13 @@ func WithMatchingLabels(name string) func(deployment *appsv1.Deployment) error {
 	}
 }
 
+func WithServiceAccountName(name string) func(deployment *appsv1.Deployment) error {
+	return func(deployment *appsv1.Deployment) error {
+		deployment.Spec.Template.Spec.ServiceAccountName = name
+		return nil
+	}
+}
+
 func WithReplicas(replicas int32) func(t *appsv1.Deployment) error {
 	return func(t *appsv1.Deployment) error {
 		t.Spec.Replicas = pointer.For(replicas)

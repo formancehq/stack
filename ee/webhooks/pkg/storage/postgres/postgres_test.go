@@ -4,6 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"github.com/formancehq/stack/libs/go-libs/logging"
+
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
@@ -15,7 +17,7 @@ import (
 
 func TestStore(t *testing.T) {
 	pgDB := pgtesting.NewPostgresDatabase(t)
-	db, err := bunconnect.OpenSQLDB(bunconnect.ConnectionOptions{
+	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: pgDB.ConnString(),
 		Debug:              testing.Verbose(),
 	})

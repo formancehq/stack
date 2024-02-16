@@ -3,10 +3,8 @@ package cmd
 import (
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunmigrate"
-	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func NewDatabaseCreateCommand() *cobra.Command {
@@ -14,7 +12,7 @@ func NewDatabaseCreateCommand() *cobra.Command {
 		Use:   "create",
 		Short: "Handle database creation",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd.OutOrStdout(), viper.GetBool(service.DebugFlag))
+			connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd.Context())
 			if err != nil {
 				return errors.Wrap(err, "resolving connection params")
 			}

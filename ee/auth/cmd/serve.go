@@ -127,7 +127,7 @@ func newServeCommand() *cobra.Command {
 
 			zLogging.SetOutput(cmd.OutOrStdout())
 
-			connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd.OutOrStdout(), viper.GetBool(service.DebugFlag))
+			connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd.Context())
 			if err != nil {
 				return err
 			}

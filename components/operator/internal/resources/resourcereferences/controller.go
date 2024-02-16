@@ -99,28 +99,45 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, req *v1beta1.ResourceReference
 		return err
 	}
 
+	gvk := schema.GroupVersionKind{
+		Group:   req.Spec.GroupVersionKind.Group,
+		Version: req.Spec.GroupVersionKind.Version,
+		Kind:    req.Spec.GroupVersionKind.Kind,
+	}
+
 	if req.Status.SyncedResource != "" && req.Spec.Name != req.Status.SyncedResource {
-		oldSecret := &v1.Secret{}
+		oldResource := &unstructured.Unstructured{}
+		oldResource.SetGroupVersionKind(gvk)
 		err := ctx.GetClient().Get(ctx, types.NamespacedName{
 			Namespace: stack.Name,
 			Name:      req.Status.SyncedResource,
-		}, oldSecret)
+		}, oldResource)
 		if client.IgnoreNotFound(err) != nil {
 			return err
 		}
 
 		if err == nil { // Can be not found, if the resource has been manually deleted
-			patch := client.MergeFrom(oldSecret.DeepCopy())
-			if err := controllerutil.RemoveOwnerReference(req, oldSecret, ctx.GetScheme()); err == nil {
-				if err := ctx.GetClient().Patch(ctx, oldSecret, patch); err != nil {
+			patch := client.MergeFrom(oldResource.DeepCopy())
+			if err := controllerutil.RemoveOwnerReference(req, oldResource, ctx.GetScheme()); err == nil {
+				if err := ctx.GetClient().Patch(ctx, oldResource, patch); err != nil {
 					return nil
 				}
 			}
-			if len(oldSecret.OwnerReferences) == 0 {
-				if err := ctx.GetClient().Delete(ctx, oldSecret); err != nil {
+			if len(oldResource.GetOwnerReferences()) == 0 {
+				if err := ctx.GetClient().Delete(ctx, oldResource); err != nil {
 					return err
 				}
 			}
+		}
+	}
+
+	annotations := make(map[string]any)
+	originalMetadata := resource.UnstructuredContent()["metadata"]
+	if originalMetadata != nil {
+		metadata := originalMetadata.(map[string]any)
+		originalAnnotations := metadata["annotations"]
+		if originalAnnotations != nil {
+			annotations = originalAnnotations.(map[string]any)
 		}
 	}
 
@@ -128,11 +145,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, req *v1beta1.ResourceReference
 	unstructured.RemoveNestedField(resource.UnstructuredContent(), "status")
 
 	newResource := &unstructured.Unstructured{}
-	newResource.SetGroupVersionKind(schema.GroupVersionKind{
-		Group:   req.Spec.GroupVersionKind.Group,
-		Version: req.Spec.GroupVersionKind.Version,
-		Kind:    req.Spec.GroupVersionKind.Kind,
-	})
+	newResource.SetGroupVersionKind(gvk)
 	newResource.SetNamespace(stack.Name)
 	newResource.SetName(req.Spec.Name)
 
@@ -140,6 +153,10 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, req *v1beta1.ResourceReference
 		content := newResource.UnstructuredContent()
 		if err := mergo.Merge(&content, resource.UnstructuredContent()); err != nil {
 			return err
+		}
+
+		if err := unstructured.SetNestedMap(content, annotations, "metadata", "annotations"); err != nil {
+			panic(err)
 		}
 
 		hasOwnerReference, err := HasOwnerReference(ctx, req, newResource)
@@ -184,12 +201,12 @@ func findMatchingResource(ctx Context, stack string, gvk metav1.GroupVersionKind
 
 	foundResources := make([]*unstructured.Unstructured, 0)
 	for _, item := range list.Items {
-		secretName, ok := item.GetAnnotations()[RewrittenResourceName]
+		resourceName, ok := item.GetAnnotations()[RewrittenResourceName]
 		if !ok {
-			secretName = item.GetName()
+			resourceName = item.GetName()
 		}
 
-		if secretName != name {
+		if resourceName != name {
 			continue
 		}
 		foundResources = append(foundResources, item.DeepCopy())

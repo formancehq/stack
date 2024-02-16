@@ -3,7 +3,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"io"
 	"net/http"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
@@ -61,7 +60,7 @@ func newServeCommand(version string) *cobra.Command {
 
 func runServer(version string) func(cmd *cobra.Command, args []string) error {
 	return func(cmd *cobra.Command, args []string) error {
-		databaseOptions, err := prepareDatabaseOptions(cmd.OutOrStdout())
+		databaseOptions, err := prepareDatabaseOptions(cmd)
 		if err != nil {
 			return err
 		}
@@ -86,8 +85,8 @@ func runServer(version string) func(cmd *cobra.Command, args []string) error {
 	}
 }
 
-func prepareDatabaseOptions(output io.Writer) (fx.Option, error) {
-	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(output, viper.GetBool(service.DebugFlag))
+func prepareDatabaseOptions(cmd *cobra.Command) (fx.Option, error) {
+	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd.Context())
 	if err != nil {
 		return nil, err
 	}

@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
+	"github.com/formancehq/operator/internal/resources/jobs"
 	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/resourcereferences"
 	"github.com/formancehq/operator/internal/resources/settings"
@@ -29,7 +30,6 @@ import (
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
@@ -48,11 +48,19 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 		return errors.Wrap(err, "retrieving database configuration")
 	}
 
-	var resourceReference *v1beta1.ResourceReference
 	if secret := databaseURL.Query().Get("secret"); secret != "" {
-		resourceReference, err = resourcereferences.Create(ctx, database, "postgres", secret, &v1.Secret{})
+		_, err = resourcereferences.Create(ctx, database, "postgres", secret, &v1.Secret{})
 	} else {
 		err = resourcereferences.Delete(ctx, database, "postgres")
+	}
+	if err != nil {
+		return err
+	}
+
+	if awsRole := databaseURL.Query().Get("awsRole"); awsRole != "" {
+		_, err = resourcereferences.Create(ctx, database, "database", awsRole, &v1.ServiceAccount{})
+	} else {
+		err = resourcereferences.Delete(ctx, database, "database")
 	}
 	if err != nil {
 		return err
@@ -79,67 +87,12 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 		database.Status.URI = databaseURL
 		database.Status.Database = dbName
 
-		if err := createDatabase(ctx, stack, database, resourceReference); err != nil {
+		if err := handleDatabaseJob(ctx, stack, database, "create-database", "db", "create"); err != nil {
 			return err
 		}
 	case database.Status.URI.String() != databaseURL.String():
 		database.Status.OutOfSync = true
 	}
-
-	return nil
-}
-
-func createDatabase(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Database, resourceReference *v1beta1.ResourceReference) error {
-	log := log.FromContext(ctx)
-	log = log.WithValues("name", database.Name)
-	annotations := make(map[string]string)
-	if resourceReference != nil {
-		annotations["secret-hash"] = resourceReference.Status.Hash
-	}
-
-	operatorUtilsImageVersion, err := core.GetImageVersionForStack(ctx, stack, "operator-utils")
-	if err != nil {
-		return err
-	}
-
-	operatorUtilsImage, err := registries.GetImage(ctx, stack, "operator-utils", operatorUtilsImageVersion)
-	if err != nil {
-		return err
-	}
-
-	jobName := fmt.Sprintf("%s-create-database", database.Spec.Service)
-	job, result, err := core.CreateOrUpdate[*batchv1.Job](ctx, types.NamespacedName{
-		Namespace: database.Spec.Stack,
-		Name:      jobName,
-	},
-		func(t *batchv1.Job) error {
-			t.Spec.BackoffLimit = pointer.For(int32(10000))
-			t.Spec.Template.Spec.RestartPolicy = v1.RestartPolicyOnFailure
-			t.Spec.TTLSecondsAfterFinished = pointer.For(int32(30))
-			if len(t.Spec.Template.Spec.Containers) == 0 {
-				t.Spec.Template.Spec.Containers = []v1.Container{{}}
-			}
-			t.Spec.Template.Spec.Containers[0].Name = "create-database"
-			t.Spec.Template.Spec.Containers[0].Image = operatorUtilsImage
-			t.Spec.Template.Spec.Containers[0].Args = []string{"db", "create"}
-			t.Spec.Template.Spec.Containers[0].Env = GetPostgresEnvVars(database)
-
-			return nil
-		},
-		core.WithController[*batchv1.Job](ctx.GetScheme(), database),
-		core.WithAnnotations[*batchv1.Job](annotations),
-	)
-	if err != nil {
-		return err
-	}
-	if result != controllerutil.OperationResultNone {
-		log.Info("Creating database")
-	}
-	if job.Status.Succeeded == 0 {
-		return core.NewPendingError()
-	}
-
-	log.Info("Database created")
 
 	return nil
 }
@@ -161,23 +114,24 @@ func Delete(ctx core.Context, database *v1beta1.Database) error {
 	logger = logger.WithValues("name", database.Name)
 	logger.Info("Deleting database")
 
-	annotations := make(map[string]string)
-	if secret := database.Status.URI.Query().Get("secret"); secret != "" {
-		secretReference := &v1beta1.ResourceReference{}
-		if err := ctx.GetClient().Get(ctx, types.NamespacedName{
-			Name: fmt.Sprintf("%s-postgres", database.Name),
-		}, secretReference); err != nil {
-			return err
-		}
-		annotations["secret-hash"] = secretReference.Status.Hash
-	}
-
 	stack := &v1beta1.Stack{}
 	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
 		Name: database.Spec.Stack,
 	}, stack); err != nil {
 		return err
 	}
+
+	if err := handleDatabaseJob(ctx, stack, database, "drop-database", "db", "drop"); err != nil {
+		return err
+	}
+
+	database.Status.URI = nil
+	logger.Info("Database deleted.")
+
+	return nil
+}
+
+func handleDatabaseJob(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Database, name string, args ...string) error {
 
 	operatorUtilsImageVersion, err := core.GetImageVersionForStack(ctx, stack, "operator-utils")
 	if err != nil {
@@ -189,38 +143,30 @@ func Delete(ctx core.Context, database *v1beta1.Database) error {
 		return err
 	}
 
-	job, _, err := core.CreateOrUpdate[*batchv1.Job](ctx, types.NamespacedName{
-		Namespace: database.Spec.Stack,
-		Name:      fmt.Sprintf("%s-drop-database", database.Spec.Service),
-	},
-		func(t *batchv1.Job) error {
-			t.Spec.BackoffLimit = pointer.For(int32(10000))
-			t.Spec.TTLSecondsAfterFinished = pointer.For(int32(30))
-			t.Spec.Template.Spec.RestartPolicy = v1.RestartPolicyOnFailure
-			if len(t.Spec.Template.Spec.Containers) == 0 {
-				t.Spec.Template.Spec.Containers = []v1.Container{{}}
-			}
-			t.Spec.Template.Spec.Containers[0].Name = "drop-database"
-			t.Spec.Template.Spec.Containers[0].Image = operatorUtilsImage
-			t.Spec.Template.Spec.Containers[0].Args = []string{"db", "drop"}
-			t.Spec.Template.Spec.Containers[0].Env = GetPostgresEnvVars(database)
-
-			return nil
-		},
-		core.WithController[*batchv1.Job](ctx.GetScheme(), database),
-		core.WithAnnotations[*batchv1.Job](annotations),
-	)
-	if err != nil {
+	annotations := make(map[string]string)
+	secretReference := &v1beta1.ResourceReference{}
+	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
+		Name: fmt.Sprintf("%s-postgres", database.Name),
+	}, secretReference); client.IgnoreNotFound(err) != nil {
 		return err
+	} else if err == nil {
+		annotations["secret-hash"] = secretReference.Status.Hash
 	}
 
-	if job.Status.Succeeded == 0 {
-		return core.NewPendingError()
+	env := GetPostgresEnvVars(database)
+	if database.Spec.Debug {
+		env = append(env, core.Env("DEBUG", "true"))
 	}
-	database.Status.URI = nil
-	logger.Info("Database deleted.")
 
-	return nil
+	return jobs.Handle(ctx, database, name, v1.Container{
+		Name:  name,
+		Image: operatorUtilsImage,
+		Args:  args,
+		Env:   env,
+	},
+		jobs.Mutator(core.WithAnnotations[*batchv1.Job](annotations)),
+		jobs.WithServiceAccount(database.Status.URI.Query().Get("awsRole")),
+	)
 }
 
 func init() {

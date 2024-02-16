@@ -30,7 +30,7 @@ func newWorkerCommand() *cobra.Command {
 }
 
 func runWorker(cmd *cobra.Command, _ []string) error {
-	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd.OutOrStdout(), viper.GetBool(service.DebugFlag))
+	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd.Context())
 	if err != nil {
 		return err
 	}

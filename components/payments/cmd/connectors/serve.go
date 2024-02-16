@@ -1,14 +1,13 @@
 package connectors
 
 import (
-	"io"
-
 	"github.com/bombsimon/logrusr/v3"
 	"github.com/formancehq/payments/cmd/connectors/internal/api"
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/auth"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
@@ -50,7 +49,7 @@ func runServer(version string) func(cmd *cobra.Command, args []string) error {
 	return func(cmd *cobra.Command, args []string) error {
 		setLogger()
 
-		databaseOptions, err := prepareDatabaseOptions(cmd.OutOrStdout())
+		databaseOptions, err := prepareDatabaseOptions(cmd)
 		if err != nil {
 			return err
 		}
@@ -79,16 +78,16 @@ func setLogger() {
 	otel.SetLogger(logrusr.New(logrus.New().WithField("component", "otlp")))
 }
 
-func prepareDatabaseOptions(output io.Writer) (fx.Option, error) {
-	postgresURI := viper.GetString(postgresURIFlag)
-	if postgresURI == "" {
-		return nil, errors.New("missing postgres uri")
-	}
-
+func prepareDatabaseOptions(cmd *cobra.Command) (fx.Option, error) {
 	configEncryptionKey := viper.GetString(configEncryptionKeyFlag)
 	if configEncryptionKey == "" {
 		return nil, errors.New("missing config encryption key")
 	}
 
-	return storage.Module(postgresURI, configEncryptionKey, viper.GetBool(service.DebugFlag), output), nil
+	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd.Context())
+	if err != nil {
+		return nil, err
+	}
+
+	return storage.Module(*connectionOptions, configEncryptionKey), nil
 }

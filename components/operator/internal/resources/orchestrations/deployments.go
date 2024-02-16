@@ -133,6 +133,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 
 	_, err = deployments.CreateOrUpdate(ctx, stack, orchestration, "orchestration",
 		resourcereferences.Annotate[*appsv1.Deployment]("temporal-secret-hash", resourceReference),
+		deployments.WithServiceAccountName(database.Status.URI.Query().Get("awsRole")),
 		deployments.WithMatchingLabels("orchestration"),
 		deployments.WithContainers(v1.Container{
 			Name:          "api",
