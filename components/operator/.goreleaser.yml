@@ -10,6 +10,7 @@ monorepo:
 builds:
   - binary: operator
     id: operator
+    main: ./cmd
     ldflags:
       - -X github.com/formancehq/operator/cmd.BuildDate={{ .Date }}
       - -X github.com/formancehq/operator/cmd.Version={{ .Version }}
