@@ -1,4 +1,4 @@
-package storage_test
+package storage
 
 import (
 	"context"
@@ -6,17 +6,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )
 
-const encryptionOptions = "compress-algo=1, cipher-algo=aes256"
+const testEncryptionOptions = "compress-algo=1, cipher-algo=aes256"
 const encryptionKey = "test"
 
 // Helpers to add test data
-func installConnector(t *testing.T, store *storage.Storage) models.ConnectorID {
+func installConnector(t *testing.T, store *Storage) models.ConnectorID {
 	db := store.DB()
 
 	connectorID := models.ConnectorID{
@@ -35,7 +34,7 @@ func installConnector(t *testing.T, store *storage.Storage) models.ConnectorID {
 
 	_, err = db.NewUpdate().
 		Model(&models.Connector{}).
-		Set("config = pgp_sym_encrypt(?::TEXT, ?, ?)", json.RawMessage(`{}`), encryptionKey, encryptionOptions).
+		Set("config = pgp_sym_encrypt(?::TEXT, ?, ?)", json.RawMessage(`{}`), encryptionKey, testEncryptionOptions).
 		Where("id = ?", connectorID). // Connector name is unique
 		Exec(context.Background())
 	require.NoError(t, err)

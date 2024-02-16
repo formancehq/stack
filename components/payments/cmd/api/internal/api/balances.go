@@ -11,6 +11,8 @@ import (
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/gorilla/mux"
 )
 
@@ -27,34 +29,48 @@ func listBalancesForAccount(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
-		pagination, err := getPagination(r)
+		balanceQuery, err := populateBalanceQueryFromRequest(r)
 		if err != nil {
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
-		accountID, err := models.AccountIDFromString(mux.Vars(r)["accountID"])
+		query, err := bunpaginate.Extract[storage.ListBalancesQuery](r, func() (*storage.ListBalancesQuery, error) {
+			options, err := getPagination(r, balanceQuery)
+			if err != nil {
+				return nil, err
+			}
+			return pointer.For(storage.NewListBalancesQuery(*options)), nil
+		})
 		if err != nil {
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
-		balanceQuery := storage.NewBalanceQuery(pagination).
-			WithAccountID(accountID)
+		// In order to support the legacy API, we need to check if the limit query parameter is set
+		// and if so, we need to override the pageSize pagination option
+		if r.URL.Query().Get("limit") != "" {
+			limit, err := strconv.ParseInt(r.URL.Query().Get("limit"), 10, 64)
+			if err != nil {
+				api.BadRequest(w, ErrValidation, err)
+				return
+			}
 
-		balanceQuery, err = populateBalanceQueryFromRequest(r, balanceQuery)
-		if err != nil {
-			api.BadRequest(w, ErrValidation, err)
-			return
+			if limit > 0 {
+				query.PageSize = uint64(limit)
+				query.Options.PageSize = uint64(limit)
+			}
 		}
 
-		ret, paginationDetails, err := b.GetService().ListBalances(r.Context(), balanceQuery)
+		cursor, err := b.GetService().ListBalances(r.Context(), *query)
 		if err != nil {
 			handleServiceErrors(w, r, err)
 			return
 		}
 
+		ret := cursor.Data
 		data := make([]*balancesResponse, len(ret))
+
 		for i := range ret {
 			data[i] = &balancesResponse{
 				AccountID:     ret[i].AccountID.String(),
@@ -68,10 +84,10 @@ func listBalancesForAccount(b backend.Backend) http.HandlerFunc {
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[*balancesResponse]{
 			Cursor: &api.Cursor[*balancesResponse]{
-				PageSize: paginationDetails.PageSize,
-				HasMore:  paginationDetails.HasMore,
-				Previous: paginationDetails.PreviousPage,
-				Next:     paginationDetails.NextPage,
+				PageSize: cursor.PageSize,
+				HasMore:  cursor.HasMore,
+				Previous: cursor.Previous,
+				Next:     cursor.Next,
 				Data:     data,
 			},
 		})
@@ -82,11 +98,18 @@ func listBalancesForAccount(b backend.Backend) http.HandlerFunc {
 	}
 }
 
-func populateBalanceQueryFromRequest(r *http.Request, balanceQuery storage.BalanceQuery) (storage.BalanceQuery, error) {
+func populateBalanceQueryFromRequest(r *http.Request) (storage.BalanceQuery, error) {
+	var balanceQuery storage.BalanceQuery
+
 	balanceQuery = balanceQuery.WithCurrency(r.URL.Query().Get("asset"))
 
+	accountID, err := models.AccountIDFromString(mux.Vars(r)["accountID"])
+	if err != nil {
+		return balanceQuery, err
+	}
+	balanceQuery = balanceQuery.WithAccountID(accountID)
+
 	var startTimeParsed, endTimeParsed time.Time
-	var err error
 
 	from, to := r.URL.Query().Get("from"), r.URL.Query().Get("to")
 	if from != "" {
@@ -99,16 +122,6 @@ func populateBalanceQueryFromRequest(r *http.Request, balanceQuery storage.Balan
 		endTimeParsed, err = time.Parse(time.RFC3339Nano, to)
 		if err != nil {
 			return balanceQuery, err
-		}
-	}
-	if r.URL.Query().Get("limit") != "" {
-		limit, err := strconv.ParseInt(r.URL.Query().Get("limit"), 10, 64)
-		if err != nil {
-			return balanceQuery, err
-		}
-
-		if limit > 0 {
-			balanceQuery = balanceQuery.WithLimit(int(limit))
 		}
 	}
 

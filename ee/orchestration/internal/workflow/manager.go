@@ -123,12 +123,12 @@ func (m *WorkflowManager) Wait(ctx context.Context, instanceID string) error {
 }
 
 func (m *WorkflowManager) ListWorkflows(ctx context.Context, query bunpaginate.OffsetPaginatedQuery[any]) (*api.Cursor[Workflow], error) {
-	workflows := make([]Workflow, 0)
-	sb := m.db.NewSelect().
-		Model(&workflows).
-		Where("deleted_at IS NULL")
+	sb := m.db.NewSelect()
 
-	return bunpaginate.UsingOffset[any, Workflow](ctx, sb, query)
+	return bunpaginate.UsingOffset[any, Workflow](ctx, sb, query,
+		func(query *bun.SelectQuery) *bun.SelectQuery {
+			return query.Where("deleted_at IS NULL")
+		})
 }
 
 func (m *WorkflowManager) ReadWorkflow(ctx context.Context, id string) (Workflow, error) {
@@ -174,19 +174,23 @@ func (m *WorkflowManager) AbortRun(ctx context.Context, instanceID string) error
 }
 
 func (m *WorkflowManager) ListInstances(ctx context.Context, pagination ListInstancesQuery) (*api.Cursor[Instance], error) {
-	instances := make([]Instance, 0)
-	query := m.db.NewSelect().Model(&instances).
-		Join("JOIN workflows ON workflows.id = u.workflow_id").
-		Where("workflows.deleted_at IS NULL")
+	query := m.db.NewSelect()
 
-	if pagination.Options.WorkflowID != "" {
-		query = query.Where("workflows.id = ?", pagination.Options.WorkflowID)
-	}
-	if pagination.Options.Running {
-		query = query.Where("u.terminated = false")
-	}
+	return bunpaginate.UsingOffset[ListInstancesOptions, Instance](ctx, query, bunpaginate.OffsetPaginatedQuery[ListInstancesOptions](pagination),
+		func(query *bun.SelectQuery) *bun.SelectQuery {
+			query = query.
+				Join("JOIN workflows ON workflows.id = u.workflow_id").
+				Where("workflows.deleted_at IS NULL")
 
-	return bunpaginate.UsingOffset[ListInstancesOptions, Instance](ctx, query, bunpaginate.OffsetPaginatedQuery[ListInstancesOptions](pagination))
+			if pagination.Options.WorkflowID != "" {
+				query = query.Where("workflows.id = ?", pagination.Options.WorkflowID)
+			}
+			if pagination.Options.Running {
+				query = query.Where("u.terminated = false")
+			}
+
+			return query
+		})
 }
 
 type StageHistory struct {

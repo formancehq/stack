@@ -15,6 +15,7 @@ import (
 	"github.com/formancehq/payments/cmd/api/internal/api/service"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/stack/libs/go-libs/api"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -481,7 +482,7 @@ func TestPayments(t *testing.T) {
 		name               string
 		queryParams        url.Values
 		pageSize           int
-		expectedQuery      storage.PaginatorQuery
+		expectedQuery      storage.ListPaymentsQuery
 		expectedStatusCode int
 		expectedErrorCode  string
 		serviceError       error
@@ -489,25 +490,34 @@ func TestPayments(t *testing.T) {
 
 	testCases := []testCase{
 		{
-			name:          "nomimal",
-			expectedQuery: storage.NewPaginatorQuery(15, nil, nil),
-			pageSize:      15,
+			name: "nomimal",
+			expectedQuery: storage.NewListPaymentsQuery(
+				storage.NewPaginatedQueryOptions(storage.PaymentQuery{}).
+					WithPageSize(15),
+			),
+			pageSize: 15,
 		},
 		{
 			name: "page size too low",
 			queryParams: url.Values{
 				"pageSize": {"0"},
 			},
-			expectedQuery: storage.NewPaginatorQuery(15, nil, nil),
-			pageSize:      15,
+			expectedQuery: storage.NewListPaymentsQuery(
+				storage.NewPaginatedQueryOptions(storage.PaymentQuery{}).
+					WithPageSize(15),
+			),
+			pageSize: 15,
 		},
 		{
 			name: "page size too high",
 			queryParams: url.Values{
 				"pageSize": {"100000"},
 			},
-			expectedQuery: storage.NewPaginatorQuery(100, nil, nil),
-			pageSize:      100,
+			expectedQuery: storage.NewListPaymentsQuery(
+				storage.NewPaginatedQueryOptions(storage.PaymentQuery{}).
+					WithPageSize(100),
+			),
+			pageSize: 100,
 		},
 		{
 			name: "with invalid page size",
@@ -530,16 +540,24 @@ func TestPayments(t *testing.T) {
 			queryParams: url.Values{
 				"query": {"{\"$match\": {\"source_account_id\": \"acc1\"}}"},
 			},
-			expectedQuery: storage.NewPaginatorQuery(15, nil, query.Match("source_account_id", "acc1")),
-			pageSize:      15,
+			expectedQuery: storage.NewListPaymentsQuery(
+				storage.NewPaginatedQueryOptions(storage.PaymentQuery{}).
+					WithPageSize(15).
+					WithQueryBuilder(query.Match("source_account_id", "acc1")),
+			),
+			pageSize: 15,
 		},
 		{
 			name: "valid sorter",
 			queryParams: url.Values{
 				"sort": {"source_account_id:asc"},
 			},
-			expectedQuery: storage.NewPaginatorQuery(15, storage.Sorter{}.Add("source_account_id", storage.SortOrderAsc), nil),
-			pageSize:      15,
+			expectedQuery: storage.NewListPaymentsQuery(
+				storage.NewPaginatedQueryOptions(storage.PaymentQuery{}).
+					WithPageSize(15).
+					WithSorter(storage.Sorter{}.Add("source_account_id", storage.SortOrderAsc)),
+			),
+			pageSize: 15,
 		},
 		{
 			name: "invalid sorter",
@@ -550,39 +568,41 @@ func TestPayments(t *testing.T) {
 			expectedErrorCode:  ErrValidation,
 		},
 		{
-			name: "valid cursor",
-			queryParams: url.Values{
-				"cursor": {cursor},
-			},
-			expectedQuery: storage.NewPaginatorQuery(15, nil, nil).
-				WithToken(cursor).
-				WithCursor(storage.NewBaseCursor("test", nil, false)),
-			pageSize: 15,
-		},
-		{
-			name:               "err validation from backend",
-			expectedQuery:      storage.NewPaginatorQuery(15, nil, nil),
+			name: "err validation from backend",
+			expectedQuery: storage.NewListPaymentsQuery(
+				storage.NewPaginatedQueryOptions(storage.PaymentQuery{}).
+					WithPageSize(15),
+			),
 			serviceError:       service.ErrValidation,
 			expectedStatusCode: http.StatusBadRequest,
 			expectedErrorCode:  ErrValidation,
 		},
 		{
-			name:               "ErrNotFound from storage",
-			expectedQuery:      storage.NewPaginatorQuery(15, nil, nil),
+			name: "ErrNotFound from storage",
+			expectedQuery: storage.NewListPaymentsQuery(
+				storage.NewPaginatedQueryOptions(storage.PaymentQuery{}).
+					WithPageSize(15),
+			),
 			serviceError:       storage.ErrNotFound,
 			expectedStatusCode: http.StatusNotFound,
 			expectedErrorCode:  ErrNotFound,
 		},
 		{
-			name:               "ErrDuplicateKeyValue from storage",
-			expectedQuery:      storage.NewPaginatorQuery(15, nil, nil),
+			name: "ErrDuplicateKeyValue from storage",
+			expectedQuery: storage.NewListPaymentsQuery(
+				storage.NewPaginatedQueryOptions(storage.PaymentQuery{}).
+					WithPageSize(15),
+			),
 			serviceError:       storage.ErrDuplicateKeyValue,
 			expectedStatusCode: http.StatusBadRequest,
 			expectedErrorCode:  ErrUniqueReference,
 		},
 		{
-			name:               "other storage errors from storage",
-			expectedQuery:      storage.NewPaginatorQuery(15, nil, nil),
+			name: "other storage errors from storage",
+			expectedQuery: storage.NewListPaymentsQuery(
+				storage.NewPaginatedQueryOptions(storage.PaymentQuery{}).
+					WithPageSize(15),
+			),
 			serviceError:       errors.New("some error"),
 			expectedStatusCode: http.StatusInternalServerError,
 			expectedErrorCode:  sharedapi.ErrorInternal,
@@ -603,7 +623,7 @@ func TestPayments(t *testing.T) {
 				Provider:  models.ConnectorProviderDummyPay,
 			}
 
-			listPaymentsResponse := []*models.Payment{
+			payments := []models.Payment{
 				{
 					ID: models.PaymentID{
 						PaymentReference: models.PaymentReference{
@@ -655,58 +675,59 @@ func TestPayments(t *testing.T) {
 					},
 				},
 			}
+			listPaymentsResponse := &api.Cursor[models.Payment]{
+				PageSize: testCase.pageSize,
+				HasMore:  false,
+				Previous: "",
+				Next:     "",
+				Data:     payments,
+			}
 
 			expectedPaymentsResponse := []*paymentResponse{
 				{
-					ID:                   listPaymentsResponse[0].ID.String(),
-					Reference:            listPaymentsResponse[0].Reference,
-					SourceAccountID:      listPaymentsResponse[0].SourceAccountID.String(),
-					DestinationAccountID: listPaymentsResponse[0].DestinationAccountID.String(),
-					Type:                 listPaymentsResponse[0].Type.String(),
-					Provider:             listPaymentsResponse[0].Connector.Provider,
-					ConnectorID:          listPaymentsResponse[0].ConnectorID.String(),
-					Status:               listPaymentsResponse[0].Status,
-					InitialAmount:        listPaymentsResponse[0].InitialAmount,
-					Amount:               listPaymentsResponse[0].Amount,
-					Scheme:               listPaymentsResponse[0].Scheme,
-					Asset:                listPaymentsResponse[0].Asset.String(),
-					CreatedAt:            listPaymentsResponse[0].CreatedAt,
-					Adjustments:          make([]paymentAdjustment, len(listPaymentsResponse[0].Adjustments)),
+					ID:                   payments[0].ID.String(),
+					Reference:            payments[0].Reference,
+					SourceAccountID:      payments[0].SourceAccountID.String(),
+					DestinationAccountID: payments[0].DestinationAccountID.String(),
+					Type:                 payments[0].Type.String(),
+					Provider:             payments[0].Connector.Provider,
+					ConnectorID:          payments[0].ConnectorID.String(),
+					Status:               payments[0].Status,
+					InitialAmount:        payments[0].InitialAmount,
+					Amount:               payments[0].Amount,
+					Scheme:               payments[0].Scheme,
+					Asset:                payments[0].Asset.String(),
+					CreatedAt:            payments[0].CreatedAt,
+					Adjustments:          make([]paymentAdjustment, len(payments[0].Adjustments)),
 				},
 				{
-					ID:                   listPaymentsResponse[1].ID.String(),
-					Reference:            listPaymentsResponse[1].Reference,
-					SourceAccountID:      listPaymentsResponse[1].SourceAccountID.String(),
-					DestinationAccountID: listPaymentsResponse[1].DestinationAccountID.String(),
-					Type:                 listPaymentsResponse[1].Type.String(),
-					Provider:             listPaymentsResponse[1].Connector.Provider,
-					ConnectorID:          listPaymentsResponse[1].ConnectorID.String(),
-					Status:               listPaymentsResponse[1].Status,
-					InitialAmount:        listPaymentsResponse[1].InitialAmount,
-					Amount:               listPaymentsResponse[1].Amount,
-					Scheme:               listPaymentsResponse[1].Scheme,
-					Asset:                listPaymentsResponse[1].Asset.String(),
-					CreatedAt:            listPaymentsResponse[1].CreatedAt,
-					Adjustments:          make([]paymentAdjustment, len(listPaymentsResponse[0].Adjustments)),
+					ID:                   payments[1].ID.String(),
+					Reference:            payments[1].Reference,
+					SourceAccountID:      payments[1].SourceAccountID.String(),
+					DestinationAccountID: payments[1].DestinationAccountID.String(),
+					Type:                 payments[1].Type.String(),
+					Provider:             payments[1].Connector.Provider,
+					ConnectorID:          payments[1].ConnectorID.String(),
+					Status:               payments[1].Status,
+					InitialAmount:        payments[1].InitialAmount,
+					Amount:               payments[1].Amount,
+					Scheme:               payments[1].Scheme,
+					Asset:                payments[1].Asset.String(),
+					CreatedAt:            payments[1].CreatedAt,
+					Adjustments:          make([]paymentAdjustment, len(payments[0].Adjustments)),
 				},
-			}
-			expectedPaginationDetails := storage.PaginationDetails{
-				PageSize:     testCase.pageSize,
-				HasMore:      false,
-				PreviousPage: "",
-				NextPage:     "",
 			}
 
 			backend, mockService := newTestingBackend(t)
 			if testCase.expectedStatusCode < 300 && testCase.expectedStatusCode >= 200 {
 				mockService.EXPECT().
 					ListPayments(gomock.Any(), testCase.expectedQuery).
-					Return(listPaymentsResponse, expectedPaginationDetails, nil)
+					Return(listPaymentsResponse, nil)
 			}
 			if testCase.serviceError != nil {
 				mockService.EXPECT().
 					ListPayments(gomock.Any(), testCase.expectedQuery).
-					Return(nil, storage.PaginationDetails{}, testCase.serviceError)
+					Return(nil, testCase.serviceError)
 			}
 
 			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
@@ -722,10 +743,10 @@ func TestPayments(t *testing.T) {
 				var resp sharedapi.BaseResponse[*paymentResponse]
 				sharedapi.Decode(t, rec.Body, &resp)
 				require.Equal(t, expectedPaymentsResponse, resp.Cursor.Data)
-				require.Equal(t, expectedPaginationDetails.PageSize, resp.Cursor.PageSize)
-				require.Equal(t, expectedPaginationDetails.HasMore, resp.Cursor.HasMore)
-				require.Equal(t, expectedPaginationDetails.NextPage, resp.Cursor.Next)
-				require.Equal(t, expectedPaginationDetails.PreviousPage, resp.Cursor.Previous)
+				require.Equal(t, listPaymentsResponse.PageSize, resp.Cursor.PageSize)
+				require.Equal(t, listPaymentsResponse.HasMore, resp.Cursor.HasMore)
+				require.Equal(t, listPaymentsResponse.Next, resp.Cursor.Next)
+				require.Equal(t, listPaymentsResponse.Previous, resp.Cursor.Previous)
 			} else {
 				err := sharedapi.ErrorResponse{}
 				sharedapi.Decode(t, rec.Body, &err)

@@ -3,12 +3,9 @@ package storage
 import (
 	"context"
 	"database/sql"
-	"fmt"
-	"sort"
 	"time"
 
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/query"
 	"github.com/pkg/errors"
 )
 
@@ -91,69 +88,6 @@ func (s *Storage) ReadTransferInitiationPayments(ctx context.Context, id models.
 	}
 
 	return payments, nil
-}
-
-func (s *Storage) ListTransferInitiations(ctx context.Context, pagination PaginatorQuery) ([]*models.TransferInitiation, PaginationDetails, error) {
-	var tfs []*models.TransferInitiation
-
-	query := s.db.NewSelect().
-		Column("id", "created_at", "scheduled_at", "description", "type", "source_account_id", "destination_account_id", "provider", "connector_id", "amount", "asset", "metadata").
-		Model(&tfs)
-
-	if pagination.queryBuilder != nil {
-		where, args, err := s.transferInitiationQueryContext(pagination.queryBuilder)
-		if err != nil {
-			// TODO: handle error
-			panic(err)
-		}
-		query = query.Where(where, args...)
-	}
-
-	query = pagination.apply(query, "transfer_initiation.created_at")
-
-	err := query.Scan(ctx)
-	if err != nil {
-		return nil, PaginationDetails{}, e("failed to list payments", err)
-	}
-
-	var (
-		hasMore                       = len(tfs) > pagination.pageSize
-		hasPrevious                   bool
-		firstReference, lastReference string
-	)
-
-	if hasMore {
-		if pagination.cursor.Next || pagination.cursor.Reference == "" {
-			tfs = tfs[:pagination.pageSize]
-		} else {
-			tfs = tfs[1:]
-		}
-	}
-
-	sort.Slice(tfs, func(i, j int) bool {
-		return tfs[i].CreatedAt.After(tfs[j].CreatedAt)
-	})
-
-	if len(tfs) > 0 {
-		firstReference = tfs[0].CreatedAt.Format(time.RFC3339Nano)
-		lastReference = tfs[len(tfs)-1].CreatedAt.Format(time.RFC3339Nano)
-
-		query = s.db.NewSelect().
-			Column("id", "created_at", "description", "type", "source_account_id", "destination_account_id", "provider", "connector_id", "amount", "asset").
-			Model(&tfs)
-
-		hasPrevious, err = pagination.hasPrevious(ctx, query, "transfer_initiation.created_at", firstReference)
-		if err != nil {
-			return nil, PaginationDetails{}, e("failed to check if there is a previous page", err)
-		}
-	}
-
-	paginationDetails, err := pagination.paginationDetails(hasMore, hasPrevious, firstReference, lastReference)
-	if err != nil {
-		return nil, PaginationDetails{}, e("failed to get pagination details", err)
-	}
-
-	return tfs, paginationDetails, nil
 }
 
 func (s *Storage) AddTransferInitiationPaymentID(ctx context.Context, id models.TransferInitiationID, paymentID *models.PaymentID, createdAt time.Time, metadata map[string]string) error {
@@ -245,24 +179,4 @@ func (s *Storage) DeleteTransferInitiation(ctx context.Context, id models.Transf
 	}
 
 	return nil
-}
-
-func (s *Storage) transferInitiationQueryContext(qb query.Builder) (string, []any, error) {
-	return qb.Build(query.ContextFn(func(key, operator string, value any) (string, []any, error) {
-		switch {
-		case key == "source_account_id", key == "destination_account_id":
-			if operator != "$match" {
-				return "", nil, fmt.Errorf("'%s' columns can only be used with $match", key)
-			}
-
-			switch accountID := value.(type) {
-			case string:
-				return fmt.Sprintf("%s = ?", key), []any{accountID}, nil
-			default:
-				return "", nil, fmt.Errorf("unexpected type %T for column '%s'", accountID, key)
-			}
-		default:
-			return "", nil, fmt.Errorf("unknown key '%s' when building query", key)
-		}
-	}))
 }

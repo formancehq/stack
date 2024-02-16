@@ -5,12 +5,13 @@ import (
 
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/google/uuid"
 )
 
-func (s *Service) ListBankAccounts(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.BankAccount, storage.PaginationDetails, error) {
-	accounts, paginationDetails, err := s.store.ListBankAccounts(ctx, pagination)
-	return accounts, paginationDetails, newStorageError(err, "listing bank accounts")
+func (s *Service) ListBankAccounts(ctx context.Context, q storage.ListBankAccountQuery) (*api.Cursor[models.BankAccount], error) {
+	cursor, err := s.store.ListBankAccounts(ctx, q)
+	return cursor, newStorageError(err, "listing bank accounts")
 }
 
 func (s *Service) GetBankAccount(ctx context.Context, id uuid.UUID, expand bool) (*models.BankAccount, error) {

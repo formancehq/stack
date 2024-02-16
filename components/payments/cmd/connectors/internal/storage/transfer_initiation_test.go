@@ -35,7 +35,6 @@ func TestTransferInitiations(t *testing.T) {
 	testCreateAccounts(t, store)
 	testCreatePayments(t, store)
 	testCreateTransferInitiations(t, store)
-	testListTransferInitiations(t, store)
 	testAddTransferInitiationPayments(t, store)
 	testUpdateTransferInitiationStatus(t, store)
 	testDeleteTransferInitiations(t, store)
@@ -108,45 +107,6 @@ func testCreateTransferInitiations(t *testing.T, store *storage.Storage) {
 
 	testGetTransferInitiation(t, store, t1ID, false, t1, nil)
 	testGetTransferInitiation(t, store, t2ID, false, t2, nil)
-}
-
-func testListTransferInitiations(t *testing.T, store *storage.Storage) {
-	query, err := storage.Paginate(1, "", nil, nil)
-	require.NoError(t, err)
-
-	tfs, paginationDetails, err := store.ListTransferInitiations(context.Background(), query)
-	require.NoError(t, err)
-	require.Len(t, tfs, 1)
-	require.True(t, paginationDetails.HasMore)
-	checkTransferInitiationsEqual(t, t1, tfs[0], false)
-
-	query, err = storage.Paginate(1, paginationDetails.NextPage, nil, nil)
-	require.NoError(t, err)
-
-	tfs, paginationDetails, err = store.ListTransferInitiations(context.Background(), query)
-	require.NoError(t, err)
-	require.Len(t, tfs, 1)
-	require.False(t, paginationDetails.HasMore)
-	checkTransferInitiationsEqual(t, t2, tfs[0], false)
-
-	query, err = storage.Paginate(1, paginationDetails.PreviousPage, nil, nil)
-	require.NoError(t, err)
-
-	tfs, paginationDetails, err = store.ListTransferInitiations(context.Background(), query)
-	require.NoError(t, err)
-	require.Len(t, tfs, 1)
-	require.True(t, paginationDetails.HasMore)
-	checkTransferInitiationsEqual(t, t1, tfs[0], false)
-
-	query, err = storage.Paginate(2, "", nil, nil)
-	require.NoError(t, err)
-
-	tfs, paginationDetails, err = store.ListTransferInitiations(context.Background(), query)
-	require.NoError(t, err)
-	require.Len(t, tfs, 2)
-	require.False(t, paginationDetails.HasMore)
-	checkTransferInitiationsEqual(t, t1, tfs[0], false)
-	checkTransferInitiationsEqual(t, t2, tfs[1], false)
 }
 
 func testGetTransferInitiation(

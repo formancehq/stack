@@ -7,12 +7,14 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strconv"
 	"testing"
 	"time"
 
 	"github.com/formancehq/payments/cmd/api/internal/api/service"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/stack/libs/go-libs/api"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -30,7 +32,7 @@ func TestGetBalances(t *testing.T) {
 		accountID          string
 		queryParams        url.Values
 		pageSize           int
-		expectedQuery      storage.BalanceQuery
+		expectedQuery      storage.ListBalancesQuery
 		expectedStatusCode int
 		expectedErrorCode  string
 		serviceError       error
@@ -51,9 +53,13 @@ func TestGetBalances(t *testing.T) {
 			queryParams: url.Values{
 				"to": []string{time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC).Format(time.RFC3339Nano)},
 			},
-			expectedQuery: storage.NewBalanceQuery(storage.NewPaginatorQuery(15, nil, nil)).
-				WithAccountID(&accountID).
-				WithTo(time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC)),
+			expectedQuery: storage.NewListBalancesQuery(
+				storage.NewPaginatedQueryOptions(
+					storage.NewBalanceQuery().
+						WithAccountID(&accountID).
+						WithTo(time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC)),
+				).WithPageSize(15),
+			),
 			pageSize:  15,
 			accountID: accountIDString,
 		},
@@ -69,10 +75,13 @@ func TestGetBalances(t *testing.T) {
 				"limit": {"10"},
 				"to":    []string{time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC).Format(time.RFC3339Nano)},
 			},
-			expectedQuery: storage.NewBalanceQuery(storage.NewPaginatorQuery(15, nil, nil)).
-				WithAccountID(&accountID).
-				WithLimit(10).
-				WithTo(time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC)),
+			expectedQuery: storage.NewListBalancesQuery(
+				storage.NewPaginatedQueryOptions(
+					storage.NewBalanceQuery().
+						WithAccountID(&accountID).
+						WithTo(time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC)),
+				).WithPageSize(10),
+			),
 			pageSize:  15,
 			accountID: accountIDString,
 		},
@@ -91,10 +100,14 @@ func TestGetBalances(t *testing.T) {
 				"from": []string{time.Date(2023, 11, 20, 6, 0, 0, 0, time.UTC).Format(time.RFC3339Nano)},
 				"to":   []string{time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC).Format(time.RFC3339Nano)},
 			},
-			expectedQuery: storage.NewBalanceQuery(storage.NewPaginatorQuery(15, nil, nil)).
-				WithAccountID(&accountID).
-				WithFrom(time.Date(2023, 11, 20, 6, 0, 0, 0, time.UTC)).
-				WithTo(time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC)),
+			expectedQuery: storage.NewListBalancesQuery(
+				storage.NewPaginatedQueryOptions(
+					storage.NewBalanceQuery().
+						WithAccountID(&accountID).
+						WithFrom(time.Date(2023, 11, 20, 6, 0, 0, 0, time.UTC)).
+						WithTo(time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC)),
+				).WithPageSize(15),
+			),
 			accountID: accountIDString,
 		},
 		{
@@ -116,14 +129,18 @@ func TestGetBalances(t *testing.T) {
 			accountID:          accountIDString,
 		},
 		{
-			name: "page size too low",
+			name: "page size too low, should use the default value",
 			queryParams: url.Values{
 				"pageSize": {"0"},
 				"to":       []string{time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC).Format(time.RFC3339Nano)},
 			},
-			expectedQuery: storage.NewBalanceQuery(storage.NewPaginatorQuery(15, nil, nil)).
-				WithAccountID(&accountID).
-				WithTo(time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC)),
+			expectedQuery: storage.NewListBalancesQuery(
+				storage.NewPaginatedQueryOptions(
+					storage.NewBalanceQuery().
+						WithAccountID(&accountID).
+						WithTo(time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC)),
+				).WithPageSize(15),
+			),
 			pageSize:  15,
 			accountID: accountIDString,
 		},
@@ -133,9 +150,13 @@ func TestGetBalances(t *testing.T) {
 				"pageSize": {"100000"},
 				"to":       []string{time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC).Format(time.RFC3339Nano)},
 			},
-			expectedQuery: storage.NewBalanceQuery(storage.NewPaginatorQuery(100, nil, nil)).
-				WithAccountID(&accountID).
-				WithTo(time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC)),
+			expectedQuery: storage.NewListBalancesQuery(
+				storage.NewPaginatedQueryOptions(
+					storage.NewBalanceQuery().
+						WithAccountID(&accountID).
+						WithTo(time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC)),
+				).WithPageSize(100),
+			),
 			pageSize:  100,
 			accountID: accountIDString,
 		},
@@ -163,9 +184,14 @@ func TestGetBalances(t *testing.T) {
 				"query": {"{\"$match\": {\"account_id\": \"acc1\"}}"},
 				"to":    []string{time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC).Format(time.RFC3339Nano)},
 			},
-			expectedQuery: storage.NewBalanceQuery(storage.NewPaginatorQuery(15, nil, query.Match("account_id", "acc1"))).
-				WithAccountID(&accountID).
-				WithTo(time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC)),
+			expectedQuery: storage.NewListBalancesQuery(
+				storage.NewPaginatedQueryOptions(
+					storage.NewBalanceQuery().
+						WithAccountID(&accountID).
+						WithTo(time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC)),
+				).WithPageSize(15).
+					WithQueryBuilder(query.Match("account_id", "acc1")),
+			),
 			pageSize:  15,
 			accountID: accountIDString,
 		},
@@ -175,9 +201,14 @@ func TestGetBalances(t *testing.T) {
 				"sort": {"account_id:asc"},
 				"to":   []string{time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC).Format(time.RFC3339Nano)},
 			},
-			expectedQuery: storage.NewBalanceQuery(storage.NewPaginatorQuery(15, storage.Sorter{}.Add("account_id", storage.SortOrderAsc), nil)).
-				WithAccountID(&accountID).
-				WithTo(time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC)),
+			expectedQuery: storage.NewListBalancesQuery(
+				storage.NewPaginatedQueryOptions(
+					storage.NewBalanceQuery().
+						WithAccountID(&accountID).
+						WithTo(time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC)),
+				).WithPageSize(15).
+					WithSorter(storage.Sorter{}.Add("account_id", storage.SortOrderAsc)),
+			),
 			pageSize:  15,
 			accountID: accountIDString,
 		},
@@ -192,29 +223,17 @@ func TestGetBalances(t *testing.T) {
 			accountID:          accountIDString,
 		},
 		{
-			name: "valid cursor",
-			queryParams: url.Values{
-				"cursor": {cursor},
-				"to":     []string{time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC).Format(time.RFC3339Nano)},
-			},
-			expectedQuery: storage.NewBalanceQuery(
-				storage.NewPaginatorQuery(15, nil, nil).
-					WithToken(cursor).
-					WithCursor(storage.NewBaseCursor("test", nil, false)),
-			).
-				WithAccountID(&accountID).
-				WithTo(time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC)),
-			pageSize:  15,
-			accountID: accountIDString,
-		},
-		{
 			name: "err validation from backend",
 			queryParams: url.Values{
 				"to": []string{time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC).Format(time.RFC3339Nano)},
 			},
-			expectedQuery: storage.NewBalanceQuery(storage.NewPaginatorQuery(15, nil, nil)).
-				WithAccountID(&accountID).
-				WithTo(time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC)),
+			expectedQuery: storage.NewListBalancesQuery(
+				storage.NewPaginatedQueryOptions(
+					storage.NewBalanceQuery().
+						WithAccountID(&accountID).
+						WithTo(time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC)),
+				).WithPageSize(15),
+			),
 			serviceError:       service.ErrValidation,
 			expectedStatusCode: http.StatusBadRequest,
 			expectedErrorCode:  ErrValidation,
@@ -225,9 +244,13 @@ func TestGetBalances(t *testing.T) {
 			queryParams: url.Values{
 				"to": []string{time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC).Format(time.RFC3339Nano)},
 			},
-			expectedQuery: storage.NewBalanceQuery(storage.NewPaginatorQuery(15, nil, nil)).
-				WithAccountID(&accountID).
-				WithTo(time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC)),
+			expectedQuery: storage.NewListBalancesQuery(
+				storage.NewPaginatedQueryOptions(
+					storage.NewBalanceQuery().
+						WithAccountID(&accountID).
+						WithTo(time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC)),
+				).WithPageSize(15),
+			),
 			serviceError:       storage.ErrNotFound,
 			expectedStatusCode: http.StatusNotFound,
 			expectedErrorCode:  ErrNotFound,
@@ -238,9 +261,13 @@ func TestGetBalances(t *testing.T) {
 			queryParams: url.Values{
 				"to": []string{time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC).Format(time.RFC3339Nano)},
 			},
-			expectedQuery: storage.NewBalanceQuery(storage.NewPaginatorQuery(15, nil, nil)).
-				WithAccountID(&accountID).
-				WithTo(time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC)),
+			expectedQuery: storage.NewListBalancesQuery(
+				storage.NewPaginatedQueryOptions(
+					storage.NewBalanceQuery().
+						WithAccountID(&accountID).
+						WithTo(time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC)),
+				).WithPageSize(15),
+			),
 			serviceError:       storage.ErrDuplicateKeyValue,
 			expectedStatusCode: http.StatusBadRequest,
 			expectedErrorCode:  ErrUniqueReference,
@@ -251,9 +278,13 @@ func TestGetBalances(t *testing.T) {
 			queryParams: url.Values{
 				"to": []string{time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC).Format(time.RFC3339Nano)},
 			},
-			expectedQuery: storage.NewBalanceQuery(storage.NewPaginatorQuery(15, nil, nil)).
-				WithAccountID(&accountID).
-				WithTo(time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC)),
+			expectedQuery: storage.NewListBalancesQuery(
+				storage.NewPaginatedQueryOptions(
+					storage.NewBalanceQuery().
+						WithAccountID(&accountID).
+						WithTo(time.Date(2023, 11, 23, 8, 0, 0, 0, time.UTC)),
+				).WithPageSize(15),
+			),
 			serviceError:       errors.New("some error"),
 			expectedStatusCode: http.StatusInternalServerError,
 			expectedErrorCode:  sharedapi.ErrorInternal,
@@ -270,7 +301,7 @@ func TestGetBalances(t *testing.T) {
 				testCase.expectedStatusCode = http.StatusOK
 			}
 
-			listBalancesResponse := []*models.Balance{
+			balances := []models.Balance{
 				{
 					AccountID:     accountID,
 					Asset:         "EUR/2",
@@ -281,33 +312,39 @@ func TestGetBalances(t *testing.T) {
 				},
 			}
 
+			listBalancesResponse := &api.Cursor[models.Balance]{
+				PageSize: testCase.pageSize,
+				HasMore:  false,
+				Previous: "",
+				Next:     "",
+				Data:     balances,
+			}
+
+			if limit, ok := testCase.queryParams["limit"]; ok {
+				testCase.pageSize, _ = strconv.Atoi(limit[0])
+			}
+
 			expectedBalancessResponse := []*balancesResponse{
 				{
-					AccountID:     listBalancesResponse[0].AccountID.String(),
-					CreatedAt:     listBalancesResponse[0].CreatedAt,
-					LastUpdatedAt: listBalancesResponse[0].LastUpdatedAt,
-					Currency:      listBalancesResponse[0].Asset.String(),
-					Asset:         listBalancesResponse[0].Asset.String(),
-					Balance:       listBalancesResponse[0].Balance,
+					AccountID:     balances[0].AccountID.String(),
+					CreatedAt:     balances[0].CreatedAt,
+					LastUpdatedAt: balances[0].LastUpdatedAt,
+					Currency:      balances[0].Asset.String(),
+					Asset:         balances[0].Asset.String(),
+					Balance:       balances[0].Balance,
 				},
-			}
-			expectedPaginationDetails := storage.PaginationDetails{
-				PageSize:     testCase.pageSize,
-				HasMore:      false,
-				PreviousPage: "",
-				NextPage:     "",
 			}
 
 			backend, mockService := newTestingBackend(t)
 			if testCase.expectedStatusCode < 300 && testCase.expectedStatusCode >= 200 {
 				mockService.EXPECT().
 					ListBalances(gomock.Any(), testCase.expectedQuery).
-					Return(listBalancesResponse, expectedPaginationDetails, nil)
+					Return(listBalancesResponse, nil)
 			}
 			if testCase.serviceError != nil {
 				mockService.EXPECT().
 					ListBalances(gomock.Any(), testCase.expectedQuery).
-					Return(nil, storage.PaginationDetails{}, testCase.serviceError)
+					Return(nil, testCase.serviceError)
 			}
 
 			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
@@ -323,10 +360,10 @@ func TestGetBalances(t *testing.T) {
 				var resp sharedapi.BaseResponse[*balancesResponse]
 				sharedapi.Decode(t, rec.Body, &resp)
 				require.Equal(t, expectedBalancessResponse, resp.Cursor.Data)
-				require.Equal(t, expectedPaginationDetails.PageSize, resp.Cursor.PageSize)
-				require.Equal(t, expectedPaginationDetails.HasMore, resp.Cursor.HasMore)
-				require.Equal(t, expectedPaginationDetails.NextPage, resp.Cursor.Next)
-				require.Equal(t, expectedPaginationDetails.PreviousPage, resp.Cursor.Previous)
+				require.Equal(t, listBalancesResponse.PageSize, resp.Cursor.PageSize)
+				require.Equal(t, listBalancesResponse.HasMore, resp.Cursor.HasMore)
+				require.Equal(t, listBalancesResponse.Next, resp.Cursor.Next)
+				require.Equal(t, listBalancesResponse.Previous, resp.Cursor.Previous)
 			} else {
 				err := sharedapi.ErrorResponse{}
 				sharedapi.Decode(t, rec.Body, &err)

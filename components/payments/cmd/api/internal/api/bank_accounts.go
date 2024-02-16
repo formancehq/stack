@@ -6,7 +6,10 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/cmd/api/internal/api/backend"
+	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
@@ -41,18 +44,25 @@ func listBankAccountsHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
-		pagination, err := getPagination(r)
+		query, err := bunpaginate.Extract[storage.ListBankAccountQuery](r, func() (*storage.ListBankAccountQuery, error) {
+			options, err := getPagination(r, storage.BankAccountQuery{})
+			if err != nil {
+				return nil, err
+			}
+			return pointer.For(storage.NewListBankAccountQuery(*options)), nil
+		})
 		if err != nil {
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
-		ret, paginationDetails, err := b.GetService().ListBankAccounts(r.Context(), pagination)
+		cursor, err := b.GetService().ListBankAccounts(r.Context(), *query)
 		if err != nil {
 			handleServiceErrors(w, r, err)
 			return
 		}
 
+		ret := cursor.Data
 		data := make([]*bankAccountResponse, len(ret))
 
 		for i := range ret {
@@ -84,10 +94,10 @@ func listBankAccountsHandler(b backend.Backend) http.HandlerFunc {
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[*bankAccountResponse]{
 			Cursor: &api.Cursor[*bankAccountResponse]{
-				PageSize: paginationDetails.PageSize,
-				HasMore:  paginationDetails.HasMore,
-				Previous: paginationDetails.PreviousPage,
-				Next:     paginationDetails.NextPage,
+				PageSize: cursor.PageSize,
+				HasMore:  cursor.HasMore,
+				Previous: cursor.Previous,
+				Next:     cursor.Next,
 				Data:     data,
 			},
 		})

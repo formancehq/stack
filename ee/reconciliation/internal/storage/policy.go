@@ -50,7 +50,6 @@ func (s *Storage) GetPolicy(ctx context.Context, id uuid.UUID) (*models.Policy, 
 
 func (s *Storage) buildPolicyListQuery(selectQuery *bun.SelectQuery, q GetPoliciesQuery, where string, args []any) *bun.SelectQuery {
 	selectQuery = selectQuery.
-		Model((*models.Policy)(nil)).
 		Order("created_at DESC")
 
 	if where != "" {

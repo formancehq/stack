@@ -1,4 +1,4 @@
-package storage_test
+package storage
 
 import (
 	"context"
@@ -6,7 +6,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/formancehq/payments/cmd/api/internal/storage"
 	migrationstorage "github.com/formancehq/payments/internal/storage"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
@@ -30,7 +29,7 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func newStore(t *testing.T) *storage.Storage {
+func newStore(t *testing.T) *Storage {
 	t.Helper()
 
 	pgServer := pgtesting.NewPostgresDatabase(t)
@@ -50,7 +49,7 @@ func newStore(t *testing.T) *storage.Storage {
 	err = migrationstorage.Migrate(context.Background(), db)
 	require.NoError(t, err)
 
-	store := storage.NewStorage(
+	store := NewStorage(
 		db,
 		string(key),
 	)

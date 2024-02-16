@@ -8,6 +8,7 @@ import (
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/google/uuid"
 )
 
@@ -28,8 +29,8 @@ func (m *MockStore) IsConnectorInstalledByConnectorID(ctx context.Context, conne
 	return m.isConnectorInstalled, nil
 }
 
-func (m *MockStore) ListBalances(ctx context.Context, query storage.BalanceQuery) ([]*models.Balance, storage.PaginationDetails, error) {
-	return nil, storage.PaginationDetails{}, nil
+func (m *MockStore) ListBalances(ctx context.Context, q storage.ListBalancesQuery) (*api.Cursor[models.Balance], error) {
+	return nil, nil
 }
 
 func (m *MockStore) GetBalancesAt(ctx context.Context, accountID models.AccountID, atTime time.Time) ([]*models.Balance, error) {
@@ -47,16 +48,16 @@ func (m *MockStore) GetBalancesAt(ctx context.Context, accountID models.AccountI
 	}, nil
 }
 
-func (m *MockStore) ListAccounts(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.Account, storage.PaginationDetails, error) {
-	return nil, storage.PaginationDetails{}, nil
+func (m *MockStore) ListAccounts(ctx context.Context, q storage.ListAccountsQuery) (*api.Cursor[models.Account], error) {
+	return nil, nil
 }
 
 func (m *MockStore) GetAccount(ctx context.Context, id string) (*models.Account, error) {
 	return nil, nil
 }
 
-func (m *MockStore) ListBankAccounts(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.BankAccount, storage.PaginationDetails, error) {
-	return nil, storage.PaginationDetails{}, nil
+func (m *MockStore) ListBankAccounts(ctx context.Context, q storage.ListBankAccountQuery) (*api.Cursor[models.BankAccount], error) {
+	return nil, nil
 }
 
 func (m *MockStore) GetBankAccount(ctx context.Context, id uuid.UUID, expand bool) (*models.BankAccount, error) {
@@ -67,8 +68,8 @@ func (m *MockStore) UpsertPayments(ctx context.Context, payments []*models.Payme
 	return nil
 }
 
-func (m *MockStore) ListPayments(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.Payment, storage.PaginationDetails, error) {
-	return nil, storage.PaginationDetails{}, nil
+func (m *MockStore) ListPayments(ctx context.Context, q storage.ListPaymentsQuery) (*api.Cursor[models.Payment], error) {
+	return nil, nil
 }
 
 func (m *MockStore) GetPayment(ctx context.Context, id string) (*models.Payment, error) {
@@ -79,8 +80,8 @@ func (m *MockStore) UpdatePaymentMetadata(ctx context.Context, paymentID models.
 	return nil
 }
 
-func (m *MockStore) ListTransferInitiations(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.TransferInitiation, storage.PaginationDetails, error) {
-	return nil, storage.PaginationDetails{}, nil
+func (m *MockStore) ListTransferInitiations(ctx context.Context, q storage.ListTransferInitiationsQuery) (*api.Cursor[models.TransferInitiation], error) {
+	return nil, nil
 }
 
 func (m *MockStore) GetTransferInitiation(ctx context.Context, id models.TransferInitiationID) (*models.TransferInitiation, error) {
@@ -103,8 +104,8 @@ func (m *MockStore) RemoveAccountFromPool(ctx context.Context, poolAccount *mode
 	return nil
 }
 
-func (m *MockStore) ListPools(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.Pool, storage.PaginationDetails, error) {
-	return nil, storage.PaginationDetails{}, nil
+func (m *MockStore) ListPools(ctx context.Context, q storage.ListPoolsQuery) (*api.Cursor[models.Pool], error) {
+	return nil, nil
 }
 
 func (m *MockStore) GetPool(ctx context.Context, poolID uuid.UUID) (*models.Pool, error) {

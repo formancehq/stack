@@ -1,17 +1,17 @@
-package storage_test
+package storage
 
 import (
 	"context"
 	"testing"
 	"time"
 
-	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )
 
-func insertPools(t *testing.T, store *storage.Storage, accountIDs []models.AccountID) []uuid.UUID {
+func insertPools(t *testing.T, store *Storage, accountIDs []models.AccountID) []uuid.UUID {
 	pool1 := models.Pool{
 		Name:      "test",
 		CreatedAt: time.Date(2023, 11, 14, 8, 0, 0, 0, time.UTC),
@@ -30,6 +30,7 @@ func insertPools(t *testing.T, store *storage.Storage, accountIDs []models.Accou
 	_, err = store.DB().NewInsert().
 		Model(&poolAccounts1).
 		Exec(context.Background())
+	require.NoError(t, err)
 
 	var uuid2 uuid.UUID
 	pool2 := models.Pool{
@@ -146,52 +147,56 @@ func TestListPools(t *testing.T) {
 	t.Run("list all pools", func(t *testing.T) {
 		t.Parallel()
 
-		pools, paginationDetails, err := store.ListPools(context.Background(), storage.NewPaginatorQuery(15, nil, nil))
+		cursor, err := store.ListPools(
+			context.Background(),
+			NewListPoolsQuery(NewPaginatedQueryOptions(PoolQuery{}).WithPageSize(15)),
+		)
 		require.NoError(t, err)
-		require.Equal(t, 2, len(pools))
-		require.Equal(t, 15, paginationDetails.PageSize)
-		require.Equal(t, false, paginationDetails.HasMore)
-		require.Equal(t, "", paginationDetails.PreviousPage)
-		require.Equal(t, "", paginationDetails.NextPage)
-		require.Equal(t, insertedPools[1], pools[0].ID)
-		require.Equal(t, 2, len(pools[0].PoolAccounts))
-		require.Equal(t, insertedPools[0], pools[1].ID)
-		require.Equal(t, 1, len(pools[1].PoolAccounts))
+		require.Equal(t, 2, len(cursor.Data))
+		require.Equal(t, 15, cursor.PageSize)
+		require.Equal(t, false, cursor.HasMore)
+		require.Equal(t, "", cursor.Previous)
+		require.Equal(t, "", cursor.Next)
+		require.Equal(t, insertedPools[1], cursor.Data[0].ID)
+		require.Equal(t, 2, len(cursor.Data[0].PoolAccounts))
+		require.Equal(t, insertedPools[0], cursor.Data[1].ID)
+		require.Equal(t, 1, len(cursor.Data[1].PoolAccounts))
 	})
 
 	t.Run("list all pools with page size 1", func(t *testing.T) {
 		t.Parallel()
 
-		query, err := storage.Paginate(1, "", nil, nil)
+		cursor, err := store.ListPools(
+			context.Background(),
+			NewListPoolsQuery(NewPaginatedQueryOptions(PoolQuery{}).WithPageSize(1)),
+		)
 		require.NoError(t, err)
+		require.Equal(t, 1, len(cursor.Data))
+		require.Equal(t, 1, cursor.PageSize)
+		require.Equal(t, true, cursor.HasMore)
+		require.Equal(t, "", cursor.Previous)
+		require.Equal(t, insertedPools[1], cursor.Data[0].ID)
+		require.Equal(t, 2, len(cursor.Data[0].PoolAccounts))
 
-		pools, paginationDetails, err := store.ListPools(context.Background(), query)
+		var query ListPoolsQuery
+		err = bunpaginate.UnmarshalCursor(cursor.Next, &query)
 		require.NoError(t, err)
-		require.Equal(t, 1, len(pools))
-		require.Equal(t, 1, paginationDetails.PageSize)
-		require.Equal(t, true, paginationDetails.HasMore)
-		require.Equal(t, "", paginationDetails.PreviousPage)
-		require.Equal(t, insertedPools[1], pools[0].ID)
-		require.Equal(t, 2, len(pools[0].PoolAccounts))
+		cursor, err = store.ListPools(context.Background(), query)
+		require.NoError(t, err)
+		require.Equal(t, 1, len(cursor.Data))
+		require.Equal(t, 1, cursor.PageSize)
+		require.Equal(t, false, cursor.HasMore)
+		require.Equal(t, insertedPools[0], cursor.Data[0].ID)
+		require.Equal(t, 1, len(cursor.Data[0].PoolAccounts))
 
-		query, err = storage.Paginate(1, paginationDetails.NextPage, nil, nil)
+		err = bunpaginate.UnmarshalCursor(cursor.Previous, &query)
 		require.NoError(t, err)
-		pools, paginationDetails, err = store.ListPools(context.Background(), query)
+		cursor, err = store.ListPools(context.Background(), query)
 		require.NoError(t, err)
-		require.Equal(t, 1, len(pools))
-		require.Equal(t, 1, paginationDetails.PageSize)
-		require.Equal(t, false, paginationDetails.HasMore)
-		require.Equal(t, insertedPools[0], pools[0].ID)
-		require.Equal(t, 1, len(pools[0].PoolAccounts))
-
-		query, err = storage.Paginate(1, paginationDetails.PreviousPage, nil, nil)
-		require.NoError(t, err)
-		pools, paginationDetails, err = store.ListPools(context.Background(), query)
-		require.NoError(t, err)
-		require.Equal(t, 1, len(pools))
-		require.Equal(t, 1, paginationDetails.PageSize)
-		require.Equal(t, true, paginationDetails.HasMore)
-		require.Equal(t, insertedPools[1], pools[0].ID)
-		require.Equal(t, 2, len(pools[0].PoolAccounts))
+		require.Equal(t, 1, len(cursor.Data))
+		require.Equal(t, 1, cursor.PageSize)
+		require.Equal(t, true, cursor.HasMore)
+		require.Equal(t, insertedPools[1], cursor.Data[0].ID)
+		require.Equal(t, 2, len(cursor.Data[0].PoolAccounts))
 	})
 }

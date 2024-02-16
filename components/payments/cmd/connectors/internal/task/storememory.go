@@ -10,6 +10,7 @@ import (
 
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/google/uuid"
 )
 
@@ -55,9 +56,9 @@ func (s *InMemoryStore) GetTaskByDescriptor(
 
 func (s *InMemoryStore) ListTasks(ctx context.Context,
 	connectorID models.ConnectorID,
-	pagination storage.PaginatorQuery,
-) ([]*models.Task, storage.PaginationDetails, error) {
-	ret := make([]*models.Task, 0)
+	q storage.ListTasksQuery,
+) (*api.Cursor[models.Task], error) {
+	ret := make([]models.Task, 0)
 
 	for id, status := range s.statuses {
 		if !strings.HasPrefix(id, fmt.Sprintf("%s/", connectorID)) {
@@ -66,7 +67,7 @@ func (s *InMemoryStore) ListTasks(ctx context.Context,
 
 		var descriptor models.TaskDescriptor
 
-		ret = append(ret, &models.Task{
+		ret = append(ret, models.Task{
 			Descriptor: descriptor.ToMessage(),
 			Status:     status,
 			Error:      s.errors[id],
@@ -75,7 +76,13 @@ func (s *InMemoryStore) ListTasks(ctx context.Context,
 		})
 	}
 
-	return ret, storage.PaginationDetails{}, nil
+	return &api.Cursor[models.Task]{
+		PageSize: 15,
+		HasMore:  false,
+		Previous: "",
+		Next:     "",
+		Data:     ret,
+	}, nil
 }
 
 func (s *InMemoryStore) ReadOldestPendingTask(
@@ -129,19 +136,19 @@ func (s *InMemoryStore) ListTasksByStatus(
 	connectorID models.ConnectorID,
 	taskStatus models.TaskStatus,
 ) ([]*models.Task, error) {
-	all, _, err := s.ListTasks(ctx, connectorID, storage.PaginatorQuery{})
+	cursor, err := s.ListTasks(ctx, connectorID, storage.NewListTasksQuery(storage.NewPaginatedQueryOptions(storage.TaskQuery{})))
 	if err != nil {
 		return nil, err
 	}
 
 	ret := make([]*models.Task, 0)
 
-	for _, v := range all {
+	for _, v := range cursor.Data {
 		if v.Status != taskStatus {
 			continue
 		}
 
-		ret = append(ret, v)
+		ret = append(ret, &v)
 	}
 
 	return ret, nil

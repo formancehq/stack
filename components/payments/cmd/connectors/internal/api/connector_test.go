@@ -17,6 +17,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/dummypay"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/stack/libs/go-libs/api"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -252,7 +253,7 @@ func TestListTasks(t *testing.T) {
 		apiVersion         APIVersion
 		queryParams        url.Values
 		pageSize           int
-		expectedQuery      storage.PaginatorQuery
+		expectedQuery      storage.ListTasksQuery
 		expectedStatusCode int
 		expectedErrorCode  string
 		managerError       error
@@ -271,7 +272,7 @@ func TestListTasks(t *testing.T) {
 			connectors: map[string]*manager.ConnectorManager{
 				connectorID.String(): nil,
 			},
-			expectedQuery: storage.NewPaginatorQuery(15, nil, nil),
+			expectedQuery: storage.NewListTasksQuery(storage.NewPaginatedQueryOptions(storage.TaskQuery{}).WithPageSize(15)),
 			connectorID:   connectorID.String(),
 			installed:     ptr(true),
 			queryParams:   map[string][]string{},
@@ -297,7 +298,7 @@ func TestListTasks(t *testing.T) {
 		// V1 tests
 		{
 			name:          "nominal V1",
-			expectedQuery: storage.NewPaginatorQuery(15, nil, nil),
+			expectedQuery: storage.NewListTasksQuery(storage.NewPaginatedQueryOptions(storage.TaskQuery{}).WithPageSize(15)),
 			connectorID:   connectorID.String(),
 			installed:     ptr(true),
 			apiVersion:    V1,
@@ -309,7 +310,7 @@ func TestListTasks(t *testing.T) {
 			queryParams: url.Values{
 				"pageSize": {"0"},
 			},
-			expectedQuery: storage.NewPaginatorQuery(15, nil, nil),
+			expectedQuery: storage.NewListTasksQuery(storage.NewPaginatedQueryOptions(storage.TaskQuery{}).WithPageSize(15)),
 			pageSize:      15,
 			connectorID:   connectorID.String(),
 			installed:     ptr(true),
@@ -320,7 +321,7 @@ func TestListTasks(t *testing.T) {
 			queryParams: url.Values{
 				"pageSize": {"100000"},
 			},
-			expectedQuery: storage.NewPaginatorQuery(100, nil, nil),
+			expectedQuery: storage.NewListTasksQuery(storage.NewPaginatedQueryOptions(storage.TaskQuery{}).WithPageSize(100)),
 			pageSize:      100,
 			connectorID:   connectorID.String(),
 			installed:     ptr(true),
@@ -353,7 +354,7 @@ func TestListTasks(t *testing.T) {
 			expectedStatusCode: http.StatusBadRequest,
 			expectedErrorCode:  ErrUniqueReference,
 			installed:          ptr(true),
-			expectedQuery:      storage.NewPaginatorQuery(15, nil, nil),
+			expectedQuery:      storage.NewListTasksQuery(storage.NewPaginatedQueryOptions(storage.TaskQuery{}).WithPageSize(15)),
 		},
 		{
 			name:               "manager error err not found storage",
@@ -363,7 +364,7 @@ func TestListTasks(t *testing.T) {
 			expectedStatusCode: http.StatusNotFound,
 			expectedErrorCode:  ErrNotFound,
 			installed:          ptr(true),
-			expectedQuery:      storage.NewPaginatorQuery(15, nil, nil),
+			expectedQuery:      storage.NewListTasksQuery(storage.NewPaginatedQueryOptions(storage.TaskQuery{}).WithPageSize(15)),
 		},
 		{
 			name:               "manager error already installed",
@@ -373,7 +374,7 @@ func TestListTasks(t *testing.T) {
 			expectedStatusCode: http.StatusBadRequest,
 			expectedErrorCode:  ErrValidation,
 			installed:          ptr(true),
-			expectedQuery:      storage.NewPaginatorQuery(15, nil, nil),
+			expectedQuery:      storage.NewListTasksQuery(storage.NewPaginatedQueryOptions(storage.TaskQuery{}).WithPageSize(15)),
 		},
 		{
 			name:               "manager error not installed",
@@ -383,7 +384,7 @@ func TestListTasks(t *testing.T) {
 			expectedStatusCode: http.StatusBadRequest,
 			expectedErrorCode:  ErrValidation,
 			installed:          ptr(true),
-			expectedQuery:      storage.NewPaginatorQuery(15, nil, nil),
+			expectedQuery:      storage.NewListTasksQuery(storage.NewPaginatedQueryOptions(storage.TaskQuery{}).WithPageSize(15)),
 		},
 		{
 			name:               "manager error connector not found",
@@ -393,7 +394,7 @@ func TestListTasks(t *testing.T) {
 			expectedStatusCode: http.StatusBadRequest,
 			expectedErrorCode:  ErrValidation,
 			installed:          ptr(true),
-			expectedQuery:      storage.NewPaginatorQuery(15, nil, nil),
+			expectedQuery:      storage.NewListTasksQuery(storage.NewPaginatedQueryOptions(storage.TaskQuery{}).WithPageSize(15)),
 		},
 		{
 			name:               "manager error err not found",
@@ -403,7 +404,7 @@ func TestListTasks(t *testing.T) {
 			expectedStatusCode: http.StatusNotFound,
 			expectedErrorCode:  ErrNotFound,
 			installed:          ptr(true),
-			expectedQuery:      storage.NewPaginatorQuery(15, nil, nil),
+			expectedQuery:      storage.NewListTasksQuery(storage.NewPaginatedQueryOptions(storage.TaskQuery{}).WithPageSize(15)),
 		},
 		{
 			name:               "manager error err validation",
@@ -413,7 +414,7 @@ func TestListTasks(t *testing.T) {
 			expectedStatusCode: http.StatusBadRequest,
 			expectedErrorCode:  ErrValidation,
 			installed:          ptr(true),
-			expectedQuery:      storage.NewPaginatorQuery(15, nil, nil),
+			expectedQuery:      storage.NewListTasksQuery(storage.NewPaginatedQueryOptions(storage.TaskQuery{}).WithPageSize(15)),
 		},
 		{
 			name:               "manager error other errors",
@@ -423,7 +424,7 @@ func TestListTasks(t *testing.T) {
 			expectedStatusCode: http.StatusInternalServerError,
 			expectedErrorCode:  sharedapi.ErrorInternal,
 			installed:          ptr(true),
-			expectedQuery:      storage.NewPaginatorQuery(15, nil, nil),
+			expectedQuery:      storage.NewListTasksQuery(storage.NewPaginatedQueryOptions(storage.TaskQuery{}).WithPageSize(15)),
 		},
 	}
 
@@ -436,7 +437,7 @@ func TestListTasks(t *testing.T) {
 				testCase.expectedStatusCode = http.StatusOK
 			}
 
-			listTasksResponse := []*models.Task{
+			tasks := []models.Task{
 				{
 					ID:          uuid.New(),
 					ConnectorID: connectorID,
@@ -448,24 +449,25 @@ func TestListTasks(t *testing.T) {
 					State:       json.RawMessage("{}"),
 				},
 			}
+			listTasksResponse := &api.Cursor[models.Task]{
+				PageSize: testCase.pageSize,
+				HasMore:  false,
+				Previous: "",
+				Next:     "",
+				Data:     tasks,
+			}
 
 			expectedListTasksResponse := []listTasksResponseElement{
 				{
-					ID:          listTasksResponse[0].ID.String(),
-					ConnectorID: listTasksResponse[0].ConnectorID.String(),
-					CreatedAt:   listTasksResponse[0].CreatedAt.Format(time.RFC3339),
-					UpdatedAt:   listTasksResponse[0].UpdatedAt.Format(time.RFC3339),
-					Descriptor:  listTasksResponse[0].Descriptor,
-					Status:      listTasksResponse[0].Status,
-					State:       listTasksResponse[0].State,
-					Error:       listTasksResponse[0].Error,
+					ID:          tasks[0].ID.String(),
+					ConnectorID: tasks[0].ConnectorID.String(),
+					CreatedAt:   tasks[0].CreatedAt.Format(time.RFC3339),
+					UpdatedAt:   tasks[0].UpdatedAt.Format(time.RFC3339),
+					Descriptor:  tasks[0].Descriptor,
+					Status:      tasks[0].Status,
+					State:       tasks[0].State,
+					Error:       tasks[0].Error,
 				},
-			}
-			expectedPaginationDetails := storage.PaginationDetails{
-				PageSize:     testCase.pageSize,
-				HasMore:      false,
-				PreviousPage: "",
-				NextPage:     "",
 			}
 
 			backend, _ := newServiceTestingBackend(t)
@@ -473,13 +475,13 @@ func TestListTasks(t *testing.T) {
 			if testCase.expectedStatusCode < 300 && testCase.expectedStatusCode >= 200 {
 				mockManager.EXPECT().
 					ListTasksStates(gomock.Any(), connectorID, testCase.expectedQuery).
-					Return(listTasksResponse, expectedPaginationDetails, nil)
+					Return(listTasksResponse, nil)
 			}
 
 			if testCase.managerError != nil {
 				mockManager.EXPECT().
 					ListTasksStates(gomock.Any(), connectorID, testCase.expectedQuery).
-					Return(nil, storage.PaginationDetails{}, testCase.managerError)
+					Return(nil, testCase.managerError)
 			}
 
 			if testCase.apiVersion == V0 {
@@ -522,10 +524,10 @@ func TestListTasks(t *testing.T) {
 				var resp sharedapi.BaseResponse[listTasksResponseElement]
 				sharedapi.Decode(t, rec.Body, &resp)
 				require.Equal(t, expectedListTasksResponse, resp.Cursor.Data)
-				require.Equal(t, expectedPaginationDetails.PageSize, resp.Cursor.PageSize)
-				require.Equal(t, expectedPaginationDetails.HasMore, resp.Cursor.HasMore)
-				require.Equal(t, expectedPaginationDetails.NextPage, resp.Cursor.Next)
-				require.Equal(t, expectedPaginationDetails.PreviousPage, resp.Cursor.Previous)
+				require.Equal(t, listTasksResponse.PageSize, resp.Cursor.PageSize)
+				require.Equal(t, listTasksResponse.HasMore, resp.Cursor.HasMore)
+				require.Equal(t, listTasksResponse.Next, resp.Cursor.Next)
+				require.Equal(t, listTasksResponse.Previous, resp.Cursor.Previous)
 			} else {
 				err := sharedapi.ErrorResponse{}
 				sharedapi.Decode(t, rec.Body, &err)

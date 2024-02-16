@@ -26,7 +26,6 @@ func TestBankAccounts(t *testing.T) {
 	testInstallConnectors(t, store)
 	testCreateAccounts(t, store)
 	testCreateBankAccounts(t, store)
-	testListBankAccounts(t, store)
 	testUpdateBankAccountMetadata(t, store)
 	testUninstallConnectors(t, store)
 	testBankAccountsDeletedAfterConnectorUninstall(t, store)
@@ -118,45 +117,6 @@ func testGetBankAccount(
 		require.Equal(t, adj.ConnectorID, expectedBankAccount.RelatedAccounts[i].ConnectorID)
 		require.Equal(t, adj.AccountID, expectedBankAccount.RelatedAccounts[i].AccountID)
 	}
-}
-
-func testListBankAccounts(t *testing.T, store *storage.Storage) {
-	query, err := storage.Paginate(1, "", nil, nil)
-	require.NoError(t, err)
-
-	bankAccounts, paginationDetails, err := store.ListBankAccounts(context.Background(), query)
-	require.NoError(t, err)
-	require.Len(t, bankAccounts, 1)
-	require.True(t, paginationDetails.HasMore)
-	require.Equal(t, bankAccount1ID, bankAccounts[0].ID)
-
-	query, err = storage.Paginate(1, paginationDetails.NextPage, nil, nil)
-	require.NoError(t, err)
-
-	bankAccounts, paginationDetails, err = store.ListBankAccounts(context.Background(), query)
-	require.NoError(t, err)
-	require.Len(t, bankAccounts, 1)
-	require.False(t, paginationDetails.HasMore)
-	require.Equal(t, bankAccount2ID, bankAccounts[0].ID)
-
-	query, err = storage.Paginate(1, paginationDetails.PreviousPage, nil, nil)
-	require.NoError(t, err)
-
-	bankAccounts, paginationDetails, err = store.ListBankAccounts(context.Background(), query)
-	require.NoError(t, err)
-	require.Len(t, bankAccounts, 1)
-	require.True(t, paginationDetails.HasMore)
-	require.Equal(t, bankAccount1ID, bankAccounts[0].ID)
-
-	query, err = storage.Paginate(2, "", nil, nil)
-	require.NoError(t, err)
-
-	bankAccounts, paginationDetails, err = store.ListBankAccounts(context.Background(), query)
-	require.NoError(t, err)
-	require.Len(t, bankAccounts, 2)
-	require.False(t, paginationDetails.HasMore)
-	require.Equal(t, bankAccount1ID, bankAccounts[0].ID)
-	require.Equal(t, bankAccount2ID, bankAccounts[1].ID)
 }
 
 func testUpdateBankAccountMetadata(t *testing.T, store *storage.Storage) {

@@ -26,7 +26,6 @@ func TestPayments(t *testing.T) {
 
 	testInstallConnectors(t, store)
 	testCreatePayments(t, store)
-	testListPayments(t, store)
 	testUpdatePayment(t, store)
 	testUninstallConnectors(t, store)
 	testPaymentsDeletedAfterConnectorUninstall(t, store)
@@ -171,43 +170,4 @@ func testUpdatePayment(t *testing.T, store *storage.Storage) {
 func testPaymentsDeletedAfterConnectorUninstall(t *testing.T, store *storage.Storage) {
 	testGetPayment(t, store, *p1ID, nil, storage.ErrNotFound)
 	testGetPayment(t, store, *p2ID, nil, storage.ErrNotFound)
-}
-
-func testListPayments(t *testing.T, store *storage.Storage) {
-	query, err := storage.Paginate(1, "", nil, nil)
-	require.NoError(t, err)
-
-	payments, paginationDetails, err := store.ListPayments(context.Background(), query)
-	require.NoError(t, err)
-	require.Len(t, payments, 1)
-	require.True(t, paginationDetails.HasMore)
-	checkPaymentsEqual(t, payments[0], p1)
-
-	query, err = storage.Paginate(1, paginationDetails.NextPage, nil, nil)
-	require.NoError(t, err)
-
-	payments, paginationDetails, err = store.ListPayments(context.Background(), query)
-	require.NoError(t, err)
-	require.Len(t, payments, 1)
-	require.False(t, paginationDetails.HasMore)
-	checkPaymentsEqual(t, payments[0], p2)
-
-	query, err = storage.Paginate(1, paginationDetails.PreviousPage, nil, nil)
-	require.NoError(t, err)
-
-	payments, paginationDetails, err = store.ListPayments(context.Background(), query)
-	require.NoError(t, err)
-	require.Len(t, payments, 1)
-	require.True(t, paginationDetails.HasMore)
-	checkPaymentsEqual(t, payments[0], p1)
-
-	query, err = storage.Paginate(2, "", nil, nil)
-	require.NoError(t, err)
-
-	payments, paginationDetails, err = store.ListPayments(context.Background(), query)
-	require.NoError(t, err)
-	require.Len(t, payments, 2)
-	require.False(t, paginationDetails.HasMore)
-	checkPaymentsEqual(t, payments[0], p1)
-	checkPaymentsEqual(t, payments[1], p2)
 }

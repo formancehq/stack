@@ -36,12 +36,12 @@ type TriggerManager struct {
 }
 
 func (m *TriggerManager) ListTriggers(ctx context.Context, query ListTriggersQuery) (*sharedapi.Cursor[Trigger], error) {
-	ret := make([]Trigger, 0)
-	q := m.db.NewSelect().
-		Model(&ret).
-		Where("deleted_at is null")
+	q := m.db.NewSelect()
 
-	return bunpaginate.UsingOffset[any, Trigger](ctx, q, bunpaginate.OffsetPaginatedQuery[any](query))
+	return bunpaginate.UsingOffset[any, Trigger](ctx, q, bunpaginate.OffsetPaginatedQuery[any](query),
+		func(query *bun.SelectQuery) *bun.SelectQuery {
+			return query.Where("deleted_at is null")
+		})
 }
 
 func (m *TriggerManager) TestTrigger(ctx context.Context, triggerID string, event map[string]any) (*TestTriggerResult, error) {
@@ -144,17 +144,19 @@ func (m *TriggerManager) CreateTrigger(ctx context.Context, data TriggerData) (*
 	return trigger, nil
 }
 
-func (m *TriggerManager) ListTriggersOccurrences(ctx context.Context, query ListTriggersOccurrencesQuery) (*sharedapi.Cursor[Occurrence], error) {
-	ret := make([]Occurrence, 0)
-	q := m.db.NewSelect().
-		Model(&ret).
-		Relation("WorkflowInstance")
+func (m *TriggerManager) ListTriggersOccurrences(ctx context.Context, q ListTriggersOccurrencesQuery) (*sharedapi.Cursor[Occurrence], error) {
+	query := m.db.NewSelect()
 
-	if query.Options.TriggerID != "" {
-		q = q.Where("trigger_id = ?", query.Options.TriggerID)
-	}
+	return bunpaginate.UsingOffset[ListTriggersOccurrencesOptions, Occurrence](ctx, query, bunpaginate.OffsetPaginatedQuery[ListTriggersOccurrencesOptions](q),
+		func(query *bun.SelectQuery) *bun.SelectQuery {
+			query = query.Relation("WorkflowInstance")
 
-	return bunpaginate.UsingOffset[ListTriggersOccurrencesOptions, Occurrence](ctx, q, bunpaginate.OffsetPaginatedQuery[ListTriggersOccurrencesOptions](query))
+			if q.Options.TriggerID != "" {
+				query = query.Where("trigger_id = ?", q.Options.TriggerID)
+			}
+
+			return query
+		})
 }
 
 func NewManager(db *bun.DB, expressionEvaluator *expressionEvaluator) *TriggerManager {

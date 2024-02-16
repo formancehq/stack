@@ -27,7 +27,6 @@ func TestAccounts(t *testing.T) {
 
 	testInstallConnectors(t, store)
 	testCreateAccounts(t, store)
-	testListAccounts(t, store)
 	testUpdateAccounts(t, store)
 	testUninstallConnectors(t, store)
 	testAccountsDeletedAfterConnectorUninstall(t, store)
@@ -156,55 +155,4 @@ func testAccountsDeletedAfterConnectorUninstall(t *testing.T, store *storage.Sto
 	testGetAccount(t, store, acc1ID, nil, true)
 	testGetAccount(t, store, acc2ID, nil, true)
 	testGetAccount(t, store, acc3ID, nil, true)
-}
-
-func testListAccounts(t *testing.T, store *storage.Storage) {
-	query, err := storage.Paginate(1, "", nil, nil)
-	require.NoError(t, err)
-
-	accounts, paginationDetails, err := store.ListAccounts(context.Background(), query)
-	require.NoError(t, err)
-	require.Len(t, accounts, 1)
-	require.Equal(t, acc1ID, accounts[0].ID)
-
-	query, err = storage.Paginate(1, paginationDetails.NextPage, nil, nil)
-	require.NoError(t, err)
-
-	accounts, paginationDetails, err = store.ListAccounts(context.Background(), query)
-	require.NoError(t, err)
-	require.Len(t, accounts, 1)
-	require.Equal(t, acc2ID, accounts[0].ID)
-
-	query, err = storage.Paginate(1, paginationDetails.NextPage, nil, nil)
-	require.NoError(t, err)
-
-	accounts, paginationDetails, err = store.ListAccounts(context.Background(), query)
-	require.NoError(t, err)
-	require.Len(t, accounts, 1)
-	require.Equal(t, acc3ID, accounts[0].ID)
-
-	query, err = storage.Paginate(1, paginationDetails.PreviousPage, nil, nil)
-	require.NoError(t, err)
-
-	accounts, paginationDetails, err = store.ListAccounts(context.Background(), query)
-	require.NoError(t, err)
-	require.Len(t, accounts, 1)
-	require.Equal(t, acc2ID, accounts[0].ID)
-
-	query, err = storage.Paginate(2, "", nil, nil)
-	require.NoError(t, err)
-
-	accounts, paginationDetails, err = store.ListAccounts(context.Background(), query)
-	require.NoError(t, err)
-	require.Len(t, accounts, 2)
-	require.Equal(t, acc1ID, accounts[0].ID)
-	require.Equal(t, acc2ID, accounts[1].ID)
-
-	query, err = storage.Paginate(2, paginationDetails.NextPage, nil, nil)
-	require.NoError(t, err)
-
-	accounts, paginationDetails, err = store.ListAccounts(context.Background(), query)
-	require.NoError(t, err)
-	require.Len(t, accounts, 1)
-	require.Equal(t, acc3ID, accounts[0].ID)
 }
