@@ -38,7 +38,6 @@ func (s *Storage) GetReconciliation(ctx context.Context, id uuid.UUID) (*models.
 
 func (s *Storage) buildReconciliationListQuery(selectQuery *bun.SelectQuery, q GetReconciliationsQuery, where string, args []any) *bun.SelectQuery {
 	selectQuery = selectQuery.
-		Model((*models.Reconciliation)(nil)).
 		Order("created_at DESC")
 
 	if where != "" {
