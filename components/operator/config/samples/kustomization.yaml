@@ -17,5 +17,5 @@ resources:
 - formance.com_v1beta1_payments.yaml
 - formance.com_v1beta1_search.yaml
 - formance.com_v1beta1_stargate.yaml
-- formance.com_v1beta1_secretreference.yaml
+- formance.com_v1beta1_resourcereference.yaml
 #+kubebuilder:scaffold:manifestskustomizesamples

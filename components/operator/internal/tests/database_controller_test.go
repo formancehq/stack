@@ -3,7 +3,7 @@ package tests_test
 import (
 	"fmt"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
-	"github.com/formancehq/operator/internal/resources/secretreferences"
+	"github.com/formancehq/operator/internal/resources/resourcereferences"
 	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/operator/internal/tests/internal"
 	"github.com/google/uuid"
@@ -164,7 +164,7 @@ var _ = Describe("DatabaseController", func() {
 								v1beta1.StackLabel: stack.Name,
 							},
 							Annotations: map[string]string{
-								secretreferences.RewrittenSecretName: "postgres",
+								resourcereferences.RewrittenResourceName: "postgres",
 							},
 						},
 						Data: map[string][]byte{
@@ -176,9 +176,9 @@ var _ = Describe("DatabaseController", func() {
 					databaseSettings.Spec.Value = "postgresql://xxx?secret=postgres"
 				})
 				shouldCreateSecretReference := func() {
-					secretReference := &v1beta1.SecretReference{}
+					resourceReference := &v1beta1.ResourceReference{}
 					Eventually(func(g Gomega) error {
-						return LoadResource("", fmt.Sprintf("%s-postgres", database.Name), secretReference)
+						return LoadResource("", fmt.Sprintf("%s-postgres", database.Name), resourceReference)
 					}).Should(Succeed())
 				}
 				It("Should create a secret reference", shouldCreateSecretReference)
@@ -194,7 +194,7 @@ var _ = Describe("DatabaseController", func() {
 									v1beta1.StackLabel: stack.Name,
 								},
 								Annotations: map[string]string{
-									secretreferences.RewrittenSecretName: "postgres2",
+									resourcereferences.RewrittenResourceName: "postgres2",
 								},
 							},
 							Data: map[string][]byte{

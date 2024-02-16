@@ -1,12 +1,12 @@
 apiVersion: formance.com/v1beta1
-kind: SecretReference
+kind: ResourceReference
 metadata:
   labels:
-    app.kubernetes.io/name: secretreference
-    app.kubernetes.io/instance: secretreference-sample
+    app.kubernetes.io/name: resourcereference
+    app.kubernetes.io/instance: resourcereference-sample
     app.kubernetes.io/part-of: operatorv2
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/created-by: operatorv2
-  name: secretreference-sample
+  name: resourcereference-sample
 spec:
   # TODO(user): Add fields here

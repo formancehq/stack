@@ -20,61 +20,60 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// SecretReferenceSpec defines the desired state of SecretReference
-type SecretReferenceSpec struct {
-	StackDependency `json:",inline"`
-	SecretName      string `json:"secretName"`
+// ResourceReferenceSpec defines the desired state of ResourceReference
+type ResourceReferenceSpec struct {
+	StackDependency  `json:",inline"`
+	GroupVersionKind *metav1.GroupVersionKind `json:"gvk"`
+	Name             string                   `json:"name"`
 }
 
-// SecretReferenceStatus defines the observed state of SecretReference
-type SecretReferenceStatus struct {
+// ResourceReferenceStatus defines the observed state of ResourceReference
+type ResourceReferenceStatus struct {
 	CommonStatus `json:",inline"`
-	// Hash of the secret, allow to watch secrets and reload if needed
+	//+optional
+	SyncedResource string `json:"syncedResource,omitempty"`
 	//+optional
 	Hash string `json:"hash,omitempty"`
-	// Synced secret at last reconciliation
-	//+optional
-	SyncedSecret string `json:"syncedSecret,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
 
-// SecretReference is the Schema for the secretreferences API
-type SecretReference struct {
+// ResourceReference is the Schema for the resourcereferences API
+type ResourceReference struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   SecretReferenceSpec   `json:"spec,omitempty"`
-	Status SecretReferenceStatus `json:"status,omitempty"`
+	Spec   ResourceReferenceSpec   `json:"spec,omitempty"`
+	Status ResourceReferenceStatus `json:"status,omitempty"`
 }
 
-func (in *SecretReference) SetReady(b bool) {
+func (in *ResourceReference) SetReady(b bool) {
 	in.Status.SetReady(b)
 }
 
-func (in *SecretReference) IsReady() bool {
+func (in *ResourceReference) IsReady() bool {
 	return in.Status.Ready
 }
 
-func (in *SecretReference) SetError(s string) {
+func (in *ResourceReference) SetError(s string) {
 	in.Status.SetError(s)
 }
 
-func (in *SecretReference) GetStack() string {
+func (in *ResourceReference) GetStack() string {
 	return in.Spec.Stack
 }
 
 //+kubebuilder:object:root=true
 
-// SecretReferenceList contains a list of SecretReference
-type SecretReferenceList struct {
+// ResourceReferenceList contains a list of ResourceReference
+type ResourceReferenceList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []SecretReference `json:"items"`
+	Items           []ResourceReference `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&SecretReference{}, &SecretReferenceList{})
+	SchemeBuilder.Register(&ResourceReference{}, &ResourceReferenceList{})
 }

@@ -21,7 +21,7 @@ import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/registries"
-	"github.com/formancehq/operator/internal/resources/secretreferences"
+	"github.com/formancehq/operator/internal/resources/resourcereferences"
 	"github.com/formancehq/operator/internal/resources/settings"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/pkg/errors"
@@ -48,8 +48,17 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 		return errors.Wrap(err, "retrieving database configuration")
 	}
 
+	var resourceReference *v1beta1.ResourceReference
+	if secret := databaseURL.Query().Get("secret"); secret != "" {
+		resourceReference, err = resourcereferences.Create(ctx, database, "postgres", secret, &v1.Secret{})
+	} else {
+		err = resourcereferences.Delete(ctx, database, "postgres")
+	}
+	if err != nil {
+		return err
+	}
+
 	switch {
-	// TODO: We have multiple occurrences of this type of code, we need to factorize
 	case !database.Status.Ready:
 		// Some job fields are immutable (env vars for example)
 		// So, if the configuration has changed, wee need to delete the job,
@@ -66,16 +75,11 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 			}
 		}
 
-		secretReference, err := secretreferences.Sync(ctx, database, "postgres", databaseURL)
-		if err != nil {
-			return errors.Wrap(err, "synchronizing secret reference")
-		}
-
 		dbName := core.GetObjectName(database.Spec.Stack, database.Spec.Service)
 		database.Status.URI = databaseURL
 		database.Status.Database = dbName
 
-		if err := createDatabase(ctx, stack, database, secretReference); err != nil {
+		if err := createDatabase(ctx, stack, database, resourceReference); err != nil {
 			return err
 		}
 	case database.Status.URI.String() != databaseURL.String():
@@ -85,12 +89,12 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 	return nil
 }
 
-func createDatabase(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Database, secretReference *v1beta1.SecretReference) error {
+func createDatabase(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Database, resourceReference *v1beta1.ResourceReference) error {
 	log := log.FromContext(ctx)
 	log = log.WithValues("name", database.Name)
 	annotations := make(map[string]string)
-	if secretReference != nil {
-		annotations["secret-hash"] = secretReference.Status.Hash
+	if resourceReference != nil {
+		annotations["secret-hash"] = resourceReference.Status.Hash
 	}
 
 	operatorUtilsImageVersion, err := core.GetImageVersionForStack(ctx, stack, "operator-utils")
@@ -159,7 +163,7 @@ func Delete(ctx core.Context, database *v1beta1.Database) error {
 
 	annotations := make(map[string]string)
 	if secret := database.Status.URI.Query().Get("secret"); secret != "" {
-		secretReference := &v1beta1.SecretReference{}
+		secretReference := &v1beta1.ResourceReference{}
 		if err := ctx.GetClient().Get(ctx, types.NamespacedName{
 			Name: fmt.Sprintf("%s-postgres", database.Name),
 		}, secretReference); err != nil {
@@ -223,7 +227,7 @@ func init() {
 	core.Init(
 		core.WithResourceReconciler(Reconcile,
 			core.WithOwn[*v1beta1.Database](&batchv1.Job{}),
-			core.WithOwn[*v1beta1.Database](&v1beta1.SecretReference{}),
+			core.WithOwn[*v1beta1.Database](&v1beta1.ResourceReference{}),
 			core.WithWatchSettings[*v1beta1.Database](),
 			core.WithFinalizer(databaseFinalizer, Delete),
 		),

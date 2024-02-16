@@ -18,9 +18,8 @@ package searches
 
 import (
 	"github.com/formancehq/operator/internal/resources/gateways"
+	"github.com/formancehq/operator/internal/resources/resourcereferences"
 	"strconv"
-
-	"github.com/formancehq/operator/internal/resources/secretreferences"
 
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
@@ -44,7 +43,12 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 		return err
 	}
 
-	secretReference, err := secretreferences.Sync(ctx, search, "elasticsearch", elasticSearchURI)
+	var resourceReference *v1beta1.ResourceReference
+	if secret := elasticSearchURI.Query().Get("secret"); secret != "" {
+		resourceReference, err = resourcereferences.Create(ctx, search, "elasticsearch", secret, &corev1.Secret{})
+	} else {
+		err = resourcereferences.Delete(ctx, search, "elasticsearch")
+	}
 	if err != nil {
 		return err
 	}
@@ -139,7 +143,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 	}
 
 	_, err = deployments.CreateOrUpdate(ctx, stack, search, "search",
-		secretreferences.Annotate[*appsv1.Deployment]("elasticsearch-secret-hash", secretReference),
+		resourcereferences.Annotate[*appsv1.Deployment]("elasticsearch-secret-hash", resourceReference),
 		deployments.WithMatchingLabels("search"),
 		deployments.WithContainers(corev1.Container{
 			Name:          "search",
@@ -161,7 +165,7 @@ func init() {
 	Init(
 		WithModuleReconciler(Reconcile,
 			WithWatchSettings[*v1beta1.Search](),
-			WithOwn[*v1beta1.Search](&v1beta1.SecretReference{}),
+			WithOwn[*v1beta1.Search](&v1beta1.ResourceReference{}),
 			WithOwn[*v1beta1.Search](&v1beta1.Benthos{}),
 			WithOwn[*v1beta1.Search](&v1beta1.GatewayHTTPAPI{}),
 			WithOwn[*v1beta1.Search](&appsv1.Deployment{}),

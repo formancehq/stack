@@ -9,9 +9,10 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
 )
 
-var _ = Describe("SecretReferenceController", func() {
+var _ = Describe("ResourceReferenceController", func() {
 	var stack *v1beta1.Stack
 	BeforeEach(func() {
 		stack = &v1beta1.Stack{
@@ -33,24 +34,32 @@ var _ = Describe("SecretReferenceController", func() {
 			}
 			Expect(Create(secret)).To(Succeed())
 		})
-		When("Creating a secret reference on a stack", func() {
-			var secretReference *v1beta1.SecretReference
+		When("Creating a resource reference on a stack", func() {
+			var resourceReference *v1beta1.ResourceReference
 			BeforeEach(func() {
-				secretReference = &v1beta1.SecretReference{
+				gvk, err := apiutil.GVKForObject(secret, GetScheme())
+				Expect(err).To(BeNil())
+
+				resourceReference = &v1beta1.ResourceReference{
 					ObjectMeta: RandObjectMeta(),
-					Spec: v1beta1.SecretReferenceSpec{
+					Spec: v1beta1.ResourceReferenceSpec{
 						StackDependency: v1beta1.StackDependency{
 							Stack: stack.Name,
 						},
-						SecretName: secret.Name,
+						Name: secret.Name,
+						GroupVersionKind: &metav1.GroupVersionKind{
+							Group:   gvk.Group,
+							Version: gvk.Version,
+							Kind:    gvk.Kind,
+						},
 					},
 				}
-				Expect(Create(secretReference)).To(Succeed())
+				Expect(Create(resourceReference)).To(Succeed())
 			})
 			shouldHaveReplicatedSecret := func() {
 				replicatedSecret := &corev1.Secret{}
 				Eventually(func() error {
-					return LoadResource(stack.Name, secretReference.Spec.SecretName, replicatedSecret)
+					return LoadResource(stack.Name, resourceReference.Spec.Name, replicatedSecret)
 				}).Should(Succeed())
 			}
 			It("Should replicate the secret to the stack namespace", shouldHaveReplicatedSecret)
@@ -69,9 +78,9 @@ var _ = Describe("SecretReferenceController", func() {
 					}
 					Expect(Create(newSecret)).To(Succeed())
 
-					patch := client.MergeFrom(secretReference.DeepCopy())
-					secretReference.Spec.SecretName = newSecret.Name
-					Expect(Patch(secretReference, patch)).To(Succeed())
+					patch := client.MergeFrom(resourceReference.DeepCopy())
+					resourceReference.Spec.Name = newSecret.Name
+					Expect(Patch(resourceReference, patch)).To(Succeed())
 				})
 				It("Should replicate the new secret to the stack namespace", shouldHaveReplicatedSecret)
 				It("Should remove old replicated secret", func() {

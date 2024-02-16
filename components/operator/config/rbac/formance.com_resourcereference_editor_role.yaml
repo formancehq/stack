@@ -1,20 +1,20 @@
-# permissions for end users to edit secretreferences.
+# permissions for end users to edit resourcereferences.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
     app.kubernetes.io/name: clusterrole
-    app.kubernetes.io/instance: secretreference-editor-role
+    app.kubernetes.io/instance: resourcereference-editor-role
     app.kubernetes.io/component: rbac
     app.kubernetes.io/created-by: operatorv2
     app.kubernetes.io/part-of: operatorv2
     app.kubernetes.io/managed-by: kustomize
-  name: secretreference-editor-role
+  name: resourcereference-editor-role
 rules:
 - apiGroups:
   - formance.com
   resources:
-  - secretreferences
+  - resourcereferences
   verbs:
   - create
   - delete
@@ -26,6 +26,6 @@ rules:
 - apiGroups:
   - formance.com
   resources:
-  - secretreferences/status
+  - resourcereferences/status
   verbs:
   - get

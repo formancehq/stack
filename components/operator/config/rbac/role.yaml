@@ -116,6 +116,18 @@ rules:
 - apiGroups:
   - ""
   resources:
+  - serviceaccounts
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
   - services
   verbs:
   - create
@@ -467,6 +479,32 @@ rules:
 - apiGroups:
   - formance.com
   resources:
+  - resourcereferences
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - resourcereferences/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - resourcereferences/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
   - searches
   verbs:
   - create
@@ -486,32 +524,6 @@ rules:
   - formance.com
   resources:
   - searches/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - formance.com
-  resources:
-  - secretreferences
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - formance.com
-  resources:
-  - secretreferences/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - formance.com
-  resources:
-  - secretreferences/status
   verbs:
   - get
   - patch

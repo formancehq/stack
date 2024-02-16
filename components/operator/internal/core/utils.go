@@ -1,10 +1,12 @@
 package core
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"io/fs"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -31,13 +33,15 @@ func HashFromConfigMaps(configMaps ...*corev1.ConfigMap) string {
 	return base64.StdEncoding.EncodeToString(digest.Sum(nil))
 }
 
-func HashFromSecrets(secrets ...*corev1.Secret) string {
-	digest := sha256.New()
-	for _, secret := range secrets {
-		if err := json.NewEncoder(digest).Encode(secret.Data); err != nil {
-			panic(err)
-		}
+func HashFromResources(resources ...*unstructured.Unstructured) string {
+	buf := bytes.NewBufferString("")
+	for _, resource := range resources {
+		buf.WriteString(string(resource.GetUID()))
+		buf.WriteString(resource.GetResourceVersion())
 	}
+	digest := sha256.New()
+	digest.Write(buf.Bytes())
+
 	return base64.StdEncoding.EncodeToString(digest.Sum(nil))
 }
 
