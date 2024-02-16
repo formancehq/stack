@@ -9,6 +9,7 @@ import (
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
+	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/pkg/errors"
 )
@@ -151,9 +152,9 @@ func (s *Service) CreatePayment(ctx context.Context, req *CreatePaymentRequest) 
 	return payment, nil
 }
 
-func (s *Service) ListPayments(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.Payment, storage.PaginationDetails, error) {
-	payments, paginationDetails, err := s.store.ListPayments(ctx, pagination)
-	return payments, paginationDetails, newStorageError(err, "listing payments")
+func (s *Service) ListPayments(ctx context.Context, q storage.ListPaymentsQuery) (*api.Cursor[models.Payment], error) {
+	cursor, err := s.store.ListPayments(ctx, q)
+	return cursor, newStorageError(err, "listing payments")
 }
 
 func (s *Service) GetPayment(ctx context.Context, id string) (*models.Payment, error) {

@@ -2,11 +2,12 @@ package storage
 
 import (
 	"context"
-	"sort"
-	"time"
 
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/google/uuid"
+	"github.com/uptrace/bun"
 )
 
 func (s *Storage) CreatePool(ctx context.Context, pool *models.Pool) error {
@@ -58,56 +59,34 @@ func (s *Storage) RemoveAccountFromPool(ctx context.Context, poolAccount *models
 	return nil
 }
 
-func (s *Storage) ListPools(ctx context.Context, pagination PaginatorQuery) ([]*models.Pool, PaginationDetails, error) {
-	var pools []*models.Pool
+type PoolQuery struct{}
 
-	query := s.db.NewSelect().
-		Model(&pools).
-		Relation("PoolAccounts")
+type ListPoolsQuery bunpaginate.OffsetPaginatedQuery[PaginatedQueryOptions[PoolQuery]]
 
-	query = pagination.apply(query, "pool.created_at")
-
-	err := query.Scan(ctx)
-	if err != nil {
-		return nil, PaginationDetails{}, e("failed to list pools", err)
+func NewListPoolsQuery(opts PaginatedQueryOptions[PoolQuery]) ListPoolsQuery {
+	return ListPoolsQuery{
+		PageSize: opts.PageSize,
+		Order:    bunpaginate.OrderAsc,
+		Options:  opts,
 	}
+}
 
-	var (
-		hasMore                       = len(pools) > pagination.pageSize
-		hasPrevious                   bool
-		firstReference, lastReference string
+func (s *Storage) ListPools(ctx context.Context, q ListPoolsQuery) (*api.Cursor[models.Pool], error) {
+	cursor, err := PaginateWithOffset[PaginatedQueryOptions[PoolQuery], models.Pool](s, ctx,
+		(*bunpaginate.OffsetPaginatedQuery[PaginatedQueryOptions[PoolQuery]])(&q),
+		func(query *bun.SelectQuery) *bun.SelectQuery {
+			query = query.
+				Relation("PoolAccounts").
+				Order("created_at DESC")
+
+			if q.Options.Sorter != nil {
+				query = q.Options.Sorter.Apply(query)
+			}
+
+			return query
+		},
 	)
-
-	if hasMore {
-		if pagination.cursor.Next || pagination.cursor.Reference == "" {
-			pools = pools[:pagination.pageSize]
-		} else {
-			pools = pools[1:]
-		}
-	}
-
-	sort.Slice(pools, func(i, j int) bool {
-		return pools[i].CreatedAt.After(pools[j].CreatedAt)
-	})
-
-	if len(pools) > 0 {
-		firstReference = pools[0].CreatedAt.Format(time.RFC3339Nano)
-		lastReference = pools[len(pools)-1].CreatedAt.Format(time.RFC3339Nano)
-
-		query = s.db.NewSelect().Model(&pools)
-
-		hasPrevious, err = pagination.hasPrevious(ctx, query, "pool.created_at", firstReference)
-		if err != nil {
-			return nil, PaginationDetails{}, e("failed to check if there is a previous page", err)
-		}
-	}
-
-	paginationDetails, err := pagination.paginationDetails(hasMore, hasPrevious, firstReference, lastReference)
-	if err != nil {
-		return nil, PaginationDetails{}, e("failed to get pagination details", err)
-	}
-
-	return pools, paginationDetails, nil
+	return cursor, err
 }
 
 func (s *Storage) GetPool(ctx context.Context, poolID uuid.UUID) (*models.Pool, error) {

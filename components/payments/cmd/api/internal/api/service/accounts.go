@@ -5,15 +5,13 @@ import (
 
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/pkg/errors"
 )
 
-func (s *Service) ListAccounts(
-	ctx context.Context,
-	pagination storage.PaginatorQuery,
-) ([]*models.Account, storage.PaginationDetails, error) {
-	accounts, paginationDetails, err := s.store.ListAccounts(ctx, pagination)
-	return accounts, paginationDetails, newStorageError(err, "listing accounts")
+func (s *Service) ListAccounts(ctx context.Context, q storage.ListAccountsQuery) (*api.Cursor[models.Account], error) {
+	cursor, err := s.store.ListAccounts(ctx, q)
+	return cursor, newStorageError(err, "listing accounts")
 }
 
 func (s *Service) GetAccount(

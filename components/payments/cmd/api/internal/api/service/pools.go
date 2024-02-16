@@ -8,6 +8,7 @@ import (
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
+	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
@@ -156,12 +157,9 @@ func (s *Service) RemoveAccountFromPool(
 	return nil
 }
 
-func (s *Service) ListPools(
-	ctx context.Context,
-	pagination storage.PaginatorQuery,
-) ([]*models.Pool, storage.PaginationDetails, error) {
-	pools, paginationDetails, err := s.store.ListPools(ctx, pagination)
-	return pools, paginationDetails, newStorageError(err, "listing pools")
+func (s *Service) ListPools(ctx context.Context, q storage.ListPoolsQuery) (*api.Cursor[models.Pool], error) {
+	cursor, err := s.store.ListPools(ctx, q)
+	return cursor, newStorageError(err, "listing pools")
 }
 
 func (s *Service) GetPool(

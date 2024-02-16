@@ -13,6 +13,7 @@ import (
 	"github.com/formancehq/payments/cmd/api/internal/api/service"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/stack/libs/go-libs/api"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -29,7 +30,7 @@ func TestListTransferInitiations(t *testing.T) {
 		name               string
 		queryParams        url.Values
 		pageSize           int
-		expectedQuery      storage.PaginatorQuery
+		expectedQuery      storage.ListTransferInitiationsQuery
 		expectedStatusCode int
 		expectedErrorCode  string
 		serviceError       error
@@ -37,25 +38,34 @@ func TestListTransferInitiations(t *testing.T) {
 
 	testCases := []testCase{
 		{
-			name:          "nomimal",
-			expectedQuery: storage.NewPaginatorQuery(15, nil, nil),
-			pageSize:      15,
+			name: "nomimal",
+			expectedQuery: storage.NewListTransferInitiationsQuery(
+				storage.NewPaginatedQueryOptions(storage.TransferInitiationQuery{}).
+					WithPageSize(15),
+			),
+			pageSize: 15,
 		},
 		{
 			name: "page size too low",
 			queryParams: url.Values{
 				"pageSize": {"0"},
 			},
-			expectedQuery: storage.NewPaginatorQuery(15, nil, nil),
-			pageSize:      15,
+			expectedQuery: storage.NewListTransferInitiationsQuery(
+				storage.NewPaginatedQueryOptions(storage.TransferInitiationQuery{}).
+					WithPageSize(15),
+			),
+			pageSize: 15,
 		},
 		{
 			name: "page size too high",
 			queryParams: url.Values{
 				"pageSize": {"100000"},
 			},
-			expectedQuery: storage.NewPaginatorQuery(100, nil, nil),
-			pageSize:      100,
+			expectedQuery: storage.NewListTransferInitiationsQuery(
+				storage.NewPaginatedQueryOptions(storage.TransferInitiationQuery{}).
+					WithPageSize(100),
+			),
+			pageSize: 100,
 		},
 		{
 			name: "with invalid page size",
@@ -78,16 +88,24 @@ func TestListTransferInitiations(t *testing.T) {
 			queryParams: url.Values{
 				"query": {"{\"$match\": {\"source_account_id\": \"acc1\"}}"},
 			},
-			expectedQuery: storage.NewPaginatorQuery(15, nil, query.Match("source_account_id", "acc1")),
-			pageSize:      15,
+			expectedQuery: storage.NewListTransferInitiationsQuery(
+				storage.NewPaginatedQueryOptions(storage.TransferInitiationQuery{}).
+					WithPageSize(15).
+					WithQueryBuilder(query.Match("source_account_id", "acc1")),
+			),
+			pageSize: 15,
 		},
 		{
 			name: "valid sorter",
 			queryParams: url.Values{
 				"sort": {"source_account_id:asc"},
 			},
-			expectedQuery: storage.NewPaginatorQuery(15, storage.Sorter{}.Add("source_account_id", storage.SortOrderAsc), nil),
-			pageSize:      15,
+			expectedQuery: storage.NewListTransferInitiationsQuery(
+				storage.NewPaginatedQueryOptions(storage.TransferInitiationQuery{}).
+					WithPageSize(15).
+					WithSorter(storage.Sorter{}.Add("source_account_id", storage.SortOrderAsc)),
+			),
+			pageSize: 15,
 		},
 		{
 			name: "invalid sorter",
@@ -98,39 +116,41 @@ func TestListTransferInitiations(t *testing.T) {
 			expectedErrorCode:  ErrValidation,
 		},
 		{
-			name: "valid cursor",
-			queryParams: url.Values{
-				"cursor": {cursor},
-			},
-			expectedQuery: storage.NewPaginatorQuery(15, nil, nil).
-				WithToken(cursor).
-				WithCursor(storage.NewBaseCursor("test", nil, false)),
-			pageSize: 15,
-		},
-		{
-			name:               "err validation from backend",
-			expectedQuery:      storage.NewPaginatorQuery(15, nil, nil),
+			name: "err validation from backend",
+			expectedQuery: storage.NewListTransferInitiationsQuery(
+				storage.NewPaginatedQueryOptions(storage.TransferInitiationQuery{}).
+					WithPageSize(15),
+			),
 			serviceError:       service.ErrValidation,
 			expectedStatusCode: http.StatusBadRequest,
 			expectedErrorCode:  ErrValidation,
 		},
 		{
-			name:               "ErrNotFound from storage",
-			expectedQuery:      storage.NewPaginatorQuery(15, nil, nil),
+			name: "ErrNotFound from storage",
+			expectedQuery: storage.NewListTransferInitiationsQuery(
+				storage.NewPaginatedQueryOptions(storage.TransferInitiationQuery{}).
+					WithPageSize(15),
+			),
 			serviceError:       storage.ErrNotFound,
 			expectedStatusCode: http.StatusNotFound,
 			expectedErrorCode:  ErrNotFound,
 		},
 		{
-			name:               "ErrDuplicateKeyValue from storage",
-			expectedQuery:      storage.NewPaginatorQuery(15, nil, nil),
+			name: "ErrDuplicateKeyValue from storage",
+			expectedQuery: storage.NewListTransferInitiationsQuery(
+				storage.NewPaginatedQueryOptions(storage.TransferInitiationQuery{}).
+					WithPageSize(15),
+			),
 			serviceError:       storage.ErrDuplicateKeyValue,
 			expectedStatusCode: http.StatusBadRequest,
 			expectedErrorCode:  ErrUniqueReference,
 		},
 		{
-			name:               "other storage errors from storage",
-			expectedQuery:      storage.NewPaginatorQuery(15, nil, nil),
+			name: "other storage errors from storage",
+			expectedQuery: storage.NewListTransferInitiationsQuery(
+				storage.NewPaginatedQueryOptions(storage.TransferInitiationQuery{}).
+					WithPageSize(15),
+			),
 			serviceError:       errors.New("some error"),
 			expectedStatusCode: http.StatusInternalServerError,
 			expectedErrorCode:  sharedapi.ErrorInternal,
@@ -151,7 +171,7 @@ func TestListTransferInitiations(t *testing.T) {
 				Provider:  models.ConnectorProviderDummyPay,
 			}
 
-			listTFsResponse := []*models.TransferInitiation{
+			tfs := []models.TransferInitiation{
 				{
 					ID: models.TransferInitiationID{
 						Reference:   "t1",
@@ -259,60 +279,61 @@ func TestListTransferInitiations(t *testing.T) {
 					},
 				},
 			}
+			listTFsResponse := &api.Cursor[models.TransferInitiation]{
+				PageSize: testCase.pageSize,
+				HasMore:  false,
+				Previous: "",
+				Next:     "",
+				Data:     tfs,
+			}
 
 			expectedTFsResponse := []*transferInitiationResponse{
 				{
-					ID:                   listTFsResponse[0].ID.String(),
-					Reference:            listTFsResponse[0].ID.Reference,
-					CreatedAt:            listTFsResponse[0].CreatedAt,
-					ScheduledAt:          listTFsResponse[0].ScheduledAt,
-					Description:          listTFsResponse[0].Description,
-					SourceAccountID:      listTFsResponse[0].SourceAccountID.String(),
-					DestinationAccountID: listTFsResponse[0].DestinationAccountID.String(),
-					Provider:             listTFsResponse[0].Provider.String(),
-					Type:                 listTFsResponse[0].Type.String(),
-					Amount:               listTFsResponse[0].Amount,
-					Asset:                listTFsResponse[0].Asset.String(),
+					ID:                   tfs[0].ID.String(),
+					Reference:            tfs[0].ID.Reference,
+					CreatedAt:            tfs[0].CreatedAt,
+					ScheduledAt:          tfs[0].ScheduledAt,
+					Description:          tfs[0].Description,
+					SourceAccountID:      tfs[0].SourceAccountID.String(),
+					DestinationAccountID: tfs[0].DestinationAccountID.String(),
+					Provider:             tfs[0].Provider.String(),
+					Type:                 tfs[0].Type.String(),
+					Amount:               tfs[0].Amount,
+					Asset:                tfs[0].Asset.String(),
 					Status:               models.TransferInitiationStatusProcessed.String(),
-					ConnectorID:          listTFsResponse[0].ConnectorID.String(),
+					ConnectorID:          tfs[0].ConnectorID.String(),
 					Error:                "",
-					Metadata:             listTFsResponse[0].Metadata,
+					Metadata:             tfs[0].Metadata,
 				},
 				{
-					ID:                   listTFsResponse[1].ID.String(),
-					Reference:            listTFsResponse[1].ID.Reference,
-					CreatedAt:            listTFsResponse[1].CreatedAt,
-					ScheduledAt:          listTFsResponse[1].ScheduledAt,
-					Description:          listTFsResponse[1].Description,
-					SourceAccountID:      listTFsResponse[1].SourceAccountID.String(),
-					DestinationAccountID: listTFsResponse[1].DestinationAccountID.String(),
-					Provider:             listTFsResponse[1].Provider.String(),
-					Type:                 listTFsResponse[1].Type.String(),
-					Amount:               listTFsResponse[1].Amount,
-					Asset:                listTFsResponse[1].Asset.String(),
-					ConnectorID:          listTFsResponse[1].ConnectorID.String(),
+					ID:                   tfs[1].ID.String(),
+					Reference:            tfs[1].ID.Reference,
+					CreatedAt:            tfs[1].CreatedAt,
+					ScheduledAt:          tfs[1].ScheduledAt,
+					Description:          tfs[1].Description,
+					SourceAccountID:      tfs[1].SourceAccountID.String(),
+					DestinationAccountID: tfs[1].DestinationAccountID.String(),
+					Provider:             tfs[1].Provider.String(),
+					Type:                 tfs[1].Type.String(),
+					Amount:               tfs[1].Amount,
+					Asset:                tfs[1].Asset.String(),
+					ConnectorID:          tfs[1].ConnectorID.String(),
 					Status:               models.TransferInitiationStatusFailed.String(),
 					Error:                "error",
-					Metadata:             listTFsResponse[1].Metadata,
+					Metadata:             tfs[1].Metadata,
 				},
-			}
-			expectedPaginationDetails := storage.PaginationDetails{
-				PageSize:     testCase.pageSize,
-				HasMore:      false,
-				PreviousPage: "",
-				NextPage:     "",
 			}
 
 			backend, mockService := newTestingBackend(t)
 			if testCase.expectedStatusCode < 300 && testCase.expectedStatusCode >= 200 {
 				mockService.EXPECT().
 					ListTransferInitiations(gomock.Any(), testCase.expectedQuery).
-					Return(listTFsResponse, expectedPaginationDetails, nil)
+					Return(listTFsResponse, nil)
 			}
 			if testCase.serviceError != nil {
 				mockService.EXPECT().
 					ListTransferInitiations(gomock.Any(), testCase.expectedQuery).
-					Return(nil, storage.PaginationDetails{}, testCase.serviceError)
+					Return(nil, testCase.serviceError)
 			}
 
 			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
@@ -328,10 +349,10 @@ func TestListTransferInitiations(t *testing.T) {
 				var resp sharedapi.BaseResponse[*transferInitiationResponse]
 				sharedapi.Decode(t, rec.Body, &resp)
 				require.Equal(t, expectedTFsResponse, resp.Cursor.Data)
-				require.Equal(t, expectedPaginationDetails.PageSize, resp.Cursor.PageSize)
-				require.Equal(t, expectedPaginationDetails.HasMore, resp.Cursor.HasMore)
-				require.Equal(t, expectedPaginationDetails.NextPage, resp.Cursor.Next)
-				require.Equal(t, expectedPaginationDetails.PreviousPage, resp.Cursor.Previous)
+				require.Equal(t, listTFsResponse.PageSize, resp.Cursor.PageSize)
+				require.Equal(t, listTFsResponse.HasMore, resp.Cursor.HasMore)
+				require.Equal(t, listTFsResponse.Next, resp.Cursor.Next)
+				require.Equal(t, listTFsResponse.Previous, resp.Cursor.Previous)
 			} else {
 				err := sharedapi.ErrorResponse{}
 				sharedapi.Decode(t, rec.Body, &err)

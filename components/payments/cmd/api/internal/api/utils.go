@@ -5,6 +5,8 @@ import (
 	"strings"
 
 	"github.com/formancehq/payments/cmd/api/internal/storage"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/formancehq/stack/libs/go-libs/query"
 	"github.com/pkg/errors"
 )
@@ -43,26 +45,21 @@ func getSorter(r *http.Request) (storage.Sorter, error) {
 	return sorter, nil
 }
 
-func getPagination(r *http.Request) (storage.PaginatorQuery, error) {
+func getPagination[T any](r *http.Request, options T) (*storage.PaginatedQueryOptions[T], error) {
 	qb, err := getQueryBuilder(r)
 	if err != nil {
-		return storage.PaginatorQuery{}, err
+		return nil, err
 	}
 
 	sorter, err := getSorter(r)
 	if err != nil {
-		return storage.PaginatorQuery{}, err
+		return nil, err
 	}
 
-	pageSize, err := pageSizeQueryParam(r)
+	pageSize, err := bunpaginate.GetPageSize(r)
 	if err != nil {
-		return storage.PaginatorQuery{}, err
+		return nil, err
 	}
 
-	pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), sorter, qb)
-	if err != nil {
-		return storage.PaginatorQuery{}, err
-	}
-
-	return pagination, nil
+	return pointer.For(storage.NewPaginatedQueryOptions(options).WithQueryBuilder(qb).WithSorter(sorter).WithPageSize(pageSize)), nil
 }

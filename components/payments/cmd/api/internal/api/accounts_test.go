@@ -12,7 +12,7 @@ import (
 	"github.com/formancehq/payments/cmd/api/internal/api/service"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
-	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/query"
@@ -28,7 +28,7 @@ func TestListAccounts(t *testing.T) {
 		name               string
 		queryParams        url.Values
 		pageSize           int
-		expectedQuery      storage.PaginatorQuery
+		expectedQuery      storage.ListAccountsQuery
 		expectedStatusCode int
 		serviceError       error
 		expectedErrorCode  string
@@ -36,25 +36,34 @@ func TestListAccounts(t *testing.T) {
 
 	testCases := []testCase{
 		{
-			name:          "nomimal",
-			expectedQuery: storage.NewPaginatorQuery(15, nil, nil),
-			pageSize:      15,
+			name: "nomimal",
+			expectedQuery: storage.NewListAccountsQuery(
+				storage.NewPaginatedQueryOptions(storage.AccountQuery{}).
+					WithPageSize(15),
+			),
+			pageSize: 15,
 		},
 		{
 			name: "page size too low",
 			queryParams: url.Values{
 				"pageSize": {"0"},
 			},
-			expectedQuery: storage.NewPaginatorQuery(15, nil, nil),
-			pageSize:      15,
+			expectedQuery: storage.NewListAccountsQuery(
+				storage.NewPaginatedQueryOptions(storage.AccountQuery{}).
+					WithPageSize(15),
+			),
+			pageSize: 15,
 		},
 		{
 			name: "page size too high",
 			queryParams: url.Values{
 				"pageSize": {"100000"},
 			},
-			expectedQuery: storage.NewPaginatorQuery(100, nil, nil),
-			pageSize:      100,
+			expectedQuery: storage.NewListAccountsQuery(
+				storage.NewPaginatedQueryOptions(storage.AccountQuery{}).
+					WithPageSize(100),
+			),
+			pageSize: 100,
 		},
 		{
 			name: "with invalid page size",
@@ -77,16 +86,24 @@ func TestListAccounts(t *testing.T) {
 			queryParams: url.Values{
 				"query": {"{\"$match\": {\"source_account_id\": \"acc1\"}}"},
 			},
-			expectedQuery: storage.NewPaginatorQuery(15, nil, query.Match("source_account_id", "acc1")),
-			pageSize:      15,
+			expectedQuery: storage.NewListAccountsQuery(
+				storage.NewPaginatedQueryOptions(storage.AccountQuery{}).
+					WithPageSize(15).
+					WithQueryBuilder(query.Match("source_account_id", "acc1")),
+			),
+			pageSize: 15,
 		},
 		{
 			name: "valid sorter",
 			queryParams: url.Values{
 				"sort": {"source_account_id:asc"},
 			},
-			expectedQuery: storage.NewPaginatorQuery(15, storage.Sorter{}.Add("source_account_id", storage.SortOrderAsc), nil),
-			pageSize:      15,
+			expectedQuery: storage.NewListAccountsQuery(
+				storage.NewPaginatedQueryOptions(storage.AccountQuery{}).
+					WithPageSize(15).
+					WithSorter(storage.Sorter{}.Add("source_account_id", storage.SortOrderAsc)),
+			),
+			pageSize: 15,
 		},
 		{
 			name: "invalid sorter",
@@ -97,42 +114,44 @@ func TestListAccounts(t *testing.T) {
 			expectedErrorCode:  ErrValidation,
 		},
 		{
-			name: "valid cursor",
-			queryParams: url.Values{
-				"cursor": {cursor},
-			},
-			expectedQuery: storage.NewPaginatorQuery(15, nil, nil).
-				WithToken(cursor).
-				WithCursor(storage.NewBaseCursor("test", nil, false)),
-			pageSize: 15,
-		},
-		{
-			name:               "err validation from backend",
-			expectedQuery:      storage.NewPaginatorQuery(15, nil, nil),
+			name: "err validation from backend",
+			expectedQuery: storage.NewListAccountsQuery(
+				storage.NewPaginatedQueryOptions(storage.AccountQuery{}).
+					WithPageSize(15),
+			),
 			serviceError:       service.ErrValidation,
 			expectedStatusCode: http.StatusBadRequest,
 			expectedErrorCode:  ErrValidation,
 		},
 		{
-			name:               "ErrNotFound from storage",
-			expectedQuery:      storage.NewPaginatorQuery(15, nil, nil),
+			name: "ErrNotFound from storage",
+			expectedQuery: storage.NewListAccountsQuery(
+				storage.NewPaginatedQueryOptions(storage.AccountQuery{}).
+					WithPageSize(15),
+			),
 			serviceError:       storage.ErrNotFound,
 			expectedStatusCode: http.StatusNotFound,
 			expectedErrorCode:  ErrNotFound,
 		},
 		{
-			name:               "ErrDuplicateKeyValue from storage",
-			expectedQuery:      storage.NewPaginatorQuery(15, nil, nil),
+			name: "ErrDuplicateKeyValue from storage",
+			expectedQuery: storage.NewListAccountsQuery(
+				storage.NewPaginatedQueryOptions(storage.AccountQuery{}).
+					WithPageSize(15),
+			),
 			serviceError:       storage.ErrDuplicateKeyValue,
 			expectedStatusCode: http.StatusBadRequest,
 			expectedErrorCode:  ErrUniqueReference,
 		},
 		{
-			name:               "other storage errors from storage",
-			expectedQuery:      storage.NewPaginatorQuery(15, nil, nil),
+			name: "other storage errors from storage",
+			expectedQuery: storage.NewListAccountsQuery(
+				storage.NewPaginatedQueryOptions(storage.AccountQuery{}).
+					WithPageSize(15),
+			),
 			serviceError:       errors.New("some error"),
 			expectedStatusCode: http.StatusInternalServerError,
-			expectedErrorCode:  sharedapi.ErrorInternal,
+			expectedErrorCode:  api.ErrorInternal,
 		},
 	}
 
@@ -145,7 +164,7 @@ func TestListAccounts(t *testing.T) {
 				testCase.expectedStatusCode = http.StatusOK
 			}
 
-			listAccountsResponse := []*models.Account{
+			accounts := []models.Account{
 				{
 					ID: models.AccountID{Reference: "acc1", ConnectorID: models.ConnectorID{Reference: uuid.New(), Provider: models.ConnectorProviderDummyPay}},
 					ConnectorID: models.ConnectorID{
@@ -177,54 +196,56 @@ func TestListAccounts(t *testing.T) {
 				},
 			}
 
+			listAccountsResponse := &api.Cursor[models.Account]{
+				PageSize: testCase.pageSize,
+				HasMore:  false,
+				Previous: "",
+				Next:     "",
+				Data:     accounts,
+			}
+
 			expectedAccountsResponse := []*accountResponse{
 				{
-					ID:              listAccountsResponse[0].ID.String(),
-					Reference:       listAccountsResponse[0].Reference,
-					CreatedAt:       listAccountsResponse[0].CreatedAt,
-					ConnectorID:     listAccountsResponse[0].ConnectorID.String(),
-					Provider:        listAccountsResponse[0].ConnectorID.Provider.String(),
-					DefaultCurrency: listAccountsResponse[0].DefaultAsset.String(),
-					DefaultAsset:    listAccountsResponse[0].DefaultAsset.String(),
-					AccountName:     listAccountsResponse[0].AccountName,
-					Type:            listAccountsResponse[0].Type.String(),
+					ID:              accounts[0].ID.String(),
+					Reference:       accounts[0].Reference,
+					CreatedAt:       accounts[0].CreatedAt,
+					ConnectorID:     accounts[0].ConnectorID.String(),
+					Provider:        accounts[0].ConnectorID.Provider.String(),
+					DefaultCurrency: accounts[0].DefaultAsset.String(),
+					DefaultAsset:    accounts[0].DefaultAsset.String(),
+					AccountName:     accounts[0].AccountName,
+					Type:            accounts[0].Type.String(),
 					Pools:           []uuid.UUID{},
-					Metadata:        listAccountsResponse[0].Metadata,
+					Metadata:        accounts[0].Metadata,
 				},
 				{
-					ID:              listAccountsResponse[1].ID.String(),
-					Reference:       listAccountsResponse[1].Reference,
-					CreatedAt:       listAccountsResponse[1].CreatedAt,
-					ConnectorID:     listAccountsResponse[1].ConnectorID.String(),
-					Provider:        listAccountsResponse[1].ConnectorID.Provider.String(),
-					DefaultCurrency: listAccountsResponse[1].DefaultAsset.String(),
-					DefaultAsset:    listAccountsResponse[1].DefaultAsset.String(),
-					AccountName:     listAccountsResponse[1].AccountName,
+					ID:              accounts[1].ID.String(),
+					Reference:       accounts[1].Reference,
+					CreatedAt:       accounts[1].CreatedAt,
+					ConnectorID:     accounts[1].ConnectorID.String(),
+					Provider:        accounts[1].ConnectorID.Provider.String(),
+					DefaultCurrency: accounts[1].DefaultAsset.String(),
+					DefaultAsset:    accounts[1].DefaultAsset.String(),
+					AccountName:     accounts[1].AccountName,
 					Pools:           []uuid.UUID{},
 					// Type is converted to external when it is external formance
 					Type: string(models.AccountTypeExternal),
 				},
-			}
-			expectedPaginationDetails := storage.PaginationDetails{
-				PageSize:     testCase.pageSize,
-				HasMore:      false,
-				PreviousPage: "",
-				NextPage:     "",
 			}
 
 			backend, mockService := newTestingBackend(t)
 			if testCase.expectedStatusCode < 300 && testCase.expectedStatusCode >= 200 {
 				mockService.EXPECT().
 					ListAccounts(gomock.Any(), testCase.expectedQuery).
-					Return(listAccountsResponse, expectedPaginationDetails, nil)
+					Return(listAccountsResponse, nil)
 			}
 			if testCase.serviceError != nil {
 				mockService.EXPECT().
 					ListAccounts(gomock.Any(), testCase.expectedQuery).
-					Return(nil, storage.PaginationDetails{}, testCase.serviceError)
+					Return(nil, testCase.serviceError)
 			}
 
-			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
+			router := httpRouter(backend, logging.Testing(), api.ServiceInfo{}, auth.NewNoAuth())
 
 			req := httptest.NewRequest(http.MethodGet, "/accounts", nil)
 			rec := httptest.NewRecorder()
@@ -234,16 +255,16 @@ func TestListAccounts(t *testing.T) {
 
 			require.Equal(t, testCase.expectedStatusCode, rec.Code)
 			if testCase.expectedStatusCode < 300 && testCase.expectedStatusCode >= 200 {
-				var resp sharedapi.BaseResponse[*accountResponse]
-				sharedapi.Decode(t, rec.Body, &resp)
+				var resp api.BaseResponse[*accountResponse]
+				api.Decode(t, rec.Body, &resp)
 				require.Equal(t, expectedAccountsResponse, resp.Cursor.Data)
-				require.Equal(t, expectedPaginationDetails.PageSize, resp.Cursor.PageSize)
-				require.Equal(t, expectedPaginationDetails.HasMore, resp.Cursor.HasMore)
-				require.Equal(t, expectedPaginationDetails.NextPage, resp.Cursor.Next)
-				require.Equal(t, expectedPaginationDetails.PreviousPage, resp.Cursor.Previous)
+				require.Equal(t, listAccountsResponse.PageSize, resp.Cursor.PageSize)
+				require.Equal(t, listAccountsResponse.HasMore, resp.Cursor.HasMore)
+				require.Equal(t, listAccountsResponse.Next, resp.Cursor.Next)
+				require.Equal(t, listAccountsResponse.Previous, resp.Cursor.Previous)
 			} else {
-				err := sharedapi.ErrorResponse{}
-				sharedapi.Decode(t, rec.Body, &err)
+				err := api.ErrorResponse{}
+				api.Decode(t, rec.Body, &err)
 				require.EqualValues(t, testCase.expectedErrorCode, err.ErrorCode)
 			}
 		})
@@ -318,7 +339,7 @@ func TestGetAccount(t *testing.T) {
 			expectedAccountID:  accountID1,
 			serviceError:       errors.New("some error"),
 			expectedStatusCode: http.StatusInternalServerError,
-			expectedErrorCode:  sharedapi.ErrorInternal,
+			expectedErrorCode:  api.ErrorInternal,
 		},
 	}
 
@@ -405,7 +426,7 @@ func TestGetAccount(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
+			router := httpRouter(backend, logging.Testing(), api.ServiceInfo{}, auth.NewNoAuth())
 
 			req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/accounts/%s", testCase.accountID), nil)
 			rec := httptest.NewRecorder()
@@ -414,12 +435,12 @@ func TestGetAccount(t *testing.T) {
 
 			require.Equal(t, testCase.expectedStatusCode, rec.Code)
 			if testCase.expectedStatusCode < 300 && testCase.expectedStatusCode >= 200 {
-				var resp sharedapi.BaseResponse[accountResponse]
-				sharedapi.Decode(t, rec.Body, &resp)
+				var resp api.BaseResponse[accountResponse]
+				api.Decode(t, rec.Body, &resp)
 				require.Equal(t, expectedAccountsResponse, resp.Data)
 			} else {
-				err := sharedapi.ErrorResponse{}
-				sharedapi.Decode(t, rec.Body, &err)
+				err := api.ErrorResponse{}
+				api.Decode(t, rec.Body, &err)
 				require.EqualValues(t, testCase.expectedErrorCode, err.ErrorCode)
 			}
 		})

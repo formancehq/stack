@@ -3,12 +3,13 @@ package storage
 import (
 	"context"
 	"encoding/json"
-	"sort"
-	"time"
 
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
+	"github.com/uptrace/bun"
 )
 
 func (s *Storage) UpdateTaskStatus(ctx context.Context, connectorID models.ConnectorID, descriptor models.TaskDescriptor, status models.TaskStatus, taskError string) error {
@@ -94,56 +95,33 @@ func (s *Storage) ListTasksByStatus(ctx context.Context, connectorID models.Conn
 	return tasks, nil
 }
 
-func (s *Storage) ListTasks(ctx context.Context, connectorID models.ConnectorID, pagination PaginatorQuery) ([]*models.Task, PaginationDetails, error) {
-	var tasks []*models.Task
+type TaskQuery struct{}
 
-	query := s.db.NewSelect().Model(&tasks).
-		Where("connector_id = ?", connectorID)
+type ListTasksQuery bunpaginate.OffsetPaginatedQuery[PaginatedQueryOptions[TaskQuery]]
 
-	query = pagination.apply(query, "task.created_at")
-
-	err := query.Scan(ctx)
-	if err != nil {
-		return nil, PaginationDetails{}, e("failed to get tasks", err)
+func NewListTasksQuery(opts PaginatedQueryOptions[TaskQuery]) ListTasksQuery {
+	return ListTasksQuery{
+		PageSize: opts.PageSize,
+		Order:    bunpaginate.OrderAsc,
+		Options:  opts,
 	}
+}
 
-	var (
-		hasMore                       = len(tasks) > pagination.pageSize
-		hasPrevious                   bool
-		firstReference, lastReference string
+func (s *Storage) ListTasks(ctx context.Context, connectorID models.ConnectorID, q ListTasksQuery) (*api.Cursor[models.Task], error) {
+	return PaginateWithOffset[PaginatedQueryOptions[TaskQuery], models.Task](s, ctx,
+		(*bunpaginate.OffsetPaginatedQuery[PaginatedQueryOptions[TaskQuery]])(&q),
+		func(query *bun.SelectQuery) *bun.SelectQuery {
+			query = query.
+				Where("connector_id = ?", connectorID).
+				Order("created_at DESC")
+
+			if q.Options.Sorter != nil {
+				query = q.Options.Sorter.Apply(query)
+			}
+
+			return query
+		},
 	)
-
-	if hasMore {
-		if pagination.cursor.Next || pagination.cursor.Reference == "" {
-			tasks = tasks[:pagination.pageSize]
-		} else {
-			tasks = tasks[1:]
-		}
-	}
-
-	sort.Slice(tasks, func(i, j int) bool {
-		return tasks[i].CreatedAt.After(tasks[j].CreatedAt)
-	})
-
-	if len(tasks) > 0 {
-		firstReference = tasks[0].CreatedAt.Format(time.RFC3339Nano)
-		lastReference = tasks[len(tasks)-1].CreatedAt.Format(time.RFC3339Nano)
-
-		query = s.db.NewSelect().Model(&tasks).
-			Where("connector_id = ?", connectorID)
-
-		hasPrevious, err = pagination.hasPrevious(ctx, query, "task.created_at", firstReference)
-		if err != nil {
-			return nil, PaginationDetails{}, e("failed to check if there is a previous page", err)
-		}
-	}
-
-	paginationDetails, err := pagination.paginationDetails(hasMore, hasPrevious, firstReference, lastReference)
-	if err != nil {
-		return nil, PaginationDetails{}, e("failed to get pagination details", err)
-	}
-
-	return tasks, paginationDetails, nil
 }
 
 func (s *Storage) ReadOldestPendingTask(ctx context.Context, connectorID models.ConnectorID) (*models.Task, error) {

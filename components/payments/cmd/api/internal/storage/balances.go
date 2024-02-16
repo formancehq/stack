@@ -3,105 +3,24 @@ package storage
 import (
 	"context"
 	"fmt"
-	"sort"
 	"time"
 
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
 )
 
-func (s *Storage) ListBalances(ctx context.Context, balanceQuery BalanceQuery) ([]*models.Balance, PaginationDetails, error) {
-	var balances []*models.Balance
-
-	query := s.db.NewSelect().
-		Model(&balances)
-
-	query = balanceQuery.Pagination.apply(query, "balance.created_at")
-
-	query = applyBalanceQuery(query, balanceQuery)
-
-	err := query.Scan(ctx)
-	if err != nil {
-		return nil, PaginationDetails{}, e("failed to list balances", err)
-	}
-
-	var (
-		hasMore                       = len(balances) > balanceQuery.Pagination.pageSize
-		hasPrevious                   bool
-		firstReference, lastReference string
-	)
-
-	if hasMore {
-		if balanceQuery.Pagination.cursor.Next || balanceQuery.Pagination.cursor.Reference == "" {
-			balances = balances[:balanceQuery.Pagination.pageSize]
-		} else {
-			balances = balances[1:]
-		}
-	}
-
-	sort.Slice(balances, func(i, j int) bool {
-		return balances[i].CreatedAt.After(balances[j].CreatedAt)
-	})
-
-	if len(balances) > 0 {
-		firstReference = balances[0].CreatedAt.Format(time.RFC3339Nano)
-		lastReference = balances[len(balances)-1].CreatedAt.Format(time.RFC3339Nano)
-
-		query = s.db.NewSelect().Model(&balances)
-		query = applyBalanceQuery(query, balanceQuery)
-
-		hasPrevious, err = balanceQuery.Pagination.hasPrevious(ctx, query, "created_at", firstReference)
-		if err != nil {
-			return nil, PaginationDetails{}, fmt.Errorf("failed to check if there is a previous page: %w", err)
-		}
-	}
-
-	paginationDetails, err := balanceQuery.Pagination.paginationDetails(hasMore, hasPrevious, firstReference, lastReference)
-	if err != nil {
-		return nil, PaginationDetails{}, fmt.Errorf("failed to get pagination details: %w", err)
-	}
-
-	return balances, paginationDetails, nil
-}
-
-func applyBalanceQuery(query *bun.SelectQuery, balanceQuery BalanceQuery) *bun.SelectQuery {
-	if balanceQuery.AccountID != nil {
-		query = query.Where("balance.account_id = ?", balanceQuery.AccountID)
-	}
-
-	if balanceQuery.Currency != "" {
-		query = query.Where("balance.currency = ?", balanceQuery.Currency)
-	}
-
-	if !balanceQuery.From.IsZero() {
-		query = query.Where("balance.last_updated_at >= ?", balanceQuery.From)
-	}
-
-	if !balanceQuery.To.IsZero() {
-		query = query.Where("(balance.created_at <= ?)", balanceQuery.To)
-	}
-
-	if balanceQuery.Limit > 0 {
-		query = query.Limit(balanceQuery.Limit)
-	}
-
-	return query
-}
-
 type BalanceQuery struct {
-	AccountID  *models.AccountID
-	Currency   string
-	From       time.Time
-	To         time.Time
-	Limit      int
-	Pagination PaginatorQuery
+	AccountID *models.AccountID
+	Currency  string
+	From      time.Time
+	To        time.Time
 }
 
-func NewBalanceQuery(pagination PaginatorQuery) BalanceQuery {
-	return BalanceQuery{
-		Pagination: pagination,
-	}
+func NewBalanceQuery() BalanceQuery {
+	return BalanceQuery{}
 }
 
 func (b BalanceQuery) WithAccountID(accountID *models.AccountID) BalanceQuery {
@@ -128,10 +47,52 @@ func (b BalanceQuery) WithTo(to time.Time) BalanceQuery {
 	return b
 }
 
-func (b BalanceQuery) WithLimit(limit int) BalanceQuery {
-	b.Limit = limit
+func applyBalanceQuery(query *bun.SelectQuery, balanceQuery BalanceQuery) *bun.SelectQuery {
+	if balanceQuery.AccountID != nil {
+		query = query.Where("balance.account_id = ?", balanceQuery.AccountID)
+	}
 
-	return b
+	if balanceQuery.Currency != "" {
+		query = query.Where("balance.currency = ?", balanceQuery.Currency)
+	}
+
+	if !balanceQuery.From.IsZero() {
+		query = query.Where("balance.last_updated_at >= ?", balanceQuery.From)
+	}
+
+	if !balanceQuery.To.IsZero() {
+		query = query.Where("(balance.created_at <= ?)", balanceQuery.To)
+	}
+
+	return query
+}
+
+type ListBalancesQuery bunpaginate.OffsetPaginatedQuery[PaginatedQueryOptions[BalanceQuery]]
+
+func NewListBalancesQuery(opts PaginatedQueryOptions[BalanceQuery]) ListBalancesQuery {
+	return ListBalancesQuery{
+		Order:    bunpaginate.OrderAsc,
+		PageSize: opts.PageSize,
+		Options:  opts,
+	}
+}
+
+func (s *Storage) ListBalances(ctx context.Context, q ListBalancesQuery) (*api.Cursor[models.Balance], error) {
+	return PaginateWithOffset[PaginatedQueryOptions[BalanceQuery], models.Balance](s, ctx,
+		(*bunpaginate.OffsetPaginatedQuery[PaginatedQueryOptions[BalanceQuery]])(&q),
+		func(query *bun.SelectQuery) *bun.SelectQuery {
+			query = query.
+				Order("created_at DESC")
+
+			query = applyBalanceQuery(query, q.Options.Options)
+
+			if q.Options.Sorter != nil {
+				query = q.Options.Sorter.Apply(query)
+			}
+
+			return query
+		},
+	)
 }
 
 func (s *Storage) ListBalanceCurrencies(ctx context.Context, accountID models.AccountID) ([]string, error) {

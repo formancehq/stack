@@ -7,7 +7,10 @@ import (
 
 	"github.com/formancehq/payments/cmd/api/internal/api/backend"
 	"github.com/formancehq/payments/cmd/api/internal/api/service"
+	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 )
@@ -119,18 +122,25 @@ func listPoolHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
-		pagination, err := getPagination(r)
+		query, err := bunpaginate.Extract[storage.ListPoolsQuery](r, func() (*storage.ListPoolsQuery, error) {
+			options, err := getPagination(r, storage.PoolQuery{})
+			if err != nil {
+				return nil, err
+			}
+			return pointer.For(storage.NewListPoolsQuery(*options)), nil
+		})
 		if err != nil {
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
-		ret, paginationDetails, err := b.GetService().ListPools(r.Context(), pagination)
+		cursor, err := b.GetService().ListPools(r.Context(), *query)
 		if err != nil {
 			handleServiceErrors(w, r, err)
 			return
 		}
 
+		ret := cursor.Data
 		data := make([]*poolResponse, len(ret))
 
 		for i := range ret {
@@ -148,10 +158,10 @@ func listPoolHandler(b backend.Backend) http.HandlerFunc {
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[*poolResponse]{
 			Cursor: &api.Cursor[*poolResponse]{
-				PageSize: paginationDetails.PageSize,
-				HasMore:  paginationDetails.HasMore,
-				Previous: paginationDetails.PreviousPage,
-				Next:     paginationDetails.NextPage,
+				PageSize: cursor.PageSize,
+				HasMore:  cursor.HasMore,
+				Previous: cursor.Previous,
+				Next:     cursor.Next,
 				Data:     data,
 			},
 		})

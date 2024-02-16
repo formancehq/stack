@@ -3,11 +3,12 @@ package storage
 import (
 	"context"
 	"fmt"
-	"sort"
-	"time"
 
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/formancehq/stack/libs/go-libs/query"
+	"github.com/uptrace/bun"
 )
 
 func (s *Storage) GetTransferInitiation(ctx context.Context, id models.TransferInitiationID) (*models.TransferInitiation, error) {
@@ -51,69 +52,43 @@ func (s *Storage) ReadTransferInitiationPayments(ctx context.Context, id models.
 	return payments, nil
 }
 
-func (s *Storage) ListTransferInitiations(ctx context.Context, pagination PaginatorQuery) ([]*models.TransferInitiation, PaginationDetails, error) {
-	var tfs []*models.TransferInitiation
+type TransferInitiationQuery struct{}
 
-	query := s.db.NewSelect().
-		Column("id", "connector_id", "created_at", "scheduled_at", "description", "type", "source_account_id", "destination_account_id", "provider", "initial_amount", "amount", "asset", "metadata").
-		Model(&tfs).
-		Relation("RelatedAdjustments")
+type ListTransferInitiationsQuery bunpaginate.OffsetPaginatedQuery[PaginatedQueryOptions[TransferInitiationQuery]]
 
-	if pagination.queryBuilder != nil {
-		where, args, err := s.transferInitiationQueryContext(pagination.queryBuilder)
-		if err != nil {
-			// TODO: handle error
-			panic(err)
-		}
-		query = query.Where(where, args...)
+func NewListTransferInitiationsQuery(opts PaginatedQueryOptions[TransferInitiationQuery]) ListTransferInitiationsQuery {
+	return ListTransferInitiationsQuery{
+		PageSize: opts.PageSize,
+		Order:    bunpaginate.OrderAsc,
+		Options:  opts,
 	}
+}
 
-	query = pagination.apply(query, "transfer_initiation.created_at")
+func (s *Storage) ListTransferInitiations(ctx context.Context, q ListTransferInitiationsQuery) (*api.Cursor[models.TransferInitiation], error) {
+	return PaginateWithOffset[PaginatedQueryOptions[TransferInitiationQuery], models.TransferInitiation](s, ctx,
+		(*bunpaginate.OffsetPaginatedQuery[PaginatedQueryOptions[TransferInitiationQuery]])(&q),
+		func(query *bun.SelectQuery) *bun.SelectQuery {
+			query = query.
+				Column("id", "connector_id", "created_at", "scheduled_at", "description", "type", "source_account_id", "destination_account_id", "provider", "initial_amount", "amount", "asset", "metadata").
+				Relation("RelatedAdjustments").
+				Order("created_at DESC")
 
-	err := query.Scan(ctx)
-	if err != nil {
-		return nil, PaginationDetails{}, e("failed to list payments", err)
-	}
+			if q.Options.QueryBuilder != nil {
+				where, args, err := s.transferInitiationQueryContext(q.Options.QueryBuilder)
+				if err != nil {
+					// TODO: handle error
+					panic(err)
+				}
+				query = query.Where(where, args...)
+			}
 
-	var (
-		hasMore                       = len(tfs) > pagination.pageSize
-		hasPrevious                   bool
-		firstReference, lastReference string
+			if q.Options.Sorter != nil {
+				query = q.Options.Sorter.Apply(query)
+			}
+
+			return query
+		},
 	)
-
-	if hasMore {
-		if pagination.cursor.Next || pagination.cursor.Reference == "" {
-			tfs = tfs[:pagination.pageSize]
-		} else {
-			tfs = tfs[1:]
-		}
-	}
-
-	sort.Slice(tfs, func(i, j int) bool {
-		return tfs[i].CreatedAt.After(tfs[j].CreatedAt)
-	})
-
-	if len(tfs) > 0 {
-		firstReference = tfs[0].CreatedAt.Format(time.RFC3339Nano)
-		lastReference = tfs[len(tfs)-1].CreatedAt.Format(time.RFC3339Nano)
-
-		query = s.db.NewSelect().
-			Column("id", "connector_id", "created_at", "scheduled_at", "description", "type", "source_account_id", "destination_account_id", "provider", "initial_amount", "amount", "asset", "metadata").
-			Model(&tfs).
-			Relation("RelatedAdjustments")
-
-		hasPrevious, err = pagination.hasPrevious(ctx, query, "transfer_initiation.created_at", firstReference)
-		if err != nil {
-			return nil, PaginationDetails{}, e("failed to check if there is a previous page", err)
-		}
-	}
-
-	paginationDetails, err := pagination.paginationDetails(hasMore, hasPrevious, firstReference, lastReference)
-	if err != nil {
-		return nil, PaginationDetails{}, e("failed to get pagination details", err)
-	}
-
-	return tfs, paginationDetails, nil
 }
 
 func (s *Storage) transferInitiationQueryContext(qb query.Builder) (string, []any, error) {

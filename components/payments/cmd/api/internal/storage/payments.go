@@ -3,64 +3,43 @@ package storage
 import (
 	"context"
 	"fmt"
-	"sort"
 	"time"
 
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	"github.com/uptrace/bun"
 )
 
-func (s *Storage) ListPayments(ctx context.Context, pagination PaginatorQuery) ([]*models.Payment, PaginationDetails, error) {
-	var payments []*models.Payment
+type PaymentQuery struct{}
 
-	query := s.db.NewSelect().
-		Model(&payments).
-		Relation("Connector").
-		Relation("Metadata").
-		Relation("Adjustments")
+type ListPaymentsQuery bunpaginate.OffsetPaginatedQuery[PaginatedQueryOptions[PaymentQuery]]
 
-	query = pagination.apply(query, "payment.created_at")
-
-	err := query.Scan(ctx)
-	if err != nil {
-		return nil, PaginationDetails{}, e("failed to list payments", err)
+func NewListPaymentsQuery(opts PaginatedQueryOptions[PaymentQuery]) ListPaymentsQuery {
+	return ListPaymentsQuery{
+		PageSize: opts.PageSize,
+		Order:    bunpaginate.OrderAsc,
+		Options:  opts,
 	}
+}
 
-	var (
-		hasMore                       = len(payments) > pagination.pageSize
-		hasPrevious                   bool
-		firstReference, lastReference string
+func (s *Storage) ListPayments(ctx context.Context, q ListPaymentsQuery) (*api.Cursor[models.Payment], error) {
+	return PaginateWithOffset[PaginatedQueryOptions[PaymentQuery], models.Payment](s, ctx,
+		(*bunpaginate.OffsetPaginatedQuery[PaginatedQueryOptions[PaymentQuery]])(&q),
+		func(query *bun.SelectQuery) *bun.SelectQuery {
+			query = query.
+				Relation("Connector").
+				Relation("Metadata").
+				Relation("Adjustments").
+				Order("created_at DESC")
+
+			if q.Options.Sorter != nil {
+				query = q.Options.Sorter.Apply(query)
+			}
+
+			return query
+		},
 	)
-
-	if hasMore {
-		if pagination.cursor.Next || pagination.cursor.Reference == "" {
-			payments = payments[:pagination.pageSize]
-		} else {
-			payments = payments[1:]
-		}
-	}
-
-	sort.Slice(payments, func(i, j int) bool {
-		return payments[i].CreatedAt.After(payments[j].CreatedAt)
-	})
-
-	if len(payments) > 0 {
-		firstReference = payments[0].CreatedAt.Format(time.RFC3339Nano)
-		lastReference = payments[len(payments)-1].CreatedAt.Format(time.RFC3339Nano)
-
-		query = s.db.NewSelect().Model(&payments)
-
-		hasPrevious, err = pagination.hasPrevious(ctx, query, "payment.created_at", firstReference)
-		if err != nil {
-			return nil, PaginationDetails{}, fmt.Errorf("failed to check if there is a previous page: %w", err)
-		}
-	}
-
-	paginationDetails, err := pagination.paginationDetails(hasMore, hasPrevious, firstReference, lastReference)
-	if err != nil {
-		return nil, PaginationDetails{}, fmt.Errorf("failed to get pagination details: %w", err)
-	}
-
-	return payments, paginationDetails, nil
 }
 
 func (s *Storage) GetPayment(ctx context.Context, id string) (*models.Payment, error) {

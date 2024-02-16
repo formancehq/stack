@@ -12,6 +12,7 @@ import (
 	service "github.com/formancehq/payments/cmd/connectors/internal/api/service"
 	storage "github.com/formancehq/payments/cmd/connectors/internal/storage"
 	models "github.com/formancehq/payments/internal/models"
+	api "github.com/formancehq/stack/libs/go-libs/api"
 	gomock "github.com/golang/mock/gomock"
 	uuid "github.com/google/uuid"
 )
@@ -267,19 +268,18 @@ func (mr *MockManagerMockRecorder[ConnectorConfig]) IsInstalled(ctx, connectorID
 }
 
 // ListTasksStates mocks base method.
-func (m *MockManager[ConnectorConfig]) ListTasksStates(ctx context.Context, connectorID models.ConnectorID, pagination storage.PaginatorQuery) ([]*models.Task, storage.PaginationDetails, error) {
+func (m *MockManager[ConnectorConfig]) ListTasksStates(ctx context.Context, connectorID models.ConnectorID, q storage.ListTasksQuery) (*api.Cursor[models.Task], error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListTasksStates", ctx, connectorID, pagination)
-	ret0, _ := ret[0].([]*models.Task)
-	ret1, _ := ret[1].(storage.PaginationDetails)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
+	ret := m.ctrl.Call(m, "ListTasksStates", ctx, connectorID, q)
+	ret0, _ := ret[0].(*api.Cursor[models.Task])
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // ListTasksStates indicates an expected call of ListTasksStates.
-func (mr *MockManagerMockRecorder[ConnectorConfig]) ListTasksStates(ctx, connectorID, pagination interface{}) *gomock.Call {
+func (mr *MockManagerMockRecorder[ConnectorConfig]) ListTasksStates(ctx, connectorID, q interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTasksStates", reflect.TypeOf((*MockManager[ConnectorConfig])(nil).ListTasksStates), ctx, connectorID, pagination)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTasksStates", reflect.TypeOf((*MockManager[ConnectorConfig])(nil).ListTasksStates), ctx, connectorID, q)
 }
 
 // ReadConfig mocks base method.

@@ -22,7 +22,6 @@ func TestBalances(t *testing.T) {
 	testInstallConnectors(t, store)
 	testCreateAccounts(t, store)
 	testCreateBalances(t, store)
-	testListBalances(t, store)
 	testUninstallConnectors(t, store)
 	testBalancesDeletedAfterConnectorUninstall(t, store)
 }
@@ -71,13 +70,9 @@ func testGetBalance(
 	expectedBalances []*models.Balance,
 	expectedError error,
 ) {
-	query, err := storage.Paginate(100, "", nil, nil)
-	require.NoError(t, err)
-
-	balances, paginationDetails, err := store.ListBalances(context.Background(), storage.NewBalanceQuery(query).WithAccountID(&accountID))
+	balances, err := store.GetBalancesForAccountID(context.Background(), accountID)
 	require.NoError(t, err)
 	require.Len(t, balances, len(expectedBalances))
-	require.False(t, paginationDetails.HasMore)
 	for i := range balances {
 		if i < len(balances)-1 {
 			require.Equal(t, balances[i+1].LastUpdatedAt.UTC(), balances[i].CreatedAt.UTC())
@@ -89,52 +84,8 @@ func testGetBalance(
 	}
 }
 
-func testListBalances(t *testing.T, store *storage.Storage) {
-	query, err := storage.Paginate(1, "", nil, nil)
-	require.NoError(t, err)
-
-	balances, paginationDetails, err := store.ListBalances(context.Background(), storage.NewBalanceQuery(query))
-	require.NoError(t, err)
-	require.Len(t, balances, 1)
-	require.True(t, paginationDetails.HasMore)
-	require.Equal(t, b2T, balances[0].CreatedAt.UTC())
-
-	query, err = storage.Paginate(1, paginationDetails.NextPage, nil, nil)
-	require.NoError(t, err)
-
-	balances, paginationDetails, err = store.ListBalances(context.Background(), storage.NewBalanceQuery(query))
-	require.NoError(t, err)
-	require.Len(t, balances, 1)
-	require.False(t, paginationDetails.HasMore)
-	require.Equal(t, b1T, balances[0].CreatedAt.UTC())
-
-	query, err = storage.Paginate(1, paginationDetails.PreviousPage, nil, nil)
-	require.NoError(t, err)
-
-	balances, paginationDetails, err = store.ListBalances(context.Background(), storage.NewBalanceQuery(query))
-	require.NoError(t, err)
-	require.Len(t, balances, 1)
-	require.True(t, paginationDetails.HasMore)
-	require.Equal(t, b2T, balances[0].CreatedAt.UTC())
-
-	query, err = storage.Paginate(2, "", nil, nil)
-	require.NoError(t, err)
-
-	balances, paginationDetails, err = store.ListBalances(context.Background(), storage.NewBalanceQuery(query))
-	require.NoError(t, err)
-	require.Len(t, balances, 2)
-	require.False(t, paginationDetails.HasMore)
-	require.Equal(t, b2T, balances[0].CreatedAt.UTC())
-	require.Equal(t, b1T, balances[1].CreatedAt.UTC())
-}
-
 func testBalancesDeletedAfterConnectorUninstall(t *testing.T, store *storage.Storage) {
-	query, err := storage.Paginate(1, "", nil, nil)
-	require.NoError(t, err)
-
-	balances, paginationDetails, err := store.ListBalances(context.Background(), storage.NewBalanceQuery(query))
+	balances, err := store.GetBalancesForAccountID(context.Background(), acc1ID)
 	require.NoError(t, err)
 	require.Len(t, balances, 0)
-	require.False(t, paginationDetails.HasMore)
-
 }

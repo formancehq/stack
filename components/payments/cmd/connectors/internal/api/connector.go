@@ -12,6 +12,8 @@ import (
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"go.opentelemetry.io/otel/attribute"
@@ -151,30 +153,31 @@ func listTasks[Config models.ConnectorConfigObject](
 			return
 		}
 
-		pageSize, err := pageSizeQueryParam(r)
+		query, err := bunpaginate.Extract[storage.ListTasksQuery](r, func() (*storage.ListTasksQuery, error) {
+			pageSize, err := bunpaginate.GetPageSize(r)
+			if err != nil {
+				return nil, err
+			}
+
+			return pointer.For(storage.NewListTasksQuery(storage.NewPaginatedQueryOptions(storage.TaskQuery{}).WithPageSize(pageSize))), nil
+		})
 		if err != nil {
 			otel.RecordError(span, err)
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
-		span.SetAttributes(attribute.Int("pageSize", pageSize))
+		span.SetAttributes(attribute.Int("pageSize", int(query.PageSize)))
 		span.SetAttributes(attribute.String("cursor", r.URL.Query().Get("cursor")))
 
-		pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), nil, nil)
-		if err != nil {
-			otel.RecordError(span, err)
-			api.BadRequest(w, ErrValidation, err)
-			return
-		}
-
-		tasks, paginationDetails, err := b.GetManager().ListTasksStates(ctx, connectorID, pagination)
+		cursor, err := b.GetManager().ListTasksStates(ctx, connectorID, *query)
 		if err != nil {
 			otel.RecordError(span, err)
 			handleConnectorsManagerErrors(w, r, err)
 			return
 		}
 
+		tasks := cursor.Data
 		data := make([]listTasksResponseElement, len(tasks))
 		for i, task := range tasks {
 			data[i] = listTasksResponseElement{
@@ -191,10 +194,10 @@ func listTasks[Config models.ConnectorConfigObject](
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[listTasksResponseElement]{
 			Cursor: &api.Cursor[listTasksResponseElement]{
-				PageSize: paginationDetails.PageSize,
-				HasMore:  paginationDetails.HasMore,
-				Previous: paginationDetails.PreviousPage,
-				Next:     paginationDetails.NextPage,
+				PageSize: cursor.PageSize,
+				HasMore:  cursor.HasMore,
+				Previous: cursor.Previous,
+				Next:     cursor.Next,
 				Data:     data,
 			},
 		})

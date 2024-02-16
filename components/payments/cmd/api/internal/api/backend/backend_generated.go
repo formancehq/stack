@@ -11,6 +11,7 @@ import (
 	service "github.com/formancehq/payments/cmd/api/internal/api/service"
 	storage "github.com/formancehq/payments/cmd/api/internal/storage"
 	models "github.com/formancehq/payments/internal/models"
+	api "github.com/formancehq/stack/libs/go-libs/api"
 	gomock "github.com/golang/mock/gomock"
 	uuid "github.com/google/uuid"
 )
@@ -172,99 +173,93 @@ func (mr *MockServiceMockRecorder) GetPoolBalance(ctx, poolID, atTime interface{
 }
 
 // ListAccounts mocks base method.
-func (m *MockService) ListAccounts(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.Account, storage.PaginationDetails, error) {
+func (m *MockService) ListAccounts(ctx context.Context, q storage.ListAccountsQuery) (*api.Cursor[models.Account], error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListAccounts", ctx, pagination)
-	ret0, _ := ret[0].([]*models.Account)
-	ret1, _ := ret[1].(storage.PaginationDetails)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
+	ret := m.ctrl.Call(m, "ListAccounts", ctx, q)
+	ret0, _ := ret[0].(*api.Cursor[models.Account])
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // ListAccounts indicates an expected call of ListAccounts.
-func (mr *MockServiceMockRecorder) ListAccounts(ctx, pagination interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) ListAccounts(ctx, q interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAccounts", reflect.TypeOf((*MockService)(nil).ListAccounts), ctx, pagination)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAccounts", reflect.TypeOf((*MockService)(nil).ListAccounts), ctx, q)
 }
 
 // ListBalances mocks base method.
-func (m *MockService) ListBalances(ctx context.Context, query storage.BalanceQuery) ([]*models.Balance, storage.PaginationDetails, error) {
+func (m *MockService) ListBalances(ctx context.Context, q storage.ListBalancesQuery) (*api.Cursor[models.Balance], error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListBalances", ctx, query)
-	ret0, _ := ret[0].([]*models.Balance)
-	ret1, _ := ret[1].(storage.PaginationDetails)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
+	ret := m.ctrl.Call(m, "ListBalances", ctx, q)
+	ret0, _ := ret[0].(*api.Cursor[models.Balance])
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // ListBalances indicates an expected call of ListBalances.
-func (mr *MockServiceMockRecorder) ListBalances(ctx, query interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) ListBalances(ctx, q interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListBalances", reflect.TypeOf((*MockService)(nil).ListBalances), ctx, query)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListBalances", reflect.TypeOf((*MockService)(nil).ListBalances), ctx, q)
 }
 
 // ListBankAccounts mocks base method.
-func (m *MockService) ListBankAccounts(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.BankAccount, storage.PaginationDetails, error) {
+func (m *MockService) ListBankAccounts(ctx context.Context, a storage.ListBankAccountQuery) (*api.Cursor[models.BankAccount], error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListBankAccounts", ctx, pagination)
-	ret0, _ := ret[0].([]*models.BankAccount)
-	ret1, _ := ret[1].(storage.PaginationDetails)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
+	ret := m.ctrl.Call(m, "ListBankAccounts", ctx, a)
+	ret0, _ := ret[0].(*api.Cursor[models.BankAccount])
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // ListBankAccounts indicates an expected call of ListBankAccounts.
-func (mr *MockServiceMockRecorder) ListBankAccounts(ctx, pagination interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) ListBankAccounts(ctx, a interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListBankAccounts", reflect.TypeOf((*MockService)(nil).ListBankAccounts), ctx, pagination)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListBankAccounts", reflect.TypeOf((*MockService)(nil).ListBankAccounts), ctx, a)
 }
 
 // ListPayments mocks base method.
-func (m *MockService) ListPayments(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.Payment, storage.PaginationDetails, error) {
+func (m *MockService) ListPayments(ctx context.Context, q storage.ListPaymentsQuery) (*api.Cursor[models.Payment], error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListPayments", ctx, pagination)
-	ret0, _ := ret[0].([]*models.Payment)
-	ret1, _ := ret[1].(storage.PaginationDetails)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
+	ret := m.ctrl.Call(m, "ListPayments", ctx, q)
+	ret0, _ := ret[0].(*api.Cursor[models.Payment])
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // ListPayments indicates an expected call of ListPayments.
-func (mr *MockServiceMockRecorder) ListPayments(ctx, pagination interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) ListPayments(ctx, q interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPayments", reflect.TypeOf((*MockService)(nil).ListPayments), ctx, pagination)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPayments", reflect.TypeOf((*MockService)(nil).ListPayments), ctx, q)
 }
 
 // ListPools mocks base method.
-func (m *MockService) ListPools(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.Pool, storage.PaginationDetails, error) {
+func (m *MockService) ListPools(ctx context.Context, q storage.ListPoolsQuery) (*api.Cursor[models.Pool], error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListPools", ctx, pagination)
-	ret0, _ := ret[0].([]*models.Pool)
-	ret1, _ := ret[1].(storage.PaginationDetails)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
+	ret := m.ctrl.Call(m, "ListPools", ctx, q)
+	ret0, _ := ret[0].(*api.Cursor[models.Pool])
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // ListPools indicates an expected call of ListPools.
-func (mr *MockServiceMockRecorder) ListPools(ctx, pagination interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) ListPools(ctx, q interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPools", reflect.TypeOf((*MockService)(nil).ListPools), ctx, pagination)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPools", reflect.TypeOf((*MockService)(nil).ListPools), ctx, q)
 }
 
 // ListTransferInitiations mocks base method.
-func (m *MockService) ListTransferInitiations(ctx context.Context, pagination storage.PaginatorQuery) ([]*models.TransferInitiation, storage.PaginationDetails, error) {
+func (m *MockService) ListTransferInitiations(ctx context.Context, q storage.ListTransferInitiationsQuery) (*api.Cursor[models.TransferInitiation], error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListTransferInitiations", ctx, pagination)
-	ret0, _ := ret[0].([]*models.TransferInitiation)
-	ret1, _ := ret[1].(storage.PaginationDetails)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
+	ret := m.ctrl.Call(m, "ListTransferInitiations", ctx, q)
+	ret0, _ := ret[0].(*api.Cursor[models.TransferInitiation])
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // ListTransferInitiations indicates an expected call of ListTransferInitiations.
-func (mr *MockServiceMockRecorder) ListTransferInitiations(ctx, pagination interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) ListTransferInitiations(ctx, q interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTransferInitiations", reflect.TypeOf((*MockService)(nil).ListTransferInitiations), ctx, pagination)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTransferInitiations", reflect.TypeOf((*MockService)(nil).ListTransferInitiations), ctx, q)
 }
 
 // Ping mocks base method.

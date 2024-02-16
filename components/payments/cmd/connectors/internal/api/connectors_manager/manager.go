@@ -13,6 +13,7 @@ import (
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/payments/pkg/events"
+	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/publish"
@@ -359,14 +360,14 @@ func (l *ConnectorsManager[ConnectorConfig]) IsInstalled(ctx context.Context, co
 func (l *ConnectorsManager[ConnectorConfig]) ListTasksStates(
 	ctx context.Context,
 	connectorID models.ConnectorID,
-	pagination storage.PaginatorQuery,
-) ([]*models.Task, storage.PaginationDetails, error) {
+	q storage.ListTasksQuery,
+) (*api.Cursor[models.Task], error) {
 	connectorManager, err := l.getManager(connectorID)
 	if err != nil {
-		return nil, storage.PaginationDetails{}, ErrConnectorNotFound
+		return nil, ErrConnectorNotFound
 	}
 
-	return connectorManager.scheduler.ListTasks(ctx, pagination)
+	return connectorManager.scheduler.ListTasks(ctx, q)
 }
 
 func (l *ConnectorsManager[Config]) ReadTaskState(ctx context.Context, connectorID models.ConnectorID, taskID uuid.UUID) (*models.Task, error) {

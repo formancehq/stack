@@ -7,8 +7,11 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/cmd/api/internal/api/backend"
+	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/gorilla/mux"
 )
 
@@ -126,18 +129,25 @@ func listTransferInitiationsHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
-		pagination, err := getPagination(r)
+		query, err := bunpaginate.Extract[storage.ListTransferInitiationsQuery](r, func() (*storage.ListTransferInitiationsQuery, error) {
+			options, err := getPagination(r, storage.TransferInitiationQuery{})
+			if err != nil {
+				return nil, err
+			}
+			return pointer.For(storage.NewListTransferInitiationsQuery(*options)), nil
+		})
 		if err != nil {
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
-		ret, paginationDetails, err := b.GetService().ListTransferInitiations(r.Context(), pagination)
+		cursor, err := b.GetService().ListTransferInitiations(r.Context(), *query)
 		if err != nil {
 			handleServiceErrors(w, r, err)
 			return
 		}
 
+		ret := cursor.Data
 		data := make([]*transferInitiationResponse, len(ret))
 		for i := range ret {
 			ret[i].SortRelatedAdjustments()
@@ -167,10 +177,10 @@ func listTransferInitiationsHandler(b backend.Backend) http.HandlerFunc {
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[*transferInitiationResponse]{
 			Cursor: &api.Cursor[*transferInitiationResponse]{
-				PageSize: paginationDetails.PageSize,
-				HasMore:  paginationDetails.HasMore,
-				Previous: paginationDetails.PreviousPage,
-				Next:     paginationDetails.NextPage,
+				PageSize: cursor.PageSize,
+				HasMore:  cursor.HasMore,
+				Previous: cursor.Previous,
+				Next:     cursor.Next,
 				Data:     data,
 			},
 		})
