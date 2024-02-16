@@ -34,7 +34,7 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=webhooks/finalizers,verbs=update
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, version string) error {
-	database, err := databases.Create(ctx, webhooks)
+	database, err := databases.Create(ctx, stack, webhooks)
 	if err != nil {
 		return err
 	}

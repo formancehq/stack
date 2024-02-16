@@ -153,11 +153,16 @@ func handleDatabaseJob(ctx core.Context, stack *v1beta1.Stack, database *v1beta1
 		annotations["secret-hash"] = secretReference.Status.Hash
 	}
 
+	env := GetPostgresEnvVars(database)
+	if database.Spec.Debug {
+		env = append(env, core.Env("DEBUG", "true"))
+	}
+
 	return jobs.Handle(ctx, database, name, v1.Container{
 		Name:  name,
 		Image: operatorUtilsImage,
 		Args:  args,
-		Env:   GetPostgresEnvVars(database),
+		Env:   env,
 	},
 		jobs.Mutator(core.WithAnnotations[*batchv1.Job](annotations)),
 		jobs.WithServiceAccount(database.Status.URI.Query().Get("awsRole")),

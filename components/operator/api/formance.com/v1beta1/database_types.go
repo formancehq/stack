@@ -24,6 +24,7 @@ import (
 type DatabaseSpec struct {
 	StackDependency `json:",inline"`
 	Service         string `json:"service"`
+	Debug           bool   `json:"debug,omitempty"`
 }
 
 // DatabaseStatus defines the observed state of Database

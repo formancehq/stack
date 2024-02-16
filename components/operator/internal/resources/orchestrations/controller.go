@@ -35,7 +35,7 @@ import (
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, o *v1beta1.Orchestration, version string) error {
 
-	database, err := databases.Create(ctx, o)
+	database, err := databases.Create(ctx, stack, o)
 	if err != nil {
 		return err
 	}

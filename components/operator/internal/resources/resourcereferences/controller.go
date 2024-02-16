@@ -131,6 +131,8 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, req *v1beta1.ResourceReference
 		}
 	}
 
+	originalAnnotations := resource.UnstructuredContent()["metadata"].(map[string]any)["annotations"].(map[string]any)
+
 	unstructured.RemoveNestedField(resource.UnstructuredContent(), "metadata")
 	unstructured.RemoveNestedField(resource.UnstructuredContent(), "status")
 
@@ -143,6 +145,10 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, req *v1beta1.ResourceReference
 		content := newResource.UnstructuredContent()
 		if err := mergo.Merge(&content, resource.UnstructuredContent()); err != nil {
 			return err
+		}
+
+		if err := unstructured.SetNestedMap(content, originalAnnotations, "metadata", "annotations"); err != nil {
+			panic(err)
 		}
 
 		hasOwnerReference, err := HasOwnerReference(ctx, req, newResource)

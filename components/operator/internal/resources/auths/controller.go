@@ -47,7 +47,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, version st
 		return errors.Wrap(err, "creating configuration")
 	}
 
-	database, err := databases.Create(ctx, auth)
+	database, err := databases.Create(ctx, stack, auth)
 	if err != nil {
 		return errors.Wrap(err, "creating database")
 	}

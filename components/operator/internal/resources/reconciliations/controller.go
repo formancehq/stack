@@ -34,7 +34,7 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=reconciliations/finalizers,verbs=update
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, reconciliation *v1beta1.Reconciliation, version string) error {
-	database, err := databases.Create(ctx, reconciliation)
+	database, err := databases.Create(ctx, stack, reconciliation)
 	if err != nil {
 		return err
 	}
