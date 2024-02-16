@@ -2,6 +2,7 @@ package workflow
 
 import (
 	"context"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"testing"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
@@ -29,7 +30,7 @@ func TestConfig(t *testing.T) {
 	t.Parallel()
 
 	database := pgtesting.NewPostgresDatabase(t)
-	db, err := bunconnect.OpenSQLDB(bunconnect.ConnectionOptions{
+	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: database.ConnString(),
 		Debug:              testing.Verbose(),
 	})

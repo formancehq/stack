@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	logging "github.com/formancehq/stack/libs/go-libs/logging"
 	"os"
 	"strings"
 
@@ -22,6 +23,7 @@ var rootCmd = &cobra.Command{
 		for _, v := range os.Environ() {
 			logger.Debugf(v)
 		}
+		cmd.SetContext(logging.ContextWithLogger(cmd.Context(), logger))
 		return nil
 	},
 }

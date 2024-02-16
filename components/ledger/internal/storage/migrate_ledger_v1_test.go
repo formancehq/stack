@@ -46,7 +46,7 @@ func TestMigrateLedgerV1(t *testing.T) {
 		require.NotEmpty(t, ledger.Bucket)
 		require.Equal(t, ledger.Name, ledger.Bucket)
 
-		bucket, err := d.OpenBucket(ledger.Bucket)
+		bucket, err := d.OpenBucket(ctx, ledger.Bucket)
 		require.NoError(t, err)
 		require.NoError(t, bucket.Migrate(ctx))
 

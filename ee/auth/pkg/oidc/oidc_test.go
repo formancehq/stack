@@ -7,6 +7,7 @@ import (
 	"crypto/rsa"
 	"encoding/json"
 	"fmt"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -77,7 +78,7 @@ func withServer(t *testing.T, fn func(m *mockoidc.MockOIDC, storage *sqlstorage.
 	require.NoError(t, err)
 
 	postgresDB := pgtesting.NewPostgresDatabase(t)
-	db, err := bunconnect.OpenSQLDB(bunconnect.ConnectionOptions{
+	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: postgresDB.ConnString(),
 		Debug:              testing.Verbose(),
 	})

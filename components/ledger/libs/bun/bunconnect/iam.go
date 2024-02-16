@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/rds/auth"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/lib/pq"
 	"github.com/xo/dburl"
@@ -58,6 +59,8 @@ func (i *iamConnector) Connect(ctx context.Context) (driver.Conn, error) {
 			dsn = fmt.Sprintf("%s %s=%s", dsn, key, value)
 		}
 	}
+
+	logging.FromContext(ctx).Debugf("IAM: Connect using dsn '%s'", dsn)
 
 	pqConnector, err := pq.NewConnector(dsn)
 	if err != nil {

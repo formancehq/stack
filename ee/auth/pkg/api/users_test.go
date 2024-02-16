@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -68,7 +69,7 @@ func withDbAndUserRouter(t *testing.T, callback func(router *mux.Router, db *bun
 	t.Parallel()
 
 	pgDatabase := pgtesting.NewPostgresDatabase(t)
-	db, err := bunconnect.OpenSQLDB(bunconnect.ConnectionOptions{
+	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: pgDatabase.ConnString(),
 		Debug:              testing.Verbose(),
 	})

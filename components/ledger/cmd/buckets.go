@@ -38,7 +38,7 @@ func NewBucketUpgrade() *cobra.Command {
 
 			name := args[0]
 
-			bucket, err := driver.OpenBucket(name)
+			bucket, err := driver.OpenBucket(cmd.Context(), name)
 			if err != nil {
 				return err
 			}

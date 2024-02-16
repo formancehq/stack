@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"fmt"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"net"
 	"net/http"
 	"testing"
@@ -41,7 +42,7 @@ func TestVerifyAccessToken(t *testing.T) {
 
 	// Construct our storage
 	postgresDB := pgtesting.NewPostgresDatabase(t)
-	db, err := bunconnect.OpenSQLDB(bunconnect.ConnectionOptions{
+	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: postgresDB.ConnString(),
 		Debug:              testing.Verbose(),
 	})
