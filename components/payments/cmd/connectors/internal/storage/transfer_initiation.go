@@ -3,11 +3,9 @@ package storage
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/query"
 	"github.com/pkg/errors"
 )
 
@@ -181,24 +179,4 @@ func (s *Storage) DeleteTransferInitiation(ctx context.Context, id models.Transf
 	}
 
 	return nil
-}
-
-func (s *Storage) transferInitiationQueryContext(qb query.Builder) (string, []any, error) {
-	return qb.Build(query.ContextFn(func(key, operator string, value any) (string, []any, error) {
-		switch {
-		case key == "source_account_id", key == "destination_account_id":
-			if operator != "$match" {
-				return "", nil, fmt.Errorf("'%s' columns can only be used with $match", key)
-			}
-
-			switch accountID := value.(type) {
-			case string:
-				return fmt.Sprintf("%s = ?", key), []any{accountID}, nil
-			default:
-				return "", nil, fmt.Errorf("unexpected type %T for column '%s'", accountID, key)
-			}
-		default:
-			return "", nil, fmt.Errorf("unknown key '%s' when building query", key)
-		}
-	}))
 }
