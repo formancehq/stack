@@ -120,6 +120,8 @@ func init() {
 			WithOwn[*v1beta1.Ledger](&v1beta1.GatewayHTTPAPI{}),
 			WithOwn[*v1beta1.Ledger](&v1beta1.Database{}),
 			WithOwn[*v1beta1.Ledger](&batchv1.CronJob{}),
+			WithOwn[*v1beta1.Ledger](&corev1.ConfigMap{}),
+			WithOwn[*v1beta1.Ledger](&v1beta1.BenthosStream{}),
 			WithWatchSettings[*v1beta1.Ledger](),
 			WithWatchDependency[*v1beta1.Ledger](&v1beta1.Search{}),
 			brokertopics.Watch[*v1beta1.Ledger]("ledger"),

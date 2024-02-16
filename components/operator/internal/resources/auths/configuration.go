@@ -11,7 +11,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 )
 
-func createConfiguration(ctx Context, stack *v1beta1.Stack, items []*v1beta1.AuthClient) (*corev1.ConfigMap, error) {
+func createConfiguration(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, items []*v1beta1.AuthClient) (*corev1.ConfigMap, error) {
 
 	sort.Slice(items, func(i, j int) bool {
 		return items[i].Name < items[j].Name
@@ -37,7 +37,7 @@ func createConfiguration(ctx Context, stack *v1beta1.Stack, items []*v1beta1.Aut
 		}
 
 		return nil
-	})
+	}, WithController[*corev1.ConfigMap](ctx.GetScheme(), auth))
 	if err != nil {
 		return nil, err
 	}

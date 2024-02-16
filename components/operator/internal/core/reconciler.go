@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -156,7 +157,7 @@ func WithWatch[T client.Object, WATCHED client.Object](fn func(ctx Context, obje
 	}
 }
 
-func WithReconciler[T client.Object](controller ObjectController[T], opts ...ReconcilerOption[T]) Initializer {
+func withReconciler[T client.Object](controller ObjectController[T], opts ...ReconcilerOption[T]) Initializer {
 	return func(mgr Manager) error {
 
 		options := ReconcilerOptions[T]{
@@ -211,11 +212,17 @@ func WithReconciler[T client.Object](controller ObjectController[T], opts ...Rec
 			}
 		}
 
-		return b.Complete(reconcile.Func(reconcileObject(mgr, controller, options.Finalizers)))
+		return b.Complete(reconcile.Func(reconcileObject(mgr, controller, options)))
 	}
 }
 
-func reconcileObject[T client.Object](mgr Manager, controller ObjectController[T], finalizers map[string]Finalizer[T]) func(ctx context.Context, request reconcile.Request) (reconcile.Result, error) {
+func WithReconciler[T client.Object](controller func(ctx Context, req T) error, opts ...ReconcilerOption[T]) Initializer {
+	return withReconciler(func(ctx Context, reconcilerOptions *ReconcilerOptions[T], req T) error {
+		return controller(ctx, req)
+	}, opts...)
+}
+
+func reconcileObject[T client.Object](mgr Manager, controller ObjectController[T], reconcilerOptions ReconcilerOptions[T]) func(ctx context.Context, request reconcile.Request) (reconcile.Result, error) {
 	return func(ctx context.Context, request reconcile.Request) (reconcile.Result, error) {
 
 		var object T
@@ -232,7 +239,7 @@ func reconcileObject[T client.Object](mgr Manager, controller ObjectController[T
 		reconcileContext := NewContext(mgr.GetClient(), mgr.GetScheme(), mgr.GetPlatform(), ctx)
 		if !object.GetDeletionTimestamp().IsZero() {
 			log.FromContext(ctx).Info("Resource " + request.Name + " deleted, calling finalizers...")
-			for name, f := range finalizers {
+			for name, f := range reconcilerOptions.Finalizers {
 
 				if !Contains(object.GetFinalizers(), name) {
 					continue
@@ -261,12 +268,13 @@ func reconcileObject[T client.Object](mgr Manager, controller ObjectController[T
 
 		log.FromContext(ctx).Info("Reconcile " + request.Name)
 		missingFinalizers := make([]string, 0)
-		for name := range finalizers {
+		for name := range reconcilerOptions.Finalizers {
 			if !Contains(object.GetFinalizers(), name) {
 				missingFinalizers = append(missingFinalizers, name)
 			}
 		}
 		if len(missingFinalizers) > 0 {
+			log.FromContext(ctx).Info(fmt.Sprintf("Adding finalizers %s", object.GetFinalizers()))
 			patch := client.MergeFrom(object.DeepCopyObject().(T))
 			finalizers := object.GetFinalizers()
 			finalizers = append(finalizers, missingFinalizers...)
@@ -281,8 +289,9 @@ func reconcileObject[T client.Object](mgr Manager, controller ObjectController[T
 		patch := client.MergeFrom(cp)
 
 		var reconcilerError error
-		err := controller(reconcileContext, object)
+		err := controller(reconcileContext, &reconcilerOptions, object)
 		if err != nil {
+			log.FromContext(ctx).Info(fmt.Sprintf("Terminated with error: %s", err))
 			if !IsApplicationError(err) {
 				reconcilerError = errors.Wrap(err, "reconciling resource")
 			}
@@ -306,22 +315,46 @@ func reconcileObject[T client.Object](mgr Manager, controller ObjectController[T
 	}
 }
 
-func WithStdReconciler[T v1beta1.Object](ctrl ObjectController[T], opts ...ReconcilerOption[T]) Initializer {
-	return WithReconciler(ForObjectController(ctrl), opts...)
+func withStdReconciler[T v1beta1.Object](ctrl ObjectController[T], opts ...ReconcilerOption[T]) Initializer {
+	return withReconciler(ForObjectController(ctrl), opts...)
 }
 
-func WithStackDependencyReconciler[T v1beta1.Dependent](fn StackDependentObjectController[T], opts ...ReconcilerOption[T]) Initializer {
+func WithStdReconciler[T v1beta1.Object](ctrl func(ctx Context, req T) error, opts ...ReconcilerOption[T]) Initializer {
+	return withStdReconciler(func(ctx Context, reconcilerOptions *ReconcilerOptions[T], req T) error {
+		return ctrl(ctx, req)
+	}, opts...)
+}
+
+func withStackDependencyReconciler[T v1beta1.Dependent](fn ObjectController[T], opts ...ReconcilerOption[T]) Initializer {
 	opts = append(opts, WithWatchStack[T]())
-	return WithStdReconciler(ForStackDependency(fn), opts...)
+	return withStdReconciler(fn, opts...)
 }
 
-func WithResourceReconciler[T v1beta1.Dependent](fn StackDependentObjectController[T], opts ...ReconcilerOption[T]) Initializer {
-	return WithStackDependencyReconciler(ForResource(fn), opts...)
+func WithStackDependencyReconciler[T v1beta1.Dependent](fn func(ctx Context, stack *v1beta1.Stack, req T) error, opts ...ReconcilerOption[T]) Initializer {
+	return withStackDependencyReconciler(ForStackDependency(func(ctx Context, stack *v1beta1.Stack, reconcilerOptions *ReconcilerOptions[T], req T) error {
+		return fn(ctx, stack, req)
+	}))
 }
 
-func WithModuleReconciler[T v1beta1.Module](fn ModuleController[T], opts ...ReconcilerOption[T]) Initializer {
+func WithResourceReconciler[T v1beta1.Dependent](fn func(ctx Context, stack *v1beta1.Stack, req T) error, opts ...ReconcilerOption[T]) Initializer {
+	return withStackDependencyReconciler(
+		ForStackDependency(
+			ForResource(func(ctx Context, stack *v1beta1.Stack, reconcilerOptions *ReconcilerOptions[T], req T) error {
+				return fn(ctx, stack, req)
+			}),
+		),
+		opts...)
+}
+
+func WithModuleReconciler[T v1beta1.Module](fn func(ctx Context, stack *v1beta1.Stack, req T, version string) error, opts ...ReconcilerOption[T]) Initializer {
 	opts = append(opts, WithWatchVersions[T])
-	return WithStackDependencyReconciler(ForModule(fn), opts...)
+	return withStackDependencyReconciler(
+		ForStackDependency(
+			ForModule(func(ctx Context, stack *v1beta1.Stack, reconcilerOptions *ReconcilerOptions[T], req T, version string) error {
+				return fn(ctx, stack, req, version)
+			}),
+		),
+		opts...)
 }
 
 func WithWatchVersions[T client.Object](options *ReconcilerOptions[T]) {
