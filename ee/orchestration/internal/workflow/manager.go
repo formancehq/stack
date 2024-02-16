@@ -123,9 +123,7 @@ func (m *WorkflowManager) Wait(ctx context.Context, instanceID string) error {
 }
 
 func (m *WorkflowManager) ListWorkflows(ctx context.Context, query bunpaginate.OffsetPaginatedQuery[any]) (*api.Cursor[Workflow], error) {
-	workflows := make([]Workflow, 0)
 	sb := m.db.NewSelect().
-		Model(&workflows).
 		Where("deleted_at IS NULL")
 
 	return bunpaginate.UsingOffset[any, Workflow](ctx, sb, query)
@@ -174,8 +172,7 @@ func (m *WorkflowManager) AbortRun(ctx context.Context, instanceID string) error
 }
 
 func (m *WorkflowManager) ListInstances(ctx context.Context, pagination ListInstancesQuery) (*api.Cursor[Instance], error) {
-	instances := make([]Instance, 0)
-	query := m.db.NewSelect().Model(&instances).
+	query := m.db.NewSelect().
 		Join("JOIN workflows ON workflows.id = u.workflow_id").
 		Where("workflows.deleted_at IS NULL")
 

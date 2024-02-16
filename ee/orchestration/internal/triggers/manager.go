@@ -36,9 +36,7 @@ type TriggerManager struct {
 }
 
 func (m *TriggerManager) ListTriggers(ctx context.Context, query ListTriggersQuery) (*sharedapi.Cursor[Trigger], error) {
-	ret := make([]Trigger, 0)
 	q := m.db.NewSelect().
-		Model(&ret).
 		Where("deleted_at is null")
 
 	return bunpaginate.UsingOffset[any, Trigger](ctx, q, bunpaginate.OffsetPaginatedQuery[any](query))
@@ -145,9 +143,7 @@ func (m *TriggerManager) CreateTrigger(ctx context.Context, data TriggerData) (*
 }
 
 func (m *TriggerManager) ListTriggersOccurrences(ctx context.Context, query ListTriggersOccurrencesQuery) (*sharedapi.Cursor[Occurrence], error) {
-	ret := make([]Occurrence, 0)
 	q := m.db.NewSelect().
-		Model(&ret).
 		Relation("WorkflowInstance")
 
 	if query.Options.TriggerID != "" {
