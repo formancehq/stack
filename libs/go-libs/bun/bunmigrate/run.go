@@ -127,7 +127,7 @@ func run(ctx context.Context, output io.Writer, args []string, connectionOptions
 }
 
 func Run(cmd *cobra.Command, args []string, executor Executor) error {
-	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd.OutOrStdout(), viper.GetBool(service.DebugFlag))
+	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd.Context())
 	if err != nil {
 		return errors.Wrap(err, "evaluating connection options")
 	}

@@ -315,5 +315,6 @@ func migrate(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, dat
 				}
 			}
 			return nil
-		}))
+		}),
+		jobs.WithServiceAccount(database.Status.URI.Query().Get("awsRole")))
 }

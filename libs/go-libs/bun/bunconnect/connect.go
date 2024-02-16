@@ -6,7 +6,6 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"io"
 	"net/url"
 	"time"
 
@@ -19,7 +18,6 @@ import (
 type ConnectionOptions struct {
 	DatabaseSourceName string
 	Debug              bool
-	Writer             io.Writer
 	MaxIdleConns       int
 	MaxOpenConns       int
 	ConnMaxIdleTime    time.Duration

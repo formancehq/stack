@@ -5,10 +5,11 @@ import (
 	"database/sql/driver"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/formancehq/stack/libs/go-libs/aws/iam"
+	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/lib/pq"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-	"io"
 	"time"
 )
 
@@ -32,7 +33,7 @@ func InitFlags(flags *pflag.FlagSet) {
 	}
 }
 
-func ConnectionOptionsFromFlags(output io.Writer, debug bool) (*ConnectionOptions, error) {
+func ConnectionOptionsFromFlags(ctx context.Context) (*ConnectionOptions, error) {
 	var connector func(string) (driver.Connector, error)
 
 	if viper.GetBool(PostgresAWSEnableIAMFlag) {
@@ -47,6 +48,7 @@ func ConnectionOptionsFromFlags(output io.Writer, debug bool) (*ConnectionOption
 				driver: &iamDriver{
 					awsConfig: cfg,
 				},
+				logger: logging.FromContext(ctx),
 			}, nil
 		}
 	} else {
@@ -56,8 +58,7 @@ func ConnectionOptionsFromFlags(output io.Writer, debug bool) (*ConnectionOption
 	}
 	return &ConnectionOptions{
 		DatabaseSourceName: viper.GetString(PostgresURIFlag),
-		Debug:              debug,
-		Writer:             output,
+		Debug:              service.IsDebug(),
 		MaxIdleConns:       viper.GetInt(PostgresMaxIdleConnsFlag),
 		ConnMaxIdleTime:    viper.GetDuration(PostgresConnMaxIdleTimeFlag),
 		MaxOpenConns:       viper.GetInt(PostgresMaxOpenConnsFlag),

@@ -382,6 +382,7 @@ _Appears in:_
 | --- | --- |
 | `stack` _string_ |  |
 | `service` _string_ |  |
+| `debug` _boolean_ |  |
 
 
 

@@ -2,12 +2,13 @@ package v1
 
 import (
 	"context"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"log"
 	"net/http"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/formancehq/stack/libs/go-libs/logging"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 

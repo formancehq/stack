@@ -60,7 +60,10 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, version st
 		}
 
 		if IsGreaterOrEqual(version, "v2.0.0-rc.5") && databases.GetSavedModuleVersion(database) != version {
-			if err := jobs.Handle(ctx, auth, "migrate", databases.MigrateDatabaseContainer(image, database)); err != nil {
+			if err := jobs.Handle(ctx, auth, "migrate",
+				databases.MigrateDatabaseContainer(image, database),
+				jobs.WithServiceAccount(database.Status.URI.Query().Get("awsRole")),
+			); err != nil {
 				return err
 			}
 

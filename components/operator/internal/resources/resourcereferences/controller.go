@@ -131,7 +131,15 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, req *v1beta1.ResourceReference
 		}
 	}
 
-	originalAnnotations := resource.UnstructuredContent()["metadata"].(map[string]any)["annotations"].(map[string]any)
+	annotations := make(map[string]any)
+	originalMetadata := resource.UnstructuredContent()["metadata"]
+	if originalMetadata != nil {
+		metadata := originalMetadata.(map[string]any)
+		originalAnnotations := metadata["annotations"]
+		if originalAnnotations != nil {
+			annotations = originalAnnotations.(map[string]any)
+		}
+	}
 
 	unstructured.RemoveNestedField(resource.UnstructuredContent(), "metadata")
 	unstructured.RemoveNestedField(resource.UnstructuredContent(), "status")
@@ -147,7 +155,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, req *v1beta1.ResourceReference
 			return err
 		}
 
-		if err := unstructured.SetNestedMap(content, originalAnnotations, "metadata", "annotations"); err != nil {
+		if err := unstructured.SetNestedMap(content, annotations, "metadata", "annotations"); err != nil {
 			panic(err)
 		}
 

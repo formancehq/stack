@@ -2,10 +2,11 @@ package api
 
 import (
 	"context"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/formancehq/stack/libs/go-libs/logging"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 	"github.com/uptrace/bun"

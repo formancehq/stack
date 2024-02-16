@@ -35,7 +35,6 @@ func TestMigrateLedgerV1(t *testing.T) {
 	d := driver.New(bunconnect.ConnectionOptions{
 		DatabaseSourceName: pgtesting.Server().GetDSN(),
 		Debug:              testing.Verbose(),
-		Writer:             os.Stdout,
 	})
 	require.NoError(t, d.Initialize(ctx))
 

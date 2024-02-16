@@ -7,7 +7,6 @@ import (
 	"crypto/rsa"
 	"encoding/json"
 	"fmt"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -15,6 +14,8 @@ import (
 	"net/url"
 	"testing"
 	"time"
+
+	"github.com/formancehq/stack/libs/go-libs/logging"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 

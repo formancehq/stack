@@ -36,7 +36,7 @@ func newServeCommand() *cobra.Command {
 			return bindFlagsToViper(cmd)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			commonOptions, err := commonOptions(cmd.OutOrStdout())
+			commonOptions, err := commonOptions(cmd)
 			if err != nil {
 				return err
 			}

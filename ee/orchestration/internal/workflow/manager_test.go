@@ -2,8 +2,9 @@ package workflow
 
 import (
 	"context"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"testing"
+
+	"github.com/formancehq/stack/libs/go-libs/logging"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 
