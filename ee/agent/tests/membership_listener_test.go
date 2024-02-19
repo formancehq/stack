@@ -3,6 +3,9 @@ package tests
 import (
 	"context"
 	"fmt"
+	"net/url"
+	"reflect"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/components/agent/internal"
 	"github.com/formancehq/stack/components/agent/internal/generated"
@@ -13,8 +16,6 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes/scheme"
-	"net/url"
-	"reflect"
 )
 
 var _ = Describe("Membership listener", func() {
@@ -27,7 +28,7 @@ var _ = Describe("Membership listener", func() {
 		clientInfo = internal.ClientInfo{
 			BaseUrl: &url.URL{},
 		}
-		listener := internal.NewMembershipListener(k8sClient, clientInfo, mapper, membershipClient)
+		listener := internal.NewMembershipListener(k8sClient, clientInfo, mapper, membershipClient, false)
 		done := make(chan struct{})
 		DeferCleanup(func() {
 			<-done

@@ -7,39 +7,46 @@ import (
 	"k8s.io/client-go/tools/cache"
 )
 
-func StacksEventHandler(logger sharedlogging.Logger, membershipClient MembershipClient) cache.ResourceEventHandlerFuncs {
-	sendStatus := func(stack string, status generated.StackStatus) {
-		if err := membershipClient.Send(&generated.Message{
-			Message: &generated.Message_StatusChanged{
-				StatusChanged: &generated.StatusChanged{
-					ClusterName: stack,
-					Status:      status,
-				},
+func sendStatus(logger sharedlogging.Logger, membershipClient MembershipClient, stack string, status generated.StackStatus) error {
+	if err := membershipClient.Send(&generated.Message{
+		Message: &generated.Message_StatusChanged{
+			StatusChanged: &generated.StatusChanged{
+				ClusterName: stack,
+				Status:      status,
 			},
-		}); err != nil {
-			logger.Errorf("Unable to send stack status to server: %s", err)
-		}
+		},
+	}); err != nil {
+		logger.Errorf("Unable to send stack status to server: %s", err)
+		return err
 	}
 
-	sendStatusFromStack := func(stack *v1beta1.Stack) {
-		sendStatus(stack.Name, func() generated.StackStatus {
-			if stack.Spec.Disabled {
-				return generated.StackStatus_Disabled
-			}
+	return nil
+}
 
-			if stack.Status.Ready {
-				return generated.StackStatus_Ready
-			} else {
-				return generated.StackStatus_Progressing
-			}
-		}())
+func evaluateStackStatus(isReady, isDisabled bool) generated.StackStatus {
+	if isDisabled {
+		return generated.StackStatus_Disabled
 	}
+
+	if isReady {
+		return generated.StackStatus_Ready
+	}
+
+	return generated.StackStatus_Progressing
+
+}
+
+func sendStatusFromStack(logger sharedlogging.Logger, membershipClient MembershipClient, stack *v1beta1.Stack) error {
+	return sendStatus(logger, membershipClient, stack.Name, evaluateStackStatus(stack.Status.Ready, stack.Spec.Disabled))
+}
+
+func StacksEventHandler(logger sharedlogging.Logger, membershipClient MembershipClient) cache.ResourceEventHandlerFuncs {
 
 	return cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			stack := convertUnstructured[*v1beta1.Stack](obj)
 			logger.Infof("Stack '%s' added", stack.Name)
-			sendStatusFromStack(stack)
+			sendStatusFromStack(logger, membershipClient, stack)
 		},
 		UpdateFunc: func(oldObj, newObj interface{}) {
 
@@ -54,12 +61,12 @@ func StacksEventHandler(logger sharedlogging.Logger, membershipClient Membership
 			}
 
 			logger.Infof("Stack '%s' updated", newStack.Name)
-			sendStatusFromStack(newStack)
+			sendStatusFromStack(logger, membershipClient, newStack)
 		},
 		DeleteFunc: func(obj interface{}) {
 			stack := convertUnstructured[*v1beta1.Stack](obj)
 			logger.Infof("Stack '%s' deleted", stack.Name)
-			sendStatus(stack.Name, generated.StackStatus_Deleted)
+			sendStatus(logger, membershipClient, stack.Name, generated.StackStatus_Deleted)
 		},
 	}
 }

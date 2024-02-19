@@ -35,6 +35,8 @@ spec:
           env:
             - name: DEBUG
               value: "{{.Values.debug}}"
+            - name: SYNC_STATUS_INIT_ENABLED
+              value: "{{.Values.firstSyncSendStatus}}"
             - name: SERVER_ADDRESS
               value: "{{.Values.server.address}}"
             - name: TLS_ENABLED

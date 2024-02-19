@@ -68,6 +68,8 @@ type membershipListener struct {
 	restMapper meta.RESTMapper
 	orders     MembershipClient
 	wp         *pond.WorkerPool
+
+	syncStatusInitEnabled bool
 }
 
 func (c *membershipListener) Start(ctx context.Context) {
@@ -111,6 +113,7 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 		},
 	})
 	if err != nil {
+
 		sharedlogging.FromContext(ctx).Errorf("Unable to create stack cluster side: %s", err)
 		return
 	}
@@ -210,6 +213,18 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 		Do(ctx).
 		Into(authClientList); err != nil {
 		sharedlogging.FromContext(ctx).Errorf("Unable to list AuthClient cluster side: %s", err)
+	}
+
+	if c.syncStatusInitEnabled {
+		status := stack.Object["status"].(map[string]any)
+		ready := status["ready"].(bool)
+		isDisabled := stack.Object["spec"].(map[string]any)["disabled"].(bool)
+
+		sharedlogging.FromContext(ctx).Infof("INIT: Stack %s status ready ? %t, disabled ? %t", stack.GetName(), ready, isDisabled)
+		err := sendStatus(sharedlogging.FromContext(ctx), c.orders, stack.GetName(), evaluateStackStatus(ready, isDisabled))
+		if err != nil {
+			sharedlogging.FromContext(ctx).Errorf("Unable to send stack status to server: %s", err)
+		}
 	}
 
 l:
@@ -374,12 +389,13 @@ func (c *membershipListener) createOrUpdateStackDependency(ctx context.Context, 
 }
 
 func NewMembershipListener(restClient *rest.RESTClient, clientInfo ClientInfo, mapper meta.RESTMapper,
-	orders MembershipClient) *membershipListener {
+	orders MembershipClient, syncStatusInitEnabled bool) *membershipListener {
 	return &membershipListener{
-		restClient: restClient,
-		clientInfo: clientInfo,
-		restMapper: mapper,
-		orders:     orders,
-		wp:         pond.New(5, 5),
+		restClient:            restClient,
+		clientInfo:            clientInfo,
+		restMapper:            mapper,
+		orders:                orders,
+		wp:                    pond.New(5, 5),
+		syncStatusInitEnabled: syncStatusInitEnabled,
 	}
 }

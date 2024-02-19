@@ -101,9 +101,11 @@ func runMembershipListener(lc fx.Lifecycle, client *membershipListener) {
 	})
 }
 
-func NewModule(serverAddress string, authenticator Authenticator, clientInfo ClientInfo, opts ...grpc.DialOption) fx.Option {
+func NewModule(serverAddress string, authenticator Authenticator, clientInfo ClientInfo, syncStatusInitEnabled bool, opts ...grpc.DialOption) fx.Option {
+
 	return fx.Options(
 		fx.Supply(clientInfo),
+		fx.Supply(syncStatusInitEnabled),
 		fx.Provide(rest.RESTClientFor),
 		fx.Provide(dynamic.NewForConfig),
 		fx.Provide(NewDynamicSharedInformerFactory),

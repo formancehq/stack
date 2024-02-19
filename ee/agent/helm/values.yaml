@@ -43,6 +43,7 @@ tolerations: []
 affinity: {}
 
 debug: false
+firstSyncSendStatus: true
 
 server:
   address: "app.formance.cloud:443"

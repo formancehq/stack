@@ -36,6 +36,7 @@ var (
 
 const (
 	debugFlag                      = "debug"
+	syncStatusInitEnabled          = "sync-status-init-enabled"
 	kubeConfigFlag                 = "kube-config"
 	serverAddressFlag              = "server-address"
 	tlsEnabledFlag                 = "tls-enabled"
@@ -111,7 +112,7 @@ func runAgent(cmd *cobra.Command, args []string) error {
 			BaseUrl:    baseUrl,
 			Production: viper.GetBool(productionFlag),
 			Version:    Version,
-		}, dialOptions...),
+		}, viper.GetBool(syncStatusInitEnabled), dialOptions...),
 		sharedotlptraces.CLITracesModule(),
 	}
 
@@ -212,4 +213,5 @@ func init() {
 	rootCmd.Flags().Bool(productionFlag, false, "Is a production agent")
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	rootCmd.Flags().BoolP(debugFlag, "d", false, "Debug mode")
+	rootCmd.Flags().Bool(syncStatusInitEnabled, false, "Sync status init enabled")
 }
