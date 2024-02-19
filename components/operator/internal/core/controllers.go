@@ -138,15 +138,15 @@ func ForModule[T v1beta1.Module](underlyingController ModuleController[T]) Stack
 			if err != nil {
 				return err
 			}
-		}
 
-		for _, condition := range t.GetConditions() {
-			if condition.ObservedGeneration != t.GetGeneration() {
-				continue
-			}
+			for _, condition := range t.GetConditions() {
+				if condition.ObservedGeneration != t.GetGeneration() {
+					continue
+				}
 
-			if condition.Status != metav1.ConditionTrue {
-				return NewPendingError()
+				if condition.Status != metav1.ConditionTrue {
+					return NewPendingError()
+				}
 			}
 		}
 
