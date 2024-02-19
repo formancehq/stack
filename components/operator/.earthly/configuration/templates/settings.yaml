@@ -56,7 +56,7 @@ metadata:
 spec:
   stacks:
     - '*'
-  key: default-otlp
+  key: opentelemetry.traces.dsn
   value: grpc://otel-collector-opentelemetry-collector.formance.svc.cluster.local:4317?insecure=true
 ---
 apiVersion: formance.com/v1beta1

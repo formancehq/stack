@@ -1,8 +1,8 @@
-# operatorv2
-// TODO(user): Add simple overview of use/purpose
+# operator
 
 ## Description
-// TODO(user): An in-depth paragraph about your project and overview of use
+
+The operator allow to install formance components on a k8s cluster.
 
 ## Getting Started
 
@@ -41,23 +41,19 @@ helm install postgres oci://registry-1.docker.io/bitnamicharts/postgresql \
   --set auth.database=formance
 ```
 
-**Create a DatabaseConfiguration object**
+**Create a Settings object for database connection**
 
 ```sh
 cat <<EOF | kubectl create -f -
 apiVersion: formance.com/v1beta1
-kind: DatabaseConfiguration
+kind: Settings
 metadata:
-  labels:
-    formance.com/stack: any
-    formance.com/service: any
   name: databaseconfiguration0
 spec:
-  username: formance
-  password: formance
-  host: postgres-postgresql.default
-  port: 5432
-  disableSSLMode: true
+  stacks:
+  - "*"
+  key: postgres.*.uri
+  value: postgresql://formance:formance@postgres-postgresql.default:5432?disableSSLMode=true
 EOF
 ```
 
@@ -105,7 +101,7 @@ EOF
 **Build and push your image to the location specified by `IMG`:**
 
 ```sh
-make docker-build docker-push IMG=<some-registry>/operatorv2:tag
+make docker-build docker-push IMG=<some-registry>/operator:tag
 ```
 
 **NOTE:** This image ought to be published in the personal registry you specified. 
@@ -121,7 +117,7 @@ make install
 **Deploy the Manager to the cluster with the image specified by `IMG`:**
 
 ```sh
-make deploy IMG=<some-registry>/operatorv2:tag
+make deploy IMG=<some-registry>/operator:tag
 ```
 
 **Run locally without building/pushing image**
@@ -160,6 +156,101 @@ make uninstall
 ```sh
 make undeploy
 ```
+
+## Settings
+
+Settings allow to configure some parts of the deployments.
+Settings are encoded as string, but under the hood, each settings can be unmarshalled on a dedicated type.
+
+While we have some basic types (string, number, bool ...), we also have some complex structures : 
+* Maps: maps are just one level dictionary with values as string. Repeat `<key>=<value>` pattern for each entry, while separating with comma.
+* URIs: URIs are used each time we need to address an external resources (postgres, kafka ...). URIs are convenient to encode a lot of information in a simple, normalized format.
+
+Available settings:
+
+| Key                                                                                      | Type   | Example             | Description                                                          |
+|------------------------------------------------------------------------------------------|--------|---------------------|----------------------------------------------------------------------|
+| postgres.`<module-name>`.uri                                                             | URI    |                     | Postgres database configuration                                      |
+| elasticsearch.dsn                                                                        | URI    |                     | Elasticsearch connection URI                                         |
+| temporal.dsn                                                                             | URI    |                     | Temporal URI                                                         |
+| temporal.tls.crt                                                                         | string |                     | Temporal certificate                                                 |
+| temporal.tls.key                                                                         | string |                     | Temporal certificate key                                             |
+| broker.dsn                                                                               | URI    |                     | Broker URI                                                           |
+| opentelemetry.traces.dsn                                                                 | URI    |                     | OpenTelemetry collector URI                                          |
+| clear-database                                                                           | bool   | true                | Whether or not remove databases on stack deletion                    |
+| payments.encryption-key                                                                  | string |                     | Payments data encryption key                                         |
+| deployments.`<deployment-name>`.init-containers.`<container-name>`.resource-requirements | Map    | cpu=X, mem=X        |
+| deployments.`<deployment-name>`.containers.`<container-name>`.resource-requirements      | Map    | cpu=X, mem=X        |
+| deployments.`<deployment-name>`.init-containers.`<container-name>`.run-as                | Map    | user=X, group=X     |
+| deployments.`<deployment-name>`.containers.`<container-name>`.run-as                     | Map    | user=X, group=X     |
+| caddy.image                                                                              | string |                     | Caddy image                                                          |
+| registries.`<name>`.endpoint                                                             | string |                     | Spécify a custom endpoint for a specific docker repository           |
+| search.batching                                                                          | Map    | period=1s, count=10 | Override default batching parameters                                 |
+| services.`<service-name>`.annotations                                                    | Map    |                     | Allow to specify custom annotations to apply on created k8s services |
+
+### Postgres URI format
+
+Scheme: postgresql
+
+Query params :
+
+| Name           | Type   | Default | Description                                          |
+|----------------|--------|---------|------------------------------------------------------|
+| secret         | string |         | Specify a secret where credentials are defined       |
+| awsRole        | string |         | Specify a service account name mapped to an aws role |
+| disableSSLMode | bool   | false   | Disable SSL on Postgres connection                   |
+
+### ElasticSearch URI format
+
+Scheme: elasticsearch
+
+Query params :
+
+| Name   | Type   | Default | Description                                    |
+|--------|--------|---------|------------------------------------------------|
+| secret | string |         | Specify a secret where credentials are defined |
+
+### Temporal URI format
+
+Scheme : temporal
+
+Path : Match the temporal namespace
+
+Query params :
+
+| Name   | Type   | Default | Description                                              |
+|--------|--------|---------|----------------------------------------------------------|
+| secret | string |         | Specify a secret where temporal certificates are defined |
+
+### Broker URI format
+
+Scheme : nats | kafka
+
+#### Broker URI format (nats)
+
+Scheme: nats
+
+Query params :
+
+| Name     | Type   | Default | Description                                                               |
+|----------|--------|---------|---------------------------------------------------------------------------|
+| replicas | number | 1       | Specify the number of replicas to configure on newly created nats streams |
+
+#### Broker URI format (kafka)
+
+Scheme: kafka
+
+Query params :
+
+| Name             | Type   | Default | Description                                    |
+|------------------|--------|---------|------------------------------------------------|
+| saslEnabled      | bool   | false   | Specify is sasl authentication must be enabled |
+| saslUsername     | string |         | Username on sasl authentication                |
+| saslPassword     | string |         | Password on sasl authentication                |
+| saslMechanism    | string |         | Mechanism on sasl authentication               |
+| saslSCRAMSHASize | string |         | SCRAM SHA size on sasl authentication          |
+| tls              | bool   | false   | Whether enable ssl or not                      |
+
 
 ## Contributing
 
