@@ -1,5 +1,5 @@
 nats:
-  enabled: true
+  enabled: false
   fullnameOverride: nats
   config:
     cluster:
@@ -30,7 +30,7 @@ postgresql:
       enabled: false
 
 opensearch:
-  enabled: true
+  enabled: false
   fullnameOverride: opensearch
   security:
     enabled: false
