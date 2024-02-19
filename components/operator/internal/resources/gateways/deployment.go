@@ -34,5 +34,6 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack,
 		settings.ConfigureCaddy(caddyfileConfigMap, image, env),
 		deployments.WithMatchingLabels("gateway"),
 	)
+
 	return err
 }
