@@ -129,6 +129,15 @@ func CreateOrUpdate(ctx core.Context, stack *v1beta1.Stack, owner interface {
 			},
 		}
 
+		if deployment.Spec.Replicas == nil {
+			replicas, err := settings.GetInt32(ctx, stack.Name, "deployment", name, "replicas")
+			if err != nil {
+				return err
+			}
+
+			deployment.Spec.Replicas = replicas
+		}
+
 		for ind, container := range deployment.Spec.Template.Spec.InitContainers {
 			resourceRequirements, err := settings.GetResourceRequirements(ctx, owner.GetStack(),
 				"deployments", deployment.Name, "init-containers", container.Name, "resource-requirements")
