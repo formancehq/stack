@@ -1,7 +1,7 @@
 package tests_test
 
 import (
-	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
+	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/operator/internal/tests/internal"
@@ -10,6 +10,7 @@ import (
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 var _ = Describe("AuthController", func() {
@@ -72,6 +73,31 @@ var _ = Describe("AuthController", func() {
 				g.Expect(err).To(BeNil())
 				return reference
 			}).Should(BeTrue())
+		})
+		Context("Then when disabling the stack", func() {
+			JustBeforeEach(func() {
+				Eventually(func(g Gomega) *v1beta1.Auth {
+					g.Expect(LoadResource("", auth.Name, auth)).To(Succeed())
+					return auth
+				}).Should(BeReady())
+				patch := client.MergeFrom(stack.DeepCopy())
+				stack.Spec.Disabled = true
+				Expect(Patch(stack, patch)).To(Succeed())
+			})
+			It("Should remove all dependents objects except the Database object", func() {
+				By("It should remove the deployment", func() {
+					deployment := &appsv1.Deployment{}
+					Eventually(func() error {
+						return LoadResource(stack.Name, "auth", deployment)
+					}).Should(BeNotFound())
+				})
+				By("It should remove the GatewayHTTPAPI object", func() {
+					gatewayHTTPApi := &v1beta1.GatewayHTTPAPI{}
+					Eventually(func() error {
+						return LoadResource("", core.GetObjectName(stack.Name, "auth"), gatewayHTTPApi)
+					}).Should(BeNotFound())
+				})
+			})
 		})
 		Context("Then when create an AuthClient object", func() {
 			var (

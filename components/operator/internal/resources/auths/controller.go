@@ -42,7 +42,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, version st
 		return err
 	}
 
-	configMap, err := createConfiguration(ctx, stack, authClientList)
+	configMap, err := createConfiguration(ctx, stack, auth, authClientList)
 	if err != nil {
 		return errors.Wrap(err, "creating configuration")
 	}
