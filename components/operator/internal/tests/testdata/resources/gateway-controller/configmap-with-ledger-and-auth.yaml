@@ -46,7 +46,7 @@
 			env "staging"
 			endpoints {
 				auth {
-                    http://auth:8080/_info http://auth:8080/
+                    http://auth:8080/_info http://auth:8080/_healthcheck
                 }
 				ledger {
                     http://ledger:8080/_info http://ledger:8080/
