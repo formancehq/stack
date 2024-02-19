@@ -25,11 +25,9 @@ func runInformers(lc fx.Lifecycle, informers []cache.SharedIndexInformer) {
 	stopCh := make(chan struct{})
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			go func() {
-				for _, informer := range informers {
-					informer.Run(stopCh)
-				}
-			}()
+			for _, informer := range informers {
+				go informer.Run(stopCh)
+			}
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
