@@ -50,7 +50,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, o *v1beta1.Orchestration, vers
 		return err
 	}
 
-	if err := gatewayhttpapis.Create(ctx, o); err != nil {
+	if err := gatewayhttpapis.Create(ctx, o, gatewayhttpapis.WithHealthCheckEndpoint("_healthcheck")); err != nil {
 		return err
 	}
 

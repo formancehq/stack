@@ -44,7 +44,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, ve
 		return err
 	}
 
-	if err := gatewayhttpapis.Create(ctx, webhooks); err != nil {
+	if err := gatewayhttpapis.Create(ctx, webhooks, gatewayhttpapis.WithHealthCheckEndpoint("_healthcheck")); err != nil {
 		return err
 	}
 

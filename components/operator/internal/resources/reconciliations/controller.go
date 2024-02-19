@@ -70,7 +70,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, reconciliation *v1beta1.Reconc
 		}
 	}
 
-	if err := gatewayhttpapis.Create(ctx, reconciliation); err != nil {
+	if err := gatewayhttpapis.Create(ctx, reconciliation, gatewayhttpapis.WithHealthCheckEndpoint("_healthcheck")); err != nil {
 		return err
 	}
 
