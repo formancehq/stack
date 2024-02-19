@@ -38,7 +38,14 @@ func NewRootCommand() *cobra.Command {
 	client := newClient()
 	root.AddCommand(client)
 
-	publish.InitCLIFlags(server)
+	publish.InitCLIFlags(server, func(cd *publish.ConfigDefault) {
+		// We want to override the default values of flags here in order for the
+		// Max reconnect flag to be set to -1, which means infinite reconnects.
+		// NOTE(polo): the value provided in the env vars will still override
+		// this one, so make sure to check if the value is set or not in the env
+		// vars
+		cd.PublisherNatsMaxReconnect = -1
+	})
 	server.Flags().String(serviceHttpAddrFlag, "localhost:8080", "Listen address for http API")
 	server.Flags().String(serviceGrpcAddrFlag, "localhost:3068", "Listen address for grpc API")
 	server.Flags().String(authIssuerURLFlag, "", "JWKS URL")
