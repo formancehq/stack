@@ -4,7 +4,7 @@ operator:
   nameOverride: "operator"
   image:
     repository: "ghcr.io/formancehq/operator"
-    tag: "v2.0.0-rc.6"
+    tag: "v2.0.0-rc.8"
   operator:
     disableWebhooks: false
     region: "private"
@@ -15,7 +15,7 @@ operator:
 agent:
   enabled: true
   image:
-    tag: "v2.0.0-rc.6"
+    tag: "v2.0.0-rc.8"
   server:
     address: "app.formance.cloud:443"
     tls:
