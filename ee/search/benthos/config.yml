@@ -1,3 +1,9 @@
 http:
   enabled: true
   address: 0.0.0.0:4195
+credentials:
+  profile: ${AWS_PROFILE}
+  id: ${AWS_ACCESS_KEY_ID}
+  secret: ${AWS_SECRET_ACCESS_KEY}
+  token: ${AWS_SESSION_TOKEN}
+  role: ${AWS_ROLE_ARN}
