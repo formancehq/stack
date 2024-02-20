@@ -19,6 +19,7 @@ package main
 import (
 	"crypto/tls"
 	"flag"
+	"fmt"
 	"net/http"
 	"os"
 
@@ -77,6 +78,8 @@ func main() {
 	opts := zap.Options{
 		Development: true,
 	}
+
+	fmt.Println("Starting TOTO")
 	opts.BindFlags(flag.CommandLine)
 	flag.Parse()
 
