@@ -15,6 +15,7 @@ const (
 	AWSSecretAccessKeyFlag = "aws-secret-access-key"
 	AWSSessionTokenFlag    = "aws-session-token"
 	AWSProfileFlag         = "aws-profile"
+	AWSRoleArn             = "aws-role-arn"
 )
 
 func InitFlags(flags *pflag.FlagSet) {
