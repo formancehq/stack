@@ -142,7 +142,8 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 		return err
 	}
 
-	_, err = deployments.CreateOrUpdate(ctx, stack, search, "search",
+	_, err = deployments.CreateOrUpdate(ctx, search, "search",
+		deployments.WithReplicasFromSettings(ctx, stack),
 		resourcereferences.Annotate[*appsv1.Deployment]("elasticsearch-secret-hash", resourceReference),
 		deployments.WithMatchingLabels("search"),
 		deployments.WithContainers(corev1.Container{

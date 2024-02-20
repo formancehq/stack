@@ -40,7 +40,8 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, stargate *v1beta1.
 		return err
 	}
 
-	_, err = deployments.CreateOrUpdate(ctx, stack, stargate, "stargate",
+	_, err = deployments.CreateOrUpdate(ctx, stargate, "stargate",
+		deployments.WithReplicasFromSettings(ctx, stack),
 		deployments.WithContainers(v1.Container{
 			Name:          "stargate",
 			Env:           env,
