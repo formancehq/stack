@@ -78,7 +78,7 @@ func createFullDeployment(ctx core.Context, stack *v1beta1.Stack,
 		env = append(env, core.Env("PUBLISHER_TOPIC_MAPPING", "*:"+core.GetObjectName(stack.Name, "payments")))
 	}
 
-	_, err = deployments.CreateOrUpdate(ctx, stack, payments, "payments",
+	_, err = deployments.CreateOrUpdate(ctx, payments, "payments",
 		deployments.WithMatchingLabels("payments"),
 		deployments.WithServiceAccountName(database.Status.URI.Query().Get("awsRole")),
 		deployments.WithContainers(v1.Container{
@@ -112,8 +112,9 @@ func createReadDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1be
 	}
 	env = append(env, authEnvVars...)
 
-	_, err = deployments.CreateOrUpdate(ctx, stack, payments, "payments-read",
+	_, err = deployments.CreateOrUpdate(ctx, payments, "payments-read",
 		deployments.WithMatchingLabels("payments-read"),
+		deployments.WithReplicasFromSettings(ctx, stack),
 		deployments.WithServiceAccountName(database.Status.URI.Query().Get("awsRole")),
 		deployments.WithContainers(v1.Container{
 			Name:          "api",
@@ -160,7 +161,7 @@ func createConnectorsDeployment(ctx core.Context, stack *v1beta1.Stack, payments
 		env = append(env, core.Env("PUBLISHER_TOPIC_MAPPING", "*:"+core.GetObjectName(stack.Name, "payments")))
 	}
 
-	_, err = deployments.CreateOrUpdate(ctx, stack, payments, "payments-connectors",
+	_, err = deployments.CreateOrUpdate(ctx, payments, "payments-connectors",
 		deployments.WithMatchingLabels("payments-connectors"),
 		deployments.WithServiceAccountName(database.Status.URI.Query().Get("awsRole")),
 		deployments.WithContainers(v1.Container{
@@ -209,7 +210,8 @@ func createGateway(ctx core.Context, stack *v1beta1.Stack, p *v1beta1.Payments) 
 		return err
 	}
 
-	_, err = deployments.CreateOrUpdate(ctx, stack, p, "payments",
+	_, err = deployments.CreateOrUpdate(ctx, p, "payments",
+		deployments.WithReplicasFromSettings(ctx, stack),
 		settings.ConfigureCaddy(caddyfileConfigMap, caddyImage, env),
 		deployments.WithMatchingLabels("payments"),
 		// notes(gfyrag): reset init containers in case of upgrading from v1 to v2

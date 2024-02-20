@@ -67,7 +67,7 @@ func installLedgerSingleInstance(ctx core.Context, stack *v1beta1.Stack,
 		}
 	}
 
-	if err := createDeployment(ctx, stack, ledger, database, "ledger", *container, v2, deployments.WithReplicas(1)); err != nil {
+	if err := createDeployment(ctx, ledger, database, "ledger", *container, v2, deployments.WithReplicas(1)); err != nil {
 		return err
 	}
 
@@ -95,7 +95,7 @@ func installLedgerMonoWriterMultipleReader(ctx core.Context, stack *v1beta1.Stac
 			return err
 		}
 
-		if err := createDeployment(ctx, stack, ledger, database, name, container, v2, mutators...); err != nil {
+		if err := createDeployment(ctx, ledger, database, name, container, v2, mutators...); err != nil {
 			return err
 		}
 
@@ -117,7 +117,7 @@ func installLedgerMonoWriterMultipleReader(ctx core.Context, stack *v1beta1.Stac
 	}
 
 	container = createLedgerContainerReadOnly(v2)
-	if err := createDeployment("ledger-read", *container); err != nil {
+	if err := createDeployment("ledger-read", *container, deployments.WithReplicasFromSettings(ctx, stack)); err != nil {
 		return err
 	}
 
@@ -156,7 +156,7 @@ func uninstallLedgerMonoWriterMultipleReader(ctx core.Context, stack *v1beta1.St
 	return nil
 }
 
-func createDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, database *v1beta1.Database,
+func createDeployment(ctx core.Context, ledger *v1beta1.Ledger, database *v1beta1.Database,
 	name string, container corev1.Container, v2 bool, mutators ...core.ObjectMutator[*v1.Deployment]) error {
 	mutators = append([]core.ObjectMutator[*v1.Deployment]{
 		deployments.WithContainers(container),
@@ -175,7 +175,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Le
 		},
 	}, mutators...)
 
-	_, err := deployments.CreateOrUpdate(ctx, stack, ledger, name, mutators...)
+	_, err := deployments.CreateOrUpdate(ctx, ledger, name, mutators...)
 	return err
 }
 
@@ -292,8 +292,9 @@ func createGatewayDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1b
 		return err
 	}
 
-	_, err = deployments.CreateOrUpdate(ctx, stack, ledger, "ledger-gateway",
+	_, err = deployments.CreateOrUpdate(ctx, ledger, "ledger-gateway",
 		settings.ConfigureCaddy(caddyfileConfigMap, caddyImage, env),
+		deployments.WithReplicasFromSettings(ctx, stack),
 		deployments.WithMatchingLabels("ledger"),
 	)
 	return err

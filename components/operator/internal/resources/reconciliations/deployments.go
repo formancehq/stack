@@ -38,7 +38,8 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, reconciliation *v1
 	}
 	env = append(env, authEnvVars...)
 
-	_, err = deployments.CreateOrUpdate(ctx, stack, reconciliation, "reconciliation",
+	_, err = deployments.CreateOrUpdate(ctx, reconciliation, "reconciliation",
+		deployments.WithReplicasFromSettings(ctx, stack),
 		func(t *appsv1.Deployment) error {
 			t.Spec.Template.Spec.Containers = []v1.Container{{
 				Name:          "reconciliation",

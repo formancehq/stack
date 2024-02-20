@@ -45,6 +45,20 @@ func WithReplicas(replicas int32) func(t *appsv1.Deployment) error {
 	}
 }
 
+func WithReplicasFromSettings(ctx core.Context, stack *v1beta1.Stack) core.ObjectMutator[*appsv1.Deployment] {
+	return func(deployment *appsv1.Deployment) error {
+		replicas, err := settings.GetInt32(ctx, stack.Name, "deployments", deployment.Name, "replicas")
+		if err != nil {
+			return err
+		}
+		if replicas != nil {
+			deployment.Spec.Replicas = replicas
+		}
+
+		return nil
+	}
+}
+
 func WithContainers(containers ...corev1.Container) func(r *appsv1.Deployment) error {
 	return func(r *appsv1.Deployment) error {
 		r.Spec.Template.Spec.Containers = containers
@@ -69,7 +83,7 @@ func WithVolumes(volumes ...corev1.Volume) func(t *appsv1.Deployment) error {
 	}
 }
 
-func CreateOrUpdate(ctx core.Context, stack *v1beta1.Stack, owner interface {
+func CreateOrUpdate(ctx core.Context, owner interface {
 	client.Object
 	GetStack() string
 	SetCondition(condition v1beta1.Condition)
@@ -127,15 +141,6 @@ func CreateOrUpdate(ctx core.Context, stack *v1beta1.Stack, owner interface {
 			SeccompProfile: &corev1.SeccompProfile{
 				Type: corev1.SeccompProfileTypeRuntimeDefault,
 			},
-		}
-
-		if deployment.Spec.Replicas == nil {
-			replicas, err := settings.GetInt32(ctx, stack.Name, "deployment", name, "replicas")
-			if err != nil {
-				return err
-			}
-
-			deployment.Spec.Replicas = replicas
 		}
 
 		for ind, container := range deployment.Spec.Template.Spec.InitContainers {

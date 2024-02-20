@@ -66,8 +66,9 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, dat
 		env = append(env, Env("CAOS_OIDC_DEV", "1"))
 	}
 
-	return deployments.CreateOrUpdate(ctx, stack, auth, "auth",
+	return deployments.CreateOrUpdate(ctx, auth, "auth",
 		deployments.WithMatchingLabels("auth"),
+		deployments.WithReplicasFromSettings(ctx, stack),
 		deployments.WithServiceAccountName(database.Status.URI.Query().Get("awsRole")),
 		func(t *appsv1.Deployment) error {
 			t.Spec.Template.Annotations = MergeMaps(t.Spec.Template.Annotations, map[string]string{
