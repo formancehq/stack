@@ -66,23 +66,24 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 		return err
 	}
 
-	switch {
-	case !database.Status.Ready:
-		// Some job fields are immutable (env vars for example)
-		// So, if the configuration has changed, wee need to delete the job,
-		// Then recreate a new one
-
-		if database.Status.URI != nil && database.Status.URI.String() != databaseURL.String() {
-			object := &batchv1.Job{}
-			object.SetName(fmt.Sprintf("%s-create-database", database.Spec.Service))
-			object.SetNamespace(database.Spec.Stack)
-			if err := ctx.GetClient().Delete(ctx, object, &client.DeleteOptions{
-				GracePeriodSeconds: pointer.For(int64(0)),
-			}); client.IgnoreNotFound(err) != nil {
-				return err
-			}
+	if database.Status.URI != nil && database.Status.URI.Host != databaseURL.Host {
+		object := &batchv1.Job{}
+		object.SetName(fmt.Sprintf("%s-create-database", database.Spec.Service))
+		object.SetNamespace(database.Spec.Stack)
+		if err := ctx.GetClient().Delete(ctx, object, &client.DeleteOptions{
+			GracePeriodSeconds: pointer.For(int64(0)),
+		}); client.IgnoreNotFound(err) != nil {
+			return err
 		}
+	}
 
+	if database.Status.Ready {
+		if database.Status.URI.Host == databaseURL.Host {
+			database.Status.URI = databaseURL
+		} else {
+			database.Status.OutOfSync = true
+		}
+	} else {
 		dbName := core.GetObjectName(database.Spec.Stack, database.Spec.Service)
 		database.Status.URI = databaseURL
 		database.Status.Database = dbName
@@ -90,8 +91,6 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 		if err := handleDatabaseJob(ctx, stack, database, "create-database", "db", "create"); err != nil {
 			return err
 		}
-	case database.Status.URI.String() != databaseURL.String():
-		database.Status.OutOfSync = true
 	}
 
 	return nil
