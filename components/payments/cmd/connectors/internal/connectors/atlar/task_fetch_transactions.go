@@ -72,6 +72,11 @@ func ingestPaymentsBatch(
 	batch := ingestion.PaymentBatch{}
 
 	for _, item := range pagedTransactions.Payload.Items {
+		if _, ok := supportedCurrenciesWithDecimal[*item.Amount.Currency]; !ok {
+			// Discard transactions with unsupported currencies
+			continue
+		}
+
 		raw, err := json.Marshal(item)
 		if err != nil {
 			return err
