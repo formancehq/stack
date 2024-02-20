@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"math"
 	"math/big"
 	"time"
 
@@ -73,6 +72,11 @@ func ingestPaymentsBatch(
 	batch := ingestion.PaymentBatch{}
 
 	for _, item := range pagedTransactions.Payload.Items {
+		if _, ok := supportedCurrenciesWithDecimal[*item.Amount.Currency]; !ok {
+			// Discard transactions with unsupported currencies
+			continue
+		}
+
 		raw, err := json.Marshal(item)
 		if err != nil {
 			return err
@@ -81,9 +85,7 @@ func ingestPaymentsBatch(
 		paymentType := determinePaymentType(item)
 
 		itemAmount := item.Amount
-		precision := supportedCurrenciesWithDecimal[*itemAmount.Currency]
-
-		amount, err := atlarTransactionAmountToPaymentAbsoluteAmount(*itemAmount.StringValue, precision)
+		amount, err := atlarTransactionAmountToPaymentAbsoluteAmount(*itemAmount.Value)
 		if err != nil {
 			return err
 		}
@@ -240,16 +242,9 @@ func ExtractPaymentMetadata(paymentId models.PaymentID, transaction *atlar_model
 	return result
 }
 
-func atlarTransactionAmountToPaymentAbsoluteAmount(atlarAmount string, precision int) (*big.Int, error) {
-	var amount big.Float
-	_, ok := amount.SetString(atlarAmount)
-	amount.Abs(&amount)
-	if !ok {
-		return nil, fmt.Errorf("failed to parse amount %s", atlarAmount)
-	}
-
-	var amountInt big.Int
-	amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
-
-	return &amountInt, nil
+func atlarTransactionAmountToPaymentAbsoluteAmount(atlarAmount int64) (*big.Int, error) {
+	var amount big.Int
+	amountInt := amount.SetInt64(atlarAmount)
+	amountInt = amountInt.Abs(amountInt)
+	return amountInt, nil
 }
