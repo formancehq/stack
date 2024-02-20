@@ -78,7 +78,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, version st
 		}
 	}
 
-	if err := gatewayhttpapis.Create(ctx, auth, gatewayhttpapis.WithRules(gatewayhttpapis.RuleUnsecured())); err != nil {
+	if err := gatewayhttpapis.Create(ctx, auth, gatewayhttpapis.WithHealthCheckEndpoint("_healthcheck"), gatewayhttpapis.WithRules(gatewayhttpapis.RuleUnsecured())); err != nil {
 		return errors.Wrap(err, "creating http api")
 	}
 

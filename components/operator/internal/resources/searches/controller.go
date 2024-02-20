@@ -154,7 +154,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 		}),
 	)
 
-	if err := gatewayhttpapis.Create(ctx, search); err != nil {
+	if err := gatewayhttpapis.Create(ctx, search, gatewayhttpapis.WithHealthCheckEndpoint("_healthcheck")); err != nil {
 		return err
 	}
 

@@ -48,7 +48,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, wallets *v1beta1.Wallets, vers
 		return err
 	}
 
-	if err := gatewayhttpapis.Create(ctx, wallets); err != nil {
+	if err := gatewayhttpapis.Create(ctx, wallets, gatewayhttpapis.WithHealthCheckEndpoint("_healthcheck")); err != nil {
 		return err
 	}
 
