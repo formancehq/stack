@@ -27,7 +27,7 @@ func TestAtlarTransactionAmountToPaymentAbsoluteAmount(t *testing.T) {
 		assert.Equal(t, *big.NewInt(330), *result)
 	}
 
-	result, err = atlarTransactionAmountToPaymentAbsoluteAmount(-030)
+	result, err = atlarTransactionAmountToPaymentAbsoluteAmount(-30)
 	if assert.Nil(t, err) {
 		assert.Equal(t, *big.NewInt(30), *result)
 	}

@@ -243,8 +243,8 @@ func ExtractPaymentMetadata(paymentId models.PaymentID, transaction *atlar_model
 }
 
 func atlarTransactionAmountToPaymentAbsoluteAmount(atlarAmount int64) (*big.Int, error) {
-	var amount *big.Int
-	amount = amount.SetInt64(atlarAmount)
-	amount = amount.Abs(amount)
-	return amount, nil
+	var amount big.Int
+	amountInt := amount.SetInt64(atlarAmount)
+	amountInt = amountInt.Abs(amountInt)
+	return amountInt, nil
 }
