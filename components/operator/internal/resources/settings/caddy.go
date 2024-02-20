@@ -40,6 +40,9 @@ func ConfigureCaddy(caddyfile *v1.ConfigMap, image string, env []v1.EnvVar) core
 				Ports: []v1.ContainerPort{{
 					Name:          "http",
 					ContainerPort: 8080,
+				}, {
+					Name:          "metrics",
+					ContainerPort: 3080,
 				}},
 				SecurityContext: &v1.SecurityContext{
 					Capabilities: &v1.Capabilities{

@@ -127,7 +127,7 @@ tests:
         --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
         ginkgo --focus=$focus -p ./...
     IF [ "$updateTestData" = "1" ]
-        SAVE ARTIFACT internal/controllers/stack/testdata AS LOCAL internal/controllers/stack/testdata
+        SAVE ARTIFACT internal/tests/testdata AS LOCAL internal/tests/testdata
     END
 
 generate-docs:
