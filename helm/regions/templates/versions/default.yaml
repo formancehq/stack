@@ -9,9 +9,9 @@ spec:
   search: v0.10.0
   auth: v0.4.4
   wallets: v0.4.6
-  webhooks: v0.7.1
+  webhooks: v2.0.0-rc.9
   payments: v1.0.0-rc.5
   stargate: v0.1.10
-  gateway: v2.0.0-rc.8
+  gateway: v2.0.0-rc.9
   ledger: v1.10.14
 {{ end }}
