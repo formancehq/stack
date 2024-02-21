@@ -10,15 +10,15 @@ maintainers:
 icon: "https://avatars.githubusercontent.com/u/84325077?s=200&v=4"
 
 type: application
-version: v2.0.0-rc.10
+version: v2.0.0-rc.11
 appVersion: "latest"
 
 dependencies:
   - name: agent
-    version: v2.0.0-rc.10
+    version: v2.0.0-rc.11
     repository: "file://../../ee/agent/helm"
     condition: agent.enabled
   - name: operator
-    version: v2.0.0-rc.10
+    version: v2.0.0-rc.11
     repository: "file://../../components/operator/helm"
     condition: operator.enabled
