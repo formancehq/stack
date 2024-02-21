@@ -36,6 +36,8 @@ func (s *Storage) InsertBalances(ctx context.Context, balances []*models.Balance
 		) data`)
 	}
 
+	query = query.On("CONFLICT (account_id, created_at, currency) DO NOTHING")
+
 	_, err := query.Exec(ctx)
 	if err != nil {
 		return e("failed to create balances", err)
