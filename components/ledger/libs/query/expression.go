@@ -223,5 +223,9 @@ func ParseJSON(data string) (Builder, error) {
 		return nil, err
 	}
 
+	if len(m) == 0 {
+		return nil, nil
+	}
+
 	return mapMapToExpression(m)
 }
