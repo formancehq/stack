@@ -1,6 +1,6 @@
 VERSION --pass-args --arg-scope-and-set 0.7
 
-ARG core=github.com/formancehq/earthly:v0.10.0
+ARG core=github.com/formancehq/earthly:v0.11.0
 IMPORT $core AS core
 IMPORT ../.. AS stack
 IMPORT .. AS components
@@ -142,12 +142,13 @@ generate-docs:
 
 pre-commit:
     WAIT
-      BUILD --pass-args +tidy
+        BUILD --pass-args +tidy
     END
     BUILD --pass-args +lint
     BUILD --pass-args +generate
     BUILD --pass-args +manifests
     BUILD --pass-args +helm-update
+    BUILD --pass-args +helm-validate
     BUILD +generate-docs
 
 openapi:
@@ -158,3 +159,9 @@ tidy:
     COPY --pass-args (+sources/src) /src
     WORKDIR /src/components/operator
     DO --pass-args stack+GO_TIDY
+
+helm-validate:
+    FROM core+helm-base
+    WORKDIR /src
+    COPY --pass-args (+helm-update/helm) .
+    DO --pass-args core+HELM_VALIDATE
