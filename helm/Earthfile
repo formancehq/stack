@@ -27,4 +27,7 @@ helm-validate:
 
 
 pre-commit:
-  BUILD --pass-args +helm-validate
+  BUILD --pass-args ./regions+helm-validate
+
+publish:
+  BUILD --pass-args ./regions+helm-publish
