@@ -1,6 +1,6 @@
 VERSION --pass-args --arg-scope-and-set 0.7
 
-ARG core=github.com/formancehq/earthly:v0.10.0
+ARG core=github.com/formancehq/earthly:v0.11.0
 IMPORT $core AS core
 
 IMPORT ../.. AS stack
@@ -63,10 +63,12 @@ deploy:
         formance-membership-agent ./helm
 
 pre-commit:
+    BUILD --pass-args +helm-validate
     WAIT
       BUILD --pass-args +tidy
     END
     BUILD --pass-args +lint
+
 
 openapi:
     RUN echo "not implemented"
@@ -105,3 +107,9 @@ tests:
     RUN --mount=type=cache,id=gomod,target=$GOPATH/pkg/mod \
         --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
         ginkgo --focus=$focus ./tests/...
+
+helm-validate:
+    FROM core+helm-base
+    WORKDIR /src
+    COPY helm .
+    DO --pass-args core+HELM_VALIDATE
