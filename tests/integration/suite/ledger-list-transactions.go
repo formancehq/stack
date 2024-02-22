@@ -2,6 +2,7 @@ package suite
 
 import (
 	"fmt"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"math/big"
 	"net/http"
 	"time"
@@ -210,6 +211,106 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			})
 		})
 
+		Then("listing transactions using filter on a single match", func() {
+			var (
+				err      error
+				response *operations.V2ListTransactionsResponse
+				now      = time.Now().Round(time.Second).UTC()
+			)
+			BeforeEach(func() {
+				response, err = Client().Ledger.V2ListTransactions(
+					TestContext(),
+					operations.V2ListTransactionsRequest{
+						RequestBody: map[string]interface{}{
+							"$match": map[string]any{
+								"source": "world",
+							},
+						},
+						Ledger:   "default",
+						PageSize: ptr(pageSize),
+						Pit:      &now,
+					},
+				)
+				Expect(err).To(BeNil())
+			})
+			It("Should be ok", func() {
+				Expect(response.V2TransactionsCursorResponse.Cursor.Next).NotTo(BeNil())
+				cursor := &bunpaginate.ColumnPaginatedQuery[map[string]any]{}
+				Expect(bunpaginate.UnmarshalCursor(*response.V2TransactionsCursorResponse.Cursor.Next, cursor)).To(BeNil())
+				Expect(cursor.Options).To(Equal(map[string]any{
+					"qb": map[string]any{
+						"$match": map[string]any{
+							"source": "world",
+						},
+					},
+					"pageSize": float64(10),
+					"options": map[string]any{
+						"pit":              now.Format(time.RFC3339),
+						"volumes":          false,
+						"effectiveVolumes": false,
+					},
+				}))
+			})
+		})
+		Then("listing transactions using filter on a single match", func() {
+			var (
+				err      error
+				response *operations.V2ListTransactionsResponse
+				now      = time.Now().Round(time.Second).UTC()
+			)
+			BeforeEach(func() {
+				response, err = Client().Ledger.V2ListTransactions(
+					TestContext(),
+					operations.V2ListTransactionsRequest{
+						RequestBody: map[string]interface{}{
+							"$and": []map[string]any{
+								{
+									"$match": map[string]any{
+										"source": "world",
+									},
+								},
+								{
+									"$match": map[string]any{
+										"destination": "account:",
+									},
+								},
+							},
+						},
+						Ledger:   "default",
+						PageSize: ptr(pageSize),
+						Pit:      &now,
+					},
+				)
+				Expect(err).To(BeNil())
+			})
+			It("Should be ok", func() {
+				Expect(response.V2TransactionsCursorResponse.Cursor.Next).NotTo(BeNil())
+				cursor := &bunpaginate.ColumnPaginatedQuery[map[string]any]{}
+				Expect(bunpaginate.UnmarshalCursor(*response.V2TransactionsCursorResponse.Cursor.Next, cursor)).To(BeNil())
+				Expect(cursor.Options).To(Equal(map[string]any{
+					"qb": map[string]any{
+						"$and": []any{
+							map[string]any{
+								"$match": map[string]any{
+									"source": "world",
+								},
+							},
+							map[string]any{
+								"$match": map[string]any{
+									"destination": "account:",
+								},
+							},
+						},
+					},
+					"pageSize": float64(10),
+					"options": map[string]any{
+						"pit":              now.Format(time.RFC3339),
+						"volumes":          false,
+						"effectiveVolumes": false,
+					},
+				}))
+			})
+		})
 		Then("listing transactions using invalid filter", func() {
 			var (
 				err error
