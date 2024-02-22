@@ -26,6 +26,12 @@ type set struct {
 	items    []Builder
 }
 
+func (s set) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]any{
+		s.operator: s.items,
+	})
+}
+
 var _ Builder = (*set)(nil)
 
 func (set set) Build(ctx Context) (string, []any, error) {
@@ -52,7 +58,24 @@ type keyValue struct {
 	value    any
 }
 
+func (s keyValue) MarshalJSON() ([]byte, error) {
+	fmt.Println("marshal json")
+	fmt.Println("marshal json")
+	fmt.Println("marshal json")
+	fmt.Println("marshal json")
+	fmt.Println("marshal json")
+	fmt.Println("marshal json")
+	fmt.Println("marshal json")
+	fmt.Println("marshal json")
+	return json.Marshal(map[string]any{
+		s.operator: map[string]any{
+			s.key: s.value,
+		},
+	})
+}
+
 var _ Builder = (*keyValue)(nil)
+var _ json.Marshaler = (*keyValue)(nil)
 
 func (k keyValue) Build(ctx Context) (string, []any, error) {
 	return ctx.BuildMatcher(k.key, k.operator, k.value)
