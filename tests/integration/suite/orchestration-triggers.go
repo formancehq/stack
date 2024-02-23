@@ -89,7 +89,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 			var payment map[string]any
 			BeforeEach(func() {
 				payment = map[string]any{
-					"amount": 100,
+					"amount": 1000000,
 					"asset":  "USD/2",
 					"id":     uuid.NewString(),
 					"links": []api.Link{
@@ -149,7 +149,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 				Expect(listTransactionsResponse.V2TransactionsCursorResponse.Cursor.Data[0].Postings[0].Asset).
 					To(Equal("USD/2"))
 				Expect(listTransactionsResponse.V2TransactionsCursorResponse.Cursor.Data[0].Postings[0].Amount).
-					To(Equal(big.NewInt(100)))
+					To(Equal(big.NewInt(1000000)))
 			})
 		})
 		Then("deleting the trigger", func() {

@@ -117,6 +117,42 @@ func TestEvalVariables(t *testing.T) {
 				"role": "admin",
 			},
 		},
+		{
+			name: "using float",
+			rawObject: map[string]any{
+				"amount": float64(1200000),
+			},
+			variables: map[string]string{
+				"amount": "event.amount",
+			},
+			expectedResult: map[string]string{
+				"amount": "1200000",
+			},
+		},
+		{
+			name: "using bool",
+			rawObject: map[string]any{
+				"test": true,
+			},
+			variables: map[string]string{
+				"test": "event.test",
+			},
+			expectedResult: map[string]string{
+				"test": "true",
+			},
+		},
+		{
+			name: "using integer",
+			rawObject: map[string]any{
+				"amount": int64(1200000),
+			},
+			variables: map[string]string{
+				"amount": "event.amount",
+			},
+			expectedResult: map[string]string{
+				"amount": "1200000",
+			},
+		},
 	} {
 		testCase := testCase
 		t.Run(testCase.name, func(t *testing.T) {

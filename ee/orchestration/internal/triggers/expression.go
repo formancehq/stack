@@ -94,7 +94,16 @@ func (h *expressionEvaluator) evalVariable(rawObject any, e string) (string, err
 		return "", err
 	}
 
-	return fmt.Sprint(ret), nil
+	switch ret.(type) {
+	case float64, float32:
+		data, err := json.Marshal(ret)
+		if err != nil {
+			return "", err
+		}
+		return string(data), nil
+	default:
+		return fmt.Sprint(ret), nil
+	}
 }
 
 func (h *expressionEvaluator) evalVariables(rawObject any, vars map[string]string) (map[string]string, error) {
