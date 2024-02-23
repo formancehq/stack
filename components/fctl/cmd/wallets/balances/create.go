@@ -2,7 +2,6 @@ package balances
 
 import (
 	"fmt"
-
 	"github.com/formancehq/fctl/cmd/wallets/internal"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
@@ -10,6 +9,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
+	"math/big"
 )
 
 type CreateStore struct {
@@ -18,6 +18,10 @@ type CreateStore struct {
 type CreateController struct {
 	store *CreateStore
 }
+
+const expiresAtFlag = "expires-at"
+
+const priorityFlag = "priority"
 
 var _ fctl.Controller[*CreateStore] = (*CreateController)(nil)
 
@@ -39,6 +43,8 @@ func NewCreateCommand() *cobra.Command {
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		internal.WithTargetingWalletByID(),
 		internal.WithTargetingWalletByName(),
+		fctl.WithStringFlag(expiresAtFlag, "", "Balance expiration date"),
+		fctl.WithIntFlag(priorityFlag, 0, "Balance priority"),
 		fctl.WithController[*CreateStore](NewCreateController()),
 	)
 }
@@ -73,10 +79,23 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
+	expiresAt, err := fctl.GetDateTime(cmd, expiresAtFlag)
+	if err != nil {
+		return nil, err
+	}
+
+	var priority *big.Int = nil
+	priorityInt := fctl.GetInt(cmd, priorityFlag)
+	if priorityInt != 0 {
+		priority = big.NewInt(int64(priorityInt))
+	}
+
 	request := operations.CreateBalanceRequest{
 		ID: walletID,
 		CreateBalanceRequest: &shared.CreateBalanceRequest{
-			Name: args[0],
+			Name:      args[0],
+			ExpiresAt: expiresAt,
+			Priority:  priority,
 		},
 	}
 	response, err := client.Wallets.CreateBalance(cmd.Context(), request)
