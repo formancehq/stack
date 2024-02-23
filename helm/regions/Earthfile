@@ -1,0 +1,49 @@
+VERSION --arg-scope-and-set --pass-args --use-function-keyword 0.7
+
+ARG core=github.com/formancehq/earthly:v0.11.0
+IMPORT $core AS core
+IMPORT ../.. AS stack
+
+sources:
+  FROM core+base-image
+  WORKDIR /src
+  COPY Chart.lock /src/Chart.lock
+  COPY Chart.yaml /src/Chart.yaml
+  COPY README.md /src/README.md
+  COPY values.yaml /src/values.yaml
+  COPY --dir templates /src/templates
+  SAVE ARTIFACT /src
+
+helm-validate:
+  FROM core+helm-base
+  WORKDIR /src
+  COPY (stack+sources/out --LOCATION=ee/agent/helm) /src/ee/agent/helm
+  COPY (stack+sources/out --LOCATION=components/operator/helm) /src/components/operator/helm
+  COPY (+sources/src) /src/helm/regions
+  WORKDIR /src/helm/regions
+  RUN helm dependencies update
+  RUN helm dependencies build
+  DO --pass-args core+HELM_VALIDATE
+  SAVE ARTIFACT /src/helm/regions/Chart.lock AS LOCAL Chart.lock
+
+helm-package:
+  FROM core+helm-base
+  WORKDIR /src
+  COPY (stack+sources/out --LOCATION=ee/agent/helm) /src/ee/agent/helm
+  COPY (stack+sources/out --LOCATION=components/operator/helm) /src/components/operator/helm
+  COPY (+sources/src) /src/helm/regions
+  COPY --if-exists --dir charts /src/helm/regions/charts
+  WORKDIR /src/helm/regions
+  RUN helm package .
+  SAVE ARTIFACT /src/helm/regions/regions-*.tgz
+
+helm-publish:
+  FROM core+helm-base
+  WORKDIR /src
+  COPY (+helm-package/) /src
+  WITH DOCKER
+      RUN --secret GITHUB_TOKEN echo $GITHUB_TOKEN | docker login ghcr.io -u NumaryBot --password-stdin
+  END
+  WITH DOCKER
+    RUN helm push /src/*.tgz oci://ghcr.io/formancehq/helm
+  END
