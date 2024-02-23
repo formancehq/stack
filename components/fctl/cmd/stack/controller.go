@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func waitStackReady(cmd *cobra.Command, client *membershipclient.APIClient, profile *fctl.Profile, stack *membershipclient.Stack) (*membershipclient.Stack, error) {
+func waitStackReady(cmd *cobra.Command, client *membershipclient.APIClient, profile *fctl.Profile, stackId, organizationId string) (*membershipclient.Stack, error) {
 	var resp *http.Response
 	var err error
 	var stackRsp *membershipclient.CreateStackResponse
@@ -23,12 +23,12 @@ func waitStackReady(cmd *cobra.Command, client *membershipclient.APIClient, prof
 	<-time.After(waitTime)
 
 	for {
-		stackRsp, resp, err = client.DefaultApi.GetStack(cmd.Context(), stack.OrganizationId, stack.Id).Execute()
+		stackRsp, resp, err = client.DefaultApi.GetStack(cmd.Context(), organizationId, stackId).Execute()
 		if err != nil {
 			return nil, err
 		}
 		if resp.StatusCode == http.StatusNotFound {
-			return nil, fmt.Errorf("stack %s not found", stack.Id)
+			return nil, fmt.Errorf("stack %s not found", stackId)
 		}
 
 		if stackRsp.Data.Status == "READY" {
