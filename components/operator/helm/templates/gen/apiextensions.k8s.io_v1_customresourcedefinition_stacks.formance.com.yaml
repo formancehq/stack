@@ -30,6 +30,10 @@ spec:
       jsonPath: .status.ready
       name: Ready
       type: boolean
+    - description: Modules List Registered
+      jsonPath: .status.modules
+      name: Modules
+      type: string
     - description: Info
       jsonPath: .status.info
       name: Info
@@ -81,6 +85,10 @@ spec:
             properties:
               info:
                 type: string
+              modules:
+                items:
+                  type: string
+                type: array
               ready:
                 type: boolean
             type: object
