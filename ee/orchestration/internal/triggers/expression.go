@@ -46,7 +46,7 @@ func (h *expressionEvaluator) link(params ...any) (any, error) {
 	case 1:
 		rsp, err := h.httpClient.Get(filteredLinks[0].URI)
 		if err != nil {
-			return nil, fmt.Errorf("reading resource: %s", filteredLinks[0].URI)
+			return nil, errors.Wrapf(err, "reading resource: %s", filteredLinks[0].URI)
 		}
 		if rsp.StatusCode >= 400 {
 			return nil, fmt.Errorf("unexpected status code when reading resource: %d", rsp.StatusCode)
