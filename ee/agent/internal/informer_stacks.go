@@ -9,17 +9,7 @@ import (
 
 func getExpectedModules() []string {
 	return []string{
-		"stargate",
-		"gateway",
-		"auth",
-		"ledger",
-		"payments",
-		"reconcillation",
-		"wallets",
-		"search",
-		"reconciliation",
-		"orchestration",
-		"webhooks",
+		"Stargate", "Wallets", "Ledger", "Payments", "Webhooks", "Auth", "Orchestration", "Search", "Gateway",
 	}
 }
 
