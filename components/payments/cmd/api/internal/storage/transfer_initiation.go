@@ -70,8 +70,7 @@ func (s *Storage) ListTransferInitiations(ctx context.Context, q ListTransferIni
 		func(query *bun.SelectQuery) *bun.SelectQuery {
 			query = query.
 				Column("id", "connector_id", "created_at", "scheduled_at", "description", "type", "source_account_id", "destination_account_id", "provider", "initial_amount", "amount", "asset", "metadata").
-				Relation("RelatedAdjustments").
-				Order("created_at DESC")
+				Relation("RelatedAdjustments")
 
 			if q.Options.QueryBuilder != nil {
 				where, args, err := s.transferInitiationQueryContext(q.Options.QueryBuilder)
@@ -84,6 +83,8 @@ func (s *Storage) ListTransferInitiations(ctx context.Context, q ListTransferIni
 
 			if q.Options.Sorter != nil {
 				query = q.Options.Sorter.Apply(query)
+			} else {
+				query = query.Order("created_at DESC")
 			}
 
 			return query

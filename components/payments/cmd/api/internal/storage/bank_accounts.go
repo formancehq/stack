@@ -27,11 +27,12 @@ func (s *Storage) ListBankAccounts(ctx context.Context, q ListBankAccountQuery) 
 		(*bunpaginate.OffsetPaginatedQuery[PaginatedQueryOptions[BankAccountQuery]])(&q),
 		func(query *bun.SelectQuery) *bun.SelectQuery {
 			query = query.
-				Relation("RelatedAccounts").
-				Order("created_at DESC")
+				Relation("RelatedAccounts")
 
 			if q.Options.Sorter != nil {
 				query = q.Options.Sorter.Apply(query)
+			} else {
+				query = query.Order("created_at DESC")
 			}
 
 			return query

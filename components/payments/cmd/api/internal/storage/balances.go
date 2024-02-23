@@ -81,13 +81,12 @@ func (s *Storage) ListBalances(ctx context.Context, q ListBalancesQuery) (*api.C
 	return PaginateWithOffset[PaginatedQueryOptions[BalanceQuery], models.Balance](s, ctx,
 		(*bunpaginate.OffsetPaginatedQuery[PaginatedQueryOptions[BalanceQuery]])(&q),
 		func(query *bun.SelectQuery) *bun.SelectQuery {
-			query = query.
-				Order("created_at DESC")
-
 			query = applyBalanceQuery(query, q.Options.Options)
 
 			if q.Options.Sorter != nil {
 				query = q.Options.Sorter.Apply(query)
+			} else {
+				query = query.Order("created_at DESC")
 			}
 
 			return query

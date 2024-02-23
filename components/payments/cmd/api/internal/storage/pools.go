@@ -76,11 +76,12 @@ func (s *Storage) ListPools(ctx context.Context, q ListPoolsQuery) (*api.Cursor[
 		(*bunpaginate.OffsetPaginatedQuery[PaginatedQueryOptions[PoolQuery]])(&q),
 		func(query *bun.SelectQuery) *bun.SelectQuery {
 			query = query.
-				Relation("PoolAccounts").
-				Order("created_at DESC")
+				Relation("PoolAccounts")
 
 			if q.Options.Sorter != nil {
 				query = q.Options.Sorter.Apply(query)
+			} else {
+				query = query.Order("created_at DESC")
 			}
 
 			return query
