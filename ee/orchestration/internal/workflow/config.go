@@ -78,8 +78,7 @@ func (c *Config) run(ctx workflow.Context, db *bun.DB, instance Instance, variab
 	for ind, rawStage := range c.Stages {
 		logger.Info("run stage", "index", ind, "workflowID", instance.ID)
 
-		stage := NewStage(instance.ID, ind)
-
+		stage := NewStage(instance.ID, workflow.GetInfo(ctx).WorkflowExecution.RunID, ind)
 		if _, dbErr := db.NewInsert().
 			Model(&stage).
 			Exec(context.Background()); dbErr != nil {

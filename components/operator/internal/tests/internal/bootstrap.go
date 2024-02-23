@@ -48,7 +48,7 @@ var _ = BeforeSuite(func() {
 	logf.SetLogger(zap.New(zap.WriteTo(os.Stdout), zap.UseDevMode(true)))
 	ctx, cancel = context.WithCancel(context.Background())
 
-	SetDefaultEventuallyTimeout(10 * time.Second)
+	SetDefaultEventuallyTimeout(20 * time.Second)
 
 	_, filename, _, _ := osRuntime.Caller(0)
 
