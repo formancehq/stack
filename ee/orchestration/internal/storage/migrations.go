@@ -7,18 +7,10 @@ import (
 	"github.com/uptrace/bun"
 )
 
-func Migrate(ctx context.Context, db *bun.DB) error {
-	migrator := migrations.NewMigrator()
-	registerMigrations(migrator)
-
-	return migrator.Up(ctx, db)
-}
-
-func registerMigrations(migrator *migrations.Migrator) {
-	migrator.RegisterMigrations(
-		migrations.Migration{
-			Up: func(tx bun.Tx) error {
-				if _, err := tx.Exec(`
+var _migrations = []migrations.Migration{
+	{
+		Up: func(tx bun.Tx) error {
+			if _, err := tx.Exec(`
 					create table "workflows" (
 						config jsonb,
 						id varchar not null,
@@ -42,45 +34,45 @@ func registerMigrations(migrator *migrations.Migrator) {
 						primary key (instance_id, stage)
 					);
 				`); err != nil {
-					return err
-				}
-				return nil
-			},
+				return err
+			}
+			return nil
 		},
-		migrations.Migration{
-			Up: func(tx bun.Tx) error {
-				if _, err := tx.Exec(`
+	},
+	{
+		Up: func(tx bun.Tx) error {
+			if _, err := tx.Exec(`
 					alter table "workflow_instances" add column terminated bool;
 					alter table "workflow_instances" add column terminated_at timestamp default null;
 				`); err != nil {
-					return err
-				}
-				return nil
-			},
+				return err
+			}
+			return nil
 		},
-		migrations.Migration{
-			Up: func(tx bun.Tx) error {
-				if _, err := tx.Exec(`
+	},
+	{
+		Up: func(tx bun.Tx) error {
+			if _, err := tx.Exec(`
 					alter table "workflow_instances" add column error varchar;
 				`); err != nil {
-					return err
-				}
-				return nil
-			},
+				return err
+			}
+			return nil
 		},
-		migrations.Migration{
-			Up: func(tx bun.Tx) error {
-				if _, err := tx.Exec(`
+	},
+	{
+		Up: func(tx bun.Tx) error {
+			if _, err := tx.Exec(`
 					alter table "workflows" add column if not exists deleted_at timestamp default null;
 				`); err != nil {
-					return err
-				}
-				return nil
-			},
+				return err
+			}
+			return nil
 		},
-		migrations.Migration{
-			Up: func(tx bun.Tx) error {
-				if _, err := tx.Exec(`
+	},
+	{
+		Up: func(tx bun.Tx) error {
+			if _, err := tx.Exec(`
 					create table triggers (
 					    id varchar primary key,
 					    workflow_id varchar references workflows(id),
@@ -99,10 +91,40 @@ func registerMigrations(migrator *migrations.Migrator) {
 					    primary key (trigger_id, event_id)
 					);
 				`); err != nil {
-					return err
-				}
-				return nil
-			},
+				return err
+			}
+			return nil
 		},
-	)
+	},
+	{
+		Up: func(tx bun.Tx) error {
+			if _, err := tx.Exec(`
+alter table "workflow_instance_stage_statuses" 
+drop constraint workflow_instance_stage_statuses_pkey;
+
+alter table "workflow_instance_stage_statuses"
+add column temporal_run_id varchar;
+
+update "workflow_instance_stage_statuses"
+set temporal_run_id = '';
+
+alter table "workflow_instance_stage_statuses"
+add primary key (instance_id, stage, temporal_run_id);
+				`); err != nil {
+				return err
+			}
+			return nil
+		},
+	},
+}
+
+func Migrate(ctx context.Context, db *bun.DB) error {
+	return MigrateUntil(ctx, db, len(_migrations))
+}
+
+func MigrateUntil(ctx context.Context, db *bun.DB, until int) error {
+	migrator := migrations.NewMigrator()
+	migrator.RegisterMigrations(_migrations[:until]...)
+
+	return migrator.Up(ctx, db)
 }
