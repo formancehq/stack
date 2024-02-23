@@ -7,6 +7,7 @@ import (
 
 	"github.com/formancehq/payments/cmd/api/internal/api/backend"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
+	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
@@ -42,6 +43,9 @@ type bankAccountResponse struct {
 
 func listBankAccountsHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := otel.Tracer().Start(r.Context(), "listBankAccountsHandler")
+		defer span.End()
+
 		w.Header().Set("Content-Type", "application/json")
 
 		query, err := bunpaginate.Extract[storage.ListBankAccountQuery](r, func() (*storage.ListBankAccountQuery, error) {
@@ -52,12 +56,14 @@ func listBankAccountsHandler(b backend.Backend) http.HandlerFunc {
 			return pointer.For(storage.NewListBankAccountQuery(*options)), nil
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
-		cursor, err := b.GetService().ListBankAccounts(r.Context(), *query)
+		cursor, err := b.GetService().ListBankAccounts(ctx, *query)
 		if err != nil {
+			otel.RecordError(span, err)
 			handleServiceErrors(w, r, err)
 			return
 		}
@@ -102,6 +108,7 @@ func listBankAccountsHandler(b backend.Backend) http.HandlerFunc {
 			},
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			api.InternalServerError(w, r, err)
 			return
 		}
@@ -110,21 +117,27 @@ func listBankAccountsHandler(b backend.Backend) http.HandlerFunc {
 
 func readBankAccountHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := otel.Tracer().Start(r.Context(), "readBankAccountHandler")
+		defer span.End()
+
 		w.Header().Set("Content-Type", "application/json")
 
 		bankAccountID, err := uuid.Parse(mux.Vars(r)["bankAccountID"])
 		if err != nil {
+			otel.RecordError(span, err)
 			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
 
-		account, err := b.GetService().GetBankAccount(r.Context(), bankAccountID, true)
+		account, err := b.GetService().GetBankAccount(ctx, bankAccountID, true)
 		if err != nil {
+			otel.RecordError(span, err)
 			handleServiceErrors(w, r, err)
 			return
 		}
 
 		if err := account.Offuscate(); err != nil {
+			otel.RecordError(span, err)
 			api.InternalServerError(w, r, err)
 			return
 		}
@@ -161,6 +174,7 @@ func readBankAccountHandler(b backend.Backend) http.HandlerFunc {
 			Data: data,
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			api.InternalServerError(w, r, err)
 			return
 		}

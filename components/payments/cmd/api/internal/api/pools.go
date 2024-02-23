@@ -8,6 +8,7 @@ import (
 	"github.com/formancehq/payments/cmd/api/internal/api/backend"
 	"github.com/formancehq/payments/cmd/api/internal/api/service"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
+	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
@@ -23,22 +24,28 @@ type poolResponse struct {
 
 func createPoolHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := otel.Tracer().Start(r.Context(), "createPoolHandler")
+		defer span.End()
+
 		w.Header().Set("Content-Type", "application/json")
 
 		var createPoolRequest service.CreatePoolRequest
 		err := json.NewDecoder(r.Body).Decode(&createPoolRequest)
 		if err != nil {
+			otel.RecordError(span, err)
 			api.BadRequest(w, ErrMissingOrInvalidBody, err)
 			return
 		}
 
 		if err := createPoolRequest.Validate(); err != nil {
+			otel.RecordError(span, err)
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
-		pool, err := b.GetService().CreatePool(r.Context(), &createPoolRequest)
+		pool, err := b.GetService().CreatePool(ctx, &createPoolRequest)
 		if err != nil {
+			otel.RecordError(span, err)
 			handleServiceErrors(w, r, err)
 			return
 		}
@@ -58,6 +65,7 @@ func createPoolHandler(b backend.Backend) http.HandlerFunc {
 			Data: data,
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			api.InternalServerError(w, r, err)
 			return
 		}
@@ -66,26 +74,34 @@ func createPoolHandler(b backend.Backend) http.HandlerFunc {
 
 func addAccountToPoolHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := otel.Tracer().Start(r.Context(), "addAccountToPoolHandler")
+		defer span.End()
+
 		poolID, ok := mux.Vars(r)["poolID"]
 		if !ok {
-			api.BadRequest(w, ErrInvalidID, nil)
+			var err = errors.New("missing poolID")
+			otel.RecordError(span, err)
+			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
 
 		var addAccountToPoolRequest service.AddAccountToPoolRequest
 		err := json.NewDecoder(r.Body).Decode(&addAccountToPoolRequest)
 		if err != nil {
+			otel.RecordError(span, err)
 			api.BadRequest(w, ErrMissingOrInvalidBody, err)
 			return
 		}
 
 		if err := addAccountToPoolRequest.Validate(); err != nil {
+			otel.RecordError(span, err)
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
-		err = b.GetService().AddAccountToPool(r.Context(), poolID, &addAccountToPoolRequest)
+		err = b.GetService().AddAccountToPool(ctx, poolID, &addAccountToPoolRequest)
 		if err != nil {
+			otel.RecordError(span, err)
 			handleServiceErrors(w, r, err)
 			return
 		}
@@ -96,20 +112,28 @@ func addAccountToPoolHandler(b backend.Backend) http.HandlerFunc {
 
 func removeAccountFromPoolHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := otel.Tracer().Start(r.Context(), "removeAccountFromPoolHandler")
+		defer span.End()
+
 		poolID, ok := mux.Vars(r)["poolID"]
 		if !ok {
-			api.BadRequest(w, ErrInvalidID, nil)
+			var err = errors.New("missing poolID")
+			otel.RecordError(span, err)
+			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
 
 		accountID, ok := mux.Vars(r)["accountID"]
 		if !ok {
-			api.BadRequest(w, ErrInvalidID, nil)
+			var err = errors.New("missing accountID")
+			otel.RecordError(span, err)
+			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
 
-		err := b.GetService().RemoveAccountFromPool(r.Context(), poolID, accountID)
+		err := b.GetService().RemoveAccountFromPool(ctx, poolID, accountID)
 		if err != nil {
+			otel.RecordError(span, err)
 			handleServiceErrors(w, r, err)
 			return
 		}
@@ -120,6 +144,9 @@ func removeAccountFromPoolHandler(b backend.Backend) http.HandlerFunc {
 
 func listPoolHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := otel.Tracer().Start(r.Context(), "listPoolHandler")
+		defer span.End()
+
 		w.Header().Set("Content-Type", "application/json")
 
 		query, err := bunpaginate.Extract[storage.ListPoolsQuery](r, func() (*storage.ListPoolsQuery, error) {
@@ -130,12 +157,14 @@ func listPoolHandler(b backend.Backend) http.HandlerFunc {
 			return pointer.For(storage.NewListPoolsQuery(*options)), nil
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
-		cursor, err := b.GetService().ListPools(r.Context(), *query)
+		cursor, err := b.GetService().ListPools(ctx, *query)
 		if err != nil {
+			otel.RecordError(span, err)
 			handleServiceErrors(w, r, err)
 			return
 		}
@@ -166,6 +195,7 @@ func listPoolHandler(b backend.Backend) http.HandlerFunc {
 			},
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			api.InternalServerError(w, r, err)
 			return
 		}
@@ -174,14 +204,20 @@ func listPoolHandler(b backend.Backend) http.HandlerFunc {
 
 func getPoolHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := otel.Tracer().Start(r.Context(), "getPoolHandler")
+		defer span.End()
+
 		poolID, ok := mux.Vars(r)["poolID"]
 		if !ok {
-			api.BadRequest(w, ErrInvalidID, nil)
+			err := errors.New("missing poolID")
+			otel.RecordError(span, err)
+			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
 
-		pool, err := b.GetService().GetPool(r.Context(), poolID)
+		pool, err := b.GetService().GetPool(ctx, poolID)
 		if err != nil {
+			otel.RecordError(span, err)
 			handleServiceErrors(w, r, err)
 			return
 		}
@@ -201,6 +237,7 @@ func getPoolHandler(b backend.Backend) http.HandlerFunc {
 			Data: data,
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			api.InternalServerError(w, r, err)
 			return
 		}
@@ -218,20 +255,28 @@ type poolBalanceResponse struct {
 
 func getPoolBalances(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := otel.Tracer().Start(r.Context(), "getPoolBalances")
+		defer span.End()
+
 		poolID, ok := mux.Vars(r)["poolID"]
 		if !ok {
-			api.BadRequest(w, ErrInvalidID, errors.New("missing poolID"))
+			var err = errors.New("missing poolID")
+			otel.RecordError(span, err)
+			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
 
 		atTime := r.URL.Query().Get("at")
 		if atTime == "" {
-			api.BadRequest(w, ErrValidation, errors.New("missing atTime"))
+			var err = errors.New("missing atTime")
+			otel.RecordError(span, err)
+			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
-		balance, err := b.GetService().GetPoolBalance(r.Context(), poolID, atTime)
+		balance, err := b.GetService().GetPoolBalance(ctx, poolID, atTime)
 		if err != nil {
+			otel.RecordError(span, err)
 			handleServiceErrors(w, r, err)
 			return
 		}
@@ -251,6 +296,7 @@ func getPoolBalances(b backend.Backend) http.HandlerFunc {
 			Data: data,
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			api.InternalServerError(w, r, err)
 			return
 		}
@@ -259,14 +305,20 @@ func getPoolBalances(b backend.Backend) http.HandlerFunc {
 
 func deletePoolHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := otel.Tracer().Start(r.Context(), "deletePoolHandler")
+		defer span.End()
+
 		poolID, ok := mux.Vars(r)["poolID"]
 		if !ok {
-			api.BadRequest(w, ErrInvalidID, nil)
+			var err = errors.New("missing poolID")
+			otel.RecordError(span, err)
+			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
 
-		err := b.GetService().DeletePool(r.Context(), poolID)
+		err := b.GetService().DeletePool(ctx, poolID)
 		if err != nil {
+			otel.RecordError(span, err)
 			handleServiceErrors(w, r, err)
 			return
 		}

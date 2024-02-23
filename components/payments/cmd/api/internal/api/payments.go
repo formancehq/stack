@@ -10,6 +10,7 @@ import (
 	"github.com/formancehq/payments/cmd/api/internal/api/service"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
@@ -45,22 +46,28 @@ type paymentAdjustment struct {
 
 func createPaymentHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := otel.Tracer().Start(r.Context(), "createPaymentHandler")
+		defer span.End()
+
 		w.Header().Set("Content-Type", "application/json")
 
 		var req service.CreatePaymentRequest
 		err := json.NewDecoder(r.Body).Decode(&req)
 		if err != nil {
+			otel.RecordError(span, err)
 			api.BadRequest(w, ErrMissingOrInvalidBody, err)
 			return
 		}
 
 		if err := req.Validate(); err != nil {
+			otel.RecordError(span, err)
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
-		payment, err := b.GetService().CreatePayment(r.Context(), &req)
+		payment, err := b.GetService().CreatePayment(ctx, &req)
 		if err != nil {
+			otel.RecordError(span, err)
 			handleServiceErrors(w, r, err)
 			return
 		}
@@ -93,6 +100,7 @@ func createPaymentHandler(b backend.Backend) http.HandlerFunc {
 			Data: &data,
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			api.InternalServerError(w, r, err)
 			return
 		}
@@ -101,6 +109,9 @@ func createPaymentHandler(b backend.Backend) http.HandlerFunc {
 
 func listPaymentsHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := otel.Tracer().Start(r.Context(), "listPaymentsHandler")
+		defer span.End()
+
 		w.Header().Set("Content-Type", "application/json")
 
 		query, err := bunpaginate.Extract[storage.ListPaymentsQuery](r, func() (*storage.ListPaymentsQuery, error) {
@@ -111,12 +122,14 @@ func listPaymentsHandler(b backend.Backend) http.HandlerFunc {
 			return pointer.For(storage.NewListPaymentsQuery(*options)), nil
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
-		cursor, err := b.GetService().ListPayments(r.Context(), *query)
+		cursor, err := b.GetService().ListPayments(ctx, *query)
 		if err != nil {
+			otel.RecordError(span, err)
 			handleServiceErrors(w, r, err)
 			return
 		}
@@ -182,6 +195,7 @@ func listPaymentsHandler(b backend.Backend) http.HandlerFunc {
 			},
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			api.InternalServerError(w, r, err)
 			return
 		}
@@ -190,12 +204,16 @@ func listPaymentsHandler(b backend.Backend) http.HandlerFunc {
 
 func readPaymentHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := otel.Tracer().Start(r.Context(), "readPaymentHandler")
+		defer span.End()
+
 		w.Header().Set("Content-Type", "application/json")
 
 		paymentID := mux.Vars(r)["paymentID"]
 
-		payment, err := b.GetService().GetPayment(r.Context(), paymentID)
+		payment, err := b.GetService().GetPayment(ctx, paymentID)
 		if err != nil {
+			otel.RecordError(span, err)
 			handleServiceErrors(w, r, err)
 			return
 		}
@@ -249,6 +267,7 @@ func readPaymentHandler(b backend.Backend) http.HandlerFunc {
 			Data: &data,
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			api.InternalServerError(w, r, err)
 			return
 		}
