@@ -35,7 +35,7 @@ func waitStackReady(cmd *cobra.Command, client *membershipclient.APIClient, prof
 			return stackRsp.Data, nil
 		}
 
-		if waitTime > 2*time.Minute {
+		if sum > 2*time.Minute {
 			pterm.Warning.Println("Waiting for stack to be ready...")
 			return nil, fmt.Errorf("there might a problem with the stack scheduling, retry and if the problem persists please contact the support")
 		}
