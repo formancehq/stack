@@ -75,7 +75,7 @@ func GetDateTime(cmd *cobra.Command, flagName string) (*time.Time, error) {
 		return nil, nil
 	}
 
-	t, err := time.Parse(time.DateTime, v)
+	t, err := time.Parse(time.RFC3339, v)
 	if err != nil {
 		return nil, err
 	}
