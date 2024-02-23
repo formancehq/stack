@@ -16,7 +16,7 @@ func waitStackReady(cmd *cobra.Command, client *membershipclient.APIClient, prof
 	var err error
 	var stackRsp *membershipclient.CreateStackResponse
 
-	waitTime := 10 * time.Second
+	waitTime := 2 * time.Second
 	for {
 		stackRsp, resp, err = client.DefaultApi.GetStack(cmd.Context(), stack.OrganizationId, stack.Id).Execute()
 		if err != nil {
@@ -39,7 +39,5 @@ func waitStackReady(cmd *cobra.Command, client *membershipclient.APIClient, prof
 		case <-cmd.Context().Done():
 			return nil, cmd.Context().Err()
 		}
-		waitTime *= 2
-
 	}
 }
