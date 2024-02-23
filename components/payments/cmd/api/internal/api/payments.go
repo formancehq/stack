@@ -15,6 +15,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/gorilla/mux"
+	"go.opentelemetry.io/otel/attribute"
 )
 
 type paymentResponse struct {
@@ -58,6 +59,19 @@ func createPaymentHandler(b backend.Backend) http.HandlerFunc {
 			api.BadRequest(w, ErrMissingOrInvalidBody, err)
 			return
 		}
+
+		span.SetAttributes(
+			attribute.String("request.reference", req.Reference),
+			attribute.String("request.sourceAccountID", req.SourceAccountID),
+			attribute.String("request.destinationAccountID", req.DestinationAccountID),
+			attribute.String("request.type", req.Type),
+			attribute.String("request.connectorID", req.ConnectorID),
+			attribute.String("request.scheme", req.Scheme),
+			attribute.String("request.status", req.Status),
+			attribute.String("request.asset", req.Asset),
+			attribute.String("request.amount", req.Amount.String()),
+			attribute.String("request.createdAt", req.CreatedAt.String()),
+		)
 
 		if err := req.Validate(); err != nil {
 			otel.RecordError(span, err)
@@ -210,6 +224,8 @@ func readPaymentHandler(b backend.Backend) http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 
 		paymentID := mux.Vars(r)["paymentID"]
+
+		span.SetAttributes(attribute.String("request.paymentID", paymentID))
 
 		payment, err := b.GetService().GetPayment(ctx, paymentID)
 		if err != nil {

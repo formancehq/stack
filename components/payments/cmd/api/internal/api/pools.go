@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"math/big"
 	"net/http"
+	"strings"
 
 	"github.com/formancehq/payments/cmd/api/internal/api/backend"
 	"github.com/formancehq/payments/cmd/api/internal/api/service"
@@ -14,6 +15,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
+	"go.opentelemetry.io/otel/attribute"
 )
 
 type poolResponse struct {
@@ -36,6 +38,11 @@ func createPoolHandler(b backend.Backend) http.HandlerFunc {
 			api.BadRequest(w, ErrMissingOrInvalidBody, err)
 			return
 		}
+
+		span.SetAttributes(
+			attribute.String("request.name", createPoolRequest.Name),
+			attribute.String("request.accounts", strings.Join(createPoolRequest.AccountIDs, ",")),
+		)
 
 		if err := createPoolRequest.Validate(); err != nil {
 			otel.RecordError(span, err)
@@ -85,6 +92,8 @@ func addAccountToPoolHandler(b backend.Backend) http.HandlerFunc {
 			return
 		}
 
+		span.SetAttributes(attribute.String("request.poolID", poolID))
+
 		var addAccountToPoolRequest service.AddAccountToPoolRequest
 		err := json.NewDecoder(r.Body).Decode(&addAccountToPoolRequest)
 		if err != nil {
@@ -92,6 +101,10 @@ func addAccountToPoolHandler(b backend.Backend) http.HandlerFunc {
 			api.BadRequest(w, ErrMissingOrInvalidBody, err)
 			return
 		}
+
+		span.SetAttributes(
+			attribute.String("request.accountID", addAccountToPoolRequest.AccountID),
+		)
 
 		if err := addAccountToPoolRequest.Validate(); err != nil {
 			otel.RecordError(span, err)
@@ -123,6 +136,8 @@ func removeAccountFromPoolHandler(b backend.Backend) http.HandlerFunc {
 			return
 		}
 
+		span.SetAttributes(attribute.String("request.poolID", poolID))
+
 		accountID, ok := mux.Vars(r)["accountID"]
 		if !ok {
 			var err = errors.New("missing accountID")
@@ -130,6 +145,8 @@ func removeAccountFromPoolHandler(b backend.Backend) http.HandlerFunc {
 			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
+
+		span.SetAttributes(attribute.String("request.accountID", accountID))
 
 		err := b.GetService().RemoveAccountFromPool(ctx, poolID, accountID)
 		if err != nil {
@@ -215,6 +232,8 @@ func getPoolHandler(b backend.Backend) http.HandlerFunc {
 			return
 		}
 
+		span.SetAttributes(attribute.String("request.poolID", poolID))
+
 		pool, err := b.GetService().GetPool(ctx, poolID)
 		if err != nil {
 			otel.RecordError(span, err)
@@ -266,6 +285,8 @@ func getPoolBalances(b backend.Backend) http.HandlerFunc {
 			return
 		}
 
+		span.SetAttributes(attribute.String("request.poolID", poolID))
+
 		atTime := r.URL.Query().Get("at")
 		if atTime == "" {
 			var err = errors.New("missing atTime")
@@ -273,6 +294,8 @@ func getPoolBalances(b backend.Backend) http.HandlerFunc {
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
+
+		span.SetAttributes(attribute.String("request.atTime", atTime))
 
 		balance, err := b.GetService().GetPoolBalance(ctx, poolID, atTime)
 		if err != nil {
@@ -315,6 +338,8 @@ func deletePoolHandler(b backend.Backend) http.HandlerFunc {
 			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
+
+		span.SetAttributes(attribute.String("request.poolID", poolID))
 
 		err := b.GetService().DeletePool(ctx, poolID)
 		if err != nil {

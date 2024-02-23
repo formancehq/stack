@@ -15,6 +15,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/gorilla/mux"
+	"go.opentelemetry.io/otel/attribute"
 )
 
 type balancesResponse struct {
@@ -39,6 +40,13 @@ func listBalancesForAccount(b backend.Backend) http.HandlerFunc {
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
+
+		span.SetAttributes(
+			attribute.String("request.accountID", balanceQuery.AccountID.String()),
+			attribute.String("request.currency", balanceQuery.Currency),
+			attribute.String("request.from", balanceQuery.From.String()),
+			attribute.String("request.to", balanceQuery.To.String()),
+		)
 
 		query, err := bunpaginate.Extract[storage.ListBalancesQuery](r, func() (*storage.ListBalancesQuery, error) {
 			options, err := getPagination(r, balanceQuery)

@@ -124,7 +124,7 @@ func readAccountHandler(b backend.Backend) http.HandlerFunc {
 
 		accountID := mux.Vars(r)["accountID"]
 
-		span.SetAttributes(attribute.String("account.id", accountID))
+		span.SetAttributes(attribute.String("request.accountID", accountID))
 
 		account, err := b.GetService().GetAccount(ctx, accountID)
 		if err != nil {

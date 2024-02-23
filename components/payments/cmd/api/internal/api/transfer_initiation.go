@@ -14,6 +14,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/gorilla/mux"
+	"go.opentelemetry.io/otel/attribute"
 )
 
 type transferInitiationResponse struct {
@@ -69,6 +70,8 @@ func readTransferInitiationHandler(b backend.Backend) http.HandlerFunc {
 			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
+
+		span.SetAttributes(attribute.String("request.transferID", transferID.String()))
 
 		ret, err := b.GetService().ReadTransferInitiation(ctx, transferID)
 		if err != nil {

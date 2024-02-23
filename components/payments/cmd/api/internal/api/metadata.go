@@ -10,6 +10,7 @@ import (
 	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/pkg/errors"
+	"go.opentelemetry.io/otel/attribute"
 
 	"github.com/gorilla/mux"
 )
@@ -26,6 +27,8 @@ func updateMetadataHandler(b backend.Backend) http.HandlerFunc {
 			return
 		}
 
+		span.SetAttributes(attribute.String("request.paymentID", paymentID.String()))
+
 		var metadata service.UpdateMetadataRequest
 		if r.ContentLength == 0 {
 			var err = errors.New("body is required")
@@ -39,6 +42,10 @@ func updateMetadataHandler(b backend.Backend) http.HandlerFunc {
 			otel.RecordError(span, err)
 			api.BadRequest(w, ErrMissingOrInvalidBody, err)
 			return
+		}
+
+		for k, v := range metadata {
+			span.SetAttributes(attribute.String("request.metadata."+k, v))
 		}
 
 		err = b.GetService().UpdatePaymentMetadata(ctx, *paymentID, metadata)

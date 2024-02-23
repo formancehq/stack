@@ -13,6 +13,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"go.opentelemetry.io/otel/attribute"
 )
 
 type bankAccountRelatedAccountsResponse struct {
@@ -128,6 +129,8 @@ func readBankAccountHandler(b backend.Backend) http.HandlerFunc {
 			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
+
+		span.SetAttributes(attribute.String("request.bankAccountID", bankAccountID.String()))
 
 		account, err := b.GetService().GetBankAccount(ctx, bankAccountID, true)
 		if err != nil {
