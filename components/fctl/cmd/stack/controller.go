@@ -20,7 +20,11 @@ func waitStackReady(cmd *cobra.Command, client *membershipclient.APIClient, prof
 	sum := 2 * time.Second
 
 	// Hack to ignore first Status
-	<-time.After(waitTime)
+	select {
+	case <-cmd.Context().Done():
+		return nil, cmd.Context().Err()
+	case <-time.After(waitTime):
+	}
 
 	for {
 		stackRsp, resp, err = client.DefaultApi.GetStack(cmd.Context(), organizationId, stackId).Execute()
