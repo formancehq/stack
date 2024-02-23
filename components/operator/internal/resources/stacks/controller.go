@@ -150,6 +150,14 @@ func RetrieveReferenceModules(ctx Context, stack *v1beta1.Stack) error {
 	return nil
 }
 
+func sliceToSet(slice []string) map[string]bool {
+	set := map[string]bool{}
+	for _, s := range slice {
+		set[s] = true
+	}
+	return set
+}
+
 func Reconcile(ctx Context, stack *v1beta1.Stack) error {
 	_, _, err := CreateOrUpdate[*corev1.Namespace](ctx, types.NamespacedName{
 		Name: stack.Name,
@@ -158,13 +166,19 @@ func Reconcile(ctx Context, stack *v1beta1.Stack) error {
 		return err
 	}
 
+	statusCopy := stack.Status.DeepCopy()
 	err = RetrieveReferenceModules(ctx, stack)
 	if err != nil {
 		return err
 	}
 
-	if err := ctx.GetClient().Status().Update(ctx, stack); err != nil {
-		return err
+	// Make a Set of the modules
+	mapCopy := sliceToSet(statusCopy.Modules)
+	mapStack := sliceToSet(stack.Status.Modules)
+	if !reflect.DeepEqual(mapCopy, mapStack) {
+		if err := ctx.GetClient().Status().Update(ctx, stack); err != nil {
+			return err
+		}
 	}
 
 	err = areDependentReady(ctx, stack)
