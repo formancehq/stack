@@ -1,6 +1,8 @@
 package internal
 
 import (
+	"slices"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/components/agent/internal/generated"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
@@ -34,11 +36,12 @@ func StacksEventHandler(logger sharedlogging.Logger, membershipClient Membership
 			}
 
 			if stack.Status.Ready {
-				if len(stack.Status.Modules) == len(GetExpectedModules()) {
-					return generated.StackStatus_Ready
-				} else {
-					return generated.StackStatus_Progressing
+				for _, module := range GetExpectedModules() {
+					if !slices.Contains(stack.Status.Modules, module) {
+						return generated.StackStatus_Progressing
+					}
 				}
+				return generated.StackStatus_Ready
 			} else {
 				return generated.StackStatus_Progressing
 			}
