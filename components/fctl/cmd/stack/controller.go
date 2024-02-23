@@ -17,6 +17,11 @@ func waitStackReady(cmd *cobra.Command, client *membershipclient.APIClient, prof
 	var stackRsp *membershipclient.CreateStackResponse
 
 	waitTime := 2 * time.Second
+	sum := 2 * time.Second
+
+	// Hack to ignore first Status
+	<-time.After(waitTime)
+
 	for {
 		stackRsp, resp, err = client.DefaultApi.GetStack(cmd.Context(), stack.OrganizationId, stack.Id).Execute()
 		if err != nil {
@@ -26,7 +31,7 @@ func waitStackReady(cmd *cobra.Command, client *membershipclient.APIClient, prof
 			return nil, fmt.Errorf("stack %s not found", stack.Id)
 		}
 
-		if stack.Status == "READY" {
+		if stackRsp.Data.Status == "READY" {
 			return stackRsp.Data, nil
 		}
 
@@ -34,6 +39,8 @@ func waitStackReady(cmd *cobra.Command, client *membershipclient.APIClient, prof
 			pterm.Warning.Println("Waiting for stack to be ready...")
 			return nil, fmt.Errorf("there might a problem with the stack scheduling, retry and if the problem persists please contact the support")
 		}
+
+		sum += waitTime
 		select {
 		case <-time.After(waitTime):
 		case <-cmd.Context().Done():
