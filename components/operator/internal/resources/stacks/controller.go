@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"sort"
 	"strings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -107,10 +108,60 @@ func areDependentReady(ctx Context, stack *v1beta1.Stack) error {
 	return nil
 }
 
+func RetrieveReferenceModules(ctx Context, stack *v1beta1.Stack) error {
+	setKind := map[string]interface{}{}
+	for _, rtype := range ctx.GetScheme().AllKnownTypes() {
+		v := reflect.New(rtype).Interface()
+		r, ok := v.(v1beta1.Module)
+		if !ok {
+			continue
+		}
+
+		gvk, err := apiutil.GVKForObject(r, ctx.GetScheme())
+		if err != nil {
+			return err
+		}
+		l := &unstructured.UnstructuredList{}
+		l.SetGroupVersionKind(gvk)
+		if err := ctx.GetClient().List(ctx, l, client.MatchingFields{
+			"stack": stack.Name,
+		}); err != nil {
+			return err
+		}
+
+		for _, item := range l.Items {
+			content := item.UnstructuredContent()
+			if content["kind"] != nil {
+				kind := content["kind"].(string)
+				if setKind[kind] == nil {
+					setKind[kind] = []string{}
+				}
+			}
+		}
+
+	}
+
+	modules := []string{}
+	for k := range setKind {
+		modules = append(modules, k)
+	}
+
+	sort.Strings(modules)
+
+	stack.Status.Modules = modules
+
+	return nil
+}
+
 func Reconcile(ctx Context, stack *v1beta1.Stack) error {
 	_, _, err := CreateOrUpdate[*corev1.Namespace](ctx, types.NamespacedName{
 		Name: stack.Name,
 	})
+	if err != nil {
+		return err
+	}
+
+	err = RetrieveReferenceModules(ctx, stack)
 	if err != nil {
 		return err
 	}

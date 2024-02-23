@@ -7,6 +7,12 @@ import (
 	"k8s.io/client-go/tools/cache"
 )
 
+func GetExpectedModules() []string {
+	return []string{
+		"Stargate", "Wallets", "Ledger", "Payments", "Webhooks", "Auth", "Orchestration", "Search", "Gateway",
+	}
+}
+
 func StacksEventHandler(logger sharedlogging.Logger, membershipClient MembershipClient) cache.ResourceEventHandlerFuncs {
 	sendStatus := func(stack string, status generated.StackStatus) {
 		if err := membershipClient.Send(&generated.Message{
@@ -28,7 +34,11 @@ func StacksEventHandler(logger sharedlogging.Logger, membershipClient Membership
 			}
 
 			if stack.Status.Ready {
-				return generated.StackStatus_Ready
+				if len(stack.Status.Modules) == len(GetExpectedModules()) {
+					return generated.StackStatus_Ready
+				} else {
+					return generated.StackStatus_Progressing
+				}
 			} else {
 				return generated.StackStatus_Progressing
 			}

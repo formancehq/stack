@@ -44,6 +44,7 @@ type StackSpec struct {
 // StackStatus defines the observed state of Stack
 type StackStatus struct {
 	CommonStatus `json:",inline"`
+	Modules      []string `json:"modules,omitempty"`
 }
 
 //+kubebuilder:object:root=true
@@ -53,6 +54,7 @@ type StackStatus struct {
 //+kubebuilder:printcolumn:name="Version",type="string",JSONPath=".spec.version",description="Stack Version"
 //+kubebuilder:printcolumn:name="Versions From file",type="string",JSONPath=".spec.versionsFromFile",description="Stack Version From File"
 //+kubebuilder:printcolumn:name="Ready",type="boolean",JSONPath=".status.ready",description="Is stack ready"
+//+kubebuilder:printcolumn:name="Modules",type=string,JSONPath=".status.modules",description="Modules List Registered"
 //+kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
 
 // Stack is the Schema for the stacks API
