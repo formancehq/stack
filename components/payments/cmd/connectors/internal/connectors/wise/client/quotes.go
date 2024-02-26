@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"math/big"
 	"net/http"
 	"time"
 
@@ -18,7 +17,7 @@ type Quote struct {
 	ID uuid.UUID `json:"id"`
 }
 
-func (w *Client) CreateQuote(ctx context.Context, profileID, currency string, amount *big.Float) (Quote, error) {
+func (w *Client) CreateQuote(ctx context.Context, profileID, currency string, amount json.Number) (Quote, error) {
 	f := connectors.ClientMetrics(ctx, "wise", "create_quote")
 	now := time.Now()
 	defer f(ctx, now)

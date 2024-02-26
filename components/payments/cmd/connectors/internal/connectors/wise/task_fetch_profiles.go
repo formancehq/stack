@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"math"
-	"math/big"
 	"strconv"
 	"time"
 
@@ -148,14 +146,10 @@ func ingestAccountsBatch(
 			RawData: raw,
 		})
 
-		var amount big.Float
-		_, ok = amount.SetString(balance.Amount.Value.String())
-		if !ok {
-			return fmt.Errorf("failed to parse amount %s", balance.Amount.Value.String())
+		amount, err := currency.GetAmountWithPrecisionFromString(balance.Amount.Value.String(), precision)
+		if err != nil {
+			return err
 		}
-
-		var amountInt big.Int
-		amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
 
 		now := time.Now()
 		balancesBatch = append(balancesBatch, &models.Balance{
@@ -164,7 +158,7 @@ func ingestAccountsBatch(
 				ConnectorID: connectorID,
 			},
 			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, balance.Amount.Currency),
-			Balance:       &amountInt,
+			Balance:       amount,
 			CreatedAt:     now,
 			LastUpdatedAt: now,
 			ConnectorID:   connectorID,
