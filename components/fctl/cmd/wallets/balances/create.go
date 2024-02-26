@@ -2,6 +2,8 @@ package balances
 
 import (
 	"fmt"
+	"math/big"
+
 	"github.com/formancehq/fctl/cmd/wallets/internal"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
@@ -9,7 +11,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
-	"math/big"
 )
 
 type CreateStore struct {

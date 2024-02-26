@@ -96,6 +96,14 @@ func InitCLIFlags(cmd *cobra.Command, options ...func(*ConfigDefault)) {
 	cmd.PersistentFlags().Int(PublisherKafkaSASLScramSHASizeFlag, values.PublisherKafkaSASLScramSHASize, "SASL SCRAM SHA size")
 	cmd.PersistentFlags().Bool(PublisherKafkaTLSEnabledFlag, values.PublisherKafkaTLSEnabled, "Enable TLS to connect on kafka")
 
+	InitNatsCLIFlags(cmd, options...)
+}
+
+func InitNatsCLIFlags(cmd *cobra.Command, options ...func(*ConfigDefault)) {
+	values := defaultConfigValues
+	for _, option := range options {
+		option(&values)
+	}
 	// NATS
 	cmd.PersistentFlags().Bool(PublisherNatsEnabledFlag, values.PublisherNatsEnabled, "Publish write events to nats")
 	cmd.PersistentFlags().String(PublisherNatsClientIDFlag, values.PublisherNatsClientID, "Nats client ID")
