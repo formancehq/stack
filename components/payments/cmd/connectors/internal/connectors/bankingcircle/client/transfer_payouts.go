@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"math/big"
 	"net/http"
 	"time"
 
@@ -25,8 +24,8 @@ type PaymentRequest struct {
 	DebtorReference        string         `json:"debtorReference"`
 	CurrencyOfTransfer     string         `json:"currencyOfTransfer"`
 	Amount                 struct {
-		Currency string     `json:"currency"`
-		Amount   *big.Float `json:"amount"`
+		Currency string      `json:"currency"`
+		Amount   json.Number `json:"amount"`
 	} `json:"amount"`
 	ChargeBearer    string          `json:"chargeBearer"`
 	CreditorAccount *PaymentAccount `json:"creditorAccount"`

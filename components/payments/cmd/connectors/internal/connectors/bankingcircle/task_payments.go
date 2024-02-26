@@ -2,9 +2,8 @@ package bankingcircle
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
-	"math"
-	"math/big"
 	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
@@ -96,8 +95,10 @@ func initiatePayment(
 		return err
 	}
 
-	amount := big.NewFloat(0).SetInt(transfer.Amount)
-	amount = amount.Quo(amount, big.NewFloat(math.Pow(10, float64(precision))))
+	amount, err := currency.GetStringAmountFromBigIntWithPrecision(transfer.Amount, precision)
+	if err != nil {
+		return err
+	}
 
 	var sourceAccount *client.Account
 	sourceAccount, err = bankingCircleClient.GetAccount(ctx, transfer.SourceAccountID.Reference)
@@ -138,11 +139,11 @@ func initiatePayment(
 			DebtorReference:    transfer.Description,
 			CurrencyOfTransfer: curr,
 			Amount: struct {
-				Currency string     "json:\"currency\""
-				Amount   *big.Float "json:\"amount\""
+				Currency string      "json:\"currency\""
+				Amount   json.Number "json:\"amount\""
 			}{
 				Currency: curr,
-				Amount:   amount,
+				Amount:   json.Number(amount),
 			},
 			ChargeBearer: "SHA",
 			CreditorAccount: &client.PaymentAccount{
@@ -171,11 +172,11 @@ func initiatePayment(
 			DebtorReference:    transfer.Description,
 			CurrencyOfTransfer: curr,
 			Amount: struct {
-				Currency string     "json:\"currency\""
-				Amount   *big.Float "json:\"amount\""
+				Currency string      "json:\"currency\""
+				Amount   json.Number "json:\"amount\""
 			}{
 				Currency: curr,
-				Amount:   amount,
+				Amount:   json.Number(amount),
 			},
 			ChargeBearer: "SHA",
 			CreditorAccount: &client.PaymentAccount{
