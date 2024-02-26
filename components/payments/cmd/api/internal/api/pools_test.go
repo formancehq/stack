@@ -15,7 +15,6 @@ import (
 	"github.com/formancehq/payments/cmd/api/internal/api/service"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/api"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -607,7 +606,7 @@ func TestListPools(t *testing.T) {
 					},
 				},
 			}
-			listPoolsResponse := &api.Cursor[models.Pool]{
+			listPoolsResponse := &sharedapi.Cursor[models.Pool]{
 				PageSize: testCase.pageSize,
 				HasMore:  false,
 				Previous: "",

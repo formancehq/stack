@@ -8,11 +8,13 @@ import (
 	"github.com/formancehq/payments/cmd/api/internal/api/backend"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"go.opentelemetry.io/otel/attribute"
 )
 
 type accountResponse struct {
@@ -32,6 +34,9 @@ type accountResponse struct {
 
 func listAccountsHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := otel.Tracer().Start(r.Context(), "listAccountsHandler")
+		defer span.End()
+
 		w.Header().Set("Content-Type", "application/json")
 
 		query, err := bunpaginate.Extract[storage.ListAccountsQuery](r, func() (*storage.ListAccountsQuery, error) {
@@ -42,12 +47,14 @@ func listAccountsHandler(b backend.Backend) http.HandlerFunc {
 			return pointer.For(storage.NewListAccountsQuery(*options)), nil
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
-		cursor, err := b.GetService().ListAccounts(r.Context(), *query)
+		cursor, err := b.GetService().ListAccounts(ctx, *query)
 		if err != nil {
+			otel.RecordError(span, err)
 			handleServiceErrors(w, r, err)
 			return
 		}
@@ -101,6 +108,7 @@ func listAccountsHandler(b backend.Backend) http.HandlerFunc {
 			},
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			api.InternalServerError(w, r, err)
 			return
 		}
@@ -109,12 +117,18 @@ func listAccountsHandler(b backend.Backend) http.HandlerFunc {
 
 func readAccountHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := otel.Tracer().Start(r.Context(), "readAccountHandler")
+		defer span.End()
+
 		w.Header().Set("Content-Type", "application/json")
 
 		accountID := mux.Vars(r)["accountID"]
 
-		account, err := b.GetService().GetAccount(r.Context(), accountID)
+		span.SetAttributes(attribute.String("request.accountID", accountID))
+
+		account, err := b.GetService().GetAccount(ctx, accountID)
 		if err != nil {
+			otel.RecordError(span, err)
 			handleServiceErrors(w, r, err)
 			return
 		}
@@ -157,6 +171,7 @@ func readAccountHandler(b backend.Backend) http.HandlerFunc {
 			Data: data,
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			api.InternalServerError(w, r, err)
 			return
 		}

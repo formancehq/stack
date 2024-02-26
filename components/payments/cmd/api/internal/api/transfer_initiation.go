@@ -9,10 +9,12 @@ import (
 	"github.com/formancehq/payments/cmd/api/internal/api/backend"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/gorilla/mux"
+	"go.opentelemetry.io/otel/attribute"
 )
 
 type transferInitiationResponse struct {
@@ -57,16 +59,23 @@ type readTransferInitiationResponse struct {
 
 func readTransferInitiationHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := otel.Tracer().Start(r.Context(), "readTransferInitiationHandler")
+		defer span.End()
+
 		w.Header().Set("Content-Type", "application/json")
 
 		transferID, err := models.TransferInitiationIDFromString(mux.Vars(r)["transferID"])
 		if err != nil {
+			otel.RecordError(span, err)
 			api.BadRequest(w, ErrInvalidID, err)
 			return
 		}
 
-		ret, err := b.GetService().ReadTransferInitiation(r.Context(), transferID)
+		span.SetAttributes(attribute.String("request.transferID", transferID.String()))
+
+		ret, err := b.GetService().ReadTransferInitiation(ctx, transferID)
 		if err != nil {
+			otel.RecordError(span, err)
 			handleServiceErrors(w, r, err)
 			return
 		}
@@ -119,6 +128,7 @@ func readTransferInitiationHandler(b backend.Backend) http.HandlerFunc {
 			Data: data,
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			api.InternalServerError(w, r, err)
 			return
 		}
@@ -127,6 +137,9 @@ func readTransferInitiationHandler(b backend.Backend) http.HandlerFunc {
 
 func listTransferInitiationsHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := otel.Tracer().Start(r.Context(), "listTransferInitiationsHandler")
+		defer span.End()
+
 		w.Header().Set("Content-Type", "application/json")
 
 		query, err := bunpaginate.Extract[storage.ListTransferInitiationsQuery](r, func() (*storage.ListTransferInitiationsQuery, error) {
@@ -137,12 +150,14 @@ func listTransferInitiationsHandler(b backend.Backend) http.HandlerFunc {
 			return pointer.For(storage.NewListTransferInitiationsQuery(*options)), nil
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
 
-		cursor, err := b.GetService().ListTransferInitiations(r.Context(), *query)
+		cursor, err := b.GetService().ListTransferInitiations(ctx, *query)
 		if err != nil {
+			otel.RecordError(span, err)
 			handleServiceErrors(w, r, err)
 			return
 		}
@@ -185,6 +200,7 @@ func listTransferInitiationsHandler(b backend.Backend) http.HandlerFunc {
 			},
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			api.InternalServerError(w, r, err)
 			return
 		}

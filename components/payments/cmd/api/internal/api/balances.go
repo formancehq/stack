@@ -10,10 +10,12 @@ import (
 	"github.com/formancehq/payments/cmd/api/internal/api/backend"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/gorilla/mux"
+	"go.opentelemetry.io/otel/attribute"
 )
 
 type balancesResponse struct {
@@ -27,13 +29,24 @@ type balancesResponse struct {
 
 func listBalancesForAccount(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := otel.Tracer().Start(r.Context(), "listBalancesForAccount")
+		defer span.End()
+
 		w.Header().Set("Content-Type", "application/json")
 
 		balanceQuery, err := populateBalanceQueryFromRequest(r)
 		if err != nil {
+			otel.RecordError(span, err)
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
+
+		span.SetAttributes(
+			attribute.String("request.accountID", balanceQuery.AccountID.String()),
+			attribute.String("request.currency", balanceQuery.Currency),
+			attribute.String("request.from", balanceQuery.From.String()),
+			attribute.String("request.to", balanceQuery.To.String()),
+		)
 
 		query, err := bunpaginate.Extract[storage.ListBalancesQuery](r, func() (*storage.ListBalancesQuery, error) {
 			options, err := getPagination(r, balanceQuery)
@@ -43,6 +56,7 @@ func listBalancesForAccount(b backend.Backend) http.HandlerFunc {
 			return pointer.For(storage.NewListBalancesQuery(*options)), nil
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			api.BadRequest(w, ErrValidation, err)
 			return
 		}
@@ -52,6 +66,7 @@ func listBalancesForAccount(b backend.Backend) http.HandlerFunc {
 		if r.URL.Query().Get("limit") != "" {
 			limit, err := strconv.ParseInt(r.URL.Query().Get("limit"), 10, 64)
 			if err != nil {
+				otel.RecordError(span, err)
 				api.BadRequest(w, ErrValidation, err)
 				return
 			}
@@ -62,8 +77,9 @@ func listBalancesForAccount(b backend.Backend) http.HandlerFunc {
 			}
 		}
 
-		cursor, err := b.GetService().ListBalances(r.Context(), *query)
+		cursor, err := b.GetService().ListBalances(ctx, *query)
 		if err != nil {
+			otel.RecordError(span, err)
 			handleServiceErrors(w, r, err)
 			return
 		}
@@ -92,6 +108,7 @@ func listBalancesForAccount(b backend.Backend) http.HandlerFunc {
 			},
 		})
 		if err != nil {
+			otel.RecordError(span, err)
 			api.InternalServerError(w, r, err)
 			return
 		}
