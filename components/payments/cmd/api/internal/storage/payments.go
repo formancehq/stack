@@ -30,11 +30,12 @@ func (s *Storage) ListPayments(ctx context.Context, q ListPaymentsQuery) (*api.C
 			query = query.
 				Relation("Connector").
 				Relation("Metadata").
-				Relation("Adjustments").
-				Order("created_at DESC")
+				Relation("Adjustments")
 
 			if q.Options.Sorter != nil {
 				query = q.Options.Sorter.Apply(query)
+			} else {
+				query = query.Order("created_at DESC")
 			}
 
 			return query
