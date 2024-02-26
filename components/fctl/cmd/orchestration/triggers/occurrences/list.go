@@ -91,15 +91,23 @@ func (c *OccurrencesListController) Render(cmd *cobra.Command, args []string) er
 				fctl.Map(c.store.WorkflowOccurrence,
 					func(src shared.TriggerOccurrence) []string {
 						return []string{
-							src.WorkflowInstanceID,
+							func() string {
+								if src.WorkflowInstanceID != nil {
+									return ""
+								}
+								return *src.WorkflowInstanceID
+							}(),
 							src.Date.Format(time.RFC3339),
 							fctl.BoolToString(src.WorkflowInstance.Terminated),
 							src.WorkflowInstance.TerminatedAt.Format(time.RFC3339),
 							func() string {
-								if src.WorkflowInstance.Error == nil {
-									return ""
+								if src.Error != nil && *src.Error != "" {
+									return *src.Error
 								}
-								return *src.WorkflowInstance.Error
+								if src.WorkflowInstance != nil && src.WorkflowInstance.Error != nil && *src.WorkflowInstance.Error != "" {
+									return *src.WorkflowInstance.Error
+								}
+								return ""
 							}(),
 						}
 					}),

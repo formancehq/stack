@@ -465,6 +465,35 @@ paths:
           $ref: '#/components/responses/V2ErrorResponse'
         default:
           $ref: '#/components/responses/V2ErrorResponse'
+  /v2/triggers/{triggerID}/test:
+    parameters:
+      - name: triggerID
+        description: The trigger id
+        in: path
+        schema:
+          type: string
+        required: true
+    post:
+      summary: Test trigger
+      operationId: testTrigger
+      description: Test trigger
+      tags:
+        - Orchestration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "200":
+          description: Test a trigger
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V2TestTriggerResponse'
+        default:
+          $ref: '#/components/responses/V2ErrorResponse'
   /v2/triggers/{triggerID}/occurrences:
     parameters:
       - name: triggerID
@@ -779,6 +808,7 @@ components:
           enum:
             - VALIDATION
             - NOT_FOUND
+            - INTERNAL
         errorMessage:
           type: string
     WorkflowConfig:
@@ -964,6 +994,7 @@ components:
       required:
         - triggerID
         - workflowInstanceID
+        - workflowInstance
         - date
         - event
       properties:
@@ -972,6 +1003,8 @@ components:
           format: date-time
         workflowInstanceID:
           type: string
+        workflowInstance:
+          $ref: '#/components/schemas/WorkflowInstance'
         triggerID:
           type: string
         event:
@@ -1067,10 +1100,10 @@ components:
           $ref: '#/components/schemas/WorkflowInstanceHistoryStageList'
     StageSendSourceWallet:
       type: object
+      required:
+        - id
       properties:
         id:
-          type: string
-        name:
           type: string
         balance:
           type: string
@@ -1181,6 +1214,74 @@ components:
             order_id: "6735"
     ActivityStripeTransfer:
       $ref: '#/components/schemas/StripeTransferRequest'
+    ActivityListWallets:
+      type: object
+      properties:
+        name:
+          type: string
+    ActivityListWalletsOutput:
+      $ref: '#/components/schemas/ListWalletsResponse'
+    ListWalletsResponse:
+      type: object
+      required:
+        - cursor
+      properties:
+        cursor:
+          allOf:
+            - $ref: '#/components/schemas/Cursor'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/components/schemas/Wallet'
+                  type: array
+              type: object
+              required:
+                - data
+    Wallet:
+      type: object
+      required:
+        - name
+        - id
+        - metadata
+        - createdAt
+        - ledger
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique ID of the wallet.
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          description: Metadata associated with the wallet.
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        ledger:
+          type: string
+    Cursor:
+      type: object
+      required:
+        - pageSize
+      properties:
+        pageSize:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 1000
+          example: 15
+        hasMore:
+          type: boolean
+          example: false
+        previous:
+          type: string
+          example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
+        next:
+          type: string
+          example: ""
     ActivityGetAccount:
       type: object
       required:
@@ -1198,6 +1299,16 @@ components:
           type: string
         data:
           $ref: '#/components/schemas/PostTransaction'
+    ActivityRevertTransaction:
+      type: object
+      required:
+        - id
+        - ledger
+      properties:
+        ledger:
+          type: string
+        id:
+          type: string
     ActivityGetPayment:
       type: object
       required:
@@ -1326,13 +1437,6 @@ components:
       properties:
         id:
           type: string
-    ActivityListWallets:
-      type: object
-      properties:
-        name:
-          type: string
-    ActivityListWalletsOutput:
-      $ref: '#/components/schemas/ListWalletsResponse'
     ActivityVoidHold:
       type: object
       required:
@@ -1370,11 +1474,18 @@ components:
           type: integer
           format: bigint
           minimum: 0
+        reverted:
+          type: boolean
       required:
         - postings
         - timestamp
         - id
         - metadata
+        - reverted
+    ActivityRevertTransactionOutput:
+      $ref: '#/components/schemas/RevertTransactionResponse'
+    RevertTransactionResponse:
+      $ref: '#/components/schemas/CreateTransactionResponse'
     ActivityGetPaymentOutput:
       $ref: '#/components/schemas/PaymentResponse'
     PaymentResponse:
@@ -1606,6 +1717,8 @@ components:
           $ref: '#/components/schemas/ActivityGetAccount'
         CreateTransaction:
           $ref: '#/components/schemas/ActivityCreateTransaction'
+        RevertTransaction:
+          $ref: '#/components/schemas/ActivityRevertTransaction'
         StripeTransfer:
           $ref: '#/components/schemas/ActivityStripeTransfer'
         GetPayment:
@@ -1629,6 +1742,8 @@ components:
           $ref: '#/components/schemas/ActivityGetAccountOutput'
         CreateTransaction:
           $ref: '#/components/schemas/ActivityCreateTransactionOutput'
+        RevertTransaction:
+          $ref: '#/components/schemas/ActivityRevertTransactionOutput'
         GetPayment:
           $ref: '#/components/schemas/ActivityGetPaymentOutput'
         DebitWallet:
@@ -1782,67 +1897,6 @@ components:
           input: 100
           output: 10
           balance: 90
-    Cursor:
-      type: object
-      required:
-        - pageSize
-      properties:
-        pageSize:
-          type: integer
-          format: int64
-          minimum: 1
-          maximum: 1000
-          example: 15
-        hasMore:
-          type: boolean
-          example: false
-        previous:
-          type: string
-          example: "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
-        next:
-          type: string
-          example: ""
-    Wallet:
-      type: object
-      required:
-        - name
-        - id
-        - metadata
-        - createdAt
-        - ledger
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: The unique ID of the wallet.
-        metadata:
-          type: object
-          additionalProperties:
-            type: string
-          description: Metadata associated with the wallet.
-        name:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        ledger:
-          type: string
-    ListWalletsResponse:
-      type: object
-      required:
-        - cursor
-      properties:
-        cursor:
-          allOf:
-            - $ref: '#/components/schemas/Cursor'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/components/schemas/Wallet'
-                  type: array
-              type: object
-              required:
-                - data
     V2ServerInfo:
       type: object
       required:
@@ -1861,6 +1915,7 @@ components:
           enum:
             - VALIDATION
             - NOT_FOUND
+            - INTERNAL
         errorMessage:
           type: string
     V2WorkflowConfig:
@@ -2067,8 +2122,6 @@ components:
       type: object
       required:
         - triggerID
-        - workflowInstanceID
-        - workflowInstance
         - date
         - event
       properties:
@@ -2080,6 +2133,8 @@ components:
         workflowInstance:
           $ref: '#/components/schemas/V2WorkflowInstance'
         triggerID:
+          type: string
+        error:
           type: string
         event:
           type: object
@@ -2302,6 +2357,10 @@ components:
           $ref: '#/components/schemas/V2StageSendDestination'
         source:
           $ref: '#/components/schemas/V2StageSendSource'
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
     V2StageDelay:
       type: object
       properties:
@@ -2351,6 +2410,74 @@ components:
             order_id: "6735"
     V2ActivityStripeTransfer:
       $ref: '#/components/schemas/V2StripeTransferRequest'
+    V2ActivityListWallets:
+      type: object
+      properties:
+        name:
+          type: string
+    V2ActivityListWalletsOutput:
+      $ref: '#/components/schemas/V2ListWalletsResponse'
+    V2ListWalletsResponse:
+      type: object
+      required:
+        - cursor
+      properties:
+        cursor:
+          allOf:
+            - $ref: '#/components/schemas/V2Cursor'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/components/schemas/V2Wallet'
+                  type: array
+              type: object
+              required:
+                - data
+    V2Wallet:
+      type: object
+      required:
+        - name
+        - id
+        - metadata
+        - createdAt
+        - ledger
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique ID of the wallet.
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          description: Metadata associated with the wallet.
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        ledger:
+          type: string
+    V2Cursor:
+      type: object
+      required:
+        - pageSize
+      properties:
+        pageSize:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 1000
+          example: 15
+        hasMore:
+          type: boolean
+          example: false
+        previous:
+          type: string
+          example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
+        next:
+          type: string
+          example: ""
     V2ActivityGetAccount:
       type: object
       required:
@@ -2368,16 +2495,6 @@ components:
           type: string
         data:
           $ref: '#/components/schemas/V2PostTransaction'
-    V2ActivityRevertTransaction:
-      type: object
-      required:
-        - id
-        - ledger
-      properties:
-        ledger:
-          type: string
-        id:
-          type: string
     V2ActivityGetPayment:
       type: object
       required:
@@ -2520,7 +2637,9 @@ components:
     V2CreateTransactionResponse:
       properties:
         data:
-          $ref: '#/components/schemas/V2Transaction'
+          type: array
+          items:
+            $ref: '#/components/schemas/V2Transaction'
       type: object
       required:
         - data
@@ -2539,19 +2658,15 @@ components:
           example: ref:001
         metadata:
           $ref: '#/components/schemas/V2Metadata'
-        id:
+        txid:
           type: integer
           format: bigint
           minimum: 0
       required:
         - postings
         - timestamp
-        - id
+        - txid
         - metadata
-    V2ActivityRevertTransactionOutput:
-      $ref: '#/components/schemas/V2RevertTransactionResponse'
-    V2RevertTransactionResponse:
-      $ref: '#/components/schemas/V2CreateTransactionResponse'
     V2ActivityGetPaymentOutput:
       $ref: '#/components/schemas/V2PaymentResponse'
     V2PaymentResponse:
@@ -2797,6 +2912,8 @@ components:
           $ref: '#/components/schemas/V2ActivityGetWallet'
         VoidHold:
           $ref: '#/components/schemas/V2ActivityVoidHold'
+        ListWallets:
+          $ref: '#/components/schemas/V2ActivityListWallets'
     V2WorkflowInstanceHistoryStageOutput:
       type: object
       properties:
@@ -2810,6 +2927,8 @@ components:
           $ref: '#/components/schemas/V2ActivityDebitWalletOutput'
         GetWallet:
           $ref: '#/components/schemas/V2ActivityGetWalletOutput'
+        ListWallets:
+          $ref: '#/components/schemas/V2ListWalletsResponse'
     V2Monetary:
       type: object
       required:
@@ -2955,6 +3074,32 @@ components:
           input: 100
           output: 10
           balance: 90
+    V2TestTriggerResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/V2TriggerTest'
+    V2TriggerTest:
+      type: object
+      properties:
+        filter:
+          type: object
+          properties:
+            match:
+              type: boolean
+            error:
+              type: string
+        variables:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              value:
+                type: string
+              error:
+                type: string
   responses:
     ErrorResponse:
       description: General error
@@ -2962,7 +3107,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-
     V2ErrorResponse:
       description: General error
       content:

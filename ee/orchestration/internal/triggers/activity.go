@@ -5,6 +5,10 @@ import (
 	"encoding/json"
 	"strings"
 
+	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
+
+	"go.temporal.io/sdk/temporal"
+
 	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
@@ -74,35 +78,42 @@ func (a Activities) ProcessTrigger(ctx context.Context, trigger Trigger, request
 
 	span := trace.SpanFromContext(ctx)
 	var (
-		evaluated map[string]string
-		err       error
+		evaluated    map[string]string
+		triggerError error
+		occurrence   = NewTriggerOccurrence(request.MessageID, trigger.ID, request.Event)
 	)
 	if trigger.Vars != nil {
-		evaluated, err = a.expressionEvaluator.evalVariables(request.Event.Payload, trigger.Vars)
-		if err != nil {
-			span.RecordError(err)
-			return err
+		evaluated, triggerError = a.expressionEvaluator.evalVariables(request.Event.Payload, trigger.Vars)
+	}
+	if triggerError == nil {
+		data, triggerError := json.Marshal(evaluated)
+		if triggerError != nil {
+			panic(triggerError)
 		}
+
+		span.SetAttributes(attribute.String("variables", string(data)))
+
+		instance, triggerError := a.manager.RunWorkflow(ctx, trigger.WorkflowID, evaluated)
+		if triggerError != nil {
+			return triggerError
+		}
+
+		occurrence.WorkflowInstanceID = pointer.For(instance.ID)
+	} else {
+		triggerError = temporal.NewNonRetryableApplicationError("unable to eval variables", "VARIABLES_EVAL", triggerError)
+		span.RecordError(triggerError)
+		occurrence.Error = pointer.For(triggerError.Error())
 	}
 
-	data, err := json.Marshal(evaluated)
-	if err != nil {
-		panic(err)
-	}
-
-	span.SetAttributes(attribute.String("variables", string(data)))
-
-	instance, err := a.manager.RunWorkflow(ctx, trigger.WorkflowID, evaluated)
-	if err != nil {
-		return err
-	}
-
-	_, err = a.db.NewInsert().
-		Model(pointer.For(NewTriggerOccurrence(request.MessageID, trigger.ID, instance.ID, request.Event))).
+	_, err := a.db.NewInsert().
+		Model(pointer.For(occurrence)).
 		On("CONFLICT (trigger_id, event_id) DO NOTHING").
 		Exec(ctx)
+	if err != nil {
+		sharedlogging.FromContext(ctx).Errorf("unable to save trigger occurrence: %s", err)
+	}
 
-	return err
+	return triggerError
 }
 
 func NewActivities(db *bun.DB, manager *workflow.WorkflowManager, expressionEvaluator *expressionEvaluator) Activities {

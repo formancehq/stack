@@ -9,10 +9,11 @@ import (
 
 type V2TriggerOccurrence struct {
 	Date               time.Time              `json:"date"`
+	Error              *string                `json:"error,omitempty"`
 	Event              map[string]interface{} `json:"event"`
 	TriggerID          string                 `json:"triggerID"`
-	WorkflowInstance   V2WorkflowInstance     `json:"workflowInstance"`
-	WorkflowInstanceID string                 `json:"workflowInstanceID"`
+	WorkflowInstance   *V2WorkflowInstance    `json:"workflowInstance,omitempty"`
+	WorkflowInstanceID *string                `json:"workflowInstanceID,omitempty"`
 }
 
 func (v V2TriggerOccurrence) MarshalJSON() ([]byte, error) {
@@ -33,6 +34,13 @@ func (o *V2TriggerOccurrence) GetDate() time.Time {
 	return o.Date
 }
 
+func (o *V2TriggerOccurrence) GetError() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Error
+}
+
 func (o *V2TriggerOccurrence) GetEvent() map[string]interface{} {
 	if o == nil {
 		return map[string]interface{}{}
@@ -47,16 +55,16 @@ func (o *V2TriggerOccurrence) GetTriggerID() string {
 	return o.TriggerID
 }
 
-func (o *V2TriggerOccurrence) GetWorkflowInstance() V2WorkflowInstance {
+func (o *V2TriggerOccurrence) GetWorkflowInstance() *V2WorkflowInstance {
 	if o == nil {
-		return V2WorkflowInstance{}
+		return nil
 	}
 	return o.WorkflowInstance
 }
 
-func (o *V2TriggerOccurrence) GetWorkflowInstanceID() string {
+func (o *V2TriggerOccurrence) GetWorkflowInstanceID() *string {
 	if o == nil {
-		return ""
+		return nil
 	}
 	return o.WorkflowInstanceID
 }
