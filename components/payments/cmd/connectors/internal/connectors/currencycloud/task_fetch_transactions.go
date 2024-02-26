@@ -4,8 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"math"
-	"math/big"
 	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
@@ -93,13 +91,10 @@ func ingestTransactions(
 				continue
 			}
 
-			var amount big.Float
-			_, ok = amount.SetString(transaction.Amount)
-			if !ok {
-				return fetchTransactionsState{}, fmt.Errorf("failed to parse amount %s", transaction.Amount)
+			amount, err := currency.GetAmountWithPrecisionFromString(transaction.Amount.String(), precision)
+			if err != nil {
+				return fetchTransactionsState{}, err
 			}
-			var amountInt big.Int
-			amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
 
 			var rawData json.RawMessage
 
@@ -125,8 +120,8 @@ func ingestTransactions(
 					ConnectorID:   connectorID,
 					Status:        matchTransactionStatus(transaction.Status),
 					Scheme:        models.PaymentSchemeOther,
-					Amount:        &amountInt,
-					InitialAmount: &amountInt,
+					Amount:        amount,
+					InitialAmount: amount,
 					Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, transaction.Currency),
 					RawData:       rawData,
 				},

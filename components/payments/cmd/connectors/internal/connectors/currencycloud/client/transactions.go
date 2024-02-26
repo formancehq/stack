@@ -21,7 +21,7 @@ type Transaction struct {
 	UpdatedAt time.Time `json:"updated_at"`
 	Action    string    `json:"action"`
 
-	Amount string `json:"amount"`
+	Amount json.Number `json:"amount"`
 }
 
 func (c *Client) GetTransactions(ctx context.Context, page int, updatedAtFrom time.Time) ([]Transaction, int, error) {

@@ -13,12 +13,12 @@ import (
 )
 
 type PayoutRequest struct {
-	OnBehalfOf      string `json:"on_behalf_of"`
-	BeneficiaryID   string `json:"beneficiary_id"`
-	Currency        string `json:"currency"`
-	Amount          string `json:"amount"`
-	Reference       string `json:"reference"`
-	UniqueRequestID string `json:"unique_request_id"`
+	OnBehalfOf      string      `json:"on_behalf_of"`
+	BeneficiaryID   string      `json:"beneficiary_id"`
+	Currency        string      `json:"currency"`
+	Amount          json.Number `json:"amount"`
+	Reference       string      `json:"reference"`
+	UniqueRequestID string      `json:"unique_request_id"`
 }
 
 func (pr *PayoutRequest) ToFormData() url.Values {
@@ -26,7 +26,7 @@ func (pr *PayoutRequest) ToFormData() url.Values {
 	form.Set("on_behalf_of", pr.OnBehalfOf)
 	form.Set("beneficiary_id", pr.BeneficiaryID)
 	form.Set("currency", pr.Currency)
-	form.Set("amount", pr.Amount)
+	form.Set("amount", pr.Amount.String())
 	form.Set("reference", pr.Reference)
 	if pr.UniqueRequestID != "" {
 		form.Set("unique_request_id", pr.UniqueRequestID)

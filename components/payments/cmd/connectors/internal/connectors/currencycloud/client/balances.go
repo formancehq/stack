@@ -11,12 +11,12 @@ import (
 )
 
 type Balance struct {
-	ID        string    `json:"id"`
-	AccountID string    `json:"account_id"`
-	Currency  string    `json:"currency"`
-	Amount    string    `json:"amount"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID        string      `json:"id"`
+	AccountID string      `json:"account_id"`
+	Currency  string      `json:"currency"`
+	Amount    json.Number `json:"amount"`
+	CreatedAt time.Time   `json:"created_at"`
+	UpdatedAt time.Time   `json:"updated_at"`
 }
 
 func (c *Client) GetBalances(ctx context.Context, page int) ([]*Balance, int, error) {
