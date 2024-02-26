@@ -3,6 +3,9 @@ package triggers
 import (
 	"time"
 
+	"github.com/pkg/errors"
+	"go.temporal.io/sdk/temporal"
+
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/uptrace/bun"
 	temporalworkflow "go.temporal.io/sdk/workflow"
@@ -42,7 +45,10 @@ func (w triggerWorkflow) RunTrigger(ctx temporalworkflow.Context, req ProcessEve
 			req,
 		).Get(ctx, nil)
 		if err != nil {
-			return err
+			applicationError := &temporal.ApplicationError{}
+			if !errors.As(err, &applicationError) {
+				return err
+			}
 		}
 	}
 

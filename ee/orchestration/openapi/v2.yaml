@@ -659,8 +659,6 @@ components:
       type: object
       required:
         - triggerID
-        - workflowInstanceID
-        - workflowInstance
         - date
         - event
       properties:
@@ -672,6 +670,8 @@ components:
         workflowInstance:
           $ref: '#/components/schemas/V2WorkflowInstance'
         triggerID:
+          type: string
+        error:
           type: string
         event:
           type: object

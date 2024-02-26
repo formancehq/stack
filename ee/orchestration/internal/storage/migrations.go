@@ -116,6 +116,17 @@ add primary key (instance_id, stage, temporal_run_id);
 			return nil
 		},
 	},
+	{
+		Up: func(tx bun.Tx) error {
+			if _, err := tx.Exec(`
+alter table "triggers_occurrences"
+add column error varchar;
+				`); err != nil {
+				return err
+			}
+			return nil
+		},
+	},
 }
 
 func Migrate(ctx context.Context, db *bun.DB) error {

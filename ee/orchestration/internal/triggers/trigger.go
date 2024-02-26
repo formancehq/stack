@@ -102,18 +102,18 @@ type Occurrence struct {
 
 	EventID            string               `json:"-" bun:"event_id,pk"`
 	TriggerID          string               `json:"triggerID" bun:"trigger_id,pk"`
-	WorkflowInstanceID string               `json:"workflowInstanceID" bun:"workflow_instance_id"`
-	WorkflowInstance   workflow.Instance    `json:"workflowInstance" bun:"rel:belongs-to,join:workflow_instance_id=id"`
+	WorkflowInstanceID *string              `json:"workflowInstanceID,omitempty" bun:"workflow_instance_id"`
+	WorkflowInstance   *workflow.Instance   `json:"workflowInstance,omitempty" bun:"rel:belongs-to,join:workflow_instance_id=id"`
 	Date               time.Time            `json:"date" bun:"date"`
 	Event              publish.EventMessage `json:"event" bun:"event"`
+	Error              *string              `json:"error,omitempty" bun:"error"`
 }
 
-func NewTriggerOccurrence(eventID, triggerID, workflowInstanceID string, event publish.EventMessage) Occurrence {
+func NewTriggerOccurrence(eventID, triggerID string, event publish.EventMessage) Occurrence {
 	return Occurrence{
-		TriggerID:          triggerID,
-		EventID:            eventID,
-		WorkflowInstanceID: workflowInstanceID,
-		Date:               time.Now().Round(time.Microsecond).UTC(),
-		Event:              event,
+		TriggerID: triggerID,
+		EventID:   eventID,
+		Date:      time.Now().Round(time.Microsecond).UTC(),
+		Event:     event,
 	}
 }

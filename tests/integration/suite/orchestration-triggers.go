@@ -127,7 +127,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 				var getInstanceResponse *operations.V2GetInstanceResponse
 				Eventually(func() bool {
 					getInstanceResponse, err = Client().Orchestration.V2GetInstance(TestContext(), operations.V2GetInstanceRequest{
-						InstanceID: listTriggersOccurrencesResponse.V2ListTriggersOccurrencesResponse.Cursor.Data[0].WorkflowInstanceID,
+						InstanceID: *listTriggersOccurrencesResponse.V2ListTriggersOccurrencesResponse.Cursor.Data[0].WorkflowInstanceID,
 					})
 					Expect(err).To(BeNil())
 
@@ -163,6 +163,68 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 				listTriggersResponse, err := Client().Orchestration.V2ListTriggers(TestContext())
 				Expect(err).To(BeNil())
 				Expect(listTriggersResponse.V2ListTriggersResponse.Cursor.Data).Should(HaveLen(0))
+			})
+		})
+	})
+})
+
+var _ = WithModules([]*Module{modules.Auth, modules.Orchestration}, func() {
+	When("creating a new workflow with a delay of 5s and a trigger on payments creation", func() {
+		var (
+			createTriggerResponse *operations.CreateTriggerResponse
+		)
+		BeforeEach(func() {
+			response, err := Client().Orchestration.CreateWorkflow(
+				TestContext(),
+				&shared.CreateWorkflowRequest{
+					Name:   ptr(uuid.NewString()),
+					Stages: []map[string]interface{}{{"delay": map[string]any{"duration": "5s"}}},
+				},
+			)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(201))
+
+			createTriggerResponse, err = Client().Orchestration.CreateTrigger(
+				TestContext(),
+				&shared.TriggerData{
+					Event:      paymentsevents.EventTypeSavedPayments,
+					WorkflowID: response.CreateWorkflowResponse.Data.ID,
+					Vars: map[string]any{
+						"fail": `link(event, "unknown").name`,
+					},
+				},
+			)
+			Expect(err).ToNot(HaveOccurred())
+		})
+		Then("publishing a new empty payment", func() {
+			var payment map[string]any
+			BeforeEach(func() {
+				payment = map[string]any{
+					"id": uuid.NewString(),
+				}
+				PublishPayments(publish.EventMessage{
+					Date:    time.Now(),
+					App:     "payments",
+					Type:    paymentsevents.EventTypeSavedPayments,
+					Payload: payment,
+				})
+			})
+			It("Should create a trigger workflow", func() {
+				var (
+					listTriggersOccurrencesResponse *operations.V2ListTriggersOccurrencesResponse
+					err                             error
+				)
+				Eventually(func(g Gomega) bool {
+					listTriggersOccurrencesResponse, err = Client().Orchestration.V2ListTriggersOccurrences(TestContext(), operations.V2ListTriggersOccurrencesRequest{
+						TriggerID: createTriggerResponse.CreateTriggerResponse.Data.ID,
+					})
+					g.Expect(err).To(BeNil())
+					g.Expect(listTriggersOccurrencesResponse.V2ListTriggersOccurrencesResponse.Cursor.Data).NotTo(BeEmpty())
+					occurrence := listTriggersOccurrencesResponse.V2ListTriggersOccurrencesResponse.Cursor.Data[0]
+					g.Expect(occurrence.WorkflowInstanceID).To(BeNil())
+					g.Expect(occurrence.WorkflowInstance).To(BeNil())
+					return true
+				}).Should(BeTrue())
 			})
 		})
 	})
