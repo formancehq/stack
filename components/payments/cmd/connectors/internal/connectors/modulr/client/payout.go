@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"math/big"
 	"net/http"
 	"time"
 
@@ -17,10 +16,10 @@ type PayoutRequest struct {
 		Type string `json:"type"`
 		ID   string `json:"id"`
 	} `json:"destination"`
-	Currency          string     `json:"currency"`
-	Amount            *big.Float `json:"amount"`
-	Reference         string     `json:"reference"`
-	ExternalReference string     `json:"externalReference"`
+	Currency          string      `json:"currency"`
+	Amount            json.Number `json:"amount"`
+	Reference         string      `json:"reference"`
+	ExternalReference string      `json:"externalReference"`
 }
 
 type PayoutResponse struct {

@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"math/big"
 	"net/http"
 	"time"
 
@@ -28,7 +27,7 @@ type TransferRequest struct {
 	SourceAccountID   string      `json:"sourceAccountId"`
 	Destination       Destination `json:"destination"`
 	Currency          string      `json:"currency"`
-	Amount            *big.Float  `json:"amount"`
+	Amount            json.Number `json:"amount"`
 	Reference         string      `json:"reference"`
 	ExternalReference string      `json:"externalReference"`
 	PaymentDate       string      `json:"paymentDate"`
