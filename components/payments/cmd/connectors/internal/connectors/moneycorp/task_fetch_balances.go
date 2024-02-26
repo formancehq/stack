@@ -2,9 +2,6 @@ package moneycorp
 
 import (
 	"context"
-	"fmt"
-	"math"
-	"math/big"
 	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
@@ -70,19 +67,15 @@ func ingestBalancesBatch(
 ) error {
 	batch := ingestion.BalanceBatch{}
 	for _, balance := range balances {
-		var amount big.Float
-		_, ok := amount.SetString(balance.Attributes.AvailableBalance.String())
-		if !ok {
-			return fmt.Errorf("failed to parse amount %s", balance.Attributes.AvailableBalance.String())
-		}
-
 		precision, err := currency.GetPrecision(supportedCurrenciesWithDecimal, balance.Attributes.CurrencyCode)
 		if err != nil {
 			return err
 		}
 
-		var amountInt big.Int
-		amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
+		amount, err := currency.GetAmountWithPrecisionFromString(balance.Attributes.AvailableBalance.String(), precision)
+		if err != nil {
+			return err
+		}
 
 		now := time.Now()
 		batch = append(batch, &models.Balance{
@@ -91,7 +84,7 @@ func ingestBalancesBatch(
 				ConnectorID: connectorID,
 			},
 			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, balance.Attributes.CurrencyCode),
-			Balance:       &amountInt,
+			Balance:       amount,
 			CreatedAt:     now,
 			LastUpdatedAt: now,
 			ConnectorID:   connectorID,

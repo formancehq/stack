@@ -18,13 +18,13 @@ type transferRequest struct {
 }
 
 type TransferRequest struct {
-	SourceAccountID    string  `json:"-"`
-	IdempotencyKey     string  `json:"-"`
-	ReceivingAccountID string  `json:"receivingAccountId"`
-	TransferAmount     float64 `json:"transferAmount"`
-	TransferCurrency   string  `json:"transferCurrency"`
-	TransferReference  string  `json:"transferReference,omitempty"`
-	ClientReference    string  `json:"clientReference,omitempty"`
+	SourceAccountID    string      `json:"-"`
+	IdempotencyKey     string      `json:"-"`
+	ReceivingAccountID string      `json:"receivingAccountId"`
+	TransferAmount     json.Number `json:"transferAmount"`
+	TransferCurrency   string      `json:"transferCurrency"`
+	TransferReference  string      `json:"transferReference,omitempty"`
+	ClientReference    string      `json:"clientReference,omitempty"`
 }
 
 type transferResponse struct {
@@ -34,19 +34,19 @@ type transferResponse struct {
 type TransferResponse struct {
 	ID         string `json:"id"`
 	Attributes struct {
-		SendingAccountID     int64   `json:"sendingAccountId"`
-		SendingAccountName   string  `json:"sendingAccountName"`
-		ReceivingAccountID   int64   `json:"receivingAccountId"`
-		ReceivingAccountName string  `json:"receivingAccountName"`
-		CreatedAt            string  `json:"createdAt"`
-		CreatedBy            string  `json:"createdBy"`
-		UpdatedAt            string  `json:"updatedAt"`
-		TransferReference    string  `json:"transferReference"`
-		ClientReference      string  `json:"clientReference"`
-		TransferDate         string  `json:"transferDate"`
-		TransferAmount       float64 `json:"transferAmount"`
-		TransferCurrency     string  `json:"transferCurrency"`
-		TransferStatus       string  `json:"transferStatus"`
+		SendingAccountID     int64       `json:"sendingAccountId"`
+		SendingAccountName   string      `json:"sendingAccountName"`
+		ReceivingAccountID   int64       `json:"receivingAccountId"`
+		ReceivingAccountName string      `json:"receivingAccountName"`
+		CreatedAt            string      `json:"createdAt"`
+		CreatedBy            string      `json:"createdBy"`
+		UpdatedAt            string      `json:"updatedAt"`
+		TransferReference    string      `json:"transferReference"`
+		ClientReference      string      `json:"clientReference"`
+		TransferDate         string      `json:"transferDate"`
+		TransferAmount       json.Number `json:"transferAmount"`
+		TransferCurrency     string      `json:"transferCurrency"`
+		TransferStatus       string      `json:"transferStatus"`
 	} `json:"attributes"`
 }
 

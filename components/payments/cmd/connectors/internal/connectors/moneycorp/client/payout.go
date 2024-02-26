@@ -18,16 +18,16 @@ type payoutRequest struct {
 }
 
 type PayoutRequest struct {
-	SourceAccountID  string  `json:"-"`
-	IdempotencyKey   string  `json:"-"`
-	RecipientID      string  `json:"recipientId"`
-	PaymentDate      string  `json:"paymentDate"`
-	PaymentAmount    float64 `json:"paymentAmount"`
-	PaymentCurrency  string  `json:"paymentCurrency"`
-	PaymentMethgod   string  `json:"paymentMethod"`
-	PaymentReference string  `json:"paymentReference"`
-	ClientReference  string  `json:"clientReference"`
-	PaymentPurpose   string  `json:"paymentPurpose"`
+	SourceAccountID  string      `json:"-"`
+	IdempotencyKey   string      `json:"-"`
+	RecipientID      string      `json:"recipientId"`
+	PaymentDate      string      `json:"paymentDate"`
+	PaymentAmount    json.Number `json:"paymentAmount"`
+	PaymentCurrency  string      `json:"paymentCurrency"`
+	PaymentMethgod   string      `json:"paymentMethod"`
+	PaymentReference string      `json:"paymentReference"`
+	ClientReference  string      `json:"clientReference"`
+	PaymentPurpose   string      `json:"paymentPurpose"`
 }
 
 type payoutResponse struct {
@@ -37,14 +37,14 @@ type payoutResponse struct {
 type PayoutResponse struct {
 	ID         string `json:"id"`
 	Attributes struct {
-		AccountID        string  `json:"accountId"`
-		PaymentAmount    float64 `json:"paymentAmount"`
-		PaymentCurrency  string  `json:"paymentCurrency"`
-		PaymentApproved  bool    `json:"paymentApproved"`
-		PaymentStatus    string  `json:"paymentStatus"`
-		PaymentMethod    string  `json:"paymentMethod"`
-		PaymentDate      string  `json:"paymentDate"`
-		PaymentValueDate string  `json:"paymentValueDate"`
+		AccountID        string      `json:"accountId"`
+		PaymentAmount    json.Number `json:"paymentAmount"`
+		PaymentCurrency  string      `json:"paymentCurrency"`
+		PaymentApproved  bool        `json:"paymentApproved"`
+		PaymentStatus    string      `json:"paymentStatus"`
+		PaymentMethod    string      `json:"paymentMethod"`
+		PaymentDate      string      `json:"paymentDate"`
+		PaymentValueDate string      `json:"paymentValueDate"`
 		RecipientDetails struct {
 			RecipientID int32 `json:"recipientId"`
 		} `json:"recipientDetails"`

@@ -2,10 +2,9 @@ package moneycorp
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
-	"math"
-	"math/big"
 	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
@@ -96,10 +95,9 @@ func initiatePayment(
 		return err
 	}
 
-	transferAmount := big.NewFloat(0).SetInt(transfer.Amount)
-	amount, accuracy := transferAmount.Quo(transferAmount, big.NewFloat(math.Pow(10, float64(precision)))).Float64()
-	if accuracy != big.Exact {
-		return errors.New("amount is not accurate, psp does not support big ints")
+	amount, err := currency.GetStringAmountFromBigIntWithPrecision(transfer.Amount, precision)
+	if err != nil {
+		return err
 	}
 
 	var connectorPaymentID string
@@ -114,7 +112,7 @@ func initiatePayment(
 			SourceAccountID:    transfer.SourceAccountID.Reference,
 			IdempotencyKey:     fmt.Sprintf("%s_%d", transfer.ID.Reference, len(transfer.RelatedAdjustments)),
 			ReceivingAccountID: transfer.DestinationAccountID.Reference,
-			TransferAmount:     amount,
+			TransferAmount:     json.Number(amount),
 			TransferCurrency:   curr,
 			TransferReference:  transfer.Description,
 			ClientReference:    transfer.Description,
@@ -132,7 +130,7 @@ func initiatePayment(
 			SourceAccountID:  transfer.SourceAccountID.Reference,
 			IdempotencyKey:   fmt.Sprintf("%s_%d", transfer.ID.Reference, len(transfer.RelatedAdjustments)),
 			RecipientID:      transfer.DestinationAccountID.Reference,
-			PaymentAmount:    amount,
+			PaymentAmount:    json.Number(amount),
 			PaymentCurrency:  curr,
 			PaymentMethgod:   "Standard",
 			PaymentReference: transfer.Description,
