@@ -1,8 +1,6 @@
 module github.com/formancehq/stack/tests/integration
 
-go 1.21
-
-toolchain go1.21.5
+go 1.21.6
 
 require (
 	github.com/docker/docker v24.0.7+incompatible
@@ -13,7 +11,7 @@ require (
 	github.com/formancehq/orchestration v0.0.0-00010101000000-000000000000
 	github.com/formancehq/payments v0.5.0
 	github.com/formancehq/search v0.5.2
-	github.com/formancehq/stack v0.0.0-00010101000000-000000000000
+	github.com/formancehq/stack/libs/events v0.0.0-00010101000000-000000000000
 	github.com/formancehq/stack/libs/go-libs v0.0.0-20230517212829-71aaaacfd130
 	github.com/formancehq/wallets v0.3.0
 	github.com/formancehq/webhooks v0.0.0-00010101000000-000000000000
@@ -248,13 +246,13 @@ require (
 	go.uber.org/multierr v1.9.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
 	golang.org/x/crypto v0.17.0 // indirect
-	golang.org/x/mod v0.12.0 // indirect
+	golang.org/x/mod v0.15.0 // indirect
 	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/sync v0.4.0 // indirect
 	golang.org/x/sys v0.16.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
-	golang.org/x/tools v0.9.1 // indirect
+	golang.org/x/tools v0.13.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20231002182017-d307bd883b97 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231002182017-d307bd883b97 // indirect
@@ -274,7 +272,7 @@ replace (
 	github.com/formancehq/orchestration => ../../ee/orchestration
 	github.com/formancehq/payments => ../../components/payments
 	github.com/formancehq/search => ../../ee/search
-	github.com/formancehq/stack => ../../
+	github.com/formancehq/stack/libs/events => ../../libs/events
 	github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
 	github.com/formancehq/wallets => ../../ee/wallets
 	github.com/formancehq/webhooks => ../../ee/webhooks
