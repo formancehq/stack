@@ -82,6 +82,9 @@ func CreateOrUpdateOnAllServices(ctx core.Context, consumer interface {
 
 	ret := make([]*v1beta1.BrokerTopicConsumer, 0)
 	for _, service := range services {
+		if service.GetKind() == consumer.GetObjectKind().GroupVersionKind().Kind {
+			continue
+		}
 		brokerTopicConsumer, err := Create(ctx, strings.ToLower(service.GetKind()), consumer)
 		if err != nil {
 			return nil, err
