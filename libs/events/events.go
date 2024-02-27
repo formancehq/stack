@@ -1,9 +1,10 @@
 package events
 
 import (
-	"embed"
 	"fmt"
 	"path/filepath"
+
+	"embed"
 
 	"github.com/pkg/errors"
 	"github.com/xeipuuv/gojsonschema"

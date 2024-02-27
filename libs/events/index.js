@@ -1,6 +1,5 @@
 const fs = require("fs/promises");
-const yaml = require('yaml')
-const JsonSchemaStaticDocs = require("json-schema-static-docs");
+const yaml = require('yaml');
 
 (async () => {
 

@@ -1,0 +1,46 @@
+VERSION --arg-scope-and-set --pass-args --use-function-keyword 0.7
+
+ARG core=github.com/formancehq/earthly:v0.11.1
+IMPORT $core AS core
+IMPORT ../.. AS stack
+
+FROM core+base-image
+
+go-sources:
+    COPY events.go go.* base.yaml /src/
+    COPY --dir services /src/
+    WORKDIR /src
+    SAVE ARTIFACT /src
+
+tidy:
+    FROM core+builder-image
+    COPY (+go-sources/*) /src
+    WORKDIR /src
+    DO --pass-args stack+GO_TIDY
+    SAVE ARTIFACT go.* AS LOCAL ./
+
+lint:
+    FROM core+builder-image
+    COPY (+go-sources/*) /src
+    WORKDIR /src
+    COPY --pass-args +tidy/go.* .
+    DO --pass-args stack+GO_LINT
+    SAVE ARTIFACT * AS LOCAL ./
+
+generate:
+    RUN apk add nodejs npm
+    WORKDIR /src
+    COPY package* .
+    RUN npm install
+    RUN mkdir generated
+    COPY index.js base.yaml .
+    COPY --dir services .
+    RUN node index.js
+    SAVE ARTIFACT generated AS LOCAL ./generated
+
+pre-commit:
+    WAIT
+      BUILD --pass-args +tidy
+    END
+    BUILD --pass-args +lint
+    BUILD --pass-args +generate
