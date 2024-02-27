@@ -2,9 +2,8 @@ package wise
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
-	"math"
-	"math/big"
 	"strconv"
 	"time"
 
@@ -108,10 +107,12 @@ func initiatePayment(
 		return err
 	}
 
-	amount := big.NewFloat(0).SetInt(transfer.Amount)
-	amount = amount.Quo(amount, big.NewFloat(math.Pow(10, float64(precision))))
+	amount, err := currency.GetStringAmountFromBigIntWithPrecision(transfer.Amount, precision)
+	if err != nil {
+		return err
+	}
 
-	quote, err := wiseClient.CreateQuote(ctx, profileID, curr, amount)
+	quote, err := wiseClient.CreateQuote(ctx, profileID, curr, json.Number(amount))
 	if err != nil {
 		return err
 	}

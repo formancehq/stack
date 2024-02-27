@@ -13,12 +13,12 @@ import (
 )
 
 type TransferRequest struct {
-	SourceAccountID      string  `json:"source_account_id"`
-	DestinationAccountID string  `json:"destination_account_id"`
-	Currency             string  `json:"currency"`
-	Amount               float64 `json:"amount"`
-	Reason               string  `json:"reason,omitempty"`
-	UniqueRequestID      string  `json:"unique_request_id,omitempty"`
+	SourceAccountID      string      `json:"source_account_id"`
+	DestinationAccountID string      `json:"destination_account_id"`
+	Currency             string      `json:"currency"`
+	Amount               json.Number `json:"amount"`
+	Reason               string      `json:"reason,omitempty"`
+	UniqueRequestID      string      `json:"unique_request_id,omitempty"`
 }
 
 func (tr *TransferRequest) ToFormData() url.Values {

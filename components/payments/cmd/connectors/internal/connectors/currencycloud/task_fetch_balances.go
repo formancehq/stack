@@ -2,9 +2,6 @@ package currencycloud
 
 import (
 	"context"
-	"fmt"
-	"math"
-	"math/big"
 	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
@@ -81,14 +78,10 @@ func ingestBalancesBatch(
 		// No need to check if the currency is supported for accounts and balances.
 		precision := supportedCurrenciesWithDecimal[balance.Currency]
 
-		var amount big.Float
-		_, ok := amount.SetString(balance.Amount)
-		if !ok {
-			return fmt.Errorf("failed to parse amount %s", balance.Amount)
+		amount, err := currency.GetAmountWithPrecisionFromString(balance.Amount.String(), precision)
+		if err != nil {
+			return err
 		}
-
-		var amountInt big.Int
-		amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
 
 		now := time.Now()
 		batch = append(batch, &models.Balance{
@@ -97,7 +90,7 @@ func ingestBalancesBatch(
 				ConnectorID: connectorID,
 			},
 			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, balance.Currency),
-			Balance:       &amountInt,
+			Balance:       amount,
 			CreatedAt:     now,
 			LastUpdatedAt: now,
 			ConnectorID:   connectorID,

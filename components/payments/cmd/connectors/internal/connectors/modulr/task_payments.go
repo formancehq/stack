@@ -2,8 +2,7 @@ package modulr
 
 import (
 	"context"
-	"math"
-	"math/big"
+	"encoding/json"
 	"regexp"
 	"time"
 
@@ -101,8 +100,10 @@ func initiatePayment(
 		return err
 	}
 
-	amount := big.NewFloat(0).SetInt(transfer.Amount)
-	amount = amount.Quo(amount, big.NewFloat(math.Pow(10, float64(precision))))
+	amount, err := currency.GetStringAmountFromBigIntWithPrecision(transfer.Amount, precision)
+	if err != nil {
+		return err
+	}
 
 	description := ""
 	if len(transfer.Description) <= 18 && ReferencePatternRegexp.MatchString(transfer.Description) {
@@ -124,7 +125,7 @@ func initiatePayment(
 				ID:   transfer.DestinationAccountID.Reference,
 			},
 			Currency:          curr,
-			Amount:            amount,
+			Amount:            json.Number(amount),
 			Reference:         description,
 			ExternalReference: description,
 			PaymentDate:       time.Now().Add(24 * time.Hour).Format("2006-01-02"),
@@ -145,7 +146,7 @@ func initiatePayment(
 				ID:   transfer.DestinationAccountID.Reference,
 			},
 			Currency:          curr,
-			Amount:            amount,
+			Amount:            json.Number(amount),
 			Reference:         description,
 			ExternalReference: description,
 		})

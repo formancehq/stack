@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"math"
 	"math/big"
 	"time"
 
@@ -141,19 +140,6 @@ func ingestAccountsBatch(
 		})
 
 		balance := account.Balance
-		// No need to check if the currency is supported for accounts and
-		// balances.
-		precision := supportedCurrenciesWithDecimal[*balance.Amount.Currency]
-
-		var amount big.Float
-		_, ok := amount.SetString(*balance.Amount.StringValue)
-		if !ok {
-			return fmt.Errorf("failed to parse amount %s", *balance.Amount.StringValue)
-		}
-
-		var amountInt big.Int
-		amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
-
 		balanceTimestamp, err := ParseAtlarTimestamp(balance.Timestamp)
 		if err != nil {
 			return err
@@ -164,7 +150,7 @@ func ingestAccountsBatch(
 				ConnectorID: connectorID,
 			},
 			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, *balance.Amount.Currency),
-			Balance:       &amountInt,
+			Balance:       big.NewInt(*balance.Amount.Value),
 			CreatedAt:     balanceTimestamp,
 			LastUpdatedAt: time.Now().UTC(),
 			ConnectorID:   connectorID,

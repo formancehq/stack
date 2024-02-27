@@ -2,9 +2,8 @@ package currencycloud
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
-	"math"
-	"math/big"
 	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
@@ -97,11 +96,9 @@ func initiatePayment(
 		return err
 	}
 
-	transferAmount := big.NewFloat(0).SetInt(transfer.Amount)
-	transferAmount = transferAmount.Quo(transferAmount, big.NewFloat(math.Pow(10, float64(precision))))
-	amount, accuracy := transferAmount.Float64()
-	if accuracy != big.Exact {
-		return errors.New("amount is not accurate, psp does not support big ints")
+	amount, err := currency.GetStringAmountFromBigIntWithPrecision(transfer.Amount, precision)
+	if err != nil {
+		return err
 	}
 
 	var connectorPaymentID string
@@ -116,7 +113,7 @@ func initiatePayment(
 			SourceAccountID:      transfer.SourceAccountID.Reference,
 			DestinationAccountID: transfer.DestinationAccountID.Reference,
 			Currency:             curr,
-			Amount:               amount,
+			Amount:               json.Number(amount),
 			Reason:               transfer.Description,
 			UniqueRequestID:      fmt.Sprintf("%s_%d", transfer.ID.Reference, len(transfer.RelatedAdjustments)),
 		})
@@ -138,7 +135,7 @@ func initiatePayment(
 			OnBehalfOf:      contact.ID,
 			BeneficiaryID:   transfer.DestinationAccount.Reference,
 			Currency:        curr,
-			Amount:          transferAmount.String(),
+			Amount:          json.Number(amount),
 			Reference:       transfer.Description,
 			UniqueRequestID: fmt.Sprintf("%s_%d", transfer.ID.Reference, len(transfer.RelatedAdjustments)),
 		})

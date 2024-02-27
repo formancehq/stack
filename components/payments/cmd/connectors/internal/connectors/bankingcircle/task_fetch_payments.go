@@ -3,8 +3,6 @@ package bankingcircle
 import (
 	"context"
 	"encoding/json"
-	"math"
-	"math/big"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/bankingcircle/client"
@@ -87,10 +85,10 @@ func ingestBatch(
 			continue
 		}
 
-		var amount big.Float
-		amount.SetFloat64(paymentEl.Transfer.Amount.Amount)
-		var amountInt big.Int
-		amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
+		amount, err := currency.GetAmountWithPrecisionFromString(paymentEl.Transfer.Amount.Amount.String(), precision)
+		if err != nil {
+			return err
+		}
 
 		batchElement := ingestion.PaymentBatchElement{
 			Payment: &models.Payment{
@@ -106,8 +104,8 @@ func ingestBatch(
 				ConnectorID:   connectorID,
 				Status:        matchPaymentStatus(paymentEl.Status),
 				Scheme:        models.PaymentSchemeOther,
-				Amount:        &amountInt,
-				InitialAmount: &amountInt,
+				Amount:        amount,
+				InitialAmount: amount,
 				Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, paymentEl.Transfer.Amount.Currency),
 				RawData:       raw,
 			},

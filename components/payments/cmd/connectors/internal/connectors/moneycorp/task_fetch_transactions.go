@@ -4,8 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"math"
-	"math/big"
 	"strconv"
 	"time"
 
@@ -137,19 +135,15 @@ func toPaymentBatch(
 		return nil, fmt.Errorf("failed to parse transaction date: %w", err)
 	}
 
-	var amount big.Float
-	_, ok := amount.SetString(transaction.Attributes.Amount.String())
-	if !ok {
-		return nil, fmt.Errorf("failed to parse amount %s", transaction.Attributes.Amount.String())
-	}
-
 	c, err := currency.GetPrecision(supportedCurrenciesWithDecimal, transaction.Attributes.Currency)
 	if err != nil {
 		return nil, err
 	}
 
-	var amountInt big.Int
-	amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(c)))).Int(&amountInt)
+	amount, err := currency.GetAmountWithPrecisionFromString(transaction.Attributes.Amount.String(), c)
+	if err != nil {
+		return nil, err
+	}
 
 	batchElement := ingestion.PaymentBatchElement{
 		Payment: &models.Payment{
@@ -163,8 +157,8 @@ func toPaymentBatch(
 			CreatedAt:     createdAt,
 			Reference:     transaction.ID,
 			ConnectorID:   connectorID,
-			Amount:        &amountInt,
-			InitialAmount: &amountInt,
+			Amount:        amount,
+			InitialAmount: amount,
 			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, transaction.Attributes.Currency),
 			Type:          paymentType,
 			Status:        models.PaymentStatusSucceeded,

@@ -4,8 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"math"
-	"math/big"
 	"strconv"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
@@ -82,15 +80,12 @@ func fetchTransfers(
 			continue
 		}
 
-		var amount big.Float
-		_, ok = amount.SetString(transfer.TargetValue.String())
-		if !ok {
-			return fmt.Errorf("failed to parse amount %s", transfer.TargetValue.String())
+		amount, err := currency.GetAmountWithPrecisionFromString(transfer.TargetValue.String(), precision)
+		if err != nil {
+			return err
 		}
 
-		var amountInt big.Int
-		amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
-
+		fmt.Println("TOTO", amount)
 		batchElement := ingestion.PaymentBatchElement{
 			Payment: &models.Payment{
 				ID: models.PaymentID{
@@ -106,7 +101,7 @@ func fetchTransfers(
 				Type:        models.PaymentTypeTransfer,
 				Status:      matchTransferStatus(transfer.Status),
 				Scheme:      models.PaymentSchemeOther,
-				Amount:      &amountInt,
+				Amount:      amount,
 				Asset:       currency.FormatAsset(supportedCurrenciesWithDecimal, transfer.TargetCurrency),
 				RawData:     rawData,
 			},

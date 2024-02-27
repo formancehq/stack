@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"math"
-	"math/big"
 	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
@@ -128,14 +126,10 @@ func ingestAccountsBatch(
 			// balances.
 			precision := supportedCurrenciesWithDecimal[balance.Currency]
 
-			var amount big.Float
-			_, ok := amount.SetString(balance.IntraDayAmount.String())
-			if !ok {
-				return fmt.Errorf("failed to parse amount %s", balance.IntraDayAmount)
+			amount, err := currency.GetAmountWithPrecisionFromString(balance.IntraDayAmount.String(), precision)
+			if err != nil {
+				return err
 			}
-
-			var amountInt big.Int
-			amount.Mul(&amount, big.NewFloat(math.Pow(10, float64(precision)))).Int(&amountInt)
 
 			now := time.Now()
 			balanceBatch = append(balanceBatch, &models.Balance{
@@ -144,7 +138,7 @@ func ingestAccountsBatch(
 					ConnectorID: connectorID,
 				},
 				Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, balance.Currency),
-				Balance:       &amountInt,
+				Balance:       amount,
 				CreatedAt:     now,
 				LastUpdatedAt: now,
 				ConnectorID:   connectorID,
