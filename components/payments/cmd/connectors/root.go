@@ -2,6 +2,7 @@ package connectors
 
 import (
 	"github.com/formancehq/stack/libs/go-libs/auth"
+	"github.com/formancehq/stack/libs/go-libs/aws/iam"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
@@ -40,6 +41,7 @@ func NewConnectors(
 	otlptraces.InitOTLPTracesFlags(server.Flags())
 	otlpmetrics.InitOTLPMetricsFlags(server.Flags())
 	publish.InitCLIFlags(server)
+	iam.InitFlags(server.Flags())
 	auth.InitAuthFlags(server.Flags())
 
 	return root
