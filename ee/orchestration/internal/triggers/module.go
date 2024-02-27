@@ -24,8 +24,9 @@ func NewModule(taskQueue string) fx.Option {
 			}, fx.As(new(any)), fx.ResultTags(`group:"workflows"`)),
 		),
 		fx.Provide(
-			fx.Annotate(func(db *bun.DB, manager *workflow.WorkflowManager, expressionEvaluator *expressionEvaluator) Activities {
-				return NewActivities(db, manager, expressionEvaluator)
+			fx.Annotate(func(db *bun.DB, manager *workflow.WorkflowManager,
+				expressionEvaluator *expressionEvaluator, publisher message.Publisher) Activities {
+				return NewActivities(db, manager, expressionEvaluator, publisher)
 			}, fx.As(new(any)), fx.ResultTags(`group:"activities"`)),
 		),
 	)

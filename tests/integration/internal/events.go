@@ -14,9 +14,9 @@ func NatsClient() *nats.Conn {
 	return natsConn
 }
 
-func SubscribeLedger() (func(), chan *nats.Msg) {
+func Subscribe(service string) (func(), chan *nats.Msg) {
 	msgs := make(chan *nats.Msg)
-	subscription, err := NatsClient().Subscribe(fmt.Sprintf("%s-ledger", currentTest.id), func(msg *nats.Msg) {
+	subscription, err := NatsClient().Subscribe(fmt.Sprintf("%s-%s", currentTest.id, service), func(msg *nats.Msg) {
 		msgs <- msg
 	})
 	Expect(err).ToNot(HaveOccurred())
@@ -25,15 +25,16 @@ func SubscribeLedger() (func(), chan *nats.Msg) {
 	}, msgs
 }
 
+func SubscribeLedger() (func(), chan *nats.Msg) {
+	return Subscribe("ledger")
+}
+
 func SubscribePayments() (func(), chan *nats.Msg) {
-	msgs := make(chan *nats.Msg)
-	subscription, err := NatsClient().Subscribe(fmt.Sprintf("%s-payments", currentTest.id), func(msg *nats.Msg) {
-		msgs <- msg
-	})
-	Expect(err).ToNot(HaveOccurred())
-	return func() {
-		Expect(subscription.Unsubscribe()).To(Succeed())
-	}, msgs
+	return Subscribe("payments")
+}
+
+func SubscribeOrchestration() (func(), chan *nats.Msg) {
+	return Subscribe("orchestration")
 }
 
 func PublishPayments(message publish.EventMessage) {

@@ -1,0 +1,12 @@
+type: object
+properties:
+  id:
+    type: string
+  instanceID:
+    type: string
+  error:
+    type: string
+required:
+  - id
+  - instanceID
+  - error

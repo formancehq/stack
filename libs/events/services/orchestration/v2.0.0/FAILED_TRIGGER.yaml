@@ -1,0 +1,12 @@
+type: object
+properties:
+  id:
+    type: string
+  eventID:
+    type: string
+  error:
+    type: string
+required:
+  - id
+  - eventID
+  - error

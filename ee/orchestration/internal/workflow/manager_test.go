@@ -4,6 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"github.com/stretchr/testify/mock"
+
 	"github.com/formancehq/stack/libs/go-libs/logging"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
@@ -46,6 +48,7 @@ func TestConfig(t *testing.T) {
 	workflows := NewWorkflows(db)
 	env.RegisterWorkflow(stages.RunNoOp)
 	env.RegisterWorkflow(workflows.Run)
+	env.OnActivity((&Activities{}).SendWorkflowTerminationEvent, mock.Anything, mock.Anything).Return(nil)
 	mockClient := &mockTemporalClient{env: env, workflows: workflows}
 	manager := NewManager(db, mockClient, "default")
 

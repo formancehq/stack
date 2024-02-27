@@ -38,6 +38,10 @@ func TestWorkflow(t *testing.T) {
 	env.
 		OnActivity(ProcessEventActivity, mock.Anything, trigger, req).
 		Once().
+		Return(&Occurrence{}, nil)
+	env.
+		OnActivity(SendEventForTriggerTermination, mock.Anything, mock.Anything).
+		Once().
 		Return(nil)
 
 	env.ExecuteWorkflow(RunTrigger, req)

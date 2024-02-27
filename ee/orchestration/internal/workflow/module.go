@@ -15,6 +15,7 @@ func NewModule(taskQueue string) fx.Option {
 		}),
 		fx.Provide(fx.Annotate(NewWorkflows, fx.ResultTags(`group:"workflows"`), fx.As(new(any)))),
 		fx.Provide(fx.Annotate(activities.New, fx.ResultTags(`group:"activities"`), fx.As(new(any)))),
+		fx.Provide(fx.Annotate(NewActivities, fx.ResultTags(`group:"activities"`), fx.As(new(any)))),
 	}
 
 	for _, schema := range stages.All() {
