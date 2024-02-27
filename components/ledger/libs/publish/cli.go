@@ -178,7 +178,7 @@ func CLIPublisherModule(serviceName string) fx.Option {
 				saramaOptions = append(saramaOptions,
 					WithTokenProvider(&MSKAccessTokenProvider{
 						region:      viper.GetString(iam.AWSRegionFlag),
-						roleArn:     viper.GetString(iam.AWSRoleArn),
+						roleArn:     viper.GetString(iam.AWSRoleArnFlag),
 						sessionName: viper.GetString(PublisherKafkaSASLIAMSessionNameFlag),
 					}),
 				)
