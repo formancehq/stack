@@ -51,6 +51,8 @@ type Orchestration struct {
 	Status OrchestrationStatus `json:"status,omitempty"`
 }
 
+func (in *Orchestration) isEventPublisher() {}
+
 func (in *Orchestration) IsEE() bool {
 	return false
 }
@@ -103,3 +105,5 @@ type OrchestrationList struct {
 func init() {
 	SchemeBuilder.Register(&Orchestration{}, &OrchestrationList{})
 }
+
+var _ EventPublisher = (*Orchestration)(nil)
