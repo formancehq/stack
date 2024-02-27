@@ -149,6 +149,9 @@ tests-integration:
 pre-commit: # Generate the final spec and run all the pre-commit hooks
     LOCALLY
     BUILD --pass-args ./releases+sdk-generate
+    FOR component IN $(cd ./libs && ls -d */)
+        BUILD --pass-args ./libs/${component}+pre-commit
+    END
     FOR component IN $(cd ./tools && ls -d */)
         BUILD --pass-args ./tools/${component}+pre-commit
     END
