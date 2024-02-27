@@ -3,11 +3,9 @@ package triggers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"strings"
 
 	"github.com/ThreeDotsLabs/watermill/message"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/formancehq/orchestration/pkg/events"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 
@@ -122,16 +120,13 @@ func (a Activities) ProcessTrigger(ctx context.Context, trigger Trigger, request
 }
 
 func (a Activities) SendEventForTriggerTermination(ctx context.Context, occurrence Occurrence) error {
-	spew.Dump(occurrence)
 	if occurrence.Error == nil || *occurrence.Error == "" {
-		fmt.Println("send succeeded")
 		return a.publisher.Publish(events.SucceededTrigger,
 			events.NewMessage(ctx, events.SucceededTrigger, events.SucceededTriggerPayload{
 				ID:      occurrence.TriggerID,
 				EventID: occurrence.EventID,
 			}))
 	} else {
-		fmt.Println("send failure")
 		return a.publisher.Publish(events.FailedTrigger,
 			events.NewMessage(ctx, events.FailedTrigger, events.FailedTriggerPayload{
 				ID:      occurrence.TriggerID,
