@@ -3,8 +3,12 @@ package triggers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"strings"
 
+	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/davecgh/go-spew/spew"
+	"github.com/formancehq/orchestration/pkg/events"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 
 	"go.temporal.io/sdk/temporal"
@@ -21,6 +25,7 @@ type Activities struct {
 	db                  *bun.DB
 	manager             *workflow.WorkflowManager
 	expressionEvaluator *expressionEvaluator
+	publisher           message.Publisher
 }
 
 func (a Activities) processTrigger(ctx context.Context, request ProcessEventRequest, trigger Trigger) bool {
@@ -74,7 +79,7 @@ func (a Activities) ListTriggers(ctx context.Context, request ProcessEventReques
 	return ret, nil
 }
 
-func (a Activities) ProcessTrigger(ctx context.Context, trigger Trigger, request ProcessEventRequest) error {
+func (a Activities) ProcessTrigger(ctx context.Context, trigger Trigger, request ProcessEventRequest) (*Occurrence, error) {
 
 	span := trace.SpanFromContext(ctx)
 	var (
@@ -95,7 +100,7 @@ func (a Activities) ProcessTrigger(ctx context.Context, trigger Trigger, request
 
 		instance, triggerError := a.manager.RunWorkflow(ctx, trigger.WorkflowID, evaluated)
 		if triggerError != nil {
-			return triggerError
+			return nil, triggerError
 		}
 
 		occurrence.WorkflowInstanceID = pointer.For(instance.ID)
@@ -113,16 +118,39 @@ func (a Activities) ProcessTrigger(ctx context.Context, trigger Trigger, request
 		sharedlogging.FromContext(ctx).Errorf("unable to save trigger occurrence: %s", err)
 	}
 
-	return triggerError
+	return &occurrence, nil
 }
 
-func NewActivities(db *bun.DB, manager *workflow.WorkflowManager, expressionEvaluator *expressionEvaluator) Activities {
+func (a Activities) SendEventForTriggerTermination(ctx context.Context, occurrence Occurrence) error {
+	spew.Dump(occurrence)
+	if occurrence.Error == nil || *occurrence.Error == "" {
+		fmt.Println("send succeeded")
+		return a.publisher.Publish(events.SucceededTrigger,
+			events.NewMessage(ctx, events.SucceededTrigger, events.SucceededTriggerPayload{
+				ID:      occurrence.TriggerID,
+				EventID: occurrence.EventID,
+			}))
+	} else {
+		fmt.Println("send failure")
+		return a.publisher.Publish(events.FailedTrigger,
+			events.NewMessage(ctx, events.FailedTrigger, events.FailedTriggerPayload{
+				ID:      occurrence.TriggerID,
+				Error:   *occurrence.Error,
+				EventID: occurrence.EventID,
+			}))
+	}
+}
+
+func NewActivities(db *bun.DB, manager *workflow.WorkflowManager,
+	expressionEvaluator *expressionEvaluator, publisher message.Publisher) Activities {
 	return Activities{
 		db:                  db,
 		manager:             manager,
 		expressionEvaluator: expressionEvaluator,
+		publisher:           publisher,
 	}
 }
 
 var ProcessEventActivity = Activities{}.ProcessTrigger
+var SendEventForTriggerTermination = Activities{}.SendEventForTriggerTermination
 var ListTriggersActivity = Activities{}.ListTriggers

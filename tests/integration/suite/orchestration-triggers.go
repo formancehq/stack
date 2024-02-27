@@ -3,12 +3,15 @@ package suite
 import (
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	orchestrationevents "github.com/formancehq/orchestration/pkg/events"
 	paymentsevents "github.com/formancehq/payments/pkg/events"
+	"github.com/formancehq/stack/libs/events"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"github.com/google/uuid"
+	"github.com/nats-io/nats.go"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"math/big"
@@ -86,7 +89,10 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 			Expect(listTriggersResponse.V2ListTriggersResponse.Cursor.Data).Should(HaveLen(1))
 		})
 		Then("publishing a new payments in the event bus", func() {
-			var payment map[string]any
+			var (
+				payment map[string]any
+				msgs    chan *nats.Msg
+			)
 			BeforeEach(func() {
 				payment = map[string]any{
 					"amount": 1000000,
@@ -104,6 +110,11 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 					App:     "payments",
 					Type:    paymentsevents.EventTypeSavedPayments,
 					Payload: payment,
+				})
+				var closeSubscription func()
+				closeSubscription, msgs = SubscribeOrchestration()
+				DeferCleanup(func() {
+					closeSubscription()
 				})
 			})
 			It("Should trigger the workflow", func() {
@@ -150,6 +161,11 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 					To(Equal("USD/2"))
 				Expect(listTransactionsResponse.V2TransactionsCursorResponse.Cursor.Data[0].Postings[0].Amount).
 					To(Equal(big.NewInt(1000000)))
+
+				By("And trigger a new succeeded workflow event", func() {
+					msg := WaitOnChanWithTimeout(msgs, time.Second)
+					Expect(events.Check(msg.Data, "orchestration", orchestrationevents.SucceededTrigger)).Should(Succeed())
+				})
 			})
 		})
 		Then("deleting the trigger", func() {
@@ -197,7 +213,10 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration}, func() {
 			Expect(err).ToNot(HaveOccurred())
 		})
 		Then("publishing a new empty payment", func() {
-			var payment map[string]any
+			var (
+				payment map[string]any
+				msgs    chan *nats.Msg
+			)
 			BeforeEach(func() {
 				payment = map[string]any{
 					"id": uuid.NewString(),
@@ -208,8 +227,13 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration}, func() {
 					Type:    paymentsevents.EventTypeSavedPayments,
 					Payload: payment,
 				})
+				var closeSubscription func()
+				closeSubscription, msgs = SubscribeOrchestration()
+				DeferCleanup(func() {
+					closeSubscription()
+				})
 			})
-			It("Should create a trigger workflow", func() {
+			It("Should create a trigger workflow with an error", func() {
 				var (
 					listTriggersOccurrencesResponse *operations.V2ListTriggersOccurrencesResponse
 					err                             error
@@ -225,6 +249,11 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration}, func() {
 					g.Expect(occurrence.WorkflowInstance).To(BeNil())
 					return true
 				}).Should(BeTrue())
+
+				By("should also trigger a new failed workflow event", func() {
+					msg := WaitOnChanWithTimeout(msgs, time.Second)
+					Expect(events.Check(msg.Data, "orchestration", orchestrationevents.FailedTrigger)).Should(Succeed())
+				})
 			})
 		})
 	})

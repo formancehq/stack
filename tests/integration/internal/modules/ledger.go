@@ -14,8 +14,8 @@ var Ledger = internal.NewModule("ledger").
 			WithArgs(func(test *internal.Test) []string {
 				return []string{
 					"serve",
-					"--publisher-nats-enabled",
 					"--auth-enabled=false",
+					"--publisher-nats-enabled",
 					"--publisher-nats-client-id=ledger",
 					"--publisher-nats-url=" + internal.GetNatsAddress(),
 					fmt.Sprintf("--publisher-topic-mapping=*:%s-ledger", test.ID()),

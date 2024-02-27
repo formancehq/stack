@@ -1,9 +1,13 @@
 package suite
 
 import (
+	orchestrationevents "github.com/formancehq/orchestration/pkg/events"
+	"github.com/formancehq/stack/libs/events"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
+	"github.com/nats-io/nats.go"
 	"math/big"
 	"net/http"
+	"time"
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -124,6 +128,101 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 						NextExecution: getWorkflowInstanceHistoryStageResponse.Data[0].NextExecution,
 						StartedAt:     getWorkflowInstanceHistoryStageResponse.Data[0].StartedAt,
 					}))
+				})
+			})
+		})
+	})
+})
+
+var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledger}, func() {
+	BeforeEach(func() {
+		createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+			Ledger: "default",
+		})
+		Expect(err).To(BeNil())
+		Expect(createLedgerResponse.StatusCode).To(Equal(http.StatusNoContent))
+	})
+	When("creating a new workflow which will fail with invalid request", func() {
+		var (
+			createWorkflowResponse *shared.V2CreateWorkflowResponse
+		)
+		BeforeEach(func() {
+			response, err := Client().Orchestration.V2CreateWorkflow(
+				TestContext(),
+				&shared.V2CreateWorkflowRequest{
+					Name: ptr(uuid.New()),
+					Stages: []map[string]interface{}{
+						{
+							"send": map[string]any{
+								"source": map[string]any{
+									"account": map[string]any{
+										"id":     "empty:account",
+										"ledger": "default",
+									},
+								},
+								"destination": map[string]any{
+									"account": map[string]any{
+										"id":     "bank",
+										"ledger": "default",
+									},
+								},
+								"amount": map[string]any{
+									"amount": -1, // Invalid amount
+									"asset":  "EUR/2",
+								},
+							},
+						},
+					},
+				},
+			)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(201))
+
+			createWorkflowResponse = response.V2CreateWorkflowResponse
+		})
+		Then("executing it", func() {
+			var (
+				runWorkflowResponse *shared.V2RunWorkflowResponse
+				msgs                chan *nats.Msg
+			)
+			BeforeEach(func() {
+				response, err := Client().Orchestration.V2RunWorkflow(
+					TestContext(),
+					operations.V2RunWorkflowRequest{
+						RequestBody: map[string]string{},
+						WorkflowID:  createWorkflowResponse.Data.ID,
+					},
+				)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(response.StatusCode).To(Equal(201))
+
+				runWorkflowResponse = response.V2RunWorkflowResponse
+
+				var closeSubscription func()
+				closeSubscription, msgs = SubscribeOrchestration()
+				DeferCleanup(func() {
+					closeSubscription()
+				})
+			})
+			It("should declare the workflow run instance as errored", func() {
+				Eventually(func(g Gomega) string {
+					response, err := Client().Orchestration.V2GetInstanceStageHistory(
+						TestContext(),
+						operations.V2GetInstanceStageHistoryRequest{
+							InstanceID: runWorkflowResponse.Data.ID,
+							Number:     0,
+						},
+					)
+					g.Expect(err).To(BeNil())
+					g.Expect(response.StatusCode).To(Equal(200))
+					g.Expect(response.V2GetWorkflowInstanceHistoryStageResponse.Data[0].Error).NotTo(BeNil())
+
+					return *response.V2GetWorkflowInstanceHistoryStageResponse.Data[0].Error
+				}).ShouldNot(BeEmpty())
+
+				By("and trigger a failed workflow event", func() {
+					msg := WaitOnChanWithTimeout(msgs, time.Second)
+					Expect(events.Check(msg.Data, "orchestration", orchestrationevents.FailedWorkflow)).Should(Succeed())
 				})
 			})
 		})

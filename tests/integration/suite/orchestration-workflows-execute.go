@@ -2,7 +2,10 @@ package suite
 
 import (
 	"encoding/json"
+	orchestrationevents "github.com/formancehq/orchestration/pkg/events"
+	"github.com/formancehq/stack/libs/events"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
+	"github.com/nats-io/nats.go"
 	"math/big"
 	"time"
 
@@ -19,6 +22,7 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 	When("creating a new workflow", func() {
 		var (
 			createWorkflowResponse *shared.V2CreateWorkflowResponse
+			msgs                   chan *nats.Msg
 		)
 		BeforeEach(func() {
 			response, err := Client().Orchestration.V2CreateWorkflow(
@@ -56,6 +60,12 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 			Expect(response.StatusCode).To(Equal(201))
 
 			createWorkflowResponse = response.V2CreateWorkflowResponse
+
+			var closeSubscription func()
+			closeSubscription, msgs = SubscribeOrchestration()
+			DeferCleanup(func() {
+				closeSubscription()
+			})
 		})
 		It("should be ok", func() {
 			Expect(createWorkflowResponse.Data.ID).NotTo(BeEmpty())
@@ -79,6 +89,10 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 			})
 			It("should be ok", func() {
 				Expect(runWorkflowResponse.Data.ID).NotTo(BeEmpty())
+			})
+			It("Should trigger a succeeded workflow event", func() {
+				msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
+				Expect(events.Check(msg.Data, "orchestration", orchestrationevents.SucceededWorkflow)).Should(Succeed())
 			})
 			Then("waiting for termination", func() {
 				var instanceResponse *shared.V2GetWorkflowInstanceResponse

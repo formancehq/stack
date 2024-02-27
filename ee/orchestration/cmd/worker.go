@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"github.com/formancehq/stack/libs/go-libs/publish"
 	"net/http"
 
 	"github.com/formancehq/orchestration/internal/triggers"
@@ -34,7 +33,6 @@ func workerOptions() fx.Option {
 			viper.GetString(temporalTaskQueueFlag),
 			viper.GetStringSlice(topicsFlag),
 		),
-		publish.CLIPublisherModule("orchestration"),
 	)
 }
 

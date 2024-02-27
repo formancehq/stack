@@ -85,7 +85,6 @@ func NewRootCommand() *cobra.Command {
 	auth.InitAuthFlags(cmd.PersistentFlags())
 	bunconnect.InitFlags(cmd.PersistentFlags())
 	iam.InitFlags(cmd.PersistentFlags())
-	publish.InitCLIFlags(cmd)
 
 	return cmd
 }

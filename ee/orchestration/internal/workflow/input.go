@@ -2,6 +2,7 @@ package workflow
 
 import (
 	"context"
+	"time"
 
 	"github.com/uptrace/bun"
 	"go.temporal.io/sdk/workflow"
@@ -27,5 +28,17 @@ func (i Input) run(ctx workflow.Context, db *bun.DB) error {
 		Exec(context.Background()); dbErr != nil {
 		workflow.GetLogger(ctx).Error("error updating instance into database", "error", dbErr)
 	}
+
+	err = workflow.ExecuteActivity(
+		workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
+			StartToCloseTimeout: 10 * time.Second,
+		}),
+		SendWorkflowTerminationEventActivity,
+		instance,
+	).Get(ctx, nil)
+	if err != nil {
+		return err
+	}
+
 	return err
 }

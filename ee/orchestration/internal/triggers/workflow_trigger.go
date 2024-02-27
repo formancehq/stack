@@ -3,9 +3,6 @@ package triggers
 import (
 	"time"
 
-	"github.com/pkg/errors"
-	"go.temporal.io/sdk/temporal"
-
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/uptrace/bun"
 	temporalworkflow "go.temporal.io/sdk/workflow"
@@ -36,6 +33,7 @@ func (w triggerWorkflow) RunTrigger(ctx temporalworkflow.Context, req ProcessEve
 	}
 
 	for _, trigger := range triggers {
+		occurrence := &Occurrence{}
 		err := temporalworkflow.ExecuteActivity(
 			temporalworkflow.WithActivityOptions(ctx, temporalworkflow.ActivityOptions{
 				StartToCloseTimeout: 10 * time.Second,
@@ -43,12 +41,20 @@ func (w triggerWorkflow) RunTrigger(ctx temporalworkflow.Context, req ProcessEve
 			ProcessEventActivity,
 			trigger,
 			req,
+		).Get(ctx, occurrence)
+		if err != nil {
+			return err
+		}
+
+		err = temporalworkflow.ExecuteActivity(
+			temporalworkflow.WithActivityOptions(ctx, temporalworkflow.ActivityOptions{
+				StartToCloseTimeout: 10 * time.Second,
+			}),
+			SendEventForTriggerTermination,
+			occurrence,
 		).Get(ctx, nil)
 		if err != nil {
-			applicationError := &temporal.ApplicationError{}
-			if !errors.As(err, &applicationError) {
-				return err
-			}
+			return err
 		}
 	}
 

@@ -42,7 +42,7 @@ func WaitOnChanWithTimeout[T any](ch chan T, timeout time.Duration) T {
 	case t := <-ch:
 		return t
 	case <-time.After(timeout):
-		Fail("should have received an event")
+		Fail("should have received an event", 1)
 	}
 	panic("cannot happen")
 }
