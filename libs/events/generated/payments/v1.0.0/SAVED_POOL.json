@@ -1,0 +1,55 @@
+{
+  "type": "object",
+  "properties": {
+    "app": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "type": {
+      "type": "string"
+    },
+    "ledger": {
+      "type": "string"
+    },
+    "payload": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "createdAt",
+        "accountIDs"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "accountIDs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "date",
+    "app",
+    "version",
+    "type",
+    "payload"
+  ]
+}

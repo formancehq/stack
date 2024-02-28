@@ -1,0 +1,147 @@
+{
+  "type": "object",
+  "properties": {
+    "app": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "type": {
+      "type": "string"
+    },
+    "ledger": {
+      "type": "string"
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "ledger": {
+          "type": "string"
+        },
+        "revertedTransaction": {
+          "type": "object",
+          "properties": {
+            "postings": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source": {
+                    "type": "string"
+                  },
+                  "destination": {
+                    "type": "string"
+                  },
+                  "amount": {
+                    "type": "number"
+                  },
+                  "asset": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "source",
+                  "destination",
+                  "amount",
+                  "asset"
+                ]
+              }
+            },
+            "reference": {
+              "type": "string"
+            },
+            "metadata": {
+              "type": "object",
+              "properties": {},
+              "required": []
+            },
+            "id": {
+              "type": "number"
+            },
+            "timestamp": {
+              "type": "string"
+            },
+            "reverted": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "postings",
+            "metadata",
+            "id",
+            "timestamp",
+            "reverted"
+          ]
+        },
+        "revertTransaction": {
+          "type": "object",
+          "properties": {
+            "postings": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source": {
+                    "type": "string"
+                  },
+                  "destination": {
+                    "type": "string"
+                  },
+                  "amount": {
+                    "type": "number"
+                  },
+                  "asset": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "source",
+                  "destination",
+                  "amount",
+                  "asset"
+                ]
+              }
+            },
+            "reference": {
+              "type": "string"
+            },
+            "metadata": {
+              "type": "object",
+              "properties": {},
+              "required": []
+            },
+            "id": {
+              "type": "number"
+            },
+            "timestamp": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "postings",
+            "metadata",
+            "id",
+            "timestamp"
+          ]
+        }
+      },
+      "required": [
+        "ledger",
+        "revertedTransaction",
+        "revertTransaction"
+      ]
+    }
+  },
+  "required": [
+    "date",
+    "app",
+    "version",
+    "type",
+    "payload"
+  ]
+}

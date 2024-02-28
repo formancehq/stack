@@ -1,0 +1,52 @@
+{
+  "type": "object",
+  "properties": {
+    "app": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "type": {
+      "type": "string"
+    },
+    "ledger": {
+      "type": "string"
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "ledger": {
+          "type": "string"
+        },
+        "targetType": {
+          "type": "string"
+        },
+        "targetId": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {}
+        }
+      },
+      "required": [
+        "ledger",
+        "targetType",
+        "targetId",
+        "metadata"
+      ]
+    }
+  },
+  "required": [
+    "date",
+    "app",
+    "version",
+    "type",
+    "payload"
+  ]
+}
