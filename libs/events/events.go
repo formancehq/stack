@@ -18,6 +18,9 @@ var baseEvent string
 //go:embed services
 var services embed.FS
 
+//go:embed generated
+var Computed embed.FS
+
 func ComputeSchema(serviceName, eventName string) (*gojsonschema.Schema, error) {
 	base := map[string]any{}
 	if err := yaml.Unmarshal([]byte(baseEvent), &base); err != nil {

@@ -25,6 +25,12 @@
 	log {
 		output stdout
 	}
+
+	file_server /assets* browse {
+		fs zip {
+           path /assets/assets.zip
+		}
+	}
 	handle /api/another/webhooks* {
 		method POST
 		uri strip_prefix /api/another

@@ -33,6 +33,12 @@
 	log {
 		output stdout
 	}
+
+	file_server /assets* browse {
+		fs zip {
+           path /assets/assets.zip
+		}
+	}
 	handle /api/auth* {
 		uri strip_prefix /api/auth
         import cors

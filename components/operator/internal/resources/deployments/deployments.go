@@ -30,6 +30,18 @@ func WithMatchingLabels(name string) func(deployment *appsv1.Deployment) error {
 	}
 }
 
+func WithTemplateAnnotations(annotations map[string]string) func(deployment *appsv1.Deployment) error {
+	return func(deployment *appsv1.Deployment) error {
+		if deployment.Spec.Template.Annotations == nil {
+			deployment.Spec.Template.Annotations = map[string]string{}
+		}
+		for k, v := range annotations {
+			deployment.Spec.Template.Annotations[k] = v
+		}
+		return nil
+	}
+}
+
 func WithServiceAccountName(name string) func(deployment *appsv1.Deployment) error {
 	return func(deployment *appsv1.Deployment) error {
 		deployment.Spec.Template.Spec.ServiceAccountName = name
@@ -77,7 +89,16 @@ func WithInitContainers(containers ...corev1.Container) func(r *appsv1.Deploymen
 
 func WithVolumes(volumes ...corev1.Volume) func(t *appsv1.Deployment) error {
 	return func(t *appsv1.Deployment) error {
-		t.Spec.Template.Spec.Volumes = volumes
+	l:
+		for i, volume := range volumes {
+			for _, actualVolume := range t.Spec.Template.Spec.Volumes {
+				if volume.Name == actualVolume.Name {
+					t.Spec.Template.Spec.Volumes[i] = volume
+					continue l
+				}
+			}
+			t.Spec.Template.Spec.Volumes = append(t.Spec.Template.Spec.Volumes, volume)
+		}
 
 		return nil
 	}

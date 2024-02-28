@@ -80,6 +80,12 @@
 		{{- end }}
 	}
 
+	file_server /assets* browse {
+		fs zip {
+           path /assets/assets.zip
+		}
+	}
+
 	{{- if .EnableAudit }}
 	import audit
 	{{- end }}

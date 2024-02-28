@@ -37,6 +37,12 @@
 	log {
 		output stdout
 	}
+
+	file_server /assets* browse {
+		fs zip {
+           path /assets/assets.zip
+		}
+	}
 	import audit
 	handle /api/ledger* {
 		uri strip_prefix /api/ledger

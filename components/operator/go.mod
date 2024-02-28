@@ -1,11 +1,12 @@
 module github.com/formancehq/operator
 
-go 1.21
+go 1.21.6
 
-toolchain go1.21.5
+toolchain go1.22.0
 
 require (
 	github.com/formancehq/search v0.0.0-00010101000000-000000000000
+	github.com/formancehq/stack/libs/events v0.0.0-00010101000000-000000000000
 	github.com/formancehq/stack/libs/go-libs v0.0.0-20231226162118-70cd9916b2b2
 	github.com/go-logr/logr v1.4.1
 	github.com/google/go-cmp v0.6.0
@@ -17,7 +18,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/stoewer/go-strcase v1.3.0
 	github.com/stretchr/testify v1.8.4
-	golang.org/x/mod v0.14.0
+	golang.org/x/mod v0.15.0
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.29.0
 	k8s.io/apimachinery v0.29.0
@@ -57,6 +58,9 @@ require (
 	github.com/prometheus/common v0.45.0 // indirect
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
+	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
+	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.26.0 // indirect
 	golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e // indirect
@@ -84,3 +88,5 @@ require (
 replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
 
 replace github.com/formancehq/search => ../../ee/search
+
+replace github.com/formancehq/stack/libs/events => ../../libs/events

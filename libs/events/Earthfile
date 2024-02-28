@@ -8,7 +8,7 @@ FROM core+base-image
 
 go-sources:
     COPY events.go go.* base.yaml /src/
-    COPY --dir services /src/
+    COPY --dir services generated /src/
     WORKDIR /src
     SAVE ARTIFACT /src
 

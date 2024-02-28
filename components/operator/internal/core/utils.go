@@ -26,8 +26,16 @@ import (
 func HashFromConfigMaps(configMaps ...*corev1.ConfigMap) string {
 	digest := sha256.New()
 	for _, configMap := range configMaps {
-		if err := json.NewEncoder(digest).Encode(configMap.Data); err != nil {
-			panic(err)
+		if configMap.Data != nil && len(configMap.Data) > 0 {
+			if err := json.NewEncoder(digest).Encode(configMap.Data); err != nil {
+				panic(err)
+			}
+		}
+
+		if configMap.BinaryData != nil && len(configMap.BinaryData) > 0 {
+			if err := json.NewEncoder(digest).Encode(configMap.BinaryData); err != nil {
+				panic(err)
+			}
 		}
 	}
 	return base64.StdEncoding.EncodeToString(digest.Sum(nil))

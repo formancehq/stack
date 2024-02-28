@@ -15,7 +15,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 )
 
-func ConfigureCaddy(caddyfile *v1.ConfigMap, image string, env []v1.EnvVar) core.ObjectMutator[*appsv1.Deployment] {
+func ConfigureCaddy(caddyfile *v1.ConfigMap, image string, env []v1.EnvVar, containerMutators ...core.ObjectMutator[*v1.Container]) core.ObjectMutator[*appsv1.Deployment] {
 	return func(t *appsv1.Deployment) error {
 		t.Spec.Template.Annotations = collectionutils.MergeMaps(t.Spec.Template.Annotations, map[string]string{
 			"caddyfile-hash": core.HashFromConfigMaps(caddyfile),
@@ -23,34 +23,38 @@ func ConfigureCaddy(caddyfile *v1.ConfigMap, image string, env []v1.EnvVar) core
 		t.Spec.Template.Spec.Volumes = []v1.Volume{
 			volumeFromConfigMap("caddyfile", caddyfile),
 		}
-		t.Spec.Template.Spec.Containers = []v1.Container{
-			{
-				Name:    "gateway",
-				Command: []string{"/usr/bin/caddy"},
-				Args: []string{
-					"run",
-					"--config", "/gateway/Caddyfile",
-					"--adapter", "caddyfile",
-				},
-				Image: image,
-				Env:   env,
-				VolumeMounts: []v1.VolumeMount{
-					core.NewVolumeMount("caddyfile", "/gateway"),
-				},
-				Ports: []v1.ContainerPort{{
-					Name:          "http",
-					ContainerPort: 8080,
-				}, {
-					Name:          "metrics",
-					ContainerPort: 3080,
-				}},
-				SecurityContext: &v1.SecurityContext{
-					Capabilities: &v1.Capabilities{
-						Add: []v1.Capability{"NET_BIND_SERVICE"},
-					},
+		container := v1.Container{
+			Name:    "gateway",
+			Command: []string{"/usr/bin/caddy"},
+			Args: []string{
+				"run",
+				"--config", "/gateway/Caddyfile",
+				"--adapter", "caddyfile",
+			},
+			Image: image,
+			Env:   env,
+			VolumeMounts: []v1.VolumeMount{
+				core.NewVolumeMount("caddyfile", "/gateway"),
+			},
+			Ports: []v1.ContainerPort{{
+				Name:          "http",
+				ContainerPort: 8080,
+			}, {
+				Name:          "metrics",
+				ContainerPort: 3080,
+			}},
+			SecurityContext: &v1.SecurityContext{
+				Capabilities: &v1.Capabilities{
+					Add: []v1.Capability{"NET_BIND_SERVICE"},
 				},
 			},
 		}
+		for _, mutator := range containerMutators {
+			if err := mutator(&container); err != nil {
+				return err
+			}
+		}
+		t.Spec.Template.Spec.Containers = []v1.Container{container}
 
 		return nil
 	}
