@@ -11,7 +11,9 @@ const yaml = require('yaml');
             for(const event of await fs.readdir('services/' + service + '/' + version)) {
                 const rawEventData = await fs.readFile('services/' + service + '/' + version + '/' + event, { encoding: 'utf8' });
                 base.properties.payload = yaml.parse(rawEventData);
-                fs.writeFile('generated/' + service + '-' + version + '-' + event + '.json', JSON.stringify(base));
+                const directory = 'generated/' + service + '/' + version + '/';
+                await fs.mkdir(directory, { recursive: true });
+                await fs.writeFile(directory + event.replace('.yaml', '.json'), JSON.stringify(base, null, 2));
             }
         }
     }
