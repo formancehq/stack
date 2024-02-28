@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func waitStackReady(cmd *cobra.Command, client *membershipclient.APIClient, profile *fctl.Profile, stackId, organizationId string) (*membershipclient.Stack, error) {
+func waitStackReady(cmd *cobra.Command, client *membershipclient.APIClient, profile *fctl.Profile, organizationId, stackId string) (*membershipclient.Stack, error) {
 	var resp *http.Response
 	var err error
 	var stackRsp *membershipclient.CreateStackResponse
