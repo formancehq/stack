@@ -170,7 +170,7 @@ Available settings:
 
 | Key                                                                                      | Type   | Example             | Description                                                          |
 |------------------------------------------------------------------------------------------|--------|---------------------|----------------------------------------------------------------------|
-| awsRole                                                                                  | string |                     |  AWS Role |
+| aws.role                                                                                 | string |                     |  AWS Role |
 | postgres.`<module-name>`.uri                                                             | URI    |                     | Postgres database configuration                                      |
 | elasticsearch.dsn                                                                        | URI    |                     | Elasticsearch connection URI                                         |
 | temporal.dsn                                                                             | URI    |                     | Temporal URI                                                         |
