@@ -24,6 +24,7 @@ import (
 	"github.com/formancehq/operator/internal/resources/gatewayhttpapis"
 	"github.com/formancehq/operator/internal/resources/jobs"
 	"github.com/formancehq/operator/internal/resources/registries"
+	"github.com/formancehq/operator/internal/resources/settings"
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"
@@ -54,10 +55,20 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, ve
 			return errors.Wrap(err, "resolving image")
 		}
 
+		serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+		if err != nil {
+			return errors.Wrap(err, "resolving service account")
+		}
+
+		migrateContainer, err := databases.MigrateDatabaseContainer(ctx, stack, image, database)
+		if err != nil {
+			return errors.Wrap(err, "creating migration container")
+		}
+
 		if IsGreaterOrEqual(version, "v2.0.0-rc.5") && databases.GetSavedModuleVersion(database) != version {
 			if err := jobs.Handle(ctx, webhooks, "migrate",
-				databases.MigrateDatabaseContainer(image, database),
-				jobs.WithServiceAccount(database.Status.URI.Query().Get("awsRole")),
+				migrateContainer,
+				jobs.WithServiceAccount(serviceAccountName),
 			); err != nil {
 				return err
 			}

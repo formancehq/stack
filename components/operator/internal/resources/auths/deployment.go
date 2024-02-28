@@ -30,9 +30,14 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, dat
 		return nil, err
 	}
 
+	postgresEnvVar, err := databases.GetPostgresEnvVars(ctx, stack, database)
+	if err != nil {
+		return nil, err
+	}
+
 	env = append(env, gatewayEnv...)
 	env = append(env, GetDevEnvVars(stack, auth)...)
-	env = append(env, databases.GetPostgresEnvVars(database)...)
+	env = append(env, postgresEnvVar...)
 	env = append(env, Env("CONFIG", "/config/config.yaml"))
 
 	authUrl, err := getUrl(ctx, stack.Name)
@@ -66,10 +71,15 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, dat
 		env = append(env, Env("CAOS_OIDC_DEV", "1"))
 	}
 
+	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	if err != nil {
+		return nil, err
+	}
+
 	return deployments.CreateOrUpdate(ctx, auth, "auth",
 		deployments.WithMatchingLabels("auth"),
 		deployments.WithReplicasFromSettings(ctx, stack),
-		deployments.WithServiceAccountName(database.Status.URI.Query().Get("awsRole")),
+		deployments.WithServiceAccountName(serviceAccountName),
 		func(t *appsv1.Deployment) error {
 			t.Spec.Template.Annotations = MergeMaps(t.Spec.Template.Annotations, map[string]string{
 				"config-hash": HashFromConfigMaps(configMap),

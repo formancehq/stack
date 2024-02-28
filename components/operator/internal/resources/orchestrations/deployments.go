@@ -2,8 +2,9 @@ package orchestrations
 
 import (
 	"fmt"
-	"github.com/formancehq/operator/internal/resources/resourcereferences"
 	"strings"
+
+	"github.com/formancehq/operator/internal/resources/resourcereferences"
 
 	appsv1 "k8s.io/api/apps/v1"
 
@@ -59,9 +60,15 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 	if err != nil {
 		return err
 	}
+
+	postgresEnvVar, err := databases.GetPostgresEnvVars(ctx, stack, database)
+	if err != nil {
+		return err
+	}
+
 	env = append(env, gatewayEnv...)
 	env = append(env, GetDevEnvVars(stack, orchestration)...)
-	env = append(env, databases.GetPostgresEnvVars(database)...)
+	env = append(env, postgresEnvVar...)
 
 	temporalURI, err := settings.RequireURL(ctx, stack.Name, "temporal.dsn")
 	if err != nil {
@@ -131,9 +138,14 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 	}
 	env = append(env, brokerEnvVars...)
 
+	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	if err != nil {
+		return err
+	}
+
 	_, err = deployments.CreateOrUpdate(ctx, orchestration, "orchestration",
 		resourcereferences.Annotate[*appsv1.Deployment]("temporal-secret-hash", resourceReference),
-		deployments.WithServiceAccountName(database.Status.URI.Query().Get("awsRole")),
+		deployments.WithServiceAccountName(serviceAccountName),
 		deployments.WithReplicasFromSettings(ctx, stack),
 		deployments.WithMatchingLabels("orchestration"),
 		deployments.WithContainers(v1.Container{

@@ -47,8 +47,13 @@ func deploymentEnvVars(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1
 		return nil, err
 	}
 
+	postgresEnvVar, err := databases.GetPostgresEnvVars(ctx, stack, database)
+	if err != nil {
+		return nil, err
+	}
+
 	env = append(env, authEnvVars...)
-	env = append(env, databases.GetPostgresEnvVars(database)...)
+	env = append(env, postgresEnvVar...)
 	env = append(env, settings.GetBrokerEnvVars(brokerURI, stack.Name, "webhooks")...)
 	env = append(env, core.Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"))
 
@@ -80,10 +85,15 @@ func createAPIDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1bet
 		}), " ")))
 	}
 
+	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	if err != nil {
+		return err
+	}
+
 	_, err = deployments.CreateOrUpdate(ctx, webhooks, "webhooks",
 		deployments.WithReplicasFromSettings(ctx, stack),
 		deployments.WithMatchingLabels("webhooks"),
-		deployments.WithServiceAccountName(database.Status.URI.Query().Get("awsRole")),
+		deployments.WithServiceAccountName(serviceAccountName),
 		deployments.WithContainers(v1.Container{
 			Name:          "api",
 			Env:           env,
@@ -113,9 +123,14 @@ func createWorkerDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1
 		return fmt.Sprintf("%s-%s", stack.Name, from.Spec.Service)
 	}), " ")))
 
+	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	if err != nil {
+		return err
+	}
+
 	_, err = deployments.CreateOrUpdate(ctx, webhooks, "webhooks-worker",
 		deployments.WithMatchingLabels("webhooks-worker"),
-		deployments.WithServiceAccountName(database.Status.URI.Query().Get("awsRole")),
+		deployments.WithServiceAccountName(serviceAccountName),
 		deployments.WithContainers(v1.Container{
 			Name:  "worker",
 			Env:   env,
