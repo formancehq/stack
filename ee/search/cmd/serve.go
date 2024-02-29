@@ -8,6 +8,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/formancehq/stack/libs/go-libs/auth"
+	"github.com/formancehq/stack/libs/go-libs/aws/iam"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 
 	"github.com/formancehq/search/pkg/searchengine"
@@ -104,6 +105,8 @@ func NewServer() *cobra.Command {
 	cmd.Flags().Bool(esDisableMappingInitFlag, false, "Disable mapping initialization")
 	cmd.Flags().Bool(awsIAMEnabledFlag, false, "Enable AWS IAM")
 	cmd.Flags().String(stackFlag, "", "Stack id")
+
+	iam.InitFlags(cmd.Flags())
 	otlptraces.InitOTLPTracesFlags(cmd.Flags())
 
 	return cmd

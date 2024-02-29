@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/formancehq/search/pkg/searchengine"
+	"github.com/formancehq/stack/libs/go-libs/aws/iam"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -32,6 +33,7 @@ func NewUpdateMapping() *cobra.Command {
 	}
 
 	cmd.Flags().Bool(awsIAMEnabledFlag, false, "Enable AWS IAM")
+	iam.InitFlags(cmd.Flags())
 
 	return cmd
 }
