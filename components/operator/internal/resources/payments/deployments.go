@@ -80,11 +80,16 @@ func createFullDeployment(ctx core.Context, stack *v1beta1.Stack,
 			return core.NewApplicationError("topic %s is not yet ready", topic.Name)
 		}
 
-		env = append(env, settings.GetBrokerEnvVars(topic.Status.URI, stack.Name, "payments")...)
+		brokerEnvVar, err := settings.GetBrokerEnvVars(ctx, topic.Status.URI, stack.Name, "payments")
+		if err != nil {
+			return err
+		}
+
+		env = append(env, brokerEnvVar...)
 		env = append(env, core.Env("PUBLISHER_TOPIC_MAPPING", "*:"+core.GetObjectName(stack.Name, "payments")))
 	}
 
-	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 	if err != nil {
 		return err
 	}
@@ -123,7 +128,7 @@ func createReadDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1be
 	}
 	env = append(env, authEnvVars...)
 
-	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 	if err != nil {
 		return err
 	}
@@ -173,11 +178,16 @@ func createConnectorsDeployment(ctx core.Context, stack *v1beta1.Stack, payments
 			return core.NewApplicationError("topic %s is not yet ready", topic.Name)
 		}
 
-		env = append(env, settings.GetBrokerEnvVars(topic.Status.URI, stack.Name, "payments")...)
+		brokerEnvVar, err := settings.GetBrokerEnvVars(ctx, topic.Status.URI, stack.Name, "payments")
+		if err != nil {
+			return err
+		}
+
+		env = append(env, brokerEnvVar...)
 		env = append(env, core.Env("PUBLISHER_TOPIC_MAPPING", "*:"+core.GetObjectName(stack.Name, "payments")))
 	}
 
-	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 	if err != nil {
 		return err
 	}

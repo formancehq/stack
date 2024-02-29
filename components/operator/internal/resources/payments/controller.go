@@ -63,7 +63,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, p *v1beta1.Payments, version s
 				return err
 			}
 
-			serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+			serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 			if err != nil {
 				return err
 			}

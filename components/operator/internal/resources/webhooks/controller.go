@@ -56,7 +56,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, ve
 		}
 
 		if IsGreaterOrEqual(version, "v2.0.0-rc.5") && databases.GetSavedModuleVersion(database) != version {
-			serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+			serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 			if err != nil {
 				return errors.Wrap(err, "resolving service account")
 			}

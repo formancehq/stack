@@ -50,7 +50,7 @@ func PostgresEnvVarsWithPrefix(ctx core.Context, stack *v1beta1.Stack, database 
 		)
 	}
 
-	awsRole, err := settings.GetAWSRole(ctx, stack.Name)
+	awsRole, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 	if err != nil {
 		return nil, err
 	}

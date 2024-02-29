@@ -157,7 +157,7 @@ func uninstallLedgerMonoWriterMultipleReader(ctx core.Context, stack *v1beta1.St
 
 func createDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, database *v1beta1.Database,
 	name string, container corev1.Container, v2 bool, mutators ...core.ObjectMutator[*v1.Deployment]) error {
-	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 	if err != nil {
 		return err
 	}
@@ -262,7 +262,12 @@ func createLedgerContainerFull(ctx core.Context, stack *v1beta1.Stack, v2 bool) 
 			prefix = "NUMARY_"
 		}
 
-		container.Env = append(container.Env, settings.GetBrokerEnvVarsWithPrefix(topic.Status.URI, stack.Name, "ledger", prefix)...)
+		brokerEnvVar, err := settings.GetBrokerEnvVarsWithPrefix(ctx, topic.Status.URI, stack.Name, "ledger", prefix)
+		if err != nil {
+			return nil, err
+		}
+
+		container.Env = append(container.Env, brokerEnvVar...)
 		container.Env = append(container.Env, core.Env(fmt.Sprintf("%sPUBLISHER_TOPIC_MAPPING", prefix), "*:"+core.GetObjectName(stack.Name, "ledger")))
 	}
 
@@ -310,7 +315,7 @@ func createGatewayDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1b
 }
 
 func migrate(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, database *v1beta1.Database, image, version string) error {
-	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 	if err != nil {
 		return err
 	}
