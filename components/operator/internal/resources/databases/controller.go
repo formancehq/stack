@@ -18,6 +18,7 @@ package databases
 
 import (
 	"fmt"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/jobs"
@@ -57,7 +58,12 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 		return err
 	}
 
-	if awsRole := databaseURL.Query().Get("awsRole"); awsRole != "" {
+	awsRole, err := settings.GetAWSRole(ctx, stack.Name)
+	if err != nil {
+		return err
+	}
+
+	if awsRole != "" {
 		_, err = resourcereferences.Create(ctx, database, "database", awsRole, &v1.ServiceAccount{})
 	} else {
 		err = resourcereferences.Delete(ctx, database, "database")
@@ -152,9 +158,18 @@ func handleDatabaseJob(ctx core.Context, stack *v1beta1.Stack, database *v1beta1
 		annotations["secret-hash"] = secretReference.Status.Hash
 	}
 
-	env := GetPostgresEnvVars(database)
+	env, err := GetPostgresEnvVars(ctx, stack, database)
+	if err != nil {
+		return err
+	}
+
 	if database.Spec.Debug {
 		env = append(env, core.Env("DEBUG", "true"))
+	}
+
+	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	if err != nil {
+		return err
 	}
 
 	return jobs.Handle(ctx, database, name, v1.Container{
@@ -164,7 +179,7 @@ func handleDatabaseJob(ctx core.Context, stack *v1beta1.Stack, database *v1beta1
 		Env:   env,
 	},
 		jobs.Mutator(core.WithAnnotations[*batchv1.Job](annotations)),
-		jobs.WithServiceAccount(database.Status.URI.Query().Get("awsRole")),
+		jobs.WithServiceAccount(serviceAccountName),
 	)
 }
 

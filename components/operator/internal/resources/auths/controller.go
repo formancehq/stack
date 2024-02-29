@@ -23,6 +23,7 @@ import (
 	"github.com/formancehq/operator/internal/resources/gatewayhttpapis"
 	"github.com/formancehq/operator/internal/resources/jobs"
 	"github.com/formancehq/operator/internal/resources/registries"
+	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
@@ -60,9 +61,19 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, version st
 		}
 
 		if IsGreaterOrEqual(version, "v2.0.0-rc.5") && databases.GetSavedModuleVersion(database) != version {
+			serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+			if err != nil {
+				return errors.Wrap(err, "getting service account name")
+			}
+
+			migrateContainer, err := databases.MigrateDatabaseContainer(ctx, stack, image, database)
+			if err != nil {
+				return errors.Wrap(err, "creating migrate container")
+			}
+
 			if err := jobs.Handle(ctx, auth, "migrate",
-				databases.MigrateDatabaseContainer(image, database),
-				jobs.WithServiceAccount(database.Status.URI.Query().Get("awsRole")),
+				migrateContainer,
+				jobs.WithServiceAccount(serviceAccountName),
 			); err != nil {
 				return err
 			}

@@ -26,9 +26,15 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, reconciliation *v1
 	if err != nil {
 		return err
 	}
+
+	postgresEnvVar, err := databases.GetPostgresEnvVars(ctx, stack, database)
+	if err != nil {
+		return err
+	}
+
 	env = append(env, gatewayEnv...)
 	env = append(env, core.GetDevEnvVars(stack, reconciliation)...)
-	env = append(env, databases.GetPostgresEnvVars(database)...)
+	env = append(env, postgresEnvVar...)
 	env = append(env, core.Env("POSTGRES_DATABASE_NAME", "$(POSTGRES_DATABASE)"))
 	env = append(env, authclients.GetEnvVars(authClient)...)
 
@@ -37,6 +43,11 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, reconciliation *v1
 		return err
 	}
 	env = append(env, authEnvVars...)
+
+	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	if err != nil {
+		return err
+	}
 
 	_, err = deployments.CreateOrUpdate(ctx, reconciliation, "reconciliation",
 		deployments.WithReplicasFromSettings(ctx, stack),
@@ -51,7 +62,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, reconciliation *v1
 
 			return nil
 		},
-		deployments.WithServiceAccountName(database.Status.URI.Query().Get("awsRole")),
+		deployments.WithServiceAccountName(serviceAccountName),
 		deployments.WithMatchingLabels("reconciliation"),
 	)
 	return err

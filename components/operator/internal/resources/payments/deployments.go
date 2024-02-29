@@ -34,9 +34,15 @@ func commonEnvVars(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Pay
 	if err != nil {
 		return nil, err
 	}
+
+	postgresEnvVar, err := databases.GetPostgresEnvVars(ctx, stack, database)
+	if err != nil {
+		return nil, err
+	}
+
 	env = append(env, gatewayEnv...)
 	env = append(env, core.GetDevEnvVars(stack, payments)...)
-	env = append(env, databases.GetPostgresEnvVars(database)...)
+	env = append(env, postgresEnvVar...)
 
 	encryptionKey, err := getEncryptionKey(ctx, payments)
 	if err != nil {
@@ -78,9 +84,14 @@ func createFullDeployment(ctx core.Context, stack *v1beta1.Stack,
 		env = append(env, core.Env("PUBLISHER_TOPIC_MAPPING", "*:"+core.GetObjectName(stack.Name, "payments")))
 	}
 
+	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	if err != nil {
+		return err
+	}
+
 	_, err = deployments.CreateOrUpdate(ctx, payments, "payments",
 		deployments.WithMatchingLabels("payments"),
-		deployments.WithServiceAccountName(database.Status.URI.Query().Get("awsRole")),
+		deployments.WithServiceAccountName(serviceAccountName),
 		deployments.WithContainers(v1.Container{
 			Name:          "api",
 			Args:          []string{"serve"},
@@ -112,10 +123,15 @@ func createReadDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1be
 	}
 	env = append(env, authEnvVars...)
 
+	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	if err != nil {
+		return err
+	}
+
 	_, err = deployments.CreateOrUpdate(ctx, payments, "payments-read",
 		deployments.WithMatchingLabels("payments-read"),
 		deployments.WithReplicasFromSettings(ctx, stack),
-		deployments.WithServiceAccountName(database.Status.URI.Query().Get("awsRole")),
+		deployments.WithServiceAccountName(serviceAccountName),
 		deployments.WithContainers(v1.Container{
 			Name:          "api",
 			Args:          []string{"api", "serve"},
@@ -161,9 +177,14 @@ func createConnectorsDeployment(ctx core.Context, stack *v1beta1.Stack, payments
 		env = append(env, core.Env("PUBLISHER_TOPIC_MAPPING", "*:"+core.GetObjectName(stack.Name, "payments")))
 	}
 
+	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	if err != nil {
+		return err
+	}
+
 	_, err = deployments.CreateOrUpdate(ctx, payments, "payments-connectors",
 		deployments.WithMatchingLabels("payments-connectors"),
-		deployments.WithServiceAccountName(database.Status.URI.Query().Get("awsRole")),
+		deployments.WithServiceAccountName(serviceAccountName),
 		deployments.WithContainers(v1.Container{
 			Name:  "connectors",
 			Args:  []string{"connectors", "serve"},

@@ -2,17 +2,18 @@ package databases
 
 import (
 	"fmt"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/settings"
 	corev1 "k8s.io/api/core/v1"
 )
 
-func GetPostgresEnvVars(db *v1beta1.Database) []corev1.EnvVar {
-	return PostgresEnvVarsWithPrefix(db, "")
+func GetPostgresEnvVars(ctx core.Context, stack *v1beta1.Stack, db *v1beta1.Database) ([]corev1.EnvVar, error) {
+	return PostgresEnvVarsWithPrefix(ctx, stack, db, "")
 }
 
-func PostgresEnvVarsWithPrefix(database *v1beta1.Database, prefix string) []corev1.EnvVar {
+func PostgresEnvVarsWithPrefix(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Database, prefix string) ([]corev1.EnvVar, error) {
 	ret := []corev1.EnvVar{
 		core.Env(fmt.Sprintf("%sPOSTGRES_HOST", prefix), database.Status.URI.Hostname()),
 		core.Env(fmt.Sprintf("%sPOSTGRES_PORT", prefix), database.Status.URI.Port()),
@@ -48,7 +49,13 @@ func PostgresEnvVarsWithPrefix(database *v1beta1.Database, prefix string) []core
 			)),
 		)
 	}
-	if awsRole := database.Status.URI.Query().Get("awsRole"); awsRole != "" {
+
+	awsRole, err := settings.GetAWSRole(ctx, stack.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	if awsRole != "" {
 		ret = append(ret, core.Env(fmt.Sprintf("%sPOSTGRES_AWS_ENABLE_IAM", prefix), "true"))
 	}
 
@@ -62,5 +69,5 @@ func PostgresEnvVarsWithPrefix(database *v1beta1.Database, prefix string) []core
 			fmt.Sprintf("%sPOSTGRES_DATABASE", prefix))),
 	)
 
-	return ret
+	return ret, nil
 }

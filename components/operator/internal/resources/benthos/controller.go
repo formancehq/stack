@@ -19,8 +19,9 @@ package benthos
 import (
 	"embed"
 	"fmt"
-	"github.com/formancehq/operator/internal/resources/resourcereferences"
 	"sort"
+
+	"github.com/formancehq/operator/internal/resources/resourcereferences"
 
 	"github.com/formancehq/operator/internal/resources/services"
 	"github.com/formancehq/operator/internal/resources/settings"
@@ -281,9 +282,15 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 		return streams[i].Name < streams[j].Name
 	})
 
+	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	if err != nil {
+		return err
+	}
+
 	_, err = deployments.CreateOrUpdate(ctx, b, "benthos",
 		resourcereferences.Annotate[*appsv1.Deployment]("elasticsearch-secret-hash", resourceReference),
 		deployments.WithMatchingLabels("benthos"),
+		deployments.WithServiceAccountName(serviceAccountName),
 		deployments.WithInitContainers(b.Spec.InitContainers...),
 		deployments.WithContainers(corev1.Container{
 			Name:    "benthos",

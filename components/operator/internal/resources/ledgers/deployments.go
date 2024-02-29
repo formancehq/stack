@@ -2,10 +2,7 @@ package ledgers
 
 import (
 	"fmt"
-	"github.com/formancehq/operator/internal/resources/jobs"
 	"strconv"
-
-	"github.com/formancehq/operator/internal/resources/settings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
@@ -14,7 +11,9 @@ import (
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
+	"github.com/formancehq/operator/internal/resources/jobs"
 	"github.com/formancehq/operator/internal/resources/services"
+	"github.com/formancehq/operator/internal/resources/settings"
 	v1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -67,15 +66,15 @@ func installLedgerSingleInstance(ctx core.Context, stack *v1beta1.Stack,
 		}
 	}
 
-	if err := createDeployment(ctx, ledger, database, "ledger", *container, v2, deployments.WithReplicas(1)); err != nil {
+	if err := createDeployment(ctx, stack, ledger, database, "ledger", *container, v2, deployments.WithReplicas(1)); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func getUpgradeContainer(database *v1beta1.Database, image, version string) corev1.Container {
-	return databases.MigrateDatabaseContainer(image, database,
+func getUpgradeContainer(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Database, image, version string) (corev1.Container, error) {
+	return databases.MigrateDatabaseContainer(ctx, stack, image, database,
 		func(m *databases.MigrationConfiguration) {
 			if core.IsLower(version, "v2.0.0-rc.6") {
 				m.Command = []string{"buckets", "upgrade-all"}
@@ -95,7 +94,7 @@ func installLedgerMonoWriterMultipleReader(ctx core.Context, stack *v1beta1.Stac
 			return err
 		}
 
-		if err := createDeployment(ctx, ledger, database, name, container, v2, mutators...); err != nil {
+		if err := createDeployment(ctx, stack, ledger, database, name, container, v2, mutators...); err != nil {
 			return err
 		}
 
@@ -156,12 +155,17 @@ func uninstallLedgerMonoWriterMultipleReader(ctx core.Context, stack *v1beta1.St
 	return nil
 }
 
-func createDeployment(ctx core.Context, ledger *v1beta1.Ledger, database *v1beta1.Database,
+func createDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, database *v1beta1.Database,
 	name string, container corev1.Container, v2 bool, mutators ...core.ObjectMutator[*v1.Deployment]) error {
+	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	if err != nil {
+		return err
+	}
+
 	mutators = append([]core.ObjectMutator[*v1.Deployment]{
 		deployments.WithContainers(container),
 		deployments.WithMatchingLabels(name),
-		deployments.WithServiceAccountName(database.Status.URI.Query().Get("awsRole")),
+		deployments.WithServiceAccountName(serviceAccountName),
 		func(t *v1.Deployment) error {
 			if !v2 {
 				t.Spec.Template.Spec.Volumes = []corev1.Volume{{
@@ -175,7 +179,7 @@ func createDeployment(ctx core.Context, ledger *v1beta1.Ledger, database *v1beta
 		},
 	}, mutators...)
 
-	_, err := deployments.CreateOrUpdate(ctx, ledger, name, mutators...)
+	_, err = deployments.CreateOrUpdate(ctx, ledger, name, mutators...)
 	return err
 }
 
@@ -205,9 +209,14 @@ func setCommonContainerConfiguration(ctx core.Context, stack *v1beta1.Stack, led
 	}
 	env = append(env, authEnvVars...)
 
+	postgresEnvVar, err := databases.PostgresEnvVarsWithPrefix(ctx, stack, database, prefix)
+	if err != nil {
+		return err
+	}
+	env = append(env, postgresEnvVar...)
+
 	container.Image = image
 	container.Env = append(container.Env, env...)
-	container.Env = append(container.Env, databases.PostgresEnvVarsWithPrefix(database, prefix)...)
 	container.Env = append(container.Env, core.Env(fmt.Sprintf("%sSTORAGE_POSTGRES_CONN_STRING", prefix), fmt.Sprintf("$(%sPOSTGRES_URI)", prefix)))
 	container.Env = append(container.Env, core.Env(fmt.Sprintf("%sSTORAGE_DRIVER", prefix), "postgres"))
 	container.Ports = []corev1.ContainerPort{deployments.StandardHTTPPort()}
@@ -301,7 +310,17 @@ func createGatewayDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1b
 }
 
 func migrate(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, database *v1beta1.Database, image, version string) error {
-	return jobs.Handle(ctx, ledger, "migrate-v2", getUpgradeContainer(database, image, version),
+	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	if err != nil {
+		return err
+	}
+
+	upgradeContainer, err := getUpgradeContainer(ctx, stack, database, image, version)
+	if err != nil {
+		return err
+	}
+
+	return jobs.Handle(ctx, ledger, "migrate-v2", upgradeContainer,
 		jobs.PreCreate(func() error {
 			list := &v1.DeploymentList{}
 			if err := ctx.GetClient().List(ctx, list, client.InNamespace(stack.Name)); err != nil {
@@ -317,5 +336,6 @@ func migrate(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, dat
 			}
 			return nil
 		}),
-		jobs.WithServiceAccount(database.Status.URI.Query().Get("awsRole")))
+		jobs.WithServiceAccount(serviceAccountName),
+	)
 }

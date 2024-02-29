@@ -9,21 +9,31 @@ fields:
 
 mapping: |
   root = if env("BROKER") == "kafka" {{
-    "kafka": {
-      "addresses": [ env("KAFKA_ADDRESS") ],
+    "kafka_franz": {
+      "seed_brokers": [ env("KAFKA_ADDRESS") ],
       "topics": [ env("TOPIC_PREFIX") + this.topic ],
-      "target_version": env("KAFKA_VERSION"),
       "consumer_group": this.consumer_group,
       "checkpoint_limit": 1024,
-      "sasl": {
-        "mechanism": env("KAFKA_SASL_MECHANISM"),
-        "password": env("KAFKA_SASL_PASSWORD"),
-        "user": env("KAFKA_SASL_USERNAME")
-      },
+      "sasl": [
+        {
+          "mechanism": env("KAFKA_SASL_MECHANISM"),
+          "password": env("KAFKA_SASL_PASSWORD"),
+          "username": env("KAFKA_SASL_USERNAME"),
+          "aws": {
+            "region": env("AWS_REGION"),
+            "credentials": {
+              "profile": env("AWS_PROFILE"),
+              "id": env("AWS_ACCESS_KEY_ID"),
+              "secret": env("AWS_SECRET_ACCESS_KEY"),
+              "token": env("AWS_SESSION_TOKEN"),
+              "role": env("AWS_ROLE_ARN")
+            }
+          }
+        }
+      ],
       "tls": {
         "enabled": env("KAFKA_TLS_ENABLED") == "true"
-      },
-      "extract_tracing_map": "root = meta()"
+      }
     }
   }} else {{
     "nats_jetstream": {
