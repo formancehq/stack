@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 
@@ -22,6 +23,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/opensearch-project/opensearch-go"
 	"github.com/opensearch-project/opensearch-go/opensearchtransport"
+	requestsigner "github.com/opensearch-project/opensearch-go/v2/signer/awsv2"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -39,6 +41,7 @@ const (
 	esDisableMappingInitFlag = "mapping-init-disabled"
 	bindFlag                 = "bind"
 	stackFlag                = "stack"
+	awsIAMEnabledFlag        = "aws-iam-enabled"
 
 	defaultBind = ":8080"
 
@@ -99,6 +102,7 @@ func NewServer() *cobra.Command {
 	cmd.Flags().String(openSearchUsernameFlag, "", "OpenSearch username")
 	cmd.Flags().String(openSearchPasswordFlag, "", "OpenSearch password")
 	cmd.Flags().Bool(esDisableMappingInitFlag, false, "Disable mapping initialization")
+	cmd.Flags().Bool(awsIAMEnabledFlag, false, "Enable AWS IAM")
 	cmd.Flags().String(stackFlag, "", "Stack id")
 	otlptraces.InitOTLPTracesFlags(cmd.Flags())
 
@@ -110,19 +114,12 @@ func exitWithError(ctx context.Context, msg string) {
 	os.Exit(1)
 }
 
-func newOpensearchClient(openSearchServiceHost string) (*opensearch.Client, error) {
+func newOpensearchClient(config opensearch.Config) (*opensearch.Client, error) {
 	httpTransport := http.DefaultTransport
 	httpTransport.(*http.Transport).TLSClientConfig = &tls.Config{
 		InsecureSkipVerify: true,
 	}
 	httpTransport = otlp.NewRoundTripper(httpTransport, viper.GetBool(app.DebugFlag))
-
-	config := opensearch.Config{
-		Addresses: []string{viper.GetString(openSearchSchemeFlag) + "://" + openSearchServiceHost},
-		Transport: httpTransport,
-		Username:  viper.GetString(openSearchUsernameFlag),
-		Password:  viper.GetString(openSearchPasswordFlag),
-	}
 
 	if viper.GetBool(app.DebugFlag) {
 		httpTransport = httpclient.NewDebugHTTPTransport(httpTransport)
@@ -138,10 +135,27 @@ func newOpensearchClient(openSearchServiceHost string) (*opensearch.Client, erro
 	return opensearch.NewClient(config)
 }
 
+func newConfig(openSearchServiceHost string) opensearch.Config {
+	cfg := opensearch.Config{
+		Addresses: []string{viper.GetString(openSearchSchemeFlag) + "://" + openSearchServiceHost},
+	}
+	aws := viper.GetBool(awsIAMEnabledFlag)
+	if aws {
+		awsConfig, _ := config.LoadDefaultConfig(context.Background())
+		signer, _ := requestsigner.NewSigner(awsConfig)
+		cfg.Signer = signer
+	} else {
+		cfg.Username = viper.GetString(openSearchUsernameFlag)
+		cfg.Password = viper.GetString(openSearchPasswordFlag)
+	}
+	return cfg
+}
+
 func opensearchClientModule(openSearchServiceHost string, loadMapping bool, esIndex string) fx.Option {
+
 	options := []fx.Option{
 		fx.Provide(func() (*opensearch.Client, error) {
-			return newOpensearchClient(openSearchServiceHost)
+			return newOpensearchClient(newConfig(openSearchServiceHost))
 		}),
 	}
 	if loadMapping {

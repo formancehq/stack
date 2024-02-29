@@ -8,7 +8,7 @@ import (
 )
 
 func NewInitMapping() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "init-mapping",
 		Short: "Init ElasticSearch mapping",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -17,7 +17,7 @@ func NewInitMapping() *cobra.Command {
 				exitWithError(cmd.Context(), "missing open search service host")
 			}
 
-			client, err := newOpensearchClient(openSearchServiceHost)
+			client, err := newOpensearchClient(newConfig(openSearchServiceHost))
 			if err != nil {
 				return err
 			}
@@ -30,4 +30,7 @@ func NewInitMapping() *cobra.Command {
 			return searchengine.CreateIndex(cmd.Context(), client, esIndex)
 		},
 	}
+	cmd.Flags().Bool(awsIAMEnabledFlag, false, "Enable AWS IAM")
+
+	return cmd
 }

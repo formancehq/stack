@@ -17,9 +17,10 @@ limitations under the License.
 package searches
 
 import (
+	"strconv"
+
 	"github.com/formancehq/operator/internal/resources/gateways"
 	"github.com/formancehq/operator/internal/resources/resourcereferences"
-	"strconv"
 
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
@@ -44,7 +45,8 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 	}
 
 	var resourceReference *v1beta1.ResourceReference
-	if secret := elasticSearchURI.Query().Get("secret"); secret != "" {
+	awsIAMEnabled := elasticSearchURI.Query().Get("awsIAMEnabled") != ""
+	if secret := elasticSearchURI.Query().Get("secret"); !awsIAMEnabled && secret != "" {
 		resourceReference, err = resourcereferences.Create(ctx, search, "elasticsearch", secret, &corev1.Secret{})
 	} else {
 		err = resourcereferences.Delete(ctx, search, "elasticsearch")
@@ -54,6 +56,10 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 	}
 
 	env := make([]corev1.EnvVar, 0)
+	if awsIAMEnabled {
+		env = append(env, Env("AWS_IAM_ENABLED", "true"))
+	}
+
 	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, LowerCamelCaseKind(ctx, search))
 	if err != nil {
 		return err
@@ -142,7 +148,13 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 		return err
 	}
 
+	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	if err != nil {
+		return err
+	}
+
 	_, err = deployments.CreateOrUpdate(ctx, search, "search",
+		deployments.WithServiceAccountName(serviceAccountName),
 		deployments.WithReplicasFromSettings(ctx, stack),
 		resourcereferences.Annotate[*appsv1.Deployment]("elasticsearch-secret-hash", resourceReference),
 		deployments.WithMatchingLabels("search"),
