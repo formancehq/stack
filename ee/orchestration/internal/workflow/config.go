@@ -18,11 +18,6 @@ type Config struct {
 }
 
 func (c *Config) runStage(ctx workflow.Context, s Stage, stage RawStage, variables map[string]string) (err error) {
-	defer func() {
-		if e := recover(); e != nil {
-			err = fmt.Errorf("%s", e)
-		}
-	}()
 	var (
 		name  string
 		value map[string]any
@@ -77,22 +72,23 @@ func (c *Config) run(ctx workflow.Context, instance Instance, variables map[stri
 			return err
 		}
 
-		err = c.runStage(ctx, stage, rawStage, variables)
-		stage.SetTerminated(err, workflow.Now(ctx).Round(time.Nanosecond))
-		if err != nil {
-			logger.Debug("error running stage", "error", stage.Error)
+		runError := c.runStage(ctx, stage, rawStage, variables)
+		if runError != nil {
+			logger.Debug("error running stage", "error", runError)
 		}
+		stage.SetTerminated(runError, workflow.Now(ctx).Round(time.Nanosecond))
 
 		err = workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 			StartToCloseTimeout: 10 * time.Second,
-		}), UpdateStage, stage).Get(ctx, stage)
-		if err != nil {
-			return err
-		}
+		}), UpdateStage, stage).Get(ctx, nil)
 		if err != nil {
 			return err
 		}
 		logger.Info("stage terminated", "index", ind, "workflowID", stage.InstanceID)
+
+		if runError != nil {
+			return runError
+		}
 	}
 
 	return nil

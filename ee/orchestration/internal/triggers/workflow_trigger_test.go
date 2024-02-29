@@ -1,6 +1,9 @@
 package triggers
 
 import (
+	"testing"
+	"time"
+
 	"github.com/formancehq/orchestration/internal/storage"
 	"github.com/formancehq/orchestration/internal/temporalworker"
 	"github.com/formancehq/orchestration/internal/workflow"
@@ -9,8 +12,6 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"go.temporal.io/sdk/client"
-	"testing"
-	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/google/uuid"
@@ -34,7 +35,7 @@ func TestWorkflow(t *testing.T) {
 	taskQueue := uuid.NewString()
 	workflowManager := workflow.NewManager(db, devServer.Client(), taskQueue)
 
-	worker := temporalworker.New(devServer.Client(), taskQueue,
+	worker := temporalworker.New(logging.Testing(), devServer.Client(), taskQueue,
 		[]any{
 			NewWorkflow(taskQueue),
 			workflow.NewWorkflows(),

@@ -2,11 +2,11 @@ type: object
 properties:
   id:
     type: string
-  eventID:
+  triggerID:
     type: string
   error:
     type: string
 required:
   - id
-  - eventID
+  - triggerID
   - error

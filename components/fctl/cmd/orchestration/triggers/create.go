@@ -37,7 +37,7 @@ func NewTriggersCreateController() *TriggersCreateController {
 
 func NewCreateCommand() *cobra.Command {
 	ctrl := NewTriggersCreateController()
-	return fctl.NewCommand("create",
+	return fctl.NewCommand("create <event> <workflow-id>",
 		fctl.WithShortDescription("Create a trigger"),
 		fctl.WithArgs(cobra.ExactArgs(2)),
 		fctl.WithController[*TriggersCreateStore](ctrl),

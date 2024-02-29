@@ -99,17 +99,17 @@ var _migrations = []migrations.Migration{
 	{
 		Up: func(tx bun.Tx) error {
 			if _, err := tx.Exec(`
-alter table "workflow_instance_stage_statuses" 
-drop constraint workflow_instance_stage_statuses_pkey;
-
-alter table "workflow_instance_stage_statuses"
-add column temporal_run_id varchar;
-
-update "workflow_instance_stage_statuses"
-set temporal_run_id = '';
-
-alter table "workflow_instance_stage_statuses"
-add primary key (instance_id, stage, temporal_run_id);
+					alter table "workflow_instance_stage_statuses" 
+					drop constraint workflow_instance_stage_statuses_pkey;
+					
+					alter table "workflow_instance_stage_statuses"
+					add column temporal_run_id varchar;
+					
+					update "workflow_instance_stage_statuses"
+					set temporal_run_id = '';
+					
+					alter table "workflow_instance_stage_statuses"
+					add primary key (instance_id, stage, temporal_run_id);
 				`); err != nil {
 				return err
 			}
@@ -119,8 +119,31 @@ add primary key (instance_id, stage, temporal_run_id);
 	{
 		Up: func(tx bun.Tx) error {
 			if _, err := tx.Exec(`
-alter table "triggers_occurrences"
-add column error varchar;
+				alter table "triggers_occurrences"
+				add column error varchar;
+				`); err != nil {
+				return err
+			}
+			return nil
+		},
+	},
+	{
+		Up: func(tx bun.Tx) error {
+			if _, err := tx.Exec(`
+				alter table "triggers_occurrences" 
+				drop constraint triggers_occurrences_pkey;
+
+				alter table "triggers_occurrences"
+				drop column event_id;
+
+				alter table "triggers_occurrences"
+				add column id varchar;
+
+				update "triggers_occurrences"
+				set id = gen_random_uuid();
+
+				alter table "triggers_occurrences"
+				add primary key (id);
 				`); err != nil {
 				return err
 			}

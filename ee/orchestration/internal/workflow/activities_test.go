@@ -1,10 +1,11 @@
 package workflow
 
 import (
+	"testing"
+
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
-	"testing"
 
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/stretchr/testify/require"
@@ -29,7 +30,7 @@ func TestActivities(t *testing.T) {
 	testSuite := &testsuite.WorkflowTestSuite{}
 	env := testSuite.NewTestActivityEnvironment()
 	env.RegisterActivity(activities.SendWorkflowTerminationEvent)
-	_, err = env.ExecuteActivity(SendWorkflowTerminationEventActivity, NewInstance("xxx"))
+	_, err = env.ExecuteActivity(SendWorkflowTerminationEventActivity, NewInstance("vvv", "xxx"))
 	require.NoError(t, err)
 	require.NotEmpty(t, publisher.AllMessages())
 }

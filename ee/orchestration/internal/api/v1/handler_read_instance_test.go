@@ -3,12 +3,14 @@ package v1
 import (
 	"context"
 	"fmt"
-	"github.com/formancehq/stack/libs/go-libs/logging"
-	chi "github.com/go-chi/chi/v5"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/formancehq/stack/libs/go-libs/logging"
+	chi "github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 
 	"github.com/formancehq/orchestration/internal/api"
 	"github.com/formancehq/orchestration/internal/workflow"
@@ -24,7 +26,7 @@ func TestGetInstance(t *testing.T) {
 		})
 		require.NoError(t, err)
 
-		instance := workflow.NewInstance(w.ID)
+		instance := workflow.NewInstance(uuid.NewString(), w.ID)
 		_, err = db.NewInsert().
 			Model(&instance).
 			Exec(logging.TestingContext())

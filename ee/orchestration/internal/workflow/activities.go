@@ -2,6 +2,7 @@ package workflow
 
 import (
 	"context"
+
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/orchestration/pkg/events"
 	"github.com/uptrace/bun"
@@ -31,7 +32,7 @@ func (a Activities) SendWorkflowTerminationEvent(ctx context.Context, instance I
 }
 
 func (a Activities) InsertNewInstance(ctx context.Context, workflowID string) (*Instance, error) {
-	instance := NewInstance(workflowID)
+	instance := NewInstance(activity.GetInfo(ctx).WorkflowExecution.ID, workflowID)
 	if _, err := a.db.
 		NewInsert().
 		Model(&instance).
@@ -50,8 +51,7 @@ func (a Activities) UpdateInstance(ctx context.Context, instance *Instance) erro
 	return dbErr
 }
 
-func (a Activities) InsertNewStage(ctx context.Context, instance *Instance, ind int) (*Stage, error) {
-
+func (a Activities) InsertNewStage(ctx context.Context, instance Instance, ind int) (*Stage, error) {
 	stage := NewStage(instance.ID, activity.GetInfo(ctx).WorkflowExecution.RunID, ind)
 	if _, err := a.db.NewInsert().
 		Model(&stage).
@@ -66,15 +66,15 @@ func (a Activities) UpdateStage(ctx context.Context, stage Stage) error {
 	_, err := a.db.NewUpdate().
 		Model(&stage).
 		WherePK().
-		Exec(context.Background())
+		Exec(ctx)
 	return err
 }
 
-var SendWorkflowTerminationEventActivity = (&Activities{}).SendWorkflowTerminationEvent
-var InsertNewInstance = (&Activities{}).InsertNewInstance
-var UpdateInstance = (&Activities{}).UpdateInstance
-var InsertNewStage = (&Activities{}).InsertNewStage
-var UpdateStage = (&Activities{}).UpdateStage
+var SendWorkflowTerminationEventActivity = Activities{}.SendWorkflowTerminationEvent
+var InsertNewInstance = Activities{}.InsertNewInstance
+var UpdateInstance = Activities{}.UpdateInstance
+var InsertNewStage = Activities{}.InsertNewStage
+var UpdateStage = Activities{}.UpdateStage
 
 func NewActivities(publisher message.Publisher, db *bun.DB) Activities {
 	return Activities{

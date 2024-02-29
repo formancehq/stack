@@ -5,9 +5,10 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"time"
+
 	enums "go.temporal.io/api/enums/v1"
 	history "go.temporal.io/api/history/v1"
-	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
@@ -88,7 +89,10 @@ func (m *WorkflowManager) RunWorkflow(ctx context.Context, id string, variables 
 
 	run, err := m.temporalClient.ExecuteWorkflow(ctx, client.StartWorkflowOptions{
 		TaskQueue: m.taskQueue,
-	}, Run, Input{
+		SearchAttributes: map[string]interface{}{
+			"OrchestrationWorkflowID": workflow.ID,
+		},
+	}, Initiate, Input{
 		Workflow:  workflow,
 		Variables: variables,
 	})
@@ -197,7 +201,8 @@ type StageHistory struct {
 }
 
 func (m *WorkflowManager) ReadInstanceHistory(ctx context.Context, instanceID string) ([]StageHistory, error) {
-	historyIterator := m.temporalClient.GetWorkflowHistory(ctx, instanceID, "",
+
+	historyIterator := m.temporalClient.GetWorkflowHistory(ctx, instanceID+"-main", "",
 		false, enums.HISTORY_EVENT_FILTER_TYPE_ALL_EVENT)
 	ret := make([]StageHistory, 0)
 	for historyIterator.HasNext() {

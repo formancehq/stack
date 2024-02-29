@@ -1,16 +1,21 @@
 package triggers
 
 import (
-	"fmt"
 	"time"
+
+	"go.temporal.io/api/enums/v1"
+
+	"github.com/formancehq/orchestration/internal/workflow"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	temporalworkflow "go.temporal.io/sdk/workflow"
 )
 
+const SearchAttributeTriggerID = "OrchestrationTriggerID"
+
 type ProcessEventRequest struct {
-	MessageID string               `json:"messageID"`
-	Event     publish.EventMessage `json:"ledger"`
+	Event publish.EventMessage `json:"ledger"`
 }
 
 type triggerWorkflow struct {
@@ -18,12 +23,6 @@ type triggerWorkflow struct {
 }
 
 func (w triggerWorkflow) RunTrigger(ctx temporalworkflow.Context, req ProcessEventRequest) error {
-
-	fmt.Println("will list triggers")
-	fmt.Println("will list triggers")
-	fmt.Println("will list triggers")
-	fmt.Println("will list triggers")
-	fmt.Println("will list triggers")
 
 	triggers := make([]Trigger, 0)
 	err := temporalworkflow.ExecuteActivity(
@@ -38,40 +37,75 @@ func (w triggerWorkflow) RunTrigger(ctx temporalworkflow.Context, req ProcessEve
 	}
 
 	for _, trigger := range triggers {
-		occurrence := &Occurrence{}
-		err := temporalworkflow.ExecuteActivity(
-			temporalworkflow.WithActivityOptions(ctx, temporalworkflow.ActivityOptions{
-				StartToCloseTimeout: 10 * time.Second,
+		if err := temporalworkflow.ExecuteChildWorkflow(
+			temporalworkflow.WithChildOptions(ctx, temporalworkflow.ChildWorkflowOptions{
+				TaskQueue:         w.taskQueue,
+				ParentClosePolicy: enums.PARENT_CLOSE_POLICY_ABANDON,
+				SearchAttributes: map[string]interface{}{
+					SearchAttributeTriggerID: trigger.ID,
+				},
 			}),
-			ProcessEventActivity,
-			trigger,
+			ExecuteTrigger,
 			req,
-		).Get(ctx, occurrence)
-		if err != nil {
+			trigger).GetChildWorkflowExecution().Get(ctx, nil); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (w triggerWorkflow) ExecuteTrigger(ctx temporalworkflow.Context, req ProcessEventRequest, trigger Trigger) error {
+
+	vars := make(map[string]string)
+	occurrence := NewTriggerOccurrence(trigger.ID, req.Event, temporalworkflow.Now(ctx))
+	err := temporalworkflow.ExecuteActivity(
+		temporalworkflow.WithActivityOptions(ctx, temporalworkflow.ActivityOptions{
+			StartToCloseTimeout: 10 * time.Second,
+		}),
+		EvalTriggerVariables,
+		trigger,
+		req,
+	).Get(ctx, &vars)
+	if err != nil {
+		occurrence.Error = pointer.For(err.Error())
+	} else {
+		instance := &workflow.Instance{}
+		if err := temporalworkflow.ExecuteChildWorkflow(
+			temporalworkflow.WithChildOptions(ctx, temporalworkflow.ChildWorkflowOptions{
+				TaskQueue: w.taskQueue,
+			}),
+			workflow.Initiate,
+			workflow.Input{
+				Workflow:  *trigger.Workflow,
+				Variables: vars,
+			}).Get(ctx, instance); err != nil {
 			return err
 		}
 
-		err = temporalworkflow.ExecuteActivity(
-			temporalworkflow.WithActivityOptions(ctx, temporalworkflow.ActivityOptions{
-				StartToCloseTimeout: 10 * time.Second,
-			}),
-			UpdateTriggerOccurrence,
-			occurrence,
-		).Get(ctx, occurrence)
-		if err != nil {
-			return err
-		}
+		occurrence.WorkflowInstanceID = pointer.For(instance.ID)
+	}
 
-		err = temporalworkflow.ExecuteActivity(
-			temporalworkflow.WithActivityOptions(ctx, temporalworkflow.ActivityOptions{
-				StartToCloseTimeout: 10 * time.Second,
-			}),
-			SendEventForTriggerTermination,
-			occurrence,
-		).Get(ctx, nil)
-		if err != nil {
-			return err
-		}
+	err = temporalworkflow.ExecuteActivity(
+		temporalworkflow.WithActivityOptions(ctx, temporalworkflow.ActivityOptions{
+			StartToCloseTimeout: 10 * time.Second,
+		}),
+		InsertTriggerOccurrence,
+		occurrence,
+	).Get(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	err = temporalworkflow.ExecuteActivity(
+		temporalworkflow.WithActivityOptions(ctx, temporalworkflow.ActivityOptions{
+			StartToCloseTimeout: 10 * time.Second,
+		}),
+		SendEventForTriggerTermination,
+		occurrence,
+	).Get(ctx, nil)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -83,4 +117,5 @@ func NewWorkflow(taskQueue string) *triggerWorkflow {
 	}
 }
 
+var ExecuteTrigger = triggerWorkflow{}.ExecuteTrigger
 var RunTrigger = triggerWorkflow{}.RunTrigger

@@ -49,10 +49,11 @@ func newExprCompilationError(expr string, err error) ExprCompilationError {
 }
 
 type TriggerData struct {
-	Event      string            `json:"event" bun:"event,type:varchar"`
-	Filter     *string           `json:"filter,omitempty" bun:"filter,type:varchar"`
-	WorkflowID string            `json:"workflowID" bun:"workflow_id,type:varchar"`
-	Vars       map[string]string `json:"vars,omitempty" bun:"vars,type:jsonb"`
+	Event      string             `json:"event" bun:"event,type:varchar"`
+	Filter     *string            `json:"filter,omitempty" bun:"filter,type:varchar"`
+	WorkflowID string             `json:"workflowID" bun:"workflow_id,type:varchar"`
+	Workflow   *workflow.Workflow `json:"workflow" bun:"rel:belongs-to,join:workflow_id=id"`
+	Vars       map[string]string  `json:"vars,omitempty" bun:"vars,type:jsonb"`
 }
 
 func (t TriggerData) Validate() error {
@@ -100,8 +101,8 @@ func NewTrigger(data TriggerData) (*Trigger, error) {
 type Occurrence struct {
 	bun.BaseModel `bun:"triggers_occurrences"`
 
-	EventID            string               `json:"-" bun:"event_id,pk"`
-	TriggerID          string               `json:"triggerID" bun:"trigger_id,pk"`
+	ID                 string               `json:"id" bun:"id,pk"`
+	TriggerID          string               `json:"triggerID" bun:"trigger_id"`
 	WorkflowInstanceID *string              `json:"workflowInstanceID,omitempty" bun:"workflow_instance_id"`
 	WorkflowInstance   *workflow.Instance   `json:"workflowInstance,omitempty" bun:"rel:belongs-to,join:workflow_instance_id=id"`
 	Date               time.Time            `json:"date" bun:"date"`
@@ -109,11 +110,11 @@ type Occurrence struct {
 	Error              *string              `json:"error,omitempty" bun:"error"`
 }
 
-func NewTriggerOccurrence(eventID, triggerID string, event publish.EventMessage) Occurrence {
+func NewTriggerOccurrence(triggerID string, event publish.EventMessage, at time.Time) Occurrence {
 	return Occurrence{
+		ID:        uuid.NewString(),
 		TriggerID: triggerID,
-		EventID:   eventID,
-		Date:      time.Now().Round(time.Microsecond).UTC(),
+		Date:      at,
 		Event:     event,
 	}
 }

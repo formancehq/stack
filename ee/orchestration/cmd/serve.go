@@ -42,13 +42,13 @@ func newServeCommand() *cobra.Command {
 			}
 
 			options := []fx.Option{
+				commonOptions,
 				healthCheckModule(),
 				fx.Provide(func() api.ServiceInfo {
 					return api.ServiceInfo{
 						Version: Version,
 					}
 				}),
-				api.NewModule(),
 				v1.NewModule(),
 				v2.NewModule(),
 				fx.Invoke(func(lifecycle fx.Lifecycle, db *bun.DB) {
@@ -58,10 +58,10 @@ func newServeCommand() *cobra.Command {
 						},
 					})
 				}),
+				api.NewModule(),
 				fx.Invoke(func(lc fx.Lifecycle, router *chi.Mux) {
 					lc.Append(httpserver.NewHook(router, httpserver.WithAddress(viper.GetString(listenFlag))))
 				}),
-				commonOptions,
 			}
 			if viper.GetBool(workerFlag) {
 				options = append(options, workerOptions())

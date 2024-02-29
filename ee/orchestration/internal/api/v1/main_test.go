@@ -2,6 +2,14 @@ package v1
 
 import (
 	"context"
+	"log"
+	"net/http"
+	"os"
+	"testing"
+
+	"go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/operatorservice/v1"
+
 	"github.com/formancehq/orchestration/internal/temporalworker"
 	"github.com/formancehq/orchestration/internal/workflow/stages"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -9,10 +17,6 @@ import (
 	chi "github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"go.temporal.io/sdk/testsuite"
-	"log"
-	"net/http"
-	"os"
-	"testing"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 
@@ -42,7 +46,7 @@ func test(t *testing.T, fn func(router *chi.Mux, backend api.Backend, db *bun.DB
 	})
 
 	taskQueue := uuid.NewString()
-	worker := temporalworker.New(devServer.Client(), taskQueue,
+	worker := temporalworker.New(logging.Testing(), devServer.Client(), taskQueue,
 		[]any{workflow.NewWorkflows(), (&stages.NoOp{}).GetWorkflow()},
 		[]any{workflow.NewActivities(publish.NoOpPublisher, db)},
 	)
@@ -71,6 +75,16 @@ func TestMain(m *testing.M) {
 
 	var err error
 	devServer, err = testsuite.StartDevServer(logging.TestingContext(), testsuite.DevServerOptions{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = devServer.Client().OperatorService().AddSearchAttributes(logging.TestingContext(), &operatorservice.AddSearchAttributesRequest{
+		SearchAttributes: map[string]enums.IndexedValueType{
+			workflow.SearchAttributeWorkflowID: enums.INDEXED_VALUE_TYPE_TEXT,
+			triggers.SearchAttributeTriggerID:  enums.INDEXED_VALUE_TYPE_TEXT,
+		},
+		Namespace: "default",
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
