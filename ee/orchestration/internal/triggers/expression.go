@@ -124,3 +124,7 @@ func NewExpressionEvaluator(httpClient *http.Client) *expressionEvaluator {
 		httpClient: httpClient,
 	}
 }
+
+func NewDefaultExpressionEvaluator() *expressionEvaluator {
+	return NewExpressionEvaluator(http.DefaultClient)
+}

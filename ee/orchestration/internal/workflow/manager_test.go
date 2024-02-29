@@ -1,33 +1,20 @@
 package workflow
 
 import (
-	"context"
+	"github.com/formancehq/orchestration/internal/temporalworker"
+	"github.com/formancehq/orchestration/internal/workflow/stages"
+	"github.com/formancehq/stack/libs/go-libs/publish"
+	"github.com/google/uuid"
 	"testing"
-
-	"github.com/stretchr/testify/mock"
 
 	"github.com/formancehq/stack/libs/go-libs/logging"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 
 	"github.com/formancehq/orchestration/internal/storage"
-	"github.com/formancehq/orchestration/internal/workflow/stages"
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/sdk/client"
-	"go.temporal.io/sdk/testsuite"
 )
-
-type mockTemporalClient struct {
-	client.Client
-	env       *testsuite.TestWorkflowEnvironment
-	workflows *Workflows
-}
-
-func (c *mockTemporalClient) ExecuteWorkflow(ctx context.Context, options client.StartWorkflowOptions, workflow interface{}, args ...interface{}) (client.WorkflowRun, error) {
-	c.env.ExecuteWorkflow(c.workflows.Run, args...)
-	return nil, nil
-}
 
 func TestConfig(t *testing.T) {
 	t.Parallel()
@@ -41,16 +28,17 @@ func TestConfig(t *testing.T) {
 	t.Cleanup(func() {
 		_ = db.Close()
 	})
+	require.NoError(t, storage.Migrate(logging.TestingContext(), db))
 
-	require.NoError(t, storage.Migrate(context.Background(), db))
-	testSuite := &testsuite.WorkflowTestSuite{}
-	env := testSuite.NewTestWorkflowEnvironment()
-	workflows := NewWorkflows(db)
-	env.RegisterWorkflow(stages.RunNoOp)
-	env.RegisterWorkflow(workflows.Run)
-	env.OnActivity((&Activities{}).SendWorkflowTerminationEvent, mock.Anything, mock.Anything).Return(nil)
-	mockClient := &mockTemporalClient{env: env, workflows: workflows}
-	manager := NewManager(db, mockClient, "default")
+	taskQueue := uuid.NewString()
+	worker := temporalworker.New(devServer.Client(), taskQueue,
+		[]any{NewWorkflows(), (&stages.NoOp{}).GetWorkflow()},
+		[]any{NewActivities(publish.NoOpPublisher, db)},
+	)
+	require.NoError(t, worker.Start())
+	t.Cleanup(worker.Stop)
+
+	manager := NewManager(db, devServer.Client(), taskQueue)
 
 	config := Config{
 		Stages: []RawStage{
@@ -59,16 +47,13 @@ func TestConfig(t *testing.T) {
 			},
 		},
 	}
-	w, err := manager.Create(context.TODO(), config)
+	w, err := manager.Create(logging.TestingContext(), config)
 	require.NoError(t, err)
 
-	i, err := manager.RunWorkflow(context.TODO(), w.ID, map[string]string{})
+	i, err := manager.RunWorkflow(logging.TestingContext(), w.ID, map[string]string{})
 	require.NoError(t, err)
 
-	require.True(t, env.IsWorkflowCompleted())
-	require.NoError(t, env.GetWorkflowError())
-
-	updatedInstance, err := manager.GetInstance(context.TODO(), i.ID)
+	updatedInstance, err := manager.GetInstance(logging.TestingContext(), i.ID)
 	require.NoError(t, err)
 	require.Len(t, updatedInstance.Statuses, 1)
 }

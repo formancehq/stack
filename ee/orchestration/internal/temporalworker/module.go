@@ -46,7 +46,7 @@ func registerActivity(worker worker.Worker, act any) {
 	}
 }
 
-func NewWorker(c client.Client, taskQueue string, workflows, activities []any) worker.Worker {
+func New(c client.Client, taskQueue string, workflows, activities []any) worker.Worker {
 	worker := worker.New(c, taskQueue, worker.Options{})
 
 	for _, workflow := range workflows {
@@ -64,7 +64,7 @@ func NewWorkerModule(taskQueue string) fx.Option {
 	return fx.Options(
 		fx.Provide(
 			fx.Annotate(func(c client.Client, workflows, activities []any) worker.Worker {
-				return NewWorker(c, taskQueue, workflows, activities)
+				return New(c, taskQueue, workflows, activities)
 			}, fx.ParamTags(``, `group:"workflows"`, `group:"activities"`)),
 		),
 		fx.Invoke(func(lc fx.Lifecycle, w worker.Worker) {

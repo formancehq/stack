@@ -1,22 +1,17 @@
 package workflow
 
 import (
-	"github.com/uptrace/bun"
 	"go.temporal.io/sdk/workflow"
 )
 
-type Workflows struct {
-	db *bun.DB
-}
+type Workflows struct{}
 
-func (r Workflows) Run(ctx workflow.Context, input Input) error {
-	return input.run(ctx, r.db)
+func (r Workflows) Run(ctx workflow.Context, input Input) (*Instance, error) {
+	return input.run(ctx)
 }
 
 var Run = Workflows{}.Run
 
-func NewWorkflows(db *bun.DB) *Workflows {
-	return &Workflows{
-		db: db,
-	}
+func NewWorkflows() *Workflows {
+	return &Workflows{}
 }

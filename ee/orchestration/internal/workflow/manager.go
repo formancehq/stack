@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	enums "go.temporal.io/api/enums/v1"
+	history "go.temporal.io/api/history/v1"
 	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/api"
@@ -12,8 +14,6 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
-	"go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/history/v1"
 	"go.temporal.io/api/serviceerror"
 	"go.temporal.io/sdk/client"
 )
@@ -86,20 +86,9 @@ func (m *WorkflowManager) RunWorkflow(ctx context.Context, id string, variables 
 		return nil, err
 	}
 
-	instance := NewInstance(id)
-
-	if _, err := m.db.
-		NewInsert().
-		Model(&instance).
-		Exec(ctx); err != nil {
-		return nil, err
-	}
-
-	_, err := m.temporalClient.ExecuteWorkflow(ctx, client.StartWorkflowOptions{
-		ID:        instance.ID,
+	run, err := m.temporalClient.ExecuteWorkflow(ctx, client.StartWorkflowOptions{
 		TaskQueue: m.taskQueue,
 	}, Run, Input{
-		Instance:  instance,
 		Workflow:  workflow,
 		Variables: variables,
 	})
@@ -107,7 +96,12 @@ func (m *WorkflowManager) RunWorkflow(ctx context.Context, id string, variables 
 		return nil, err
 	}
 
-	return &instance, nil
+	instance := &Instance{}
+	if err := run.Get(ctx, instance); err != nil {
+		return nil, err
+	}
+
+	return instance, nil
 }
 
 func (m *WorkflowManager) Wait(ctx context.Context, instanceID string) error {

@@ -7,8 +7,6 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/orchestration/pkg/events"
-	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
-
 	"go.temporal.io/sdk/temporal"
 
 	"github.com/formancehq/orchestration/internal/workflow"
@@ -108,15 +106,15 @@ func (a Activities) ProcessTrigger(ctx context.Context, trigger Trigger, request
 		occurrence.Error = pointer.For(triggerError.Error())
 	}
 
+	return &occurrence, nil
+}
+
+func (a Activities) UpdateTriggerOccurrence(ctx context.Context, occurrence Occurrence) error {
 	_, err := a.db.NewInsert().
 		Model(pointer.For(occurrence)).
 		On("CONFLICT (trigger_id, event_id) DO NOTHING").
 		Exec(ctx)
-	if err != nil {
-		sharedlogging.FromContext(ctx).Errorf("unable to save trigger occurrence: %s", err)
-	}
-
-	return &occurrence, nil
+	return err
 }
 
 func (a Activities) SendEventForTriggerTermination(ctx context.Context, occurrence Occurrence) error {
@@ -149,3 +147,4 @@ func NewActivities(db *bun.DB, manager *workflow.WorkflowManager,
 var ProcessEventActivity = Activities{}.ProcessTrigger
 var SendEventForTriggerTermination = Activities{}.SendEventForTriggerTermination
 var ListTriggersActivity = Activities{}.ListTriggers
+var UpdateTriggerOccurrence = Activities{}.UpdateTriggerOccurrence

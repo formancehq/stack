@@ -1,4 +1,4 @@
-package workflow
+package triggers
 
 import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
