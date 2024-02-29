@@ -41,20 +41,20 @@ func GetBrokerEnvVarsWithPrefix(ctx core.Context, brokerURI *v1beta1.URI, stackN
 				core.Env(fmt.Sprintf("%sPUBLISHER_KAFKA_SASL_MECHANISM", prefix), brokerURI.Query().Get("saslMechanism")),
 				core.Env(fmt.Sprintf("%sPUBLISHER_KAFKA_SASL_SCRAM_SHA_SIZE", prefix), brokerURI.Query().Get("saslSCRAMSHASize")),
 			)
+
+			serviceAccount, err := GetAWSServiceAccount(ctx, stackName)
+			if err != nil {
+				return nil, err
+			}
+
+			if serviceAccount != "" {
+				ret = append(ret, core.Env(fmt.Sprintf("%sPUBLISHER_KAFKA_SASL_IAM_ENABLED", prefix), "true"))
+			}
 		}
 		if IsTrue(brokerURI.Query().Get("tls")) {
 			ret = append(ret,
 				core.Env(fmt.Sprintf("%sPUBLISHER_KAFKA_TLS_ENABLED", prefix), "true"),
 			)
-		}
-
-		serviceAccount, err := GetAWSServiceAccount(ctx, stackName)
-		if err != nil {
-			return nil, err
-		}
-
-		if serviceAccount != "" {
-			ret = append(ret, core.Env(fmt.Sprintf("%sPUBLISHER_KAFKA_SASL_IAM_ENABLED", prefix), "true"))
 		}
 
 	case brokerURI.Scheme == "nats":

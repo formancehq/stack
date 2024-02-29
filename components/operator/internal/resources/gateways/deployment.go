@@ -21,12 +21,12 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack,
 	env = append(env, otlpEnv...)
 	env = append(env, core.GetDevEnvVars(stack, gateway)...)
 
-	brokerEnvVar, err := settings.GetBrokerEnvVars(ctx, auditTopic.Status.URI, stack.Name, "gateway")
-	if err != nil {
-		return err
-	}
-
 	if stack.Spec.EnableAudit && auditTopic != nil {
+		brokerEnvVar, err := settings.GetBrokerEnvVars(ctx, auditTopic.Status.URI, stack.Name, "gateway")
+		if err != nil {
+			return err
+		}
+
 		env = append(env, brokerEnvVar...)
 	}
 
