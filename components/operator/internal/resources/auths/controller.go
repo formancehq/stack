@@ -61,7 +61,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, version st
 		}
 
 		if IsGreaterOrEqual(version, "v2.0.0-rc.5") && databases.GetSavedModuleVersion(database) != version {
-			serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+			serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 			if err != nil {
 				return errors.Wrap(err, "getting service account name")
 			}

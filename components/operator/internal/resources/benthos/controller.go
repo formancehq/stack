@@ -282,7 +282,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 		return streams[i].Name < streams[j].Name
 	})
 
-	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 	if err != nil {
 		return err
 	}

@@ -71,7 +71,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, dat
 		env = append(env, Env("CAOS_OIDC_DEV", "1"))
 	}
 
-	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 	if err != nil {
 		return nil, err
 	}

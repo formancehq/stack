@@ -138,7 +138,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 	}
 	env = append(env, brokerEnvVars...)
 
-	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 	if err != nil {
 		return err
 	}

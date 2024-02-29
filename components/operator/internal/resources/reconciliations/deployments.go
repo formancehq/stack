@@ -44,7 +44,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, reconciliation *v1
 	}
 	env = append(env, authEnvVars...)
 
-	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 	if err != nil {
 		return err
 	}

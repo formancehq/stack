@@ -52,9 +52,14 @@ func deploymentEnvVars(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1
 		return nil, err
 	}
 
+	brokerEnvVar, err := settings.GetBrokerEnvVars(ctx, brokerURI, stack.Name, "webhooks")
+	if err != nil {
+		return nil, err
+	}
+
 	env = append(env, authEnvVars...)
 	env = append(env, postgresEnvVar...)
-	env = append(env, settings.GetBrokerEnvVars(brokerURI, stack.Name, "webhooks")...)
+	env = append(env, brokerEnvVar...)
 	env = append(env, core.Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"))
 
 	return env, nil
@@ -85,7 +90,7 @@ func createAPIDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1bet
 		}), " ")))
 	}
 
-	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 	if err != nil {
 		return err
 	}
@@ -123,7 +128,7 @@ func createWorkerDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1
 		return fmt.Sprintf("%s-%s", stack.Name, from.Spec.Service)
 	}), " ")))
 
-	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 	if err != nil {
 		return err
 	}

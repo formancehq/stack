@@ -22,7 +22,12 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack,
 	env = append(env, core.GetDevEnvVars(stack, gateway)...)
 
 	if stack.Spec.EnableAudit && auditTopic != nil {
-		env = append(env, settings.GetBrokerEnvVars(auditTopic.Status.URI, stack.Name, "gateway")...)
+		brokerEnvVar, err := settings.GetBrokerEnvVars(ctx, auditTopic.Status.URI, stack.Name, "gateway")
+		if err != nil {
+			return err
+		}
+
+		env = append(env, brokerEnvVar...)
 	}
 
 	image, err := registries.GetImage(ctx, stack, "gateway", version)

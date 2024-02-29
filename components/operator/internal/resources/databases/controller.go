@@ -58,7 +58,7 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Databas
 		return err
 	}
 
-	awsRole, err := settings.GetAWSRole(ctx, stack.Name)
+	awsRole, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 	if err != nil {
 		return err
 	}
@@ -167,7 +167,7 @@ func handleDatabaseJob(ctx core.Context, stack *v1beta1.Stack, database *v1beta1
 		env = append(env, core.Env("DEBUG", "true"))
 	}
 
-	serviceAccountName, err := settings.GetAWSRole(ctx, stack.Name)
+	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 	if err != nil {
 		return err
 	}
