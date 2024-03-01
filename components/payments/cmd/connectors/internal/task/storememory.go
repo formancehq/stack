@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
@@ -15,6 +16,7 @@ import (
 )
 
 type InMemoryStore struct {
+	mu       sync.RWMutex
 	tasks    map[uuid.UUID]models.Task
 	statuses map[string]models.TaskStatus
 	created  map[string]time.Time
@@ -22,6 +24,9 @@ type InMemoryStore struct {
 }
 
 func (s *InMemoryStore) GetTask(ctx context.Context, id uuid.UUID) (*models.Task, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
 	task, ok := s.tasks[id]
 	if !ok {
 		return nil, storage.ErrNotFound
@@ -35,6 +40,9 @@ func (s *InMemoryStore) GetTaskByDescriptor(
 	connectorID models.ConnectorID,
 	descriptor models.TaskDescriptor,
 ) (*models.Task, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
 	id, err := descriptor.EncodeToString()
 	if err != nil {
 		return nil, err
@@ -58,6 +66,9 @@ func (s *InMemoryStore) ListTasks(ctx context.Context,
 	connectorID models.ConnectorID,
 	q storage.ListTasksQuery,
 ) (*api.Cursor[models.Task], error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
 	ret := make([]models.Task, 0)
 
 	for id, status := range s.statuses {
@@ -89,6 +100,9 @@ func (s *InMemoryStore) ReadOldestPendingTask(
 	ctx context.Context,
 	connectorID models.ConnectorID,
 ) (*models.Task, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
 	var (
 		oldestDate time.Time
 		oldestID   string
@@ -182,6 +196,9 @@ func (s *InMemoryStore) UpdateTaskStatus(
 	status models.TaskStatus,
 	taskError string,
 ) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	taskID, err := descriptor.EncodeToString()
 	if err != nil {
 		return err
@@ -203,6 +220,9 @@ func (s *InMemoryStore) Result(
 	connectorID models.ConnectorID,
 	descriptor models.TaskDescriptor,
 ) (models.TaskStatus, string, bool) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
 	taskID, err := descriptor.EncodeToString()
 	if err != nil {
 		panic(err)
