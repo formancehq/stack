@@ -44,8 +44,14 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 		return err
 	}
 
+	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
+	if err != nil {
+		return err
+	}
+
+	awsIAMEnabled := serviceAccountName != ""
+
 	var resourceReference *v1beta1.ResourceReference
-	awsIAMEnabled := elasticSearchURI.Query().Get("awsIAMEnabled") != ""
 	if secret := elasticSearchURI.Query().Get("secret"); !awsIAMEnabled && secret != "" {
 		resourceReference, err = resourcereferences.Create(ctx, search, "elasticsearch", secret, &corev1.Secret{})
 	} else {
@@ -144,11 +150,6 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 			return nil
 		},
 	)
-	if err != nil {
-		return err
-	}
-
-	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 	if err != nil {
 		return err
 	}

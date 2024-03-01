@@ -93,8 +93,13 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 		return errors.Wrap(err, "searching elasticsearch configuration")
 	}
 
+	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
+	if err != nil {
+		return err
+	}
+
+	awsIAMEnabled := serviceAccountName != ""
 	var resourceReference *v1beta1.ResourceReference
-	awsIAMEnabled := elasticSearchURI.Query().Get("awsIAMEnabled") != ""
 	if secret := elasticSearchURI.Query().Get("secret"); !awsIAMEnabled && secret != "" {
 		resourceReference, err = resourcereferences.Create(ctx, b, "elasticsearch", secret, &corev1.Secret{})
 	} else {
@@ -286,11 +291,6 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 	sort.Slice(streams, func(i, j int) bool {
 		return streams[i].Name < streams[j].Name
 	})
-
-	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
-	if err != nil {
-		return err
-	}
 
 	_, err = deployments.CreateOrUpdate(ctx, b, "benthos",
 		resourcereferences.Annotate[*appsv1.Deployment]("elasticsearch-secret-hash", resourceReference),
