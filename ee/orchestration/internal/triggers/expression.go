@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"go.temporal.io/sdk/temporal"
+
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 
 	"github.com/expr-lang/expr"
@@ -18,7 +20,11 @@ type expressionEvaluator struct {
 
 func (h *expressionEvaluator) link(params ...any) (any, error) {
 	if len(params) != 2 {
-		return nil, fmt.Errorf("expect two arguments, got %d", len(params))
+		return nil, temporal.NewNonRetryableApplicationError(
+			fmt.Sprintf("expect two arguments, got %d", len(params)),
+			"APPLICATION",
+			fmt.Errorf("expect two arguments, got %d", len(params)),
+		)
 	}
 
 	data, _ := json.Marshal(params[0])
@@ -42,7 +48,11 @@ func (h *expressionEvaluator) link(params ...any) (any, error) {
 
 	switch len(filteredLinks) {
 	case 0:
-		return nil, fmt.Errorf("link '%s' not defined for object", rel)
+		return nil, temporal.NewNonRetryableApplicationError(
+			fmt.Sprintf("link '%s' not defined for object", rel),
+			"APPLICATION",
+			fmt.Errorf("link '%s' not defined for object", rel),
+		)
 	case 1:
 		rsp, err := h.httpClient.Get(filteredLinks[0].URI)
 		if err != nil {
@@ -59,7 +69,11 @@ func (h *expressionEvaluator) link(params ...any) (any, error) {
 
 		return apiResponse.Data, nil
 	default:
-		return nil, fmt.Errorf("multiple link '%s' found for object", rel)
+		return nil, temporal.NewNonRetryableApplicationError(
+			fmt.Sprintf("multiple link '%s' found for object", rel),
+			"APPLICATION",
+			fmt.Errorf("multiple link '%s' found for object", rel),
+		)
 	}
 }
 
@@ -69,9 +83,17 @@ func (h *expressionEvaluator) eval(rawObject any, e string) (any, error) {
 		return "", err
 	}
 
-	return expr.Run(p, map[string]any{
+	ret, err := expr.Run(p, map[string]any{
 		"event": rawObject,
 	})
+	if err != nil {
+		if err := errors.Unwrap(err); err != nil {
+			return nil, err
+		}
+		return nil, err
+	}
+
+	return ret, nil
 }
 
 func (h *expressionEvaluator) evalFilter(event any, filter string) (bool, error) {
@@ -112,7 +134,7 @@ func (h *expressionEvaluator) evalVariables(rawObject any, vars map[string]strin
 		var err error
 		results[k], err = h.evalVariable(rawObject, v)
 		if err != nil {
-			return nil, errors.Wrapf(err, "evaluating variable: %s (expr: %s)", k, v)
+			return nil, err
 		}
 	}
 
@@ -123,4 +145,8 @@ func NewExpressionEvaluator(httpClient *http.Client) *expressionEvaluator {
 	return &expressionEvaluator{
 		httpClient: httpClient,
 	}
+}
+
+func NewDefaultExpressionEvaluator() *expressionEvaluator {
+	return NewExpressionEvaluator(http.DefaultClient)
 }

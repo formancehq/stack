@@ -27,14 +27,15 @@ type FailedWorkflowPayload struct {
 }
 
 type SucceededTriggerPayload struct {
-	ID      string `json:"id"`
-	EventID string `json:"eventID"`
+	ID                 string `json:"id"`
+	TriggerID          string `json:"triggerID"`
+	WorkflowInstanceID string `json:"workflowInstanceID"`
 }
 
 type FailedTriggerPayload struct {
-	ID      string `json:"id"`
-	EventID string `json:"eventID"`
-	Error   string `json:"error"`
+	ID        string `json:"id"`
+	TriggerID string `json:"triggerID"`
+	Error     string `json:"error"`
 }
 
 func NewMessage(ctx context.Context, mtype string, payload any) *message.Message {

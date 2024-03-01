@@ -2,16 +2,11 @@ package triggers
 
 import (
 	"context"
-	"encoding/json"
 	"strings"
 
 	"github.com/ThreeDotsLabs/watermill/message"
-	"github.com/formancehq/orchestration/pkg/events"
-	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
-
-	"go.temporal.io/sdk/temporal"
-
 	"github.com/formancehq/orchestration/internal/workflow"
+	"github.com/formancehq/orchestration/pkg/events"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/uptrace/bun"
@@ -59,7 +54,8 @@ func (a Activities) ListTriggers(ctx context.Context, request ProcessEventReques
 	triggers := make([]Trigger, 0)
 	if err := a.db.NewSelect().
 		Model(&triggers).
-		Where("deleted_at is null").
+		Relation("Workflow").
+		Where("trigger.deleted_at is null").
 		Where("event = ?", request.Event.Type).
 		Scan(ctx); err != nil {
 		return nil, err
@@ -77,61 +73,31 @@ func (a Activities) ListTriggers(ctx context.Context, request ProcessEventReques
 	return ret, nil
 }
 
-func (a Activities) ProcessTrigger(ctx context.Context, trigger Trigger, request ProcessEventRequest) (*Occurrence, error) {
+func (a Activities) EvalTriggerVariables(ctx context.Context, trigger Trigger, request ProcessEventRequest) (map[string]string, error) {
+	return a.expressionEvaluator.evalVariables(request.Event.Payload, trigger.Vars)
+}
 
-	span := trace.SpanFromContext(ctx)
-	var (
-		evaluated    map[string]string
-		triggerError error
-		occurrence   = NewTriggerOccurrence(request.MessageID, trigger.ID, request.Event)
-	)
-	if trigger.Vars != nil {
-		evaluated, triggerError = a.expressionEvaluator.evalVariables(request.Event.Payload, trigger.Vars)
-	}
-	if triggerError == nil {
-		data, triggerError := json.Marshal(evaluated)
-		if triggerError != nil {
-			panic(triggerError)
-		}
-
-		span.SetAttributes(attribute.String("variables", string(data)))
-
-		instance, triggerError := a.manager.RunWorkflow(ctx, trigger.WorkflowID, evaluated)
-		if triggerError != nil {
-			return nil, triggerError
-		}
-
-		occurrence.WorkflowInstanceID = pointer.For(instance.ID)
-	} else {
-		triggerError = temporal.NewNonRetryableApplicationError("unable to eval variables", "VARIABLES_EVAL", triggerError)
-		span.RecordError(triggerError)
-		occurrence.Error = pointer.For(triggerError.Error())
-	}
-
+func (a Activities) InsertTriggerOccurrence(ctx context.Context, occurrence Occurrence) error {
 	_, err := a.db.NewInsert().
 		Model(pointer.For(occurrence)).
-		On("CONFLICT (trigger_id, event_id) DO NOTHING").
 		Exec(ctx)
-	if err != nil {
-		sharedlogging.FromContext(ctx).Errorf("unable to save trigger occurrence: %s", err)
-	}
-
-	return &occurrence, nil
+	return err
 }
 
 func (a Activities) SendEventForTriggerTermination(ctx context.Context, occurrence Occurrence) error {
 	if occurrence.Error == nil || *occurrence.Error == "" {
 		return a.publisher.Publish(events.SucceededTrigger,
 			events.NewMessage(ctx, events.SucceededTrigger, events.SucceededTriggerPayload{
-				ID:      occurrence.TriggerID,
-				EventID: occurrence.EventID,
+				ID:                 occurrence.ID,
+				WorkflowInstanceID: *occurrence.WorkflowInstanceID,
+				TriggerID:          occurrence.TriggerID,
 			}))
 	} else {
 		return a.publisher.Publish(events.FailedTrigger,
 			events.NewMessage(ctx, events.FailedTrigger, events.FailedTriggerPayload{
-				ID:      occurrence.TriggerID,
-				Error:   *occurrence.Error,
-				EventID: occurrence.EventID,
+				ID:        occurrence.ID,
+				TriggerID: occurrence.TriggerID,
+				Error:     *occurrence.Error,
 			}))
 	}
 }
@@ -146,6 +112,7 @@ func NewActivities(db *bun.DB, manager *workflow.WorkflowManager,
 	}
 }
 
-var ProcessEventActivity = Activities{}.ProcessTrigger
+var EvalTriggerVariables = Activities{}.EvalTriggerVariables
 var SendEventForTriggerTermination = Activities{}.SendEventForTriggerTermination
 var ListTriggersActivity = Activities{}.ListTriggers
+var InsertTriggerOccurrence = Activities{}.InsertTriggerOccurrence

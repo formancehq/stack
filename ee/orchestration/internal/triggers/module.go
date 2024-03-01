@@ -19,8 +19,8 @@ func NewModule(taskQueue string) fx.Option {
 			return NewExpressionEvaluator(httpClient)
 		}),
 		fx.Provide(
-			fx.Annotate(func(db *bun.DB) *triggerWorkflow {
-				return NewWorkflow(db, taskQueue)
+			fx.Annotate(func() *triggerWorkflow {
+				return NewWorkflow(taskQueue)
 			}, fx.As(new(any)), fx.ResultTags(`group:"workflows"`)),
 		),
 		fx.Provide(

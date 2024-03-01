@@ -89,8 +89,7 @@ func handleMessage(temporalClient client.Client, taskIDPrefix, taskQueue string,
 	}
 
 	_, err = temporalClient.ExecuteWorkflow(ctx, options, RunTrigger, ProcessEventRequest{
-		MessageID: msg.UUID,
-		Event:     *event,
+		Event: *event,
 	})
 	if err != nil {
 		_, ok := err.(*serviceerror.WorkflowExecutionAlreadyStarted)

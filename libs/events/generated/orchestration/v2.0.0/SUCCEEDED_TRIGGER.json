@@ -23,13 +23,14 @@
         "id": {
           "type": "string"
         },
-        "eventID": {
+        "triggerID": {
           "type": "string"
         }
       },
       "required": [
         "id",
-        "eventID"
+        "triggerID",
+        "workflowInstanceID"
       ]
     }
   },

@@ -7,13 +7,14 @@ import (
 	"fmt"
 	"time"
 
+	enums "go.temporal.io/api/enums/v1"
+	history "go.temporal.io/api/history/v1"
+
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
-	"go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/history/v1"
 	"go.temporal.io/api/serviceerror"
 	"go.temporal.io/sdk/client"
 )
@@ -86,20 +87,12 @@ func (m *WorkflowManager) RunWorkflow(ctx context.Context, id string, variables 
 		return nil, err
 	}
 
-	instance := NewInstance(id)
-
-	if _, err := m.db.
-		NewInsert().
-		Model(&instance).
-		Exec(ctx); err != nil {
-		return nil, err
-	}
-
-	_, err := m.temporalClient.ExecuteWorkflow(ctx, client.StartWorkflowOptions{
-		ID:        instance.ID,
+	run, err := m.temporalClient.ExecuteWorkflow(ctx, client.StartWorkflowOptions{
 		TaskQueue: m.taskQueue,
-	}, Run, Input{
-		Instance:  instance,
+		SearchAttributes: map[string]interface{}{
+			"OrchestrationWorkflowID": workflow.ID,
+		},
+	}, Initiate, Input{
 		Workflow:  workflow,
 		Variables: variables,
 	})
@@ -107,7 +100,12 @@ func (m *WorkflowManager) RunWorkflow(ctx context.Context, id string, variables 
 		return nil, err
 	}
 
-	return &instance, nil
+	instance := &Instance{}
+	if err := run.Get(ctx, instance); err != nil {
+		return nil, err
+	}
+
+	return instance, nil
 }
 
 func (m *WorkflowManager) Wait(ctx context.Context, instanceID string) error {
@@ -203,7 +201,8 @@ type StageHistory struct {
 }
 
 func (m *WorkflowManager) ReadInstanceHistory(ctx context.Context, instanceID string) ([]StageHistory, error) {
-	historyIterator := m.temporalClient.GetWorkflowHistory(ctx, instanceID, "",
+
+	historyIterator := m.temporalClient.GetWorkflowHistory(ctx, instanceID+"-main", "",
 		false, enums.HISTORY_EVENT_FILTER_TYPE_ALL_EVENT)
 	ret := make([]StageHistory, 0)
 	for historyIterator.HasNext() {

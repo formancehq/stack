@@ -8,9 +8,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/formancehq/orchestration/internal/api"
-	"github.com/go-chi/chi/v5"
+	"github.com/formancehq/stack/libs/go-libs/logging"
+	chi "github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 
+	"github.com/formancehq/orchestration/internal/api"
 	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/formancehq/stack/libs/go-libs/api/apitesting"
 	"github.com/stretchr/testify/require"
@@ -19,12 +21,15 @@ import (
 
 func TestGetInstance(t *testing.T) {
 	test(t, func(router *chi.Mux, m api.Backend, db *bun.DB) {
-		w, err := m.Create(context.TODO(), workflow.Config{
+		w, err := m.Create(logging.TestingContext(), workflow.Config{
 			Stages: []workflow.RawStage{},
 		})
 		require.NoError(t, err)
 
-		instance, err := m.RunWorkflow(context.TODO(), w.ID, map[string]string{})
+		instance := workflow.NewInstance(uuid.NewString(), w.ID)
+		_, err = db.NewInsert().
+			Model(&instance).
+			Exec(logging.TestingContext())
 		require.NoError(t, err)
 
 		now := time.Now().Round(time.Nanosecond)

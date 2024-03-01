@@ -3,7 +3,6 @@ package workflow
 import (
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
 
@@ -30,12 +29,12 @@ func (i *Instance) SetTerminatedWithError(at time.Time, err error) {
 	i.Error = err.Error()
 }
 
-func NewInstance(workflowID string) Instance {
+func NewInstance(id, workflowID string) Instance {
 	now := time.Now().Round(time.Nanosecond)
 	return Instance{
 		BaseModel:  bun.BaseModel{},
 		WorkflowID: workflowID,
-		ID:         uuid.NewString(),
+		ID:         id,
 		CreatedAt:  now,
 		UpdatedAt:  now,
 	}

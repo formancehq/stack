@@ -4,6 +4,8 @@ import (
 	"context"
 	"reflect"
 
+	"github.com/formancehq/stack/libs/go-libs/logging"
+
 	temporalworkflow "go.temporal.io/sdk/workflow"
 
 	"go.temporal.io/sdk/activity"
@@ -46,8 +48,10 @@ func registerActivity(worker worker.Worker, act any) {
 	}
 }
 
-func NewWorker(c client.Client, taskQueue string, workflows, activities []any) worker.Worker {
-	worker := worker.New(c, taskQueue, worker.Options{})
+func New(logger logging.Logger, c client.Client, taskQueue string, workflows, activities []any) worker.Worker {
+	worker := worker.New(c, taskQueue, worker.Options{
+		BackgroundActivityContext: logging.ContextWithLogger(context.Background(), logger),
+	})
 
 	for _, workflow := range workflows {
 		registerWorkflow(worker, workflow)
@@ -63,9 +67,9 @@ func NewWorker(c client.Client, taskQueue string, workflows, activities []any) w
 func NewWorkerModule(taskQueue string) fx.Option {
 	return fx.Options(
 		fx.Provide(
-			fx.Annotate(func(c client.Client, workflows, activities []any) worker.Worker {
-				return NewWorker(c, taskQueue, workflows, activities)
-			}, fx.ParamTags(``, `group:"workflows"`, `group:"activities"`)),
+			fx.Annotate(func(logger logging.Logger, c client.Client, workflows, activities []any) worker.Worker {
+				return New(logger, c, taskQueue, workflows, activities)
+			}, fx.ParamTags(``, ``, `group:"workflows"`, `group:"activities"`)),
 		),
 		fx.Invoke(func(lc fx.Lifecycle, w worker.Worker) {
 			willStop := false

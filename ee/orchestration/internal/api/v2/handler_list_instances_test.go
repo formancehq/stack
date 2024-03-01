@@ -8,6 +8,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
+
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 
 	"github.com/formancehq/orchestration/internal/api"
@@ -27,7 +29,7 @@ func TestListInstances(t *testing.T) {
 		require.NoError(t, err)
 
 		for i := 0; i < 10; i++ {
-			instance := workflow.NewInstance(w.ID)
+			instance := workflow.NewInstance(uuid.NewString(), w.ID)
 			if i > 5 {
 				instance.SetTerminated(time.Now())
 			}

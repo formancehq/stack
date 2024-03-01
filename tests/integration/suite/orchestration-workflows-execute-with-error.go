@@ -83,7 +83,6 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 				var getWorkflowInstanceHistoryStageResponse *shared.V2GetWorkflowInstanceHistoryStageResponse
 				BeforeEach(func() {
 					Eventually(func(g Gomega) int64 {
-
 						response, err := Client().Orchestration.V2GetInstanceStageHistory(
 							TestContext(),
 							operations.V2GetInstanceStageHistoryRequest{
@@ -91,12 +90,8 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 								Number:     0,
 							},
 						)
-						if err != nil {
-							return 0
-						}
-						if response.StatusCode != 200 {
-							return 0
-						}
+						g.Expect(err).To(BeNil())
+						g.Expect(response.StatusCode).To(Equal(200))
 
 						getWorkflowInstanceHistoryStageResponse = response.V2GetWorkflowInstanceHistoryStageResponse
 						g.Expect(getWorkflowInstanceHistoryStageResponse.Data).To(HaveLen(1))
@@ -186,6 +181,12 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 				msgs                chan *nats.Msg
 			)
 			BeforeEach(func() {
+				var closeSubscription func()
+				closeSubscription, msgs = SubscribeOrchestration()
+				DeferCleanup(func() {
+					closeSubscription()
+				})
+
 				response, err := Client().Orchestration.V2RunWorkflow(
 					TestContext(),
 					operations.V2RunWorkflowRequest{
@@ -197,12 +198,6 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 				Expect(response.StatusCode).To(Equal(201))
 
 				runWorkflowResponse = response.V2RunWorkflowResponse
-
-				var closeSubscription func()
-				closeSubscription, msgs = SubscribeOrchestration()
-				DeferCleanup(func() {
-					closeSubscription()
-				})
 			})
 			It("should declare the workflow run instance as errored", func() {
 				Eventually(func(g Gomega) string {
@@ -221,7 +216,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 				}).ShouldNot(BeEmpty())
 
 				By("and trigger a failed workflow event", func() {
-					msg := WaitOnChanWithTimeout(msgs, time.Second)
+					msg := WaitOnChanWithTimeout(msgs, 3*time.Second)
 					Expect(events.Check(msg.Data, "orchestration", orchestrationevents.FailedWorkflow)).Should(Succeed())
 				})
 			})

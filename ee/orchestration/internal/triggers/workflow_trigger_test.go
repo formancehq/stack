@@ -4,47 +4,82 @@ import (
 	"testing"
 	"time"
 
+	"github.com/formancehq/orchestration/internal/storage"
+	"github.com/formancehq/orchestration/internal/temporalworker"
+	"github.com/formancehq/orchestration/internal/workflow"
+	"github.com/formancehq/orchestration/internal/workflow/stages"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/pgtesting"
+	"go.temporal.io/sdk/client"
+
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/google/uuid"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/sdk/testsuite"
 )
 
 func TestWorkflow(t *testing.T) {
 	t.Parallel()
 
-	testSuite := &testsuite.WorkflowTestSuite{}
+	database := pgtesting.NewPostgresDatabase(t)
+	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
+		DatabaseSourceName: database.ConnString(),
+		Debug:              testing.Verbose(),
+	})
+	require.NoError(t, err)
+	t.Cleanup(func() {
+		_ = db.Close()
+	})
+	require.NoError(t, storage.Migrate(logging.TestingContext(), db))
+
+	taskQueue := uuid.NewString()
+	workflowManager := workflow.NewManager(db, devServer.Client(), taskQueue)
+
+	worker := temporalworker.New(logging.Testing(), devServer.Client(), taskQueue,
+		[]any{
+			NewWorkflow(taskQueue),
+			workflow.NewWorkflows(),
+			(&stages.NoOp{}).GetWorkflow()},
+		[]any{
+			workflow.NewActivities(publish.NoOpPublisher, db),
+			NewActivities(db, workflowManager, NewDefaultExpressionEvaluator(), publish.NoOpPublisher),
+		},
+	)
+	require.NoError(t, worker.Start())
+	t.Cleanup(worker.Stop)
 
 	req := ProcessEventRequest{
 		Event: publish.EventMessage{
+			Type: "NEW_TRANSACTION",
 			Date: time.Now().Round(time.Second).UTC(),
 		},
 	}
 
+	workflow := workflow.New(workflow.Config{
+		Stages: []workflow.RawStage{{
+			"noop": map[string]any{},
+		}},
+	})
+	_, err = db.
+		NewInsert().
+		Model(&workflow).
+		Exec(logging.TestingContext())
+	require.NoError(t, err)
+
 	trigger := Trigger{
 		TriggerData: TriggerData{
 			Event:      "NEW_TRANSACTION",
-			WorkflowID: "xxx",
+			WorkflowID: workflow.ID,
 		},
 		ID: uuid.NewString(),
 	}
+	_, err = db.NewInsert().Model(&trigger).Exec(logging.TestingContext())
+	require.NoError(t, err)
 
-	env := testSuite.NewTestWorkflowEnvironment()
-	env.
-		OnActivity(ListTriggersActivity, mock.Anything, req).
-		Once().
-		Return([]Trigger{trigger}, nil)
-	env.
-		OnActivity(ProcessEventActivity, mock.Anything, trigger, req).
-		Once().
-		Return(&Occurrence{}, nil)
-	env.
-		OnActivity(SendEventForTriggerTermination, mock.Anything, mock.Anything).
-		Once().
-		Return(nil)
-
-	env.ExecuteWorkflow(RunTrigger, req)
-	require.True(t, env.IsWorkflowCompleted())
-	require.NoError(t, env.GetWorkflowError())
+	ret, err := devServer.Client().
+		ExecuteWorkflow(logging.TestingContext(), client.StartWorkflowOptions{
+			TaskQueue: taskQueue,
+		}, RunTrigger, req)
+	require.NoError(t, err)
+	require.NoError(t, ret.Get(logging.TestingContext(), nil))
 }

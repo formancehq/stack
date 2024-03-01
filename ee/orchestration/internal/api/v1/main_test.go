@@ -6,15 +6,21 @@ import (
 	"net/http"
 	"os"
 	"testing"
-	"time"
 
+	"go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/operatorservice/v1"
+
+	"github.com/formancehq/orchestration/internal/temporalworker"
+	"github.com/formancehq/orchestration/internal/workflow/stages"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/publish"
+	chi "github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
+	"go.temporal.io/sdk/testsuite"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 
 	"github.com/formancehq/orchestration/internal/api"
-	"github.com/go-chi/chi/v5"
-
 	"github.com/formancehq/orchestration/internal/triggers"
 
 	"github.com/formancehq/orchestration/internal/storage"
@@ -24,59 +30,7 @@ import (
 	flag "github.com/spf13/pflag"
 	"github.com/stretchr/testify/require"
 	"github.com/uptrace/bun"
-	"go.temporal.io/sdk/client"
 )
-
-type mockedRun struct {
-	client.WorkflowRun
-	runID string
-}
-
-func (m mockedRun) GetRunID() string {
-	return m.runID
-}
-
-func (m mockedRun) Get(ctx context.Context, valuePtr interface{}) error {
-	return nil
-}
-
-type mockedClient struct {
-	client.Client
-	db        *bun.DB
-	t         *testing.T
-	workflows map[string]mockedRun
-}
-
-func (c *mockedClient) ExecuteWorkflow(ctx context.Context, options client.StartWorkflowOptions, w interface{}, args ...interface{}) (client.WorkflowRun, error) {
-	input := args[0].(workflow.Input)
-	for ind := range input.Workflow.Config.Stages {
-		timestamp := time.Now()
-		_, err := c.db.NewInsert().Model(&workflow.Stage{
-			Number:       ind,
-			InstanceID:   options.ID,
-			StartedAt:    time.Now(),
-			TerminatedAt: &timestamp,
-		}).Exec(context.Background())
-		require.NoError(c.t, err)
-	}
-	r := mockedRun{
-		runID: options.ID,
-	}
-	c.workflows[options.ID] = r
-	return r, nil
-}
-
-func (c *mockedClient) GetWorkflow(ctx context.Context, workflowID string, runID string) client.WorkflowRun {
-	return c.workflows[workflowID]
-}
-
-func newMockedClient(t *testing.T, db *bun.DB) *mockedClient {
-	return &mockedClient{
-		db:        db,
-		t:         t,
-		workflows: map[string]mockedRun{},
-	}
-}
 
 func test(t *testing.T, fn func(router *chi.Mux, backend api.Backend, db *bun.DB)) {
 	t.Parallel()
@@ -91,8 +45,16 @@ func test(t *testing.T, fn func(router *chi.Mux, backend api.Backend, db *bun.DB
 		_ = db.Close()
 	})
 
+	taskQueue := uuid.NewString()
+	worker := temporalworker.New(logging.Testing(), devServer.Client(), taskQueue,
+		[]any{workflow.NewWorkflows(), (&stages.NoOp{}).GetWorkflow()},
+		[]any{workflow.NewActivities(publish.NoOpPublisher, db)},
+	)
+	require.NoError(t, worker.Start())
+	t.Cleanup(worker.Stop)
+
 	require.NoError(t, storage.Migrate(context.Background(), db))
-	workflowManager := workflow.NewManager(db, newMockedClient(t, db), "default")
+	workflowManager := workflow.NewManager(db, devServer.Client(), taskQueue)
 	expressionEvaluator := triggers.NewExpressionEvaluator(http.DefaultClient)
 	triggersManager := triggers.NewManager(db, expressionEvaluator)
 	backend := api.NewDefaultBackend(triggersManager, workflowManager)
@@ -100,13 +62,37 @@ func test(t *testing.T, fn func(router *chi.Mux, backend api.Backend, db *bun.DB
 	fn(router, backend, db)
 }
 
+var (
+	devServer *testsuite.DevServer
+)
+
 func TestMain(m *testing.M) {
 	flag.Parse()
 
 	if err := pgtesting.CreatePostgresServer(); err != nil {
 		log.Fatal(err)
 	}
+
+	var err error
+	devServer, err = testsuite.StartDevServer(logging.TestingContext(), testsuite.DevServerOptions{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = devServer.Client().OperatorService().AddSearchAttributes(logging.TestingContext(), &operatorservice.AddSearchAttributesRequest{
+		SearchAttributes: map[string]enums.IndexedValueType{
+			workflow.SearchAttributeWorkflowID: enums.INDEXED_VALUE_TYPE_TEXT,
+			triggers.SearchAttributeTriggerID:  enums.INDEXED_VALUE_TYPE_TEXT,
+		},
+		Namespace: "default",
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	code := m.Run()
+	if err := devServer.Stop(); err != nil {
+		log.Println("unable to stop temporal server", err)
+	}
 	if err := pgtesting.DestroyPostgresServer(); err != nil {
 		log.Println("unable to stop postgres server", err)
 	}

@@ -23,7 +23,7 @@
         "id": {
           "type": "string"
         },
-        "eventID": {
+        "triggerID": {
           "type": "string"
         },
         "error": {
@@ -32,7 +32,7 @@
       },
       "required": [
         "id",
-        "eventID",
+        "triggerID",
         "error"
       ]
     }
