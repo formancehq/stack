@@ -40,18 +40,19 @@ var (
 )
 
 const (
-	stackFlag                 = "stack"
-	stackURLFlag              = "stack-url"
-	stackClientIDFlag         = "stack-client-id"
-	stackClientSecretFlag     = "stack-client-secret"
-	temporalAddressFlag       = "temporal-address"
-	temporalNamespaceFlag     = "temporal-namespace"
-	temporalSSLClientKeyFlag  = "temporal-ssl-client-key"
-	temporalSSLClientCertFlag = "temporal-ssl-client-cert"
-	temporalTaskQueueFlag     = "temporal-task-queue"
-	topicsFlag                = "topics"
-	listenFlag                = "listen"
-	workerFlag                = "worker"
+	stackFlag                    = "stack"
+	stackURLFlag                 = "stack-url"
+	stackClientIDFlag            = "stack-client-id"
+	stackClientSecretFlag        = "stack-client-secret"
+	temporalAddressFlag          = "temporal-address"
+	temporalNamespaceFlag        = "temporal-namespace"
+	temporalSSLClientKeyFlag     = "temporal-ssl-client-key"
+	temporalSSLClientCertFlag    = "temporal-ssl-client-cert"
+	temporalTaskQueueFlag        = "temporal-task-queue"
+	temporalInitSearchAttributes = "temporal-init-search-attributes"
+	topicsFlag                   = "topics"
+	listenFlag                   = "listen"
+	workerFlag                   = "worker"
 )
 
 func NewRootCommand() *cobra.Command {
@@ -70,6 +71,7 @@ func NewRootCommand() *cobra.Command {
 	cmd.PersistentFlags().String(temporalSSLClientKeyFlag, "", "Temporal client key")
 	cmd.PersistentFlags().String(temporalSSLClientCertFlag, "", "Temporal client cert")
 	cmd.PersistentFlags().String(temporalTaskQueueFlag, "default", "Temporal task queue name")
+	cmd.PersistentFlags().Bool(temporalInitSearchAttributes, false, "Init temporal search attributes")
 	cmd.PersistentFlags().StringSlice(topicsFlag, []string{}, "Topics to listen")
 	cmd.PersistentFlags().String(stackFlag, "", "Stack")
 	cmd.AddCommand(
@@ -112,6 +114,7 @@ func commonOptions(cmd *cobra.Command) (fx.Option, error) {
 			viper.GetString(temporalNamespaceFlag),
 			viper.GetString(temporalSSLClientCertFlag),
 			viper.GetString(temporalSSLClientKeyFlag),
+			viper.GetBool(temporalInitSearchAttributes),
 		),
 		bunconnect.Module(*connectionOptions),
 		publish.CLIPublisherModule("orchestration"),

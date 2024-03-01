@@ -17,7 +17,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func NewModule(address, namespace string, certStr string, key string) fx.Option {
+func NewModule(address, namespace string, certStr string, key string, initSearchAttributes bool) fx.Option {
 	return fx.Options(
 		fx.Provide(func(logger logging.Logger) (client.Options, error) {
 
@@ -54,7 +54,10 @@ func NewModule(address, namespace string, certStr string, key string) fx.Option 
 		fx.Invoke(func(lifecycle fx.Lifecycle, c client.Client) {
 			lifecycle.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
-					return createSearchAttributes(ctx, c, namespace)
+					if initSearchAttributes {
+						return createSearchAttributes(ctx, c, namespace)
+					}
+					return nil
 				},
 				OnStop: func(ctx context.Context) error {
 					c.Close()
