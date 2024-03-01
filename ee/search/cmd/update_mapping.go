@@ -18,7 +18,12 @@ func NewUpdateMapping() *cobra.Command {
 				exitWithError(cmd.Context(), "missing open search service host")
 			}
 
-			client, err := newOpensearchClient(newConfig(openSearchServiceHost))
+			config, err := newConfig(openSearchServiceHost)
+			if err != nil {
+				return err
+			}
+
+			client, err := newOpensearchClient(config)
 			if err != nil {
 				return err
 			}

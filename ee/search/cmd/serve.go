@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/aws/aws-sdk-go-v2/config"
+
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/aws/iam"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
@@ -103,9 +104,9 @@ func NewServer() *cobra.Command {
 	cmd.Flags().String(openSearchUsernameFlag, "", "OpenSearch username")
 	cmd.Flags().String(openSearchPasswordFlag, "", "OpenSearch password")
 	cmd.Flags().Bool(esDisableMappingInitFlag, false, "Disable mapping initialization")
-	cmd.Flags().Bool(awsIAMEnabledFlag, false, "Enable AWS IAM")
 	cmd.Flags().String(stackFlag, "", "Stack id")
 
+	cmd.Flags().Bool(awsIAMEnabledFlag, false, "Use AWS IAM for authentication")
 	iam.InitFlags(cmd.Flags())
 	otlptraces.InitOTLPTracesFlags(cmd.Flags())
 
@@ -117,7 +118,7 @@ func exitWithError(ctx context.Context, msg string) {
 	os.Exit(1)
 }
 
-func newOpensearchClient(config opensearch.Config) (*opensearch.Client, error) {
+func newOpensearchClient(config *opensearch.Config) (*opensearch.Client, error) {
 	httpTransport := http.DefaultTransport
 	httpTransport.(*http.Transport).TLSClientConfig = &tls.Config{
 		InsecureSkipVerify: true,
@@ -135,30 +136,38 @@ func newOpensearchClient(config opensearch.Config) (*opensearch.Client, error) {
 		config.UseResponseCheckOnly = true
 	}
 
-	return opensearch.NewClient(config)
+	return opensearch.NewClient(*config)
 }
 
-func newConfig(openSearchServiceHost string) opensearch.Config {
+func newConfig(openSearchServiceHost string) (*opensearch.Config, error) {
 	cfg := opensearch.Config{
 		Addresses: []string{viper.GetString(openSearchSchemeFlag) + "://" + openSearchServiceHost},
 	}
-	aws := viper.GetBool(awsIAMEnabledFlag)
-	if aws {
-		awsConfig, _ := config.LoadDefaultConfig(context.Background())
-		signer, _ := requestsigner.NewSigner(awsConfig)
+	if viper.GetBool(awsIAMEnabledFlag) {
+		awsConfig, err := config.LoadDefaultConfig(context.Background())
+		if err != nil {
+			return nil, err
+		}
+		signer, err := requestsigner.NewSigner(awsConfig)
+		if err != nil {
+			return nil, err
+		}
 		cfg.Signer = signer
 	} else {
 		cfg.Username = viper.GetString(openSearchUsernameFlag)
 		cfg.Password = viper.GetString(openSearchPasswordFlag)
 	}
-	return cfg
+	return &cfg, nil
 }
 
 func opensearchClientModule(openSearchServiceHost string, loadMapping bool, esIndex string) fx.Option {
 
 	options := []fx.Option{
-		fx.Provide(func() (*opensearch.Client, error) {
-			return newOpensearchClient(newConfig(openSearchServiceHost))
+		fx.Provide(func() (*opensearch.Config, error) {
+			return newConfig(openSearchServiceHost)
+		}),
+		fx.Provide(func(config *opensearch.Config) (*opensearch.Client, error) {
+			return newOpensearchClient(config)
 		}),
 	}
 	if loadMapping {

@@ -41,12 +41,5 @@ output_resources:
       upsert: ${! if json().exists("upsert") { json("upsert") } else {""} }
       params: ${! if json().exists("params") { json("params") } else {""} }
       aws:
-        enabled: env("AWS_IAM_ENABLED")
-        region: env("AWS_REGION")
-        endpoint: env("AWS_ENDPOINT")
-        credentials:
-          id: env("AWS_ACCESS_KEY_ID")
-          secret: env("AWS_SECRET_ACCESS_KEY")
-          token: env("AWS_SESSION_TOKEN")
-          role: env("AWS_ROLE_ARN")
-          profile: env("AWS_PROFILE")
+        enabled: ${AWS_IAM_ENABLED}
+        region: ${AWS_REGION}
