@@ -22,6 +22,7 @@ var Orchestration = internal.NewModule("orchestration").
 					"--stack-url=" + test.GatewayURL(),
 					"--temporal-address=" + internal.GetTemporalAddress(),
 					"--temporal-task-queue=" + test.ID(),
+					"--temporal-init-search-attributes",
 					"--worker",
 					"--publisher-nats-enabled",
 					"--publisher-nats-client-id=orchestration",
