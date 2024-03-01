@@ -41,5 +41,5 @@ output_resources:
       upsert: ${! if json().exists("upsert") { json("upsert") } else {""} }
       params: ${! if json().exists("params") { json("params") } else {""} }
       aws:
-        enabled: ${AWS_IAM_ENABLED}
-        region: ${AWS_REGION}
+        enabled: ${AWS_IAM_ENABLED:false}
+        region: ${AWS_REGION:""}
