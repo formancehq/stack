@@ -659,7 +659,7 @@ Name | Type | Description  | Notes
 
 ## DeleteStack
 
-> DeleteStack(ctx, organizationId, stackId).Execute()
+> DeleteStack(ctx, organizationId, stackId).Force(force).Execute()
 
 Delete stack
 
@@ -678,10 +678,11 @@ import (
 func main() {
     organizationId := "organizationId_example" // string | 
     stackId := "stackId_example" // string | 
+    force := true // bool |  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    r, err := apiClient.DefaultApi.DeleteStack(context.Background(), organizationId, stackId).Execute()
+    r, err := apiClient.DefaultApi.DeleteStack(context.Background(), organizationId, stackId).Force(force).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.DeleteStack``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -707,6 +708,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
 
+ **force** | **bool** |  | 
 
 ### Return type
 

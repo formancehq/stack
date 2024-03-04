@@ -423,6 +423,13 @@ paths:
         schema:
           type: string
         style: simple
+      - explode: true
+        in: query
+        name: force
+        required: false
+        schema:
+          type: boolean
+        style: form
       responses:
         "204":
           description: Stack deleted

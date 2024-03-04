@@ -1152,6 +1152,12 @@ type ApiDeleteStackRequest struct {
 	ApiService *DefaultApiService
 	organizationId string
 	stackId string
+	force *bool
+}
+
+func (r ApiDeleteStackRequest) Force(force bool) ApiDeleteStackRequest {
+	r.force = &force
+	return r
 }
 
 func (r ApiDeleteStackRequest) Execute() (*http.Response, error) {
@@ -1196,6 +1202,9 @@ func (a *DefaultApiService) DeleteStackExecute(r ApiDeleteStackRequest) (*http.R
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 
+	if r.force != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "force", r.force, "")
+	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 

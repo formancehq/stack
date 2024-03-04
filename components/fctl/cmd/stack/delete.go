@@ -8,6 +8,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	stackNameFlag = "name"
+	forceFlag     = "force"
+)
+
 type DeletedStackStore struct {
 	Stack  *membershipclient.Stack `json:"stack"`
 	Status string                  `json:"status"`
@@ -32,15 +37,13 @@ func NewStackDeleteController() *StackDeleteController {
 }
 
 func NewDeleteCommand() *cobra.Command {
-	const (
-		stackNameFlag = "name"
-	)
 	return fctl.NewMembershipCommand("delete (<stack-id> | --name=<stack-name>)",
 		fctl.WithConfirmFlag(),
 		fctl.WithShortDescription("Delete a stack"),
 		fctl.WithAliases("del", "d"),
 		fctl.WithArgs(cobra.MaximumNArgs(1)),
 		fctl.WithStringFlag(stackNameFlag, "", "Stack to delete"),
+		fctl.WithBoolFlag(forceFlag, false, "Force deleting a stack without retention policy"),
 		fctl.WithController[*DeletedStackStore](NewStackDeleteController()),
 	)
 }
@@ -49,10 +52,6 @@ func (c *StackDeleteController) GetStore() *DeletedStackStore {
 }
 
 func (c *StackDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	const (
-		stackNameFlag = "name"
-	)
-
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
 		return nil, err
@@ -101,7 +100,15 @@ func (c *StackDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		return nil, fctl.ErrMissingApproval
 	}
 
-	if _, err := apiClient.DefaultApi.DeleteStack(cmd.Context(), organization, stack.Id).Execute(); err != nil {
+	query := apiClient.DefaultApi.DeleteStack(cmd.Context(), organization, stack.Id)
+	if fctl.GetBool(cmd, forceFlag) {
+		if isValid := fctl.ValidateMembershipServerVersion(cmd.Context(), apiClient, "v0.27.1"); isValid != nil {
+			return nil, err
+		}
+		query = query.Force(true)
+	}
+	_, err = query.Execute()
+	if err != nil {
 		return nil, errors.Wrap(err, "deleting stack")
 	}
 
