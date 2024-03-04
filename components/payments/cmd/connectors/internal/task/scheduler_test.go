@@ -2,7 +2,6 @@ package task
 
 import (
 	"context"
-	"fmt"
 	"testing"
 	"time"
 
@@ -36,8 +35,6 @@ func TaskTerminatedWithStatus(
 		if !ok {
 			return false
 		}
-
-		fmt.Println(status, resultErr, errString, expectedStatus)
 
 		if resultErr != errString {
 			return false
