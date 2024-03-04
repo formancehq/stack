@@ -112,7 +112,7 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 		"spec": map[string]any{
 			"versionsFromFile": versions,
 			"disabled":         membershipStack.Disabled,
-			"enableAudit":      true,
+			"enableAudit":      membershipStack.EnableAudit,
 		},
 	}, additionalLabels)
 	if err != nil {

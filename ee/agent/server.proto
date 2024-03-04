@@ -54,6 +54,7 @@ message Stack {
   bool disabled = 6;
   google.protobuf.Timestamp deletedAt = 7;
   string versions = 8;
+  bool enableAudit = 9;
   map<string, string> additionalLabels = 10;
 }
 
