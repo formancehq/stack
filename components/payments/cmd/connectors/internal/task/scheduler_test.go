@@ -2,13 +2,13 @@ package task
 
 import (
 	"context"
-	"errors"
 	"testing"
 	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/google/uuid"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/dig"
@@ -271,5 +271,149 @@ func TestTaskScheduler(t *testing.T) {
 		// schedule the worker task because the scheduler was stopped
 		require.Eventually(t, TaskActive(store, connectorID, mainDescriptor), time.Second, 100*time.Millisecond)
 		require.Eventually(t, TaskActive(store, connectorID, workerDescriptor), time.Second, 100*time.Millisecond)
+	})
+
+	t.Run("errors and retryable errors", func(t *testing.T) {
+		t.Parallel()
+
+		connectorID := models.ConnectorID{
+			Reference: uuid.New(),
+			Provider:  models.ConnectorProviderDummyPay,
+		}
+		store := NewInMemoryStore()
+		nonRetryableDescriptor := newDescriptor()
+		retryableDescriptor := newDescriptor()
+		otherErrorDescriptor := newDescriptor()
+		noErrorDescriptor := newDescriptor()
+
+		scheduler := NewDefaultScheduler(connectorID, store, DefaultContainerFactory,
+			ResolverFn(func(descriptor models.TaskDescriptor) Task {
+				switch string(descriptor) {
+				case string(nonRetryableDescriptor):
+					return func(ctx context.Context, scheduler Scheduler) error {
+						return ErrNonRetryableError
+					}
+				case string(retryableDescriptor):
+					return func(ctx context.Context, scheduler Scheduler) error {
+						return ErrRetryableError
+					}
+				case string(otherErrorDescriptor):
+					return func(ctx context.Context, scheduler Scheduler) error {
+						return errors.New("test")
+					}
+				case string(noErrorDescriptor):
+					return func(ctx context.Context, scheduler Scheduler) error {
+						return nil
+					}
+				default:
+					return func() {
+
+					}
+				}
+			}), metrics.NewNoOpMetricsRegistry(), 1)
+
+		require.NoError(t, scheduler.Schedule(context.TODO(), nonRetryableDescriptor, models.TaskSchedulerOptions{
+			ScheduleOption: models.OPTIONS_RUN_NOW,
+			RestartOption:  models.OPTIONS_RESTART_NEVER,
+		}))
+		require.Eventually(t, TaskFailed(store, connectorID, nonRetryableDescriptor, "non-retryable error"), time.Second, 100*time.Millisecond)
+
+		require.NoError(t, scheduler.Schedule(context.TODO(), otherErrorDescriptor, models.TaskSchedulerOptions{
+			ScheduleOption: models.OPTIONS_RUN_NOW,
+			RestartOption:  models.OPTIONS_RESTART_NEVER,
+		}))
+		require.Eventually(t, TaskFailed(store, connectorID, otherErrorDescriptor, "test"), time.Second, 100*time.Millisecond)
+
+		require.NoError(t, scheduler.Schedule(context.TODO(), noErrorDescriptor, models.TaskSchedulerOptions{
+			ScheduleOption: models.OPTIONS_RUN_NOW,
+			RestartOption:  models.OPTIONS_RESTART_NEVER,
+		}))
+		require.Eventually(t, TaskTerminated(store, connectorID, noErrorDescriptor), time.Second, 100*time.Millisecond)
+
+		require.NoError(t, scheduler.Schedule(context.TODO(), retryableDescriptor, models.TaskSchedulerOptions{
+			ScheduleOption: models.OPTIONS_RUN_NOW,
+			RestartOption:  models.OPTIONS_RESTART_NEVER,
+		}))
+		require.Eventually(t, TaskActive(store, connectorID, retryableDescriptor), time.Second, 100*time.Millisecond)
+		require.NoError(t, scheduler.Shutdown(context.TODO()))
+
+		require.Eventually(t, TaskFailed(store, connectorID, nonRetryableDescriptor, "non-retryable error"), time.Second, 100*time.Millisecond)
+		require.Eventually(t, TaskFailed(store, connectorID, otherErrorDescriptor, "test"), time.Second, 100*time.Millisecond)
+		require.Eventually(t, TaskTerminated(store, connectorID, noErrorDescriptor), time.Second, 100*time.Millisecond)
+		require.Eventually(t, TaskActive(store, connectorID, retryableDescriptor), time.Second, 100*time.Millisecond)
+	})
+
+	t.Run("errors and retryable errors", func(t *testing.T) {
+		t.Parallel()
+
+		connectorID := models.ConnectorID{
+			Reference: uuid.New(),
+			Provider:  models.ConnectorProviderDummyPay,
+		}
+		store := NewInMemoryStore()
+		nonRetryableDescriptor := newDescriptor()
+		retryableDescriptor := newDescriptor()
+		otherErrorDescriptor := newDescriptor()
+		noErrorDescriptor := newDescriptor()
+
+		scheduler := NewDefaultScheduler(connectorID, store, DefaultContainerFactory,
+			ResolverFn(func(descriptor models.TaskDescriptor) Task {
+				switch string(descriptor) {
+				case string(nonRetryableDescriptor):
+					return func(ctx context.Context, scheduler Scheduler) error {
+						return ErrNonRetryableError
+					}
+				case string(retryableDescriptor):
+					return func(ctx context.Context, scheduler Scheduler) error {
+						return ErrRetryableError
+					}
+				case string(otherErrorDescriptor):
+					return func(ctx context.Context, scheduler Scheduler) error {
+						return errors.New("test")
+					}
+				case string(noErrorDescriptor):
+					return func(ctx context.Context, scheduler Scheduler) error {
+						return nil
+					}
+				default:
+					return func() {
+
+					}
+				}
+			}), metrics.NewNoOpMetricsRegistry(), 1)
+
+		require.NoError(t, scheduler.Schedule(context.TODO(), nonRetryableDescriptor, models.TaskSchedulerOptions{
+			ScheduleOption: models.OPTIONS_RUN_PERIODICALLY,
+			Duration:       1 * time.Second,
+			RestartOption:  models.OPTIONS_RESTART_NEVER,
+		}))
+		require.Eventually(t, TaskFailed(store, connectorID, nonRetryableDescriptor, "non-retryable error"), time.Second, 100*time.Millisecond)
+
+		require.NoError(t, scheduler.Schedule(context.TODO(), otherErrorDescriptor, models.TaskSchedulerOptions{
+			ScheduleOption: models.OPTIONS_RUN_PERIODICALLY,
+			Duration:       1 * time.Second,
+			RestartOption:  models.OPTIONS_RESTART_NEVER,
+		}))
+		require.Eventually(t, TaskFailed(store, connectorID, otherErrorDescriptor, "test"), time.Second, 100*time.Millisecond)
+
+		require.NoError(t, scheduler.Schedule(context.TODO(), noErrorDescriptor, models.TaskSchedulerOptions{
+			ScheduleOption: models.OPTIONS_RUN_PERIODICALLY,
+			Duration:       1 * time.Second,
+			RestartOption:  models.OPTIONS_RESTART_NEVER,
+		}))
+		require.Eventually(t, TaskActive(store, connectorID, noErrorDescriptor), time.Second, 100*time.Millisecond)
+
+		require.NoError(t, scheduler.Schedule(context.TODO(), retryableDescriptor, models.TaskSchedulerOptions{
+			ScheduleOption: models.OPTIONS_RUN_PERIODICALLY,
+			Duration:       1 * time.Second,
+			RestartOption:  models.OPTIONS_RESTART_NEVER,
+		}))
+		require.Eventually(t, TaskActive(store, connectorID, retryableDescriptor), time.Second, 100*time.Millisecond)
+		require.NoError(t, scheduler.Shutdown(context.TODO()))
+
+		require.Eventually(t, TaskFailed(store, connectorID, nonRetryableDescriptor, "non-retryable error"), time.Second, 100*time.Millisecond)
+		require.Eventually(t, TaskFailed(store, connectorID, otherErrorDescriptor, "test"), time.Second, 100*time.Millisecond)
+		require.Eventually(t, TaskActive(store, connectorID, noErrorDescriptor), time.Second, 100*time.Millisecond)
+		require.Eventually(t, TaskActive(store, connectorID, retryableDescriptor), time.Second, 100*time.Millisecond)
 	})
 }
