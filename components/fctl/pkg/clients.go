@@ -7,6 +7,7 @@ import (
 	"github.com/formancehq/fctl/membershipclient"
 	formance "github.com/formancehq/formance-sdk-go/v2"
 	"github.com/spf13/cobra"
+	"golang.org/x/mod/semver"
 )
 
 func getVersion(cmd *cobra.Command) string {
@@ -43,6 +44,18 @@ func MembershipServerInfo(ctx context.Context, client *membershipclient.APIClien
 		return fmt.Sprintf("Error: %s", response.Status)
 	}
 	return serverInfo.Version
+}
+
+func ValidateMembershipServerVersion(ctx context.Context, client *membershipclient.APIClient, version string) error {
+	serverVersion := MembershipServerInfo(ctx, client)
+	if !semver.IsValid(serverVersion) {
+		return nil
+	}
+	if semver.Compare(serverVersion, version) >= 0 {
+		return nil
+	}
+
+	return fmt.Errorf("unsupported membership server version: %s", version)
 }
 
 func NewStackClient(cmd *cobra.Command, cfg *Config, stack *membershipclient.Stack) (*formance.Formance, error) {
