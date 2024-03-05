@@ -56,7 +56,9 @@ var _ = Describe("Membership listener", func() {
 					Issuer:       "http://example.net",
 				},
 				AdditionalLabels: map[string]string{
-					"foo": "bar",
+					"foo":     "bar",
+					"foo.foo": "bar",
+					"foo-foo": "bar",
 				},
 			}
 			membershipClient.Orders() <- &generated.Order{
@@ -70,7 +72,9 @@ var _ = Describe("Membership listener", func() {
 			}).Should(BeNil())
 		})
 		It("Should have additional labels", func() {
-			Expect(stack.Labels).To(HaveKeyWithValue("foo", "bar"))
+			Expect(stack.Labels).To(HaveKeyWithValue("formance.com/foo", "bar"))
+			Expect(stack.Labels).To(HaveKeyWithValue("formance.com/foo.foo", "bar"))
+			Expect(stack.Labels).To(HaveKeyWithValue("formance.com/foo-foo", "bar"))
 		})
 		It("Should create all required crds cluster side", func() {
 			auth := &v1beta1.Auth{}

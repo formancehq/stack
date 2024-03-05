@@ -298,7 +298,11 @@ func (c *membershipListener) createOrUpdate(ctx context.Context, gvk schema.Grou
 	if content["metadata"] == nil {
 		content["metadata"] = map[string]any{}
 	}
-	content["metadata"].(map[string]any)["labels"] = additionalLabel
+
+	content["metadata"].(map[string]any)["labels"] = map[string]any{}
+	for k, v := range additionalLabel {
+		content["metadata"].(map[string]any)["labels"].(map[string]any)["formance.com/"+k] = v
+	}
 	content["metadata"].(map[string]any)["labels"].(map[string]any)["formance.com/created-by-agent"] = "true"
 	content["metadata"].(map[string]any)["name"] = name
 
