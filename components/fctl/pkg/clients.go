@@ -51,8 +51,7 @@ func ValidateMembershipServerVersion(ctx context.Context, client *membershipclie
 	if !semver.IsValid(serverVersion) {
 		return nil
 	}
-
-	if semver.Compare(version, serverVersion) >= 0 {
+	if semver.Compare(serverVersion, version) >= 0 {
 		return nil
 	}
 

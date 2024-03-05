@@ -1,6 +1,8 @@
 package stack
 
 import (
+	"os"
+
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pkg/errors"
@@ -103,10 +105,12 @@ func (c *StackDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 	query := apiClient.DefaultApi.DeleteStack(cmd.Context(), organization, stack.Id)
 	if fctl.GetBool(cmd, forceFlag) {
 		if isValid := fctl.ValidateMembershipServerVersion(cmd.Context(), apiClient, "v0.27.1"); isValid != nil {
-			return nil, err
+			return nil, isValid
 		}
 		query = query.Force(true)
 	}
+
+	os.Exit(0)
 	_, err = query.Execute()
 	if err != nil {
 		return nil, errors.Wrap(err, "deleting stack")
