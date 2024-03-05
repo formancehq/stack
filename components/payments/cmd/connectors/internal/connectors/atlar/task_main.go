@@ -35,7 +35,7 @@ func MainTask(logger logging.Logger) task.Task {
 		})
 		if err != nil {
 			otel.RecordError(span, err)
-			return err
+			return errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		err = scheduler.Schedule(ctx, taskAccounts, models.TaskSchedulerOptions{
@@ -44,7 +44,7 @@ func MainTask(logger logging.Logger) task.Task {
 		})
 		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
 			otel.RecordError(span, err)
-			return err
+			return errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		return nil
