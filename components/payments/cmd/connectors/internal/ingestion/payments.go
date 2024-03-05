@@ -14,7 +14,6 @@ import (
 type PaymentBatchElement struct {
 	Payment    *models.Payment
 	Adjustment *models.PaymentAdjustment
-	Metadata   []*models.PaymentMetadata
 }
 
 type PaymentBatch []PaymentBatchElement
@@ -42,11 +41,12 @@ func (i *DefaultIngester) IngestPayments(
 
 	for batchIdx := range batch {
 		payment := batch[batchIdx].Payment
-		metadata := batch[batchIdx].Metadata
 		adjustment := batch[batchIdx].Adjustment
 
-		if metadata != nil {
-			for _, data := range metadata {
+		if payment != nil {
+			allPayments = append(allPayments, payment)
+
+			for _, data := range payment.Metadata {
 				data.Changelog = append(data.Changelog,
 					models.MetadataChangelog{
 						CreatedAt: time.Now(),
@@ -55,10 +55,6 @@ func (i *DefaultIngester) IngestPayments(
 
 				allMetadata = append(allMetadata, data)
 			}
-		}
-
-		if payment != nil {
-			allPayments = append(allPayments, payment)
 		}
 
 		if adjustment != nil && adjustment.Reference != "" {
