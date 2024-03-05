@@ -291,11 +291,11 @@ func TestTaskScheduler(t *testing.T) {
 				switch string(descriptor) {
 				case string(nonRetryableDescriptor):
 					return func(ctx context.Context, scheduler Scheduler) error {
-						return ErrNonRetryableError
+						return ErrNonRetryable
 					}
 				case string(retryableDescriptor):
 					return func(ctx context.Context, scheduler Scheduler) error {
-						return ErrRetryableError
+						return ErrRetryable
 					}
 				case string(otherErrorDescriptor):
 					return func(ctx context.Context, scheduler Scheduler) error {
@@ -361,11 +361,11 @@ func TestTaskScheduler(t *testing.T) {
 				switch string(descriptor) {
 				case string(nonRetryableDescriptor):
 					return func(ctx context.Context, scheduler Scheduler) error {
-						return ErrNonRetryableError
+						return ErrNonRetryable
 					}
 				case string(retryableDescriptor):
 					return func(ctx context.Context, scheduler Scheduler) error {
-						return ErrRetryableError
+						return ErrRetryable
 					}
 				case string(otherErrorDescriptor):
 					return func(ctx context.Context, scheduler Scheduler) error {

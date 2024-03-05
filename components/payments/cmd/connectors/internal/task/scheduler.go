@@ -549,9 +549,9 @@ loop:
 		switch {
 		case err == nil:
 			break loop
-		case errors.Is(err, ErrRetryableError):
+		case errors.Is(err, ErrRetryable):
 			continue
-		case errors.Is(err, ErrNonRetryableError):
+		case errors.Is(err, ErrNonRetryable):
 			fallthrough
 		default:
 			if err == context.Canceled {
@@ -634,10 +634,10 @@ func (s *DefaultTaskScheduler) runTaskPeriodically(
 		switch {
 		case err == nil:
 			// Doing nothing, waiting for the next tick
-		case errors.Is(err, ErrRetryableError):
+		case errors.Is(err, ErrRetryable):
 			ticker.Reset(options.Duration)
 			continue
-		case errors.Is(err, ErrNonRetryableError):
+		case errors.Is(err, ErrNonRetryable):
 			fallthrough
 		default:
 			// All other errors
