@@ -193,8 +193,8 @@ func ExtractPaymentMetadata(paymentId models.PaymentID, transaction *atlar_model
 	result = append(result, ComputePaymentMetadata(paymentId, "remittanceInformation/type", *transaction.RemittanceInformation.Type))
 	result = append(result, ComputePaymentMetadata(paymentId, "remittanceInformation/value", *transaction.RemittanceInformation.Value))
 	result = append(result, ComputePaymentMetadata(paymentId, "btc/domain", transaction.Characteristics.BankTransactionCode.Domain))
-	result = append(result, ComputePaymentMetadata(paymentId, "btc/familiy", transaction.Characteristics.BankTransactionCode.Family))
-	result = append(result, ComputePaymentMetadata(paymentId, "btc/subfamiliy", transaction.Characteristics.BankTransactionCode.Subfamily))
+	result = append(result, ComputePaymentMetadata(paymentId, "btc/family", transaction.Characteristics.BankTransactionCode.Family))
+	result = append(result, ComputePaymentMetadata(paymentId, "btc/subfamily", transaction.Characteristics.BankTransactionCode.Subfamily))
 	result = append(result, ComputePaymentMetadata(paymentId, "btc/description", transaction.Characteristics.BankTransactionCode.Description))
 	result = append(result, ComputePaymentMetadataBool(paymentId, "returned", transaction.Characteristics.Returned))
 	if transaction.CounterpartyDetails != nil && transaction.CounterpartyDetails.Name != "" {
