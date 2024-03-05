@@ -3,6 +3,9 @@ package tests
 import (
 	"context"
 	"fmt"
+	"net/url"
+	"reflect"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/components/agent/internal"
 	"github.com/formancehq/stack/components/agent/internal/generated"
@@ -13,8 +16,6 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes/scheme"
-	"net/url"
-	"reflect"
 )
 
 var _ = Describe("Membership listener", func() {
@@ -54,6 +55,11 @@ var _ = Describe("Membership listener", func() {
 					ClientSecret: "clientsecret",
 					Issuer:       "http://example.net",
 				},
+				AdditionalLabels: map[string]string{
+					"foo":     "bar",
+					"foo.foo": "bar",
+					"foo-foo": "bar",
+				},
 			}
 			membershipClient.Orders() <- &generated.Order{
 				Message: &generated.Order_ExistingStack{
@@ -64,6 +70,11 @@ var _ = Describe("Membership listener", func() {
 			Eventually(func() error {
 				return LoadResource("Stacks", membershipStack.ClusterName, stack)
 			}).Should(BeNil())
+		})
+		It("Should have additional labels", func() {
+			Expect(stack.Labels).To(HaveKeyWithValue("formance.com/foo", "bar"))
+			Expect(stack.Labels).To(HaveKeyWithValue("formance.com/foo.foo", "bar"))
+			Expect(stack.Labels).To(HaveKeyWithValue("formance.com/foo-foo", "bar"))
 		})
 		It("Should create all required crds cluster side", func() {
 			auth := &v1beta1.Auth{}
