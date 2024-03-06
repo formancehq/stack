@@ -13,6 +13,7 @@ import (
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes/scheme"
@@ -48,28 +49,71 @@ var _ = Describe("Membership listener", func() {
 			stack           *v1beta1.Stack
 		)
 		BeforeEach(func() {
-			membershipStack = &generated.Stack{
-				ClusterName: uuid.NewString(),
-				AuthConfig: &generated.AuthConfig{
-					ClientId:     "clientid",
-					ClientSecret: "clientsecret",
-					Issuer:       "http://example.net",
-				},
-				AdditionalLabels: map[string]string{
-					"foo":     "bar",
-					"foo.foo": "bar",
-					"foo-foo": "bar",
-				},
-			}
-			membershipClient.Orders() <- &generated.Order{
-				Message: &generated.Order_ExistingStack{
-					ExistingStack: membershipStack,
-				},
-			}
-			stack = &v1beta1.Stack{}
-			Eventually(func() error {
-				return LoadResource("Stacks", membershipStack.ClusterName, stack)
-			}).Should(BeNil())
+			stackName := uuid.NewString()
+			By("Creating a wrong client", func() {
+				client := &v1beta1.AuthClient{
+					ObjectMeta: metav1.ObjectMeta{
+						Name: "wrong",
+						Labels: map[string]string{
+							"formance.com/created-by-agent": "true",
+							"formance.com/stack":            stackName,
+						},
+					},
+					Spec: v1beta1.AuthClientSpec{
+						StackDependency: v1beta1.StackDependency{
+							Stack: stackName,
+						},
+						ID:     "wrong",
+						Public: true,
+					},
+				}
+				Expect(k8sClient.Post().Resource("AuthClients").Body(client).Do(context.Background()).Error()).To(BeNil())
+			})
+
+			By("Creating a stack", func() {
+				membershipStack = &generated.Stack{
+					ClusterName: stackName,
+					AuthConfig: &generated.AuthConfig{
+						ClientId:     "clientid",
+						ClientSecret: "clientsecret",
+						Issuer:       "http://example.net",
+					},
+					AdditionalLabels: map[string]string{
+						"foo":     "bar",
+						"foo.foo": "bar",
+						"foo-foo": "bar",
+					},
+					StaticClients: []*generated.AuthClient{
+						{
+							Id:     "clientid1",
+							Public: true,
+						},
+						{
+							Id:     "clientid2",
+							Public: true,
+						},
+					},
+				}
+				membershipClient.Orders() <- &generated.Order{
+					Message: &generated.Order_ExistingStack{
+						ExistingStack: membershipStack,
+					},
+				}
+				stack = &v1beta1.Stack{}
+				Eventually(func() error {
+					return LoadResource("Stacks", membershipStack.ClusterName, stack)
+				}).Should(BeNil())
+			})
+		})
+		It("Should have sync auth client", func() {
+			clients := &unstructured.UnstructuredList{}
+			Eventually(func(g Gomega) []unstructured.Unstructured {
+
+				g.Expect(k8sClient.Get().Resource("AuthClients").VersionedParams(&metav1.ListOptions{
+					LabelSelector: "formance.com/created-by-agent=true,formance.com/stack=" + membershipStack.ClusterName,
+				}, scheme.ParameterCodec).Do(context.Background()).Into(clients)).To(Succeed())
+				return clients.Items
+			}).Should(HaveLen(2))
 		})
 		It("Should have additional labels", func() {
 			Expect(stack.Labels).To(HaveKeyWithValue("formance.com/foo", "bar"))
