@@ -24,15 +24,13 @@ helm-validate:
   RUN helm dependencies update
   RUN helm dependencies build
   DO --pass-args core+HELM_VALIDATE
+  SAVE ARTIFACT /src/helm
   SAVE ARTIFACT /src/helm/regions/Chart.lock AS LOCAL Chart.lock
 
 helm-package:
   FROM core+helm-base
   WORKDIR /src
-  COPY (stack+sources/out --LOCATION=ee/agent/helm) /src/ee/agent/helm
-  COPY (stack+sources/out --LOCATION=components/operator/helm) /src/components/operator/helm
-  COPY (+sources/src) /src/helm/regions
-  COPY --if-exists --dir charts /src/helm/regions/charts
+  COPY (+helm-validate/) /src
   WORKDIR /src/helm/regions
   RUN helm package .
   SAVE ARTIFACT /src/helm/regions/regions-*.tgz
