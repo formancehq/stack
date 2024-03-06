@@ -108,7 +108,7 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 		return value
 	})
 
-	stack, err := c.createOrUpdate(ctx, v1beta1.GroupVersion.WithKind("Stack"), membershipStack.ClusterName, nil, map[string]any{
+	stack, err := c.createOrUpdate(ctx, v1beta1.GroupVersion.WithKind("Stack"), membershipStack.ClusterName, membershipStack.ClusterName, nil, map[string]any{
 		"spec": map[string]any{
 			"versionsFromFile": versions,
 			"disabled":         membershipStack.Disabled,
@@ -136,12 +136,12 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 			continue
 		}
 
-		if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack, gvk, map[string]any{}, additionalLabels); err != nil {
+		if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, gvk, map[string]any{}, additionalLabels); err != nil {
 			sharedlogging.FromContext(ctx).Errorf("Unable to create module %s cluster side: %s", gvk.Kind, err)
 		}
 	}
 
-	if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack, v1beta1.GroupVersion.WithKind("Auth"), map[string]any{
+	if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, v1beta1.GroupVersion.WithKind("Auth"), map[string]any{
 		"spec": map[string]any{
 			"delegatedOIDCServer": map[string]any{
 				"issuer":       membershipStack.AuthConfig.Issuer,
@@ -157,7 +157,7 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 	if membershipStack.StargateConfig != nil && membershipStack.StargateConfig.Enabled {
 		parts := strings.Split(stack.GetName(), "-")
 
-		if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack, v1beta1.GroupVersion.WithKind("Stargate"), map[string]any{
+		if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, v1beta1.GroupVersion.WithKind("Stargate"), map[string]any{
 			"spec": map[string]any{
 				"organizationID": parts[0],
 				"stackID":        parts[1],
@@ -180,7 +180,7 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 		}
 	}
 
-	if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack, v1beta1.GroupVersion.WithKind("Gateway"), map[string]any{
+	if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, v1beta1.GroupVersion.WithKind("Gateway"), map[string]any{
 		"spec": map[string]any{
 			"ingress": map[string]any{
 				"host":   fmt.Sprintf("%s.%s", stack.GetName(), c.clientInfo.BaseUrl.Host),
@@ -193,7 +193,7 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 
 	syncAuthClients := make([]*unstructured.Unstructured, 0)
 	for _, client := range membershipStack.StaticClients {
-		authClient, err := c.createOrUpdateStackDependency(ctx, fmt.Sprintf("%s-authclient", stack.GetName()),
+		authClient, err := c.createOrUpdateStackDependency(ctx, fmt.Sprintf("%s-%s", stack.GetName(), client.Id), stack.GetName(),
 			stack, v1beta1.GroupVersion.WithKind("AuthClient"), map[string]any{
 				"spec": map[string]any{
 					"id":     client.Id,
@@ -208,33 +208,45 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 
 	authClientList := &unstructured.UnstructuredList{}
 	if err := c.restClient.Get().
-		Resource("Auths").
+		Resource("AuthClients").
 		VersionedParams(&metav1.ListOptions{
-			LabelSelector: "formance.com/created-by-agent=true",
+			LabelSelector: "formance.com/created-by-agent=true,formance.com/stack=" + stack.GetName(),
 		}, scheme.ParameterCodec).
 		Do(ctx).
 		Into(authClientList); err != nil {
 		sharedlogging.FromContext(ctx).Errorf("Unable to list AuthClient cluster side: %s", err)
 	}
 
-l:
-	for _, existingAuthClient := range authClientList.Items {
+	// Here i need to find all AuthClients that differ from syncAuthClients and delete them
+	authClientsToDelete := Reduce(authClientList.Items, func(acc []string, item unstructured.Unstructured) []string {
 		for _, syncAuthClient := range syncAuthClients {
-			if syncAuthClient.GetName() == existingAuthClient.GetName() {
-				continue l
+			if syncAuthClient.GetName() == item.GetName() {
+				return acc
 			}
+		}
+		return append(acc, item.GetName())
+	}, []string{})
 
-			if err := c.restClient.Delete().
-				Resource("Auths").
-				Name(syncAuthClient.GetName()).
-				Do(ctx).
-				Error(); err != nil {
-				sharedlogging.FromContext(ctx).Errorf("Unable to delete AuthClient %s cluster side: %s", syncAuthClient.GetName(), err)
-			}
+	for _, name := range authClientsToDelete {
+		sharedlogging.FromContext(ctx).Infof("Deleting AuthClient %s", name)
+		if err := c.restClient.Delete().
+			Resource("AuthClients").
+			Name(name).
+			Do(ctx).
+			Error(); err != nil {
+			sharedlogging.FromContext(ctx).Errorf("Unable to delete AuthClient %s cluster side: %s", name, err)
 		}
 	}
 
 	sharedlogging.FromContext(ctx).Infof("Stack %s updated cluster side", stack.GetName())
+}
+
+func Reduce[TYPE any, ACC any](input []TYPE, reducer func(ACC, TYPE) ACC, initial ACC) ACC {
+	ret := initial
+	for _, i := range input {
+		ret = reducer(ret, i)
+	}
+	return ret
 }
 
 func (c *membershipListener) deleteStack(ctx context.Context, stack *generated.DeletedStack) {
@@ -289,7 +301,7 @@ func (c *membershipListener) enableStack(ctx context.Context, stack *generated.E
 	sharedlogging.FromContext(ctx).Infof("Stack %s enabled", stack.ClusterName)
 }
 
-func (c *membershipListener) createOrUpdate(ctx context.Context, gvk schema.GroupVersionKind, name string, owner *metav1.OwnerReference, content map[string]any, additionalLabel map[string]any) (*unstructured.Unstructured, error) {
+func (c *membershipListener) createOrUpdate(ctx context.Context, gvk schema.GroupVersionKind, name string, stackName string, owner *metav1.OwnerReference, content map[string]any, additionalLabel map[string]any) (*unstructured.Unstructured, error) {
 
 	logger := sharedlogging.WithFields(map[string]any{
 		"gvk": gvk,
@@ -304,6 +316,7 @@ func (c *membershipListener) createOrUpdate(ctx context.Context, gvk schema.Grou
 		content["metadata"].(map[string]any)["labels"].(map[string]any)["formance.com/"+k] = v
 	}
 	content["metadata"].(map[string]any)["labels"].(map[string]any)["formance.com/created-by-agent"] = "true"
+	content["metadata"].(map[string]any)["labels"].(map[string]any)["formance.com/stack"] = stackName
 	content["metadata"].(map[string]any)["name"] = name
 
 	restMapping, err := c.restMapper.RESTMapping(gvk.GroupKind())
@@ -366,13 +379,13 @@ func (c *membershipListener) createOrUpdate(ctx context.Context, gvk schema.Grou
 	return u, nil
 }
 
-func (c *membershipListener) createOrUpdateStackDependency(ctx context.Context, name string, stack *unstructured.Unstructured, gvk schema.GroupVersionKind, content map[string]any, additionalLabel map[string]any) (*unstructured.Unstructured, error) {
+func (c *membershipListener) createOrUpdateStackDependency(ctx context.Context, name string, stackName string, stack *unstructured.Unstructured, gvk schema.GroupVersionKind, content map[string]any, additionalLabel map[string]any) (*unstructured.Unstructured, error) {
 	if _, ok := content["spec"]; !ok {
 		content["spec"] = map[string]any{}
 	}
 	content["spec"].(map[string]any)["stack"] = stack.GetName()
 
-	return c.createOrUpdate(ctx, gvk, name,
+	return c.createOrUpdate(ctx, gvk, name, stackName,
 		&metav1.OwnerReference{
 			APIVersion: "formance.com/v1beta1",
 			Kind:       "Stack",
