@@ -46,6 +46,11 @@ func printInformation(out io.Writer, stack *membershipclient.Stack) error {
 	tableData = append(tableData, []string{pterm.LightCyan("Region"), stack.RegionID, ""})
 	tableData = append(tableData, []string{pterm.LightCyan("Status"), stack.State, ""})
 	tableData = append(tableData, []string{pterm.LightCyan("Effective status"), stack.Status, ""})
+
+	if stack.AuditEnabled != nil {
+		tableData = append(tableData, []string{pterm.LightCyan("Audit enabled"), fctl.BoolPointerToString(stack.AuditEnabled), ""})
+	}
+
 	return pterm.DefaultTable.
 		WithWriter(out).
 		WithData(tableData).

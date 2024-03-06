@@ -32,6 +32,7 @@ type StackAllOf struct {
 	CreatedAt *time.Time `json:"createdAt,omitempty"`
 	DeletedAt *time.Time `json:"deletedAt,omitempty"`
 	DisabledAt *time.Time `json:"disabledAt,omitempty"`
+	AuditEnabled *bool `json:"auditEnabled,omitempty"`
 }
 
 // NewStackAllOf instantiates a new StackAllOf object
@@ -272,6 +273,38 @@ func (o *StackAllOf) SetDisabledAt(v time.Time) {
 	o.DisabledAt = &v
 }
 
+// GetAuditEnabled returns the AuditEnabled field value if set, zero value otherwise.
+func (o *StackAllOf) GetAuditEnabled() bool {
+	if o == nil || IsNil(o.AuditEnabled) {
+		var ret bool
+		return ret
+	}
+	return *o.AuditEnabled
+}
+
+// GetAuditEnabledOk returns a tuple with the AuditEnabled field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *StackAllOf) GetAuditEnabledOk() (*bool, bool) {
+	if o == nil || IsNil(o.AuditEnabled) {
+		return nil, false
+	}
+	return o.AuditEnabled, true
+}
+
+// HasAuditEnabled returns a boolean if a field has been set.
+func (o *StackAllOf) HasAuditEnabled() bool {
+	if o != nil && !IsNil(o.AuditEnabled) {
+		return true
+	}
+
+	return false
+}
+
+// SetAuditEnabled gets a reference to the given bool and assigns it to the AuditEnabled field.
+func (o *StackAllOf) SetAuditEnabled(v bool) {
+	o.AuditEnabled = &v
+}
+
 func (o StackAllOf) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -295,6 +328,9 @@ func (o StackAllOf) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.DisabledAt) {
 		toSerialize["disabledAt"] = o.DisabledAt
+	}
+	if !IsNil(o.AuditEnabled) {
+		toSerialize["auditEnabled"] = o.AuditEnabled
 	}
 	return toSerialize, nil
 }
