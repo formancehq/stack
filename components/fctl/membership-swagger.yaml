@@ -1358,6 +1358,8 @@ components:
             disabledAt:
               type: string
               format: date-time
+            auditEnabled:
+              type: boolean
     UserData:
       allOf:
         - type: object
