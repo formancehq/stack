@@ -86,14 +86,14 @@ func (a Activities) InsertTriggerOccurrence(ctx context.Context, occurrence Occu
 
 func (a Activities) SendEventForTriggerTermination(ctx context.Context, occurrence Occurrence) error {
 	if occurrence.Error == nil || *occurrence.Error == "" {
-		return a.publisher.Publish(events.SucceededTrigger,
+		return a.publisher.Publish(events.TopicOrchestration,
 			events.NewMessage(ctx, events.SucceededTrigger, events.SucceededTriggerPayload{
 				ID:                 occurrence.ID,
 				WorkflowInstanceID: *occurrence.WorkflowInstanceID,
 				TriggerID:          occurrence.TriggerID,
 			}))
 	} else {
-		return a.publisher.Publish(events.FailedTrigger,
+		return a.publisher.Publish(events.TopicOrchestration,
 			events.NewMessage(ctx, events.FailedTrigger, events.FailedTriggerPayload{
 				ID:        occurrence.ID,
 				TriggerID: occurrence.TriggerID,
