@@ -211,30 +211,43 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 		Resource("Auths").
 		VersionedParams(&metav1.ListOptions{
 			LabelSelector: "formance.com/created-by-agent=true",
+			FieldSelector: "spec.stack=" + stack.GetName(),
 		}, scheme.ParameterCodec).
 		Do(ctx).
 		Into(authClientList); err != nil {
 		sharedlogging.FromContext(ctx).Errorf("Unable to list AuthClient cluster side: %s", err)
 	}
 
-l:
-	for _, existingAuthClient := range authClientList.Items {
-		for _, syncAuthClient := range syncAuthClients {
-			if syncAuthClient.GetName() == existingAuthClient.GetName() {
-				continue l
-			}
 
-			if err := c.restClient.Delete().
-				Resource("Auths").
-				Name(syncAuthClient.GetName()).
-				Do(ctx).
-				Error(); err != nil {
-				sharedlogging.FromContext(ctx).Errorf("Unable to delete AuthClient %s cluster side: %s", syncAuthClient.GetName(), err)
+	// Here i need to find all AuthClients that differ from syncAuthClients and delete them
+	toDelete := Reduce(authClientList.Items, func(acc []string, item unstructured.Unstructured) []string {
+		for _, syncAuthClient := range syncAuthClients {
+			if syncAuthClient.GetName() == item.GetName() {
+				return acc
 			}
+		}
+		return append(acc, item.GetName())
+	}, []string{})
+
+	for _, name := range toDelete {
+		if err := c.restClient.Delete().
+			Resource("Auths").
+			Name(name).
+			Do(ctx).
+			Error(); err != nil {
+			sharedlogging.FromContext(ctx).Errorf("Unable to delete AuthClient %s cluster side: %s", name, err)
 		}
 	}
 
 	sharedlogging.FromContext(ctx).Infof("Stack %s updated cluster side", stack.GetName())
+}
+
+func Reduce[TYPE any, ACC any](input []TYPE, reducer func(ACC, TYPE) ACC, initial ACC) ACC {
+	ret := initial
+	for _, i := range input {
+		ret = reducer(ret, i)
+	}
+	return ret
 }
 
 func (c *membershipListener) deleteStack(ctx context.Context, stack *generated.DeletedStack) {
