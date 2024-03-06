@@ -1939,6 +1939,8 @@ components:
         disabledAt:
           format: date-time
           type: string
+        auditEnabled:
+          type: boolean
       required:
       - id
       - organizationId

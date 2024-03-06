@@ -12,6 +12,7 @@ Name | Type | Description | Notes
 **CreatedAt** | Pointer to **time.Time** |  | [optional] 
 **DeletedAt** | Pointer to **time.Time** |  | [optional] 
 **DisabledAt** | Pointer to **time.Time** |  | [optional] 
+**AuditEnabled** | Pointer to **bool** |  | [optional] 
 
 ## Methods
 
@@ -206,6 +207,31 @@ SetDisabledAt sets DisabledAt field to given value.
 `func (o *StackAllOf) HasDisabledAt() bool`
 
 HasDisabledAt returns a boolean if a field has been set.
+
+### GetAuditEnabled
+
+`func (o *StackAllOf) GetAuditEnabled() bool`
+
+GetAuditEnabled returns the AuditEnabled field if non-nil, zero value otherwise.
+
+### GetAuditEnabledOk
+
+`func (o *StackAllOf) GetAuditEnabledOk() (*bool, bool)`
+
+GetAuditEnabledOk returns a tuple with the AuditEnabled field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetAuditEnabled
+
+`func (o *StackAllOf) SetAuditEnabled(v bool)`
+
+SetAuditEnabled sets AuditEnabled field to given value.
+
+### HasAuditEnabled
+
+`func (o *StackAllOf) HasAuditEnabled() bool`
+
+HasAuditEnabled returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

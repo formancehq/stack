@@ -17,13 +17,14 @@ const (
 )
 
 type Stack struct {
-	Id         string  `json:"id"`
-	Name       string  `json:"name"`
-	Dashboard  string  `json:"dashboard"`
-	RegionID   string  `json:"region"`
-	DisabledAt *string `json:"disabledAt"`
-	DeletedAt  *string `json:"deletedAt"`
-	Status     string  `json:"status"`
+	Id           string  `json:"id"`
+	Name         string  `json:"name"`
+	Dashboard    string  `json:"dashboard"`
+	RegionID     string  `json:"region"`
+	DisabledAt   *string `json:"disabledAt"`
+	DeletedAt    *string `json:"deletedAt"`
+	AuditEnabled string  `json:"auditEnabled"`
+	Status       string  `json:"status"`
 }
 type StackListStore struct {
 	Stacks []Stack `json:"stacks"`
@@ -97,11 +98,12 @@ func (c *StackListController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 
 	c.store.Stacks = fctl.Map(rsp.Data, func(stack membershipclient.Stack) Stack {
 		return Stack{
-			Id:        stack.Id,
-			Name:      stack.Name,
-			Dashboard: "https://console.formance.cloud",
-			RegionID:  stack.RegionID,
-			Status:    stack.State,
+			Id:           stack.Id,
+			Name:         stack.Name,
+			Dashboard:    "https://console.formance.cloud",
+			RegionID:     stack.RegionID,
+			Status:       stack.State,
+			AuditEnabled: fctl.BoolPointerToString(stack.AuditEnabled),
 			DisabledAt: func() *string {
 				if stack.DisabledAt != nil {
 					t := stack.DisabledAt.Format(time.RFC3339)
@@ -135,9 +137,9 @@ func (c *StackListController) Render(cmd *cobra.Command, args []string) error {
 			stack.Dashboard,
 			stack.RegionID,
 			stack.Status,
+			stack.AuditEnabled,
 		}
 		if fctl.GetBool(cmd, allFlag) {
-
 			if stack.DisabledAt != nil {
 				data = append(data, *stack.DisabledAt)
 			} else {
@@ -160,7 +162,7 @@ func (c *StackListController) Render(cmd *cobra.Command, args []string) error {
 		return data
 	})
 
-	headers := []string{"ID", "Name", "Dashboard", "Region", "Status"}
+	headers := []string{"ID", "Name", "Dashboard", "Region", "Status", "Audit Enabled"}
 	if fctl.GetBool(cmd, allFlag) {
 		headers = append(headers, "Disabled At", "Deleted At")
 	}
