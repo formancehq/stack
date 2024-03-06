@@ -109,8 +109,8 @@ type Payment struct {
 	DestinationAccountID *AccountID `bun:",type:character varying,nullzero"`
 
 	// Read only fields
-	Adjustments []*PaymentAdjustment `bun:"rel:has-many,join:id=payment_id"`
 	Metadata    []*PaymentMetadata   `bun:"rel:has-many,join:id=payment_id"`
+	Adjustments []*PaymentAdjustment `bun:"rel:has-many,join:id=payment_id"`
 	Connector   *Connector           `bun:"rel:has-one,join:connector_id=id"`
 }
 
