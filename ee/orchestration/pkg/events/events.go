@@ -9,6 +9,8 @@ import (
 )
 
 const (
+	TopicOrchestration = "orchestration"
+
 	SucceededWorkflow = "SUCCEEDED_WORKFLOW"
 	FailedWorkflow    = "FAILED_WORKFLOW"
 	SucceededTrigger  = "SUCCEEDED_TRIGGER"
