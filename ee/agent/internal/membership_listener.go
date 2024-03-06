@@ -193,7 +193,7 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 
 	syncAuthClients := make([]*unstructured.Unstructured, 0)
 	for _, client := range membershipStack.StaticClients {
-		authClient, err := c.createOrUpdateStackDependency(ctx, fmt.Sprintf("%s-authclient", stack.GetName()),
+		authClient, err := c.createOrUpdateStackDependency(ctx, fmt.Sprintf("%s-%s", stack.GetName(), client.Id),
 			stack, v1beta1.GroupVersion.WithKind("AuthClient"), map[string]any{
 				"spec": map[string]any{
 					"id":     client.Id,
@@ -208,19 +208,17 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 
 	authClientList := &unstructured.UnstructuredList{}
 	if err := c.restClient.Get().
-		Resource("Auths").
+		Resource("AuthClients").
 		VersionedParams(&metav1.ListOptions{
-			LabelSelector: "formance.com/created-by-agent=true",
-			FieldSelector: "spec.stack=" + stack.GetName(),
+			LabelSelector: "formance.com/created-by-agent=true,formance.com/stack=" + stack.GetName(),
 		}, scheme.ParameterCodec).
 		Do(ctx).
 		Into(authClientList); err != nil {
 		sharedlogging.FromContext(ctx).Errorf("Unable to list AuthClient cluster side: %s", err)
 	}
 
-
 	// Here i need to find all AuthClients that differ from syncAuthClients and delete them
-	toDelete := Reduce(authClientList.Items, func(acc []string, item unstructured.Unstructured) []string {
+	authClientsToDelete := Reduce(authClientList.Items, func(acc []string, item unstructured.Unstructured) []string {
 		for _, syncAuthClient := range syncAuthClients {
 			if syncAuthClient.GetName() == item.GetName() {
 				return acc
@@ -229,9 +227,9 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 		return append(acc, item.GetName())
 	}, []string{})
 
-	for _, name := range toDelete {
+	for _, name := range authClientsToDelete {
 		if err := c.restClient.Delete().
-			Resource("Auths").
+			Resource("AuthClients").
 			Name(name).
 			Do(ctx).
 			Error(); err != nil {
@@ -317,6 +315,7 @@ func (c *membershipListener) createOrUpdate(ctx context.Context, gvk schema.Grou
 		content["metadata"].(map[string]any)["labels"].(map[string]any)["formance.com/"+k] = v
 	}
 	content["metadata"].(map[string]any)["labels"].(map[string]any)["formance.com/created-by-agent"] = "true"
+	content["metadata"].(map[string]any)["labels"].(map[string]any)["formance.com/stack"] = name
 	content["metadata"].(map[string]any)["name"] = name
 
 	restMapping, err := c.restMapper.RESTMapping(gvk.GroupKind())
