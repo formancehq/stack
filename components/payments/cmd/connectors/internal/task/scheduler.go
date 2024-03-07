@@ -550,8 +550,10 @@ loop:
 		case err == nil:
 			break loop
 		case errors.Is(err, ErrRetryable):
+			logger.Infof("Task terminated with retryable error: %s", err)
 			continue
 		case errors.Is(err, ErrNonRetryable):
+			logger.Infof("Task terminated with non retryable error: %s", err)
 			fallthrough
 		default:
 			if err == context.Canceled {
