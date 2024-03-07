@@ -60,7 +60,7 @@ func (c *Client) GetRecipients(ctx context.Context, accountID string, page int, 
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
+		return nil, unmarshalErrorWithRetry(resp.StatusCode, resp.Body).Error()
 	}
 
 	var recipients recipientsResponse

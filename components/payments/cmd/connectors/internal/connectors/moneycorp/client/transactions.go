@@ -102,7 +102,7 @@ func (c *Client) GetTransactions(ctx context.Context, accountID string, page, pa
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
+		return nil, unmarshalErrorWithRetry(resp.StatusCode, resp.Body).Error()
 	}
 
 	var transactions transactionsResponse

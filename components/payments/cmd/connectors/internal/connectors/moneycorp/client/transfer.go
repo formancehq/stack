@@ -84,7 +84,8 @@ func (c *Client) InitiateTransfer(ctx context.Context, tr *TransferRequest) (*Tr
 	}()
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
+		// Never retry transfer initiation
+		return nil, unmarshalErrorWithoutRetry(resp.StatusCode, resp.Body).Error()
 	}
 
 	var transferResponse transferResponse
@@ -120,7 +121,7 @@ func (c *Client) GetTransfer(ctx context.Context, accountID string, transferID s
 	}()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
+		return nil, unmarshalErrorWithRetry(resp.StatusCode, resp.Body).Error()
 	}
 
 	var transferResponse transferResponse

@@ -58,7 +58,7 @@ func (c *Client) GetAccounts(ctx context.Context, page int, pageSize int) ([]*Ac
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
+		return nil, unmarshalErrorWithRetry(resp.StatusCode, resp.Body).Error()
 	}
 
 	var accounts accountsResponse

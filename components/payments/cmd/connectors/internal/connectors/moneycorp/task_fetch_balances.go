@@ -11,6 +11,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
+	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
 )
 
@@ -48,11 +49,12 @@ func fetchBalances(
 ) error {
 	balances, err := client.GetAccountBalances(ctx, accountID)
 	if err != nil {
+		// retryable error already handled by the client
 		return err
 	}
 
 	if err := ingestBalancesBatch(ctx, connectorID, ingester, accountID, balances); err != nil {
-		return err
+		return errors.Wrap(task.ErrRetryable, err.Error())
 	}
 
 	return nil
