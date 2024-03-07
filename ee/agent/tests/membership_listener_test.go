@@ -115,6 +115,23 @@ var _ = Describe("Membership listener", func() {
 				return clients.Items
 			}).Should(HaveLen(2))
 		})
+		When("Having an @ in labels", func() {
+			BeforeEach(func() {
+				membershipStack.AdditionalLabels["owner-email"] = "example@emaple.net"
+				membershipClient.Orders() <- &generated.Order{
+					Message: &generated.Order_ExistingStack{
+						ExistingStack: membershipStack,
+					},
+				}
+				stack = &v1beta1.Stack{}
+				Eventually(func() error {
+					return LoadResource("Stacks", membershipStack.ClusterName, stack)
+				}).Should(BeNil())
+			})
+			It("Shoold not work ", func() {
+				Expect(stack.Labels).ToNot(HaveKeyWithValue("formance.com/owner-email", "example@emaple.net"))
+			})
+		})
 		It("Should have additional labels", func() {
 			Expect(stack.Labels).To(HaveKeyWithValue("formance.com/foo", "bar"))
 			Expect(stack.Labels).To(HaveKeyWithValue("formance.com/foo.foo", "bar"))
