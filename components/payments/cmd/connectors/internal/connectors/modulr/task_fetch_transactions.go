@@ -14,6 +14,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
+	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
 )
 
@@ -99,12 +100,13 @@ func taskFetchTransactions(config Config, client *client.Client, accountID strin
 		)
 		if err != nil {
 			otel.RecordError(span, err)
+			// Retry errors are handled by the function
 			return err
 		}
 
 		if err := ingester.UpdateTaskState(ctx, state); err != nil {
 			otel.RecordError(span, err)
-			return err
+			return errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		return nil
@@ -130,6 +132,7 @@ func fetchTransactions(
 			state.GetFilterValue(),
 		)
 		if err != nil {
+			// Retry errors are handled by the client
 			return newState, err
 		}
 
@@ -139,20 +142,20 @@ func fetchTransactions(
 
 		transactions, err := state.FilterNew(pagedTransactions.Content)
 		if err != nil {
-			return newState, err
+			return newState, errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		batch, err := toBatch(connectorID, accountID, transactions)
 		if err != nil {
-			return newState, err
+			return newState, errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		if err := ingester.IngestPayments(ctx, batch); err != nil {
-			return newState, err
+			return newState, errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		if err := newState.FindLatest(transactions); err != nil {
-			return newState, err
+			return newState, errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		if len(pagedTransactions.Content) < config.PageSize {

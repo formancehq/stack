@@ -51,7 +51,7 @@ func (m *Client) GetTransactions(ctx context.Context, accountID string, page, pa
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
+		return nil, unmarshalErrorWithRetry(resp.StatusCode, resp.Body).Error()
 	}
 
 	var res responseWrapper[[]*Transaction]

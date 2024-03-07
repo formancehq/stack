@@ -43,7 +43,7 @@ func (m *Client) GetBeneficiaries(ctx context.Context, page, pageSize int, modif
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
+		return nil, unmarshalErrorWithRetry(resp.StatusCode, resp.Body).Error()
 	}
 
 	var res responseWrapper[[]*Beneficiary]

@@ -3,7 +3,6 @@ package modulr
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"time"
 
@@ -14,6 +13,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
+	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
 )
 
@@ -91,12 +91,13 @@ func taskFetchAccounts(config Config, client *client.Client) task.Task {
 		)
 		if err != nil {
 			otel.RecordError(span, err)
+			// Retry errors are handled by the function
 			return err
 		}
 
 		if err := ingester.UpdateTaskState(ctx, state); err != nil {
 			otel.RecordError(span, err)
-			return err
+			return errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		return nil
@@ -121,22 +122,24 @@ func fetchAccounts(
 			state.GetFilterValue(),
 		)
 		if err != nil {
+			// Retry errors are handled by the client
 			return newState, err
 		}
+
 		accounts, err := state.FilterNew(pagedAccounts.Content)
 		if err != nil {
-			return newState, err
+			return newState, errors.Wrap(task.ErrRetryable, err.Error())
 		}
 		if len(accounts) == 0 {
 			break
 		}
 		if err := ingestAccountsBatch(ctx, connectorID, ingester, accounts); err != nil {
-			return newState, err
+			return newState, errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		for _, account := range accounts {
 			if err := newState.UpdateLatest(account); err != nil {
-				return newState, err
+				return newState, errors.Wrap(task.ErrRetryable, err.Error())
 			}
 			transactionsTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
 				Name:      "Fetch transactions from client by account",
@@ -144,7 +147,7 @@ func fetchAccounts(
 				AccountID: account.ID,
 			})
 			if err != nil {
-				return newState, err
+				return newState, errors.Wrap(task.ErrRetryable, err.Error())
 			}
 
 			err = scheduler.Schedule(ctx, transactionsTask, models.TaskSchedulerOptions{
@@ -153,7 +156,7 @@ func fetchAccounts(
 				RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 			})
 			if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
-				return newState, err
+				return newState, errors.Wrap(task.ErrRetryable, err.Error())
 			}
 		}
 

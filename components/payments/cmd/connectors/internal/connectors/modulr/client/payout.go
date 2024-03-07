@@ -48,7 +48,7 @@ func (c *Client) InitiatePayout(ctx context.Context, payoutRequest *PayoutReques
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
+		return nil, unmarshalErrorWithoutRetry(resp.StatusCode, resp.Body).Error()
 	}
 
 	var res PayoutResponse
@@ -71,7 +71,7 @@ func (c *Client) GetPayout(ctx context.Context, payoutID string) (*PayoutRespons
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
+		return nil, unmarshalErrorWithRetry(resp.StatusCode, resp.Body).Error()
 	}
 
 	var res PayoutResponse
