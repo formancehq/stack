@@ -2,6 +2,7 @@ package tests
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"reflect"
@@ -16,6 +17,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes/scheme"
 )
 
@@ -116,20 +118,28 @@ var _ = Describe("Membership listener", func() {
 			}).Should(HaveLen(2))
 		})
 		When("Having an @ in labels", func() {
+			var patch []byte
+			var err error
 			BeforeEach(func() {
-				membershipStack.AdditionalLabels["owner-email"] = "example@emaple.net"
-				membershipClient.Orders() <- &generated.Order{
-					Message: &generated.Order_ExistingStack{
-						ExistingStack: membershipStack,
+				patch, err = json.Marshal(map[string]any{
+					"metadata": map[string]any{
+						"labels": map[string]any{
+							"formance.com/owner-email": "example@example.net",
+						},
 					},
-				}
-				stack = &v1beta1.Stack{}
-				Eventually(func() error {
-					return LoadResource("Stacks", membershipStack.ClusterName, stack)
-				}).Should(BeNil())
+				})
+				Expect(err).To(BeNil())
+
 			})
-			It("Shoold not work ", func() {
-				Expect(stack.Labels).ToNot(HaveKeyWithValue("formance.com/owner-email", "example@emaple.net"))
+			It("Should through an error", func() {
+				err := k8sClient.Patch(types.MergePatchType).
+					Resource("Stacks").
+					Name(stack.Name).
+					Body(patch).
+					Do(context.Background()).
+					Error()
+
+				Expect(err).To(HaveOccurred())
 			})
 		})
 		It("Should have additional labels", func() {
