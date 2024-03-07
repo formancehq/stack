@@ -33,7 +33,7 @@ func (c *Connector) mainTask() task.Task {
 		})
 		if err != nil {
 			otel.RecordError(span, err)
-			return err
+			return errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		err = scheduler.Schedule(ctx, taskAccounts, models.TaskSchedulerOptions{
@@ -42,7 +42,7 @@ func (c *Connector) mainTask() task.Task {
 		})
 		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
 			otel.RecordError(span, err)
-			return err
+			return errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		taskPayments, err := models.EncodeTaskDescriptor(TaskDescriptor{
@@ -51,7 +51,7 @@ func (c *Connector) mainTask() task.Task {
 		})
 		if err != nil {
 			otel.RecordError(span, err)
-			return err
+			return errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		err = scheduler.Schedule(ctx, taskPayments, models.TaskSchedulerOptions{
@@ -60,7 +60,7 @@ func (c *Connector) mainTask() task.Task {
 		})
 		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
 			otel.RecordError(span, err)
-			return err
+			return errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		return nil
