@@ -11,6 +11,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
+	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
 )
 
@@ -47,12 +48,13 @@ func taskFetchBankAccounts(client *client.Client, userID string) task.Task {
 		newState, err := ingestBankAccounts(ctx, client, userID, connectorID, scheduler, ingester, state)
 		if err != nil {
 			otel.RecordError(span, err)
+			// Retry is already handled by the function
 			return err
 		}
 
 		if err := ingester.UpdateTaskState(ctx, newState); err != nil {
 			otel.RecordError(span, err)
-			return err
+			return errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		return nil
@@ -77,6 +79,7 @@ func ingestBankAccounts(
 	for currentPage = state.LastPage; ; currentPage++ {
 		pagedBankAccounts, err := client.GetBankAccounts(ctx, userID, currentPage, pageSize)
 		if err != nil {
+			// The client is already deciding if the error is retryable or not.
 			return fetchBankAccountsState{}, err
 		}
 
@@ -98,7 +101,7 @@ func ingestBankAccounts(
 
 			buf, err := json.Marshal(bankAccount)
 			if err != nil {
-				return fetchBankAccountsState{}, err
+				return fetchBankAccountsState{}, errors.Wrap(task.ErrRetryable, err.Error())
 			}
 
 			accountBatch = append(accountBatch, &models.Account{
@@ -121,7 +124,7 @@ func ingestBankAccounts(
 		}
 
 		if err := ingester.IngestAccounts(ctx, accountBatch); err != nil {
-			return fetchBankAccountsState{}, err
+			return fetchBankAccountsState{}, errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		if len(pagedBankAccounts) < pageSize {

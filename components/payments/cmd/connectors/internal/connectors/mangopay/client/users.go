@@ -70,7 +70,7 @@ func (c *Client) getUsers(ctx context.Context, page int, pageSize int) ([]*user,
 	}()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
+		return nil, unmarshalErrorWithRetry(resp.StatusCode, resp.Body).Error()
 	}
 
 	var users []*user

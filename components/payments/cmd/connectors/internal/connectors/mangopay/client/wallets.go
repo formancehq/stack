@@ -52,7 +52,7 @@ func (c *Client) GetWallets(ctx context.Context, userID string, page, pageSize i
 	}()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
+		return nil, unmarshalErrorWithRetry(resp.StatusCode, resp.Body).Error()
 	}
 
 	var wallets []*Wallet
