@@ -1,6 +1,7 @@
 package api
 
 import (
+	"io"
 	"net/http"
 	"strings"
 
@@ -12,7 +13,17 @@ import (
 )
 
 func getQueryBuilder(r *http.Request) (query.Builder, error) {
-	return query.ParseJSON(r.URL.Query().Get("query"))
+	data, err := io.ReadAll(r.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(data) > 0 {
+		return query.ParseJSON(string(data))
+	} else {
+		// In order to be backward compatible
+		return query.ParseJSON(r.URL.Query().Get("query"))
+	}
 }
 
 func getSorter(r *http.Request) (storage.Sorter, error) {

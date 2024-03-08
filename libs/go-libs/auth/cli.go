@@ -24,7 +24,7 @@ func InitAuthFlags(flags *flag.FlagSet) {
 
 func CLIAuthModule() fx.Option {
 	return Module(ModuleConfig{
-		Enabled:              viper.GetBool(AuthEnabled),
+		Enabled:              false,
 		Issuer:               viper.GetString(AuthIssuerFlag),
 		ReadKeySetMaxRetries: viper.GetInt(AuthReadKeySetMaxRetriesFlag),
 		CheckScopes:          viper.GetBool(AuthCheckScopesFlag),
