@@ -7,6 +7,7 @@ import (
 
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	"github.com/formancehq/stack/libs/go-libs/query"
 	"github.com/stretchr/testify/require"
 )
 
@@ -22,6 +23,7 @@ func insertAccounts(t *testing.T, store *Storage, connectorID models.ConnectorID
 		Reference:   "test_account",
 		AccountName: "test",
 		Type:        models.AccountTypeInternal,
+		Metadata:    map[string]string{"foo": "bar"},
 	}
 
 	_, err := store.DB().NewInsert().
@@ -40,6 +42,10 @@ func insertAccounts(t *testing.T, store *Storage, connectorID models.ConnectorID
 		Reference:   "test_account2",
 		AccountName: "test2",
 		Type:        models.AccountTypeInternal,
+		Metadata: map[string]string{
+			"foo":  "bar",
+			"foo2": "bar2",
+		},
 	}
 
 	_, err = store.DB().NewInsert().
@@ -68,6 +74,9 @@ func TestListAccounts(t *testing.T) {
 		Reference:   "test_account",
 		AccountName: "test",
 		Type:        models.AccountTypeInternal,
+		Metadata: map[string]string{
+			"foo": "bar",
+		},
 	}
 
 	acc2 := models.Account{
@@ -80,6 +89,10 @@ func TestListAccounts(t *testing.T) {
 		Reference:   "test_account2",
 		AccountName: "test2",
 		Type:        models.AccountTypeInternal,
+		Metadata: map[string]string{
+			"foo":  "bar",
+			"foo2": "bar2",
+		},
 	}
 
 	t.Run("list all accounts with page size 1", func(t *testing.T) {
@@ -151,5 +164,103 @@ func TestListAccounts(t *testing.T) {
 		cursor.Data[1].CreatedAt = cursor.Data[1].CreatedAt.UTC()
 		require.Equal(t, acc2, cursor.Data[0])
 		require.Equal(t, acc1, cursor.Data[1])
+	})
+
+	t.Run("list all accounts with reference", func(t *testing.T) {
+		t.Parallel()
+
+		cursor, err := store.ListAccounts(
+			context.Background(),
+			NewListAccountsQuery(NewPaginatedQueryOptions(AccountQuery{}).
+				WithPageSize(10).
+				WithQueryBuilder(query.Match("reference", "test_account")),
+			),
+		)
+		require.NoError(t, err)
+		require.Len(t, cursor.Data, 1)
+		require.False(t, cursor.HasMore)
+		cursor.Data[0].CreatedAt = cursor.Data[0].CreatedAt.UTC()
+		require.Equal(t, acc1, cursor.Data[0])
+	})
+
+	t.Run("list all accounts with unknown reference", func(t *testing.T) {
+		t.Parallel()
+
+		cursor, err := store.ListAccounts(
+			context.Background(),
+			NewListAccountsQuery(NewPaginatedQueryOptions(AccountQuery{}).
+				WithPageSize(10).
+				WithQueryBuilder(query.Match("reference", "unknown")),
+			),
+		)
+		require.NoError(t, err)
+		require.Len(t, cursor.Data, 0)
+		require.False(t, cursor.HasMore)
+	})
+
+	t.Run("list all accounts with metadata (1)", func(t *testing.T) {
+		t.Parallel()
+
+		cursor, err := store.ListAccounts(
+			context.Background(),
+			NewListAccountsQuery(NewPaginatedQueryOptions(AccountQuery{}).
+				WithPageSize(10).
+				WithQueryBuilder(query.Match("metadata[foo]", "bar")),
+			),
+		)
+		require.NoError(t, err)
+		require.Len(t, cursor.Data, 2)
+		require.False(t, cursor.HasMore)
+		cursor.Data[0].CreatedAt = cursor.Data[0].CreatedAt.UTC()
+		cursor.Data[1].CreatedAt = cursor.Data[1].CreatedAt.UTC()
+		require.Equal(t, acc2, cursor.Data[0])
+		require.Equal(t, acc1, cursor.Data[1])
+	})
+
+	t.Run("list all accounts with metadata (2)", func(t *testing.T) {
+		t.Parallel()
+
+		cursor, err := store.ListAccounts(
+			context.Background(),
+			NewListAccountsQuery(NewPaginatedQueryOptions(AccountQuery{}).
+				WithPageSize(10).
+				WithQueryBuilder(query.Match("metadata[foo2]", "bar2")),
+			),
+		)
+		require.NoError(t, err)
+		require.Len(t, cursor.Data, 1)
+		require.False(t, cursor.HasMore)
+		cursor.Data[0].CreatedAt = cursor.Data[0].CreatedAt.UTC()
+		require.Equal(t, acc2, cursor.Data[0])
+	})
+
+	t.Run("list all accounts with unknown metadata key", func(t *testing.T) {
+		t.Parallel()
+
+		cursor, err := store.ListAccounts(
+			context.Background(),
+			NewListAccountsQuery(NewPaginatedQueryOptions(AccountQuery{}).
+				WithPageSize(10).
+				WithQueryBuilder(query.Match("metadata[unknown]", "bar")),
+			),
+		)
+		require.NoError(t, err)
+		require.Len(t, cursor.Data, 0)
+		require.False(t, cursor.HasMore)
+	})
+
+	t.Run("list all accounts with unknown metadata value", func(t *testing.T) {
+		t.Parallel()
+
+		cursor, err := store.ListAccounts(
+			context.Background(),
+			NewListAccountsQuery(NewPaginatedQueryOptions(AccountQuery{}).
+				WithPageSize(10).
+				WithQueryBuilder(query.Match("metadata[foo]", "unknown")),
+			),
+		)
+		require.NoError(t, err)
+		require.Len(t, cursor.Data, 0)
+		require.False(t, cursor.HasMore)
 	})
 }

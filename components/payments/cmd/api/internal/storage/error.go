@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+var ErrValidation = errors.New("validation error")
 var ErrNotFound = errors.New("not found")
 var ErrDuplicateKeyValue = errors.New("duplicate key value")
 
