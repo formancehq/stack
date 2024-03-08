@@ -80,16 +80,11 @@ tidy:
     DO --pass-args stack+GO_TIDY
 
 grpc-generate:
-    FROM core+builder-image
-    RUN apk add --no-cache protobuf git protobuf-dev && \
-        go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28 && \
-        go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
-    WORKDIR /src
-    RUN mkdir generated
-    COPY server.proto .
-    RUN protoc --go_out=generated --go_opt=paths=source_relative --go-grpc_out=generated --go-grpc_opt=paths=source_relative server.proto
+    FROM core+grpc-base
+    LET protoName=server.proto
+    COPY $protoName .
+    DO core+GRPC_GEN --protoName=$protoName
     SAVE ARTIFACT generated AS LOCAL internal/generated
-
 tests:
     FROM core+builder-image
     RUN apk update && apk add bash
