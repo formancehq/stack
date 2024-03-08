@@ -138,7 +138,8 @@ func (c *Client) createBankAccount(ctx context.Context, endpoint string, req any
 	}()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
+		// Never retry bank account creation
+		return nil, unmarshalErrorWithoutRetry(resp.StatusCode, resp.Body).Error()
 	}
 
 	var bankAccount BankAccount
@@ -185,7 +186,7 @@ func (c *Client) GetBankAccounts(ctx context.Context, userID string, page, pageS
 	}()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
+		return nil, unmarshalErrorWithRetry(resp.StatusCode, resp.Body).Error()
 	}
 
 	var bankAccounts []*BankAccount

@@ -14,6 +14,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
+	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
 )
 
@@ -54,12 +55,13 @@ func taskFetchTransactions(client *client.Client, walletsID string) task.Task {
 		newState, err := fetchTransactions(ctx, client, walletsID, connectorID, ingester, state)
 		if err != nil {
 			otel.RecordError(span, err)
+			// Retry is already handled by the function
 			return err
 		}
 
 		if err := ingester.UpdateTaskState(ctx, newState); err != nil {
 			otel.RecordError(span, err)
-			return err
+			return errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		return nil
@@ -81,6 +83,7 @@ func fetchTransactions(
 	for page := 1; ; page++ {
 		pagedPayments, err := client.GetTransactions(ctx, walletsID, page, pageSize, state.FirstCreatedTransactionCreationDate)
 		if err != nil {
+			// Client is already deciding if the error is retryable or not.
 			return fetchTransactionsState{}, err
 		}
 
@@ -92,7 +95,7 @@ func fetchTransactions(
 		for _, payment := range pagedPayments {
 			batchElement, err := processPayment(ctx, connectorID, payment)
 			if err != nil {
-				return fetchTransactionsState{}, err
+				return fetchTransactionsState{}, errors.Wrap(task.ErrRetryable, err.Error())
 			}
 
 			if batchElement.Payment != nil {
@@ -110,7 +113,7 @@ func fetchTransactions(
 
 		err = ingester.IngestPayments(ctx, batch)
 		if err != nil {
-			return fetchTransactionsState{}, err
+			return fetchTransactionsState{}, errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		if len(pagedPayments) < pageSize {

@@ -55,7 +55,7 @@ func (c *Client) GetAccountBalances(ctx context.Context, accountID string) ([]*B
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
+		return nil, unmarshalErrorWithRetry(resp.StatusCode, resp.Body).Error()
 	}
 
 	var balances balancesResponse

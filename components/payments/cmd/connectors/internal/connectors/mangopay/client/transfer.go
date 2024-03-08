@@ -74,7 +74,8 @@ func (c *Client) InitiateWalletTransfer(ctx context.Context, transferRequest *Tr
 	}()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
+		// Never retry transfer initiation
+		return nil, unmarshalErrorWithoutRetry(resp.StatusCode, resp.Body).Error()
 	}
 
 	var transferResponse TransferResponse
@@ -109,7 +110,7 @@ func (c *Client) GetWalletTransfer(ctx context.Context, transferID string) (*Tra
 	}()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
+		return nil, unmarshalErrorWithRetry(resp.StatusCode, resp.Body).Error()
 	}
 
 	var transfer TransferResponse

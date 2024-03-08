@@ -95,7 +95,7 @@ func (t *apiTransport) login(ctx context.Context) error {
 	}()
 
 	if resp.StatusCode != http.StatusOK {
-		return unmarshalError(resp.StatusCode, resp.Body).Error()
+		return unmarshalErrorWithRetry(resp.StatusCode, resp.Body).Error()
 	}
 
 	var res loginResponse

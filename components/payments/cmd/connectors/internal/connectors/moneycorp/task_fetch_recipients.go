@@ -13,6 +13,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
+	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
 )
 
@@ -51,7 +52,7 @@ func taskFetchRecipients(client *client.Client, accountID string) task.Task {
 
 		if err := ingester.UpdateTaskState(ctx, newState); err != nil {
 			otel.RecordError(span, err)
-			return err
+			return errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		return nil
@@ -77,6 +78,7 @@ func fetchRecipients(
 
 		pagedRecipients, err := client.GetRecipients(ctx, accountID, page, pageSize)
 		if err != nil {
+			// Retryable errors already handled by the client
 			return fetchRecipientsState{}, err
 		}
 
@@ -88,7 +90,7 @@ func fetchRecipients(
 		for _, recipient := range pagedRecipients {
 			createdAt, err := time.Parse("2006-01-02T15:04:05.999999999", recipient.Attributes.CreatedAt)
 			if err != nil {
-				return fetchRecipientsState{}, fmt.Errorf("failed to parse transaction date: %w", err)
+				return fetchRecipientsState{}, errors.Wrap(task.ErrNonRetryable, fmt.Sprintf("failed to parse transaction date: %v", err))
 			}
 
 			switch createdAt.Compare(state.LastCreatedAt) {
@@ -99,7 +101,7 @@ func fetchRecipients(
 
 			raw, err := json.Marshal(recipient)
 			if err != nil {
-				return fetchRecipientsState{}, err
+				return fetchRecipientsState{}, errors.Wrap(task.ErrRetryable, err.Error())
 			}
 
 			batch = append(batch, &models.Account{
@@ -121,7 +123,7 @@ func fetchRecipients(
 		}
 
 		if err := ingester.IngestAccounts(ctx, batch); err != nil {
-			return fetchRecipientsState{}, err
+			return fetchRecipientsState{}, errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		if len(pagedRecipients) < pageSize {

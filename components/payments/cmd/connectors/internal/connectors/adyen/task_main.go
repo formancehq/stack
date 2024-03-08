@@ -2,12 +2,12 @@ package adyen
 
 import (
 	"context"
-	"errors"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
+	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
 )
 
@@ -32,7 +32,7 @@ func taskMain() task.Task {
 		})
 		if err != nil {
 			otel.RecordError(span, err)
-			return err
+			return errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		err = scheduler.Schedule(ctx, taskAccounts, models.TaskSchedulerOptions{
@@ -41,7 +41,7 @@ func taskMain() task.Task {
 		})
 		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
 			otel.RecordError(span, err)
-			return err
+			return errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		return nil

@@ -3,7 +3,6 @@ package mangopay
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"math/big"
 	"time"
@@ -15,9 +14,11 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
+	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
 )
 
+// taskFetchWallets in run inside a periodic task to fetch wallets from the client.
 func taskFetchWallets(client *client.Client, config *Config, userID string) task.Task {
 	return func(
 		ctx context.Context,
@@ -58,6 +59,8 @@ func ingestWallets(
 	for currentPage := 1; ; currentPage++ {
 		pagedWallets, err := client.GetWallets(ctx, userID, currentPage, pageSize)
 		if err != nil {
+			// The client is already deciding if the error is retryable or not.
+			// Just return it.
 			return err
 		}
 
@@ -74,7 +77,9 @@ func ingestWallets(
 			scheduler,
 			pagedWallets,
 		); err != nil {
-			return err
+			// Since we're just ingesting data, we can safely retry the task in
+			// case of error
+			return errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		if len(pagedWallets) < pageSize {

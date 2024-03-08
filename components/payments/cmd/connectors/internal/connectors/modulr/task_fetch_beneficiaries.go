@@ -6,13 +6,13 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors/modulr/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/ingestion"
+	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
+	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
-
-	"github.com/formancehq/payments/cmd/connectors/internal/connectors/modulr/client"
-	"github.com/formancehq/payments/cmd/connectors/internal/task"
 )
 
 type fetchBeneficiariesState struct {
@@ -103,7 +103,7 @@ func taskFetchBeneficiaries(config Config, client *client.Client) task.Task {
 
 		if err := ingester.UpdateTaskState(ctx, state); err != nil {
 			otel.RecordError(span, err)
-			return err
+			return errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		return nil
@@ -128,6 +128,7 @@ func fetchBeneficiaries(
 			state.GetFilterValue(),
 		)
 		if err != nil {
+			// Retry errors are handled by the client
 			return newState, err
 		}
 		if len(pagedBeneficiaries.Content) == 0 {
@@ -135,13 +136,13 @@ func fetchBeneficiaries(
 		}
 		beneficiaries, err := state.FilterNew(pagedBeneficiaries.Content)
 		if err != nil {
-			return newState, err
+			return newState, errors.Wrap(task.ErrRetryable, err.Error())
 		}
 		if err := newState.FindLatest(beneficiaries); err != nil {
-			return newState, err
+			return newState, errors.Wrap(task.ErrRetryable, err.Error())
 		}
 		if err := ingestBeneficiariesAccountsBatch(ctx, connectorID, ingester, beneficiaries); err != nil {
-			return newState, err
+			return newState, errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		if len(pagedBeneficiaries.Content) < config.PageSize {
