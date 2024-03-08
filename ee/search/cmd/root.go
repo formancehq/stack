@@ -37,7 +37,7 @@ func NewRootCommand() *cobra.Command {
 
 	root.AddCommand(NewVersion(), serverCmd, NewInitMapping(), NewUpdateMapping())
 
-	root.Flags().Bool(service.DebugFlag, false, "debug mode")
+	root.PersistentFlags().Bool(service.DebugFlag, false, "debug mode")
 	err := viper.BindPFlags(root.Flags())
 	if err != nil {
 		panic(err)

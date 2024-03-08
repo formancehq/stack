@@ -93,8 +93,14 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 		return errors.Wrap(err, "searching elasticsearch configuration")
 	}
 
+	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
+	if err != nil {
+		return err
+	}
+
+	awsIAMEnabled := serviceAccountName != ""
 	var resourceReference *v1beta1.ResourceReference
-	if secret := elasticSearchURI.Query().Get("secret"); secret != "" {
+	if secret := elasticSearchURI.Query().Get("secret"); !awsIAMEnabled && secret != "" {
 		resourceReference, err = resourcereferences.Create(ctx, b, "elasticsearch", secret, &corev1.Secret{})
 	} else {
 		err = resourcereferences.Delete(ctx, b, "elasticsearch")
@@ -109,6 +115,10 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 		Env("OPENSEARCH_INDEX", "stacks"),
 		Env("STACK", b.Spec.Stack),
 	}
+	if awsIAMEnabled {
+		env = append(env, Env("AWS_IAM_ENABLED", "true"))
+	}
+
 	if b.Spec.Batching != nil {
 		if b.Spec.Batching.Count != 0 {
 			env = append(env, Env("OPENSEARCH_BATCHING_COUNT", fmt.Sprint(b.Spec.Batching.Count)))
@@ -281,11 +291,6 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 	sort.Slice(streams, func(i, j int) bool {
 		return streams[i].Name < streams[j].Name
 	})
-
-	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
-	if err != nil {
-		return err
-	}
 
 	_, err = deployments.CreateOrUpdate(ctx, b, "benthos",
 		resourcereferences.Annotate[*appsv1.Deployment]("elasticsearch-secret-hash", resourceReference),
