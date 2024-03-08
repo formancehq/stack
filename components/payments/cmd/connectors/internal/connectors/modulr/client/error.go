@@ -42,6 +42,7 @@ func unmarshalError(statusCode int, body io.ReadCloser, withRetry bool) *modulrE
 	if len(ces) == 0 {
 		return &modulrError{
 			StatusCode: statusCode,
+			WithRetry:  withRetry,
 		}
 	}
 

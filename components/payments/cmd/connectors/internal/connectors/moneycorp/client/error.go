@@ -44,6 +44,7 @@ func unmarshalError(statusCode int, body io.ReadCloser, withRetry bool) *moneyco
 	if len(ces.Errors) == 0 {
 		return &moneycorpError{
 			StatusCode: statusCode,
+			WithRetry:  withRetry,
 		}
 	}
 
