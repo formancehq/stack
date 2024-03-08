@@ -262,6 +262,12 @@ paths:
         - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/Cursor'
         - $ref: '#/components/parameters/Sort'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
       responses:
         '200':
           $ref: '#/components/responses/Accounts'

@@ -1621,6 +1621,9 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Payments.PaymentslistAccounts(ctx, operations.PaymentslistAccountsRequest{
+        RequestBody: map[string]interface{}{
+            "key": "string",
+        },
         Cursor: v2.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
         Sort: []string{
             "string",
