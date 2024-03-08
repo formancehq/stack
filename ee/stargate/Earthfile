@@ -86,3 +86,10 @@ tidy:
     COPY --pass-args (+sources/src) /src
     WORKDIR /src/ee/stargate
     DO --pass-args stack+GO_TIDY
+
+grpc-generate:
+    FROM core+grpc-base
+    LET protoName=stargate.proto
+    COPY $protoName .
+    DO core+GRPC_GEN --protoName=$protoName
+    SAVE ARTIFACT generated AS LOCAL internal/generated

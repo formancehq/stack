@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package formance.stargate.api;
+package server;
 
-option go_package = "github.com/formancehq/stack/components/stargate/internal/api";
+option go_package = "github.com/formancehq/stack/components/stargate/internal/generated";
 
 message Values { repeated string values = 1; }
 

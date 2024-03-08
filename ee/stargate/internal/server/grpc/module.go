@@ -5,7 +5,7 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/formancehq/stack/components/stargate/internal/api"
+	"github.com/formancehq/stack/components/stargate/internal/generated"
 	"github.com/formancehq/stack/components/stargate/internal/server/grpc/interceptors"
 	"github.com/formancehq/stack/components/stargate/internal/server/grpc/metrics"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -91,7 +91,7 @@ func newGrpcServer(
 		),
 	)
 
-	api.RegisterStargateServiceServer(grpcSrv, srv)
+	generated.RegisterStargateServiceServer(grpcSrv, srv)
 	grpc_health_v1.RegisterHealthServer(grpcSrv, health.NewServer())
 	reflection.Register(grpcSrv)
 

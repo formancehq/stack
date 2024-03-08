@@ -6,11 +6,11 @@ import (
 	"crypto/x509"
 	"fmt"
 
-	"github.com/formancehq/stack/components/stargate/internal/api"
 	"github.com/formancehq/stack/components/stargate/internal/client/controllers"
 	"github.com/formancehq/stack/components/stargate/internal/client/interceptors"
 	"github.com/formancehq/stack/components/stargate/internal/client/metrics"
 	"github.com/formancehq/stack/components/stargate/internal/client/routes"
+	"github.com/formancehq/stack/components/stargate/internal/generated"
 	"github.com/formancehq/stack/components/stargate/internal/server/http/middlewares"
 	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
@@ -52,7 +52,7 @@ func Module(
 		}),
 
 		fx.Provide(interceptors.NewAuthInterceptor),
-		fx.Provide(func(l logging.Logger, authInterceptor *interceptors.AuthInterceptor) (api.StargateServiceClient, error) {
+		fx.Provide(func(l logging.Logger, authInterceptor *interceptors.AuthInterceptor) (generated.StargateServiceClient, error) {
 			return newGrpcClient(l, serverURL, tlsEnabled, tlsCACertificate, tlsInsecureSkipVerify, authInterceptor)
 		}),
 		fx.Provide(fx.Annotate(noop.NewMeterProvider, fx.As(new(metric.MeterProvider)))),
@@ -93,7 +93,7 @@ func newGrpcClient(
 	tlsCACertificate string,
 	tlsInsecureSkipVerify bool,
 	authInterceptors *interceptors.AuthInterceptor,
-) (api.StargateServiceClient, error) {
+) (generated.StargateServiceClient, error) {
 	var credential credentials.TransportCredentials
 	if !tlsEnabled {
 		logger.Infof("TLS not enabled")
@@ -134,5 +134,5 @@ func newGrpcClient(
 		return nil, err
 	}
 
-	return api.NewStargateServiceClient(conn), nil
+	return generated.NewStargateServiceClient(conn), nil
 }

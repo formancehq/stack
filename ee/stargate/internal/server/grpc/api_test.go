@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/formancehq/stack/components/stargate/internal/api"
+	"github.com/formancehq/stack/components/stargate/internal/generated"
 	"github.com/formancehq/stack/components/stargate/internal/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -24,21 +24,21 @@ func TestStream(t *testing.T) {
 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
-	responseChan := make(chan *api.StargateClientMessage)
+	responseChan := make(chan *generated.StargateClientMessage)
 	incomingMessageChan := client.RunStream(t, ctx, organizationID, stackID, responseChan)
 
 	type testCase struct {
 		name     string
-		ev       *api.StargateServerMessage
-		response *api.StargateClientMessage
+		ev       *generated.StargateServerMessage
+		response *generated.StargateClientMessage
 	}
 
 	testCases := []*testCase{
 		{
 			name: "success",
-			ev: &api.StargateServerMessage{
-				Event: &api.StargateServerMessage_ApiCall{
-					ApiCall: &api.StargateServerMessage_APICall{
+			ev: &generated.StargateServerMessage{
+				Event: &generated.StargateServerMessage_ApiCall{
+					ApiCall: &generated.StargateServerMessage_APICall{
 						Method:  http.MethodGet,
 						Path:    "/api/ledger",
 						Query:   nil,
@@ -47,9 +47,9 @@ func TestStream(t *testing.T) {
 					},
 				},
 			},
-			response: &api.StargateClientMessage{
-				Event: &api.StargateClientMessage_ApiCallResponse{
-					ApiCallResponse: &api.StargateClientMessage_APICallResponse{
+			response: &generated.StargateClientMessage{
+				Event: &generated.StargateClientMessage_ApiCallResponse{
+					ApiCallResponse: &generated.StargateClientMessage_APICallResponse{
 						StatusCode: 204,
 						Body:       nil,
 						Headers:    nil,
@@ -59,18 +59,18 @@ func TestStream(t *testing.T) {
 		},
 		{
 			name: "success with query, body and headers",
-			ev: &api.StargateServerMessage{
-				Event: &api.StargateServerMessage_ApiCall{
-					ApiCall: &api.StargateServerMessage_APICall{
+			ev: &generated.StargateServerMessage{
+				Event: &generated.StargateServerMessage_ApiCall{
+					ApiCall: &generated.StargateServerMessage_APICall{
 						Method: http.MethodGet,
 						Path:   "/api/ledger",
-						Query: map[string]*api.Values{
+						Query: map[string]*generated.Values{
 							"foo": {
 								Values: []string{"bar"},
 							},
 						},
 						Body: []byte(`{"foo":"bar"}`),
-						Headers: map[string]*api.Values{
+						Headers: map[string]*generated.Values{
 							"fake-auth": {
 								Values: []string{"fake-token"},
 							},
@@ -78,12 +78,12 @@ func TestStream(t *testing.T) {
 					},
 				},
 			},
-			response: &api.StargateClientMessage{
-				Event: &api.StargateClientMessage_ApiCallResponse{
-					ApiCallResponse: &api.StargateClientMessage_APICallResponse{
+			response: &generated.StargateClientMessage{
+				Event: &generated.StargateClientMessage_ApiCallResponse{
+					ApiCallResponse: &generated.StargateClientMessage_APICallResponse{
 						StatusCode: 200,
 						Body:       []byte(`{"bar":"baz"}`),
-						Headers: map[string]*api.Values{
+						Headers: map[string]*generated.Values{
 							"fake-headers": {
 								Values: []string{"fake-value"},
 							},
@@ -105,8 +105,8 @@ func TestStream(t *testing.T) {
 				return
 			case ev := <-incomingMessageChan:
 				switch serverMsg := ev.Event.(type) {
-				case *api.StargateServerMessage_ApiCall:
-					testCaseMsg := testCase.ev.Event.(*api.StargateServerMessage_ApiCall)
+				case *generated.StargateServerMessage_ApiCall:
+					testCaseMsg := testCase.ev.Event.(*generated.StargateServerMessage_ApiCall)
 					assert.Equal(t, testCaseMsg.ApiCall.Method, serverMsg.ApiCall.Method)
 					assert.Equal(t, testCaseMsg.ApiCall.Path, serverMsg.ApiCall.Path)
 					for k, v := range testCaseMsg.ApiCall.Query {
@@ -123,11 +123,11 @@ func TestStream(t *testing.T) {
 						return
 					case responseChan <- testCase.response:
 					}
-				case *api.StargateServerMessage_Ping_:
-					responseChan <- &api.StargateClientMessage{
+				case *generated.StargateServerMessage_Ping_:
+					responseChan <- &generated.StargateClientMessage{
 						CorrelationId: ev.CorrelationId,
-						Event: &api.StargateClientMessage_Pong_{
-							Pong: &api.StargateClientMessage_Pong{},
+						Event: &generated.StargateClientMessage_Pong_{
+							Pong: &generated.StargateClientMessage_Pong{},
 						},
 					}
 				}
@@ -139,12 +139,12 @@ func TestStream(t *testing.T) {
 		cancel()
 		require.NoError(t, err)
 
-		var response api.StargateClientMessage
+		var response generated.StargateClientMessage
 		err = proto.Unmarshal(resp.Data, &response)
 		require.NoError(t, err)
 
-		testCaseMsg := testCase.response.Event.(*api.StargateClientMessage_ApiCallResponse)
-		responseMsg := response.Event.(*api.StargateClientMessage_ApiCallResponse)
+		testCaseMsg := testCase.response.Event.(*generated.StargateClientMessage_ApiCallResponse)
+		responseMsg := response.Event.(*generated.StargateClientMessage_ApiCallResponse)
 		assert.Equal(t, testCase.response.CorrelationId, response.CorrelationId)
 		assert.Equal(t, testCaseMsg.ApiCallResponse.StatusCode, responseMsg.ApiCallResponse.StatusCode)
 		for k, v := range testCaseMsg.ApiCallResponse.Headers {
