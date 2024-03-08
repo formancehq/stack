@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/formancehq/stack/components/stargate/internal/api"
+	"github.com/formancehq/stack/components/stargate/internal/generated"
 	stargateserver "github.com/formancehq/stack/components/stargate/internal/server/grpc"
 	"github.com/formancehq/stack/components/stargate/internal/server/grpc/metrics"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -50,7 +50,7 @@ func TestMain(m *testing.M) {
 	lis = bufconn.Listen(bufSize)
 	srv := grpc.NewServer()
 	defer srv.GracefulStop()
-	api.RegisterStargateServiceServer(srv, stargateserver.NewServer(logging.Testing(), nc, metrics.NewNoOpMetricsRegistry()))
+	generated.RegisterStargateServiceServer(srv, stargateserver.NewServer(logging.Testing(), nc, metrics.NewNoOpMetricsRegistry()))
 
 	go func() {
 		if err := srv.Serve(lis); err != nil {
@@ -71,7 +71,7 @@ func bufDialer(context.Context, string) (net.Conn, error) {
 
 type Client struct {
 	conn           *grpc.ClientConn
-	stargateClient api.StargateServiceClient
+	stargateClient generated.StargateServiceClient
 }
 
 func NewClient() *Client {
@@ -86,7 +86,7 @@ func NewClient() *Client {
 
 	return &Client{
 		conn:           conn,
-		stargateClient: api.NewStargateServiceClient(conn),
+		stargateClient: generated.NewStargateServiceClient(conn),
 	}
 }
 
@@ -94,13 +94,13 @@ func (c *Client) Close() error {
 	return c.conn.Close()
 }
 
-func (c *Client) RunStream(t *testing.T, ctx context.Context, organizationID, stackID string, responseChan chan *api.StargateClientMessage) chan *api.StargateServerMessage {
+func (c *Client) RunStream(t *testing.T, ctx context.Context, organizationID, stackID string, responseChan chan *generated.StargateClientMessage) chan *generated.StargateServerMessage {
 	ctx = metadata.AppendToOutgoingContext(ctx, "organization-id", organizationID, "stack-id", stackID)
 	stream, err := c.stargateClient.Stargate(ctx)
 	require.NoError(t, err)
 	time.Sleep(100 * time.Millisecond)
 
-	incomingMessageChan := make(chan *api.StargateServerMessage)
+	incomingMessageChan := make(chan *generated.StargateServerMessage)
 	go func() {
 		for {
 			select {

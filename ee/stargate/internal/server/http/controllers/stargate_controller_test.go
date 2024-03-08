@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	service "github.com/formancehq/stack/components/stargate/internal/api"
+	"github.com/formancehq/stack/components/stargate/internal/generated"
 	"github.com/formancehq/stack/components/stargate/internal/server/http/controllers"
 	"github.com/formancehq/stack/components/stargate/internal/server/http/opentelemetry"
 	"github.com/formancehq/stack/components/stargate/internal/server/http/routes"
@@ -44,7 +44,7 @@ func TestStargateController(t *testing.T) {
 		method             string
 		queryParams        url.Values
 		url                string
-		response           service.StargateClientMessage
+		response           generated.StargateClientMessage
 		expectedStatusCode int
 		expectedHeaders    http.Header
 		expectedBody       []byte
@@ -58,12 +58,12 @@ func TestStargateController(t *testing.T) {
 				"metadata[roles]": []string{"admin"},
 			},
 			url: "http://test.staging.formance.cloud/" + organizationID + "/" + stackID + "/api/ledger",
-			response: service.StargateClientMessage{
-				Event: &service.StargateClientMessage_ApiCallResponse{
-					ApiCallResponse: &service.StargateClientMessage_APICallResponse{
+			response: generated.StargateClientMessage{
+				Event: &generated.StargateClientMessage_ApiCallResponse{
+					ApiCallResponse: &generated.StargateClientMessage_APICallResponse{
 						StatusCode: 204,
 						Body:       []byte{},
-						Headers:    map[string]*service.Values{},
+						Headers:    map[string]*generated.Values{},
 					},
 				},
 			},
@@ -80,12 +80,12 @@ func TestStargateController(t *testing.T) {
 				"metadata[roles]": []string{"admin"},
 			},
 			url: "http://test.staging.formance.cloud/notfoundtest/test/api/ledger",
-			response: service.StargateClientMessage{
-				Event: &service.StargateClientMessage_ApiCallResponse{
-					ApiCallResponse: &service.StargateClientMessage_APICallResponse{
+			response: generated.StargateClientMessage{
+				Event: &generated.StargateClientMessage_ApiCallResponse{
+					ApiCallResponse: &generated.StargateClientMessage_APICallResponse{
 						StatusCode: 204,
 						Body:       []byte{},
-						Headers:    map[string]*service.Values{},
+						Headers:    map[string]*generated.Values{},
 					},
 				},
 			},
@@ -103,12 +103,12 @@ func TestStargateController(t *testing.T) {
 				"metadata[roles]": []string{"admin"},
 			},
 			url: "http://test.staging.formance.cloud/api/ledger",
-			response: service.StargateClientMessage{
-				Event: &service.StargateClientMessage_ApiCallResponse{
-					ApiCallResponse: &service.StargateClientMessage_APICallResponse{
+			response: generated.StargateClientMessage{
+				Event: &generated.StargateClientMessage_ApiCallResponse{
+					ApiCallResponse: &generated.StargateClientMessage_APICallResponse{
 						StatusCode: 204,
 						Body:       []byte{},
-						Headers:    map[string]*service.Values{},
+						Headers:    map[string]*generated.Values{},
 					},
 				},
 			},
@@ -126,12 +126,12 @@ func TestStargateController(t *testing.T) {
 				"metadata[roles]": []string{"admin"},
 			},
 			url: "http://test.staging.formance.cloud/" + organizationID + "/1234/api/ledger",
-			response: service.StargateClientMessage{
-				Event: &service.StargateClientMessage_ApiCallResponse{
-					ApiCallResponse: &service.StargateClientMessage_APICallResponse{
+			response: generated.StargateClientMessage{
+				Event: &generated.StargateClientMessage_ApiCallResponse{
+					ApiCallResponse: &generated.StargateClientMessage_APICallResponse{
 						StatusCode: 204,
 						Body:       []byte{},
-						Headers:    map[string]*service.Values{},
+						Headers:    map[string]*generated.Values{},
 					},
 				},
 			},
@@ -149,12 +149,12 @@ func TestStargateController(t *testing.T) {
 				"metadata[roles]": []string{"admin"},
 			},
 			url: "http://test.staging.formance.cloud/",
-			response: service.StargateClientMessage{
-				Event: &service.StargateClientMessage_ApiCallResponse{
-					ApiCallResponse: &service.StargateClientMessage_APICallResponse{
+			response: generated.StargateClientMessage{
+				Event: &generated.StargateClientMessage_ApiCallResponse{
+					ApiCallResponse: &generated.StargateClientMessage_APICallResponse{
 						StatusCode: 204,
 						Body:       []byte{},
-						Headers:    map[string]*service.Values{},
+						Headers:    map[string]*generated.Values{},
 					},
 				},
 			},
@@ -170,7 +170,7 @@ func TestStargateController(t *testing.T) {
 	for _, test := range testCases {
 		testCase := test
 		sub, err := nc.QueueSubscribe(natsSubject, natsSubject, func(msg *nats.Msg) {
-			var request service.StargateServerMessage
+			var request generated.StargateServerMessage
 			if err := proto.Unmarshal(msg.Data, &request); err != nil {
 				t.Fatal(err)
 			}

@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	service "github.com/formancehq/stack/components/stargate/internal/api"
+	"github.com/formancehq/stack/components/stargate/internal/generated"
 	"github.com/formancehq/stack/components/stargate/internal/opentelemetry"
 	"github.com/formancehq/stack/components/stargate/internal/utils"
 	"github.com/formancehq/stack/libs/go-libs/api"
@@ -66,7 +66,7 @@ func (s *StargateController) HandleCalls(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	var response service.StargateClientMessage
+	var response generated.StargateClientMessage
 	if err = proto.Unmarshal(resp.Data, &response); err != nil {
 		status = ResponseError(w, r, errors.Wrapf(err, "failed to unmarshal response"))
 		return
@@ -75,7 +75,7 @@ func (s *StargateController) HandleCalls(w http.ResponseWriter, r *http.Request)
 	s.logger.Debugf("[HTTP] received response for %s with path: %s", subject, r.URL.Path)
 
 	switch ev := response.Event.(type) {
-	case *service.StargateClientMessage_ApiCallResponse:
+	case *generated.StargateClientMessage_ApiCallResponse:
 		for k, v := range ev.ApiCallResponse.Headers {
 			for _, vv := range v.Values {
 				w.Header().Add(k, vv)
@@ -113,10 +113,10 @@ func getOrganizationAndStackID(r *http.Request) (string, string, error) {
 	return organizationID, stackID, nil
 }
 
-func requestToProto(r *http.Request) (*service.StargateServerMessage, error) {
-	urlQuery := make(map[string]*service.Values)
+func requestToProto(r *http.Request) (*generated.StargateServerMessage, error) {
+	urlQuery := make(map[string]*generated.Values)
 	for k, v := range r.URL.Query() {
-		urlQuery[k] = &service.Values{Values: v}
+		urlQuery[k] = &generated.Values{Values: v}
 	}
 
 	body, err := io.ReadAll(r.Body)
@@ -124,17 +124,17 @@ func requestToProto(r *http.Request) (*service.StargateServerMessage, error) {
 		return nil, err
 	}
 
-	headers := make(map[string]*service.Values)
+	headers := make(map[string]*generated.Values)
 	for k, v := range r.Header {
-		headers[k] = &service.Values{Values: v}
+		headers[k] = &generated.Values{Values: v}
 	}
 
 	carrier := propagation.MapCarrier{}
 	opentelemetry.Propagator.Inject(r.Context(), carrier)
 
-	return &service.StargateServerMessage{
-		Event: &service.StargateServerMessage_ApiCall{
-			ApiCall: &service.StargateServerMessage_APICall{
+	return &generated.StargateServerMessage{
+		Event: &generated.StargateServerMessage_ApiCall{
+			ApiCall: &generated.StargateServerMessage_APICall{
 				Method:      r.Method,
 				Path:        r.URL.Path,
 				Query:       urlQuery,

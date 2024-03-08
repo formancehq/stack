@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/formancehq/stack/components/stargate/internal/api"
+	"github.com/formancehq/stack/components/stargate/internal/generated"
 	"github.com/formancehq/stack/components/stargate/internal/server/grpc/metrics"
 	"github.com/formancehq/stack/components/stargate/internal/utils"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -24,7 +24,7 @@ import (
 )
 
 type Server struct {
-	api.UnimplementedStargateServiceServer
+	generated.UnimplementedStargateServiceServer
 
 	logger          logging.Logger
 	natsConn        *nats.Conn
@@ -52,7 +52,7 @@ type waitingPingResponse struct {
 	resp chan struct{}
 }
 
-func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
+func (s *Server) Stargate(stream generated.StargateService_StargateServer) error {
 	ctx := stream.Context()
 	organizationID, stackID, err := orgaAndStackIDFromIncomingContext(ctx)
 	if err != nil {
@@ -99,13 +99,13 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 				}
 			}
 
-			var request api.StargateServerMessage
+			var request generated.StargateServerMessage
 			if err := proto.Unmarshal(msg.Data, &request); err != nil {
 				return err
 			}
 
 			switch ev := request.Event.(type) {
-			case *api.StargateServerMessage_ApiCall:
+			case *generated.StargateServerMessage_ApiCall:
 				logger.WithFields(map[string]any{
 					"path": ev.ApiCall.Path,
 				}).Debug("[GRPC] stream api call request received")
@@ -138,7 +138,7 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 			}
 
 			switch in.Event.(type) {
-			case *api.StargateClientMessage_ApiCallResponse:
+			case *generated.StargateClientMessage_ApiCallResponse:
 				logger.Debugf("[GRPC] stream api call response received")
 
 				entry, ok := waitingResponses.LoadAndDelete(in.CorrelationId)
@@ -160,7 +160,7 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 				if err := wr.msg.Respond(data); err != nil {
 					return err
 				}
-			case *api.StargateClientMessage_Pong_:
+			case *generated.StargateClientMessage_Pong_:
 				entry, ok := waitingPingResponses.LoadAndDelete(in.CorrelationId)
 				if !ok {
 					continue
@@ -186,9 +186,9 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 					resp: resp,
 				})
 
-				if err := stream.Send(&api.StargateServerMessage{
+				if err := stream.Send(&generated.StargateServerMessage{
 					CorrelationId: correlationID,
-					Event:         &api.StargateServerMessage_Ping_{Ping: &api.StargateServerMessage_Ping{}},
+					Event:         &generated.StargateServerMessage_Ping_{Ping: &generated.StargateServerMessage_Ping{}},
 				}); err != nil {
 					return err
 				}

@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/alitto/pond"
-	"github.com/formancehq/stack/components/stargate/internal/api"
 	"github.com/formancehq/stack/components/stargate/internal/client/metrics"
+	"github.com/formancehq/stack/components/stargate/internal/generated"
 	"github.com/formancehq/stack/components/stargate/internal/opentelemetry"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/otel/attribute"
@@ -65,7 +65,7 @@ func NewClientConfig(
 type Client struct {
 	logger         logging.Logger
 	config         Config
-	stargateClient api.StargateServiceClient
+	stargateClient generated.StargateServiceClient
 	httpClient     *http.Client
 
 	workerPool      *pond.WorkerPool
@@ -74,7 +74,7 @@ type Client struct {
 
 func NewClient(
 	l logging.Logger,
-	stargateClient api.StargateServiceClient,
+	stargateClient generated.StargateServiceClient,
 	clientConfig Config,
 	workerPoolConfig WorkerPoolConfig,
 	metricsRegistry metrics.MetricsRegistry,
@@ -99,7 +99,7 @@ func NewClient(
 }
 
 type ResponseChanEvent struct {
-	msg *api.StargateClientMessage
+	msg *generated.StargateClientMessage
 	err error
 }
 
@@ -189,11 +189,11 @@ func (c *Client) Run(ctx context.Context) error {
 	return eg.Wait()
 }
 
-func (c *Client) Forward(ctx context.Context, in *api.StargateServerMessage) *ResponseChanEvent {
+func (c *Client) Forward(ctx context.Context, in *generated.StargateServerMessage) *ResponseChanEvent {
 	attrs := []attribute.KeyValue{}
 
 	switch ev := in.Event.(type) {
-	case *api.StargateServerMessage_ApiCall:
+	case *generated.StargateServerMessage_ApiCall:
 
 		ctx = opentelemetry.Propagator.Extract(ctx, propagation.MapCarrier(ev.ApiCall.OtlpContext))
 
@@ -232,12 +232,12 @@ func (c *Client) Forward(ctx context.Context, in *api.StargateServerMessage) *Re
 			c.logger.Errorf("error making http request: %v", err)
 			return &ResponseChanEvent{
 				err: nil,
-				msg: &api.StargateClientMessage{
+				msg: &generated.StargateClientMessage{
 					CorrelationId: in.CorrelationId,
-					Event: &api.StargateClientMessage_ApiCallResponse{ApiCallResponse: &api.StargateClientMessage_APICallResponse{
+					Event: &generated.StargateClientMessage_ApiCallResponse{ApiCallResponse: &generated.StargateClientMessage_APICallResponse{
 						StatusCode: http.StatusInternalServerError,
 						Body:       []byte{},
-						Headers:    map[string]*api.Values{},
+						Headers:    map[string]*generated.Values{},
 					}},
 				},
 			}
@@ -252,9 +252,9 @@ func (c *Client) Forward(ctx context.Context, in *api.StargateServerMessage) *Re
 			}
 		}
 
-		headers := make(map[string]*api.Values)
+		headers := make(map[string]*generated.Values)
 		for k, v := range resp.Header {
-			headers[k] = &api.Values{
+			headers[k] = &generated.Values{
 				Values: v,
 			}
 		}
@@ -264,22 +264,22 @@ func (c *Client) Forward(ctx context.Context, in *api.StargateServerMessage) *Re
 
 		return &ResponseChanEvent{
 			err: nil,
-			msg: &api.StargateClientMessage{
+			msg: &generated.StargateClientMessage{
 				CorrelationId: in.CorrelationId,
-				Event: &api.StargateClientMessage_ApiCallResponse{ApiCallResponse: &api.StargateClientMessage_APICallResponse{
+				Event: &generated.StargateClientMessage_ApiCallResponse{ApiCallResponse: &generated.StargateClientMessage_APICallResponse{
 					StatusCode: int32(resp.StatusCode),
 					Body:       body,
 					Headers:    headers,
 				}},
 			},
 		}
-	case *api.StargateServerMessage_Ping_:
+	case *generated.StargateServerMessage_Ping_:
 		return &ResponseChanEvent{
 			err: nil,
-			msg: &api.StargateClientMessage{
+			msg: &generated.StargateClientMessage{
 				CorrelationId: in.CorrelationId,
-				Event: &api.StargateClientMessage_Pong_{
-					Pong: &api.StargateClientMessage_Pong{},
+				Event: &generated.StargateClientMessage_Pong_{
+					Pong: &generated.StargateClientMessage_Pong{},
 				},
 			},
 		}
