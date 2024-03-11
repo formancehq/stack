@@ -8,7 +8,6 @@ import (
 
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
-	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -32,31 +31,8 @@ func NewRootCommand() *cobra.Command {
 	version := newVersion()
 	root.AddCommand(version)
 
-	server := newServer()
-	root.AddCommand(server)
-
 	client := newClient()
 	root.AddCommand(client)
-
-	publish.InitCLIFlags(server, func(cd *publish.ConfigDefault) {
-		// We want to override the default values of flags here in order for the
-		// Max reconnect flag to be set to -1, which means infinite reconnects.
-		// NOTE(polo): the value provided in the env vars will still override
-		// this one, so make sure to check if the value is set or not in the env
-		// vars
-		cd.PublisherNatsMaxReconnect = -1
-	})
-	server.Flags().String(serviceHttpAddrFlag, "localhost:8080", "Listen address for http API")
-	server.Flags().String(serviceGrpcAddrFlag, "localhost:3068", "Listen address for grpc API")
-	server.Flags().String(authIssuerURLFlag, "", "JWKS URL")
-	server.Flags().Int(maxRetriesJWKSFetchingFlag, 3, "Max retries for fetching JWKS")
-	server.Flags().Duration(natsRequestTimeout, 10*time.Second, "NATS request timeout (in seconds)")
-	if err := viper.BindPFlags(server.Flags()); err != nil {
-		panic(err)
-	}
-	if err := viper.BindPFlags(server.PersistentFlags()); err != nil {
-		panic(err)
-	}
 
 	client.Flags().String(organizationIDFlag, "", "Organization ID")
 	client.Flags().String(stackIDFlag, "", "Stack ID")

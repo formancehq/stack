@@ -1,6 +1,6 @@
 package main
 
-import "github.com/formancehq/stack/components/stargate/cmd"
+import "github.com/formancehq/stack/ee/stargate/cmd"
 
 func main() {
 	cmd.Execute()
