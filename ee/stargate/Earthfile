@@ -49,18 +49,6 @@ deploy:
     END
     FROM --pass-args core+vcluster-deployer-image
     RUN kubectl patch Versions.formance.com default -p "{\"spec\":{\"stargate\": \"${tag}\"}}" --type=merge
-    COPY .earthly/stargate-values.yaml stargate-values.yaml
-    COPY helm helm
-    ARG --required user
-    RUN --secret tld helm upgrade --namespace formance-system --create-namespace --install formance-stargate ./helm \
-        -f stargate-values.yaml \
-        --set config.auth_issuer_url=https://$user.$tld/api \
-        --set image.tag=$tag
-    COPY .earthly/ingress ingress-chart
-    RUN --secret tld helm upgrade --install stargate-ingress ./ingress-chart \
-        --namespace formance-system \
-        --set user=$user \
-        --set tld=$tld
 
 lint:
     FROM core+builder-image
@@ -74,7 +62,7 @@ lint:
 
 pre-commit:
     WAIT
-      BUILD --pass-args +tidy
+        BUILD --pass-args +tidy
     END
     BUILD --pass-args +lint
 

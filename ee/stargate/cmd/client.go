@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"github.com/formancehq/stack/components/stargate/internal/client"
-	"github.com/formancehq/stack/components/stargate/internal/client/controllers"
-	"github.com/formancehq/stack/components/stargate/internal/client/interceptors"
+	"github.com/formancehq/stack/ee/stargate/internal/client"
+	"github.com/formancehq/stack/ee/stargate/internal/client/controllers"
+	"github.com/formancehq/stack/ee/stargate/internal/client/interceptors"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	app "github.com/formancehq/stack/libs/go-libs/service"

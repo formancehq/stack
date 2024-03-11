@@ -1,4 +1,4 @@
-package metrics
+package grpcmetrics
 
 import (
 	"go.opentelemetry.io/otel"

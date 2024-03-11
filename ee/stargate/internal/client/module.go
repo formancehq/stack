@@ -6,16 +6,16 @@ import (
 	"crypto/x509"
 	"fmt"
 
-	"github.com/formancehq/stack/components/stargate/internal/client/controllers"
-	"github.com/formancehq/stack/components/stargate/internal/client/interceptors"
-	"github.com/formancehq/stack/components/stargate/internal/client/metrics"
-	"github.com/formancehq/stack/components/stargate/internal/client/routes"
-	"github.com/formancehq/stack/components/stargate/internal/generated"
-	"github.com/formancehq/stack/components/stargate/internal/server/http/middlewares"
+	"github.com/formancehq/stack/ee/stargate/internal/client/controllers"
+	"github.com/formancehq/stack/ee/stargate/internal/client/interceptors"
+	"github.com/formancehq/stack/ee/stargate/internal/client/routes"
+	"github.com/formancehq/stack/ee/stargate/internal/generated"
+	metrics "github.com/formancehq/stack/ee/stargate/internal/grpcmetrics"
+	"github.com/formancehq/stack/ee/stargate/internal/middlewares"
 	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	app "github.com/formancehq/stack/libs/go-libs/service"
+	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/go-chi/chi/v5"
 	"github.com/spf13/viper"
 	"go.opentelemetry.io/otel/metric"
@@ -40,7 +40,7 @@ func Module(
 		fx.Provide(controllers.NewStargateController),
 		health.Module(),
 		fx.Invoke(func(lc fx.Lifecycle, h chi.Router, l logging.Logger) {
-			if viper.GetBool(app.DebugFlag) {
+			if viper.GetBool(service.DebugFlag) {
 				wrappedRouter := chi.NewRouter()
 				wrappedRouter.Use(middlewares.Log())
 				wrappedRouter.Mount("/", h)
