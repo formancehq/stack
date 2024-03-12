@@ -83,7 +83,6 @@ func (s *Storage) GetAccount(ctx context.Context, id string) (*models.Account, e
 
 	err := s.db.NewSelect().
 		Model(&account).
-		Relation("Connector").
 		Relation("PoolAccounts").
 		Where("account.id = ?", id).
 		Scan(ctx)

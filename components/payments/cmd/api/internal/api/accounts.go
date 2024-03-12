@@ -73,15 +73,12 @@ func listAccountsHandler(b backend.Backend) http.HandlerFunc {
 				Reference:       ret[i].Reference,
 				CreatedAt:       ret[i].CreatedAt,
 				ConnectorID:     ret[i].ConnectorID.String(),
+				Provider:        ret[i].ConnectorID.Provider.String(),
 				DefaultCurrency: ret[i].DefaultAsset.String(),
 				DefaultAsset:    ret[i].DefaultAsset.String(),
 				AccountName:     ret[i].AccountName,
 				Type:            accountType.String(),
 				Raw:             ret[i].RawData,
-			}
-
-			if ret[i].Connector != nil {
-				data[i].Provider = ret[i].Connector.Provider.String()
 			}
 
 			if ret[i].Metadata != nil {
@@ -143,15 +140,12 @@ func readAccountHandler(b backend.Backend) http.HandlerFunc {
 			Reference:       account.Reference,
 			CreatedAt:       account.CreatedAt,
 			ConnectorID:     account.ConnectorID.String(),
+			Provider:        account.ConnectorID.Provider.String(),
 			DefaultCurrency: account.DefaultAsset.String(),
 			DefaultAsset:    account.DefaultAsset.String(),
 			AccountName:     account.AccountName,
 			Type:            accountType.String(),
 			Raw:             account.RawData,
-		}
-
-		if account.Connector != nil {
-			data.Provider = account.Connector.Provider.String()
 		}
 
 		if account.Metadata != nil {

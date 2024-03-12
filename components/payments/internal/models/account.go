@@ -26,7 +26,6 @@ type Account struct {
 
 	RawData json.RawMessage
 
-	Connector    *Connector      `bun:"rel:has-one,join:connector_id=id"`
 	PoolAccounts []*PoolAccounts `bun:"rel:has-many,join:id=account_id"`
 }
 
