@@ -107,24 +107,14 @@ jobs:
           fetch-depth: 0
       - name: Setup Env
         uses: ./.github/actions/env
-      - name: Generate SDK
+      - name: Generate OpenAPI final specification
         run: >
-          earthly
-          --allow-privileged
-          --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY
-          ./releases+sdk-generate-all --version=${{github.ref_name}}
-        env:
-          SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
-      - name: Publish SDK
+          earthly +build-final-spec --version=${{github.ref_name}}
+      - name: Add the OpenAPI file to the release assets
         run: >
-          earthly
-          --allow-privileged
-          --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY
-          --secret GITHUB_TOKEN=$GITHUB_TOKEN
-          ./releases+sdk-publish-all --version=${{github.ref_name}}
+          gh release upload ${{github.ref_name}} ./releases/build/generate.json#openapi.json
         env:
-          GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
-          SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   Helm:
     runs-on: "ubuntu-latest"
