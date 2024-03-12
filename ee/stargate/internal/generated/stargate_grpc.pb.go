@@ -34,7 +34,7 @@ func NewStargateServiceClient(cc grpc.ClientConnInterface) StargateServiceClient
 }
 
 func (c *stargateServiceClient) Stargate(ctx context.Context, opts ...grpc.CallOption) (StargateService_StargateClient, error) {
-	stream, err := c.cc.NewStream(ctx, &StargateService_ServiceDesc.Streams[0], "/server.StargateService/Stargate", opts...)
+	stream, err := c.cc.NewStream(ctx, &StargateService_ServiceDesc.Streams[0], "/formance.stargate.api.StargateService/Stargate", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +122,7 @@ func (x *stargateServiceStargateServer) Recv() (*StargateClientMessage, error) {
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var StargateService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "server.StargateService",
+	ServiceName: "formance.stargate.api.StargateService",
 	HandlerType: (*StargateServiceServer)(nil),
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
