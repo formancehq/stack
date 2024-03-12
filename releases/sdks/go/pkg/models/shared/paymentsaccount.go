@@ -20,6 +20,7 @@ type PaymentsAccount struct {
 	ID              string              `json:"id"`
 	Metadata        map[string]string   `json:"metadata"`
 	Pools           []string            `json:"pools,omitempty"`
+	Provider        *string             `json:"provider,omitempty"`
 	Raw             *PaymentsAccountRaw `json:"raw"`
 	Reference       string              `json:"reference"`
 	Type            string              `json:"type"`
@@ -90,6 +91,13 @@ func (o *PaymentsAccount) GetPools() []string {
 		return nil
 	}
 	return o.Pools
+}
+
+func (o *PaymentsAccount) GetProvider() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Provider
 }
 
 func (o *PaymentsAccount) GetRaw() *PaymentsAccountRaw {

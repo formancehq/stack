@@ -177,9 +177,6 @@ func TestListAccounts(t *testing.T) {
 					Metadata: map[string]string{
 						"foo": "bar",
 					},
-					Connector: &models.Connector{
-						Provider: models.ConnectorProviderDummyPay,
-					},
 				},
 				{
 					ID: models.AccountID{Reference: "acc2", ConnectorID: models.ConnectorID{Reference: uuid.New(), Provider: models.ConnectorProviderDummyPay}},
@@ -190,9 +187,6 @@ func TestListAccounts(t *testing.T) {
 					CreatedAt: time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
 					Reference: "acc2",
 					Type:      models.AccountTypeExternalFormance,
-					Connector: &models.Connector{
-						Provider: models.ConnectorProviderDummyPay,
-					},
 				},
 			}
 
@@ -367,9 +361,6 @@ func TestGetAccount(t *testing.T) {
 					Metadata: map[string]string{
 						"foo": "bar",
 					},
-					Connector: &models.Connector{
-						Provider: models.ConnectorProviderDummyPay,
-					},
 				}
 
 				expectedAccountsResponse = &accountResponse{
@@ -395,9 +386,6 @@ func TestGetAccount(t *testing.T) {
 					CreatedAt: time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
 					Reference: "acc2",
 					Type:      models.AccountTypeExternalFormance,
-					Connector: &models.Connector{
-						Provider: models.ConnectorProviderDummyPay,
-					},
 				}
 				expectedAccountsResponse = &accountResponse{
 					ID:              getAccountResponse.ID.String(),

@@ -1872,6 +1872,8 @@ components:
           type: string
         connectorID:
           type: string
+        provider:
+          type: string
         defaultCurrency:
           type: string
           deprecated: true
