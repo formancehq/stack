@@ -17,52 +17,6 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 )
 
-type fetchAccountsState struct {
-	LastCreatedTime time.Time `json:"last_created_date"`
-}
-
-func (s *fetchAccountsState) UpdateLatest(latest *client.Account) error {
-	createdTime, err := time.Parse("2006-01-02T15:04:05.999-0700", latest.CreatedDate)
-	if err != nil {
-		return err
-	}
-	if createdTime.After(s.LastCreatedTime) {
-		s.LastCreatedTime = createdTime
-	}
-	return nil
-}
-
-func (s *fetchAccountsState) IsNew(account *client.Account) (bool, error) {
-	createdTime, err := time.Parse("2006-01-02T15:04:05.999-0700", account.CreatedDate)
-	if err != nil {
-		return false, err
-	}
-	return createdTime.After(s.LastCreatedTime), nil
-}
-
-func (s *fetchAccountsState) FilterNew(accounts []*client.Account) ([]*client.Account, error) {
-	// accounts are assumed to be sorted by creation date.
-	firstNewIdx := len(accounts)
-	for idx, account := range accounts {
-		isNew, err := s.IsNew(account)
-		if err != nil {
-			return nil, err
-		}
-		if isNew {
-			firstNewIdx = idx
-			break
-		}
-	}
-	return accounts[firstNewIdx:], nil
-}
-
-func (s *fetchAccountsState) GetFilterValue() string {
-	if s.LastCreatedTime.IsZero() {
-		return ""
-	}
-	return s.LastCreatedTime.Format("2006-01-02T15:04:05-0700")
-}
-
 func taskFetchAccounts(config Config, client *client.Client) task.Task {
 	return func(
 		ctx context.Context,
@@ -70,7 +24,6 @@ func taskFetchAccounts(config Config, client *client.Client) task.Task {
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
 		scheduler task.Scheduler,
-		resolver task.StateResolver,
 	) error {
 		ctx, span := connectors.StartSpan(
 			ctx,
@@ -80,24 +33,18 @@ func taskFetchAccounts(config Config, client *client.Client) task.Task {
 		)
 		defer span.End()
 
-		state, err := fetchAccounts(
+		err := fetchAccounts(
 			ctx,
 			config,
 			client,
 			connectorID,
 			ingester,
 			scheduler,
-			task.MustResolveTo(ctx, resolver, fetchAccountsState{}),
 		)
 		if err != nil {
 			otel.RecordError(span, err)
 			// Retry errors are handled by the function
 			return err
-		}
-
-		if err := ingester.UpdateTaskState(ctx, state); err != nil {
-			otel.RecordError(span, err)
-			return errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		return nil
@@ -111,52 +58,42 @@ func fetchAccounts(
 	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
 	scheduler task.Scheduler,
-	state fetchAccountsState,
-) (fetchAccountsState, error) {
-	newState := state
+) error {
 	for page := 0; ; page++ {
 		pagedAccounts, err := client.GetAccounts(
 			ctx,
 			page,
 			config.PageSize,
-			state.GetFilterValue(),
 		)
 		if err != nil {
 			// Retry errors are handled by the client
-			return newState, err
+			return err
 		}
 
-		accounts, err := state.FilterNew(pagedAccounts.Content)
-		if err != nil {
-			return newState, errors.Wrap(task.ErrRetryable, err.Error())
-		}
-		if len(accounts) == 0 {
+		if len(pagedAccounts.Content) == 0 {
 			break
 		}
-		if err := ingestAccountsBatch(ctx, connectorID, ingester, accounts); err != nil {
-			return newState, errors.Wrap(task.ErrRetryable, err.Error())
+
+		if err := ingestAccountsBatch(ctx, connectorID, ingester, pagedAccounts.Content); err != nil {
+			return errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
-		for _, account := range accounts {
-			if err := newState.UpdateLatest(account); err != nil {
-				return newState, errors.Wrap(task.ErrRetryable, err.Error())
-			}
+		for _, account := range pagedAccounts.Content {
 			transactionsTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
 				Name:      "Fetch transactions from client by account",
 				Key:       taskNameFetchTransactions,
 				AccountID: account.ID,
 			})
 			if err != nil {
-				return newState, errors.Wrap(task.ErrRetryable, err.Error())
+				return errors.Wrap(task.ErrRetryable, err.Error())
 			}
 
 			err = scheduler.Schedule(ctx, transactionsTask, models.TaskSchedulerOptions{
-				ScheduleOption: models.OPTIONS_RUN_PERIODICALLY,
-				Duration:       config.PollingPeriod.Duration,
+				ScheduleOption: models.OPTIONS_RUN_NOW,
 				RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 			})
 			if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
-				return newState, errors.Wrap(task.ErrRetryable, err.Error())
+				return errors.Wrap(task.ErrRetryable, err.Error())
 			}
 		}
 
@@ -170,7 +107,7 @@ func fetchAccounts(
 		}
 	}
 
-	return newState, nil
+	return nil
 }
 
 func ingestAccountsBatch(
