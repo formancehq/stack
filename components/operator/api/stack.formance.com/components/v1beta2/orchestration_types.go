@@ -40,6 +40,7 @@ func (in *TemporalConfig) Env() []corev1.EnvVar {
 		Env("TEMPORAL_SSL_CLIENT_KEY", in.TLS.Key),
 		Env("TEMPORAL_SSL_CLIENT_CERT", in.TLS.CRT),
 		Env("TEMPORAL_TASK_QUEUE", in.TaskQueue),
+		Env("TEMPORAL_INIT_SEARCH_ATTRIBUTES", "true"),
 	}
 }
 

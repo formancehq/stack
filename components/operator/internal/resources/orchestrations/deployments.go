@@ -94,6 +94,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 		Env("TEMPORAL_TASK_QUEUE", stack.Name),
 		Env("TEMPORAL_ADDRESS", temporalURI.Host),
 		Env("TEMPORAL_NAMESPACE", temporalURI.Path[1:]),
+		Env("TEMPORAL_INIT_SEARCH_ATTRIBUTES", "true"),
 		Env("WORKER", "true"),
 		Env("TOPICS", strings.Join(collectionutils.Map(consumers, func(from *v1beta1.BrokerTopicConsumer) string {
 			return fmt.Sprintf("%s-%s", stack.Name, from.Spec.Service)
