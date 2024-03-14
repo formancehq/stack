@@ -95,12 +95,12 @@ func (c *Client) GetPayout(ctx context.Context, payoutID string) (*PayoutRespons
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create login request: %w", err)
+		return nil, fmt.Errorf("failed to create get payout request: %w", err)
 	}
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get wallets: %w", err)
+		return nil, fmt.Errorf("failed to get payout: %w", err)
 	}
 
 	defer func() {
@@ -116,7 +116,7 @@ func (c *Client) GetPayout(ctx context.Context, payoutID string) (*PayoutRespons
 
 	var payoutResponse PayoutResponse
 	if err := json.NewDecoder(resp.Body).Decode(&payoutResponse); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal wallets response body: %w", err)
+		return nil, fmt.Errorf("failed to unmarshal payout response body: %w", err)
 	}
 
 	return &payoutResponse, nil

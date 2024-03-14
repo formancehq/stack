@@ -1,6 +1,8 @@
 package mangopay
 
 import (
+	"net/http"
+
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -36,7 +38,11 @@ func (l *Loader) ApplyDefaults(cfg Config) Config {
 }
 
 func (l *Loader) Router() *mux.Router {
-	return nil
+	r := mux.NewRouter()
+
+	r.Path("/").Methods(http.MethodPost).Handler(handleWebhooks())
+
+	return r
 }
 
 // NewLoader creates a new loader.

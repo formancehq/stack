@@ -17,6 +17,8 @@ import (
 type fetchUsersState struct {
 	LastPage         int       `json:"last_page"`
 	LastCreationDate time.Time `json:"last_creation_date"`
+
+	FetchCount int `json:"-"`
 }
 
 func taskFetchUsers(client *client.Client, config *Config) task.Task {
@@ -104,6 +106,8 @@ func ingestUsers(
 			return fetchUsersState{}, err
 		}
 
+		// Bank accounts are never fetched using webhooks, so we need to keep
+		// polling them.
 		bankAccountsTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
 			Name:   "Fetch bank accounts from client by user",
 			Key:    taskNameFetchBankAccounts,

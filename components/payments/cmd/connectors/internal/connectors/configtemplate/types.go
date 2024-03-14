@@ -7,4 +7,5 @@ const (
 	TypeString                  Type = "string"
 	TypeDurationNs              Type = "duration ns"
 	TypeDurationUnsignedInteger Type = "unsigned integer"
+	TypeBoolean                 Type = "boolean"
 )

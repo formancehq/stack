@@ -19,6 +19,8 @@ const (
 	taskNameInitiatePayment           = "initiate-payment"
 	taskNameUpdatePaymentStatus       = "update-payment-status"
 	taskNameCreateExternalBankAccount = "create-external-bank-account"
+	taskNameCreateWebhook             = "create-webhook"
+	taskNameHandleWebhook             = "handle-webhook"
 )
 
 // TaskDescriptor is the definition of a task.
@@ -31,6 +33,7 @@ type TaskDescriptor struct {
 	PaymentID     string              `json:"paymentID" yaml:"paymentID" bson:"paymentID"`
 	Attempt       int                 `json:"attempt" yaml:"attempt" bson:"attempt"`
 	BankAccountID uuid.UUID           `json:"bankAccountID,omitempty" yaml:"bankAccountID" bson:"bankAccountID"`
+	WebhookID     uuid.UUID           `json:"webhookId,omitempty" yaml:"webhookId" bson:"webhookId"`
 	PollingPeriod connectors.Duration `json:"pollingPeriod" yaml:"pollingPeriod" bson:"pollingPeriod"`
 }
 
@@ -59,15 +62,19 @@ func resolveTasks(logger logging.Logger, config Config) func(taskDefinition Task
 		case taskNameFetchUsers:
 			return taskFetchUsers(mangopayClient, &config)
 		case taskNameFetchBankAccounts:
-			return taskFetchBankAccounts(mangopayClient, taskDescriptor.UserID)
+			return taskFetchBankAccounts(mangopayClient, &config, taskDescriptor.UserID)
 		case taskNameFetchTransactions:
-			return taskFetchTransactions(mangopayClient, taskDescriptor.WalletID)
+			return taskFetchTransactions(mangopayClient, &config, taskDescriptor.WalletID)
+		case taskNameFetchWallets:
+			return taskFetchWallets(mangopayClient, &config, taskDescriptor.UserID)
+		case taskNameCreateWebhook:
+			return taskCreateWebhooks(mangopayClient)
+		case taskNameHandleWebhook:
+			return taskHandleWebhooks(mangopayClient, taskDescriptor.WebhookID)
 		case taskNameInitiatePayment:
 			return taskInitiatePayment(mangopayClient, taskDescriptor.TransferID)
 		case taskNameUpdatePaymentStatus:
 			return taskUpdatePaymentStatus(mangopayClient, taskDescriptor.TransferID, taskDescriptor.PaymentID, taskDescriptor.Attempt)
-		case taskNameFetchWallets:
-			return taskFetchWallets(mangopayClient, &config, taskDescriptor.UserID)
 		case taskNameCreateExternalBankAccount:
 			return taskCreateExternalBankAccount(mangopayClient, taskDescriptor.BankAccountID)
 		}

@@ -168,8 +168,7 @@ func handleWallets(
 
 	for _, transactionTask := range transactionTasks {
 		err := scheduler.Schedule(ctx, transactionTask, models.TaskSchedulerOptions{
-			ScheduleOption: models.OPTIONS_RUN_PERIODICALLY,
-			Duration:       config.PollingPeriod.Duration,
+			ScheduleOption: models.OPTIONS_RUN_NOW,
 			RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 		})
 		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {

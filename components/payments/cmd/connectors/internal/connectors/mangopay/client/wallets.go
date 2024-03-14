@@ -12,10 +12,11 @@ import (
 )
 
 type Wallet struct {
-	ID           string `json:"Id"`
-	Description  string `json:"Description"`
-	CreationDate int64  `json:"CreationDate"`
-	Currency     string `json:"Currency"`
+	ID           string   `json:"Id"`
+	Owners       []string `json:"Owners"`
+	Description  string   `json:"Description"`
+	CreationDate int64    `json:"CreationDate"`
+	Currency     string   `json:"Currency"`
 	Balance      struct {
 		Currency string      `json:"Currency"`
 		Amount   json.Number `json:"Amount"`
@@ -61,4 +62,39 @@ func (c *Client) GetWallets(ctx context.Context, userID string, page, pageSize i
 	}
 
 	return wallets, nil
+}
+
+func (c *Client) GetWallet(ctx context.Context, walletID string) (*Wallet, error) {
+	f := connectors.ClientMetrics(ctx, "mangopay", "get_wallets")
+	now := time.Now()
+	defer f(ctx, now)
+
+	endpoint := fmt.Sprintf("%s/v2.01/%s/wallets/%s", c.endpoint, c.clientID, walletID)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, http.NoBody)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create wallet request: %w", err)
+	}
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get wallet: %w", err)
+	}
+
+	defer func() {
+		err = resp.Body.Close()
+		if err != nil {
+			c.logger.Error(err)
+		}
+	}()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, unmarshalErrorWithRetry(resp.StatusCode, resp.Body).Error()
+	}
+
+	var wallet Wallet
+	if err := json.NewDecoder(resp.Body).Decode(&wallet); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal wallet response body: %w", err)
+	}
+
+	return &wallet, nil
 }

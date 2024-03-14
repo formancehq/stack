@@ -20,7 +20,7 @@ type fetchBankAccountsState struct {
 	LastCreationDate time.Time `json:"last_creation_date"`
 }
 
-func taskFetchBankAccounts(client *client.Client, userID string) task.Task {
+func taskFetchBankAccounts(client *client.Client, config *Config, userID string) task.Task {
 	return func(
 		ctx context.Context,
 		taskID models.TaskID,
