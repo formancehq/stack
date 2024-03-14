@@ -10,7 +10,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
-const Name = models.ConnectorProviderMoneycorp
+const name = models.ConnectorProviderMoneycorp
 
 var (
 	mainTaskDescriptor = TaskDescriptor{

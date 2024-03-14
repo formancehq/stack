@@ -4,10 +4,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
+	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/configtemplate"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
+)
+
+const (
+	defaultPageSize      = 10
+	defaultPollingPeriod = 2 * time.Minute
 )
 
 type Config struct {
@@ -50,10 +57,10 @@ type TimelineConfig struct {
 func (c Config) BuildTemplate() (string, configtemplate.Config) {
 	cfg := configtemplate.NewConfig()
 
-	cfg.AddParameter("name", configtemplate.TypeString, true)
-	cfg.AddParameter("apiKey", configtemplate.TypeString, true)
-	cfg.AddParameter("pollingPeriod", configtemplate.TypeDurationNs, false)
-	cfg.AddParameter("pageSize", configtemplate.TypeDurationUnsignedInteger, false)
+	cfg.AddParameter("name", configtemplate.TypeString, name.String(), false)
+	cfg.AddParameter("apiKey", configtemplate.TypeString, "", true)
+	cfg.AddParameter("pollingPeriod", configtemplate.TypeDurationNs, defaultPollingPeriod.String(), false)
+	cfg.AddParameter("pageSize", configtemplate.TypeDurationUnsignedInteger, strconv.Itoa(defaultPageSize), false)
 
-	return Name.String(), cfg
+	return name.String(), cfg
 }

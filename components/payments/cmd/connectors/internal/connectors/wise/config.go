@@ -2,9 +2,14 @@ package wise
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/configtemplate"
+)
+
+const (
+	defaultPollingPeriod = 2 * time.Minute
 )
 
 type Config struct {
@@ -42,9 +47,9 @@ func (c Config) ConnectorName() string {
 func (c Config) BuildTemplate() (string, configtemplate.Config) {
 	cfg := configtemplate.NewConfig()
 
-	cfg.AddParameter("name", configtemplate.TypeString, true)
-	cfg.AddParameter("apiKey", configtemplate.TypeString, true)
-	cfg.AddParameter("pollingPeriod", configtemplate.TypeDurationNs, false)
+	cfg.AddParameter("name", configtemplate.TypeString, name.String(), false)
+	cfg.AddParameter("apiKey", configtemplate.TypeString, "", true)
+	cfg.AddParameter("pollingPeriod", configtemplate.TypeDurationNs, defaultPollingPeriod.String(), false)
 
-	return Name.String(), cfg
+	return name.String(), cfg
 }

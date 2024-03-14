@@ -5,10 +5,22 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"strconv"
+	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/configtemplate"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
+)
+
+var (
+	//"https://api.atlar.com"
+	defaultURLValue = url.URL{
+		Scheme: "https",
+		Host:   "api.atlar.com",
+	}
+	defaultPollingPeriod        = 2 * time.Minute
+	defaultPageSize      uint64 = 25
 )
 
 type Config struct {
@@ -89,12 +101,13 @@ type ApiConfig struct {
 func (c Config) BuildTemplate() (string, configtemplate.Config) {
 	cfg := configtemplate.NewConfig()
 
-	cfg.AddParameter("baseUrl", configtemplate.TypeString, false)
-	cfg.AddParameter("accessKey", configtemplate.TypeString, true)
-	cfg.AddParameter("secret", configtemplate.TypeString, true)
-	cfg.AddParameter("pollingPeriod", configtemplate.TypeDurationNs, false)
-	cfg.AddParameter("transferInitiationStatusPollingPeriod", configtemplate.TypeDurationNs, false)
-	cfg.AddParameter("pageSize", configtemplate.TypeDurationUnsignedInteger, false)
+	cfg.AddParameter("name", configtemplate.TypeString, name.String(), false)
+	cfg.AddParameter("baseUrl", configtemplate.TypeString, defaultURLValue.String(), false)
+	cfg.AddParameter("accessKey", configtemplate.TypeString, "", true)
+	cfg.AddParameter("secret", configtemplate.TypeString, "", true)
+	cfg.AddParameter("pollingPeriod", configtemplate.TypeDurationNs, defaultPollingPeriod.String(), false)
+	cfg.AddParameter("transferInitiationStatusPollingPeriod", configtemplate.TypeDurationNs, defaultPollingPeriod.String(), false)
+	cfg.AddParameter("pageSize", configtemplate.TypeDurationUnsignedInteger, strconv.Itoa(int(defaultPageSize)), false)
 
-	return Name.String(), cfg
+	return name.String(), cfg
 }

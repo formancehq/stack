@@ -10,7 +10,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-const Name = models.ConnectorProviderBankingCircle
+const name = models.ConnectorProviderBankingCircle
 
 var (
 	mainTaskDescriptor = TaskDescriptor{

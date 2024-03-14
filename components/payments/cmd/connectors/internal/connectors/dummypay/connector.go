@@ -10,8 +10,8 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
-// Name is the name of the connector.
-const Name = models.ConnectorProviderDummyPay
+// name is the name of the connector.
+const name = models.ConnectorProviderDummyPay
 
 // Connector is the connector for the dummy payment connector.
 type Connector struct {

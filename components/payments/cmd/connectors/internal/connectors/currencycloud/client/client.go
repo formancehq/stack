@@ -31,7 +31,7 @@ func (c *Client) buildEndpoint(path string, args ...interface{}) string {
 	return fmt.Sprintf("%s/%s", c.endpoint, fmt.Sprintf(path, args...))
 }
 
-const devAPIEndpoint = "https://devapi.currencycloud.com"
+const DevAPIEndpoint = "https://devapi.currencycloud.com"
 
 func newAuthenticatedHTTPClient(authToken string) *http.Client {
 	return &http.Client{
@@ -51,7 +51,7 @@ func newHTTPClient() *http.Client {
 // NewClient creates a new client for the CurrencyCloud API.
 func NewClient(loginID, apiKey, endpoint string) (*Client, error) {
 	if endpoint == "" {
-		endpoint = devAPIEndpoint
+		endpoint = DevAPIEndpoint
 	}
 
 	c := &Client{
