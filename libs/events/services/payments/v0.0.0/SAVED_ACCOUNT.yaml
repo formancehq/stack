@@ -1,0 +1,29 @@
+type: object
+required:
+  - id
+  - reference
+  - createdAt
+  - provider
+  - defaultAsset
+  - accountName
+  - type
+properties:
+  id:
+    type: string
+  reference:
+    type: string
+  createdAt:
+    type: string
+    format: date-time
+  provider:
+    type: string
+  defaultAsset:
+    type: string
+  accountName:
+    type: string
+  type:
+    type: string
+    enum:
+    - UNKNOWN
+    - INTERNAL
+    - EXTERNAL

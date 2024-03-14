@@ -1,0 +1,53 @@
+{
+  "type": "object",
+  "properties": {
+    "app": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "type": {
+      "type": "string"
+    },
+    "ledger": {
+      "type": "string"
+    },
+    "payload": {
+      "type": "object",
+      "required": [
+        "accountID",
+        "createdAt",
+        "asset",
+        "balance"
+      ],
+      "properties": {
+        "accountID": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "asset": {
+          "type": "string"
+        },
+        "balance": {
+          "type": "number",
+          "format": "bigint"
+        }
+      }
+    }
+  },
+  "required": [
+    "date",
+    "app",
+    "version",
+    "type",
+    "payload"
+  ]
+}
