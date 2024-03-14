@@ -19,7 +19,7 @@ func TestLoader(t *testing.T) {
 
 	loader := NewLoader()
 
-	assert.Equal(t, Name, loader.Name())
+	assert.Equal(t, name, loader.Name())
 	assert.Equal(t, 10, loader.AllowTasks())
 	assert.Equal(t, Config{
 		Name:              "DUMMY-PAY",

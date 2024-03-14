@@ -20,7 +20,7 @@ func TestLoader(t *testing.T) {
 
 	loader := NewLoader()
 
-	assert.Equal(t, Name, loader.Name())
+	assert.Equal(t, name, loader.Name())
 	assert.Equal(t, 50, loader.AllowTasks())
 
 	baseUrl, err := url.Parse("https://api.atlar.com")

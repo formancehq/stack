@@ -3,9 +3,14 @@ package bankingcircle
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/configtemplate"
+)
+
+const (
+	defaultPollingPeriod = 2 * time.Minute
 )
 
 // PFX is not handle very well in Go if we have more than one certificate
@@ -76,14 +81,14 @@ func (c Config) ConnectorName() string {
 func (c Config) BuildTemplate() (string, configtemplate.Config) {
 	cfg := configtemplate.NewConfig()
 
-	cfg.AddParameter("name", configtemplate.TypeString, true)
-	cfg.AddParameter("username", configtemplate.TypeString, true)
-	cfg.AddParameter("password", configtemplate.TypeString, true)
-	cfg.AddParameter("endpoint", configtemplate.TypeString, true)
-	cfg.AddParameter("authorizationEndpoint", configtemplate.TypeString, true)
-	cfg.AddParameter("userCertificate", configtemplate.TypeLongString, true)
-	cfg.AddParameter("userCertificateKey", configtemplate.TypeLongString, true)
-	cfg.AddParameter("pollingPeriod", configtemplate.TypeDurationNs, false)
+	cfg.AddParameter("name", configtemplate.TypeString, name.String(), false)
+	cfg.AddParameter("username", configtemplate.TypeString, "", true)
+	cfg.AddParameter("password", configtemplate.TypeString, "", true)
+	cfg.AddParameter("endpoint", configtemplate.TypeString, "", true)
+	cfg.AddParameter("authorizationEndpoint", configtemplate.TypeString, "", true)
+	cfg.AddParameter("userCertificate", configtemplate.TypeLongString, "", true)
+	cfg.AddParameter("userCertificateKey", configtemplate.TypeLongString, "", true)
+	cfg.AddParameter("pollingPeriod", configtemplate.TypeDurationNs, defaultPollingPeriod.String(), false)
 
-	return Name.String(), cfg
+	return name.String(), cfg
 }

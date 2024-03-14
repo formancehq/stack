@@ -2,7 +2,6 @@ package adyen
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/internal/models"
@@ -19,7 +18,7 @@ func (l *Loader) AllowTasks() int {
 }
 
 func (l *Loader) Name() models.ConnectorProvider {
-	return Name
+	return name
 }
 
 func (l *Loader) Load(logger logging.Logger, config Config) connectors.Connector {
@@ -28,11 +27,11 @@ func (l *Loader) Load(logger logging.Logger, config Config) connectors.Connector
 
 func (l *Loader) ApplyDefaults(cfg Config) Config {
 	if cfg.PollingPeriod.Duration == 0 {
-		cfg.PollingPeriod.Duration = 2 * time.Minute
+		cfg.PollingPeriod.Duration = defaultPollingPeriod
 	}
 
 	if cfg.Name == "" {
-		cfg.Name = Name.String()
+		cfg.Name = name.String()
 	}
 
 	return cfg

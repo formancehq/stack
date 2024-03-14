@@ -9,7 +9,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
-const Name = models.ConnectorProviderAdyen
+const name = models.ConnectorProviderAdyen
 
 var (
 	mainTaskDescriptor = TaskDescriptor{

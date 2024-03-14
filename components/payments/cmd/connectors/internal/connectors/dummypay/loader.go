@@ -13,7 +13,7 @@ type Loader struct{}
 
 // Name returns the name of the connector.
 func (l *Loader) Name() models.ConnectorProvider {
-	return Name
+	return name
 }
 
 // AllowTasks returns the amount of tasks that are allowed to be scheduled.
@@ -33,7 +33,7 @@ func (l *Loader) ApplyDefaults(cfg Config) Config {
 	}
 
 	if cfg.Name == "" {
-		cfg.Name = Name.String()
+		cfg.Name = name.String()
 	}
 
 	return cfg

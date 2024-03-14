@@ -65,12 +65,12 @@ func (c Config) Validate() error {
 func (c Config) BuildTemplate() (string, configtemplate.Config) {
 	cfg := configtemplate.NewConfig()
 
-	cfg.AddParameter("name", configtemplate.TypeString, true)
-	cfg.AddParameter("directory", configtemplate.TypeString, true)
-	cfg.AddParameter("filePollingPeriod", configtemplate.TypeDurationNs, true)
-	cfg.AddParameter("prefixFileToIngest", configtemplate.TypeString, false)
-	cfg.AddParameter("numberOfAccountsPreGenerated", configtemplate.TypeDurationUnsignedInteger, false)
-	cfg.AddParameter("numberOfPaymentsPreGenerated", configtemplate.TypeDurationUnsignedInteger, false)
+	cfg.AddParameter("name", configtemplate.TypeString, name.String(), false)
+	cfg.AddParameter("directory", configtemplate.TypeString, "", true)
+	cfg.AddParameter("filePollingPeriod", configtemplate.TypeDurationNs, "", true)
+	cfg.AddParameter("prefixFileToIngest", configtemplate.TypeString, "", false)
+	cfg.AddParameter("numberOfAccountsPreGenerated", configtemplate.TypeDurationUnsignedInteger, "0", false)
+	cfg.AddParameter("numberOfPaymentsPreGenerated", configtemplate.TypeDurationUnsignedInteger, "0", false)
 
-	return Name.String(), cfg
+	return name.String(), cfg
 }

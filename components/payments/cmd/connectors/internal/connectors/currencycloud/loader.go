@@ -18,7 +18,7 @@ func (l *Loader) AllowTasks() int {
 }
 
 func (l *Loader) Name() models.ConnectorProvider {
-	return Name
+	return name
 }
 
 func (l *Loader) Load(logger logging.Logger, config Config) connectors.Connector {
@@ -31,7 +31,7 @@ func (l *Loader) ApplyDefaults(cfg Config) Config {
 	}
 
 	if cfg.Name == "" {
-		cfg.Name = Name.String()
+		cfg.Name = name.String()
 	}
 
 	return cfg

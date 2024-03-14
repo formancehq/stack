@@ -3,9 +3,15 @@ package currencycloud
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/configtemplate"
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currencycloud/client"
+)
+
+const (
+	defaultPollingDuration = 2 * time.Minute
 )
 
 type Config struct {
@@ -49,11 +55,11 @@ func (c Config) ConnectorName() string {
 func (c Config) BuildTemplate() (string, configtemplate.Config) {
 	cfg := configtemplate.NewConfig()
 
-	cfg.AddParameter("name", configtemplate.TypeString, true)
-	cfg.AddParameter("loginID", configtemplate.TypeString, true)
-	cfg.AddParameter("apiKey", configtemplate.TypeString, true)
-	cfg.AddParameter("endpoint", configtemplate.TypeString, false)
-	cfg.AddParameter("pollingPeriod", configtemplate.TypeDurationNs, false)
+	cfg.AddParameter("name", configtemplate.TypeString, name.String(), false)
+	cfg.AddParameter("loginID", configtemplate.TypeString, "", true)
+	cfg.AddParameter("apiKey", configtemplate.TypeString, "", true)
+	cfg.AddParameter("endpoint", configtemplate.TypeString, client.DevAPIEndpoint, false)
+	cfg.AddParameter("pollingPeriod", configtemplate.TypeDurationNs, defaultPollingDuration.String(), false)
 
-	return Name.String(), cfg
+	return name.String(), cfg
 }

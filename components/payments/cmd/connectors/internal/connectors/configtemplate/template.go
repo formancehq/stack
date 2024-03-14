@@ -5,8 +5,9 @@ type Configs map[string]Config
 type Config map[string]Parameter
 
 type Parameter struct {
-	DataType Type `json:"dataType"`
-	Required bool `json:"required"`
+	DataType     Type   `json:"dataType"`
+	Required     bool   `json:"required"`
+	DefaultValue string `json:"defaultValue"`
 }
 
 type TemplateBuilder interface {
@@ -27,9 +28,10 @@ func NewConfig() Config {
 	return make(map[string]Parameter)
 }
 
-func (c *Config) AddParameter(name string, dataType Type, required bool) {
+func (c *Config) AddParameter(name string, dataType Type, defaultValue string, required bool) {
 	(*c)[name] = Parameter{
-		DataType: dataType,
-		Required: required,
+		DataType:     dataType,
+		Required:     required,
+		DefaultValue: defaultValue,
 	}
 }

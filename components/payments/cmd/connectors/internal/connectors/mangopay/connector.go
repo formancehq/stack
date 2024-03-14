@@ -10,7 +10,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
-const Name = models.ConnectorProviderMangopay
+const name = models.ConnectorProviderMangopay
 
 var (
 	mainTaskDescriptor = TaskDescriptor{

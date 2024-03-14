@@ -10,7 +10,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-const Name = models.ConnectorProviderCurrencyCloud
+const name = models.ConnectorProviderCurrencyCloud
 
 var (
 	mainTaskDescriptor = TaskDescriptor{
