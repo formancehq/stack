@@ -20,7 +20,7 @@ require (
 	github.com/google/uuid v1.4.0
 	github.com/hashicorp/go-retryablehttp v0.7.2
 	github.com/imdario/mergo v0.3.13
-	github.com/jackc/pgx/v5 v5.3.0
+	github.com/jackc/pgx/v5 v5.5.4
 	github.com/lib/pq v1.10.7
 	github.com/nats-io/nats-server/v2 v2.9.23
 	github.com/nats-io/nats.go v1.31.0
@@ -59,7 +59,12 @@ require (
 	go.opentelemetry.io/otel/trace v1.22.0
 	go.uber.org/fx v1.19.1
 	go.uber.org/zap v1.24.0
-	google.golang.org/grpc v1.61.1
+)
+
+require (
+	github.com/jackc/puddle/v2 v2.2.1 // indirect
+	golang.org/x/sync v0.5.0 // indirect
+	google.golang.org/grpc v1.61.1 // indirect
 )
 
 require (
@@ -109,7 +114,6 @@ require (
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/gorilla/schema v1.2.0 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
-	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.1.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.16.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
@@ -185,7 +189,7 @@ require (
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240125205218-1f4bbc51befe // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240213162025-012b6fc9bca9 // indirect
-	google.golang.org/protobuf v1.32.0 // indirect
+	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
