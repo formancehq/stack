@@ -1,0 +1,17 @@
+type: object
+required:
+  - accountID
+  - createdAt
+  - asset
+  - balance
+properties:
+  accountID:
+    type: string
+  createdAt:
+    type: string
+    format: date-time
+  asset:
+    type: string
+  balance:
+    type: number
+    format: bigint

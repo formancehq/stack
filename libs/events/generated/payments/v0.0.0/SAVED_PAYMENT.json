@@ -1,0 +1,142 @@
+{
+  "type": "object",
+  "properties": {
+    "app": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "type": {
+      "type": "string"
+    },
+    "ledger": {
+      "type": "string"
+    },
+    "payload": {
+      "type": "object",
+      "required": [
+        "id",
+        "reference",
+        "createdAt",
+        "provider",
+        "type",
+        "status",
+        "scheme",
+        "asset",
+        "amount",
+        "initialAmount"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "reference": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "PAY-IN",
+            "PAYOUT",
+            "TRANSFER",
+            "OTHER"
+          ]
+        },
+        "status": {
+          "type": "string"
+        },
+        "scheme": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "other",
+            "visa",
+            "mastercard",
+            "amex",
+            "diners",
+            "discover",
+            "jcb",
+            "unionpay",
+            "alipay",
+            "cup",
+            "sepa debit",
+            "sepa credit",
+            "sepa",
+            "apple pay",
+            "google pay",
+            "doku",
+            "dragonpay",
+            "maestro",
+            "molpay",
+            "a2a",
+            "ach debit",
+            "ach",
+            "rtp"
+          ]
+        },
+        "asset": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "number",
+          "format": "bigint"
+        },
+        "initialAmount": {
+          "type": "number",
+          "format": "bigint"
+        },
+        "sourceAccountId": {
+          "type": "string"
+        },
+        "destinationAccountId": {
+          "type": "string"
+        },
+        "links": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "uri": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "rawData": {
+          "type": "object"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "date",
+    "app",
+    "version",
+    "type",
+    "payload"
+  ]
+}
