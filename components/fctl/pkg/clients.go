@@ -30,7 +30,7 @@ func (c *MembershipClient) GetProfile() *Profile {
 	return c.profile
 }
 
-func (c *MembershipClient) Refresh(cmd *cobra.Command) error {
+func (c *MembershipClient) TryToRefresh(cmd *cobra.Command) error {
 	logging.Debug("Refreshing membership client")
 	token, err := c.profile.GetToken(cmd.Context(), c.GetConfig().HTTPClient)
 	if err != nil {
@@ -54,7 +54,7 @@ func NewMembershipClient(cmd *cobra.Command, cfg *Config) (*MembershipClient, er
 		APIClient: membershipclient.NewAPIClient(configuration),
 		profile:   profile,
 	}
-	err := client.Refresh(cmd)
+	err := client.TryToRefresh(cmd)
 	if err != nil {
 		return nil, err
 	}
