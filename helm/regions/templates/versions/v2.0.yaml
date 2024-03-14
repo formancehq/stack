@@ -4,15 +4,15 @@ kind: Versions
 metadata:
   name: v2.0
 spec:
-  ledger: v2.0.0-rc.15
-  search: v2.0.0-rc.15
-  stargate: v2.0.0-rc.15
-  auth: v2.0.0-rc.15
-  wallets: v2.0.0-rc.15
-  webhooks: v2.0.0-rc.15
-  gateway: v2.0.0-rc.15
-  payments: v2.0.0-rc.15
-  orchestration: v2.0.0-rc.15
-  reconciliation: v2.0.0-rc.15
-  operator-utils: v2.0.0-rc.15
+  ledger: v2.0.0-rc.16
+  search: v2.0.0-rc.16
+  stargate: v2.0.0-rc.16
+  auth: v2.0.0-rc.16
+  wallets: v2.0.0-rc.16
+  webhooks: v2.0.0-rc.16
+  gateway: v2.0.0-rc.16
+  payments: v2.0.0-rc.16
+  orchestration: v2.0.0-rc.16
+  reconciliation: v2.0.0-rc.16
+  operator-utils: v2.0.0-rc.16
 {{ end }}
