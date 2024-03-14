@@ -28,7 +28,7 @@ func waitStackReady(cmd *cobra.Command, client *fctl.MembershipClient, organizat
 	}
 
 	for {
-		err = client.TryToRefresh(cmd)
+		err = client.RefreshIfNeeded(cmd)
 		if err != nil {
 			return nil, err
 		}
