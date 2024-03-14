@@ -1,8 +1,6 @@
 package stack
 
 import (
-	"os"
-
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pkg/errors"
@@ -63,7 +61,7 @@ func (c *StackDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		return nil, errors.Wrap(err, "searching default organization")
 	}
 
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
+	client, err := fctl.NewMembershipClient(cmd, cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +72,7 @@ func (c *StackDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 			return nil, errors.New("need either an id of a name specified using --name flag")
 		}
 
-		rsp, _, err := apiClient.DefaultApi.GetStack(cmd.Context(), organization, args[0]).Execute()
+		rsp, _, err := client.DefaultApi.GetStack(cmd.Context(), organization, args[0]).Execute()
 		if err != nil {
 			return nil, err
 		}
@@ -83,7 +81,7 @@ func (c *StackDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		if fctl.GetString(cmd, stackNameFlag) == "" {
 			return nil, errors.New("need either an id of a name specified using --name flag")
 		}
-		stacks, _, err := apiClient.DefaultApi.ListStacks(cmd.Context(), organization).Execute()
+		stacks, _, err := client.DefaultApi.ListStacks(cmd.Context(), organization).Execute()
 		if err != nil {
 			return nil, errors.Wrap(err, "listing stacks")
 		}
@@ -102,15 +100,14 @@ func (c *StackDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		return nil, fctl.ErrMissingApproval
 	}
 
-	query := apiClient.DefaultApi.DeleteStack(cmd.Context(), organization, stack.Id)
+	query := client.DefaultApi.DeleteStack(cmd.Context(), organization, stack.Id)
 	if fctl.GetBool(cmd, forceFlag) {
-		if isValid := fctl.ValidateMembershipServerVersion(cmd.Context(), apiClient, "v0.27.1"); isValid != nil {
+		if isValid := fctl.ValidateMembershipServerVersion(cmd.Context(), client.APIClient, "v0.27.1"); isValid != nil {
 			return nil, isValid
 		}
 		query = query.Force(true)
 	}
 
-	os.Exit(0)
 	_, err = query.Execute()
 	if err != nil {
 		return nil, errors.Wrap(err, "deleting stack")

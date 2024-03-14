@@ -6,6 +6,7 @@ import (
 
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -82,7 +83,7 @@ func (c *StackListController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 	if err != nil {
 		return nil, err
 	}
-
+	logging.FromContext(cmd.Context()).Debug("Listing stacks")
 	rsp, _, err := apiClient.DefaultApi.ListStacks(cmd.Context(), organization).
 		All(fctl.GetBool(cmd, allFlag)).
 		Deleted(fctl.GetBool(cmd, deletedFlag)).
