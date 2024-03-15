@@ -171,7 +171,7 @@ require (
 	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0-rc2 // indirect
-	github.com/opencontainers/runc v1.1.5 // indirect
+	github.com/opencontainers/runc v1.1.12 // indirect
 	github.com/opensearch-project/opensearch-go v1.1.0 // indirect
 	github.com/opensearch-project/opensearch-go/v2 v2.3.0 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
@@ -221,7 +221,7 @@ require (
 	github.com/zitadel/logging v0.3.4 // indirect
 	go.mongodb.org/mongo-driver v1.12.0 // indirect
 	go.opentelemetry.io/contrib v1.14.0 // indirect
-	go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux v0.39.0 // indirect
+	go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux v0.44.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/host v0.47.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.47.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/runtime v0.47.0 // indirect
