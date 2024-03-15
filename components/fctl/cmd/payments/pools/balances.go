@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/formancehq/fctl/cmd/payments/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -38,32 +39,14 @@ func (c *BalancesController) GetStore() *BalancesStore {
 }
 
 func (c *BalancesController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, err
-	}
+	store := store.GetStore(cmd.Context())
 
 	at, err := time.Parse(time.RFC3339, args[1])
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := client.Payments.GetPoolBalances(
+	response, err := store.Client().Payments.GetPoolBalances(
 		cmd.Context(),
 		operations.GetPoolBalancesRequest{
 			At:     at,

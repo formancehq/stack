@@ -3,6 +3,7 @@ package bankaccounts
 import (
 	"fmt"
 
+	"github.com/formancehq/fctl/cmd/payments/store"
 	"github.com/formancehq/fctl/cmd/payments/versions"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
@@ -54,6 +55,8 @@ func (c *ForwardController) GetStore() *ForwardStore {
 }
 
 func (c *ForwardController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	store := store.GetStore(cmd.Context())
+
 	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
 		return nil, err
 	}
@@ -62,18 +65,8 @@ func (c *ForwardController) Run(cmd *cobra.Command, args []string) (fctl.Rendera
 		return nil, fmt.Errorf("bank accounts are only supported in >= v1.0.0")
 	}
 
-	soc, err := fctl.GetStackOrganizationConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	if !fctl.CheckStackApprobation(cmd, soc.Stack, "You are about to create a bank account") {
+	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to create a bank account") {
 		return nil, fctl.ErrMissingApproval
-	}
-
-	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
 	}
 
 	bankAccountID := args[0]
@@ -87,7 +80,7 @@ func (c *ForwardController) Run(cmd *cobra.Command, args []string) (fctl.Rendera
 	}
 
 	//nolint:gosimple
-	response, err := client.Payments.ForwardBankAccount(cmd.Context(), operations.ForwardBankAccountRequest{
+	response, err := store.Client().Payments.ForwardBankAccount(cmd.Context(), operations.ForwardBankAccountRequest{
 		ForwardBankAccountRequest: shared.ForwardBankAccountRequest{
 			ConnectorID: connectorID,
 		},

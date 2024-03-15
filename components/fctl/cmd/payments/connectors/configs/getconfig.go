@@ -5,6 +5,7 @@ import (
 
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
 	"github.com/formancehq/fctl/cmd/payments/connectors/views"
+	"github.com/formancehq/fctl/cmd/payments/store"
 	"github.com/formancehq/fctl/cmd/payments/versions"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
@@ -63,6 +64,8 @@ func (c *PaymentsGetConfigController) GetStore() *PaymentsGetConfigStore {
 }
 
 func (c *PaymentsGetConfigController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	store := store.GetStore(cmd.Context())
+
 	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
 		return nil, err
 	}
@@ -70,33 +73,13 @@ func (c *PaymentsGetConfigController) Run(cmd *cobra.Command, args []string) (fc
 	provider := fctl.GetString(cmd, c.providerNameFlag)
 	connectorID := fctl.GetString(cmd, c.connectorIDFlag)
 
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, err
-	}
-
 	switch c.PaymentsVersion {
 	case versions.V0:
 		if provider == "" {
 			return nil, fmt.Errorf("provider is required")
 		}
 
-		response, err := client.Payments.ReadConnectorConfig(cmd.Context(), operations.ReadConnectorConfigRequest{
+		response, err := store.Client().Payments.ReadConnectorConfig(cmd.Context(), operations.ReadConnectorConfigRequest{
 			Connector: shared.Connector(provider),
 		})
 		if err != nil {
@@ -119,7 +102,7 @@ func (c *PaymentsGetConfigController) Run(cmd *cobra.Command, args []string) (fc
 			return nil, fmt.Errorf("connector-id is required")
 		}
 
-		response, err := client.Payments.ReadConnectorConfigV1(cmd.Context(), operations.ReadConnectorConfigV1Request{
+		response, err := store.Client().Payments.ReadConnectorConfigV1(cmd.Context(), operations.ReadConnectorConfigV1Request{
 			Connector:   shared.Connector(provider),
 			ConnectorID: connectorID,
 		})
@@ -136,7 +119,7 @@ func (c *PaymentsGetConfigController) Run(cmd *cobra.Command, args []string) (fc
 		c.store.ConnectorConfig = response.ConnectorConfigResponse
 	}
 
-	return c, err
+	return c, nil
 
 }
 

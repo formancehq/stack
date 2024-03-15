@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
+	"github.com/formancehq/fctl/cmd/payments/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -51,17 +52,11 @@ func (c *PaymentsConnectorsModulrController) GetStore() *PaymentsConnectorsModul
 }
 
 func (c *PaymentsConnectorsModulrController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	soc, err := fctl.GetStackOrganizationConfigApprobation(cmd, "You are about to install connector '%s'", internal.ModulrConnector)
-	if err != nil {
+	store := store.GetStore(cmd.Context())
+	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to install connector '%s'", internal.ModulrConnector) {
 		return nil, fctl.ErrMissingApproval
 	}
-
-	paymentsClient, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
-	if err != nil {
-		return nil, err
-	}
-
-	script, err := fctl.ReadFile(cmd, soc.Stack, args[0])
+	script, err := fctl.ReadFile(cmd, store.Stack(), args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +66,7 @@ func (c *PaymentsConnectorsModulrController) Run(cmd *cobra.Command, args []stri
 		return nil, err
 	}
 
-	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
+	response, err := store.Client().Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
 		ConnectorConfig: shared.ConnectorConfig{
 			ModulrConfig: &config,
 		},

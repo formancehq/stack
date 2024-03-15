@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/formancehq/fctl/cmd/payments/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -44,27 +45,9 @@ func (c *ShowController) GetStore() *ShowStore {
 }
 
 func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
+	store := store.GetStore(cmd.Context())
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	ledgerClient, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, err
-	}
-
-	response, err := ledgerClient.Payments.PaymentsgetAccount(cmd.Context(), operations.PaymentsgetAccountRequest{
+	response, err := store.Client().Payments.PaymentsgetAccount(cmd.Context(), operations.PaymentsgetAccountRequest{
 		AccountID: args[0],
 	})
 	if err != nil {

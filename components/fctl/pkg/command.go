@@ -30,36 +30,8 @@ type StackOrganizationConfig struct {
 	Config         *Config
 }
 
-func GetStackOrganizationConfig(cmd *cobra.Command, cfg *Config, client *membershipclient.DefaultApiService) (*StackOrganizationConfig, error) {
-	organizationID, err := ResolveOrganizationID(cmd, cfg, client)
-	if err != nil {
-		return nil, err
-	}
 
-	stack, err := ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
 
-	return &StackOrganizationConfig{
-		OrganizationID: organizationID,
-		Stack:          stack,
-		Config:         cfg,
-	}, nil
-}
-
-func GetStackOrganizationConfigApprobation(cmd *cobra.Command, cfg *Config, client *membershipclient.DefaultApiService, disclaimer string, args ...any) (*StackOrganizationConfig, error) {
-	soc, err := GetStackOrganizationConfig(cmd, cfg, client)
-	if err != nil {
-		return nil, err
-	}
-
-	if !CheckStackApprobation(cmd, soc.Stack, disclaimer, args...) {
-		return nil, ErrMissingApproval
-	}
-
-	return soc, nil
-}
 
 func GetSelectedOrganization(cmd *cobra.Command) string {
 	return GetString(cmd, organizationFlag)

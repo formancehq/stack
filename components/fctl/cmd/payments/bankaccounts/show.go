@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/formancehq/fctl/cmd/payments/store"
 	"github.com/formancehq/fctl/cmd/payments/versions"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
@@ -52,6 +53,8 @@ func (c *ShowController) GetStore() *ShowStore {
 }
 
 func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	store := store.GetStore(cmd.Context())
+
 	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
 		return nil, err
 	}
@@ -60,27 +63,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, fmt.Errorf("bank accounts are only supported in >= v1.0.0")
 	}
 
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	ledgerClient, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, err
-	}
-
-	response, err := ledgerClient.Payments.GetBankAccount(cmd.Context(), operations.GetBankAccountRequest{
+	response, err := store.Client().Payments.GetBankAccount(cmd.Context(), operations.GetBankAccountRequest{
 		BankAccountID: args[0],
 	})
 	if err != nil {

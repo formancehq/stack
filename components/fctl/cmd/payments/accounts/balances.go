@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/formancehq/fctl/cmd/payments/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -44,25 +45,7 @@ func (c *ListBalancesController) GetStore() *ListBalancesStore {
 }
 
 func (c *ListBalancesController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, err
-	}
+	store := store.GetStore(cmd.Context())
 
 	var cursor *string
 	if c := fctl.GetString(cmd, c.cursorFlag); c != "" {
@@ -74,7 +57,7 @@ func (c *ListBalancesController) Run(cmd *cobra.Command, args []string) (fctl.Re
 		pageSize = fctl.Ptr(int64(ps))
 	}
 
-	response, err := client.Payments.GetAccountBalances(
+	response, err := store.Client().Payments.GetAccountBalances(
 		cmd.Context(),
 		operations.GetAccountBalancesRequest{
 			Cursor:    cursor,
