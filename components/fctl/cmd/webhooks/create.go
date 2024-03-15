@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 
+	"github.com/formancehq/fctl/cmd/webhooks/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/pkg/errors"
@@ -41,28 +42,10 @@ func (c *CreateWebhookController) GetStore() *CreateWebhookStore {
 }
 
 func (c *CreateWebhookController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, errors.Wrap(err, "fctl.GetConfig")
-	}
+	store := store.GetStore(cmd.Context())
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to create a webhook") {
+	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to create a webhook") {
 		return nil, fctl.ErrMissingApproval
-	}
-
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
 	}
 
 	if _, err := url.Parse(args[0]); err != nil {
@@ -71,7 +54,7 @@ func (c *CreateWebhookController) Run(cmd *cobra.Command, args []string) (fctl.R
 
 	secret := fctl.GetString(cmd, secretFlag)
 
-	response, err := client.Webhooks.InsertConfig(cmd.Context(), shared.ConfigUser{
+	response, err := store.Client().Webhooks.InsertConfig(cmd.Context(), shared.ConfigUser{
 		Endpoint:   args[0],
 		EventTypes: args[1:],
 		Secret:     &secret,

@@ -3,6 +3,7 @@ package webhooks
 import (
 	"fmt"
 
+	"github.com/formancehq/fctl/cmd/webhooks/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/pkg/errors"
@@ -32,34 +33,15 @@ func (c *ActivateWebhookController) GetStore() *ActivateWebhookStore {
 }
 
 func (c *ActivateWebhookController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, errors.Wrap(err, "fctl.GetConfig")
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	if !fctl.CheckStackApprobation(cmd, stack, "You are bout to activate a webhook") {
+	store := store.GetStore(cmd.Context())
+	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are bout to activate a webhook") {
 		return nil, fctl.ErrMissingApproval
-	}
-
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
 	}
 
 	request := operations.ActivateConfigRequest{
 		ID: args[0],
 	}
-	response, err := client.Webhooks.ActivateConfig(cmd.Context(), request)
+	response, err := store.Client().Webhooks.ActivateConfig(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "activating config")
 	}
