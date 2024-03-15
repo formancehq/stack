@@ -2,7 +2,6 @@ package organizations
 
 import (
 	"github.com/formancehq/fctl/cmd/cloud/organizations/internal"
-	"github.com/formancehq/fctl/cmd/cloud/store"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
@@ -46,7 +45,7 @@ func (c *CreateController) GetStore() *CreateStore {
 
 func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetMembershipStore(cmd.Context())
 	if !fctl.CheckOrganizationApprobation(cmd, "You are about to create a new organization") {
 		return nil, fctl.ErrMissingApproval
 	}

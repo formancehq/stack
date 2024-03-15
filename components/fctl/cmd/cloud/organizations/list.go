@@ -1,7 +1,6 @@
 package organizations
 
 import (
-	"github.com/formancehq/fctl/cmd/cloud/store"
 	"github.com/formancehq/fctl/membershipclient"
 
 	fctl "github.com/formancehq/fctl/pkg"
@@ -52,7 +51,7 @@ func (c *ListController) GetStore() *ListStore {
 }
 
 func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetMembershipStore(cmd.Context())
 
 	expand := fctl.GetBool(cmd, "expand")
 

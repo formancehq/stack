@@ -7,8 +7,11 @@ import (
 	v2 "github.com/formancehq/formance-sdk-go/v2"
 )
 
-var storeKey string = "_stores"
-var stackKey string = "_stack"
+var (
+	storeKey      string = "_stores"
+	stackKey      string = "_stack"
+	membershipKey string = "_membership"
+)
 
 func ContextWithStore(ctx context.Context, key string, store interface{}) context.Context {
 	var stores map[string]interface{}
@@ -67,4 +70,28 @@ func GetStackStore(ctx context.Context) *StackStore {
 
 func ContextWithStackStore(ctx context.Context, store *StackStore) context.Context {
 	return ContextWithStore(ctx, stackKey, store)
+}
+
+type MembershipStore struct {
+	Config           *Config
+	MembershipClient *MembershipClient
+}
+
+func (cns MembershipStore) Client() *membershipclient.DefaultApiService {
+	return cns.MembershipClient.DefaultApi
+}
+
+func MembershipNode(config *Config, apiClient *MembershipClient) *MembershipStore {
+	return &MembershipStore{
+		Config:           config,
+		MembershipClient: apiClient,
+	}
+}
+
+func GetMembershipStore(ctx context.Context) *MembershipStore {
+	return GetStore(ctx, membershipKey).(*MembershipStore)
+}
+
+func ContextWithMembershipStore(ctx context.Context, store *MembershipStore) context.Context {
+	return ContextWithStore(ctx, membershipKey, store)
 }

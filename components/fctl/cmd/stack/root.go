@@ -38,7 +38,12 @@ func NewCommand() *cobra.Command {
 				return err
 			}
 
-			cmd.SetContext(store.ContextWithStore(cmd.Context(), store.StackNode(cfg, apiClient, organization)))
+			mbStore := &fctl.MembershipStore{
+				Config:           cfg,
+				MembershipClient: apiClient,
+			}
+
+			cmd.SetContext(store.ContextWithStore(cmd.Context(), store.StackNode(mbStore, organization)))
 			return nil
 		}),
 	)

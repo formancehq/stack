@@ -1,7 +1,6 @@
 package organizations
 
 import (
-	"github.com/formancehq/fctl/cmd/cloud/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -42,7 +41,7 @@ func (c *DeleteController) GetStore() *DeleteStore {
 }
 
 func (c *DeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetMembershipStore(cmd.Context())
 
 	if !fctl.CheckOrganizationApprobation(cmd, "You are about to delete an organization") {
 		return nil, fctl.ErrMissingApproval

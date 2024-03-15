@@ -3,7 +3,6 @@ package me
 import (
 	"errors"
 
-	"github.com/formancehq/fctl/cmd/cloud/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -43,7 +42,7 @@ func (c *InfoController) GetStore() *InfoStore {
 }
 
 func (c *InfoController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetMembershipStore(cmd.Context())
 	profile := fctl.GetCurrentProfile(cmd, store.Config)
 	if !profile.IsConnected() {
 		return nil, errors.New("not logged. use 'login' command before")

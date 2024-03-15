@@ -4,7 +4,6 @@ import (
 	"github.com/formancehq/fctl/cmd/cloud/me"
 	"github.com/formancehq/fctl/cmd/cloud/organizations"
 	"github.com/formancehq/fctl/cmd/cloud/regions"
-	"github.com/formancehq/fctl/cmd/cloud/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
 )
@@ -29,7 +28,7 @@ func NewCommand() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			cmd.SetContext(store.ContextWithStore(cmd.Context(), store.CloudNode(cfg, apiClient)))
+			cmd.SetContext(fctl.ContextWithMembershipStore(cmd.Context(), fctl.MembershipNode(cfg, apiClient)))
 			return nil
 		}),
 	)

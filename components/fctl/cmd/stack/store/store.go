@@ -10,9 +10,8 @@ import (
 const key = "_stack"
 
 type StackNodeStore struct {
-	Config           *fctl.Config
-	MembershipClient *fctl.MembershipClient
-	organizationId   string
+	*fctl.MembershipStore
+	organizationId string
 }
 
 func (cns StackNodeStore) Client() *membershipclient.DefaultApiService {
@@ -23,11 +22,10 @@ func (cns StackNodeStore) OrganizationId() string {
 	return cns.organizationId
 }
 
-func StackNode(config *fctl.Config, apiClient *fctl.MembershipClient, organization string) *StackNodeStore {
+func StackNode(store *fctl.MembershipStore, organization string) *StackNodeStore {
 	return &StackNodeStore{
-		Config:           config,
-		MembershipClient: apiClient,
-		organizationId:   organization,
+		MembershipStore: store,
+		organizationId:  organization,
 	}
 }
 
