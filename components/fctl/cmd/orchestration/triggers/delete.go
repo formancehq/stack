@@ -3,6 +3,7 @@ package triggers
 import (
 	"fmt"
 
+	"github.com/formancehq/fctl/cmd/orchestration/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/pkg/errors"
@@ -43,17 +44,8 @@ func (c *TriggersDeleteController) GetStore() *TriggersDeleteStore {
 }
 
 func (c *TriggersDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	soc, err := fctl.GetStackOrganizationConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
-	}
-
-	res, err := client.Orchestration.DeleteTrigger(cmd.Context(), operations.DeleteTriggerRequest{
+	store := store.GetStore(cmd.Context())
+	res, err := store.Client().Orchestration.DeleteTrigger(cmd.Context(), operations.DeleteTriggerRequest{
 		TriggerID: args[0],
 	})
 	if err != nil {

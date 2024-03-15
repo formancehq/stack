@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/formancehq/fctl/cmd/orchestration/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/pkg/errors"
@@ -52,16 +53,9 @@ func (c *WorkflowsListController) GetStore() *WorkflowsListStore {
 
 func (c *WorkflowsListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	soc, err := fctl.GetStackOrganizationConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
-	}
+	store := store.GetStore(cmd.Context())
 
-	response, err := client.Orchestration.ListWorkflows(cmd.Context())
+	response, err := store.Client().Orchestration.ListWorkflows(cmd.Context())
 	if err != nil {
 		return nil, err
 	}

@@ -3,6 +3,7 @@ package triggers
 import (
 	"encoding/json"
 
+	"github.com/formancehq/fctl/cmd/orchestration/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -43,22 +44,14 @@ func (c *TriggersTestController) GetStore() *TriggersTestStore {
 }
 
 func (c *TriggersTestController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	soc, err := fctl.GetStackOrganizationConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
-	}
+	store := store.GetStore(cmd.Context())
 
 	data := make(map[string]any)
 	if err := json.Unmarshal([]byte(args[1]), &data); err != nil {
 		return nil, err
 	}
 
-	res, err := client.Orchestration.TestTrigger(cmd.Context(), operations.TestTriggerRequest{
+	res, err := store.Client().Orchestration.TestTrigger(cmd.Context(), operations.TestTriggerRequest{
 		TriggerID:   args[0],
 		RequestBody: data,
 	})

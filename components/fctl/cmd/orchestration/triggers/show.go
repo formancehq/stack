@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/formancehq/fctl/cmd/orchestration/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -44,17 +45,9 @@ func (c *TriggersShowController) GetStore() *TriggersShowStore {
 }
 
 func (c *TriggersShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	soc, err := fctl.GetStackOrganizationConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
+	store := store.GetStore(cmd.Context())
 
-	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
-	}
-
-	res, err := client.Orchestration.ReadTrigger(cmd.Context(), operations.ReadTriggerRequest{
+	res, err := store.Client().Orchestration.ReadTrigger(cmd.Context(), operations.ReadTriggerRequest{
 		TriggerID: args[0],
 	})
 	if err != nil {

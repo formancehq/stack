@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/formancehq/fctl/cmd/orchestration/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
@@ -51,15 +52,7 @@ func (c *TriggersCreateController) GetStore() *TriggersCreateStore {
 }
 
 func (c *TriggersCreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	soc, err := fctl.GetStackOrganizationConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
-	}
+	store := store.GetStore(cmd.Context())
 
 	var (
 		event    = args[0]
@@ -86,7 +79,7 @@ func (c *TriggersCreateController) Run(cmd *cobra.Command, args []string) (fctl.
 		}
 	}
 
-	res, err := client.Orchestration.CreateTrigger(cmd.Context(), data)
+	res, err := store.Client().Orchestration.CreateTrigger(cmd.Context(), data)
 	if err != nil {
 		return nil, errors.Wrap(err, "reading trigger")
 	}
