@@ -19,17 +19,7 @@ func NewCommand() *cobra.Command {
 			NewGeneratePersonalTokenCommand(),
 		),
 		fctl.WithPersistentPreRunE(func(cmd *cobra.Command, args []string) error {
-			cfg, err := fctl.GetConfig(cmd)
-			if err != nil {
-				return err
-			}
-
-			apiClient, err := fctl.NewMembershipClient(cmd, cfg)
-			if err != nil {
-				return err
-			}
-			cmd.SetContext(fctl.ContextWithMembershipStore(cmd.Context(), fctl.MembershipNode(cfg, apiClient)))
-			return nil
+			return fctl.NewMembershipStore(cmd)
 		}),
 	)
 }

@@ -5,6 +5,7 @@ import (
 
 	"github.com/formancehq/fctl/membershipclient"
 	v2 "github.com/formancehq/formance-sdk-go/v2"
+	"github.com/spf13/cobra"
 )
 
 var (
@@ -72,6 +73,33 @@ func ContextWithStackStore(ctx context.Context, store *StackStore) context.Conte
 	return ContextWithStore(ctx, stackKey, store)
 }
 
+func NewStackStore(cmd *cobra.Command) error {
+	cfg, err := GetConfig(cmd)
+	if err != nil {
+		return err
+	}
+	apiClient, err := NewMembershipClient(cmd, cfg)
+	if err != nil {
+		return err
+	}
+	organizationID, err := ResolveOrganizationID(cmd, cfg, apiClient.DefaultApi)
+	if err != nil {
+		return err
+	}
+
+	stack, err := ResolveStack(cmd, cfg, organizationID)
+	if err != nil {
+		return err
+	}
+
+	stackClient, err := NewStackClient(cmd, cfg, stack)
+	if err != nil {
+		return err
+	}
+	cmd.SetContext(ContextWithStackStore(cmd.Context(), StackNode(cfg, stack, organizationID, stackClient)))
+	return nil
+}
+
 type MembershipStore struct {
 	Config           *Config
 	MembershipClient *MembershipClient
@@ -94,4 +122,17 @@ func GetMembershipStore(ctx context.Context) *MembershipStore {
 
 func ContextWithMembershipStore(ctx context.Context, store *MembershipStore) context.Context {
 	return ContextWithStore(ctx, membershipKey, store)
+}
+
+func NewMembershipStore(cmd *cobra.Command) error {
+	cfg, err := GetConfig(cmd)
+	if err != nil {
+		return err
+	}
+	apiClient, err := NewMembershipClient(cmd, cfg)
+	if err != nil {
+		return err
+	}
+	cmd.SetContext(ContextWithMembershipStore(cmd.Context(), MembershipNode(cfg, apiClient)))
+	return nil
 }

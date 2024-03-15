@@ -5,6 +5,7 @@ import (
 
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
+	"github.com/spf13/cobra"
 )
 
 const key = "_stack"
@@ -35,4 +36,21 @@ func GetStore(ctx context.Context) *StackNodeStore {
 
 func ContextWithStore(ctx context.Context, store *StackNodeStore) context.Context {
 	return fctl.ContextWithStore(ctx, key, store)
+}
+
+func NewMembershipStackStore(cmd *cobra.Command) error {
+	err := fctl.NewMembershipStore(cmd)
+	if err != nil {
+		return err
+	}
+
+	store := fctl.GetMembershipStore(cmd.Context())
+	organization, err := fctl.ResolveOrganizationID(cmd, store.Config, store.Client())
+	if err != nil {
+		return err
+	}
+
+	cmd.SetContext(ContextWithStore(cmd.Context(), StackNode(store, organization)))
+
+	return nil
 }

@@ -24,30 +24,7 @@ func NewCommand() *cobra.Command {
 			balances.NewCommand(),
 		),
 		fctl.WithPersistentPreRunE(func(cmd *cobra.Command, args []string) error {
-			cfg, err := fctl.GetConfig(cmd)
-			if err != nil {
-				return err
-			}
-			apiClient, err := fctl.NewMembershipClient(cmd, cfg)
-			if err != nil {
-				return err
-			}
-			organizationID, err := fctl.ResolveOrganizationID(cmd, cfg, apiClient.DefaultApi)
-			if err != nil {
-				return err
-			}
-
-			stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-			if err != nil {
-				return err
-			}
-
-			stackClient, err := fctl.NewStackClient(cmd, cfg, stack)
-			if err != nil {
-				return err
-			}
-			cmd.SetContext(fctl.ContextWithStackStore(cmd.Context(), fctl.StackNode(cfg, stack, organizationID, stackClient)))
-			return nil
+			return fctl.NewStackStore(cmd)
 		}),
 	)
 }
