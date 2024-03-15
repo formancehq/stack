@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/big"
 
+	"github.com/formancehq/fctl/cmd/wallets/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -53,25 +54,7 @@ func (c *ConfirmController) GetStore() *ConfirmStore {
 }
 
 func (c *ConfirmController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, errors.Wrap(err, "retrieving config")
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	stackClient, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
-	}
+	store := store.GetStore(cmd.Context())
 
 	final := fctl.GetBool(cmd, c.finalFlag)
 	amount := int64(fctl.GetInt(cmd, c.amountFlag))
@@ -83,7 +66,7 @@ func (c *ConfirmController) Run(cmd *cobra.Command, args []string) (fctl.Rendera
 			Final:  &final,
 		},
 	}
-	response, err := stackClient.Wallets.ConfirmHold(cmd.Context(), request)
+	response, err := store.Client().Wallets.ConfirmHold(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "confirming hold")
 	}

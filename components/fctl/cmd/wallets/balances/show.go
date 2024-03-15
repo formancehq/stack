@@ -5,6 +5,7 @@ import (
 
 	"github.com/formancehq/fctl/cmd/wallets/internal"
 	"github.com/formancehq/fctl/cmd/wallets/internal/views"
+	"github.com/formancehq/fctl/cmd/wallets/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -48,27 +49,9 @@ func (c *ShowController) GetStore() *ShowStore {
 
 func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, errors.Wrap(err, "retrieving config")
-	}
+	store := store.GetStore(cmd.Context())
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
-	}
-
-	walletID, err := internal.RequireWalletID(cmd, client)
+	walletID, err := internal.RequireWalletID(cmd, store.Client())
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +60,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		ID:          walletID,
 		BalanceName: args[0],
 	}
-	response, err := client.Wallets.GetBalance(cmd.Context(), request)
+	response, err := store.Client().Wallets.GetBalance(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "getting balance")
 	}
