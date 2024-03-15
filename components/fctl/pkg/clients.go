@@ -6,6 +6,7 @@ import (
 
 	"github.com/formancehq/fctl/membershipclient"
 	formance "github.com/formancehq/formance-sdk-go/v2"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/spf13/cobra"
 	"golang.org/x/mod/semver"
 )
@@ -20,19 +21,45 @@ func getVersion(cmd *cobra.Command) string {
 	return "cmd.Version"
 }
 
-func NewMembershipClient(cmd *cobra.Command, cfg *Config) (*membershipclient.APIClient, error) {
+type MembershipClient struct {
+	profile *Profile
+	*membershipclient.APIClient
+}
+
+func (c *MembershipClient) GetProfile() *Profile {
+	return c.profile
+}
+
+func (c *MembershipClient) RefreshIfNeeded(cmd *cobra.Command) error {
+	logging.Debug("Refreshing membership client")
+	token, err := c.profile.GetToken(cmd.Context(), c.GetConfig().HTTPClient)
+	if err != nil {
+		return err
+	}
+	config := c.GetConfig()
+	config.AddDefaultHeader("Authorization", fmt.Sprintf("Bearer %s", token.AccessToken))
+
+	c.APIClient = membershipclient.NewAPIClient(config)
+	return err
+}
+
+func NewMembershipClient(cmd *cobra.Command, cfg *Config) (*MembershipClient, error) {
 	profile := GetCurrentProfile(cmd, cfg)
 	httpClient := GetHttpClient(cmd, map[string][]string{})
 	configuration := membershipclient.NewConfiguration()
-	token, err := profile.GetToken(cmd.Context(), httpClient)
-	if err != nil {
-		return nil, err
-	}
-	configuration.AddDefaultHeader("Authorization", fmt.Sprintf("Bearer %s", token.AccessToken))
 	configuration.HTTPClient = httpClient
 	configuration.UserAgent = "fctl/" + getVersion(cmd)
 	configuration.Servers[0].URL = profile.GetMembershipURI()
-	return membershipclient.NewAPIClient(configuration), nil
+	client := &MembershipClient{
+		APIClient: membershipclient.NewAPIClient(configuration),
+		profile:   profile,
+	}
+	err := client.RefreshIfNeeded(cmd)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }
 
 func MembershipServerInfo(ctx context.Context, client *membershipclient.APIClient) string {

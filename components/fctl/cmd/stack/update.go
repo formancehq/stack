@@ -47,12 +47,12 @@ func NewUpdateCommand() *cobra.Command {
 				return err
 			}
 
-			apiClient, err := fctl.NewMembershipClient(cmd, cfg)
+			client, err := fctl.NewMembershipClient(cmd, cfg)
 			if err != nil {
 				return err
 			}
 
-			version := fctl.MembershipServerInfo(cmd.Context(), apiClient)
+			version := fctl.MembershipServerInfo(cmd.Context(), client.APIClient)
 			if !semver.IsValid(version) {
 				return nil
 			}

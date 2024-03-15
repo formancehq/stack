@@ -90,10 +90,8 @@ func (c *StackRestoreController) Run(cmd *cobra.Command, args []string) (fctl.Re
 		return nil, err
 	}
 
-	profile := fctl.GetCurrentProfile(cmd, cfg)
-
 	if !fctl.GetBool(cmd, nowaitFlag) {
-		stack, err = waitStackReady(cmd, apiClient, profile, response.Data.OrganizationId, response.Data.Id)
+		stack, err = waitStackReady(cmd, apiClient, response.Data.OrganizationId, response.Data.Id)
 		if err != nil {
 			return nil, err
 		}

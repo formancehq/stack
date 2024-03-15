@@ -6,6 +6,8 @@ import (
 
 	"github.com/TylerBrock/colorjson"
 	"github.com/formancehq/fctl/membershipclient"
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
 	"github.com/segmentio/analytics-go/v3"
 	"github.com/segmentio/ksuid"
@@ -246,18 +248,29 @@ func WithDeprecated(message string) CommandOptionFn {
 func WithController[T any](c Controller[T]) CommandOptionFn {
 	return func(cmd *cobra.Command) {
 		cmd.RunE = func(cmd *cobra.Command, args []string) error {
-			// Run all parent commands
 			parent := cmd.Parent()
+			parentsOrdered := make([]*cobra.Command, 0)
+			if parent != nil {
+				parentsOrdered = append(parentsOrdered, parent)
+			}
+
 			for parent != nil {
+				parentsOrdered = collectionutils.Prepend(parentsOrdered, parent)
+				parent = parent.Parent()
+			}
+			logger := logging.NewLogrus(logging.DefaultLogger(cmd.OutOrStdout(), GetBool(cmd, DebugFlag)))
+			for _, parent := range parentsOrdered {
 				if parent.RunE != nil {
+					parent.SetContext(logging.ContextWithLogger(cmd.Context(), logger))
 					err := parent.RunE(parent, args)
 					if err != nil {
 						return err
 					}
 				}
-				parent = parent.Parent()
+
 			}
 
+			cmd.SetContext(logging.ContextWithLogger(cmd.Context(), logger))
 			renderable, err := c.Run(cmd, args)
 
 			// If the controller return an argument error, we want to print the usage

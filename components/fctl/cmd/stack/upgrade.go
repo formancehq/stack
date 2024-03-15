@@ -46,12 +46,12 @@ func NewUpgradeCommand() *cobra.Command {
 				return err
 			}
 
-			apiClient, err := fctl.NewMembershipClient(cmd, cfg)
+			client, err := fctl.NewMembershipClient(cmd, cfg)
 			if err != nil {
 				return err
 			}
 
-			version := fctl.MembershipServerInfo(cmd.Context(), apiClient)
+			version := fctl.MembershipServerInfo(cmd.Context(), client.APIClient)
 			if !semver.IsValid(version) {
 				return nil
 			}
@@ -84,12 +84,12 @@ func (c *UpgradeController) Run(cmd *cobra.Command, args []string) (fctl.Rendera
 		return nil, err
 	}
 
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
+	client, err := fctl.NewMembershipClient(cmd, cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	stack, res, err := apiClient.DefaultApi.GetStack(cmd.Context(), organization, args[0]).Execute()
+	stack, res, err := client.DefaultApi.GetStack(cmd.Context(), organization, args[0]).Execute()
 	if err != nil {
 		return nil, errors.Wrap(err, "retrieving stack")
 	}
@@ -103,7 +103,7 @@ func (c *UpgradeController) Run(cmd *cobra.Command, args []string) (fctl.Rendera
 	}
 	specifiedVersion := fctl.GetString(cmd, versionFlag)
 	if specifiedVersion == "" {
-		upgradeOpts, err := retrieveUpgradableVersion(cmd.Context(), organization, *stack.Data, apiClient)
+		upgradeOpts, err := retrieveUpgradableVersion(cmd.Context(), organization, *stack.Data, client.APIClient)
 		if err != nil {
 			return nil, err
 		}
@@ -126,7 +126,7 @@ func (c *UpgradeController) Run(cmd *cobra.Command, args []string) (fctl.Rendera
 	}
 	req.Version = pointer.For(specifiedVersion)
 
-	res, err = apiClient.DefaultApi.
+	res, err = client.DefaultApi.
 		UpgradeStack(cmd.Context(), organization, args[0]).StackVersion(req).
 		Execute()
 	if err != nil {
@@ -143,7 +143,7 @@ func (c *UpgradeController) Run(cmd *cobra.Command, args []string) (fctl.Rendera
 			return nil, err
 		}
 
-		stack, err := waitStackReady(cmd, apiClient, profile, stack.Data.OrganizationId, stack.Data.Id)
+		stack, err := waitStackReady(cmd, client, stack.Data.OrganizationId, stack.Data.Id)
 		if err != nil {
 			return nil, err
 		}

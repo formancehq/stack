@@ -74,7 +74,7 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		return nil, err
 	}
 
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
+	client, err := fctl.NewMembershipClient(cmd, cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +96,7 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 
 	region := fctl.GetString(cmd, regionFlag)
 	if region == "" {
-		regions, _, err := apiClient.DefaultApi.ListRegions(cmd.Context(), organization).Execute()
+		regions, _, err := client.DefaultApi.ListRegions(cmd.Context(), organization).Execute()
 		if err != nil {
 			return nil, errors.Wrap(err, "listing regions")
 		}
@@ -133,7 +133,7 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		RegionID: region,
 	}
 
-	availableVersions, httpResponse, err := apiClient.DefaultApi.GetRegionVersions(cmd.Context(), organization, region).Execute()
+	availableVersions, httpResponse, err := client.DefaultApi.GetRegionVersions(cmd.Context(), organization, region).Execute()
 	if err != nil {
 		return nil, errors.Wrap(err, "retrieving available versions")
 	}
@@ -149,17 +149,20 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 			options = append(options, version.Name)
 		}
 
-		printer := pterm.DefaultInteractiveSelect.WithOptions(options)
-		selectedOption, err := printer.Show("Please select a version")
-		if err != nil {
-			return nil, err
+		selectedOption := ""
+		if len(options) > 0 {
+			printer := pterm.DefaultInteractiveSelect.WithOptions(options)
+			selectedOption, err = printer.Show("Please select a version")
+			if err != nil {
+				return nil, err
+			}
 		}
 
 		specifiedVersion = selectedOption
 	}
 	req.Version = pointer.For(specifiedVersion)
 
-	stackResponse, _, err := apiClient.DefaultApi.
+	stackResponse, _, err := client.DefaultApi.
 		CreateStack(cmd.Context(), organization).
 		CreateStackRequest(req).
 		Execute()
@@ -175,7 +178,7 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 			return nil, err
 		}
 
-		stack, err := waitStackReady(cmd, apiClient, profile, stackResponse.Data.OrganizationId, stackResponse.Data.Id)
+		stack, err := waitStackReady(cmd, client, stackResponse.Data.OrganizationId, stackResponse.Data.Id)
 		if err != nil {
 			return nil, err
 		}

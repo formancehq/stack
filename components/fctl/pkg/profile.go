@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/formancehq/fctl/membershipclient"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/golang-jwt/jwt"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -116,15 +117,18 @@ func (p *Profile) GetDefaultOrganization() string {
 }
 
 func (p *Profile) GetToken(ctx context.Context, httpClient *http.Client) (*oauth2.Token, error) {
+	logging.FromContext(ctx).Debug("Check token from profile")
 	if p.token == nil {
 		return nil, errors.New("not authenticated")
 	}
+	logging.FromContext(ctx).Debug("Has been authenticated")
 	if p.token != nil {
 		claims := &oidc.AccessTokenClaims{}
 		_, err := oidc.ParseToken(p.token.AccessToken, claims)
 		if err != nil {
 			return nil, newErrInvalidAuthentication(errors.Wrap(err, "parsing token"))
 		}
+		logging.FromContext(ctx).Debugf("Token has expired ? %s in %s", BoolToString(claims.Expiration.AsTime().Before(time.Now())), time.Since(claims.Expiration.AsTime()).String())
 		if claims.Expiration.AsTime().Before(time.Now()) {
 			relyingParty, err := GetAuthRelyingParty(httpClient, p.membershipURI)
 			if err != nil {
@@ -145,6 +149,7 @@ func (p *Profile) GetToken(ctx context.Context, httpClient *http.Client) (*oauth
 			if err := p.config.Persist(); err != nil {
 				return nil, err
 			}
+			logging.FromContext(ctx).Debug("Token refreshed and persisted")
 		}
 	}
 	claims := &oidc.AccessTokenClaims{}
