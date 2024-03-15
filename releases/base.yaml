@@ -35,8 +35,8 @@ components:
       type: oauth2
       flows:
         clientCredentials:
-          tokenUrl: 'https://localhost/api/auth/oauth/token'
-          refreshUrl: 'https://localhost/api/auth/oauth/token'
+          tokenUrl: '/api/auth/oauth/token'
+          refreshUrl: '/api/auth/oauth/token'
           scopes: {}
 
   schemas:
