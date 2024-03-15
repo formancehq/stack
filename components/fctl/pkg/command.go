@@ -24,15 +24,6 @@ var (
 	ErrMultipleOrganizationsFound = errors.New("found more than one organization and no organization specified")
 )
 
-type StackOrganizationConfig struct {
-	OrganizationID string
-	Stack          *membershipclient.Stack
-	Config         *Config
-}
-
-
-
-
 func GetSelectedOrganization(cmd *cobra.Command) string {
 	return GetString(cmd, organizationFlag)
 }
