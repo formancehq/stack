@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/formancehq/fctl/cmd/search/store"
 	"github.com/formancehq/fctl/cmd/search/views"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -53,25 +54,7 @@ func (c *SearchController) GetStore() *SearchStore {
 
 func (c *SearchController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	searchClient, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, err
-	}
+	store := store.GetStore(cmd.Context())
 
 	terms := make([]string, 0)
 	if len(args) > 1 {
@@ -90,7 +73,7 @@ func (c *SearchController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		Terms:    terms,
 		Target:   &target,
 	}
-	response, err := searchClient.Search.Search(cmd.Context(), request)
+	response, err := store.Client().Search.Search(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}
@@ -189,5 +172,33 @@ func NewCommand() *cobra.Command {
 		// }),
 		fctl.WithShortDescription("Search in all services (Default: ANY), or in a specific service (ACCOUNT, TRANSACTION, ASSET, PAYMENT)"),
 		fctl.WithController[*SearchStore](NewSearchController()),
+		fctl.WithPersistentPreRunE(func(cmd *cobra.Command, args []string) error {
+
+			cfg, err := fctl.GetConfig(cmd)
+			if err != nil {
+				return err
+			}
+			apiClient, err := fctl.NewMembershipClient(cmd, cfg)
+			if err != nil {
+				return err
+			}
+			organizationID, err := fctl.ResolveOrganizationID(cmd, cfg, apiClient.DefaultApi)
+			if err != nil {
+				return err
+			}
+
+			stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+			if err != nil {
+				return err
+			}
+
+			stackClient, err := fctl.NewStackClient(cmd, cfg, stack)
+			if err != nil {
+				return err
+			}
+			cmd.SetContext(store.ContextWithStore(cmd.Context(), store.SearchNode(cfg, stack, organizationID, stackClient)))
+
+			return nil
+		}),
 	)
 }
