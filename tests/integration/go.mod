@@ -18,7 +18,7 @@ require (
 	github.com/getkin/kin-openapi v0.114.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.4.0
-	github.com/jackc/pgx/v5 v5.3.0
+	github.com/jackc/pgx/v5 v5.5.4
 	github.com/nats-io/nats.go v1.31.0
 	github.com/oauth2-proxy/mockoidc v0.0.0-20220308204021-b9169deeb282
 	github.com/onsi/ginkgo/v2 v2.8.3
@@ -142,6 +142,7 @@ require (
 	github.com/invopop/yaml v0.1.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
+	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jcmturner/aescts/v2 v2.0.0 // indirect
 	github.com/jcmturner/dnsutils/v2 v2.0.0 // indirect
 	github.com/jcmturner/gofork v1.7.6 // indirect
@@ -259,7 +260,7 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20240125205218-1f4bbc51befe // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240213162025-012b6fc9bca9 // indirect
 	google.golang.org/grpc v1.61.1 // indirect
-	google.golang.org/protobuf v1.32.0 // indirect
+	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/segmentio/analytics-go.v3 v3.1.0 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
