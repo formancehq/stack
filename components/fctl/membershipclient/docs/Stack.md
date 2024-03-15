@@ -13,6 +13,8 @@ Name | Type | Description | Notes
 **LastStateUpdate** | **time.Time** |  | 
 **LastExpectedStatusUpdate** | **time.Time** |  | 
 **LastStatusUpdate** | **time.Time** |  | 
+**Reachable** | **bool** | Stack is reachable through Stargate | 
+**LastReachableUpdate** | Pointer to **time.Time** | Last time the stack was reachable | [optional] 
 **Id** | **string** | Stack ID | 
 **OrganizationId** | **string** | Organization ID | 
 **Uri** | **string** | Base stack uri | 
@@ -27,7 +29,7 @@ Name | Type | Description | Notes
 
 ### NewStack
 
-`func NewStack(name string, metadata map[string]string, status string, state string, expectedStatus string, lastStateUpdate time.Time, lastExpectedStatusUpdate time.Time, lastStatusUpdate time.Time, id string, organizationId string, uri string, regionID string, stargateEnabled bool, ) *Stack`
+`func NewStack(name string, metadata map[string]string, status string, state string, expectedStatus string, lastStateUpdate time.Time, lastExpectedStatusUpdate time.Time, lastStatusUpdate time.Time, reachable bool, id string, organizationId string, uri string, regionID string, stargateEnabled bool, ) *Stack`
 
 NewStack instantiates a new Stack object
 This constructor will assign default values to properties that have it defined,
@@ -226,6 +228,51 @@ and a boolean to check if the value has been set.
 
 SetLastStatusUpdate sets LastStatusUpdate field to given value.
 
+
+### GetReachable
+
+`func (o *Stack) GetReachable() bool`
+
+GetReachable returns the Reachable field if non-nil, zero value otherwise.
+
+### GetReachableOk
+
+`func (o *Stack) GetReachableOk() (*bool, bool)`
+
+GetReachableOk returns a tuple with the Reachable field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetReachable
+
+`func (o *Stack) SetReachable(v bool)`
+
+SetReachable sets Reachable field to given value.
+
+
+### GetLastReachableUpdate
+
+`func (o *Stack) GetLastReachableUpdate() time.Time`
+
+GetLastReachableUpdate returns the LastReachableUpdate field if non-nil, zero value otherwise.
+
+### GetLastReachableUpdateOk
+
+`func (o *Stack) GetLastReachableUpdateOk() (*time.Time, bool)`
+
+GetLastReachableUpdateOk returns a tuple with the LastReachableUpdate field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetLastReachableUpdate
+
+`func (o *Stack) SetLastReachableUpdate(v time.Time)`
+
+SetLastReachableUpdate sets LastReachableUpdate field to given value.
+
+### HasLastReachableUpdate
+
+`func (o *Stack) HasLastReachableUpdate() bool`
+
+HasLastReachableUpdate returns a boolean if a field has been set.
 
 ### GetId
 

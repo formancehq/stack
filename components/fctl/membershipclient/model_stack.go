@@ -31,6 +31,10 @@ type Stack struct {
 	LastStateUpdate time.Time `json:"lastStateUpdate"`
 	LastExpectedStatusUpdate time.Time `json:"lastExpectedStatusUpdate"`
 	LastStatusUpdate time.Time `json:"lastStatusUpdate"`
+	// Stack is reachable through Stargate
+	Reachable bool `json:"reachable"`
+	// Last time the stack was reachable
+	LastReachableUpdate *time.Time `json:"lastReachableUpdate,omitempty"`
 	// Stack ID
 	Id string `json:"id"`
 	// Organization ID
@@ -50,7 +54,7 @@ type Stack struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewStack(name string, metadata map[string]string, status string, state string, expectedStatus string, lastStateUpdate time.Time, lastExpectedStatusUpdate time.Time, lastStatusUpdate time.Time, id string, organizationId string, uri string, regionID string, stargateEnabled bool) *Stack {
+func NewStack(name string, metadata map[string]string, status string, state string, expectedStatus string, lastStateUpdate time.Time, lastExpectedStatusUpdate time.Time, lastStatusUpdate time.Time, reachable bool, id string, organizationId string, uri string, regionID string, stargateEnabled bool) *Stack {
 	this := Stack{}
 	this.Name = name
 	this.Metadata = metadata
@@ -60,6 +64,7 @@ func NewStack(name string, metadata map[string]string, status string, state stri
 	this.LastStateUpdate = lastStateUpdate
 	this.LastExpectedStatusUpdate = lastExpectedStatusUpdate
 	this.LastStatusUpdate = lastStatusUpdate
+	this.Reachable = reachable
 	this.Id = id
 	this.OrganizationId = organizationId
 	this.Uri = uri
@@ -298,6 +303,62 @@ func (o *Stack) GetLastStatusUpdateOk() (*time.Time, bool) {
 // SetLastStatusUpdate sets field value
 func (o *Stack) SetLastStatusUpdate(v time.Time) {
 	o.LastStatusUpdate = v
+}
+
+// GetReachable returns the Reachable field value
+func (o *Stack) GetReachable() bool {
+	if o == nil {
+		var ret bool
+		return ret
+	}
+
+	return o.Reachable
+}
+
+// GetReachableOk returns a tuple with the Reachable field value
+// and a boolean to check if the value has been set.
+func (o *Stack) GetReachableOk() (*bool, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Reachable, true
+}
+
+// SetReachable sets field value
+func (o *Stack) SetReachable(v bool) {
+	o.Reachable = v
+}
+
+// GetLastReachableUpdate returns the LastReachableUpdate field value if set, zero value otherwise.
+func (o *Stack) GetLastReachableUpdate() time.Time {
+	if o == nil || IsNil(o.LastReachableUpdate) {
+		var ret time.Time
+		return ret
+	}
+	return *o.LastReachableUpdate
+}
+
+// GetLastReachableUpdateOk returns a tuple with the LastReachableUpdate field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Stack) GetLastReachableUpdateOk() (*time.Time, bool) {
+	if o == nil || IsNil(o.LastReachableUpdate) {
+		return nil, false
+	}
+	return o.LastReachableUpdate, true
+}
+
+// HasLastReachableUpdate returns a boolean if a field has been set.
+func (o *Stack) HasLastReachableUpdate() bool {
+	if o != nil && !IsNil(o.LastReachableUpdate) {
+		return true
+	}
+
+	return false
+}
+
+// SetLastReachableUpdate gets a reference to the given time.Time and assigns it to the LastReachableUpdate field.
+func (o *Stack) SetLastReachableUpdate(v time.Time) {
+	o.LastReachableUpdate = &v
 }
 
 // GetId returns the Id field value
@@ -569,6 +630,10 @@ func (o Stack) ToMap() (map[string]interface{}, error) {
 	toSerialize["lastStateUpdate"] = o.LastStateUpdate
 	toSerialize["lastExpectedStatusUpdate"] = o.LastExpectedStatusUpdate
 	toSerialize["lastStatusUpdate"] = o.LastStatusUpdate
+	toSerialize["reachable"] = o.Reachable
+	if !IsNil(o.LastReachableUpdate) {
+		toSerialize["lastReachableUpdate"] = o.LastReachableUpdate
+	}
 	toSerialize["id"] = o.Id
 	toSerialize["organizationId"] = o.OrganizationId
 	toSerialize["uri"] = o.Uri
