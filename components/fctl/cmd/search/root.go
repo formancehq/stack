@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/formancehq/fctl/cmd/search/store"
 	"github.com/formancehq/fctl/cmd/search/views"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -196,7 +195,7 @@ func NewCommand() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			cmd.SetContext(store.ContextWithStore(cmd.Context(), store.SearchNode(cfg, stack, organizationID, stackClient)))
+			cmd.SetContext(fctl.ContextWithStackStore(cmd.Context(), fctl.StackNode(cfg, stack, organizationID, stackClient)))
 
 			return nil
 		}),
