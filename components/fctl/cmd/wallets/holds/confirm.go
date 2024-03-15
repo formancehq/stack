@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/formancehq/fctl/cmd/wallets/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -54,7 +53,7 @@ func (c *ConfirmController) GetStore() *ConfirmStore {
 }
 
 func (c *ConfirmController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
 
 	final := fctl.GetBool(cmd, c.finalFlag)
 	amount := int64(fctl.GetInt(cmd, c.amountFlag))

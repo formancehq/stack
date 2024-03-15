@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/formancehq/fctl/cmd/orchestration/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -61,7 +60,7 @@ func (c *InstancesListController) GetStore() *InstancesListStore {
 }
 
 func (c *InstancesListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
 
 	response, err := store.Client().Orchestration.ListInstances(cmd.Context(), operations.ListInstancesRequest{
 		Running:    fctl.Ptr(fctl.GetBool(cmd, c.runningFlag)),

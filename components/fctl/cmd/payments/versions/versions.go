@@ -3,7 +3,7 @@ package versions
 import (
 	"fmt"
 
-	"github.com/formancehq/fctl/cmd/payments/store"
+	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
 	"golang.org/x/mod/semver"
 )
@@ -20,7 +20,7 @@ type VersionController interface {
 }
 
 func GetPaymentsVersion(cmd *cobra.Command, args []string, controller VersionController) error {
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
 	response, err := store.Client().Payments.PaymentsgetServerInfo(cmd.Context())
 	if err != nil {
 		return err

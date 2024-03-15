@@ -3,7 +3,6 @@ package holds
 import (
 	"fmt"
 
-	"github.com/formancehq/fctl/cmd/wallets/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/pkg/errors"
@@ -46,7 +45,7 @@ func (c *VoidController) GetStore() *VoidStore {
 
 func (c *VoidController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
 	request := operations.VoidHoldRequest{
 		HoldID: args[0],
 	}

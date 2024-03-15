@@ -2,7 +2,6 @@ package reconciliation
 
 import (
 	"github.com/formancehq/fctl/cmd/reconciliation/policies"
-	"github.com/formancehq/fctl/cmd/reconciliation/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
 )
@@ -38,7 +37,7 @@ func NewCommand() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			cmd.SetContext(store.ContextWithStore(cmd.Context(), store.ReconciliationNode(cfg, stack, organizationID, stackClient)))
+			cmd.SetContext(fctl.ContextWithStackStore(cmd.Context(), fctl.StackNode(cfg, stack, organizationID, stackClient)))
 			return nil
 		}),
 	)

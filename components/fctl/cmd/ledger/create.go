@@ -3,7 +3,6 @@ package ledger
 import (
 	"fmt"
 
-	"github.com/formancehq/fctl/cmd/ledger/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -55,7 +54,7 @@ func (c *CreateController) GetStore() *CreateStore {
 }
 
 func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
 	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to create a new ledger") {
 		return nil, fctl.ErrMissingApproval
 	}

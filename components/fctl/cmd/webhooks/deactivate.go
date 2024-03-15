@@ -3,7 +3,6 @@ package webhooks
 import (
 	"fmt"
 
-	"github.com/formancehq/fctl/cmd/webhooks/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/pkg/errors"
@@ -37,7 +36,7 @@ func (c *DesactivateWebhookController) GetStore() *DesactivateWebhookStore {
 }
 
 func (c *DesactivateWebhookController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
 
 	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to deactivate a webhook") {
 		return nil, fctl.ErrMissingApproval

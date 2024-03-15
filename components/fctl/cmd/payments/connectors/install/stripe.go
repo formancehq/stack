@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
-	"github.com/formancehq/fctl/cmd/payments/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -52,7 +51,7 @@ func (c *PaymentsConnectorsStripeController) GetStore() *PaymentsConnectorsStrip
 }
 
 func (c *PaymentsConnectorsStripeController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
 
 	script, err := fctl.ReadFile(cmd, store.Stack(), args[0])
 	if err != nil {

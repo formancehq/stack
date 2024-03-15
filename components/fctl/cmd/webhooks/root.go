@@ -1,7 +1,6 @@
 package webhooks
 
 import (
-	"github.com/formancehq/fctl/cmd/webhooks/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
 )
@@ -37,11 +36,11 @@ func NewCommand() *cobra.Command {
 				return err
 			}
 
-			webhookClient, err := fctl.NewStackClient(cmd, cfg, stack)
+			stackClient, err := fctl.NewStackClient(cmd, cfg, stack)
 			if err != nil {
 				return err
 			}
-			cmd.SetContext(store.ContextWithStore(cmd.Context(), store.WebhooksNode(cfg, stack, organizationID, webhookClient)))
+			cmd.SetContext(fctl.ContextWithStackStore(cmd.Context(), fctl.StackNode(cfg, stack, organizationID, stackClient)))
 			return nil
 		}),
 	)

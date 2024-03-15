@@ -3,7 +3,6 @@ package webhooks
 import (
 	"fmt"
 
-	"github.com/formancehq/fctl/cmd/webhooks/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -38,7 +37,7 @@ func (c *ChangeSecretWebhookController) GetStore() *ChangeSecretStore {
 	return c.store
 }
 func (c *ChangeSecretWebhookController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
 
 	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to change a webhook secret") {
 		return nil, fctl.ErrMissingApproval

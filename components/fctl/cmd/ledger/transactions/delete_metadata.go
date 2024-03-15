@@ -2,7 +2,6 @@ package transactions
 
 import (
 	"github.com/formancehq/fctl/cmd/ledger/internal"
-	"github.com/formancehq/fctl/cmd/ledger/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/pterm/pterm"
@@ -45,7 +44,7 @@ func (c *DeleteMetadataController) GetStore() *DeleteMetadataStore {
 
 func (c *DeleteMetadataController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
 
 	transactionID, err := internal.TransactionIDOrLastN(cmd.Context(), store.Client(),
 		fctl.GetString(cmd, internal.LedgerFlag), args[0])

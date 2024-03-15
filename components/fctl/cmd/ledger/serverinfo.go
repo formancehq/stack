@@ -3,7 +3,6 @@ package ledger
 import (
 	"fmt"
 
-	"github.com/formancehq/fctl/cmd/ledger/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -46,7 +45,7 @@ func (c *ServerInfoController) GetStore() *ServerInfoStore {
 }
 
 func (c *ServerInfoController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
 
 	response, err := store.Client().Ledger.GetInfo(cmd.Context())
 	if err != nil {

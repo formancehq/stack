@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/formancehq/fctl/cmd/payments/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -46,7 +45,7 @@ func (c *ShowController) GetStore() *ShowStore {
 }
 
 func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
 	response, err := store.Client().Payments.GetPayment(cmd.Context(), operations.GetPaymentRequest{
 		PaymentID: args[0],
 	})

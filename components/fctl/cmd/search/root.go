@@ -54,7 +54,7 @@ func (c *SearchController) GetStore() *SearchStore {
 
 func (c *SearchController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
 
 	terms := make([]string, 0)
 	if len(args) > 1 {

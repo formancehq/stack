@@ -2,7 +2,6 @@ package accounts
 
 import (
 	"github.com/formancehq/fctl/cmd/ledger/internal"
-	"github.com/formancehq/fctl/cmd/ledger/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/pterm/pterm"
@@ -44,7 +43,7 @@ func (c *DeleteMetadataController) GetStore() *DeleteMetadataStore {
 
 func (c *DeleteMetadataController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
 
 	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to set a metadata on account %s", args[0]) {
 		return nil, fctl.ErrMissingApproval

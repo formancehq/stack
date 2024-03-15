@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/formancehq/fctl/cmd/orchestration/internal"
-	"github.com/formancehq/fctl/cmd/orchestration/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -57,7 +56,7 @@ func (c *WorkflowsRunController) GetStore() *WorkflowsRunStore {
 
 func (c *WorkflowsRunController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
 
 	wait := fctl.GetBool(cmd, c.waitFlag)
 	variables := make(map[string]string)
@@ -93,7 +92,7 @@ func (c *WorkflowsRunController) Run(cmd *cobra.Command, args []string) (fctl.Re
 }
 
 func (c *WorkflowsRunController) Render(cmd *cobra.Command, args []string) error {
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
 	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Workflow instance created with ID: %s", c.store.WorkflowInstance.ID)
 	if c.wait {
 		w, err := store.Client().Orchestration.GetWorkflow(cmd.Context(), operations.GetWorkflowRequest{

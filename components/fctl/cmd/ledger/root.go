@@ -3,7 +3,6 @@ package ledger
 import (
 	"github.com/formancehq/fctl/cmd/ledger/accounts"
 	"github.com/formancehq/fctl/cmd/ledger/internal"
-	"github.com/formancehq/fctl/cmd/ledger/store"
 	"github.com/formancehq/fctl/cmd/ledger/transactions"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
@@ -46,7 +45,7 @@ func NewCommand() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			cmd.SetContext(store.ContextWithStore(cmd.Context(), store.LedgerNode(cfg, stack, organizationID, stackClient)))
+			cmd.SetContext(fctl.ContextWithStackStore(cmd.Context(), fctl.StackNode(cfg, stack, organizationID, stackClient)))
 			return nil
 		}),
 	)

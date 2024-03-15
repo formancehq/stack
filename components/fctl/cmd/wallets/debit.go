@@ -5,7 +5,6 @@ import (
 	"math/big"
 
 	"github.com/formancehq/fctl/cmd/wallets/internal"
-	"github.com/formancehq/fctl/cmd/wallets/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -71,7 +70,7 @@ func (c *DebitWalletController) GetStore() *DebitWalletStore {
 }
 
 func (c *DebitWalletController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
 	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to debit a wallets") {
 		return nil, fctl.ErrMissingApproval
 	}

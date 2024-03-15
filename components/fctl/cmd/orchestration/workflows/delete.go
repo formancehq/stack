@@ -3,7 +3,6 @@ package workflows
 import (
 	"fmt"
 
-	"github.com/formancehq/fctl/cmd/orchestration/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/pterm/pterm"
@@ -43,7 +42,7 @@ func (c *WorkflowsDeleteController) GetStore() *WorkflowsDeleteStore {
 }
 
 func (c *WorkflowsDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
 
 	response, err := store.Client().Orchestration.DeleteWorkflow(
 		cmd.Context(),

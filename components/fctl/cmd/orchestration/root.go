@@ -2,7 +2,6 @@ package orchestration
 
 import (
 	"github.com/formancehq/fctl/cmd/orchestration/instances"
-	"github.com/formancehq/fctl/cmd/orchestration/store"
 	"github.com/formancehq/fctl/cmd/orchestration/triggers"
 	"github.com/formancehq/fctl/cmd/orchestration/workflows"
 	fctl "github.com/formancehq/fctl/pkg"
@@ -42,7 +41,7 @@ func NewCommand() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			cmd.SetContext(store.ContextWithStore(cmd.Context(), store.OrchestrationNode(cfg, stack, organizationID, stackClient)))
+			cmd.SetContext(fctl.ContextWithStackStore(cmd.Context(), fctl.StackNode(cfg, stack, organizationID, stackClient)))
 			return nil
 		}),
 	)

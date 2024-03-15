@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/formancehq/fctl/cmd/wallets/internal"
-	"github.com/formancehq/fctl/cmd/wallets/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -48,7 +47,7 @@ func (c *ListController) GetStore() *ListStore {
 
 func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
 	walletID, err := internal.RetrieveWalletID(cmd, store.Client())
 	if err != nil {
 		return nil, err

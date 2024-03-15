@@ -5,7 +5,6 @@ import (
 	"math/big"
 
 	"github.com/formancehq/fctl/cmd/wallets/internal"
-	"github.com/formancehq/fctl/cmd/webhooks/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -56,7 +55,7 @@ func (c *CreateController) GetStore() *CreateStore {
 }
 
 func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
 
 	walletID, err := internal.RequireWalletID(cmd, store.Client())
 	if err != nil {

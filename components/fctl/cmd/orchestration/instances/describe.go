@@ -5,7 +5,6 @@ import (
 	"io"
 	"time"
 
-	"github.com/formancehq/fctl/cmd/orchestration/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	formance "github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
@@ -47,7 +46,7 @@ func (c *InstancesDescribeController) GetStore() *InstancesDescribeStore {
 }
 
 func (c *InstancesDescribeController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
 
 	response, err := store.Client().Orchestration.GetInstanceHistory(cmd.Context(), operations.GetInstanceHistoryRequest{
 		InstanceID: args[0],
@@ -70,7 +69,7 @@ func (c *InstancesDescribeController) Run(cmd *cobra.Command, args []string) (fc
 }
 
 func (c *InstancesDescribeController) Render(cmd *cobra.Command, args []string) error {
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
 	for i, history := range c.store.WorkflowInstancesHistory {
 		if err := printStage(cmd, i, store.Client(), args[0], history); err != nil {
 			return err

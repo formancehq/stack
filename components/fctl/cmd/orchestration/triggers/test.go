@@ -3,7 +3,6 @@ package triggers
 import (
 	"encoding/json"
 
-	"github.com/formancehq/fctl/cmd/orchestration/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -44,7 +43,7 @@ func (c *TriggersTestController) GetStore() *TriggersTestStore {
 }
 
 func (c *TriggersTestController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
 
 	data := make(map[string]any)
 	if err := json.Unmarshal([]byte(args[1]), &data); err != nil {

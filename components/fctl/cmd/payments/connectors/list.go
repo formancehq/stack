@@ -3,7 +3,6 @@ package connectors
 import (
 	"fmt"
 
-	"github.com/formancehq/fctl/cmd/payments/store"
 	"github.com/formancehq/fctl/cmd/payments/versions"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -56,7 +55,7 @@ func (c *PaymentsConnectorsListController) GetStore() *PaymentsConnectorsListSto
 }
 
 func (c *PaymentsConnectorsListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
 
 	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
 		return nil, err

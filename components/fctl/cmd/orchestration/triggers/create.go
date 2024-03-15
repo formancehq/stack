@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/formancehq/fctl/cmd/orchestration/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
@@ -52,7 +51,7 @@ func (c *TriggersCreateController) GetStore() *TriggersCreateStore {
 }
 
 func (c *TriggersCreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	store := store.GetStore(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
 
 	var (
 		event    = args[0]

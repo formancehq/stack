@@ -6,7 +6,6 @@ import (
 	"github.com/formancehq/fctl/cmd/payments/connectors"
 	"github.com/formancehq/fctl/cmd/payments/payments"
 	"github.com/formancehq/fctl/cmd/payments/pools"
-	"github.com/formancehq/fctl/cmd/payments/store"
 	"github.com/formancehq/fctl/cmd/payments/transferinitiation"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
@@ -46,7 +45,7 @@ func NewCommand() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			cmd.SetContext(store.ContextWithStore(cmd.Context(), store.PaymentsNode(cfg, stack, organizationID, stackClient)))
+			cmd.SetContext(fctl.ContextWithStackStore(cmd.Context(), fctl.StackNode(cfg, stack, organizationID, stackClient)))
 			return nil
 		}),
 	)
