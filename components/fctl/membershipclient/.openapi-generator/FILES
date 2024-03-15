@@ -53,6 +53,7 @@ docs/StackAllOf.md
 docs/StackClaim.md
 docs/StackData.md
 docs/StackLifeCycle.md
+docs/StackReachability.md
 docs/StackUserAccess.md
 docs/StackUserAccessAllOf.md
 docs/StackUserAccessResponse.md
@@ -114,6 +115,7 @@ model_stack_all_of.go
 model_stack_claim.go
 model_stack_data.go
 model_stack_life_cycle.go
+model_stack_reachability.go
 model_stack_user_access.go
 model_stack_user_access_all_of.go
 model_stack_user_access_response.go

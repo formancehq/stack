@@ -166,6 +166,7 @@ Class | Method | HTTP request | Description
  - [StackClaim](docs/StackClaim.md)
  - [StackData](docs/StackData.md)
  - [StackLifeCycle](docs/StackLifeCycle.md)
+ - [StackReachability](docs/StackReachability.md)
  - [StackUserAccess](docs/StackUserAccess.md)
  - [StackUserAccessAllOf](docs/StackUserAccessAllOf.md)
  - [StackUserAccessResponse](docs/StackUserAccessResponse.md)

@@ -1421,11 +1421,24 @@ components:
       - state
       - status
       type: object
+    StackReachability:
+      properties:
+        reachable:
+          description: Stack is reachable through Stargate
+          type: boolean
+        lastReachableUpdate:
+          description: Last time the stack was reachable
+          format: date-time
+          type: string
+      required:
+      - reachable
+      type: object
     Stack:
       allOf:
       - $ref: '#/components/schemas/StackData'
       - $ref: '#/components/schemas/StackVersion'
       - $ref: '#/components/schemas/StackLifeCycle'
+      - $ref: '#/components/schemas/StackReachability'
       - $ref: '#/components/schemas/Stack_allOf'
     UserData:
       allOf:
