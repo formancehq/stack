@@ -3,6 +3,7 @@ package invitations
 import (
 	"encoding/json"
 
+	"github.com/formancehq/fctl/cmd/cloud/store"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
@@ -53,17 +54,9 @@ func (c *SendController) GetStore() *SendStore {
 }
 
 func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
+	store := store.GetStore(cmd.Context())
 
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(cmd, store.Config, store.Client())
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +81,7 @@ func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		invitationClaim.StackClaims = stackClaims
 	}
 
-	invitations, _, err := apiClient.DefaultApi.
+	invitations, _, err := store.Client().
 		CreateInvitation(cmd.Context(), organizationID).
 		Email(args[0]).InvitationClaim(invitationClaim).Execute()
 	if err != nil {

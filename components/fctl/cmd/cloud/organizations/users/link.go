@@ -3,6 +3,7 @@ package users
 import (
 	"fmt"
 
+	"github.com/formancehq/fctl/cmd/cloud/store"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
@@ -37,17 +38,9 @@ func NewLinkCommand() *cobra.Command {
 		fctl.WithShortDescription("Link user to an organization with properties"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithPreRunE(func(cmd *cobra.Command, args []string) error {
-			cfg, err := fctl.GetConfig(cmd)
-			if err != nil {
-				return err
-			}
+			store := store.GetStore(cmd.Context())
 
-			client, err := fctl.NewMembershipClient(cmd, cfg)
-			if err != nil {
-				return err
-			}
-
-			version := fctl.MembershipServerInfo(cmd.Context(), client.APIClient)
+			version := fctl.MembershipServerInfo(cmd.Context(), store.Client())
 			if !semver.IsValid(version) {
 				return nil
 			}
@@ -67,17 +60,9 @@ func (c *LinkController) GetStore() *LinkStore {
 }
 
 func (c *LinkController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
+	store := store.GetStore(cmd.Context())
 
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(cmd, store.Config, store.Client())
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +74,7 @@ func (c *LinkController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	} else {
 		return nil, fmt.Errorf("role is required")
 	}
-	response, err := apiClient.DefaultApi.UpsertOrganizationUser(
+	response, err := store.Client().UpsertOrganizationUser(
 		cmd.Context(),
 		organizationID,
 		args[0]).

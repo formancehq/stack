@@ -12,6 +12,12 @@ import (
 	"github.com/pterm/pterm"
 )
 
+type StackPrinter struct {
+	Out io.Writer
+	*membershipclient.Stack
+	versions *shared.GetVersionsResponse
+}
+
 func PrintStackInformation(out io.Writer, profile *fctl.Profile, stack *membershipclient.Stack, versions *shared.GetVersionsResponse) error {
 	baseUrlStr := profile.ServicesBaseUrl(stack)
 
@@ -83,6 +89,20 @@ func printMetadata(out io.Writer, stack *membershipclient.Stack) error {
 	for k, v := range stack.Metadata {
 		tableData = append(tableData, []string{pterm.LightCyan(k), v})
 	}
+
+	return pterm.DefaultTable.
+		WithWriter(out).
+		WithData(tableData).
+		Render()
+}
+
+func printReachability(out io.Writer, stack *membershipclient.Stack) error {
+	fctl.Println()
+	fctl.Section.WithWriter(out).Println("Reachability through Stargate")
+
+	tableData := pterm.TableData{}
+	tableData = append(tableData, []string{pterm.LightCyan("Is reachable ?"), fctl.BoolToString(stack.Reachable)})
+	tableData = append(tableData, []string{pterm.LightCyan("Last reachable update"), fctl.TimePointerToString(stack.LastReachableUpdate)})
 
 	return pterm.DefaultTable.
 		WithWriter(out).

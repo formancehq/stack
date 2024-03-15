@@ -40,7 +40,7 @@ lint:
 
 pre-commit:
     WAIT
-      BUILD --pass-args +tidy
+        BUILD --pass-args +tidy
     END
     BUILD --pass-args +lint
     BUILD --pass-args +completions

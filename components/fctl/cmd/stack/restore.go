@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/formancehq/fctl/cmd/stack/internal"
+	"github.com/formancehq/fctl/cmd/stack/store"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -51,24 +52,10 @@ func (c *StackRestoreController) GetStore() *StackRestoreStore {
 }
 
 func (c *StackRestoreController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	organization, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, errors.Wrap(err, "searching default organization")
-	}
-
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
+	store := store.GetStore(cmd.Context())
 	var stack *membershipclient.Stack
 	if len(args) == 1 {
-		rsp, _, err := apiClient.DefaultApi.GetStack(cmd.Context(), organization, args[0]).Execute()
+		rsp, _, err := store.Client().GetStack(cmd.Context(), store.OrganizationId(), args[0]).Execute()
 		if err != nil {
 			return nil, err
 		}
@@ -83,15 +70,15 @@ func (c *StackRestoreController) Run(cmd *cobra.Command, args []string) (fctl.Re
 		return nil, fctl.ErrMissingApproval
 	}
 
-	response, _, err := apiClient.DefaultApi.
-		RestoreStack(cmd.Context(), organization, args[0]).
+	response, _, err := store.Client().
+		RestoreStack(cmd.Context(), store.OrganizationId(), args[0]).
 		Execute()
 	if err != nil {
 		return nil, err
 	}
 
 	if !fctl.GetBool(cmd, nowaitFlag) {
-		stack, err = waitStackReady(cmd, apiClient, response.Data.OrganizationId, response.Data.Id)
+		stack, err = waitStackReady(cmd, store.MembershipClient, response.Data.OrganizationId, response.Data.Id)
 		if err != nil {
 			return nil, err
 		}
@@ -101,7 +88,7 @@ func (c *StackRestoreController) Run(cmd *cobra.Command, args []string) (fctl.Re
 		c.store.Stack = response.Data
 	}
 
-	stackClient, err := fctl.NewStackClient(cmd, cfg, response.Data)
+	stackClient, err := fctl.NewStackClient(cmd, store.Config, response.Data)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +103,7 @@ func (c *StackRestoreController) Run(cmd *cobra.Command, args []string) (fctl.Re
 	}
 
 	c.store.Versions = versions.GetVersionsResponse
-	c.config = cfg
+	c.config = store.Config
 
 	return c, nil
 }

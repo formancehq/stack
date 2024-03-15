@@ -1,6 +1,7 @@
 package users
 
 import (
+	"github.com/formancehq/fctl/cmd/cloud/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -41,22 +42,13 @@ func (c *DeleteController) GetStore() *UnlinkStore {
 
 func (c *DeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	cfg, err := fctl.GetConfig(cmd)
+	store := store.GetStore(cmd.Context())
+	organizationID, err := fctl.ResolveOrganizationID(cmd, store.Config, store.Client())
 	if err != nil {
 		return nil, err
 	}
 
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = apiClient.DefaultApi.DeleteUserFromOrganization(cmd.Context(), organizationID, args[0]).Execute()
+	_, err = store.Client().DeleteUserFromOrganization(cmd.Context(), organizationID, args[0]).Execute()
 	if err != nil {
 		return nil, err
 	}

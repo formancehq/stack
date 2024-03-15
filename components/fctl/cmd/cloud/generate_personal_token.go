@@ -3,6 +3,7 @@ package cloud
 import (
 	"fmt"
 
+	"github.com/formancehq/fctl/cmd/cloud/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
 )
@@ -41,18 +42,15 @@ func (c *GeneratePersonalTokenController) GetStore() *GeneratePersonalTokenStore
 
 func (c *GeneratePersonalTokenController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-	profile := fctl.GetCurrentProfile(cmd, cfg)
+	store := store.GetStore(cmd.Context())
+	profile := fctl.GetCurrentProfile(cmd, store.Config)
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	organizationID, err := fctl.ResolveOrganizationID(cmd, store.Config, store.Client())
 	if err != nil {
 		return nil, err
 	}
 
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
+	stack, err := fctl.ResolveStack(cmd, store.Config, organizationID)
 	if err != nil {
 		return nil, err
 	}

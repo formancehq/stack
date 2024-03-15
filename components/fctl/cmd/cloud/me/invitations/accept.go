@@ -1,6 +1,7 @@
 package invitations
 
 import (
+	"github.com/formancehq/fctl/cmd/cloud/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -42,21 +43,12 @@ func (c *AcceptController) GetStore() *AcceptStore {
 
 func (c *AcceptController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := fctl.NewMembershipClient(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
+	store := store.GetStore(cmd.Context())
 	if !fctl.CheckOrganizationApprobation(cmd, "You are about to accept an invitation") {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	_, err = client.DefaultApi.AcceptInvitation(cmd.Context(), args[0]).Execute()
+	_, err := store.Client().AcceptInvitation(cmd.Context(), args[0]).Execute()
 	if err != nil {
 		return nil, err
 	}

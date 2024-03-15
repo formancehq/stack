@@ -1,6 +1,7 @@
 package invitations
 
 import (
+	"github.com/formancehq/fctl/cmd/cloud/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -41,21 +42,13 @@ func (c *DeclineController) GetStore() *DeclineStore {
 }
 
 func (c *DeclineController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := fctl.NewMembershipClient(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
+	store := store.GetStore(cmd.Context())
 
 	if !fctl.CheckOrganizationApprobation(cmd, "You are about to decline an invitation") {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	_, err = client.DefaultApi.DeclineInvitation(cmd.Context(), args[0]).Execute()
+	_, err := store.Client().DeclineInvitation(cmd.Context(), args[0]).Execute()
 	if err != nil {
 		return nil, err
 	}

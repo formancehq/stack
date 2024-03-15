@@ -27,6 +27,7 @@ import (
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -64,7 +65,14 @@ func NewRootCommand() *cobra.Command {
 		fctl.WithPersistentStringPFlag(fctl.OutputFlag, "o", "plain", "Output format (plain, json)"),
 		fctl.WithPersistentBoolFlag(fctl.InsecureTlsFlag, false, "Insecure TLS"),
 		fctl.WithPersistentBoolFlag(fctl.TelemetryFlag, false, "Telemetry enabled"),
+		fctl.WithPersistentPreRunE(func(cmd *cobra.Command, args []string) error {
+			logger := logging.NewLogrus(logging.DefaultLogger(cmd.OutOrStdout(), fctl.GetBool(cmd, fctl.DebugFlag)))
+			ctx := logging.ContextWithLogger(cmd.Context(), logger)
+			cmd.SetContext(ctx)
+			return nil
+		}),
 	)
+
 	cmd.Version = version.Version
 	cmd.RegisterFlagCompletionFunc(fctl.ProfileFlag, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		cfg, err := fctl.GetConfig(cmd)
@@ -87,7 +95,7 @@ func Execute() {
 			debug.PrintStack()
 		}
 	}()
-
+	cobra.EnableTraverseRunHooks = true
 	ctx, _ := signal.NotifyContext(context.TODO(), os.Interrupt)
 	err := NewRootCommand().ExecuteContext(ctx)
 	if err != nil {
