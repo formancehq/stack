@@ -18,5 +18,8 @@ func NewCommand() *cobra.Command {
 			regions.NewCommand(),
 			NewGeneratePersonalTokenCommand(),
 		),
+		fctl.WithPersistentPreRunE(func(cmd *cobra.Command, args []string) error {
+			return fctl.NewMembershipStore(cmd)
+		}),
 	)
 }

@@ -70,29 +70,9 @@ func (c *DebitWalletController) GetStore() *DebitWalletStore {
 }
 
 func (c *DebitWalletController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, errors.Wrap(err, "retrieving config")
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to debit a wallets") {
+	store := fctl.GetStackStore(cmd.Context())
+	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to debit a wallets") {
 		return nil, fctl.ErrMissingApproval
-	}
-
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
 	}
 
 	pending := fctl.GetBool(cmd, c.pendingFlag)
@@ -104,7 +84,7 @@ func (c *DebitWalletController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 
 	amountStr := args[0]
 	asset := args[1]
-	walletID, err := internal.RequireWalletID(cmd, client)
+	walletID, err := internal.RequireWalletID(cmd, store.Client())
 	if err != nil {
 		return nil, err
 	}
@@ -118,13 +98,13 @@ func (c *DebitWalletController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 
 	var destination *shared.Subject
 	if destinationStr := fctl.GetString(cmd, c.destinationFlag); destinationStr != "" {
-		destination, err = internal.ParseSubject(destinationStr, cmd, client)
+		destination, err = internal.ParseSubject(destinationStr, cmd, store.Client())
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	response, err := client.Wallets.DebitWallet(cmd.Context(), operations.DebitWalletRequest{
+	response, err := store.Client().Wallets.DebitWallet(cmd.Context(), operations.DebitWalletRequest{
 		DebitWalletRequest: &shared.DebitWalletRequest{
 			Amount: shared.Monetary{
 				Asset:  asset,

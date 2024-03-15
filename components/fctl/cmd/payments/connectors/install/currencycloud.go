@@ -50,17 +50,11 @@ func (c *PaymentsConnectorsCurrencyCloudController) GetStore() *PaymentsConnecto
 }
 
 func (c *PaymentsConnectorsCurrencyCloudController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	soc, err := fctl.GetStackOrganizationConfigApprobation(cmd, "You are about to install connector '%s'", internal.CurrencyCloudConnector)
-	if err != nil {
+	store := fctl.GetStackStore(cmd.Context())
+	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to install connector '%s'", internal.CurrencyCloudConnector) {
 		return nil, fctl.ErrMissingApproval
 	}
-
-	paymentsClient, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
-	if err != nil {
-		return nil, err
-	}
-
-	script, err := fctl.ReadFile(cmd, soc.Stack, args[0])
+	script, err := fctl.ReadFile(cmd, store.Stack(), args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +64,7 @@ func (c *PaymentsConnectorsCurrencyCloudController) Run(cmd *cobra.Command, args
 		return nil, err
 	}
 
-	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
+	response, err := store.Client().Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
 		ConnectorConfig: shared.ConnectorConfig{
 			CurrencyCloudConfig: &config,
 		},

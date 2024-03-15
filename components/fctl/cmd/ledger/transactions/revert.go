@@ -44,32 +44,14 @@ func (c *RevertController) GetStore() *RevertStore {
 }
 
 func (c *RevertController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
+	store := fctl.GetStackStore(cmd.Context())
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to revert transaction %s", args[0]) {
+	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to revert transaction %s", args[0]) {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	ledgerClient, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, err
-	}
-
 	ledger := fctl.GetString(cmd, internal.LedgerFlag)
-	txId, err := internal.TransactionIDOrLastN(cmd.Context(), ledgerClient, ledger, args[0])
+	txId, err := internal.TransactionIDOrLastN(cmd.Context(), store.Client(), ledger, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +61,7 @@ func (c *RevertController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		Txid:   txId,
 	}
 
-	response, err := ledgerClient.Ledger.RevertTransaction(cmd.Context(), request)
+	response, err := store.Client().Ledger.RevertTransaction(cmd.Context(), request)
 	if response.ErrorResponse != nil {
 		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
 	}

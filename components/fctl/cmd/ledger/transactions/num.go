@@ -70,33 +70,15 @@ func (c *NumController) GetStore() *NumStore {
 
 func (c *NumController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	cfg, err := fctl.GetConfig(cmd)
+	store := fctl.GetStackStore(cmd.Context())
+
+	script, err := fctl.ReadFile(cmd, store.Stack(), args[0])
 	if err != nil {
 		return nil, err
 	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	script, err := fctl.ReadFile(cmd, stack, args[0])
-	if err != nil {
-		return nil, err
-	}
-
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to apply a numscript") {
+	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to apply a numscript") {
 		return nil, fctl.ErrMissingApproval
-	}
-
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, err
 	}
 
 	vars := map[string]interface{}{}
@@ -156,7 +138,7 @@ func (c *NumController) Run(cmd *cobra.Command, args []string) (fctl.Renderable,
 
 	ledger := fctl.GetString(cmd, internal.LedgerFlag)
 
-	response, err := client.Ledger.CreateTransaction(cmd.Context(), operations.CreateTransactionRequest{
+	response, err := store.Client().Ledger.CreateTransaction(cmd.Context(), operations.CreateTransactionRequest{
 		PostTransaction: shared.PostTransaction{
 			Metadata:  collectionutils.ConvertMap(metadata, collectionutils.ToAny[string]),
 			Reference: &reference,

@@ -49,27 +49,10 @@ func (c *ShowController) GetStore() *ShowStore {
 }
 
 func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, errors.Wrap(err, "retrieving config")
-	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
+	store := fctl.GetStackStore(cmd.Context())
 
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
-	}
-
-	walletID, err := internal.RetrieveWalletID(cmd, client)
+	walletID, err := internal.RetrieveWalletID(cmd, store.Client())
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +60,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, errors.New("You need to specify wallet id using --id or --name flags")
 	}
 
-	response, err := client.Wallets.GetWallet(cmd.Context(), operations.GetWalletRequest{
+	response, err := store.Client().Wallets.GetWallet(cmd.Context(), operations.GetWalletRequest{
 		ID: walletID,
 	})
 	if err != nil {

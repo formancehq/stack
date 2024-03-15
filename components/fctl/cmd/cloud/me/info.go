@@ -42,14 +42,10 @@ func (c *InfoController) GetStore() *InfoStore {
 }
 
 func (c *InfoController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	profile := fctl.GetCurrentProfile(cmd, cfg)
+	store := fctl.GetMembershipStore(cmd.Context())
+	profile := fctl.GetCurrentProfile(cmd, store.Config)
 	if !profile.IsConnected() {
-		return nil, errors.New("Not logged. Use 'login' command before.")
+		return nil, errors.New("not logged. use 'login' command before")
 	}
 
 	userInfo, err := profile.GetUserInfo(cmd)

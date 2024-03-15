@@ -51,17 +51,9 @@ func (c *PaymentsConnectorsStripeController) GetStore() *PaymentsConnectorsStrip
 }
 
 func (c *PaymentsConnectorsStripeController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	soc, err := fctl.GetStackOrganizationConfigApprobation(cmd, "You are about to install connector '%s'", internal.StripeConnector)
-	if err != nil {
-		return nil, fctl.ErrMissingApproval
-	}
+	store := fctl.GetStackStore(cmd.Context())
 
-	paymentsClient, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
-	if err != nil {
-		return nil, err
-	}
-
-	script, err := fctl.ReadFile(cmd, soc.Stack, args[0])
+	script, err := fctl.ReadFile(cmd, store.Stack(), args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -70,8 +62,10 @@ func (c *PaymentsConnectorsStripeController) Run(cmd *cobra.Command, args []stri
 	if err := json.Unmarshal([]byte(script), &config); err != nil {
 		return nil, err
 	}
-
-	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
+	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to install connector '%s'", internal.StripeConnector) {
+		return nil, fctl.ErrMissingApproval
+	}
+	response, err := store.Client().Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
 		ConnectorConfig: shared.ConnectorConfig{
 			StripeConfig: &config,
 		},

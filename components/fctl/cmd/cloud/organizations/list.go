@@ -2,6 +2,7 @@ package organizations
 
 import (
 	"github.com/formancehq/fctl/membershipclient"
+
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -50,24 +51,16 @@ func (c *ListController) GetStore() *ListStore {
 }
 
 func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
+	store := fctl.GetMembershipStore(cmd.Context())
 
 	expand := fctl.GetBool(cmd, "expand")
 
-	organizations, _, err := apiClient.DefaultApi.ListOrganizations(cmd.Context()).Expand(expand).Execute()
+	organizations, _, err := store.Client().ListOrganizations(cmd.Context()).Expand(expand).Execute()
 	if err != nil {
 		return nil, err
 	}
 
-	currentProfile := fctl.GetCurrentProfile(cmd, cfg)
+	currentProfile := fctl.GetCurrentProfile(cmd, store.Config)
 	claims, err := currentProfile.GetClaims()
 	if err != nil {
 		return nil, err

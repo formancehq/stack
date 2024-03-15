@@ -9,7 +9,6 @@ import (
 	formance "github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -18,8 +17,7 @@ type InstancesDescribeStore struct {
 	WorkflowInstancesHistory []shared.WorkflowInstanceHistory `json:"workflowInstanceHistory"`
 }
 type InstancesDescribeController struct {
-	store  *InstancesDescribeStore
-	client *formance.Formance
+	store *InstancesDescribeStore
 }
 
 var _ fctl.Controller[*InstancesDescribeStore] = (*InstancesDescribeController)(nil)
@@ -48,17 +46,9 @@ func (c *InstancesDescribeController) GetStore() *InstancesDescribeStore {
 }
 
 func (c *InstancesDescribeController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	soc, err := fctl.GetStackOrganizationConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
+	store := fctl.GetStackStore(cmd.Context())
 
-	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
-	}
-
-	response, err := client.Orchestration.GetInstanceHistory(cmd.Context(), operations.GetInstanceHistoryRequest{
+	response, err := store.Client().Orchestration.GetInstanceHistory(cmd.Context(), operations.GetInstanceHistoryRequest{
 		InstanceID: args[0],
 	})
 	if err != nil {
@@ -73,16 +63,15 @@ func (c *InstancesDescribeController) Run(cmd *cobra.Command, args []string) (fc
 		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
-	c.client = client
 	c.store.WorkflowInstancesHistory = response.GetWorkflowInstanceHistoryResponse.Data
 
 	return c, nil
 }
 
 func (c *InstancesDescribeController) Render(cmd *cobra.Command, args []string) error {
-
+	store := fctl.GetStackStore(cmd.Context())
 	for i, history := range c.store.WorkflowInstancesHistory {
-		if err := printStage(cmd, i, c.client, args[0], history); err != nil {
+		if err := printStage(cmd, i, store.Client(), args[0], history); err != nil {
 			return err
 		}
 	}

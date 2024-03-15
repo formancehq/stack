@@ -5,7 +5,6 @@ import (
 
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
-	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -46,31 +45,14 @@ func (c *DeleteController) GetStore() *DeleteStore {
 }
 
 func (c *DeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, errors.Wrap(err, "retrieving config")
-	}
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
+	store := fctl.GetStackStore(cmd.Context())
 
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to delete '%s'", args[0]) {
+	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to delete '%s'", args[0]) {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
-	}
-
-	response, err := client.Reconciliation.DeletePolicy(
+	response, err := store.Client().Reconciliation.DeletePolicy(
 		cmd.Context(),
 		operations.DeletePolicyRequest{
 			PolicyID: args[0],

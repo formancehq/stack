@@ -59,34 +59,14 @@ func (c *CreditWalletController) GetStore() *CreditWalletStore {
 }
 
 func (c *CreditWalletController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, errors.Wrap(err, "reading config")
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to credit a wallets") {
+	store := fctl.GetStackStore(cmd.Context())
+	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to credit a wallets") {
 		return nil, fctl.ErrMissingApproval
-	}
-
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
 	}
 
 	amountStr := args[0]
 	asset := args[1]
-	walletID, err := internal.RetrieveWalletID(cmd, client)
+	walletID, err := internal.RetrieveWalletID(cmd, store.Client())
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +87,7 @@ func (c *CreditWalletController) Run(cmd *cobra.Command, args []string) (fctl.Re
 
 	sources := make([]shared.Subject, 0)
 	for _, sourceStr := range fctl.GetStringSlice(cmd, c.sourceFlag) {
-		source, err := internal.ParseSubject(sourceStr, cmd, client)
+		source, err := internal.ParseSubject(sourceStr, cmd, store.Client())
 		if err != nil {
 			return nil, err
 		}
@@ -126,7 +106,7 @@ func (c *CreditWalletController) Run(cmd *cobra.Command, args []string) (fctl.Re
 			Balance:  formance.String(fctl.GetString(cmd, c.balanceFlag)),
 		},
 	}
-	response, err := client.Wallets.CreditWallet(cmd.Context(), request)
+	response, err := store.Client().Wallets.CreditWallet(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "crediting wallet")
 	}

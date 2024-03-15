@@ -54,29 +54,10 @@ func (c *SendController) GetStore() *SendStore {
 }
 
 func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	store := fctl.GetStackStore(cmd.Context())
 
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to create a new transaction") {
+	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to create a new transaction") {
 		return nil, fctl.ErrMissingApproval
-	}
-
-	ledgerClient, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, err
 	}
 
 	var source, destination, asset, amountStr string
@@ -104,7 +85,7 @@ func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 
 	reference := fctl.GetString(cmd, c.referenceFlag)
 
-	response, err := ledgerClient.Ledger.CreateTransaction(cmd.Context(), operations.CreateTransactionRequest{
+	response, err := store.Client().Ledger.CreateTransaction(cmd.Context(), operations.CreateTransactionRequest{
 		PostTransaction: shared.PostTransaction{
 			Metadata: collectionutils.ConvertMap(metadata, collectionutils.ToAny[string]),
 			Postings: []shared.Posting{

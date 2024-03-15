@@ -1,7 +1,9 @@
 package organizations
 
 import (
+	"github.com/formancehq/fctl/cmd/cloud/organizations/internal"
 	"github.com/formancehq/fctl/membershipclient"
+
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
 )
@@ -41,18 +43,10 @@ func (c *DescribeController) GetStore() *DescribeStore {
 
 func (c *DescribeController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
+	store := fctl.GetMembershipStore(cmd.Context())
 
 	expand := fctl.GetBool(cmd, "expand")
-	response, _, err := apiClient.DefaultApi.
+	response, _, err := store.Client().
 		ReadOrganization(cmd.Context(), args[0]).Expand(expand).Execute()
 	if err != nil {
 		return nil, err
@@ -63,5 +57,5 @@ func (c *DescribeController) Run(cmd *cobra.Command, args []string) (fctl.Render
 }
 
 func (c *DescribeController) Render(cmd *cobra.Command, args []string) error {
-	return PrintOrganization(c.store.OrganizationExpanded)
+	return internal.PrintOrganization(c.store.OrganizationExpanded)
 }

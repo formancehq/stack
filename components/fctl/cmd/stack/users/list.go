@@ -1,6 +1,7 @@
 package users
 
 import (
+	"github.com/formancehq/fctl/cmd/stack/store"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
@@ -43,22 +44,9 @@ func (c *ListController) GetStore() *ListStore {
 
 func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
+	store := store.GetStore(cmd.Context())
 
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	ListStackUsersAccesses, response, err := apiClient.DefaultApi.ListStackUsersAccesses(cmd.Context(), organizationID, args[0]).Execute()
+	ListStackUsersAccesses, response, err := store.Client().ListStackUsersAccesses(cmd.Context(), store.OrganizationId(), args[0]).Execute()
 	if err != nil {
 		return nil, err
 	}

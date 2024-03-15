@@ -62,6 +62,9 @@ func (c *UpdateStripeConnectorConfigController) GetStore() *UpdateStripeConnecto
 }
 
 func (c *UpdateStripeConnectorConfigController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+
+	store := fctl.GetStackStore(cmd.Context())
+
 	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
 		return nil, err
 	}
@@ -75,17 +78,11 @@ func (c *UpdateStripeConnectorConfigController) Run(cmd *cobra.Command, args []s
 		return nil, fmt.Errorf("missing connector ID")
 	}
 
-	soc, err := fctl.GetStackOrganizationConfigApprobation(cmd, "You are about to update the config of connector '%s'", connectorID)
-	if err != nil {
+	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to update the config of connector '%s'", connectorID) {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	paymentsClient, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
-	if err != nil {
-		return nil, err
-	}
-
-	script, err := fctl.ReadFile(cmd, soc.Stack, args[0])
+	script, err := fctl.ReadFile(cmd, store.Stack(), args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +92,7 @@ func (c *UpdateStripeConnectorConfigController) Run(cmd *cobra.Command, args []s
 		return nil, err
 	}
 
-	response, err := paymentsClient.Payments.UpdateConnectorConfigV1(cmd.Context(), operations.UpdateConnectorConfigV1Request{
+	response, err := store.Client().Payments.UpdateConnectorConfigV1(cmd.Context(), operations.UpdateConnectorConfigV1Request{
 		ConnectorConfig: shared.ConnectorConfig{
 			StripeConfig: config,
 		},

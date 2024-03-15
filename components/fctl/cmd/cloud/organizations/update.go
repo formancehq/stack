@@ -1,6 +1,8 @@
 package organizations
 
 import (
+	"github.com/formancehq/fctl/cmd/cloud/organizations/internal"
+
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
@@ -41,22 +43,12 @@ func (c *UpdateController) GetStore() *DescribeStore {
 }
 
 func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
+	store := fctl.GetMembershipStore(cmd.Context())
 	if !fctl.CheckOrganizationApprobation(cmd, "You are about to update an organization") {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	org, _, err := apiClient.DefaultApi.ReadOrganization(cmd.Context(), args[0]).Execute()
+	org, _, err := store.Client().ReadOrganization(cmd.Context(), args[0]).Execute()
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +83,7 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		}(),
 	}
 
-	response, _, err := apiClient.DefaultApi.
+	response, _, err := store.Client().
 		UpdateOrganization(cmd.Context(), args[0]).OrganizationData(preparedData).Execute()
 
 	if err != nil {
@@ -104,5 +96,5 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 }
 
 func (c *UpdateController) Render(cmd *cobra.Command, args []string) error {
-	return PrintOrganization(c.store.OrganizationExpanded)
+	return internal.PrintOrganization(c.store.OrganizationExpanded)
 }

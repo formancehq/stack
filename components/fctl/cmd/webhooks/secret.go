@@ -37,36 +37,17 @@ func (c *ChangeSecretWebhookController) GetStore() *ChangeSecretStore {
 	return c.store
 }
 func (c *ChangeSecretWebhookController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, errors.Wrap(err, "fctl.GetConfig")
-	}
+	store := fctl.GetStackStore(cmd.Context())
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to change a webhook secret") {
+	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to change a webhook secret") {
 		return nil, fctl.ErrMissingApproval
 	}
-
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
-	}
-
 	secret := ""
 	if len(args) > 1 {
 		secret = args[1]
 	}
 
-	response, err := client.Webhooks.
+	response, err := store.Client().Webhooks.
 		ChangeConfigSecret(cmd.Context(), operations.ChangeConfigSecretRequest{
 			ConfigChangeSecret: &shared.ConfigChangeSecret{
 				Secret: secret,

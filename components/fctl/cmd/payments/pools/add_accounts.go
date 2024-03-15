@@ -53,6 +53,8 @@ func (c *AddAccountController) GetStore() *AddAccountStore {
 }
 
 func (c *AddAccountController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	store := fctl.GetStackStore(cmd.Context())
+
 	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
 		return nil, err
 	}
@@ -61,27 +63,7 @@ func (c *AddAccountController) Run(cmd *cobra.Command, args []string) (fctl.Rend
 		return nil, fmt.Errorf("pools are only supported in >= v1.0.0")
 	}
 
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	ledgerClient, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, err
-	}
-
-	response, err := ledgerClient.Payments.AddAccountToPool(cmd.Context(), operations.AddAccountToPoolRequest{
+	response, err := store.Client().Payments.AddAccountToPool(cmd.Context(), operations.AddAccountToPoolRequest{
 		PoolID: args[0],
 		AddAccountToPoolRequest: shared.AddAccountToPoolRequest{
 			AccountID: args[1],

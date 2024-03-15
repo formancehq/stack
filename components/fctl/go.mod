@@ -17,7 +17,7 @@ require (
 	github.com/pterm/pterm v0.12.62
 	github.com/segmentio/analytics-go/v3 v3.2.1
 	github.com/segmentio/ksuid v1.0.4
-	github.com/spf13/cobra v1.6.1
+	github.com/spf13/cobra v1.8.1-0.20240312104246-bd914e58d69d
 	github.com/zitadel/oidc/v2 v2.11.0
 	golang.org/x/mod v0.8.0
 	golang.org/x/oauth2 v0.16.0
@@ -91,6 +91,6 @@ replace github.com/zitadel/oidc/v2 v2.6.1 => github.com/formancehq/oidc/v2 v2.6.
 
 replace github.com/formancehq/fctl/membershipclient => ./membershipclient
 
-replace github.com/spf13/cobra => github.com/formancehq/cobra v0.0.0-20221112160629-60a6d6d55ef9
+replace github.com/spf13/cobra => github.com/formancehq/cobra v0.0.0-20240315111924-ca456bf9cac9
 
 replace github.com/formancehq/formance-sdk-go/v2 => ../../releases/sdks/go

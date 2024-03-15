@@ -43,17 +43,8 @@ func (c *TriggersDeleteController) GetStore() *TriggersDeleteStore {
 }
 
 func (c *TriggersDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	soc, err := fctl.GetStackOrganizationConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
-	}
-
-	res, err := client.Orchestration.DeleteTrigger(cmd.Context(), operations.DeleteTriggerRequest{
+	store := fctl.GetStackStore(cmd.Context())
+	res, err := store.Client().Orchestration.DeleteTrigger(cmd.Context(), operations.DeleteTriggerRequest{
 		TriggerID: args[0],
 	})
 	if err != nil {

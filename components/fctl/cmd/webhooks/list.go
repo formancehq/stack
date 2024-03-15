@@ -38,28 +38,9 @@ func (c *ListWebhookController) GetStore() *ListWebhookStore {
 }
 
 func (c *ListWebhookController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, errors.Wrap(err, "fctl.GetConfig")
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	webhookClient, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
-	}
-
+	store := fctl.GetStackStore(cmd.Context())
 	request := operations.GetManyConfigsRequest{}
-	response, err := webhookClient.Webhooks.GetManyConfigs(cmd.Context(), request)
+	response, err := store.Client().Webhooks.GetManyConfigs(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "listing all config")
 	}

@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"golang.org/x/mod/semver"
 )
@@ -21,17 +20,8 @@ type VersionController interface {
 }
 
 func GetPaymentsVersion(cmd *cobra.Command, args []string, controller VersionController) error {
-	soc, err := fctl.GetStackOrganizationConfig(cmd)
-	if err != nil {
-		return err
-	}
-
-	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
-	if err != nil {
-		return errors.Wrap(err, "creating stack client")
-	}
-
-	response, err := client.Payments.PaymentsgetServerInfo(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
+	response, err := store.Client().Payments.PaymentsgetServerInfo(cmd.Context())
 	if err != nil {
 		return err
 	}

@@ -5,7 +5,6 @@ import (
 
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
-	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -43,27 +42,9 @@ func (c *WorkflowsDeleteController) GetStore() *WorkflowsDeleteStore {
 }
 
 func (c *WorkflowsDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, errors.Wrap(err, "retrieving config")
-	}
+	store := fctl.GetStackStore(cmd.Context())
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
-	}
-
-	response, err := client.Orchestration.DeleteWorkflow(
+	response, err := store.Client().Orchestration.DeleteWorkflow(
 		cmd.Context(),
 		operations.DeleteWorkflowRequest{
 			FlowID: args[0],

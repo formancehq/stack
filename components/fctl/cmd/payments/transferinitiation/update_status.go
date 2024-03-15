@@ -7,7 +7,6 @@ import (
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -55,6 +54,8 @@ func (c *UpdateStatusController) GetStore() *UpdateStatusStore {
 }
 
 func (c *UpdateStatusController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	store := fctl.GetStackStore(cmd.Context())
+
 	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
 		return nil, err
 	}
@@ -63,22 +64,12 @@ func (c *UpdateStatusController) Run(cmd *cobra.Command, args []string) (fctl.Re
 		return nil, fmt.Errorf("transfer initiation are only supported in >= v1.0.0")
 	}
 
-	soc, err := fctl.GetStackOrganizationConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	if !fctl.CheckStackApprobation(cmd, soc.Stack, "You are about to update the status of the transfer initiation '%s' to '%s'", args[0], args[1]) {
+	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to update the status of the transfer initiation '%s' to '%s'", args[0], args[1]) {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
-	}
-
 	//nolint:gosimple
-	response, err := client.Payments.UdpateTransferInitiationStatus(cmd.Context(), operations.UdpateTransferInitiationStatusRequest{
+	response, err := store.Client().Payments.UdpateTransferInitiationStatus(cmd.Context(), operations.UdpateTransferInitiationStatusRequest{
 		UpdateTransferInitiationStatusRequest: shared.UpdateTransferInitiationStatusRequest{
 			Status: shared.Status(args[1]),
 		},

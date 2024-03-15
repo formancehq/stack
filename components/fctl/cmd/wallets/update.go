@@ -48,29 +48,10 @@ func (c *UpdateController) GetStore() *UpdateStore {
 }
 
 func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	store := fctl.GetStackStore(cmd.Context())
 
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, errors.Wrap(err, "retrieving config")
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to update a wallets") {
+	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to update a wallets") {
 		return nil, fctl.ErrMissingApproval
-	}
-
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
 	}
 
 	metadata, err := fctl.ParseMetadata(fctl.GetStringSlice(cmd, c.metadataFlag))
@@ -78,7 +59,7 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
-	response, err := client.Wallets.UpdateWallet(cmd.Context(), operations.UpdateWalletRequest{
+	response, err := store.Client().Wallets.UpdateWallet(cmd.Context(), operations.UpdateWalletRequest{
 		RequestBody: &operations.UpdateWalletRequestBody{
 			Metadata: metadata,
 		},

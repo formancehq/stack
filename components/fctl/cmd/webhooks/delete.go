@@ -41,35 +41,17 @@ func (c *DeleteWebhookController) GetStore() *DeleteWebhookStore {
 }
 
 func (c *DeleteWebhookController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, errors.Wrap(err, "fctl.GetConfig")
-	}
-	c.config = cfg
+	store := fctl.GetStackStore(cmd.Context())
+	c.config = store.Config
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to delete a webhook") {
+	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to delete a webhook") {
 		return nil, fctl.ErrMissingApproval
-	}
-
-	webhookClient, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
 	}
 
 	request := operations.DeleteConfigRequest{
 		ID: args[0],
 	}
-	response, err := webhookClient.Webhooks.DeleteConfig(cmd.Context(), request)
+	response, err := store.Client().Webhooks.DeleteConfig(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "deleting config")
 	}

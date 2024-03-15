@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/formancehq/fctl/cmd/stack/internal"
+	"github.com/formancehq/fctl/cmd/stack/store"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pkg/errors"
@@ -42,17 +43,9 @@ func NewUpdateCommand() *cobra.Command {
 		fctl.WithShortDescription("Update a created stack, name, or metadata"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithPreRunE(func(cmd *cobra.Command, args []string) error {
-			cfg, err := fctl.GetConfig(cmd)
-			if err != nil {
-				return err
-			}
+			store := store.GetStore(cmd.Context())
 
-			client, err := fctl.NewMembershipClient(cmd, cfg)
-			if err != nil {
-				return err
-			}
-
-			version := fctl.MembershipServerInfo(cmd.Context(), client.APIClient)
+			version := fctl.MembershipServerInfo(cmd.Context(), store.Client())
 			if !semver.IsValid(version) {
 				return nil
 			}
@@ -73,31 +66,15 @@ func (c *StackUpdateController) GetStore() *StackUpdateStore {
 }
 
 func (c *StackUpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	profile := fctl.GetCurrentProfile(cmd, cfg)
-	c.profile = profile
-
-	organization, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
+	store := store.GetStore(cmd.Context())
+	c.profile = store.Config.GetProfile(fctl.GetCurrentProfileName(cmd, store.Config))
 
 	protected := !fctl.GetBool(cmd, unprotectFlag)
 	metadata := map[string]string{
 		fctl.ProtectedStackMetadata: fctl.BoolPointerToString(&protected),
 	}
 
-	stack, res, err := apiClient.DefaultApi.GetStack(cmd.Context(), organization, args[0]).Execute()
+	stack, res, err := store.Client().GetStack(cmd.Context(), store.OrganizationId(), args[0]).Execute()
 	if err != nil {
 		return nil, errors.Wrap(err, "retrieving stack")
 	}
@@ -115,8 +92,8 @@ func (c *StackUpdateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		Metadata: metadata,
 	}
 
-	stackResponse, _, err := apiClient.DefaultApi.
-		UpdateStack(cmd.Context(), organization, args[0]).
+	stackResponse, _, err := store.Client().
+		UpdateStack(cmd.Context(), store.OrganizationId(), args[0]).
 		UpdateStackRequest(req).
 		Execute()
 	if err != nil {

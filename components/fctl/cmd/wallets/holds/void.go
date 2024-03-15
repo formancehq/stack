@@ -45,30 +45,11 @@ func (c *VoidController) GetStore() *VoidStore {
 
 func (c *VoidController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, errors.Wrap(err, "retrieving config")
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	stackClient, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
-	}
-
+	store := fctl.GetStackStore(cmd.Context())
 	request := operations.VoidHoldRequest{
 		HoldID: args[0],
 	}
-	response, err := stackClient.Wallets.VoidHold(cmd.Context(), request)
+	response, err := store.Client().Wallets.VoidHold(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "voiding hold")
 	}

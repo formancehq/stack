@@ -46,28 +46,9 @@ func (c *ListController) GetStore() *ListStore {
 }
 
 func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	store := fctl.GetStackStore(cmd.Context())
 
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	ledgerClient, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, err
-	}
-
-	response, err := ledgerClient.Ledger.V2ListLedgers(cmd.Context(), operations.V2ListLedgersRequest{})
+	response, err := store.Client().Ledger.V2ListLedgers(cmd.Context(), operations.V2ListLedgersRequest{})
 	if err != nil {
 		return nil, err
 	}

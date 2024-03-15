@@ -14,5 +14,8 @@ func NewCommand() *cobra.Command {
 			clients.NewCommand(),
 			users.NewCommand(),
 		),
+		fctl.WithPersistentPreRunE(func(cmd *cobra.Command, args []string) error {
+			return fctl.NewStackStore(cmd)
+		}),
 	)
 }

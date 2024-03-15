@@ -47,27 +47,9 @@ func (c *ListController) GetStore() *ListStore {
 }
 
 func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, errors.Wrap(err, "retrieving config")
-	}
+	store := fctl.GetStackStore(cmd.Context())
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
-	}
-
-	walletID, err := internal.RequireWalletID(cmd, client)
+	walletID, err := internal.RequireWalletID(cmd, store.Client())
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +57,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	request := operations.ListBalancesRequest{
 		ID: walletID,
 	}
-	response, err := client.Wallets.ListBalances(cmd.Context(), request)
+	response, err := store.Client().Wallets.ListBalances(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "listing balance")
 	}

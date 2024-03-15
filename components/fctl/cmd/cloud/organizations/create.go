@@ -1,6 +1,7 @@
 package organizations
 
 import (
+	"github.com/formancehq/fctl/cmd/cloud/organizations/internal"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
@@ -44,23 +45,14 @@ func (c *CreateController) GetStore() *CreateStore {
 
 func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
+	store := fctl.GetMembershipStore(cmd.Context())
 	if !fctl.CheckOrganizationApprobation(cmd, "You are about to create a new organization") {
 		return nil, fctl.ErrMissingApproval
 	}
 
 	defaultStackRole := fctl.GetString(cmd, "default-stack-role")
 	defaultOrganizationRole := fctl.GetString(cmd, "default-organization-role")
-	response, _, err := apiClient.DefaultApi.
+	response, _, err := store.Client().
 		CreateOrganization(cmd.Context()).
 		Body(membershipclient.OrganizationData{
 			Name:                      args[0],
@@ -84,5 +76,5 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 }
 
 func (c *CreateController) Render(cmd *cobra.Command, args []string) error {
-	return PrintOrganization(c.store.Organization)
+	return internal.PrintOrganization(c.store.Organization)
 }

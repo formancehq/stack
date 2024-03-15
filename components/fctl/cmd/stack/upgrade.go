@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/formancehq/fctl/cmd/stack/store"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
@@ -41,17 +42,9 @@ func NewUpgradeCommand() *cobra.Command {
 		fctl.WithBoolFlag(nowaitFlag, false, "Wait stack availability"),
 		fctl.WithArgs(cobra.RangeArgs(1, 2)),
 		fctl.WithPreRunE(func(cmd *cobra.Command, args []string) error {
-			cfg, err := fctl.GetConfig(cmd)
-			if err != nil {
-				return err
-			}
+			store := store.GetStore(cmd.Context())
 
-			client, err := fctl.NewMembershipClient(cmd, cfg)
-			if err != nil {
-				return err
-			}
-
-			version := fctl.MembershipServerInfo(cmd.Context(), client.APIClient)
+			version := fctl.MembershipServerInfo(cmd.Context(), store.Client())
 			if !semver.IsValid(version) {
 				return nil
 			}
@@ -70,26 +63,15 @@ func (c *UpgradeController) GetStore() *UpgradeStore {
 }
 
 func (c *UpgradeController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	store := store.GetStore(cmd.Context())
+	c.profile = store.Config.GetProfile(fctl.GetCurrentProfileName(cmd, store.Config))
 
-	cfg, err := fctl.GetConfig(cmd)
+	organization, err := fctl.ResolveOrganizationID(cmd, store.Config, store.Client())
 	if err != nil {
 		return nil, err
 	}
 
-	profile := fctl.GetCurrentProfile(cmd, cfg)
-	c.profile = profile
-
-	organization, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := fctl.NewMembershipClient(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, res, err := client.DefaultApi.GetStack(cmd.Context(), organization, args[0]).Execute()
+	stack, res, err := store.Client().GetStack(cmd.Context(), organization, args[0]).Execute()
 	if err != nil {
 		return nil, errors.Wrap(err, "retrieving stack")
 	}
@@ -103,7 +85,7 @@ func (c *UpgradeController) Run(cmd *cobra.Command, args []string) (fctl.Rendera
 	}
 	specifiedVersion := fctl.GetString(cmd, versionFlag)
 	if specifiedVersion == "" {
-		upgradeOpts, err := retrieveUpgradableVersion(cmd.Context(), organization, *stack.Data, client.APIClient)
+		upgradeOpts, err := retrieveUpgradableVersion(cmd.Context(), organization, *stack.Data, store.Client())
 		if err != nil {
 			return nil, err
 		}
@@ -126,7 +108,7 @@ func (c *UpgradeController) Run(cmd *cobra.Command, args []string) (fctl.Rendera
 	}
 	req.Version = pointer.For(specifiedVersion)
 
-	res, err = client.DefaultApi.
+	res, err = store.Client().
 		UpgradeStack(cmd.Context(), organization, args[0]).StackVersion(req).
 		Execute()
 	if err != nil {
@@ -143,7 +125,7 @@ func (c *UpgradeController) Run(cmd *cobra.Command, args []string) (fctl.Rendera
 			return nil, err
 		}
 
-		stack, err := waitStackReady(cmd, client, stack.Data.OrganizationId, stack.Data.Id)
+		stack, err := waitStackReady(cmd, store.MembershipClient, stack.Data.OrganizationId, stack.Data.Id)
 		if err != nil {
 			return nil, err
 		}
@@ -162,8 +144,8 @@ func (c *UpgradeController) Render(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func retrieveUpgradableVersion(ctx context.Context, organization string, stack membershipclient.Stack, apiClient *membershipclient.APIClient) ([]string, error) {
-	availableVersions, httpResponse, err := apiClient.DefaultApi.GetRegionVersions(ctx, organization, stack.RegionID).Execute()
+func retrieveUpgradableVersion(ctx context.Context, organization string, stack membershipclient.Stack, apiClient *membershipclient.DefaultApiService) ([]string, error) {
+	availableVersions, httpResponse, err := apiClient.GetRegionVersions(ctx, organization, stack.RegionID).Execute()
 	if httpResponse == nil {
 		return nil, err
 	}

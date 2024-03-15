@@ -54,32 +54,12 @@ func (c *CreateController) GetStore() *CreateStore {
 }
 
 func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to create a new ledger") {
+	store := fctl.GetStackStore(cmd.Context())
+	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to create a new ledger") {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	ledgerClient, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, err
-	}
-
-	response, err := ledgerClient.Ledger.V2CreateLedger(cmd.Context(), operations.V2CreateLedgerRequest{
+	response, err := store.Client().Ledger.V2CreateLedger(cmd.Context(), operations.V2CreateLedgerRequest{
 		V2CreateLedgerRequest: &shared.V2CreateLedgerRequest{
 			Bucket: pointer.For(fctl.GetString(cmd, bucketNameFlag)),
 		},

@@ -6,8 +6,6 @@ import (
 
 	"github.com/TylerBrock/colorjson"
 	"github.com/formancehq/fctl/membershipclient"
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
 	"github.com/segmentio/analytics-go/v3"
 	"github.com/segmentio/ksuid"
@@ -26,48 +24,6 @@ var (
 	ErrMultipleOrganizationsFound = errors.New("found more than one organization and no organization specified")
 )
 
-type StackOrganizationConfig struct {
-	OrganizationID string
-	Stack          *membershipclient.Stack
-	Config         *Config
-}
-
-func GetStackOrganizationConfig(cmd *cobra.Command) (*StackOrganizationConfig, error) {
-	cfg, err := GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	return &StackOrganizationConfig{
-		OrganizationID: organizationID,
-		Stack:          stack,
-		Config:         cfg,
-	}, nil
-}
-
-func GetStackOrganizationConfigApprobation(cmd *cobra.Command, disclaimer string, args ...any) (*StackOrganizationConfig, error) {
-	soc, err := GetStackOrganizationConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	if !CheckStackApprobation(cmd, soc.Stack, disclaimer, args...) {
-		return nil, ErrMissingApproval
-	}
-
-	return soc, nil
-}
-
 func GetSelectedOrganization(cmd *cobra.Command) string {
 	return GetString(cmd, organizationFlag)
 }
@@ -83,17 +39,12 @@ func RetrieveOrganizationIDFromFlagOrProfile(cmd *cobra.Command, cfg *Config) (s
 	return "", ErrOrganizationNotSpecified
 }
 
-func ResolveOrganizationID(cmd *cobra.Command, cfg *Config) (string, error) {
+func ResolveOrganizationID(cmd *cobra.Command, cfg *Config, client *membershipclient.DefaultApiService) (string, error) {
 	if id, err := RetrieveOrganizationIDFromFlagOrProfile(cmd, cfg); err == nil {
 		return id, nil
 	}
 
-	client, err := NewMembershipClient(cmd, cfg)
-	if err != nil {
-		return "", err
-	}
-
-	organizations, _, err := client.DefaultApi.ListOrganizations(cmd.Context()).Execute()
+	organizations, _, err := client.ListOrganizations(cmd.Context()).Execute()
 	if err != nil {
 		return "", errors.Wrap(err, "listing organizations")
 	}
@@ -227,6 +178,12 @@ func WithRunE(fn func(cmd *cobra.Command, args []string) error) CommandOptionFn 
 	}
 }
 
+func WithPersistentPreRunE(fn func(cmd *cobra.Command, args []string) error) CommandOptionFn {
+	return func(cmd *cobra.Command) {
+		cmd.PersistentPreRunE = fn
+	}
+}
+
 func WithPreRunE(fn func(cmd *cobra.Command, args []string) error) CommandOptionFn {
 	return func(cmd *cobra.Command) {
 		cmd.PreRunE = fn
@@ -248,37 +205,7 @@ func WithDeprecated(message string) CommandOptionFn {
 func WithController[T any](c Controller[T]) CommandOptionFn {
 	return func(cmd *cobra.Command) {
 		cmd.RunE = func(cmd *cobra.Command, args []string) error {
-			parent := cmd.Parent()
-			parentsOrdered := make([]*cobra.Command, 0)
-			if parent != nil {
-				parentsOrdered = append(parentsOrdered, parent)
-			}
-
-			for parent != nil {
-				parentsOrdered = collectionutils.Prepend(parentsOrdered, parent)
-				parent = parent.Parent()
-			}
-			logger := logging.NewLogrus(logging.DefaultLogger(cmd.OutOrStdout(), GetBool(cmd, DebugFlag)))
-			for _, parent := range parentsOrdered {
-				if parent.RunE != nil {
-					parent.SetContext(logging.ContextWithLogger(cmd.Context(), logger))
-					err := parent.RunE(parent, args)
-					if err != nil {
-						return err
-					}
-				}
-
-			}
-
-			cmd.SetContext(logging.ContextWithLogger(cmd.Context(), logger))
 			renderable, err := c.Run(cmd, args)
-
-			// If the controller return an argument error, we want to print the usage
-			// of the command instead of the error message.
-			// if errors.Is(err, ErrArgument) {
-			// 	_ = cmd.help()
-			// 	return nil
-			// }
 
 			if err != nil {
 				return err

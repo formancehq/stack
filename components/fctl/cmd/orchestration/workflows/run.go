@@ -6,7 +6,6 @@ import (
 
 	"github.com/formancehq/fctl/cmd/orchestration/internal"
 	fctl "github.com/formancehq/fctl/pkg"
-	formance "github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/pkg/errors"
@@ -21,7 +20,6 @@ type WorkflowsRunController struct {
 	store        *WorkflowsRunStore
 	variableFlag string
 	waitFlag     string
-	client       *formance.Formance
 	wait         bool
 }
 
@@ -58,14 +56,7 @@ func (c *WorkflowsRunController) GetStore() *WorkflowsRunStore {
 
 func (c *WorkflowsRunController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	soc, err := fctl.GetStackOrganizationConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
-	}
+	store := fctl.GetStackStore(cmd.Context())
 
 	wait := fctl.GetBool(cmd, c.waitFlag)
 	variables := make(map[string]string)
@@ -77,7 +68,7 @@ func (c *WorkflowsRunController) Run(cmd *cobra.Command, args []string) (fctl.Re
 		variables[parts[0]] = parts[1]
 	}
 
-	response, err := client.Orchestration.
+	response, err := store.Client().Orchestration.
 		RunWorkflow(cmd.Context(), operations.RunWorkflowRequest{
 			RequestBody: variables,
 			Wait:        &wait,
@@ -97,15 +88,14 @@ func (c *WorkflowsRunController) Run(cmd *cobra.Command, args []string) (fctl.Re
 
 	c.wait = wait
 	c.store.WorkflowInstance = response.RunWorkflowResponse.Data
-	c.client = client
 	return c, nil
 }
 
 func (c *WorkflowsRunController) Render(cmd *cobra.Command, args []string) error {
-
+	store := fctl.GetStackStore(cmd.Context())
 	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Workflow instance created with ID: %s", c.store.WorkflowInstance.ID)
 	if c.wait {
-		w, err := c.client.Orchestration.GetWorkflow(cmd.Context(), operations.GetWorkflowRequest{
+		w, err := store.Client().Orchestration.GetWorkflow(cmd.Context(), operations.GetWorkflowRequest{
 			FlowID: args[0],
 		})
 		if err != nil {

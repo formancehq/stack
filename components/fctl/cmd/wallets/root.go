@@ -23,5 +23,8 @@ func NewCommand() *cobra.Command {
 			holds.NewCommand(),
 			balances.NewCommand(),
 		),
+		fctl.WithPersistentPreRunE(func(cmd *cobra.Command, args []string) error {
+			return fctl.NewStackStore(cmd)
+		}),
 	)
 }

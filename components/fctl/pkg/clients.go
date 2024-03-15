@@ -62,8 +62,8 @@ func NewMembershipClient(cmd *cobra.Command, cfg *Config) (*MembershipClient, er
 	return client, nil
 }
 
-func MembershipServerInfo(ctx context.Context, client *membershipclient.APIClient) string {
-	serverInfo, response, err := client.DefaultApi.GetServerInfo(ctx).Execute()
+func MembershipServerInfo(ctx context.Context, client *membershipclient.DefaultApiService) string {
+	serverInfo, response, err := client.GetServerInfo(ctx).Execute()
 	if err != nil {
 		return fmt.Sprintf("Error: %s", err)
 	}
@@ -73,7 +73,7 @@ func MembershipServerInfo(ctx context.Context, client *membershipclient.APIClien
 	return serverInfo.Version
 }
 
-func ValidateMembershipServerVersion(ctx context.Context, client *membershipclient.APIClient, version string) error {
+func ValidateMembershipServerVersion(ctx context.Context, client *membershipclient.DefaultApiService, version string) error {
 	serverVersion := MembershipServerInfo(ctx, client)
 	if !semver.IsValid(serverVersion) {
 		return nil

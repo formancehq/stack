@@ -68,27 +68,9 @@ func (c *PaymentsConnectorsUninstallController) GetStore() *PaymentsConnectorsUn
 }
 
 func (c *PaymentsConnectorsUninstallController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	store := fctl.GetStackStore(cmd.Context())
+
 	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
-		return nil, err
-	}
-
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
 		return nil, err
 	}
 
@@ -104,11 +86,11 @@ func (c *PaymentsConnectorsUninstallController) Run(cmd *cobra.Command, args []s
 			return nil, fmt.Errorf("missing connector ID")
 		}
 
-		if !fctl.CheckStackApprobation(cmd, stack, "You are about to uninstall connector '%s' from provider '%s'", connectorID, provider) {
+		if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to uninstall connector '%s' from provider '%s'", connectorID, provider) {
 			return nil, fctl.ErrMissingApproval
 		}
 
-		response, err := client.Payments.UninstallConnectorV1(cmd.Context(), operations.UninstallConnectorV1Request{
+		response, err := store.Client().Payments.UninstallConnectorV1(cmd.Context(), operations.UninstallConnectorV1Request{
 			ConnectorID: connectorID,
 			Connector:   shared.Connector(provider),
 		})
@@ -126,11 +108,11 @@ func (c *PaymentsConnectorsUninstallController) Run(cmd *cobra.Command, args []s
 			return nil, fmt.Errorf("missing provider")
 		}
 
-		if !fctl.CheckStackApprobation(cmd, stack, "You are about to uninstall connector '%s'", provider) {
+		if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to uninstall connector '%s'", provider) {
 			return nil, fctl.ErrMissingApproval
 		}
 
-		response, err := client.Payments.UninstallConnector(cmd.Context(), operations.UninstallConnectorRequest{
+		response, err := store.Client().Payments.UninstallConnector(cmd.Context(), operations.UninstallConnectorRequest{
 			Connector: shared.Connector(provider),
 		})
 		if err != nil {

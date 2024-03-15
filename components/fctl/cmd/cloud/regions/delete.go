@@ -40,22 +40,14 @@ func (c *DeleteController) GetStore() *DeleteStore {
 
 func (c *DeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	cfg, err := fctl.GetConfig(cmd)
+	store := fctl.GetMembershipStore(cmd.Context())
+
+	organizationID, err := fctl.ResolveOrganizationID(cmd, store.Config, store.Client())
 	if err != nil {
 		return nil, err
 	}
 
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = apiClient.DefaultApi.DeleteRegion(cmd.Context(), organizationID, args[0]).Execute()
+	_, err = store.Client().DeleteRegion(cmd.Context(), organizationID, args[0]).Execute()
 	if err != nil {
 		return nil, err
 	}

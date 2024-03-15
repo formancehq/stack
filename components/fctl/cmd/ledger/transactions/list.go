@@ -75,25 +75,7 @@ func (c *ListController) GetStore() *ListStore {
 }
 
 func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	ledgerClient, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, err
-	}
+	store := fctl.GetStackStore(cmd.Context())
 
 	metadata, err := fctl.ParseMetadata(fctl.GetStringSlice(cmd, c.metadataFlag))
 	if err != nil {
@@ -134,7 +116,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	}
 	req.Metadata = collectionutils.ConvertMap(metadata, collectionutils.ToAny[string])
 
-	response, err := ledgerClient.Ledger.ListTransactions(cmd.Context(), req)
+	response, err := store.Client().Ledger.ListTransactions(cmd.Context(), req)
 	if err != nil {
 		return nil, err
 	}

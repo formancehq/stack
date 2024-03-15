@@ -52,16 +52,9 @@ func (c *WorkflowsListController) GetStore() *WorkflowsListStore {
 
 func (c *WorkflowsListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	soc, err := fctl.GetStackOrganizationConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
-	}
+	store := fctl.GetStackStore(cmd.Context())
 
-	response, err := client.Orchestration.ListWorkflows(cmd.Context())
+	response, err := store.Client().Orchestration.ListWorkflows(cmd.Context())
 	if err != nil {
 		return nil, err
 	}

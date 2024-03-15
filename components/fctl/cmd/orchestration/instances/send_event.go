@@ -5,7 +5,6 @@ import (
 
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
-	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -48,16 +47,8 @@ func (c *InstancesSendEventController) GetStore() *InstancesSendEventStore {
 }
 
 func (c *InstancesSendEventController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	soc, err := fctl.GetStackOrganizationConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
-	}
-	response, err := client.Orchestration.SendEvent(cmd.Context(), operations.SendEventRequest{
+	store := fctl.GetStackStore(cmd.Context())
+	response, err := store.Client().Orchestration.SendEvent(cmd.Context(), operations.SendEventRequest{
 		RequestBody: &operations.SendEventRequestBody{
 			Name: args[1],
 		},

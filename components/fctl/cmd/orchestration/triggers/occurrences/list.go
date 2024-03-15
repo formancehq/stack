@@ -47,17 +47,9 @@ func (c *OccurrencesListController) GetStore() *OccurrencesListStore {
 }
 
 func (c *OccurrencesListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	soc, err := fctl.GetStackOrganizationConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
+	store := fctl.GetStackStore(cmd.Context())
 
-	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
-	}
-
-	response, err := client.Orchestration.ListTriggersOccurrences(cmd.Context(), operations.ListTriggersOccurrencesRequest{
+	response, err := store.Client().Orchestration.ListTriggersOccurrences(cmd.Context(), operations.ListTriggersOccurrencesRequest{
 		TriggerID: args[0],
 	})
 	if err != nil {

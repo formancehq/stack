@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/formancehq/fctl/cmd/stack/store"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pkg/errors"
@@ -66,23 +67,10 @@ func (c *StackListController) GetStore() *StackListStore {
 
 func (c *StackListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
+	store := store.GetStore(cmd.Context())
+	c.profile = store.Config.GetProfile(fctl.GetCurrentProfileName(cmd, store.Config))
 
-	profile := fctl.GetCurrentProfile(cmd, cfg)
-
-	organization, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, errors.Wrap(err, "searching default organization")
-	}
-
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-	rsp, _, err := apiClient.DefaultApi.ListStacks(cmd.Context(), organization).
+	rsp, _, err := store.Client().ListStacks(cmd.Context(), store.OrganizationId()).
 		All(fctl.GetBool(cmd, allFlag)).
 		Deleted(fctl.GetBool(cmd, deletedFlag)).
 		Execute()
@@ -90,7 +78,6 @@ func (c *StackListController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 		return nil, errors.Wrap(err, "listing stacks")
 	}
 
-	c.profile = profile
 	if len(rsp.Data) == 0 {
 		return c, nil
 	}

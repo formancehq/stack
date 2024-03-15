@@ -51,15 +51,7 @@ func (c *TriggersCreateController) GetStore() *TriggersCreateStore {
 }
 
 func (c *TriggersCreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	soc, err := fctl.GetStackOrganizationConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
-	}
+	store := fctl.GetStackStore(cmd.Context())
 
 	var (
 		event    = args[0]
@@ -86,7 +78,7 @@ func (c *TriggersCreateController) Run(cmd *cobra.Command, args []string) (fctl.
 		}
 	}
 
-	res, err := client.Orchestration.CreateTrigger(cmd.Context(), data)
+	res, err := store.Client().Orchestration.CreateTrigger(cmd.Context(), data)
 	if err != nil {
 		return nil, errors.Wrap(err, "reading trigger")
 	}

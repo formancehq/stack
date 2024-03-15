@@ -42,31 +42,12 @@ func (c *ShowController) GetStore() *ShowStore {
 }
 
 func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, err
-	}
+	store := fctl.GetStackStore(cmd.Context())
 
 	request := operations.ReadUserRequest{
 		UserID: args[0],
 	}
-	readUserResponse, err := client.Auth.ReadUser(cmd.Context(), request)
+	readUserResponse, err := store.Client().Auth.ReadUser(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}

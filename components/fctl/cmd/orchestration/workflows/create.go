@@ -5,7 +5,6 @@ import (
 
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
@@ -45,16 +44,9 @@ func (c *WorkflowsCreateController) GetStore() *WorkflowsCreateStore {
 
 func (c *WorkflowsCreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	soc, err := fctl.GetStackOrganizationConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
-	}
+	store := fctl.GetStackStore(cmd.Context())
 
-	script, err := fctl.ReadFile(cmd, soc.Stack, args[0])
+	script, err := fctl.ReadFile(cmd, store.Stack(), args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +57,7 @@ func (c *WorkflowsCreateController) Run(cmd *cobra.Command, args []string) (fctl
 	}
 
 	//nolint:gosimple
-	response, err := client.Orchestration.
+	response, err := store.Client().Orchestration.
 		CreateWorkflow(cmd.Context(), &shared.CreateWorkflowRequest{
 			Name:   config.Name,
 			Stages: config.Stages,

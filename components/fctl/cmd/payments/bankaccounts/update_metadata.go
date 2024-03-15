@@ -52,6 +52,8 @@ func (c *UpdateMetadataController) GetStore() *UpdateMetadataStore {
 }
 
 func (c *UpdateMetadataController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	store := fctl.GetStackStore(cmd.Context())
+
 	if err := versions.GetPaymentsVersion(cmd, args, c); err != nil {
 		return nil, err
 	}
@@ -65,30 +67,10 @@ func (c *UpdateMetadataController) Run(cmd *cobra.Command, args []string) (fctl.
 		return nil, err
 	}
 
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
 	bankAccountID := args[0]
 
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to set a metadata on bank account '%s'", bankAccountID) {
+	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to set a metadata on bank account '%s'", bankAccountID) {
 		return nil, fctl.ErrMissingApproval
-	}
-
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, err
 	}
 
 	request := operations.UpdateBankAccountMetadataRequest{
@@ -98,7 +80,7 @@ func (c *UpdateMetadataController) Run(cmd *cobra.Command, args []string) (fctl.
 		BankAccountID: bankAccountID,
 	}
 
-	response, err := client.Payments.UpdateBankAccountMetadata(cmd.Context(), request)
+	response, err := store.Client().Payments.UpdateBankAccountMetadata(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}

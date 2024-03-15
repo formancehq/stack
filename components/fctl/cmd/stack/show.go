@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/formancehq/fctl/cmd/stack/internal"
+	"github.com/formancehq/fctl/cmd/stack/store"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -56,27 +57,14 @@ func (c *StackShowController) GetStore() *StackShowStore {
 
 func (c *StackShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	var stackNameFlag = "name"
-
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-	organization, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, errors.Wrap(err, "searching default organization")
-	}
-
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
 	var stack *membershipclient.Stack
+
+	store := store.GetStore(cmd.Context())
 	if len(args) == 1 {
 		if fctl.GetString(cmd, stackNameFlag) != "" {
 			return nil, errors.New("need either an id of a name specified using --name flag")
 		}
-		stackResponse, httpResponse, err := apiClient.DefaultApi.GetStack(cmd.Context(), organization, args[0]).Execute()
+		stackResponse, httpResponse, err := store.Client().GetStack(cmd.Context(), store.OrganizationId(), args[0]).Execute()
 		if err != nil {
 			if httpResponse.StatusCode == http.StatusNotFound {
 				return nil, errStackNotFound
@@ -88,7 +76,7 @@ func (c *StackShowController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 		if fctl.GetString(cmd, stackNameFlag) == "" {
 			return nil, errors.New("need either an id of a name specified using --name flag")
 		}
-		stacksResponse, _, err := apiClient.DefaultApi.ListStacks(cmd.Context(), organization).Execute()
+		stacksResponse, _, err := store.Client().ListStacks(cmd.Context(), store.OrganizationId()).Execute()
 		if err != nil {
 			return nil, errors.Wrap(err, "listing stacks")
 		}
@@ -105,7 +93,7 @@ func (c *StackShowController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 	}
 
 	c.store.Stack = stack
-	c.config = cfg
+	c.config = store.Config
 
 	// the stack is not active, we can't get the running versions
 	// Maybe add something in the process with sync status and store it in membership
@@ -113,7 +101,7 @@ func (c *StackShowController) Run(cmd *cobra.Command, args []string) (fctl.Rende
 		return c, nil
 	}
 
-	stackClient, err := fctl.NewStackClient(cmd, cfg, stack)
+	stackClient, err := fctl.NewStackClient(cmd, store.Config, stack)
 	if err != nil {
 		return nil, err
 	}

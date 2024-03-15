@@ -1,6 +1,7 @@
 package stack
 
 import (
+	"github.com/formancehq/fctl/cmd/stack/store"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pkg/errors"
@@ -52,19 +53,7 @@ func (c *EnableController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		stackNameFlag = "name"
 	)
 
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-	organization, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, errors.Wrap(err, "searching default organization")
-	}
-
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
+	store := store.GetStore(cmd.Context())
 
 	var stack *membershipclient.Stack
 	if len(args) == 1 {
@@ -72,7 +61,7 @@ func (c *EnableController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 			return nil, errors.New("need either an id of a name specified using --name flag")
 		}
 
-		rsp, _, err := apiClient.DefaultApi.GetStack(cmd.Context(), organization, args[0]).Execute()
+		rsp, _, err := store.Client().GetStack(cmd.Context(), store.OrganizationId(), args[0]).Execute()
 		if err != nil {
 			return nil, err
 		}
@@ -81,7 +70,7 @@ func (c *EnableController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		if fctl.GetString(cmd, stackNameFlag) == "" {
 			return nil, errors.New("need either an id of a name specified using --name flag")
 		}
-		stacks, _, err := apiClient.DefaultApi.ListStacks(cmd.Context(), organization).Execute()
+		stacks, _, err := store.Client().ListStacks(cmd.Context(), store.OrganizationId()).Execute()
 		if err != nil {
 			return nil, errors.Wrap(err, "listing stacks")
 		}
@@ -100,7 +89,7 @@ func (c *EnableController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, fctl.ErrMissingApproval
 	}
 
-	if _, err := apiClient.DefaultApi.EnableStack(cmd.Context(), organization, stack.Id).Execute(); err != nil {
+	if _, err := store.Client().EnableStack(cmd.Context(), store.OrganizationId(), stack.Id).Execute(); err != nil {
 		return nil, errors.Wrap(err, "stack enable")
 	}
 

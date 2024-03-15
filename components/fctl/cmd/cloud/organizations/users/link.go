@@ -37,17 +37,9 @@ func NewLinkCommand() *cobra.Command {
 		fctl.WithShortDescription("Link user to an organization with properties"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithPreRunE(func(cmd *cobra.Command, args []string) error {
-			cfg, err := fctl.GetConfig(cmd)
-			if err != nil {
-				return err
-			}
+			store := fctl.GetMembershipStore(cmd.Context())
 
-			client, err := fctl.NewMembershipClient(cmd, cfg)
-			if err != nil {
-				return err
-			}
-
-			version := fctl.MembershipServerInfo(cmd.Context(), client.APIClient)
+			version := fctl.MembershipServerInfo(cmd.Context(), store.Client())
 			if !semver.IsValid(version) {
 				return nil
 			}
@@ -67,17 +59,8 @@ func (c *LinkController) GetStore() *LinkStore {
 }
 
 func (c *LinkController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
+	store := fctl.GetMembershipStore(cmd.Context())
+	organizationID, err := fctl.ResolveOrganizationID(cmd, store.Config, store.Client())
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +72,7 @@ func (c *LinkController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	} else {
 		return nil, fmt.Errorf("role is required")
 	}
-	response, err := apiClient.DefaultApi.UpsertOrganizationUser(
+	response, err := store.Client().UpsertOrganizationUser(
 		cmd.Context(),
 		organizationID,
 		args[0]).

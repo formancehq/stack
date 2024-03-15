@@ -48,31 +48,13 @@ func (c *PaymentsConnectorsMangoPayController) GetStore() *PaymentsConnectorsMan
 }
 
 func (c *PaymentsConnectorsMangoPayController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
+	store := fctl.GetStackStore(cmd.Context())
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to install connector '%s'", internal.MangoPayConnector) {
+	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to install connector '%s'", internal.MangoPayConnector) {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	paymentsClient, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, err
-	}
-
-	script, err := fctl.ReadFile(cmd, stack, args[0])
+	script, err := fctl.ReadFile(cmd, store.Stack(), args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +70,7 @@ func (c *PaymentsConnectorsMangoPayController) Run(cmd *cobra.Command, args []st
 			MangoPayConfig: &config,
 		},
 	}
-	response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), request)
+	response, err := store.Client().Payments.InstallConnector(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "installing connector")
 	}

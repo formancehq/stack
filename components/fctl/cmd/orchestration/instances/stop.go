@@ -5,7 +5,6 @@ import (
 
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
-	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -43,17 +42,9 @@ func (c *InstancesStopController) GetStore() *InstancesStopStore {
 }
 
 func (c *InstancesStopController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	soc, err := fctl.GetStackOrganizationConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
+	store := fctl.GetStackStore(cmd.Context())
 
-	client, err := fctl.NewStackClient(cmd, soc.Config, soc.Stack)
-	if err != nil {
-		return nil, errors.Wrap(err, "creating stack client")
-	}
-
-	response, err := client.Orchestration.CancelEvent(cmd.Context(), operations.CancelEventRequest{
+	response, err := store.Client().Orchestration.CancelEvent(cmd.Context(), operations.CancelEventRequest{
 		InstanceID: args[0],
 	})
 	if err != nil {

@@ -3,6 +3,7 @@ package users
 import (
 	"fmt"
 
+	"github.com/formancehq/fctl/cmd/stack/store"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
@@ -45,20 +46,7 @@ func (c *LinkController) GetStore() *LinkStore {
 
 func (c *LinkController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	apiClient, err := fctl.NewMembershipClient(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
+	store := store.GetStore(cmd.Context())
 
 	role := membershipclient.Role(fctl.GetString(cmd, "role"))
 	req := membershipclient.UpdateStackUserRequest{}
@@ -68,14 +56,14 @@ func (c *LinkController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, fmt.Errorf("role is required")
 	}
 
-	_, err = apiClient.DefaultApi.
-		UpsertStackUserAccess(cmd.Context(), organizationID, args[0], args[1]).
+	_, err := store.Client().
+		UpsertStackUserAccess(cmd.Context(), store.OrganizationId(), args[0], args[1]).
 		UpdateStackUserRequest(req).Execute()
 	if err != nil {
 		return nil, err
 	}
 
-	c.store.OrganizationID = organizationID
+	c.store.OrganizationID = store.OrganizationId()
 	c.store.StackID = args[0]
 	c.store.UserID = args[1]
 

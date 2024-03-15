@@ -1,6 +1,7 @@
 package stack
 
 import (
+	"github.com/formancehq/fctl/cmd/stack/store"
 	"github.com/formancehq/fctl/cmd/stack/users"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
@@ -22,5 +23,8 @@ func NewCommand() *cobra.Command {
 			NewUpgradeCommand(),
 			users.NewCommand(),
 		),
+		fctl.WithPersistentPreRunE(func(cmd *cobra.Command, args []string) error {
+			return store.NewMembershipStackStore(cmd)
+		}),
 	)
 }

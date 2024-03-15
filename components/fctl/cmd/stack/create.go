@@ -7,6 +7,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 
 	"github.com/formancehq/fctl/cmd/stack/internal"
+	"github.com/formancehq/fctl/cmd/stack/store"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -63,21 +64,8 @@ func (c *StackCreateController) GetStore() *StackCreateStore {
 }
 
 func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	organization, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := fctl.NewMembershipClient(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
+	var err error
+	store := store.GetStore(cmd.Context())
 
 	protected := !fctl.GetBool(cmd, unprotectFlag)
 	metadata := map[string]string{
@@ -96,7 +84,7 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 
 	region := fctl.GetString(cmd, regionFlag)
 	if region == "" {
-		regions, _, err := client.DefaultApi.ListRegions(cmd.Context(), organization).Execute()
+		regions, _, err := store.Client().ListRegions(cmd.Context(), store.OrganizationId()).Execute()
 		if err != nil {
 			return nil, errors.Wrap(err, "listing regions")
 		}
@@ -133,7 +121,7 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		RegionID: region,
 	}
 
-	availableVersions, httpResponse, err := client.DefaultApi.GetRegionVersions(cmd.Context(), organization, region).Execute()
+	availableVersions, httpResponse, err := store.Client().GetRegionVersions(cmd.Context(), store.OrganizationId(), region).Execute()
 	if err != nil {
 		return nil, errors.Wrap(err, "retrieving available versions")
 	}
@@ -162,15 +150,13 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 	}
 	req.Version = pointer.For(specifiedVersion)
 
-	stackResponse, _, err := client.DefaultApi.
-		CreateStack(cmd.Context(), organization).
+	stackResponse, _, err := store.Client().
+		CreateStack(cmd.Context(), store.OrganizationId()).
 		CreateStackRequest(req).
 		Execute()
 	if err != nil {
 		return nil, errors.Wrap(err, "creating stack")
 	}
-
-	profile := fctl.GetCurrentProfile(cmd, cfg)
 
 	if !fctl.GetBool(cmd, nowaitFlag) {
 		spinner, err := pterm.DefaultSpinner.Start("Waiting services availability")
@@ -178,7 +164,7 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 			return nil, err
 		}
 
-		stack, err := waitStackReady(cmd, client, stackResponse.Data.OrganizationId, stackResponse.Data.Id)
+		stack, err := waitStackReady(cmd, store.MembershipClient, stackResponse.Data.OrganizationId, stackResponse.Data.Id)
 		if err != nil {
 			return nil, err
 		}
@@ -193,7 +179,7 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 
 	fctl.BasicTextCyan.WithWriter(cmd.OutOrStdout()).Println("Your dashboard will be reachable on: https://console.formance.cloud")
 
-	stackClient, err := fctl.NewStackClient(cmd, cfg, stackResponse.Data)
+	stackClient, err := fctl.NewStackClient(cmd, store.Config, stackResponse.Data)
 	if err != nil {
 		return nil, err
 	}
@@ -207,7 +193,7 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 	}
 
 	c.store.Versions = versions.GetVersionsResponse
-	c.profile = profile
+	c.profile = store.Config.GetProfile(fctl.GetCurrentProfileName(cmd, store.Config))
 
 	return c, nil
 }

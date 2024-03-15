@@ -45,25 +45,7 @@ func (c *ReconciliationController) GetStore() *ReconciliationStore {
 }
 
 func (c *ReconciliationController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	ledgerClient, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, err
-	}
+	store := fctl.GetStackStore(cmd.Context())
 
 	atLedger, err := time.Parse(time.RFC3339, args[1])
 	if err != nil {
@@ -76,7 +58,7 @@ func (c *ReconciliationController) Run(cmd *cobra.Command, args []string) (fctl.
 	}
 
 	fmt.Println(args[0], atLedger, atPayments)
-	response, err := ledgerClient.Reconciliation.Reconcile(cmd.Context(), operations.ReconcileRequest{
+	response, err := store.Client().Reconciliation.Reconcile(cmd.Context(), operations.ReconcileRequest{
 		PolicyID: args[0],
 		ReconciliationRequest: shared.ReconciliationRequest{
 			ReconciledAtLedger:   atLedger,
