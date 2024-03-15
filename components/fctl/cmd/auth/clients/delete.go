@@ -43,35 +43,16 @@ func (c *DeleteController) GetStore() *DeleteStore {
 }
 
 func (c *DeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	store := fctl.GetStackStore(cmd.Context())
 
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to delete an OAuth2 client") {
+	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to delete an OAuth2 client") {
 		return nil, fctl.ErrMissingApproval
-	}
-
-	authClient, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, err
 	}
 
 	request := operations.DeleteClientRequest{
 		ClientID: args[0],
 	}
-	response, err := authClient.Auth.DeleteClient(cmd.Context(), request)
+	response, err := store.Client().Auth.DeleteClient(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}

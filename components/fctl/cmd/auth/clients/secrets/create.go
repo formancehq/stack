@@ -47,28 +47,10 @@ func (c *CreateController) GetStore() *CreateStore {
 
 func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
+	store := fctl.GetStackStore(cmd.Context())
 
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to create a new client secret") {
+	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to create a new client secret") {
 		return nil, fctl.ErrMissingApproval
-	}
-
-	authClient, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, err
 	}
 
 	request := operations.CreateSecretRequest{
@@ -78,7 +60,7 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 			Metadata: nil,
 		},
 	}
-	response, err := authClient.Auth.CreateSecret(cmd.Context(), request)
+	response, err := store.Client().Auth.CreateSecret(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}

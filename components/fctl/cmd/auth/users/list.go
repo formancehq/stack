@@ -48,27 +48,8 @@ func (c *ListController) GetStore() *ListStore {
 }
 
 func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, err
-	}
-
-	listUsersResponse, err := client.Auth.ListUsers(cmd.Context())
+	store := fctl.GetStackStore(cmd.Context())
+	listUsersResponse, err := store.Client().Auth.ListUsers(cmd.Context())
 	if err != nil {
 		return nil, err
 	}
