@@ -6,6 +6,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 
 	internal "github.com/formancehq/fctl/cmd/ledger/internal"
+	"github.com/formancehq/fctl/cmd/ledger/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -47,28 +48,10 @@ func (c *ShowController) GetStore() *ShowStore {
 
 func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	ledgerClient, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, err
-	}
+	store := store.GetStore(cmd.Context())
 
 	ledger := fctl.GetString(cmd, internal.LedgerFlag)
-	response, err := ledgerClient.Ledger.GetAccount(cmd.Context(), operations.GetAccountRequest{
+	response, err := store.Client().Ledger.GetAccount(cmd.Context(), operations.GetAccountRequest{
 		Address: args[0],
 		Ledger:  ledger,
 	})

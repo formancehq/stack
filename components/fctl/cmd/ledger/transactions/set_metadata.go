@@ -6,6 +6,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 
 	"github.com/formancehq/fctl/cmd/ledger/internal"
+	"github.com/formancehq/fctl/cmd/ledger/store"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/pterm/pterm"
@@ -48,38 +49,20 @@ func (c *SetMetadataController) GetStore() *SetMetadataStore {
 
 func (c *SetMetadataController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 
+	store := store.GetStore(cmd.Context())
+
 	metadata, err := fctl.ParseMetadata(args[1:])
 	if err != nil {
 		return nil, err
 	}
 
-	cfg, err := fctl.GetConfig(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stack, err := fctl.ResolveStack(cmd, cfg, organizationID)
-	if err != nil {
-		return nil, err
-	}
-
-	ledgerClient, err := fctl.NewStackClient(cmd, cfg, stack)
-	if err != nil {
-		return nil, err
-	}
-
-	transactionID, err := internal.TransactionIDOrLastN(cmd.Context(), ledgerClient,
+	transactionID, err := internal.TransactionIDOrLastN(cmd.Context(), store.Client(),
 		fctl.GetString(cmd, internal.LedgerFlag), args[0])
 	if err != nil {
 		return nil, err
 	}
 
-	if !fctl.CheckStackApprobation(cmd, stack, "You are about to set a metadata on transaction %d", transactionID) {
+	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to set a metadata on transaction %d", transactionID) {
 		return nil, fctl.ErrMissingApproval
 	}
 
@@ -88,7 +71,7 @@ func (c *SetMetadataController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		Txid:        transactionID,
 		RequestBody: collectionutils.ConvertMap(metadata, collectionutils.ToAny[string]),
 	}
-	response, err := ledgerClient.Ledger.AddMetadataOnTransaction(cmd.Context(), request)
+	response, err := store.Client().Ledger.AddMetadataOnTransaction(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}
