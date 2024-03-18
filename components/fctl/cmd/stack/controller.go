@@ -45,7 +45,7 @@ func waitStackReady(cmd *cobra.Command, client *fctl.MembershipClient, organizat
 			return stackRsp.Data, nil
 		}
 
-		if sum > 2*time.Minute {
+		if sum > 10*time.Minute {
 			pterm.Warning.Printf("You can check fctl stack show %s --organization %s to see the status of the stack", stackId, organizationId)
 			problem := fmt.Errorf("there might a problem with the stack scheduling, if the problem persists, please contact the support")
 
