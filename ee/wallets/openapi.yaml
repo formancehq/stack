@@ -335,6 +335,12 @@ paths:
                 $ref: '#/components/schemas/DebitWalletResponse'
         204:
           description: Wallet successfully debited
+        400:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         default:
           description: Error
           content:
@@ -362,6 +368,12 @@ paths:
       responses:
         204:
           description: Wallet successfully credited
+        400:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         default:
           description: Error
           content:

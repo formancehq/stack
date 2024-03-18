@@ -32,7 +32,10 @@ func (m *MainHandler) creditWalletHandler(w http.ResponseWriter, r *http.Request
 	err := m.manager.Credit(r.Context(), credit)
 	if err != nil {
 		switch {
-		case errors.Is(err, wallet.ErrBalanceNotExists):
+		case errors.Is(err, wallet.ErrBalanceNotExists),
+			errors.Is(err, wallet.ErrNegativeAmount),
+			wallet.IsErrInvalidAccountName(err),
+			wallet.IsErrInvalidAsset(err):
 			badRequest(w, ErrorCodeValidation, err)
 		default:
 			internalError(w, r, err)

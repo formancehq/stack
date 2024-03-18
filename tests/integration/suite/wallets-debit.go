@@ -2,6 +2,7 @@ package suite
 
 import (
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	. "github.com/formancehq/stack/tests/integration/internal"
@@ -9,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"github.com/pkg/errors"
 	"math/big"
 )
 
@@ -97,6 +99,63 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 						Expect(err).To(Succeed())
 					})
 					It("should be ok", func() {})
+				})
+			})
+			Then("debiting it using invalid destination", func() {
+				It("should fail", func() {
+					_, err := Client().Wallets.DebitWallet(TestContext(), operations.DebitWalletRequest{
+						DebitWalletRequest: &shared.DebitWalletRequest{
+							Amount: shared.Monetary{
+								Amount: big.NewInt(100),
+								Asset:  "USD/2",
+							},
+							Metadata: map[string]string{},
+							Destination: pointer.For(shared.CreateSubjectAccount(shared.LedgerAccountSubject{
+								Identifier: "@xxx",
+							})),
+						},
+						ID: createWalletResponse.CreateWalletResponse.Data.ID,
+					})
+					Expect(err).NotTo(Succeed())
+					sdkError := &sdkerrors.WalletsErrorResponse{}
+					Expect(errors.As(err, &sdkError)).To(BeTrue())
+					Expect(sdkError.ErrorCode).To(Equal(sdkerrors.SchemasErrorCodeValidation))
+				})
+			})
+			Then("debiting it using negative amount", func() {
+				It("should fail", func() {
+					_, err := Client().Wallets.DebitWallet(TestContext(), operations.DebitWalletRequest{
+						DebitWalletRequest: &shared.DebitWalletRequest{
+							Amount: shared.Monetary{
+								Amount: big.NewInt(-100),
+								Asset:  "USD/2",
+							},
+							Metadata: map[string]string{},
+						},
+						ID: createWalletResponse.CreateWalletResponse.Data.ID,
+					})
+					Expect(err).NotTo(Succeed())
+					sdkError := &sdkerrors.WalletsErrorResponse{}
+					Expect(errors.As(err, &sdkError)).To(BeTrue())
+					Expect(sdkError.ErrorCode).To(Equal(sdkerrors.SchemasErrorCodeValidation))
+				})
+			})
+			Then("debiting it using invalid asset", func() {
+				It("should fail", func() {
+					_, err := Client().Wallets.DebitWallet(TestContext(), operations.DebitWalletRequest{
+						DebitWalletRequest: &shared.DebitWalletRequest{
+							Amount: shared.Monetary{
+								Amount: big.NewInt(100),
+								Asset:  "test",
+							},
+							Metadata: map[string]string{},
+						},
+						ID: createWalletResponse.CreateWalletResponse.Data.ID,
+					})
+					Expect(err).NotTo(Succeed())
+					sdkError := &sdkerrors.WalletsErrorResponse{}
+					Expect(errors.As(err, &sdkError)).To(BeTrue())
+					Expect(sdkError.ErrorCode).To(Equal(sdkerrors.SchemasErrorCodeValidation))
 				})
 			})
 		})

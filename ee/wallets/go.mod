@@ -6,6 +6,7 @@ toolchain go1.21.5
 
 require (
 	github.com/formancehq/formance-sdk-go/v2 v2.0.0-00010101000000-000000000000
+	github.com/formancehq/ledger v0.0.0-00010101000000-000000000000
 	github.com/formancehq/stack/libs/go-libs v0.0.0-20230222164357-55840b21a337
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-chi/render v1.0.2
@@ -45,7 +46,7 @@ require (
 	github.com/muhlemmer/gu v0.3.1 // indirect
 	github.com/muhlemmer/httpforwarded v0.1.0 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
-	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
+	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rs/cors v1.10.0 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
@@ -88,5 +89,7 @@ require (
 )
 
 replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
+
+replace github.com/formancehq/ledger => ../../components/ledger
 
 replace github.com/formancehq/formance-sdk-go/v2 => ../../releases/sdks/go

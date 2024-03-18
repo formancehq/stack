@@ -9,6 +9,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
+
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
@@ -42,15 +44,15 @@ type testCase struct {
 }
 
 type apiErrorMock struct {
-	ErrorCode    shared.WalletsErrorResponseErrorCode `json:"errorCode,omitempty"`
-	ErrorMessage string                               `json:"errorMessage,omitempty"`
+	ErrorCode    sdkerrors.SchemasErrorCode `json:"errorCode,omitempty"`
+	ErrorMessage string                     `json:"errorMessage,omitempty"`
 }
 
 func (a *apiErrorMock) Model() any {
 	if a == nil {
 		return nil
 	}
-	return shared.WalletsErrorResponse{
+	return sdkerrors.WalletsErrorResponse{
 		ErrorCode:    a.ErrorCode,
 		ErrorMessage: a.ErrorMessage,
 	}
@@ -139,7 +141,7 @@ var walletDebitTestCases = []testCase{
 			Amount: wallet.NewMonetary(big.NewInt(100), "USD"),
 		},
 		postTransactionError: &apiErrorMock{
-			ErrorCode: shared.WalletsErrorResponseErrorCodeInsufficientFund,
+			ErrorCode: sdkerrors.SchemasErrorCodeInsufficientFund,
 		},
 		expectedStatusCode: http.StatusBadRequest,
 		expectedErrorCode:  string(shared.ErrorsEnumInsufficientFund),
@@ -244,7 +246,7 @@ var walletDebitTestCases = []testCase{
 			}
 		},
 		expectedStatusCode: http.StatusBadRequest,
-		expectedErrorCode:  string(shared.WalletsErrorResponseErrorCodeValidation),
+		expectedErrorCode:  string(sdkerrors.SchemasErrorCodeValidation),
 	},
 	{
 		name: "with custom balance as destination",

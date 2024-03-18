@@ -3,6 +3,8 @@ package ledger
 import (
 	"testing"
 
+	"github.com/formancehq/ledger/pkg/accounts"
+
 	"github.com/stretchr/testify/require"
 )
 
@@ -86,7 +88,7 @@ func TestValidateAddress(t *testing.T) {
 	for _, testCase := range testsCases {
 		testCase := testCase
 		t.Run(testCase.name, func(t *testing.T) {
-			require.Equal(t, testCase.shouldBeOk, ValidateAddress(testCase.address))
+			require.Equal(t, testCase.shouldBeOk, accounts.ValidateAddress(testCase.address))
 		})
 	}
 }
