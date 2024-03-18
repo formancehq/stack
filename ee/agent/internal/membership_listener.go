@@ -303,7 +303,7 @@ func (c *membershipListener) enableStack(ctx context.Context, stack *generated.E
 
 func (c *membershipListener) createOrUpdate(ctx context.Context, gvk schema.GroupVersionKind, name string, stackName string, owner *metav1.OwnerReference, content map[string]any, additionalLabel map[string]any) (*unstructured.Unstructured, error) {
 
-	logger := sharedlogging.WithFields(map[string]any{
+	logger := sharedlogging.FromContext(ctx).WithFields(map[string]any{
 		"gvk": gvk,
 	})
 	logger.Infof("creating object '%s'", name)

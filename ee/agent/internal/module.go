@@ -73,14 +73,14 @@ func CreateRestMapper(config *rest.Config) (meta.RESTMapper, error) {
 	return restmapper.NewDiscoveryRESTMapper(groupResources), nil
 }
 
-func runMembershipClient(lc fx.Lifecycle, client *membershipClient) {
+func runMembershipClient(lc fx.Lifecycle, client *membershipClient, logger logging.Logger) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			if err := client.connect(ctx); err != nil {
+			if err := client.connect(logging.ContextWithLogger(ctx, logger)); err != nil {
 				return err
 			}
 			go func() {
-				if err := client.Start(context.Background()); err != nil {
+				if err := client.Start(logging.ContextWithLogger(context.Background(), logger)); err != nil {
 					panic(err)
 				}
 			}()
@@ -90,10 +90,10 @@ func runMembershipClient(lc fx.Lifecycle, client *membershipClient) {
 	})
 }
 
-func runMembershipListener(lc fx.Lifecycle, client *membershipListener) {
+func runMembershipListener(lc fx.Lifecycle, client *membershipListener, logger logging.Logger) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			go client.Start(context.Background())
+			go client.Start(logging.ContextWithLogger(context.Background(), logger))
 			return nil
 		},
 	})
