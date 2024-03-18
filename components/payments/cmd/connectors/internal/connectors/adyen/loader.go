@@ -39,6 +39,8 @@ func (l *Loader) ApplyDefaults(cfg Config) Config {
 }
 
 func (l *Loader) Router(_ *storage.Storage) *mux.Router {
+	// storage is not used in this connector
+
 	r := mux.NewRouter()
 
 	r.Path("/").Methods(http.MethodPost).Handler(handleStandardWebhooks())

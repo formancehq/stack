@@ -5,6 +5,7 @@ import (
 
 	"github.com/formancehq/payments/internal/models"
 	"github.com/google/uuid"
+	"github.com/pkg/errors"
 )
 
 func (s *Storage) CreateWebhook(ctx context.Context, webhook *models.Webhook) error {
@@ -17,6 +18,10 @@ func (s *Storage) CreateWebhook(ctx context.Context, webhook *models.Webhook) er
 }
 
 func (s *Storage) UpdateWebhookRequestBody(ctx context.Context, webhookID uuid.UUID, requestBody []byte) error {
+	if len(requestBody) == 0 {
+		return errors.New("requestBody cannot be empty")
+	}
+
 	_, err := s.db.NewUpdate().Model((*models.Webhook)(nil)).Set("request_body = ?", requestBody).Where("id = ?", webhookID).Exec(ctx)
 	if err != nil {
 		return err

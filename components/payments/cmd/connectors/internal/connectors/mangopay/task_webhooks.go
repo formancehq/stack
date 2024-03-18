@@ -55,7 +55,7 @@ func handleWebhooks(store *storage.Storage) http.HandlerFunc {
 			return
 		}
 
-		detachedCtx, _ := contextutil.Detached(r.Context())
+		detachedCtx, _ := contextutil.DetachedWithTimeout(r.Context(), 30*time.Second)
 		taskDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
 			Name:      "handle webhook",
 			Key:       taskNameHandleWebhook,
@@ -245,6 +245,7 @@ func taskHandleWebhooks(c *client.Client, webhookID uuid.UUID) task.Task {
 
 		default:
 			// ignore unknown events
+			logger.Errorf("unknown event type: %s", webhook.EventType)
 			return nil
 		}
 

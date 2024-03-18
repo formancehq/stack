@@ -47,6 +47,7 @@ func (l *Loader) Load(logger logging.Logger, config Config) connectors.Connector
 
 // Router returns the router.
 func (l *Loader) Router(_ *storage.Storage) *mux.Router {
+	// Webhooks are not implemented yet
 	return nil
 }
 

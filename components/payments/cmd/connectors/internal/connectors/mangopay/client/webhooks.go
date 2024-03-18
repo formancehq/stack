@@ -69,7 +69,7 @@ var (
 )
 
 type Webhook struct {
-	ResourceID string    `json:"RessourceId"`
+	ResourceID string    `json:"ResourceId"`
 	EventType  EventType `json:"EventType"`
 }
 

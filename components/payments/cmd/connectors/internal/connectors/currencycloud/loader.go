@@ -39,6 +39,7 @@ func (l *Loader) ApplyDefaults(cfg Config) Config {
 }
 
 func (l *Loader) Router(_ *storage.Storage) *mux.Router {
+	// Webhooks are not implemented yet
 	return nil
 }
 
