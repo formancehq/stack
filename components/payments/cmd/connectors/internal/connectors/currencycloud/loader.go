@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
+	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/gorilla/mux"
@@ -37,7 +38,8 @@ func (l *Loader) ApplyDefaults(cfg Config) Config {
 	return cfg
 }
 
-func (l *Loader) Router() *mux.Router {
+func (l *Loader) Router(_ *storage.Storage) *mux.Router {
+	// Webhooks are not implemented yet
 	return nil
 }
 

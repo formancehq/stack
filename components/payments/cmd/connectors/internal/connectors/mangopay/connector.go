@@ -22,6 +22,8 @@ var (
 type Connector struct {
 	logger logging.Logger
 	cfg    Config
+
+	taskMemoryState taskMemoryState
 }
 
 func newConnector(logger logging.Logger, cfg Config) *Connector {
@@ -64,14 +66,28 @@ func (c *Connector) UpdateConfig(ctx task.ConnectorContext, config models.Connec
 }
 
 func (c *Connector) Install(ctx task.ConnectorContext) error {
-	taskDescriptor, err := models.EncodeTaskDescriptor(mainTaskDescriptor)
+	// Create hooks on mangopay sync
+	createWebhookDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
+		Name: "First task to create webhooks",
+		Key:  taskNameCreateWebhook,
+	})
 	if err != nil {
 		return err
 	}
 
-	return ctx.Scheduler().Schedule(ctx.Context(), taskDescriptor, models.TaskSchedulerOptions{
-		// We want to polling every c.cfg.PollingPeriod.Duration seconds the users
-		// and their transactions.
+	if err := ctx.Scheduler().Schedule(ctx.Context(), createWebhookDescriptor, models.TaskSchedulerOptions{
+		ScheduleOption: models.OPTIONS_RUN_NOW_SYNC,
+		RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
+	}); err != nil {
+		return err
+	}
+
+	mainDescriptor, err := models.EncodeTaskDescriptor(mainTaskDescriptor)
+	if err != nil {
+		return err
+	}
+
+	return ctx.Scheduler().Schedule(ctx.Context(), mainDescriptor, models.TaskSchedulerOptions{
 		ScheduleOption: models.OPTIONS_RUN_PERIODICALLY,
 		Duration:       c.cfg.PollingPeriod.Duration,
 		// No need to restart this task, since the connector is not existing or
@@ -90,7 +106,7 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 		panic(err)
 	}
 
-	return resolveTasks(c.logger, c.cfg)(taskDescriptor)
+	return resolveTasks(c.logger, c.cfg, &c.taskMemoryState)(taskDescriptor)
 }
 
 func (c *Connector) SupportedCurrenciesAndDecimals() map[string]int {

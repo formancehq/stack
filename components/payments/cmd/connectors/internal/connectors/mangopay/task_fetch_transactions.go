@@ -33,7 +33,7 @@ type fetchTransactionsState struct {
 	FirstCreatedTransactionCreationDate time.Time `json:"first_created_transaction_creation_date"`
 }
 
-func taskFetchTransactions(client *client.Client, walletsID string) task.Task {
+func taskFetchTransactions(client *client.Client, config *Config, walletsID string) task.Task {
 	return func(
 		ctx context.Context,
 		taskID models.TaskID,

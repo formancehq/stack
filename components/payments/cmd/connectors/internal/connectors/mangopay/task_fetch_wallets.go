@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
+	"sync"
 	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
@@ -19,7 +20,12 @@ import (
 )
 
 // taskFetchWallets in run inside a periodic task to fetch wallets from the client.
-func taskFetchWallets(client *client.Client, config *Config, userID string) task.Task {
+func taskFetchWallets(
+	client *client.Client,
+	config *Config,
+	taskMemoryState *taskMemoryState,
+	userID string,
+) task.Task {
 	return func(
 		ctx context.Context,
 		taskID models.TaskID,
@@ -37,7 +43,7 @@ func taskFetchWallets(client *client.Client, config *Config, userID string) task
 		)
 		defer span.End()
 
-		err := ingestWallets(ctx, client, config, userID, connectorID, scheduler, ingester)
+		err := ingestWallets(ctx, client, config, taskMemoryState, userID, connectorID, scheduler, ingester)
 		if err != nil {
 			otel.RecordError(span, err)
 			return err
@@ -51,6 +57,7 @@ func ingestWallets(
 	ctx context.Context,
 	client *client.Client,
 	config *Config,
+	taskMemoryState *taskMemoryState,
 	userID string,
 	connectorID models.ConnectorID,
 	scheduler task.Scheduler,
@@ -71,6 +78,7 @@ func ingestWallets(
 		if err = handleWallets(
 			ctx,
 			config,
+			taskMemoryState,
 			userID,
 			connectorID,
 			ingester,
@@ -93,6 +101,7 @@ func ingestWallets(
 func handleWallets(
 	ctx context.Context,
 	config *Config,
+	taskMemoryState *taskMemoryState,
 	userID string,
 	connectorID models.ConnectorID,
 	ingester ingestion.Ingester,
@@ -102,13 +111,14 @@ func handleWallets(
 	var accountBatch ingestion.AccountBatch
 	var balanceBatch ingestion.BalanceBatch
 	var transactionTasks []models.TaskDescriptor
+	var err error
 	for _, wallet := range pagedWallets {
-		transactionTask, err := models.EncodeTaskDescriptor(TaskDescriptor{
-			Name:     "Fetch transactions from client by user and wallets",
-			Key:      taskNameFetchTransactions,
-			UserID:   userID,
-			WalletID: wallet.ID,
-		})
+		transactionTasks, err = appendTransactionTask(
+			taskMemoryState,
+			transactionTasks,
+			userID,
+			wallet,
+		)
 		if err != nil {
 			return err
 		}
@@ -118,7 +128,6 @@ func handleWallets(
 			return err
 		}
 
-		transactionTasks = append(transactionTasks, transactionTask)
 		accountBatch = append(accountBatch, &models.Account{
 			ID: models.AccountID{
 				Reference:   wallet.ID,
@@ -168,8 +177,7 @@ func handleWallets(
 
 	for _, transactionTask := range transactionTasks {
 		err := scheduler.Schedule(ctx, transactionTask, models.TaskSchedulerOptions{
-			ScheduleOption: models.OPTIONS_RUN_PERIODICALLY,
-			Duration:       config.PollingPeriod.Duration,
+			ScheduleOption: models.OPTIONS_RUN_NOW,
 			RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 		})
 		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
@@ -178,4 +186,41 @@ func handleWallets(
 	}
 
 	return nil
+}
+
+func appendTransactionTask(
+	taskMemoryState *taskMemoryState,
+	transactionTasks []models.TaskDescriptor,
+	userID string,
+	wallet *client.Wallet,
+) ([]models.TaskDescriptor, error) {
+	if taskMemoryState.fetchTransactionsOnce == nil {
+		taskMemoryState.fetchTransactionsOnce = make(map[string]*sync.Once)
+	}
+
+	key := userID + wallet.ID
+	_, ok := taskMemoryState.fetchTransactionsOnce[key]
+	if !ok {
+		taskMemoryState.fetchTransactionsOnce[key] = &sync.Once{}
+	}
+
+	once := taskMemoryState.fetchTransactionsOnce[key]
+
+	var err error
+	once.Do(func() {
+		var transactionTask models.TaskDescriptor
+		transactionTask, err = models.EncodeTaskDescriptor(TaskDescriptor{
+			Name:     "Fetch transactions from client by user and wallets",
+			Key:      taskNameFetchTransactions,
+			UserID:   userID,
+			WalletID: wallet.ID,
+		})
+		if err != nil {
+			return
+		}
+
+		transactionTasks = append(transactionTasks, transactionTask)
+	})
+
+	return transactionTasks, err
 }

@@ -2,6 +2,7 @@ package connectors_manager
 
 import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
+	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/gorilla/mux"
@@ -15,7 +16,7 @@ type Loader[ConnectorConfig models.ConnectorConfigObject] interface {
 	ApplyDefaults(t ConnectorConfig) ConnectorConfig
 
 	// Extra routes to be added to the connectors manager API
-	Router() *mux.Router
+	Router(store *storage.Storage) *mux.Router
 
 	// AllowTasks define how many task the connector can run
 	// If too many tasks are scheduled by the connector,
@@ -99,7 +100,7 @@ func (b *BuiltLoader[ConnectorConfig]) ApplyDefaults(t ConnectorConfig) Connecto
 	return t
 }
 
-func (b *BuiltLoader[ConnectorConfig]) Router() *mux.Router {
+func (b *BuiltLoader[ConnectorConfig]) Router(store *storage.Storage) *mux.Router {
 	return nil
 }
 
