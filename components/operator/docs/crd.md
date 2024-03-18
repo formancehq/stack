@@ -1083,6 +1083,7 @@ _Appears in:_
 | `versionsFromFile` _string_ | VersionsFromFile allow to specify a formance.com/Versions object which contains individual versions<br />for each component.<br />Must reference a valid formance.com/Versions object |  |  |
 | `enableAudit` _boolean_ |  |  |  |
 | `disabled` _boolean_ |  |  |  |
+| `expectedModules` _string array_ |  |  |  |
 
 
 

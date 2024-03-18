@@ -30,6 +30,10 @@ spec:
       jsonPath: .status.ready
       name: Ready
       type: boolean
+    - description: Expectedm Modules
+      jsonPath: .status.expectedModules
+      name: Ready
+      type: boolean
     - description: Modules List Registered
       jsonPath: .status.modules
       name: Modules
@@ -70,6 +74,10 @@ spec:
                 type: boolean
               enableAudit:
                 type: boolean
+              expectedModules:
+                items:
+                  type: string
+                type: array
               version:
                 description: Version allow to specify the version of the components
                   Must be a valid docker tag

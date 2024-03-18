@@ -82,7 +82,7 @@ var _ = Describe("Stacks informer", func() {
 			When("the stack is reconcilled", func() {
 				BeforeEach(func() {
 					stack.Status.Ready = true
-					stack.Status.Modules = internal.GetExpectedModules()
+					stack.Status.Modules = internal.ExpectedModules(&generated.Stack{})
 					Expect(
 						k8sClient.Put().
 							Resource("Stacks").
@@ -134,7 +134,7 @@ var _ = Describe("Stacks informer", func() {
 		When("the stack is reconcilled", func() {
 			BeforeEach(func() {
 				stack.Status.Ready = true
-				stack.Status.Modules = internal.GetExpectedModules()
+				stack.Status.Modules = internal.ExpectedModules(&generated.Stack{})
 				Expect(
 					k8sClient.Put().
 						Resource("Stacks").
