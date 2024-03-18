@@ -194,6 +194,10 @@ func appendTransactionTask(
 	userID string,
 	wallet *client.Wallet,
 ) ([]models.TaskDescriptor, error) {
+	if taskMemoryState.fetchTransactionsOnce == nil {
+		taskMemoryState.fetchTransactionsOnce = make(map[string]*sync.Once)
+	}
+
 	key := userID + wallet.ID
 	_, ok := taskMemoryState.fetchTransactionsOnce[key]
 	if !ok {

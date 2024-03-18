@@ -92,7 +92,7 @@ func taskCreateWebhooks(c *client.Client) task.Task {
 		activeHooks := make(map[client.EventType]*client.Hook)
 		for _, hook := range alreadyExistingHooks {
 			// Mangopay allows only one active hook per event type.
-			if hook.Status == "ENABLED" {
+			if hook.Validity == "VALID" {
 				activeHooks[hook.EventType] = hook
 			}
 		}

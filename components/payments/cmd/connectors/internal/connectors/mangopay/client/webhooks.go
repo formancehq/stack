@@ -102,6 +102,11 @@ func (c *Client) ListAllHooks(ctx context.Context) ([]*Hook, error) {
 		return nil, fmt.Errorf("failed to create hooks request: %w", err)
 	}
 
+	q := req.URL.Query()
+	q.Add("per_page", "100") // Should be enough, since we're creating only a few
+	q.Add("Sort", "CreationDate:ASC")
+	req.URL.RawQuery = q.Encode()
+
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get wallet: %w", err)
