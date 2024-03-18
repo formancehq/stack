@@ -88,7 +88,6 @@ goreleaser:
             --secret GITHUB_TOKEN \
             --secret SPEAKEASY_API_KEY \
             --secret FURY_TOKEN \
-            --secret SEGMENT_WRITE_KEY \
             goreleaser release -f .goreleaser.yml $buildArgs
     END
 

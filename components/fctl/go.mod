@@ -15,7 +15,6 @@ require (
 	github.com/mattn/go-shellwords v1.0.12
 	github.com/pkg/errors v0.9.1
 	github.com/pterm/pterm v0.12.62
-	github.com/segmentio/analytics-go/v3 v3.2.1
 	github.com/segmentio/ksuid v1.0.4
 	github.com/spf13/cobra v1.8.1-0.20240312104246-bd914e58d69d
 	github.com/zitadel/oidc/v2 v2.11.0
@@ -60,7 +59,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
-	github.com/segmentio/backo-go v1.0.1 // indirect
 	github.com/sergi/go-diff v1.3.1 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/spf13/afero v1.9.3 // indirect
