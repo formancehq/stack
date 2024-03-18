@@ -10,9 +10,9 @@ builds:
   - binary: agent
     id: agent
     ldflags:
-      - -X github.com/formancehq/agent/cmd.BuildDate={{ .Date }}
-      - -X github.com/formancehq/agent/cmd.Version={{ .Version }}
-      - -X github.com/formancehq/agent/cmd.Commit={{ .ShortCommit }}
+      - -X github.com/formancehq/stack/components/agent/cmd.BuildDate={{ .Date }}
+      - -X github.com/formancehq/stack/components/agent/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/stack/components/agent/cmd.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:
       - CGO_ENABLED=0
@@ -28,7 +28,6 @@ archives:
       - agent
     format: tar.gz
     name_template: "{{.ProjectName}}_{{.Os}}-{{.Arch}}"
-
 
 release:
   prerelease: auto
