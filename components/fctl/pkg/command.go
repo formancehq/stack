@@ -7,16 +7,14 @@ import (
 	"github.com/TylerBrock/colorjson"
 	"github.com/formancehq/fctl/membershipclient"
 	"github.com/pkg/errors"
-	"github.com/segmentio/analytics-go/v3"
 	"github.com/segmentio/ksuid"
 	"github.com/spf13/cobra"
 )
 
 const (
-	stackFlag              = "stack"
-	organizationFlag       = "organization"
-	DefaultSegmentWriteKey = ""
-	outputFlag             = "output"
+	stackFlag        = "stack"
+	organizationFlag = "organization"
+	outputFlag       = "output"
 )
 
 var (
@@ -395,19 +393,6 @@ func NewCommand(use string, opts ...CommandOption) *cobra.Command {
 						return
 					}
 				}
-
-				client := NewAnalyticsClient()
-				defer client.Close()
-				err = client.Enqueue(analytics.Track{
-					UserId: cfg.GetUniqueID(),
-					Event:  "fctl usages",
-					Properties: analytics.NewProperties().
-						Set("command", cmd.Name()).
-						Set("args", args),
-				})
-				if err != nil {
-					return
-				}
 			}
 		},
 	}
@@ -415,9 +400,4 @@ func NewCommand(use string, opts ...CommandOption) *cobra.Command {
 		opt.apply(cmd)
 	}
 	return cmd
-}
-
-func NewAnalyticsClient() analytics.Client {
-	client := analytics.New(DefaultSegmentWriteKey)
-	return client
 }
