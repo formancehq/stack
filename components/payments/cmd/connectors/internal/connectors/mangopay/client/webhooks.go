@@ -70,7 +70,6 @@ var (
 
 type Webhook struct {
 	ResourceID string    `json:"RessourceId"`
-	Date       int64     `json:"Date"`
 	EventType  EventType `json:"EventType"`
 }
 

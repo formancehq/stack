@@ -16,6 +16,15 @@ func (s *Storage) CreateWebhook(ctx context.Context, webhook *models.Webhook) er
 	return nil
 }
 
+func (s *Storage) UpdateWebhookRequestBody(ctx context.Context, webhookID uuid.UUID, requestBody []byte) error {
+	_, err := s.db.NewUpdate().Model((*models.Webhook)(nil)).Set("request_body = ?", requestBody).Where("id = ?", webhookID).Exec(ctx)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *Storage) GetWebhook(ctx context.Context, id uuid.UUID) (*models.Webhook, error) {
 	webhook := &models.Webhook{}
 	err := s.db.NewSelect().Model(webhook).Where("id = ?", id).Scan(ctx)

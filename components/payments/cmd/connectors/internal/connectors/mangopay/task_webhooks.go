@@ -26,11 +26,34 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-func handleWebhooks() http.HandlerFunc {
+func handleWebhooks(store *storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		connectorContext := task.ConnectorContextFromContext(r.Context())
 		webhookID := connectors.WebhookIDFromContext(r.Context())
 		span := trace.SpanFromContext(r.Context())
+
+		// Mangopay does not send us the event inside the body, but using
+		// URL query.
+		eventType := r.URL.Query().Get("EventType")
+		resourceID := r.URL.Query().Get("RessourceId")
+
+		hook := client.Webhook{
+			ResourceID: resourceID,
+			EventType:  client.EventType(eventType),
+		}
+
+		body, err := json.Marshal(hook)
+		if err != nil {
+			otel.RecordError(span, err)
+			api.InternalServerError(w, r, err)
+			return
+		}
+
+		if err := store.UpdateWebhookRequestBody(r.Context(), webhookID, body); err != nil {
+			otel.RecordError(span, err)
+			api.InternalServerError(w, r, err)
+			return
+		}
 
 		detachedCtx, _ := contextutil.Detached(r.Context())
 		taskDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{

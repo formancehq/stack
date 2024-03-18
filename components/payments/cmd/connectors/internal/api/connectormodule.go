@@ -72,12 +72,13 @@ func addConnector[ConnectorConfig models.ConnectorConfigObject](loader manager.L
 			return backend.NewDefaultManagerBackend[ConnectorConfig](cm)
 		}),
 		fx.Provide(fx.Annotate(func(
+			store *storage.Storage,
 			b backend.ManagerBackend[ConnectorConfig],
 			cm *manager.ConnectorsManager[ConnectorConfig],
 		) connectorHandler {
 			return connectorHandler{
 				Handler:                   connectorRouter(loader.Name(), b),
-				WebhookHandler:            webhookConnectorRouter(loader.Name(), loader.Router(), b),
+				WebhookHandler:            webhookConnectorRouter(loader.Name(), loader.Router(store), b),
 				Provider:                  loader.Name(),
 				initiatePayment:           cm.InitiatePayment,
 				reversePayment:            cm.ReversePayment,
