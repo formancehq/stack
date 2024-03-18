@@ -108,12 +108,15 @@ func (m *Manager) Debit(ctx context.Context, debit Debit) (*DebitHold, error) {
 
 	dest := debit.getDestination()
 
-	var hold *DebitHold
+	var (
+		hold     *DebitHold
+		metadata map[string]map[string]string
+	)
 	if debit.Pending {
 		hold = Ptr(debit.newHold())
 		holdAccount := m.chart.GetHoldAccount(hold.ID)
-		if err := m.client.AddMetadataToAccount(ctx, m.ledgerName, holdAccount, hold.LedgerMetadata(m.chart)); err != nil {
-			return nil, errors.Wrap(err, "adding metadata to account")
+		metadata = map[string]map[string]string{
+			holdAccount: hold.LedgerMetadata(m.chart),
 		}
 
 		dest = NewLedgerAccountSubject(holdAccount)
@@ -149,7 +152,7 @@ func (m *Manager) Debit(ctx context.Context, debit Debit) (*DebitHold, error) {
 
 	postTransaction := PostTransaction{
 		Script: &shared.PostTransactionScript{
-			Plain: BuildDebitWalletScript(sources...),
+			Plain: BuildDebitWalletScript(metadata, sources...),
 			Vars: map[string]interface{}{
 				"destination": dest.getAccount(m.chart),
 				"amount": map[string]any{

@@ -4,6 +4,7 @@ package wallet
 import (
 	"bytes"
 	_ "embed"
+	"strconv"
 	"text/template"
 )
 
@@ -20,7 +21,9 @@ var (
 
 func renderTemplate(tplStr string, data any) string {
 	buf := bytes.NewBufferString("")
-	tpl := template.Must(template.New("tpl").Parse(tplStr))
+	tpl := template.Must(template.New("tpl").Funcs(template.FuncMap{
+		"quote": strconv.Quote,
+	}).Parse(tplStr))
 	if err := tpl.Execute(buf, data); err != nil {
 		panic(err)
 	}
@@ -40,9 +43,10 @@ func BuildCreditWalletScript(sources ...string) string {
 	})
 }
 
-func BuildDebitWalletScript(sources ...string) string {
+func BuildDebitWalletScript(metadata map[string]map[string]string, sources ...string) string {
 	return renderTemplate(DebitWalletScript, map[string]any{
-		"Sources": sources,
+		"Sources":  sources,
+		"Metadata": metadata,
 	})
 }
 
