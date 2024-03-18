@@ -1,7 +1,7 @@
 lockVersion: 2.0.0
 id: 7eac0a45-60a2-40bb-9e85-26bd77ec2a6d
 management:
-  docChecksum: e91c0afcc14528ae195f1f3d9fdcc2fc
+  docChecksum: d11ae6dcb5a32c2a80fa6ad166fb3a06
   docVersion: v0.0.0
   speakeasyVersion: internal
   generationVersion: 2.237.2
@@ -512,7 +512,6 @@ generatedFiles:
   - /pkg/models/shared/reconciliationrequest.go
   - /pkg/models/shared/response.go
   - /pkg/models/shared/query.go
-  - /pkg/models/shared/walletserrorresponse.go
   - /pkg/models/shared/confirmholdrequest.go
   - /pkg/models/shared/createbalanceresponse.go
   - /pkg/models/shared/balance.go
@@ -544,6 +543,7 @@ generatedFiles:
   - /pkg/models/sdkerrors/errorresponse.go
   - /pkg/models/sdkerrors/v2errorresponse.go
   - /pkg/models/sdkerrors/v2error.go
+  - /pkg/models/sdkerrors/walletserrorresponse.go
   - /pkg/models/sdkerrors/webhookserrorresponse.go
   - docs/pkg/models/operations/getversionsresponse.md
   - docs/pkg/models/operations/getapiauthwellknownopenidconfigurationresponse.md
@@ -1233,8 +1233,6 @@ generatedFiles:
   - docs/pkg/models/shared/response.md
   - docs/pkg/models/shared/queryraw.md
   - docs/pkg/models/shared/query.md
-  - docs/pkg/models/shared/walletserrorresponseerrorcode.md
-  - docs/pkg/models/shared/walletserrorresponse.md
   - docs/pkg/models/shared/confirmholdrequest.md
   - docs/pkg/models/shared/createbalanceresponse.md
   - docs/pkg/models/shared/balance.md
@@ -1272,6 +1270,8 @@ generatedFiles:
   - docs/pkg/models/sdkerrors/v2errorresponse.md
   - docs/pkg/models/sdkerrors/errorcode.md
   - docs/pkg/models/sdkerrors/v2error.md
+  - docs/pkg/models/sdkerrors/schemaserrorcode.md
+  - docs/pkg/models/sdkerrors/walletserrorresponse.md
   - docs/pkg/models/sdkerrors/webhookserrorresponse.md
   - docs/sdks/formance/README.md
   - docs/sdks/auth/README.md

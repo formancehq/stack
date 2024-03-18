@@ -21,7 +21,7 @@ __fctl_get_completion_results() {
     local requestComp lastParam lastChar args
 
     # Prepare the command to request completions for the program.
-    # Calling ${words[0]} instead of directly fctl allows to handle aliases
+    # Calling ${words[0]} instead of directly fctl allows handling aliases
     args=("${words[@]:1}")
     requestComp="${words[0]} __complete ${args[*]}"
 
@@ -65,6 +65,7 @@ __fctl_process_completion_results() {
     local shellCompDirectiveNoFileComp=4
     local shellCompDirectiveFilterFileExt=8
     local shellCompDirectiveFilterDirs=16
+    local shellCompDirectiveKeepOrder=32
 
     if (((directive & shellCompDirectiveError) != 0)); then
         # Error code.  No completion.
@@ -77,6 +78,19 @@ __fctl_process_completion_results() {
                 compopt -o nospace
             else
                 __fctl_debug "No space directive not supported in this version of bash"
+            fi
+        fi
+        if (((directive & shellCompDirectiveKeepOrder) != 0)); then
+            if [[ $(type -t compopt) == builtin ]]; then
+                # no sort isn't supported for bash less than < 4.4
+                if [[ ${BASH_VERSINFO[0]} -lt 4 || ( ${BASH_VERSINFO[0]} -eq 4 && ${BASH_VERSINFO[1]} -lt 4 ) ]]; then
+                    __fctl_debug "No sort directive not supported in this version of bash"
+                else
+                    __fctl_debug "Activating keep order"
+                    compopt -o nosort
+                fi
+            else
+                __fctl_debug "No sort directive not supported in this version of bash"
             fi
         fi
         if (((directive & shellCompDirectiveNoFileComp) != 0)); then

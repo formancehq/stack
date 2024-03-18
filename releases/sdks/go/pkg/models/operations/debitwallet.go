@@ -3,6 +3,7 @@
 package operations
 
 import (
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"net/http"
 )
@@ -36,7 +37,7 @@ type DebitWalletResponse struct {
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
 	// Error
-	WalletsErrorResponse *shared.WalletsErrorResponse
+	WalletsErrorResponse *sdkerrors.WalletsErrorResponse
 }
 
 func (o *DebitWalletResponse) GetContentType() string {
@@ -67,7 +68,7 @@ func (o *DebitWalletResponse) GetRawResponse() *http.Response {
 	return o.RawResponse
 }
 
-func (o *DebitWalletResponse) GetWalletsErrorResponse() *shared.WalletsErrorResponse {
+func (o *DebitWalletResponse) GetWalletsErrorResponse() *sdkerrors.WalletsErrorResponse {
 	if o == nil {
 		return nil
 	}

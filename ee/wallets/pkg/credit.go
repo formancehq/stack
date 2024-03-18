@@ -1,7 +1,10 @@
 package wallet
 
 import (
+	"math/big"
 	"net/http"
+
+	"github.com/formancehq/ledger/pkg/assets"
 
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 )
@@ -24,6 +27,13 @@ func (c CreditRequest) Validate() error {
 	if err := c.Sources.Validate(); err != nil {
 		return err
 	}
+	if c.Amount.Amount.Cmp(big.NewInt(0)) < 0 {
+		return ErrNegativeAmount
+	}
+	if !assets.IsValid(c.Amount.Asset) {
+		return newErrInvalidAsset(c.Amount.Asset)
+	}
+
 	return nil
 }
 

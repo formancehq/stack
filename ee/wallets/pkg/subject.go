@@ -2,6 +2,8 @@ package wallet
 
 import (
 	"fmt"
+
+	"github.com/formancehq/ledger/pkg/accounts"
 )
 
 const (
@@ -31,6 +33,12 @@ func (s Subject) getAccount(chart *Chart) string {
 func (s Subject) Validate() error {
 	if s.Type != SubjectTypeWallet && s.Type != SubjectTypeLedgerAccount {
 		return fmt.Errorf("unknown source type: %s", s.Type)
+	}
+	switch s.Type {
+	case SubjectTypeLedgerAccount:
+		if !accounts.ValidateAddress(s.Identifier) {
+			return newErrInvalidAccountName(s.Identifier)
+		}
 	}
 	return nil
 }

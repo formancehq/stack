@@ -2,12 +2,14 @@ package suite
 
 import (
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"github.com/pkg/errors"
 	"math/big"
 )
 
@@ -45,6 +47,65 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 				Expect(err).To(Succeed())
 			})
 			It("should be ok", func() {})
+		})
+		Then("crediting it with invalid source", func() {
+			It("should fail", func() {
+				_, err := Client().Wallets.CreditWallet(TestContext(), operations.CreditWalletRequest{
+					CreditWalletRequest: &shared.CreditWalletRequest{
+						Amount: shared.Monetary{
+							Amount: big.NewInt(1000),
+							Asset:  "USD/2",
+						},
+						Sources: []shared.Subject{shared.CreateSubjectAccount(shared.LedgerAccountSubject{
+							Identifier: "@xxx",
+						})},
+						Metadata: map[string]string{},
+					},
+					ID: response.CreateWalletResponse.Data.ID,
+				})
+				Expect(err).NotTo(Succeed())
+				sdkError := &sdkerrors.WalletsErrorResponse{}
+				Expect(errors.As(err, &sdkError)).To(BeTrue())
+				Expect(sdkError.ErrorCode).To(Equal(sdkerrors.SchemasErrorCodeValidation))
+			})
+		})
+		Then("crediting it with negative amount", func() {
+			It("should fail", func() {
+				_, err := Client().Wallets.CreditWallet(TestContext(), operations.CreditWalletRequest{
+					CreditWalletRequest: &shared.CreditWalletRequest{
+						Amount: shared.Monetary{
+							Amount: big.NewInt(-1000),
+							Asset:  "USD/2",
+						},
+						Sources:  []shared.Subject{},
+						Metadata: map[string]string{},
+					},
+					ID: response.CreateWalletResponse.Data.ID,
+				})
+				Expect(err).NotTo(Succeed())
+				sdkError := &sdkerrors.WalletsErrorResponse{}
+				Expect(errors.As(err, &sdkError)).To(BeTrue())
+				Expect(sdkError.ErrorCode).To(Equal(sdkerrors.SchemasErrorCodeValidation))
+			})
+		})
+		Then("crediting it with invalid asset name", func() {
+			It("should fail", func() {
+				_, err := Client().Wallets.CreditWallet(TestContext(), operations.CreditWalletRequest{
+					CreditWalletRequest: &shared.CreditWalletRequest{
+						Amount: shared.Monetary{
+							Amount: big.NewInt(1000),
+							Asset:  "test",
+						},
+						Sources:  []shared.Subject{},
+						Metadata: map[string]string{},
+					},
+					ID: response.CreateWalletResponse.Data.ID,
+				})
+				Expect(err).NotTo(Succeed())
+				sdkError := &sdkerrors.WalletsErrorResponse{}
+				Expect(errors.As(err, &sdkError)).To(BeTrue())
+				Expect(sdkError.ErrorCode).To(Equal(sdkerrors.SchemasErrorCodeValidation))
+			})
 		})
 	})
 })
