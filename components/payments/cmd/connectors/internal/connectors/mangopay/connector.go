@@ -22,6 +22,8 @@ var (
 type Connector struct {
 	logger logging.Logger
 	cfg    Config
+
+	taskMemoryState taskMemoryState
 }
 
 func newConnector(logger logging.Logger, cfg Config) *Connector {
@@ -104,7 +106,7 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 		panic(err)
 	}
 
-	return resolveTasks(c.logger, c.cfg)(taskDescriptor)
+	return resolveTasks(c.logger, c.cfg, &c.taskMemoryState)(taskDescriptor)
 }
 
 func (c *Connector) SupportedCurrenciesAndDecimals() map[string]int {
