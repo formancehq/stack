@@ -60,11 +60,3 @@ func TestConfig(t *testing.T) {
 		return len(updatedInstance.Statuses) == 1
 	}, 2*time.Second, 100*time.Millisecond)
 }
-
-/**
-register activity InsertNewInstance
-register activity InsertNewStage
-register activity SendWorkflowTerminationEvent
-register activity UpdateInstance
-register activity UpdateStage
-*/

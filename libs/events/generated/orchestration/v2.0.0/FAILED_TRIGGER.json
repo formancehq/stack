@@ -21,13 +21,16 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "triggerID": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "error": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         }
       },
       "required": [

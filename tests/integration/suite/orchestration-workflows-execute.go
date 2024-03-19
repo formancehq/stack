@@ -90,8 +90,17 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 			It("should be ok", func() {
 				Expect(runWorkflowResponse.Data.ID).NotTo(BeEmpty())
 			})
-			It("Should trigger a succeeded workflow event", func() {
+			It("Should trigger appropriate events", func() {
 				msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
+				Expect(events.Check(msg.Data, "orchestration", orchestrationevents.StartedWorkflow)).Should(Succeed())
+
+				msg = WaitOnChanWithTimeout(msgs, 5*time.Second)
+				Expect(events.Check(msg.Data, "orchestration", orchestrationevents.StartedWorkflowStage)).Should(Succeed())
+
+				msg = WaitOnChanWithTimeout(msgs, 5*time.Second)
+				Expect(events.Check(msg.Data, "orchestration", orchestrationevents.SucceededWorkflowStage)).Should(Succeed())
+
+				msg = WaitOnChanWithTimeout(msgs, 5*time.Second)
 				Expect(events.Check(msg.Data, "orchestration", orchestrationevents.SucceededWorkflow)).Should(Succeed())
 			})
 			Then("waiting for termination", func() {

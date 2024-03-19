@@ -24,15 +24,24 @@
           "type": "string",
           "minLength": 1
         },
-        "triggerID": {
+        "instanceID": {
+          "type": "string",
+          "minLength": 1
+        },
+        "number": {
+          "type": "integer",
+          "minLength": 1
+        },
+        "error": {
           "type": "string",
           "minLength": 1
         }
       },
       "required": [
         "id",
-        "triggerID",
-        "workflowInstanceID"
+        "instanceID",
+        "number",
+        "error"
       ]
     }
   },

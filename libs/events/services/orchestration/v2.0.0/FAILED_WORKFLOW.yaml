@@ -2,10 +2,13 @@ type: object
 properties:
   id:
     type: string
+    minLength: 1
   instanceID:
     type: string
+    minLength: 1
   error:
     type: string
+    minLength: 1
 required:
   - id
   - instanceID

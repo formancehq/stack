@@ -67,7 +67,14 @@ func (c *Config) run(ctx workflow.Context, instance Instance, variables map[stri
 		stage := Stage{}
 		err := workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 			StartToCloseTimeout: 10 * time.Second,
-		}), InsertNewStage, instance, ind).Get(ctx, &stage)
+		}), InsertNewStageActivity, instance, ind).Get(ctx, &stage)
+		if err != nil {
+			return err
+		}
+
+		err = workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
+			StartToCloseTimeout: 10 * time.Second,
+		}), SendWorkflowStageStartedEventActivity, instance, stage).Get(ctx, nil)
 		if err != nil {
 			return err
 		}
@@ -80,10 +87,18 @@ func (c *Config) run(ctx workflow.Context, instance Instance, variables map[stri
 
 		err = workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 			StartToCloseTimeout: 10 * time.Second,
-		}), UpdateStage, stage).Get(ctx, nil)
+		}), UpdateStageActivity, stage).Get(ctx, nil)
 		if err != nil {
 			return err
 		}
+
+		err = workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
+			StartToCloseTimeout: 10 * time.Second,
+		}), SendWorkflowStageTerminationEventActivity, instance, stage).Get(ctx, nil)
+		if err != nil {
+			return err
+		}
+
 		logger.Info("stage terminated", "index", ind, "workflowID", stage.InstanceID)
 
 		if runError != nil {
