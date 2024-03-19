@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"reflect"
 	"strings"
 
 	"github.com/alitto/pond"
@@ -97,6 +96,75 @@ func (c *membershipListener) Start(ctx context.Context) {
 	}
 }
 
+// convert name to pascal case
+func pascalNameModule(modules ...*generated.Service) []string {
+	var names []string
+	for _, module := range modules {
+		moduleName := strings.ToUpper(string(module.Name[0])) + module.Name[1:]
+		names = append(names, moduleName)
+	}
+	return names
+}
+
+func ExpectedModules(stack *generated.Stack) []string {
+	modules := []string{}
+	if stack.StargateConfig != nil && stack.StargateConfig.Enabled {
+		modules = append(modules, "Stargate")
+	}
+
+	modules = append(modules, pascalNameModule(stack.Services...)...)
+
+	if len(modules) > 0 {
+		modules = append(modules, "Gateway")
+	}
+
+	return modules
+}
+
+func NotExpectedModules(stack *unstructured.Unstructured) []string {
+	status, ok := stack.Object["status"].(map[string]any)
+	if !ok {
+		panic("status not found")
+	}
+
+	var installedModules []string
+	installedModulesI, ok := status["modules"].([]any)
+	if !ok {
+		installedModules = []string{}
+	} else {
+		installedModules = collectionutils.Map(installedModulesI, func(module any) string {
+			return module.(string)
+		})
+	}
+
+	spec, ok := stack.Object["spec"].(map[string]any)
+	if !ok {
+		panic("spec not found")
+	}
+
+	expectedModulesI, ok := spec["expectedModules"].([]any)
+	if !ok {
+		panic("expectedModules not found")
+	}
+
+	expectedModules := collectionutils.Map(expectedModulesI, func(module any) string {
+		return module.(string)
+	})
+
+	return Reduce(installedModules, func(acc []string, module string) []string {
+		if collectionutils.Contains(expectedModules, module) {
+			return acc
+		}
+		return append(acc, module)
+	}, []string{})
+}
+
+func ExpectedModulesAsGVK(modules []string) []schema.GroupVersionKind {
+	return collectionutils.Map(modules, func(module string) schema.GroupVersionKind {
+		return v1beta1.GroupVersion.WithKind(module)
+	})
+}
+
 func (c *membershipListener) syncExistingStack(ctx context.Context, membershipStack *generated.Stack) {
 
 	versions := membershipStack.Versions
@@ -108,11 +176,14 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 		return value
 	})
 
+	expectedStringModules := ExpectedModules(membershipStack)
+	expectedModules := ExpectedModulesAsGVK(expectedStringModules)
 	stack, err := c.createOrUpdate(ctx, v1beta1.GroupVersion.WithKind("Stack"), membershipStack.ClusterName, membershipStack.ClusterName, nil, map[string]any{
 		"spec": map[string]any{
 			"versionsFromFile": versions,
 			"disabled":         membershipStack.Disabled,
 			"enableAudit":      membershipStack.EnableAudit,
+			"expectedModules":  expectedStringModules,
 		},
 	}, additionalLabels)
 	if err != nil {
@@ -120,43 +191,41 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 		return
 	}
 
-	for gvk, rtype := range scheme.Scheme.AllKnownTypes() {
-		object := reflect.New(rtype).Interface()
-		if module, ok := object.(v1beta1.Module); !ok {
-			continue
-		} else {
-			// Currently, ee modules are not supported by membership
-			if module.IsEE() {
-				continue
-			}
-		}
-		// Stargate, Auth, and Gateway modules must be configured with specific values.
-		// So exclude them from automatic module creation.
-		if gvk.Kind == "Stargate" || gvk.Kind == "Auth" || gvk.Kind == "Gateway" {
+	for _, gvkModule := range expectedModules {
+		if gvkModule.Kind == "Stargate" || gvkModule.Kind == "Auth" || gvkModule.Kind == "Gateway" {
 			continue
 		}
 
-		if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, gvk, map[string]any{}, additionalLabels); err != nil {
-			sharedlogging.FromContext(ctx).Errorf("Unable to create module %s cluster side: %s", gvk.Kind, err)
+		if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, gvkModule, map[string]any{}, additionalLabels); err != nil {
+			sharedlogging.FromContext(ctx).Errorf("Unable to create module %s cluster side: %s", gvkModule.Kind, err)
 		}
 	}
 
-	if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, v1beta1.GroupVersion.WithKind("Auth"), map[string]any{
-		"spec": map[string]any{
-			"delegatedOIDCServer": map[string]any{
-				"issuer":       membershipStack.AuthConfig.Issuer,
-				"clientID":     membershipStack.AuthConfig.ClientId,
-				"clientSecret": membershipStack.AuthConfig.ClientSecret,
+	if collectionutils.Contains(expectedStringModules, "Auth") {
+		if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, v1beta1.GroupVersion.WithKind("Auth"), map[string]any{
+			"spec": map[string]any{
+				"delegatedOIDCServer": map[string]any{
+					"issuer":       membershipStack.AuthConfig.Issuer,
+					"clientID":     membershipStack.AuthConfig.ClientId,
+					"clientSecret": membershipStack.AuthConfig.ClientSecret,
+				},
 			},
-		},
-	}, additionalLabels); err != nil {
-		sharedlogging.FromContext(ctx).Errorf("Unable to create module Auth cluster side: %s", err)
+		}, additionalLabels); err != nil {
+			sharedlogging.FromContext(ctx).Errorf("Unable to create module Auth cluster side: %s", err)
+		}
+	} else {
+		// If the module is not in the expectedModules list, then it should delete the module
+		if err := c.restClient.Delete().
+			Resource("Auths").
+			Name(stack.GetName()).
+			Do(ctx).
+			Error(); client.IgnoreNotFound(err) != nil {
+			sharedlogging.FromContext(ctx).Errorf("Unable to delete module Auth cluster side: %s", err)
+		}
 	}
 
-	stargateName := fmt.Sprintf("%s-stargate", membershipStack.ClusterName)
-	if membershipStack.StargateConfig != nil && membershipStack.StargateConfig.Enabled {
+	if collectionutils.Contains(expectedStringModules, "Stargate") {
 		parts := strings.Split(stack.GetName(), "-")
-
 		if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, v1beta1.GroupVersion.WithKind("Stargate"), map[string]any{
 			"spec": map[string]any{
 				"organizationID": parts[0],
@@ -171,39 +240,36 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 		}, additionalLabels); err != nil {
 			sharedlogging.FromContext(ctx).Errorf("Unable to create module Stargate cluster side: %s", err)
 		}
-	} else {
-		if err := c.restClient.Delete().
-			Name(stargateName).
-			Do(ctx).
-			Error(); client.IgnoreNotFound(err) != nil {
-			sharedlogging.FromContext(ctx).Errorf("Unable to delete module Stargate cluster side: %s", err)
-		}
 	}
 
-	if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, v1beta1.GroupVersion.WithKind("Gateway"), map[string]any{
-		"spec": map[string]any{
-			"ingress": map[string]any{
-				"host":   fmt.Sprintf("%s.%s", stack.GetName(), c.clientInfo.BaseUrl.Host),
-				"scheme": c.clientInfo.BaseUrl.Scheme,
+	if collectionutils.Contains(expectedStringModules, "Gateway") {
+		if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, v1beta1.GroupVersion.WithKind("Gateway"), map[string]any{
+			"spec": map[string]any{
+				"ingress": map[string]any{
+					"host":   fmt.Sprintf("%s.%s", stack.GetName(), c.clientInfo.BaseUrl.Host),
+					"scheme": c.clientInfo.BaseUrl.Scheme,
+				},
 			},
-		},
-	}, additionalLabels); client.IgnoreNotFound(err) != nil {
-		sharedlogging.FromContext(ctx).Errorf("Unable to create module Stargate cluster side: %s", err)
+		}, additionalLabels); client.IgnoreNotFound(err) != nil {
+			sharedlogging.FromContext(ctx).Errorf("Unable to create module Stargate cluster side: %s", err)
+		}
 	}
 
 	syncAuthClients := make([]*unstructured.Unstructured, 0)
-	for _, client := range membershipStack.StaticClients {
-		authClient, err := c.createOrUpdateStackDependency(ctx, fmt.Sprintf("%s-%s", stack.GetName(), client.Id), stack.GetName(),
-			stack, v1beta1.GroupVersion.WithKind("AuthClient"), map[string]any{
-				"spec": map[string]any{
-					"id":     client.Id,
-					"public": client.Public,
-				},
-			}, additionalLabels)
-		if err != nil {
-			sharedlogging.FromContext(ctx).Errorf("Unable to create AuthClient cluster side: %s", err)
+	if collectionutils.Contains(expectedStringModules, "Auth") {
+		for _, client := range membershipStack.StaticClients {
+			authClient, err := c.createOrUpdateStackDependency(ctx, fmt.Sprintf("%s-%s", stack.GetName(), client.Id), stack.GetName(),
+				stack, v1beta1.GroupVersion.WithKind("AuthClient"), map[string]any{
+					"spec": map[string]any{
+						"id":     client.Id,
+						"public": client.Public,
+					},
+				}, additionalLabels)
+			if err != nil {
+				sharedlogging.FromContext(ctx).Errorf("Unable to create AuthClient cluster side: %s", err)
+			}
+			syncAuthClients = append(syncAuthClients, authClient)
 		}
-		syncAuthClients = append(syncAuthClients, authClient)
 	}
 
 	authClientList := &unstructured.UnstructuredList{}
@@ -218,6 +284,7 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 	}
 
 	// Here i need to find all AuthClients that differ from syncAuthClients and delete them
+	// If the modules is not in the expectedModules list, then it should delete all AuthClients
 	authClientsToDelete := Reduce(authClientList.Items, func(acc []string, item unstructured.Unstructured) []string {
 		for _, syncAuthClient := range syncAuthClients {
 			if syncAuthClient.GetName() == item.GetName() {
@@ -238,7 +305,31 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 		}
 	}
 
+	moduleToDelete := NotExpectedModules(stack)
+	for _, module := range moduleToDelete {
+		moduleAPI := ModuleToPlural(module)
+		sharedlogging.FromContext(ctx).Infof("Deleting module %s", module)
+		if err := c.restClient.Delete().
+			Resource(moduleAPI).
+			Name(stack.GetName()).
+			Do(ctx).
+			Error(); err != nil {
+			sharedlogging.FromContext(ctx).Errorf("Unable to delete module %s cluster side: %s", module, err)
+		}
+	}
+
 	sharedlogging.FromContext(ctx).Infof("Stack %s updated cluster side", stack.GetName())
+}
+
+func ModuleToPlural(module string) string {
+	switch {
+	case module == "Search":
+		return "Searches"
+	case string(module[len(module)-1:]) == "s":
+		return module
+	default:
+		return module + "s"
+	}
 }
 
 func Reduce[TYPE any, ACC any](input []TYPE, reducer func(ACC, TYPE) ACC, initial ACC) ACC {
@@ -251,7 +342,7 @@ func Reduce[TYPE any, ACC any](input []TYPE, reducer func(ACC, TYPE) ACC, initia
 
 func (c *membershipListener) deleteStack(ctx context.Context, stack *generated.DeletedStack) {
 	if err := c.restClient.Delete().
-		Resource("stacks").
+		Resource("Stacks").
 		Name(stack.ClusterName).
 		Do(ctx).
 		Error(); err != nil {

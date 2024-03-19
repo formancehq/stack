@@ -39,6 +39,8 @@ type StackSpec struct {
 	EnableAudit bool `json:"enableAudit,omitempty"`
 	//+optional
 	Disabled bool `json:"disabled"`
+
+	ExpectedModules []string `json:"expectedModules,omitempty"`
 }
 
 // StackStatus defines the observed state of Stack
@@ -54,6 +56,7 @@ type StackStatus struct {
 //+kubebuilder:printcolumn:name="Version",type="string",JSONPath=".spec.version",description="Stack Version"
 //+kubebuilder:printcolumn:name="Versions From file",type="string",JSONPath=".spec.versionsFromFile",description="Stack Version From File"
 //+kubebuilder:printcolumn:name="Ready",type="boolean",JSONPath=".status.ready",description="Is stack ready"
+//+kubebuilder:printcolumn:name="Expected Modules",type="string",JSONPath=".spec.expectedModules",description="Expected Modules"
 //+kubebuilder:printcolumn:name="Modules",type=string,JSONPath=".status.modules",description="Modules List Registered"
 //+kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
 
