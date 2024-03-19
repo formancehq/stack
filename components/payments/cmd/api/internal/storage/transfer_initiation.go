@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/formancehq/stack/libs/go-libs/query"
 	"github.com/uptrace/bun"
@@ -64,7 +63,7 @@ func NewListTransferInitiationsQuery(opts PaginatedQueryOptions[TransferInitiati
 	}
 }
 
-func (s *Storage) ListTransferInitiations(ctx context.Context, q ListTransferInitiationsQuery) (*api.Cursor[models.TransferInitiation], error) {
+func (s *Storage) ListTransferInitiations(ctx context.Context, q ListTransferInitiationsQuery) (*bunpaginate.Cursor[models.TransferInitiation], error) {
 	return PaginateWithOffset[PaginatedQueryOptions[TransferInitiationQuery], models.TransferInitiation](s, ctx,
 		(*bunpaginate.OffsetPaginatedQuery[PaginatedQueryOptions[TransferInitiationQuery]])(&q),
 		func(query *bun.SelectQuery) *bun.SelectQuery {

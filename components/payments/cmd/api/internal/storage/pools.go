@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
@@ -71,7 +70,7 @@ func NewListPoolsQuery(opts PaginatedQueryOptions[PoolQuery]) ListPoolsQuery {
 	}
 }
 
-func (s *Storage) ListPools(ctx context.Context, q ListPoolsQuery) (*api.Cursor[models.Pool], error) {
+func (s *Storage) ListPools(ctx context.Context, q ListPoolsQuery) (*bunpaginate.Cursor[models.Pool], error) {
 	cursor, err := PaginateWithOffset[PaginatedQueryOptions[PoolQuery], models.Pool](s, ctx,
 		(*bunpaginate.OffsetPaginatedQuery[PaginatedQueryOptions[PoolQuery]])(&q),
 		func(query *bun.SelectQuery) *bun.SelectQuery {

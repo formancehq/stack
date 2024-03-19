@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/formancehq/reconciliation/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/formancehq/stack/libs/go-libs/query"
 	"github.com/google/uuid"
@@ -60,7 +59,7 @@ func (s *Storage) buildPolicyListQuery(selectQuery *bun.SelectQuery, q GetPolici
 }
 
 // TODO(polo): add pagination from go libs
-func (s *Storage) ListPolicies(ctx context.Context, q GetPoliciesQuery) (*api.Cursor[models.Policy], error) {
+func (s *Storage) ListPolicies(ctx context.Context, q GetPoliciesQuery) (*bunpaginate.Cursor[models.Policy], error) {
 	var (
 		where string
 		args  []any

@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
@@ -22,7 +21,7 @@ func NewListBankAccountQuery(opts PaginatedQueryOptions[BankAccountQuery]) ListB
 	}
 }
 
-func (s *Storage) ListBankAccounts(ctx context.Context, q ListBankAccountQuery) (*api.Cursor[models.BankAccount], error) {
+func (s *Storage) ListBankAccounts(ctx context.Context, q ListBankAccountQuery) (*bunpaginate.Cursor[models.BankAccount], error) {
 	return PaginateWithOffset[PaginatedQueryOptions[BankAccountQuery], models.BankAccount](s, ctx,
 		(*bunpaginate.OffsetPaginatedQuery[PaginatedQueryOptions[BankAccountQuery]])(&q),
 		func(query *bun.SelectQuery) *bun.SelectQuery {

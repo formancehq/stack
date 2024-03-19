@@ -9,9 +9,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/google/uuid"
 )
 
@@ -65,7 +66,7 @@ func (s *InMemoryStore) GetTaskByDescriptor(
 func (s *InMemoryStore) ListTasks(ctx context.Context,
 	connectorID models.ConnectorID,
 	q storage.ListTasksQuery,
-) (*api.Cursor[models.Task], error) {
+) (*bunpaginate.Cursor[models.Task], error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -87,7 +88,7 @@ func (s *InMemoryStore) ListTasks(ctx context.Context,
 		})
 	}
 
-	return &api.Cursor[models.Task]{
+	return &bunpaginate.Cursor[models.Task]{
 		PageSize: 15,
 		HasMore:  false,
 		Previous: "",

@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
@@ -77,7 +76,7 @@ func NewListBalancesQuery(opts PaginatedQueryOptions[BalanceQuery]) ListBalances
 	}
 }
 
-func (s *Storage) ListBalances(ctx context.Context, q ListBalancesQuery) (*api.Cursor[models.Balance], error) {
+func (s *Storage) ListBalances(ctx context.Context, q ListBalancesQuery) (*bunpaginate.Cursor[models.Balance], error) {
 	return PaginateWithOffset[PaginatedQueryOptions[BalanceQuery], models.Balance](s, ctx,
 		(*bunpaginate.OffsetPaginatedQuery[PaginatedQueryOptions[BalanceQuery]])(&q),
 		func(query *bun.SelectQuery) *bun.SelectQuery {

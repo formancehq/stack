@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
@@ -107,7 +106,7 @@ func NewListTasksQuery(opts PaginatedQueryOptions[TaskQuery]) ListTasksQuery {
 	}
 }
 
-func (s *Storage) ListTasks(ctx context.Context, connectorID models.ConnectorID, q ListTasksQuery) (*api.Cursor[models.Task], error) {
+func (s *Storage) ListTasks(ctx context.Context, connectorID models.ConnectorID, q ListTasksQuery) (*bunpaginate.Cursor[models.Task], error) {
 	return PaginateWithOffset[PaginatedQueryOptions[TaskQuery], models.Task](s, ctx,
 		(*bunpaginate.OffsetPaginatedQuery[PaginatedQueryOptions[TaskQuery]])(&q),
 		func(query *bun.SelectQuery) *bun.SelectQuery {

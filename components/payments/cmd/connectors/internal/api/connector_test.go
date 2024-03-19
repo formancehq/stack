@@ -12,12 +12,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+
 	manager "github.com/formancehq/payments/cmd/connectors/internal/api/connectors_manager"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/dummypay"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/api"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -449,7 +450,7 @@ func TestListTasks(t *testing.T) {
 					State:       json.RawMessage("{}"),
 				},
 			}
-			listTasksResponse := &api.Cursor[models.Task]{
+			listTasksResponse := &bunpaginate.Cursor[models.Task]{
 				PageSize: testCase.pageSize,
 				HasMore:  false,
 				Previous: "",

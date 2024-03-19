@@ -200,7 +200,7 @@ func listPaymentsHandler(b backend.Backend) http.HandlerFunc {
 		}
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[*paymentResponse]{
-			Cursor: &api.Cursor[*paymentResponse]{
+			Cursor: &bunpaginate.Cursor[*paymentResponse]{
 				PageSize: cursor.PageSize,
 				HasMore:  cursor.HasMore,
 				Previous: cursor.Previous,

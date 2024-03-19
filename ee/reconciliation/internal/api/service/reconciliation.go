@@ -6,9 +6,10 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+
 	"github.com/formancehq/reconciliation/internal/models"
 	"github.com/formancehq/reconciliation/internal/storage"
-	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"golang.org/x/sync/errgroup"
@@ -172,7 +173,7 @@ func (s *Service) GetReconciliation(ctx context.Context, id string) (*models.Rec
 	return reco, newStorageError(err, "getting reconciliation")
 }
 
-func (s *Service) ListReconciliations(ctx context.Context, q storage.GetReconciliationsQuery) (*api.Cursor[models.Reconciliation], error) {
+func (s *Service) ListReconciliations(ctx context.Context, q storage.GetReconciliationsQuery) (*bunpaginate.Cursor[models.Reconciliation], error) {
 	reconciliations, err := s.store.ListReconciliations(ctx, q)
 	return reconciliations, newStorageError(err, "listing reconciliations")
 }

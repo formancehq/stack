@@ -99,7 +99,7 @@ func listBalancesForAccount(b backend.Backend) http.HandlerFunc {
 		}
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[*balancesResponse]{
-			Cursor: &api.Cursor[*balancesResponse]{
+			Cursor: &bunpaginate.Cursor[*balancesResponse]{
 				PageSize: cursor.PageSize,
 				HasMore:  cursor.HasMore,
 				Previous: cursor.Previous,

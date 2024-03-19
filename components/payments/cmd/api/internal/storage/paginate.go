@@ -3,7 +3,6 @@ package storage
 import (
 	"context"
 
-	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/formancehq/stack/libs/go-libs/query"
 	"github.com/uptrace/bun"
@@ -42,7 +41,7 @@ func NewPaginatedQueryOptions[T any](options T) PaginatedQueryOptions[T] {
 }
 
 func PaginateWithOffset[FILTERS any, RETURN any](s *Storage, ctx context.Context,
-	q *bunpaginate.OffsetPaginatedQuery[FILTERS], builders ...func(query *bun.SelectQuery) *bun.SelectQuery) (*api.Cursor[RETURN], error) {
+	q *bunpaginate.OffsetPaginatedQuery[FILTERS], builders ...func(query *bun.SelectQuery) *bun.SelectQuery) (*bunpaginate.Cursor[RETURN], error) {
 	query := s.db.NewSelect()
 	return bunpaginate.UsingOffset[FILTERS, RETURN](ctx, query, *q, builders...)
 }

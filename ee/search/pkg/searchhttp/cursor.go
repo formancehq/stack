@@ -5,8 +5,9 @@ import (
 	"encoding/base64"
 	"encoding/json"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+
 	"github.com/formancehq/search/pkg/searchengine"
-	"github.com/formancehq/stack/libs/go-libs/api"
 )
 
 type cursorTokenInfo struct {
@@ -41,7 +42,7 @@ type Total struct {
 }
 
 type Cursor[T any] struct {
-	api.Cursor[T]
+	bunpaginate.Cursor[T]
 	Total Total `json:"value"`
 }
 

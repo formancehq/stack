@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/uuid"
+	sharedapi "github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 
-	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/google/uuid"
 
 	"github.com/formancehq/orchestration/internal/api"
 	"github.com/go-chi/chi/v5"

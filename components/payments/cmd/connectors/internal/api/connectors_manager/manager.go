@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
@@ -13,7 +15,6 @@ import (
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/payments/pkg/events"
-	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/publish"
@@ -361,7 +362,7 @@ func (l *ConnectorsManager[ConnectorConfig]) ListTasksStates(
 	ctx context.Context,
 	connectorID models.ConnectorID,
 	q storage.ListTasksQuery,
-) (*api.Cursor[models.Task], error) {
+) (*bunpaginate.Cursor[models.Task], error) {
 	connectorManager, err := l.getManager(connectorID)
 	if err != nil {
 		return nil, ErrConnectorNotFound

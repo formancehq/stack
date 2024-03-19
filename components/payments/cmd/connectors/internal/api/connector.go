@@ -193,7 +193,7 @@ func listTasks[Config models.ConnectorConfigObject](
 		}
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[listTasksResponseElement]{
-			Cursor: &api.Cursor[listTasksResponseElement]{
+			Cursor: &bunpaginate.Cursor[listTasksResponseElement]{
 				PageSize: cursor.PageSize,
 				HasMore:  cursor.HasMore,
 				Previous: cursor.Previous,

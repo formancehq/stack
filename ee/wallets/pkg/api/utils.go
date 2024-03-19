@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 	wallet "github.com/formancehq/wallets/pkg"
@@ -57,7 +59,7 @@ func ok(w io.Writer, v any) {
 	}
 }
 
-func cursor[T any](w io.Writer, v sharedapi.Cursor[T]) {
+func cursor[T any](w io.Writer, v bunpaginate.Cursor[T]) {
 	if err := json.NewEncoder(w).Encode(sharedapi.BaseResponse[T]{
 		Cursor: &v,
 	}); err != nil {
@@ -66,7 +68,7 @@ func cursor[T any](w io.Writer, v sharedapi.Cursor[T]) {
 }
 
 func cursorFromListResponse[T any, V any](w io.Writer, query wallet.ListQuery[V], response *wallet.ListResponse[T]) {
-	cursor(w, sharedapi.Cursor[T]{
+	cursor(w, bunpaginate.Cursor[T]{
 		PageSize: query.Limit,
 		HasMore:  response.HasMore,
 		Previous: response.Previous,

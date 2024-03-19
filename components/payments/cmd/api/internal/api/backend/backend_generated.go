@@ -6,12 +6,12 @@ package backend
 
 import (
 	context "context"
+	api "github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	reflect "reflect"
 
 	service "github.com/formancehq/payments/cmd/api/internal/api/service"
 	storage "github.com/formancehq/payments/cmd/api/internal/storage"
 	models "github.com/formancehq/payments/internal/models"
-	api "github.com/formancehq/stack/libs/go-libs/api"
 	gomock "github.com/golang/mock/gomock"
 	uuid "github.com/google/uuid"
 )
