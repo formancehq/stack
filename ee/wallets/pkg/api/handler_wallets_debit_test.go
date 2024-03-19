@@ -78,7 +78,7 @@ var walletDebitTestCases = []testCase{
 		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
 			return wallet.PostTransaction{
 				Script: &shared.PostTransactionScript{
-					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
+					Plain: wallet.BuildDebitWalletScript(map[string]map[string]string{}, testEnv.Chart().GetMainBalanceAccount(walletID)),
 					Vars: map[string]interface{}{
 						"destination": wallet.DefaultDebitDest.Identifier,
 						"amount": map[string]any{
@@ -100,7 +100,7 @@ var walletDebitTestCases = []testCase{
 		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
 			return wallet.PostTransaction{
 				Script: &shared.PostTransactionScript{
-					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
+					Plain: wallet.BuildDebitWalletScript(map[string]map[string]string{}, testEnv.Chart().GetMainBalanceAccount(walletID)),
 					Vars: map[string]interface{}{
 						"destination": "account1",
 						"amount": map[string]any{
@@ -122,7 +122,7 @@ var walletDebitTestCases = []testCase{
 		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
 			return wallet.PostTransaction{
 				Script: &shared.PostTransactionScript{
-					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
+					Plain: wallet.BuildDebitWalletScript(map[string]map[string]string{}, testEnv.Chart().GetMainBalanceAccount(walletID)),
 					Vars: map[string]interface{}{
 						"destination": testEnv.Chart().GetMainBalanceAccount("wallet1"),
 						"amount": map[string]any{
@@ -159,7 +159,9 @@ var walletDebitTestCases = []testCase{
 		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
 			return wallet.PostTransaction{
 				Script: &shared.PostTransactionScript{
-					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
+					Plain: wallet.BuildDebitWalletScript(map[string]map[string]string{
+						testEnv.Chart().GetHoldAccount(h.ID): h.LedgerMetadata(testEnv.Chart()),
+					}, testEnv.Chart().GetMainBalanceAccount(walletID)),
 					Vars: map[string]interface{}{
 						"destination": testEnv.Chart().GetHoldAccount(h.ID),
 						"amount": map[string]any{
@@ -184,7 +186,7 @@ var walletDebitTestCases = []testCase{
 		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
 			return wallet.PostTransaction{
 				Script: &shared.PostTransactionScript{
-					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetBalanceAccount(walletID, "secondary")),
+					Plain: wallet.BuildDebitWalletScript(map[string]map[string]string{}, testEnv.Chart().GetBalanceAccount(walletID, "secondary")),
 					Vars: map[string]interface{}{
 						"destination": "world",
 						"amount": map[string]any{
@@ -206,12 +208,7 @@ var walletDebitTestCases = []testCase{
 		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
 			return wallet.PostTransaction{
 				Script: &shared.PostTransactionScript{
-					Plain: wallet.BuildDebitWalletScript(
-						testEnv.Chart().GetBalanceAccount(walletID, "coupon1"),
-						testEnv.Chart().GetBalanceAccount(walletID, "coupon4"),
-						testEnv.Chart().GetBalanceAccount(walletID, "coupon2"),
-						testEnv.Chart().GetBalanceAccount(walletID, "main"),
-					),
+					Plain: wallet.BuildDebitWalletScript(map[string]map[string]string{}, testEnv.Chart().GetBalanceAccount(walletID, "coupon1"), testEnv.Chart().GetBalanceAccount(walletID, "coupon4"), testEnv.Chart().GetBalanceAccount(walletID, "coupon2"), testEnv.Chart().GetBalanceAccount(walletID, "main")),
 					Vars: map[string]interface{}{
 						"destination": "world",
 						"amount": map[string]any{
@@ -233,7 +230,7 @@ var walletDebitTestCases = []testCase{
 		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
 			return wallet.PostTransaction{
 				Script: &shared.PostTransactionScript{
-					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetBalanceAccount(walletID, "secondary")),
+					Plain: wallet.BuildDebitWalletScript(map[string]map[string]string{}, testEnv.Chart().GetBalanceAccount(walletID, "secondary")),
 					Vars: map[string]interface{}{
 						"destination": "world",
 						"amount": map[string]any{
@@ -257,7 +254,7 @@ var walletDebitTestCases = []testCase{
 		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
 			return wallet.PostTransaction{
 				Script: &shared.PostTransactionScript{
-					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
+					Plain: wallet.BuildDebitWalletScript(map[string]map[string]string{}, testEnv.Chart().GetMainBalanceAccount(walletID)),
 					Vars: map[string]interface{}{
 						"destination": testEnv.Chart().GetBalanceAccount("wallet1", "secondary"),
 						"amount": map[string]any{
@@ -284,18 +281,10 @@ func TestWalletsDebit(t *testing.T) {
 			rec := httptest.NewRecorder()
 
 			var (
-				testEnv             *testEnv
-				postTransaction     wallet.PostTransaction
-				holdAccount         string
-				holdAccountMetadata map[string]string
+				testEnv         *testEnv
+				postTransaction wallet.PostTransaction
 			)
 			testEnv = newTestEnv(
-				WithAddMetadataToAccount(func(ctx context.Context, ledger, account string, m map[string]string) error {
-					require.Equal(t, testEnv.LedgerName(), ledger)
-					holdAccount = account
-					holdAccountMetadata = m
-					return nil
-				}),
 				WithListAccounts(func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*wallet.AccountsCursorResponseCursor, error) {
 					require.Equal(t, testEnv.LedgerName(), ledger)
 					require.Equal(t, query.Metadata, wallet.BalancesMetadataFilter(walletID))
@@ -356,9 +345,10 @@ func TestWalletsDebit(t *testing.T) {
 			}
 			require.Equal(t, expectedStatusCode, rec.Result().StatusCode)
 
-			hold := &wallet.DebitHold{}
+			var hold *wallet.DebitHold
 			switch expectedStatusCode {
 			case http.StatusCreated:
+				hold = &wallet.DebitHold{}
 				readResponse(t, rec, hold)
 			case http.StatusNoContent:
 			default:
@@ -373,10 +363,8 @@ func TestWalletsDebit(t *testing.T) {
 			}
 
 			if testCase.request.Pending {
-				require.Equal(t, testEnv.Chart().GetHoldAccount(hold.ID), holdAccount)
 				require.Equal(t, walletID, hold.WalletID)
 				require.Equal(t, testCase.request.Amount.Asset, hold.Asset)
-				require.Equal(t, hold.LedgerMetadata(testEnv.Chart()), holdAccountMetadata)
 			}
 		})
 	}
