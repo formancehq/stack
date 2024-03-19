@@ -5,7 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	sharedapi "github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+
 	"github.com/formancehq/stack/libs/go-libs/auth"
 
 	"github.com/formancehq/orchestration/internal/api"

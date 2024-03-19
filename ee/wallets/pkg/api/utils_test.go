@@ -10,6 +10,8 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
@@ -34,7 +36,7 @@ func readResponse[T any](t *testing.T, rec *httptest.ResponseRecorder, to T) {
 	reflect.ValueOf(to).Elem().Set(reflect.ValueOf(*ret.Data).Elem())
 }
 
-func readCursor[T any](t *testing.T, rec *httptest.ResponseRecorder, to *sharedapi.Cursor[T]) {
+func readCursor[T any](t *testing.T, rec *httptest.ResponseRecorder, to *bunpaginate.Cursor[T]) {
 	t.Helper()
 	ret := &sharedapi.BaseResponse[T]{}
 	require.NoError(t, json.NewDecoder(rec.Body).Decode(ret))

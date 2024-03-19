@@ -9,6 +9,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+
 	"github.com/aquasecurity/esquery"
 	search "github.com/formancehq/search/pkg"
 	"github.com/formancehq/search/pkg/es"
@@ -222,7 +224,7 @@ func TestSingleDocTypeSearch(t *testing.T) {
 			},
 			expected: BaseResponse[map[string]interface{}]{
 				Cursor: &Cursor[map[string]interface{}]{
-					Cursor: api.Cursor[map[string]any]{
+					Cursor: bunpaginate.Cursor[map[string]any]{
 						PageSize: 2,
 						Data: []map[string]interface{}{
 							{
@@ -267,7 +269,7 @@ func TestSingleDocTypeSearch(t *testing.T) {
 			},
 			expected: BaseResponse[map[string]interface{}]{
 				Cursor: &Cursor[map[string]interface{}]{
-					Cursor: api.Cursor[map[string]any]{
+					Cursor: bunpaginate.Cursor[map[string]any]{
 						PageSize: 1,
 						HasMore:  false,
 						Data: []map[string]interface{}{
@@ -309,7 +311,7 @@ func TestSingleDocTypeSearch(t *testing.T) {
 			},
 			expected: BaseResponse[map[string]interface{}]{
 				Cursor: &Cursor[map[string]interface{}]{
-					Cursor: api.Cursor[map[string]any]{
+					Cursor: bunpaginate.Cursor[map[string]any]{
 						PageSize: 1,
 						HasMore:  false,
 						Data: []map[string]interface{}{
@@ -360,7 +362,7 @@ func TestSingleDocTypeSearch(t *testing.T) {
 			},
 			expected: BaseResponse[map[string]interface{}]{
 				Cursor: &Cursor[map[string]interface{}]{
-					Cursor: api.Cursor[map[string]any]{
+					Cursor: bunpaginate.Cursor[map[string]any]{
 						PageSize: 1,
 						HasMore:  false,
 						Previous: EncodeCursorToken(cursorTokenInfo{

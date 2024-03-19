@@ -191,7 +191,7 @@ func listTransferInitiationsHandler(b backend.Backend) http.HandlerFunc {
 		}
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[*transferInitiationResponse]{
-			Cursor: &api.Cursor[*transferInitiationResponse]{
+			Cursor: &bunpaginate.Cursor[*transferInitiationResponse]{
 				PageSize: cursor.PageSize,
 				HasMore:  cursor.HasMore,
 				Previous: cursor.Previous,

@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/formancehq/reconciliation/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/formancehq/stack/libs/go-libs/query"
 	"github.com/google/uuid"
@@ -47,7 +46,7 @@ func (s *Storage) buildReconciliationListQuery(selectQuery *bun.SelectQuery, q G
 	return selectQuery
 }
 
-func (s *Storage) ListReconciliations(ctx context.Context, q GetReconciliationsQuery) (*api.Cursor[models.Reconciliation], error) {
+func (s *Storage) ListReconciliations(ctx context.Context, q GetReconciliationsQuery) (*bunpaginate.Cursor[models.Reconciliation], error) {
 	var (
 		where string
 		args  []any

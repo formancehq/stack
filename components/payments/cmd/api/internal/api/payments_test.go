@@ -12,6 +12,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+
 	"github.com/formancehq/payments/cmd/api/internal/api/service"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
@@ -674,7 +676,7 @@ func TestPayments(t *testing.T) {
 					},
 				},
 			}
-			listPaymentsResponse := &sharedapi.Cursor[models.Payment]{
+			listPaymentsResponse := &bunpaginate.Cursor[models.Payment]{
 				PageSize: testCase.pageSize,
 				HasMore:  false,
 				Previous: "",

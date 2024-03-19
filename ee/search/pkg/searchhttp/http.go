@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+
 	"github.com/aquasecurity/esquery"
 	"github.com/formancehq/search/pkg/searchengine"
 	"github.com/formancehq/stack/libs/go-libs/api"
@@ -267,7 +269,7 @@ func Handler(engine searchengine.Engine) http.HandlerFunc {
 
 			resp := BaseResponse[json.RawMessage]{
 				Cursor: &Cursor[json.RawMessage]{
-					Cursor: api.Cursor[json.RawMessage]{
+					Cursor: bunpaginate.Cursor[json.RawMessage]{
 						PageSize: int(math.Min(float64(qq.PageSize-1), float64(len(items)))),
 						HasMore:  next != "",
 						Previous: previous,

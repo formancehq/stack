@@ -96,7 +96,7 @@ func listAccountsHandler(b backend.Backend) http.HandlerFunc {
 		}
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[*accountResponse]{
-			Cursor: &api.Cursor[*accountResponse]{
+			Cursor: &bunpaginate.Cursor[*accountResponse]{
 				PageSize: cursor.PageSize,
 				HasMore:  cursor.HasMore,
 				Previous: cursor.Previous,

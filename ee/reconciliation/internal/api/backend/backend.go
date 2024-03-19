@@ -3,22 +3,23 @@ package backend
 import (
 	"context"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+
 	"github.com/formancehq/reconciliation/internal/api/service"
 	"github.com/formancehq/reconciliation/internal/models"
 	"github.com/formancehq/reconciliation/internal/storage"
-	"github.com/formancehq/stack/libs/go-libs/api"
 )
 
 //go:generate mockgen -source backend.go -destination backend_generated.go -package backend . Service
 type Service interface {
 	Reconciliation(ctx context.Context, policyID string, req *service.ReconciliationRequest) (*models.Reconciliation, error)
 	GetReconciliation(ctx context.Context, id string) (*models.Reconciliation, error)
-	ListReconciliations(ctx context.Context, q storage.GetReconciliationsQuery) (*api.Cursor[models.Reconciliation], error)
+	ListReconciliations(ctx context.Context, q storage.GetReconciliationsQuery) (*bunpaginate.Cursor[models.Reconciliation], error)
 
 	CreatePolicy(ctx context.Context, req *service.CreatePolicyRequest) (*models.Policy, error)
 	DeletePolicy(ctx context.Context, id string) error
 	GetPolicy(ctx context.Context, id string) (*models.Policy, error)
-	ListPolicies(ctx context.Context, q storage.GetPoliciesQuery) (*api.Cursor[models.Policy], error)
+	ListPolicies(ctx context.Context, q storage.GetPoliciesQuery) (*bunpaginate.Cursor[models.Policy], error)
 }
 
 type Backend interface {

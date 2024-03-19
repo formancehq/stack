@@ -10,7 +10,6 @@ import (
 	enums "go.temporal.io/api/enums/v1"
 	history "go.temporal.io/api/history/v1"
 
-	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 
 	"github.com/pkg/errors"
@@ -120,7 +119,7 @@ func (m *WorkflowManager) Wait(ctx context.Context, instanceID string) error {
 	return nil
 }
 
-func (m *WorkflowManager) ListWorkflows(ctx context.Context, query bunpaginate.OffsetPaginatedQuery[any]) (*api.Cursor[Workflow], error) {
+func (m *WorkflowManager) ListWorkflows(ctx context.Context, query bunpaginate.OffsetPaginatedQuery[any]) (*bunpaginate.Cursor[Workflow], error) {
 	sb := m.db.NewSelect()
 
 	return bunpaginate.UsingOffset[any, Workflow](ctx, sb, query,
@@ -171,7 +170,7 @@ func (m *WorkflowManager) AbortRun(ctx context.Context, instanceID string) error
 	return m.temporalClient.CancelWorkflow(ctx, instanceID, "")
 }
 
-func (m *WorkflowManager) ListInstances(ctx context.Context, pagination ListInstancesQuery) (*api.Cursor[Instance], error) {
+func (m *WorkflowManager) ListInstances(ctx context.Context, pagination ListInstancesQuery) (*bunpaginate.Cursor[Instance], error) {
 	query := m.db.NewSelect()
 
 	return bunpaginate.UsingOffset[ListInstancesOptions, Instance](ctx, query, bunpaginate.OffsetPaginatedQuery[ListInstancesOptions](pagination),

@@ -4,9 +4,10 @@ import (
 	"context"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+
 	"github.com/formancehq/reconciliation/internal/models"
 	"github.com/formancehq/reconciliation/internal/storage"
-	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 )
@@ -80,7 +81,7 @@ func (s *Service) GetPolicy(ctx context.Context, id string) (*models.Policy, err
 	return policy, nil
 }
 
-func (s *Service) ListPolicies(ctx context.Context, q storage.GetPoliciesQuery) (*api.Cursor[models.Policy], error) {
+func (s *Service) ListPolicies(ctx context.Context, q storage.GetPoliciesQuery) (*bunpaginate.Cursor[models.Policy], error) {
 	policies, err := s.store.ListPolicies(ctx, q)
 	return policies, newStorageError(err, "listing policies")
 }

@@ -11,6 +11,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+
 	"github.com/formancehq/payments/cmd/api/internal/api/service"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
@@ -311,7 +313,7 @@ func TestGetBalances(t *testing.T) {
 				},
 			}
 
-			listBalancesResponse := &sharedapi.Cursor[models.Balance]{
+			listBalancesResponse := &bunpaginate.Cursor[models.Balance]{
 				PageSize: testCase.pageSize,
 				HasMore:  false,
 				Previous: "",

@@ -8,11 +8,12 @@ import (
 	"sync"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+
 	"github.com/alitto/pond"
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
@@ -50,7 +51,7 @@ type DefaultTaskScheduler struct {
 	workerPool       *pond.WorkerPool
 }
 
-func (s *DefaultTaskScheduler) ListTasks(ctx context.Context, q storage.ListTasksQuery) (*api.Cursor[models.Task], error) {
+func (s *DefaultTaskScheduler) ListTasks(ctx context.Context, q storage.ListTasksQuery) (*bunpaginate.Cursor[models.Task], error) {
 	return s.store.ListTasks(ctx, s.connectorID, q)
 }
 

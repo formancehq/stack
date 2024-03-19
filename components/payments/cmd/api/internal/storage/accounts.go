@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/formancehq/stack/libs/go-libs/query"
 	"github.com/pkg/errors"
@@ -45,7 +44,7 @@ func (s *Storage) accountQueryContext(qb query.Builder) (string, []any, error) {
 	}))
 }
 
-func (s *Storage) ListAccounts(ctx context.Context, q ListAccountsQuery) (*api.Cursor[models.Account], error) {
+func (s *Storage) ListAccounts(ctx context.Context, q ListAccountsQuery) (*bunpaginate.Cursor[models.Account], error) {
 	var (
 		where string
 		args  []any

@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	webhooks "github.com/formancehq/webhooks/pkg"
@@ -27,7 +29,7 @@ func (h *serverHandler) getManyConfigsHandle(w http.ResponseWriter, r *http.Requ
 	}
 
 	resp := api.BaseResponse[webhooks.Config]{
-		Cursor: &api.Cursor[webhooks.Config]{
+		Cursor: &bunpaginate.Cursor[webhooks.Config]{
 			Data: cfgs,
 		},
 	}

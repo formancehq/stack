@@ -203,7 +203,7 @@ func listPoolHandler(b backend.Backend) http.HandlerFunc {
 		}
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[*poolResponse]{
-			Cursor: &api.Cursor[*poolResponse]{
+			Cursor: &bunpaginate.Cursor[*poolResponse]{
 				PageSize: cursor.PageSize,
 				HasMore:  cursor.HasMore,
 				Previous: cursor.Previous,

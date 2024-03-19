@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"time"
 
-	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 
 	"github.com/formancehq/orchestration/internal/workflow"
@@ -35,7 +34,7 @@ type TriggerManager struct {
 	expressionEvaluator *expressionEvaluator
 }
 
-func (m *TriggerManager) ListTriggers(ctx context.Context, query ListTriggersQuery) (*sharedapi.Cursor[Trigger], error) {
+func (m *TriggerManager) ListTriggers(ctx context.Context, query ListTriggersQuery) (*bunpaginate.Cursor[Trigger], error) {
 	q := m.db.NewSelect()
 
 	return bunpaginate.UsingOffset[any, Trigger](ctx, q, bunpaginate.OffsetPaginatedQuery[any](query),
@@ -144,7 +143,7 @@ func (m *TriggerManager) CreateTrigger(ctx context.Context, data TriggerData) (*
 	return trigger, nil
 }
 
-func (m *TriggerManager) ListTriggersOccurrences(ctx context.Context, q ListTriggersOccurrencesQuery) (*sharedapi.Cursor[Occurrence], error) {
+func (m *TriggerManager) ListTriggersOccurrences(ctx context.Context, q ListTriggersOccurrencesQuery) (*bunpaginate.Cursor[Occurrence], error) {
 	query := m.db.NewSelect()
 
 	return bunpaginate.UsingOffset[ListTriggersOccurrencesOptions, Occurrence](ctx, query, bunpaginate.OffsetPaginatedQuery[ListTriggersOccurrencesOptions](q),

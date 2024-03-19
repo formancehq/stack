@@ -6,11 +6,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/reconciliation/internal/models"
 	"github.com/formancehq/reconciliation/internal/storage"
-	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/google/uuid"
 )
 
@@ -116,7 +117,7 @@ func (s *mockStore) GetPolicy(ctx context.Context, id uuid.UUID) (*models.Policy
 	}, nil
 }
 
-func (s *mockStore) ListPolicies(ctx context.Context, q storage.GetPoliciesQuery) (*api.Cursor[models.Policy], error) {
+func (s *mockStore) ListPolicies(ctx context.Context, q storage.GetPoliciesQuery) (*bunpaginate.Cursor[models.Policy], error) {
 	return nil, nil
 }
 
@@ -128,7 +129,7 @@ func (s *mockStore) GetReconciliation(ctx context.Context, id uuid.UUID) (*model
 	return nil, nil
 }
 
-func (s *mockStore) ListReconciliations(ctx context.Context, q storage.GetReconciliationsQuery) (*api.Cursor[models.Reconciliation], error) {
+func (s *mockStore) ListReconciliations(ctx context.Context, q storage.GetReconciliationsQuery) (*bunpaginate.Cursor[models.Reconciliation], error) {
 	return nil, nil
 }
 
