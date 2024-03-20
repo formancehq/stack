@@ -15,7 +15,14 @@ func (r Workflows) Initiate(ctx workflow.Context, input Input) (*Instance, error
 	instance := &Instance{}
 	err := workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
-	}), InsertNewInstance, input.Workflow.ID).Get(ctx, instance)
+	}), InsertNewInstanceActivity, input.Workflow.ID).Get(ctx, instance)
+	if err != nil {
+		return nil, err
+	}
+
+	err = workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
+		StartToCloseTimeout: 10 * time.Second,
+	}), SendWorkflowStartedEventActivity, instance).Get(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +55,7 @@ func (r Workflows) Run(ctx workflow.Context, i Input, instance Instance) error {
 
 	err = workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
-	}), UpdateInstance, instance).Get(ctx, nil)
+	}), UpdateInstanceActivity, instance).Get(ctx, nil)
 	if err != nil {
 		return err
 	}

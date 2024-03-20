@@ -5,7 +5,6 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	orchestrationevents "github.com/formancehq/orchestration/pkg/events"
 	paymentsevents "github.com/formancehq/payments/pkg/events"
-	"github.com/formancehq/stack/libs/events"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	. "github.com/formancehq/stack/tests/integration/internal"
@@ -163,8 +162,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 					To(Equal(big.NewInt(1000000)))
 
 				By("And trigger a new succeeded workflow event", func() {
-					msg := WaitOnChanWithTimeout(msgs, time.Second)
-					Expect(events.Check(msg.Data, "orchestration", orchestrationevents.SucceededTrigger)).Should(Succeed())
+					Eventually(msgs).Should(ReceiveEvent("orchestration", orchestrationevents.SucceededTrigger))
 				})
 			})
 		})
@@ -251,8 +249,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration}, func() {
 				}).Should(BeTrue())
 
 				By("should also trigger a new failed workflow event", func() {
-					msg := WaitOnChanWithTimeout(msgs, time.Second)
-					Expect(events.Check(msg.Data, "orchestration", orchestrationevents.FailedTrigger)).Should(Succeed())
+					Eventually(msgs).Should(ReceiveEvent("orchestration", orchestrationevents.FailedTrigger))
 				})
 			})
 		})

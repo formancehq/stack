@@ -11,10 +11,14 @@ import (
 const (
 	TopicOrchestration = "orchestration"
 
-	SucceededWorkflow = "SUCCEEDED_WORKFLOW"
-	FailedWorkflow    = "FAILED_WORKFLOW"
-	SucceededTrigger  = "SUCCEEDED_TRIGGER"
-	FailedTrigger     = "FAILED_TRIGGER"
+	SucceededWorkflow      = "SUCCEEDED_WORKFLOW"
+	SucceededWorkflowStage = "SUCCEEDED_WORKFLOW_STAGE"
+	StartedWorkflow        = "STARTED_WORKFLOW"
+	StartedWorkflowStage   = "STARTED_WORKFLOW_STAGE"
+	FailedWorkflow         = "FAILED_WORKFLOW"
+	FailedWorkflowStage    = "FAILED_WORKFLOW_STAGE"
+	SucceededTrigger       = "SUCCEEDED_TRIGGER"
+	FailedTrigger          = "FAILED_TRIGGER"
 )
 
 type SucceededWorkflowPayload struct {
@@ -22,9 +26,33 @@ type SucceededWorkflowPayload struct {
 	InstanceID string `json:"instanceID"`
 }
 
+type StartedWorkflowPayload struct {
+	ID         string `json:"id"`
+	InstanceID string `json:"instanceID"`
+}
+
+type StartedWorkflowStagePayload struct {
+	ID         string `json:"id"`
+	InstanceID string `json:"instanceID"`
+	Number     int    `json:"number"`
+}
+
+type SucceededWorkflowStagePayload struct {
+	ID         string `json:"id"`
+	InstanceID string `json:"instanceID"`
+	Number     int    `json:"number"`
+}
+
 type FailedWorkflowPayload struct {
 	ID         string `json:"id"`
 	InstanceID string `json:"instanceID"`
+	Error      string `json:"error"`
+}
+
+type FailedWorkflowStagePayload struct {
+	ID         string `json:"id"`
+	InstanceID string `json:"instanceID"`
+	Number     int    `json:"number"`
 	Error      string `json:"error"`
 }
 

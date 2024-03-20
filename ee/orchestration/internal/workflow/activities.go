@@ -14,6 +14,14 @@ type Activities struct {
 	db        *bun.DB
 }
 
+func (a Activities) SendWorkflowStartedEvent(ctx context.Context, instance Instance) error {
+	return a.publisher.Publish(events.TopicOrchestration,
+		events.NewMessage(ctx, events.StartedWorkflow, events.StartedWorkflowPayload{
+			ID:         instance.WorkflowID,
+			InstanceID: instance.ID,
+		}))
+}
+
 func (a Activities) SendWorkflowTerminationEvent(ctx context.Context, instance Instance) error {
 	if instance.Error == "" {
 		return a.publisher.Publish(events.TopicOrchestration,
@@ -27,6 +35,34 @@ func (a Activities) SendWorkflowTerminationEvent(ctx context.Context, instance I
 				ID:         instance.WorkflowID,
 				InstanceID: instance.ID,
 				Error:      instance.Error,
+			}))
+	}
+}
+
+func (a Activities) SendWorkflowStageStartedEvent(ctx context.Context, instance Instance, stage Stage) error {
+	return a.publisher.Publish(events.TopicOrchestration,
+		events.NewMessage(ctx, events.StartedWorkflowStage, events.StartedWorkflowStagePayload{
+			ID:         instance.WorkflowID,
+			InstanceID: instance.ID,
+			Number:     stage.Number,
+		}))
+}
+
+func (a Activities) SendWorkflowStageTerminationEvent(ctx context.Context, instance Instance, stage Stage) error {
+	if stage.Error == nil {
+		return a.publisher.Publish(events.TopicOrchestration,
+			events.NewMessage(ctx, events.SucceededWorkflowStage, events.SucceededWorkflowStagePayload{
+				ID:         instance.WorkflowID,
+				InstanceID: instance.ID,
+				Number:     stage.Number,
+			}))
+	} else {
+		return a.publisher.Publish(events.TopicOrchestration,
+			events.NewMessage(ctx, events.FailedWorkflowStage, events.FailedWorkflowStagePayload{
+				ID:         instance.WorkflowID,
+				InstanceID: instance.ID,
+				Number:     stage.Number,
+				Error:      *stage.Error,
 			}))
 	}
 }
@@ -71,10 +107,13 @@ func (a Activities) UpdateStage(ctx context.Context, stage Stage) error {
 }
 
 var SendWorkflowTerminationEventActivity = Activities{}.SendWorkflowTerminationEvent
-var InsertNewInstance = Activities{}.InsertNewInstance
-var UpdateInstance = Activities{}.UpdateInstance
-var InsertNewStage = Activities{}.InsertNewStage
-var UpdateStage = Activities{}.UpdateStage
+var SendWorkflowStartedEventActivity = Activities{}.SendWorkflowStartedEvent
+var SendWorkflowStageStartedEventActivity = Activities{}.SendWorkflowStageStartedEvent
+var SendWorkflowStageTerminationEventActivity = Activities{}.SendWorkflowStageTerminationEvent
+var InsertNewInstanceActivity = Activities{}.InsertNewInstance
+var UpdateInstanceActivity = Activities{}.UpdateInstance
+var InsertNewStageActivity = Activities{}.InsertNewStage
+var UpdateStageActivity = Activities{}.UpdateStage
 
 func NewActivities(publisher message.Publisher, db *bun.DB) Activities {
 	return Activities{

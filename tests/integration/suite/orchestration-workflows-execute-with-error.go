@@ -210,13 +210,23 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 					)
 					g.Expect(err).To(BeNil())
 					g.Expect(response.StatusCode).To(Equal(200))
+					g.Expect(response.V2GetWorkflowInstanceHistoryStageResponse.Data).To(HaveLen(1))
 					g.Expect(response.V2GetWorkflowInstanceHistoryStageResponse.Data[0].Error).NotTo(BeNil())
 
 					return *response.V2GetWorkflowInstanceHistoryStageResponse.Data[0].Error
 				}).ShouldNot(BeEmpty())
 
-				By("and trigger a failed workflow event", func() {
-					msg := WaitOnChanWithTimeout(msgs, 3*time.Second)
+				By("Should trigger appropriate events", func() {
+					msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
+					Expect(events.Check(msg.Data, "orchestration", orchestrationevents.StartedWorkflow)).Should(Succeed())
+
+					msg = WaitOnChanWithTimeout(msgs, 5*time.Second)
+					Expect(events.Check(msg.Data, "orchestration", orchestrationevents.StartedWorkflowStage)).Should(Succeed())
+
+					msg = WaitOnChanWithTimeout(msgs, 5*time.Second)
+					Expect(events.Check(msg.Data, "orchestration", orchestrationevents.FailedWorkflowStage)).Should(Succeed())
+
+					msg = WaitOnChanWithTimeout(msgs, 5*time.Second)
 					Expect(events.Check(msg.Data, "orchestration", orchestrationevents.FailedWorkflow)).Should(Succeed())
 				})
 			})
