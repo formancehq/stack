@@ -5,6 +5,7 @@ import (
 	"github.com/formancehq/orchestration/internal/schema"
 	"github.com/formancehq/orchestration/internal/workflow/stages"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
+	"github.com/formancehq/stack/libs/go-libs/time"
 )
 
 type WalletReference struct {
@@ -92,6 +93,7 @@ type Send struct {
 	Destination Destination       `json:"destination"`
 	Amount      *shared.Monetary  `json:"amount,omitempty"`
 	Metadata    metadata.Metadata `json:"metadata,omitempty"`
+	Timestamp   *time.Time        `json:"timestamp"`
 }
 
 func (s Send) GetWorkflow() any {

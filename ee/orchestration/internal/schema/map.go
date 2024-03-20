@@ -7,7 +7,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
+
+	"github.com/formancehq/stack/libs/go-libs/time"
 
 	"github.com/formancehq/orchestration/internal/workflow/stages"
 	"github.com/pkg/errors"
@@ -248,13 +249,13 @@ func mapObjectField(ctx Context, raw any, spec reflect.Value, fieldTag tag) erro
 				if interpolated == "" {
 					interpolated = fieldTag.defaultValue
 				}
-				date, err := time.Parse(time.RFC3339, interpolated)
+				date, err := time.ParseTime(interpolated)
 				if err != nil {
 					return fmt.Errorf("expected date as rfc3339 format")
 				}
 				spec.Set(reflect.ValueOf(date))
 			case nil:
-				date, err := time.Parse(time.RFC3339, fieldTag.defaultValue)
+				date, err := time.ParseTime(fieldTag.defaultValue)
 				if err != nil {
 					return fmt.Errorf("expected date as rfc3339 format")
 				}

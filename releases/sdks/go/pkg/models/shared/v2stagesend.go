@@ -2,11 +2,28 @@
 
 package shared
 
+import (
+	"github.com/formancehq/formance-sdk-go/v2/pkg/utils"
+	"time"
+)
+
 type V2StageSend struct {
 	Amount      *V2Monetary             `json:"amount,omitempty"`
 	Destination *V2StageSendDestination `json:"destination,omitempty"`
 	Metadata    map[string]string       `json:"metadata,omitempty"`
 	Source      *V2StageSendSource      `json:"source,omitempty"`
+	Timestamp   *time.Time              `json:"timestamp,omitempty"`
+}
+
+func (v V2StageSend) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(v, "", false)
+}
+
+func (v *V2StageSend) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &v, "", false, true); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (o *V2StageSend) GetAmount() *V2Monetary {
@@ -35,4 +52,11 @@ func (o *V2StageSend) GetSource() *V2StageSendSource {
 		return nil
 	}
 	return o.Source
+}
+
+func (o *V2StageSend) GetTimestamp() *time.Time {
+	if o == nil {
+		return nil
+	}
+	return o.Timestamp
 }

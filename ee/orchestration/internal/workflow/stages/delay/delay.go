@@ -1,10 +1,9 @@
 package delay
 
 import (
-	"time"
-
 	"github.com/formancehq/orchestration/internal/schema"
 	"github.com/formancehq/orchestration/internal/workflow/stages"
+	"github.com/formancehq/stack/libs/go-libs/time"
 )
 
 type Delay struct {
