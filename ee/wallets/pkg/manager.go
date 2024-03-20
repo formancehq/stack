@@ -4,7 +4,8 @@ import (
 	"context"
 	"math/big"
 	"sort"
-	"time"
+
+	"github.com/formancehq/stack/libs/go-libs/time"
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
 
@@ -113,6 +114,10 @@ func (m *Manager) Debit(ctx context.Context, debit Debit) (*DebitHold, error) {
 		metadata map[string]map[string]string
 	)
 	if debit.Pending {
+		if debit.Timestamp != nil {
+			return nil, errors.New("timestamp cannot be specified using pending debit")
+		}
+
 		hold = Ptr(debit.newHold())
 		holdAccount := m.chart.GetHoldAccount(hold.ID)
 		metadata = map[string]map[string]string{
@@ -162,7 +167,8 @@ func (m *Manager) Debit(ctx context.Context, debit Debit) (*DebitHold, error) {
 				},
 			},
 		},
-		Metadata: TransactionMetadata(debit.Metadata),
+		Timestamp: debit.Timestamp,
+		Metadata:  TransactionMetadata(debit.Metadata),
 		//nolint:godox
 		// TODO: Add set account metadata for hold when released on ledger (v1.9)
 	}
@@ -276,7 +282,8 @@ func (m *Manager) Credit(ctx context.Context, credit Credit) error {
 				},
 			},
 		},
-		Metadata: TransactionMetadata(credit.Metadata),
+		Timestamp: credit.Timestamp,
+		Metadata:  TransactionMetadata(credit.Metadata),
 	}
 	if credit.Reference != "" {
 		postTransaction.Reference = &credit.Reference

@@ -6,7 +6,8 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
-	"time"
+
+	"github.com/formancehq/stack/libs/go-libs/time"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -97,7 +98,7 @@ func BalanceFromAccount(account interface {
 	expiresAtRaw := GetMetadata(account, MetadataKeyBalanceExpiresAt)
 	var expiresAt *time.Time
 	if expiresAtRaw != "" {
-		parsedExpiresAt, err := time.Parse(time.RFC3339Nano, expiresAtRaw)
+		parsedExpiresAt, err := time.ParseTime(expiresAtRaw)
 		if err != nil {
 			panic(err)
 		}

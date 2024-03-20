@@ -4,6 +4,8 @@ import (
 	"math/big"
 	"net/http"
 
+	"github.com/formancehq/stack/libs/go-libs/time"
+
 	"github.com/formancehq/ledger/pkg/assets"
 
 	"github.com/formancehq/stack/libs/go-libs/metadata"
@@ -19,6 +21,7 @@ type DebitRequest struct {
 	Reference   string            `json:"reference"`
 	Destination *Subject          `json:"destination"`
 	Balances    []string          `json:"balances"`
+	Timestamp   *time.Time        `json:"timestamp"`
 }
 
 func (c *DebitRequest) Bind(r *http.Request) error {

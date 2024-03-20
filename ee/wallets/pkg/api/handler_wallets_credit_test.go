@@ -7,6 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/formancehq/stack/libs/go-libs/time"
+
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 
 	"github.com/formancehq/stack/libs/go-libs/metadata"
@@ -17,6 +19,7 @@ import (
 
 func TestWalletsCredit(t *testing.T) {
 	t.Parallel()
+	now := time.Now()
 
 	type testCase struct {
 		name                    string
@@ -137,6 +140,29 @@ func TestWalletsCredit(t *testing.T) {
 			},
 			expectedStatusCode: http.StatusBadRequest,
 			expectedErrorCode:  ErrorCodeValidation,
+		},
+		{
+			name: "with specified timestamp",
+			request: wallet.CreditRequest{
+				Amount:    wallet.NewMonetary(big.NewInt(100), "USD"),
+				Timestamp: &now,
+			},
+			expectedPostTransaction: func(testEnv *testEnv, walletID string) wallet.PostTransaction {
+				return wallet.PostTransaction{
+					Script: &shared.PostTransactionScript{
+						Plain: wallet.BuildCreditWalletScript("world"),
+						Vars: map[string]interface{}{
+							"destination": testEnv.chart.GetMainBalanceAccount(walletID),
+							"amount": map[string]any{
+								"amount": uint64(100),
+								"asset":  "USD",
+							},
+						},
+					},
+					Metadata:  wallet.TransactionMetadata(nil),
+					Timestamp: &now,
+				}
+			},
 		},
 	}
 
