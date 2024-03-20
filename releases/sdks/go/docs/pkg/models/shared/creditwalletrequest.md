@@ -10,3 +10,4 @@
 | `Metadata`                                                | map[string]*string*                                       | :heavy_check_mark:                                        | Metadata associated with the wallet.                      |
 | `Reference`                                               | **string*                                                 | :heavy_minus_sign:                                        | N/A                                                       |
 | `Sources`                                                 | [][shared.Subject](../../../pkg/models/shared/subject.md) | :heavy_check_mark:                                        | N/A                                                       |
+| `Timestamp`                                               | [*time.Time](https://pkg.go.dev/time#Time)                | :heavy_minus_sign:                                        | N/A                                                       |

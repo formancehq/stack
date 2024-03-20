@@ -897,6 +897,9 @@ components:
         balance:
           type: string
           description: The balance to credit
+        timestamp:
+          type: string
+          format: date-time
       example:
         amount:
           asset: USD/2
@@ -930,6 +933,10 @@ components:
           items:
             type: string
             description: A targeted balance (use '*' for all)
+        timestamp:
+          type: string
+          format: date-time
+          description: cannot be used in conjunction with `pending` property
       example:
         amount:
           asset: USD/2

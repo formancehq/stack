@@ -7,7 +7,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
+
+	"github.com/formancehq/stack/libs/go-libs/time"
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
 
@@ -69,6 +70,7 @@ func (a *apiErrorMock) Error() string {
 	return string(by)
 }
 
+var now = time.Now()
 var walletDebitTestCases = []testCase{
 	{
 		name: "nominal",
@@ -88,6 +90,29 @@ var walletDebitTestCases = []testCase{
 					},
 				},
 				Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.TransactionMetadata(nil)),
+			}
+		},
+	},
+	{
+		name: "using timestamp",
+		request: wallet.DebitRequest{
+			Amount:    wallet.NewMonetary(big.NewInt(100), "USD"),
+			Timestamp: &now,
+		},
+		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
+			return wallet.PostTransaction{
+				Script: &shared.PostTransactionScript{
+					Plain: wallet.BuildDebitWalletScript(map[string]map[string]string{}, testEnv.Chart().GetMainBalanceAccount(walletID)),
+					Vars: map[string]interface{}{
+						"destination": wallet.DefaultDebitDest.Identifier,
+						"amount": map[string]any{
+							"amount": uint64(100),
+							"asset":  "USD",
+						},
+					},
+				},
+				Metadata:  metadataWithExpectingTypesAfterUnmarshalling(wallet.TransactionMetadata(nil)),
+				Timestamp: &now,
 			}
 		},
 	},

@@ -4,6 +4,8 @@ import (
 	"math/big"
 	"net/http"
 
+	"github.com/formancehq/stack/libs/go-libs/time"
+
 	"github.com/formancehq/ledger/pkg/assets"
 
 	"github.com/formancehq/stack/libs/go-libs/metadata"
@@ -17,6 +19,7 @@ type CreditRequest struct {
 	Sources   Subjects          `json:"sources"`
 	Reference string            `json:"reference"`
 	Balance   string            `json:"balance"`
+	Timestamp *time.Time        `json:"timestamp"`
 }
 
 func (c *CreditRequest) Bind(r *http.Request) error {

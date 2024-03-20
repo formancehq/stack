@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"math/big"
-	"time"
+	stdtime "time"
+
+	"github.com/formancehq/stack/libs/go-libs/time"
 
 	sdk "github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
@@ -138,7 +140,12 @@ func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, tra
 			Postings:  transaction.Postings,
 			Reference: transaction.Reference,
 			Script:    transaction.Script,
-			Timestamp: transaction.Timestamp,
+			Timestamp: func() *stdtime.Time {
+				if transaction.Timestamp == nil {
+					return nil
+				}
+				return &transaction.Timestamp.Time
+			}(),
 		},
 		Ledger: ledger,
 	})

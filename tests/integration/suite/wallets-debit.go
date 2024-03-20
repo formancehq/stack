@@ -12,6 +12,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/pkg/errors"
 	"math/big"
+	"time"
 )
 
 var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, func() {
@@ -63,19 +64,46 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 				})
 				It("should be ok", func() {})
 			})
+			Then("debiting it using timestamp", func() {
+				now := time.Now().Round(time.Microsecond).UTC()
+				BeforeEach(func() {
+					_, err := Client().Wallets.DebitWallet(TestContext(), operations.DebitWalletRequest{
+						DebitWalletRequest: &shared.DebitWalletRequest{
+							Amount: shared.Monetary{
+								Amount: big.NewInt(100),
+								Asset:  "USD/2",
+							},
+							Metadata:  map[string]string{},
+							Timestamp: &now,
+						},
+						ID: createWalletResponse.CreateWalletResponse.Data.ID,
+					})
+					Expect(err).To(Succeed())
+				})
+				It("should create the transaction at the specified timestamp", func() {
+					tx, err := Client().Ledger.V2GetTransaction(TestContext(), operations.V2GetTransactionRequest{
+						ID:     big.NewInt(1),
+						Ledger: "wallets-002",
+					})
+					Expect(err).To(Succeed())
+					Expect(tx.V2GetTransactionResponse.Data.Timestamp).To(Equal(now))
+				})
+			})
 			Then("debiting it using a hold", func() {
 				var (
 					debitWalletResponse *operations.DebitWalletResponse
+					ts                  *time.Time
 				)
-				BeforeEach(func() {
+				JustBeforeEach(func() {
 					debitWalletResponse, err = Client().Wallets.DebitWallet(TestContext(), operations.DebitWalletRequest{
 						DebitWalletRequest: &shared.DebitWalletRequest{
 							Amount: shared.Monetary{
 								Amount: big.NewInt(100),
 								Asset:  "USD/2",
 							},
-							Pending:  pointer.For(true),
-							Metadata: map[string]string{},
+							Pending:   pointer.For(true),
+							Metadata:  map[string]string{},
+							Timestamp: ts,
 						},
 						ID: createWalletResponse.CreateWalletResponse.Data.ID,
 					})
@@ -83,7 +111,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 				})
 				It("should be ok", func() {})
 				Then("confirm the hold", func() {
-					BeforeEach(func() {
+					JustBeforeEach(func() {
 						_, err := Client().Wallets.ConfirmHold(TestContext(), operations.ConfirmHoldRequest{
 							HoldID: debitWalletResponse.DebitWalletResponse.Data.ID,
 						})
@@ -92,7 +120,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 					It("should be ok", func() {})
 				})
 				Then("void the hold", func() {
-					BeforeEach(func() {
+					JustBeforeEach(func() {
 						_, err := Client().Wallets.VoidHold(TestContext(), operations.VoidHoldRequest{
 							HoldID: debitWalletResponse.DebitWalletResponse.Data.ID,
 						})

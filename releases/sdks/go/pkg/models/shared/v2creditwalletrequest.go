@@ -2,6 +2,11 @@
 
 package shared
 
+import (
+	"github.com/formancehq/formance-sdk-go/v2/pkg/utils"
+	"time"
+)
+
 type V2CreditWalletRequest struct {
 	Amount V2Monetary `json:"amount"`
 	// The balance to credit
@@ -10,6 +15,18 @@ type V2CreditWalletRequest struct {
 	Metadata  map[string]string `json:"metadata"`
 	Reference *string           `json:"reference,omitempty"`
 	Sources   []V2Subject       `json:"sources"`
+	Timestamp *time.Time        `json:"timestamp,omitempty"`
+}
+
+func (v V2CreditWalletRequest) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(v, "", false)
+}
+
+func (v *V2CreditWalletRequest) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &v, "", false, false); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (o *V2CreditWalletRequest) GetAmount() V2Monetary {
@@ -45,4 +62,11 @@ func (o *V2CreditWalletRequest) GetSources() []V2Subject {
 		return []V2Subject{}
 	}
 	return o.Sources
+}
+
+func (o *V2CreditWalletRequest) GetTimestamp() *time.Time {
+	if o == nil {
+		return nil
+	}
+	return o.Timestamp
 }

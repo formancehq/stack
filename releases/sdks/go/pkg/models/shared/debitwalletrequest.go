@@ -2,6 +2,11 @@
 
 package shared
 
+import (
+	"github.com/formancehq/formance-sdk-go/v2/pkg/utils"
+	"time"
+)
+
 type DebitWalletRequest struct {
 	Amount      Monetary `json:"amount"`
 	Balances    []string `json:"balances,omitempty"`
@@ -11,6 +16,19 @@ type DebitWalletRequest struct {
 	Metadata map[string]string `json:"metadata"`
 	// Set to true to create a pending hold. If false, the wallet will be debited immediately.
 	Pending *bool `json:"pending,omitempty"`
+	// cannot be used in conjunction with `pending` property
+	Timestamp *time.Time `json:"timestamp,omitempty"`
+}
+
+func (d DebitWalletRequest) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(d, "", false)
+}
+
+func (d *DebitWalletRequest) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &d, "", false, false); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (o *DebitWalletRequest) GetAmount() Monetary {
@@ -67,4 +85,11 @@ func (o *DebitWalletRequest) GetPending() *bool {
 		return nil
 	}
 	return o.Pending
+}
+
+func (o *DebitWalletRequest) GetTimestamp() *time.Time {
+	if o == nil {
+		return nil
+	}
+	return o.Timestamp
 }
