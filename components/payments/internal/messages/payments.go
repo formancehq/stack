@@ -23,8 +23,8 @@ type paymentMessagePayload struct {
 	Status               models.PaymentStatus `json:"status"`
 	Scheme               models.PaymentScheme `json:"scheme"`
 	Asset                models.Asset         `json:"asset"`
-	SourceAccountID      *models.AccountID    `json:"sourceAccountId,omitempty"`
-	DestinationAccountID *models.AccountID    `json:"destinationAccountId,omitempty"`
+	SourceAccountID      string               `json:"sourceAccountId,omitempty"`
+	DestinationAccountID string               `json:"destinationAccountId,omitempty"`
 	Links                []api.Link           `json:"links"`
 	RawData              json.RawMessage      `json:"rawData"`
 
@@ -36,20 +36,29 @@ type paymentMessagePayload struct {
 
 func (m *Messages) NewEventSavedPayments(provider models.ConnectorProvider, payment *models.Payment) publish.EventMessage {
 	payload := paymentMessagePayload{
-		ID:                   payment.ID.String(),
-		Reference:            payment.Reference,
-		Type:                 payment.Type,
-		Status:               payment.Status,
-		InitialAmount:        payment.InitialAmount,
-		Amount:               payment.Amount,
-		Scheme:               payment.Scheme,
-		Asset:                payment.Asset,
-		CreatedAt:            payment.CreatedAt,
-		ConnectorID:          payment.ConnectorID.String(),
-		Provider:             provider.String(),
-		SourceAccountID:      payment.SourceAccountID,
-		DestinationAccountID: payment.DestinationAccountID,
-
+		ID:            payment.ID.String(),
+		Reference:     payment.Reference,
+		Type:          payment.Type,
+		Status:        payment.Status,
+		InitialAmount: payment.InitialAmount,
+		Amount:        payment.Amount,
+		Scheme:        payment.Scheme,
+		Asset:         payment.Asset,
+		CreatedAt:     payment.CreatedAt,
+		ConnectorID:   payment.ConnectorID.String(),
+		Provider:      provider.String(),
+		SourceAccountID: func() string {
+			if payment.SourceAccountID == nil {
+				return ""
+			}
+			return payment.SourceAccountID.String()
+		}(),
+		DestinationAccountID: func() string {
+			if payment.DestinationAccountID == nil {
+				return ""
+			}
+			return payment.DestinationAccountID.String()
+		}(),
 		RawData: payment.RawData,
 		Metadata: func() map[string]string {
 			ret := make(map[string]string)

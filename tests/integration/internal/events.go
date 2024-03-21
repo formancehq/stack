@@ -78,18 +78,30 @@ type receiveEventMatcher struct {
 }
 
 func (r *receiveEventMatcher) Match(actual interface{}) (success bool, err error) {
-	msgs, ok := actual.(chan *nats.Msg)
-	if !ok {
-		return false, fmt.Errorf("expected chan *nats.Msg, got %T", actual)
+
+	var data []byte
+	// Handle different types of channels and extract data accordingly.
+	switch v := actual.(type) {
+	case chan *nats.Msg:
+		select {
+		case msg := <-v:
+			data = msg.Data
+		default:
+			return false, nil
+		}
+	case chan []byte:
+		select {
+		case msg := <-v:
+			data = msg
+		default:
+			return false, nil
+		}
+	default:
+		return false, fmt.Errorf("expected chan *nats.Msg or chan []uint8, got %T", actual)
 	}
 
-	select {
-	case msg := <-msgs:
-		r.err = events.Check(msg.Data, r.serviceName, r.eventName)
-		return r.err == nil, nil
-	default:
-		return false, nil
-	}
+	r.err = events.Check(data, r.serviceName, r.eventName)
+	return r.err == nil, nil
 }
 
 func (r *receiveEventMatcher) FailureMessage(actual interface{}) (message string) {

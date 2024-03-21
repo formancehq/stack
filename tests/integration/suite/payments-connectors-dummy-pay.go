@@ -1,6 +1,10 @@
 package suite
 
 import (
+	webhooks "github.com/formancehq/webhooks/pkg"
+	"io"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"time"
@@ -24,7 +28,7 @@ var _ = WithModules([]*Module{modules.Payments}, func() {
 			msgs               chan *nats.Msg
 			cancelSubscription func()
 		)
-		BeforeEach(func() {
+		JustBeforeEach(func() {
 			cancelSubscription, msgs = SubscribePayments()
 
 			paymentsDir := filepath.Join(os.TempDir(), uuid.NewString())
@@ -48,7 +52,7 @@ var _ = WithModules([]*Module{modules.Payments}, func() {
 			Expect(response.StatusCode).To(Equal(201))
 			Expect(response.ConnectorResponse).ToNot(BeNil())
 		})
-		AfterEach(func() {
+		JustAfterEach(func() {
 			cancelSubscription()
 		})
 		It("should trigger some events", func() {
@@ -66,6 +70,41 @@ var _ = WithModules([]*Module{modules.Payments}, func() {
 
 				return response.PaymentsCursor.Cursor.Data
 			}).WithTimeout(10 * time.Second).ShouldNot(BeEmpty()) // TODO: Check other fields
+		})
+		WithModules([]*Module{modules.Webhooks}, func() {
+			var (
+				httpServer *httptest.Server
+				called     chan []byte
+				secret     = webhooks.NewSecret()
+			)
+			BeforeEach(func() {
+				called = make(chan []byte)
+				httpServer = httptest.NewServer(
+					http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+						defer close(called)
+						data, _ := io.ReadAll(r.Body)
+						called <- data
+					}))
+				DeferCleanup(func() {
+					httpServer.Close()
+				})
+
+				response, err := Client().Webhooks.InsertConfig(
+					TestContext(),
+					shared.ConfigUser{
+						Endpoint: httpServer.URL,
+						Secret:   &secret,
+						EventTypes: []string{
+							"payments.saved_payment",
+						},
+					},
+				)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(response.StatusCode).To(Equal(http.StatusOK))
+			})
+			It("Should trigger a webhook", func() {
+				Eventually(called).Should(ReceiveEvent("payments", paymentEvents.EventTypeSavedPayments))
+			})
 		})
 	})
 })

@@ -22,6 +22,7 @@ var Webhooks = internal.NewModule("webhooks").
 					"--publisher-nats-client-id=webhooks",
 					"--publisher-nats-url=" + internal.GetNatsAddress(),
 					fmt.Sprintf("--kafka-topics=%s-ledger", test.ID()),
+					fmt.Sprintf("--kafka-topics=%s-payments", test.ID()),
 					"--retry-period=1s",
 					"--min-backoff-delay=1s",
 					"--abort-after=3s",
