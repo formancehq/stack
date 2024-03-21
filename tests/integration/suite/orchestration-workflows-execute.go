@@ -23,6 +23,7 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 		var (
 			createWorkflowResponse *shared.V2CreateWorkflowResponse
 			msgs                   chan *nats.Msg
+			now                    = time.Now().Round(time.Microsecond).UTC()
 		)
 		BeforeEach(func() {
 			response, err := Client().Orchestration.V2CreateWorkflow(
@@ -51,6 +52,7 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 								"metadata": map[string]any{
 									"foo": "${userID}",
 								},
+								"timestamp": now.Format(time.RFC3339Nano),
 							},
 						},
 					},
@@ -203,6 +205,7 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 								Metadata: map[string]string{
 									"foo": "bar",
 								},
+								Timestamp: &now,
 							}))
 					})
 					Then("reading first stage history", func() {
@@ -237,6 +240,7 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 										Metadata: metadata.Metadata{
 											"foo": "bar",
 										},
+										Timestamp: &now,
 									},
 								},
 							}))
@@ -246,9 +250,6 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].StartedAt).NotTo(BeZero())
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Attempt).To(Equal(int64(1)))
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].NextExecution).To(BeNil())
-							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Output.CreateTransaction.Data[0].Timestamp).
-								NotTo(BeZero())
-							getWorkflowInstanceHistoryStageResponse.Data[0].Output.CreateTransaction.Data[0].Timestamp = time.Time{}
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Output).To(Equal(&shared.V2WorkflowInstanceHistoryStageOutput{
 								CreateTransaction: &shared.V2ActivityCreateTransactionOutput{
 									Data: []shared.OrchestrationV2Transaction{{
@@ -257,6 +258,7 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 										Metadata: map[string]string{
 											"foo": "bar",
 										},
+										Timestamp: now,
 									}},
 								},
 							}))

@@ -2,7 +2,8 @@ package delay
 
 import (
 	"testing"
-	"time"
+
+	"github.com/formancehq/stack/libs/go-libs/time"
 
 	"github.com/formancehq/orchestration/internal/schema"
 	"github.com/formancehq/orchestration/internal/workflow/stages/internal/stagestesting"
@@ -14,7 +15,7 @@ func TestDelaySchema(t *testing.T) {
 		{
 			Name: "valid case using until property",
 			Data: map[string]any{
-				"until": now.Format(time.RFC3339),
+				"until": now.Format(time.RFC3339Nano),
 			},
 			ExpectedResolved: Delay{
 				Until: &now,
@@ -40,7 +41,7 @@ func TestDelaySchema(t *testing.T) {
 		{
 			Name: "invalid case, both until and duration specified",
 			Data: map[string]any{
-				"until":    now.Format(time.RFC3339),
+				"until":    now.Format(time.RFC3339Nano),
 				"duration": "10s",
 			},
 			ExpectedResolved: Delay{

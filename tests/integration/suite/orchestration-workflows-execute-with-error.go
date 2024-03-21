@@ -11,7 +11,6 @@ import (
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -98,7 +97,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 						return getWorkflowInstanceHistoryStageResponse.Data[0].Attempt
 					}).Should(BeNumerically(">", 2))
 				})
-				It("should be retried with insufficient fund error ", func() {
+				It("should be retried with insufficient fund error", func() {
 					Expect(getWorkflowInstanceHistoryStageResponse.Data[0].StartedAt).NotTo(BeZero())
 					Expect(getWorkflowInstanceHistoryStageResponse.Data[0].NextExecution).NotTo(BeNil())
 					Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Attempt).To(BeNumerically(">", 2))
@@ -114,7 +113,6 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 										Destination: "bank",
 										Source:      "empty:account",
 									}},
-									Metadata: metadata.Metadata{},
 								},
 							},
 						},

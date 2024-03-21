@@ -898,6 +898,9 @@ components:
           type: object
           additionalProperties:
             type: string
+        timestamp:
+          type: string
+          format: date-time
     V2StageDelay:
       type: object
       properties:

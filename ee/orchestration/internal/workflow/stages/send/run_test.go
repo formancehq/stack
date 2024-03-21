@@ -4,6 +4,8 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/formancehq/stack/libs/go-libs/time"
+
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/orchestration/internal/workflow/activities"
 	"github.com/formancehq/orchestration/internal/workflow/stages/internal/stagestesting"
@@ -13,6 +15,7 @@ import (
 )
 
 func TestSendSchemaValidation(t *testing.T) {
+	now := time.Now().Round(time.Millisecond).UTC()
 	stagestesting.TestSchemas(t, "send", []stagestesting.SchemaTestCase{
 		{
 			Name: "twice destination",
@@ -225,6 +228,47 @@ func TestSendSchemaValidation(t *testing.T) {
 				},
 			},
 		},
+		{
+			Name: "use timestamp",
+			Data: map[string]any{
+				"source": map[string]any{
+					"account": map[string]any{
+						"id": "bar",
+					},
+				},
+				"destination": map[string]any{
+					"wallet": map[string]any{
+						"id": "foo",
+					},
+				},
+				"amount": map[string]any{
+					"amount": float64(100),
+					"asset":  "USD",
+				},
+				"timestamp": now.Format(time.RFC3339Nano),
+			},
+			ExpectedResolved: Send{
+				Source: Source{
+					Account: &LedgerAccountSource{
+						ID:     "bar",
+						Ledger: "default",
+					},
+				},
+				Destination: Destination{
+					Wallet: &WalletSource{
+						WalletReference: WalletReference{
+							ID: "foo",
+						},
+						Balance: "main",
+					},
+				},
+				Amount: &shared.Monetary{
+					Asset:  "USD",
+					Amount: big.NewInt(100),
+				},
+				Timestamp: &now,
+			},
+		},
 	}...)
 }
 
@@ -269,7 +313,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: shared.PostTransaction{
+						Data: activities.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -277,7 +321,6 @@ var (
 								Source:      "world",
 							}},
 							Reference: pointer.For(paymentAccountName("payment1")),
-							Metadata:  map[string]interface{}{},
 						},
 					},
 				},
@@ -290,7 +333,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: shared.PostTransaction{
+						Data: activities.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -326,7 +369,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreditWalletRequest{
 						ID: "wallet1",
-						Data: &shared.CreditWalletRequest{
+						Data: &activities.CreditWalletRequestPayload{
 							Amount: shared.Monetary{
 								Amount: big.NewInt(100),
 								Asset:  "USD",
@@ -389,7 +432,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: shared.PostTransaction{
+						Data: activities.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -397,7 +440,6 @@ var (
 								Source:      "world",
 							}},
 							Reference: pointer.For(paymentAccountName("payment1")),
-							Metadata:  map[string]interface{}{},
 						},
 					},
 				},
@@ -410,7 +452,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: shared.PostTransaction{
+						Data: activities.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -448,7 +490,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreditWalletRequest{
 						ID: "wallet1",
-						Data: &shared.CreditWalletRequest{
+						Data: &activities.CreditWalletRequestPayload{
 							Amount: shared.Monetary{
 								Amount: big.NewInt(100),
 								Asset:  "USD",
@@ -509,7 +551,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: shared.PostTransaction{
+						Data: activities.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -517,7 +559,6 @@ var (
 								Source:      "world",
 							}},
 							Reference: pointer.For(paymentAccountName("payment1")),
-							Metadata:  map[string]any{},
 						},
 					},
 				},
@@ -530,7 +571,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: shared.PostTransaction{
+						Data: activities.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -552,7 +593,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "default",
-						Data: shared.PostTransaction{
+						Data: activities.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -609,7 +650,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: shared.PostTransaction{
+						Data: activities.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -617,7 +658,6 @@ var (
 								Source:      "world",
 							}},
 							Reference: pointer.For(paymentAccountName("payment1")),
-							Metadata:  map[string]any{},
 						},
 					},
 				},
@@ -628,7 +668,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: internalLedger,
-						Data: shared.PostTransaction{
+						Data: activities.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -650,7 +690,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "default",
-						Data: shared.PostTransaction{
+						Data: activities.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -694,7 +734,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "default",
-						Data: shared.PostTransaction{
+						Data: activities.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -735,7 +775,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "ledger1",
-						Data: shared.PostTransaction{
+						Data: activities.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -757,7 +797,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "ledger2",
-						Data: shared.PostTransaction{
+						Data: activities.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -812,7 +852,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreditWalletRequest{
 						ID: "bar",
-						Data: &shared.CreditWalletRequest{
+						Data: &activities.CreditWalletRequestPayload{
 							Amount: shared.Monetary{
 								Amount: big.NewInt(100),
 								Asset:  "USD",
@@ -869,7 +909,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "ledger1",
-						Data: shared.PostTransaction{
+						Data: activities.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -891,7 +931,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreditWalletRequest{
 						ID: "wallet",
-						Data: &shared.CreditWalletRequest{
+						Data: &activities.CreditWalletRequestPayload{
 							Amount: shared.Monetary{
 								Amount: big.NewInt(100),
 								Asset:  "USD",
@@ -966,14 +1006,13 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "default",
-						Data: shared.PostTransaction{
+						Data: activities.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
 								Destination: "world",
 								Source:      "foo",
 							}},
-							Metadata: map[string]any{},
 						},
 					},
 				},
@@ -1022,7 +1061,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.DebitWalletRequest{
 						ID: "foo",
-						Data: &shared.DebitWalletRequest{
+						Data: &activities.DebitWalletRequestPayload{
 							Amount: shared.Monetary{
 								Asset:  "USD",
 								Amount: big.NewInt(100),
@@ -1078,7 +1117,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.DebitWalletRequest{
 						ID: "wallet",
-						Data: &shared.DebitWalletRequest{
+						Data: &activities.DebitWalletRequestPayload{
 							Amount: shared.Monetary{
 								Asset:  "USD",
 								Amount: big.NewInt(100),
@@ -1097,7 +1136,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "ledger2",
-						Data: shared.PostTransaction{
+						Data: activities.PostTransaction{
 							Postings: []shared.Posting{{
 								Amount:      big.NewInt(100),
 								Asset:       "USD",
@@ -1166,7 +1205,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreditWalletRequest{
 						ID: "bar",
-						Data: &shared.CreditWalletRequest{
+						Data: &activities.CreditWalletRequestPayload{
 							Amount: shared.Monetary{
 								Asset:  "USD",
 								Amount: big.NewInt(100),
@@ -1238,7 +1277,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.DebitWalletRequest{
 						ID: "wallet1",
-						Data: &shared.DebitWalletRequest{
+						Data: &activities.DebitWalletRequestPayload{
 							Amount: shared.Monetary{
 								Asset:  "USD",
 								Amount: big.NewInt(100),
@@ -1257,7 +1296,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.CreditWalletRequest{
 						ID: "wallet2",
-						Data: &shared.CreditWalletRequest{
+						Data: &activities.CreditWalletRequestPayload{
 							Amount: shared.Monetary{
 								Asset:  "USD",
 								Amount: big.NewInt(100),
@@ -1326,7 +1365,7 @@ var (
 				Args: []any{
 					mock.Anything, activities.DebitWalletRequest{
 						ID: "foo",
-						Data: &shared.DebitWalletRequest{
+						Data: &activities.DebitWalletRequestPayload{
 							Amount: shared.Monetary{
 								Asset:  "USD",
 								Amount: big.NewInt(100),

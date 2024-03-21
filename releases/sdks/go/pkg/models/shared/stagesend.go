@@ -2,11 +2,28 @@
 
 package shared
 
+import (
+	"github.com/formancehq/formance-sdk-go/v2/pkg/utils"
+	"time"
+)
+
 type StageSend struct {
 	Amount      *Monetary             `json:"amount,omitempty"`
 	Destination *StageSendDestination `json:"destination,omitempty"`
 	Metadata    map[string]string     `json:"metadata,omitempty"`
 	Source      *StageSendSource      `json:"source,omitempty"`
+	Timestamp   *time.Time            `json:"timestamp,omitempty"`
+}
+
+func (s StageSend) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *StageSend) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, true); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (o *StageSend) GetAmount() *Monetary {
@@ -35,4 +52,11 @@ func (o *StageSend) GetSource() *StageSendSource {
 		return nil
 	}
 	return o.Source
+}
+
+func (o *StageSend) GetTimestamp() *time.Time {
+	if o == nil {
+		return nil
+	}
+	return o.Timestamp
 }
