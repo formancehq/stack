@@ -269,6 +269,50 @@ func TestSendSchemaValidation(t *testing.T) {
 				Timestamp: &now,
 			},
 		},
+		{
+			Name: "use timestamp as variable",
+			Data: map[string]any{
+				"source": map[string]any{
+					"account": map[string]any{
+						"id": "bar",
+					},
+				},
+				"destination": map[string]any{
+					"wallet": map[string]any{
+						"id": "foo",
+					},
+				},
+				"amount": map[string]any{
+					"amount": float64(100),
+					"asset":  "USD",
+				},
+				"timestamp": "${timestamp}",
+			},
+			Variables: map[string]string{
+				"timestamp": now.Format(time.RFC3339Nano),
+			},
+			ExpectedResolved: Send{
+				Source: Source{
+					Account: &LedgerAccountSource{
+						ID:     "bar",
+						Ledger: "default",
+					},
+				},
+				Destination: Destination{
+					Wallet: &WalletSource{
+						WalletReference: WalletReference{
+							ID: "foo",
+						},
+						Balance: "main",
+					},
+				},
+				Amount: &shared.Monetary{
+					Asset:  "USD",
+					Amount: big.NewInt(100),
+				},
+				Timestamp: &now,
+			},
+		},
 	}...)
 }
 

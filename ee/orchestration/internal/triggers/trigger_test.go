@@ -153,6 +153,18 @@ func TestEvalVariables(t *testing.T) {
 				"amount": "1200000",
 			},
 		},
+		{
+			name: "concat string",
+			rawObject: map[string]any{
+				"foo": "XXX",
+			},
+			variables: map[string]string{
+				"ret": `event.foo + "-YYY"`,
+			},
+			expectedResult: map[string]string{
+				"ret": "XXX-YYY",
+			},
+		},
 	} {
 		testCase := testCase
 		t.Run(testCase.name, func(t *testing.T) {
