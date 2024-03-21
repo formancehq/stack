@@ -52,7 +52,7 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 								"metadata": map[string]any{
 									"foo": "${userID}",
 								},
-								"timestamp": now.Format(time.RFC3339Nano),
+								"timestamp": "${timestamp}",
 							},
 						},
 					},
@@ -79,7 +79,8 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 					TestContext(),
 					operations.V2RunWorkflowRequest{
 						RequestBody: map[string]string{
-							"userID": "bar",
+							"userID":    "bar",
+							"timestamp": now.Format(time.RFC3339Nano),
 						},
 						WorkflowID: createWorkflowResponse.Data.ID,
 					},

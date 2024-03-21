@@ -249,17 +249,21 @@ func mapObjectField(ctx Context, raw any, spec reflect.Value, fieldTag tag) erro
 				if interpolated == "" {
 					interpolated = fieldTag.defaultValue
 				}
-				date, err := time.ParseTime(interpolated)
-				if err != nil {
-					return fmt.Errorf("expected date as rfc3339 format")
+				if interpolated != "" {
+					date, err := time.ParseTime(interpolated)
+					if err != nil {
+						return fmt.Errorf("expected date as rfc3339 format")
+					}
+					spec.Set(reflect.ValueOf(date))
 				}
-				spec.Set(reflect.ValueOf(date))
 			case nil:
-				date, err := time.ParseTime(fieldTag.defaultValue)
-				if err != nil {
-					return fmt.Errorf("expected date as rfc3339 format")
+				if fieldTag.defaultValue != "" {
+					date, err := time.ParseTime(fieldTag.defaultValue)
+					if err != nil {
+						return fmt.Errorf("expected date as rfc3339 format")
+					}
+					spec.Set(reflect.ValueOf(date))
 				}
-				spec.Set(reflect.ValueOf(date))
 			default:
 				return fmt.Errorf("expected string but was %T", json)
 			}
