@@ -198,7 +198,6 @@ Query params :
 | Name           | Type   | Default | Description                                          |
 |----------------|--------|---------|------------------------------------------------------|
 | secret         | string |         | Specify a secret where credentials are defined       |
-| awsRole        | string |         | Specify a service account name mapped to an aws role |
 | disableSSLMode | bool   | false   | Disable SSL on Postgres connection                   |
 
 ### ElasticSearch URI format
