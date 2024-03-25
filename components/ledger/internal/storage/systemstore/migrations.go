@@ -67,6 +67,10 @@ func Migrate(ctx context.Context, db bun.IDB) error {
 					alter table ledgers
 					add column if not exists ledger varchar(63),
 					add column if not exists bucket varchar(63);
+
+					alter table ledgers
+					alter column ledger type varchar(63),
+					alter column bucket type varchar(63);
 				`)
 				if err != nil {
 					return err
