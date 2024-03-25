@@ -2,8 +2,9 @@ package systemstore
 
 import (
 	"fmt"
-	"github.com/google/uuid"
 	"testing"
+
+	"github.com/google/uuid"
 
 	"github.com/formancehq/stack/libs/go-libs/time"
 
@@ -95,4 +96,26 @@ func TestUpdateLedgerMetadata(t *testing.T) {
 	ledgerFromDB, err := store.GetLedger(ctx, ledger.Name)
 	require.NoError(t, err)
 	require.Equal(t, addedMetadata, ledgerFromDB.Metadata)
+}
+
+func TestDeleteLedgerMetadata(t *testing.T) {
+	ctx := logging.TestingContext()
+	store := newSystemStore(t)
+
+	ledger := &Ledger{
+		Name:    uuid.NewString(),
+		AddedAt: time.Now(),
+		Metadata: map[string]string{
+			"foo": "bar",
+		},
+	}
+	_, err := store.RegisterLedger(ctx, ledger)
+	require.NoError(t, err)
+
+	err = store.DeleteLedgerMetadata(ctx, ledger.Name, "foo")
+	require.NoError(t, err)
+
+	ledgerFromDB, err := store.GetLedger(ctx, ledger.Name)
+	require.NoError(t, err)
+	require.Equal(t, map[string]string{}, ledgerFromDB.Metadata)
 }

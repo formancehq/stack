@@ -309,6 +309,20 @@ func (mr *MockBackendMockRecorder) CreateLedger(ctx, name, configuration any) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateLedger", reflect.TypeOf((*MockBackend)(nil).CreateLedger), ctx, name, configuration)
 }
 
+// DeleteLedgerMetadata mocks base method.
+func (m *MockBackend) DeleteLedgerMetadata(ctx context.Context, param, key string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteLedgerMetadata", ctx, param, key)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteLedgerMetadata indicates an expected call of DeleteLedgerMetadata.
+func (mr *MockBackendMockRecorder) DeleteLedgerMetadata(ctx, param, key any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteLedgerMetadata", reflect.TypeOf((*MockBackend)(nil).DeleteLedgerMetadata), ctx, param, key)
+}
+
 // GetLedger mocks base method.
 func (m *MockBackend) GetLedger(ctx context.Context, name string) (*systemstore.Ledger, error) {
 	m.ctrl.T.Helper()

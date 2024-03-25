@@ -2,6 +2,7 @@ package systemstore
 
 import (
 	"context"
+
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/formancehq/stack/libs/go-libs/time"
 
@@ -76,6 +77,15 @@ func (s *Store) UpdateLedgerMetadata(ctx context.Context, name string, m metadat
 	_, err := s.db.NewUpdate().
 		Model(&Ledger{}).
 		Set("metadata = ?", m).
+		Where("ledger = ?", name).
+		Exec(ctx)
+	return err
+}
+
+func (s *Store) DeleteLedgerMetadata(ctx context.Context, name string, key string) error {
+	_, err := s.db.NewUpdate().
+		Model(&Ledger{}).
+		Set("metadata = metadata - ?", key).
 		Where("ledger = ?", name).
 		Exec(ctx)
 	return err

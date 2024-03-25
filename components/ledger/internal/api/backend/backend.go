@@ -45,12 +45,17 @@ type Backend interface {
 	CreateLedger(ctx context.Context, name string, configuration driver.LedgerConfiguration) error
 	UpdateLedgerMetadata(ctx context.Context, name string, m map[string]string) error
 	GetVersion() string
+	DeleteLedgerMetadata(ctx context.Context, param string, key string) error
 }
 
 type DefaultBackend struct {
 	storageDriver *driver.Driver
 	resolver      *engine.Resolver
 	version       string
+}
+
+func (d DefaultBackend) DeleteLedgerMetadata(ctx context.Context, name string, key string) error {
+	return d.storageDriver.GetSystemStore().DeleteLedgerMetadata(ctx, name, key)
 }
 
 func (d DefaultBackend) UpdateLedgerMetadata(ctx context.Context, name string, m map[string]string) error {

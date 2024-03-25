@@ -31,6 +31,7 @@
 * [V2CreateLedger](#v2createledger) - Create a ledger
 * [V2CreateTransaction](#v2createtransaction) - Create a new transaction to a ledger
 * [V2DeleteAccountMetadata](#v2deleteaccountmetadata) - Delete metadata by key
+* [V2DeleteLedgerMetadata](#v2deleteledgermetadata) - Delete ledger metadata by key
 * [V2DeleteTransactionMetadata](#v2deletetransactionmetadata) - Delete metadata by key
 * [V2GetAccount](#v2getaccount) - Get account by its address
 * [V2GetBalancesAggregated](#v2getbalancesaggregated) - Get the aggregated balances from selected accounts
@@ -1734,6 +1735,62 @@ func main() {
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
 | sdkerrors.SDKError | 4xx-5xx            | */*                |
+
+## V2DeleteLedgerMetadata
+
+Delete ledger metadata by key
+
+### Example Usage
+
+```go
+package main
+
+import(
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
+	"context"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"log"
+	"net/http"
+)
+
+func main() {
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
+
+    ctx := context.Background()
+    res, err := s.Ledger.V2DeleteLedgerMetadata(ctx, operations.V2DeleteLedgerMetadataRequest{
+        Key: "foo",
+        Ledger: "ledger001",
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    if res.StatusCode == http.StatusOK {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                                                                | Type                                                                                                     | Required                                                                                                 | Description                                                                                              |
+| -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                    | [context.Context](https://pkg.go.dev/context#Context)                                                    | :heavy_check_mark:                                                                                       | The context to use for the request.                                                                      |
+| `request`                                                                                                | [operations.V2DeleteLedgerMetadataRequest](../../pkg/models/operations/v2deleteledgermetadatarequest.md) | :heavy_check_mark:                                                                                       | The request object to use for the request.                                                               |
+
+
+### Response
+
+**[*operations.V2DeleteLedgerMetadataResponse](../../pkg/models/operations/v2deleteledgermetadataresponse.md), error**
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | 400                       | application/json          |
+| sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
 ## V2DeleteTransactionMetadata
 

@@ -1,6 +1,10 @@
 package v2_test
 
 import (
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
 	v2 "github.com/formancehq/ledger/internal/api/v2"
 	"github.com/formancehq/ledger/internal/opentelemetry/metrics"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
@@ -9,9 +13,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
-	"net/http"
-	"net/http/httptest"
-	"testing"
 )
 
 func TestUpdateLedgerMetadata(t *testing.T) {
@@ -29,6 +30,26 @@ func TestUpdateLedgerMetadata(t *testing.T) {
 	router := v2.NewRouter(backend, nil, metrics.NewNoOpRegistry(), auth.NewNoAuth())
 
 	req := httptest.NewRequest(http.MethodPut, "/"+name+"/metadata", sharedapi.Buffer(t, metadata))
+	req = req.WithContext(ctx)
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	require.Equal(t, http.StatusNoContent, rec.Code)
+}
+
+func TestDeleteLedgerMetadata(t *testing.T) {
+	ctx := logging.TestingContext()
+
+	name := uuid.NewString()
+	backend, _ := newTestingBackend(t, false)
+	backend.EXPECT().
+		DeleteLedgerMetadata(gomock.Any(), name, "foo").
+		Return(nil)
+
+	router := v2.NewRouter(backend, nil, metrics.NewNoOpRegistry(), auth.NewNoAuth())
+
+	req := httptest.NewRequest(http.MethodDelete, "/"+name+"/metadata/foo", nil)
 	req = req.WithContext(ctx)
 	rec := httptest.NewRecorder()
 

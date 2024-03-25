@@ -166,6 +166,47 @@ paths:
               schema:
                 $ref: '#/components/schemas/V2ErrorResponse'
 
+  /v2/{ledger}/metadata/{key}:
+    parameters:
+      - name: ledger
+        in: path
+        description: Name of the ledger.
+        required: true
+        schema:
+          type: string
+          example: ledger001
+      - name: key
+        in: path
+        description: Key to remove.
+        required: true
+        schema:
+          type: string
+          example: foo
+
+    delete:
+      summary: Delete ledger metadata by key
+      operationId: v2DeleteLedgerMetadata
+      tags:
+        - Ledger
+      x-speakeasy-group: ledger
+      responses:
+        "204":
+          description: OK
+
+        "400":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V2ErrorResponse'
+
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V2ErrorResponse'
+
   /v2/{ledger}/_info:
     get:
       summary: Get information about a ledger

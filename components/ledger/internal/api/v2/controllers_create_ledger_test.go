@@ -1,6 +1,10 @@
 package v2_test
 
 import (
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
 	v2 "github.com/formancehq/ledger/internal/api/v2"
 	"github.com/formancehq/ledger/internal/opentelemetry/metrics"
 	"github.com/formancehq/stack/libs/go-libs/api"
@@ -8,9 +12,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
-	"net/http"
-	"net/http/httptest"
-	"testing"
 
 	"github.com/formancehq/ledger/internal/storage/driver"
 )

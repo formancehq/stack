@@ -3,8 +3,9 @@ package driver
 import (
 	"context"
 	"database/sql"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"sync"
+
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 
