@@ -3,6 +3,7 @@ package driver
 import (
 	"context"
 	"database/sql"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"sync"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
@@ -30,7 +31,8 @@ var (
 )
 
 type LedgerConfiguration struct {
-	Bucket string `json:"bucket"`
+	Bucket   string            `json:"bucket"`
+	Metadata metadata.Metadata `json:"metadata"`
 }
 
 type Driver struct {
@@ -129,9 +131,10 @@ func (f *Driver) CreateLedgerStore(ctx context.Context, name string, configurati
 	}
 
 	_, err = systemstore.RegisterLedger(ctx, tx, &systemstore.Ledger{
-		Name:    name,
-		AddedAt: time.Now(),
-		Bucket:  bucketName,
+		Name:     name,
+		AddedAt:  time.Now(),
+		Bucket:   bucketName,
+		Metadata: configuration.Metadata,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "registring ledger on system store")

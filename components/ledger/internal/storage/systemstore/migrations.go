@@ -74,6 +74,19 @@ func Migrate(ctx context.Context, db bun.IDB) error {
 				return nil
 			},
 		},
+		migrations.Migration{
+			Name: "Add ledger metadata",
+			UpWithContext: func(ctx context.Context, tx bun.Tx) error {
+				_, err := tx.ExecContext(ctx, `
+					alter table ledgers
+					alter column metadata type jsonb;
+				`)
+				if err != nil {
+					return err
+				}
+				return nil
+			},
+		},
 	)
 	return migrator.Up(ctx, db)
 }

@@ -2,7 +2,7 @@ package systemstore
 
 import (
 	"context"
-
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/formancehq/stack/libs/go-libs/time"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
@@ -15,9 +15,10 @@ import (
 type Ledger struct {
 	bun.BaseModel `bun:"_system.ledgers,alias:ledgers"`
 
-	Name    string    `bun:"ledger,type:varchar(255),pk" json:"name"` // Primary key
-	AddedAt time.Time `bun:"addedat,type:timestamp" json:"addedAt"`
-	Bucket  string    `bun:"bucket,type:varchar(255)" json:"bucket"`
+	Name     string            `bun:"ledger,type:varchar(255),pk" json:"name"` // Primary key
+	AddedAt  time.Time         `bun:"addedat,type:timestamp" json:"addedAt"`
+	Bucket   string            `bun:"bucket,type:varchar(255)" json:"bucket"`
+	Metadata map[string]string `bun:"metadata,type:jsonb" json:"metadata"`
 }
 
 type PaginatedQueryOptions struct {
@@ -39,7 +40,7 @@ func NewListLedgersQuery(pageSize uint64) ListLedgersQuery {
 
 func (s *Store) ListLedgers(ctx context.Context, q ListLedgersQuery) (*bunpaginate.Cursor[Ledger], error) {
 	query := s.db.NewSelect().
-		Column("ledger", "bucket", "addedat").
+		Column("ledger", "bucket", "addedat", "metadata").
 		Order("addedat asc")
 
 	return bunpaginate.UsingOffset[PaginatedQueryOptions, Ledger](ctx, query, bunpaginate.OffsetPaginatedQuery[PaginatedQueryOptions](q))
@@ -62,7 +63,7 @@ func (s *Store) GetLedger(ctx context.Context, name string) (*Ledger, error) {
 	ret := &Ledger{}
 	if err := s.db.NewSelect().
 		Model(ret).
-		Column("ledger", "bucket", "addedat").
+		Column("ledger", "bucket", "addedat", "metadata").
 		Where("ledger = ?", name).
 		Scan(ctx); err != nil {
 		return nil, sqlutils.PostgresError(err)
@@ -71,7 +72,19 @@ func (s *Store) GetLedger(ctx context.Context, name string) (*Ledger, error) {
 	return ret, nil
 }
 
+func (s *Store) UpdateLedgerMetadata(ctx context.Context, name string, m metadata.Metadata) error {
+	_, err := s.db.NewUpdate().
+		Model(&Ledger{}).
+		Set("metadata = ?", m).
+		Where("ledger = ?", name).
+		Exec(ctx)
+	return err
+}
+
 func RegisterLedger(ctx context.Context, db bun.IDB, l *Ledger) (bool, error) {
+	if l.Metadata == nil {
+		l.Metadata = map[string]string{}
+	}
 	ret, err := db.NewInsert().
 		Model(l).
 		Ignore().

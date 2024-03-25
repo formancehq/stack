@@ -3,7 +3,6 @@ package systemstore
 import (
 	"context"
 	"fmt"
-
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 
 	"github.com/formancehq/ledger/internal/storage/sqlutils"

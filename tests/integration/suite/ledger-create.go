@@ -16,16 +16,20 @@ import (
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {
 	When("creating a bulk on a ledger", func() {
-		BeforeEach(func() {
+		var m map[string]string
+		JustBeforeEach(func() {
 			response, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 				Ledger: "default",
+				V2CreateLedgerRequest: &shared.V2CreateLedgerRequest{
+					Metadata: m,
+				},
 			})
 			Expect(err).To(BeNil())
 			Expect(response.StatusCode).To(Equal(http.StatusNoContent))
 		})
 		It("Should be ok", func() {})
 		Then("trying to create another ledger with the same name", func() {
-			BeforeEach(func() {
+			JustBeforeEach(func() {
 				_, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 					Ledger: "default",
 				})
@@ -33,6 +37,20 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(shared.V2ErrorsEnumValidation))
 			})
 			It("should fail", func() {})
+		})
+		Context("With metadata", func() {
+			BeforeEach(func() {
+				m = map[string]string{
+					"foo": "bar",
+				}
+			})
+			It("Should be ok", func() {
+				ledger, err := Client().Ledger.V2GetLedger(TestContext(), operations.V2GetLedgerRequest{
+					Ledger: "default",
+				})
+				Expect(err).To(BeNil())
+				Expect(ledger.V2GetLedgerResponse.Data.Metadata).To(Equal(m))
+			})
 		})
 	})
 	When("bucket naming convention depends on the database 63 bytes length (pg constraint)", func() {

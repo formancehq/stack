@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 7eac0a45-60a2-40bb-9e85-26bd77ec2a6d
 management:
-  docChecksum: fca2d184b689029c38090555d6e4ec21
+  docChecksum: 3a6ed7338e18f072cc534acc7b940697
   docVersion: v0.0.0
   speakeasyVersion: internal
   generationVersion: 2.237.2
-  releaseVersion: v0.0.0
-  configChecksum: 50130ac1de5d0825ab31d45fbe3aac35
+  releaseVersion: 0.0.1
+  configChecksum: c299152255ec1caf1aad2b6fbca6bdc9
 features:
   go:
     constsAndDefaults: 0.1.2
@@ -99,6 +99,7 @@ generatedFiles:
   - /pkg/models/operations/v2listtransactions.go
   - /pkg/models/operations/v2readstats.go
   - /pkg/models/operations/v2reverttransaction.go
+  - /pkg/models/operations/v2updateledgermetadata.go
   - /pkg/models/operations/cancelevent.go
   - /pkg/models/operations/createtrigger.go
   - /pkg/models/operations/createworkflow.go
@@ -277,6 +278,7 @@ generatedFiles:
   - /pkg/models/shared/v2volume.go
   - /pkg/models/shared/v2aggregatebalancesresponse.go
   - /pkg/models/shared/v2configinforesponse.go
+  - /pkg/models/shared/v2getledgerresponse.go
   - /pkg/models/shared/v2ledger.go
   - /pkg/models/shared/v2ledgerinforesponse.go
   - /pkg/models/shared/v2ledgerinfo.go
@@ -643,6 +645,8 @@ generatedFiles:
   - docs/pkg/models/operations/v2readstatsresponse.md
   - docs/pkg/models/operations/v2reverttransactionrequest.md
   - docs/pkg/models/operations/v2reverttransactionresponse.md
+  - docs/pkg/models/operations/v2updateledgermetadatarequest.md
+  - docs/pkg/models/operations/v2updateledgermetadataresponse.md
   - docs/pkg/models/operations/canceleventrequest.md
   - docs/pkg/models/operations/canceleventresponse.md
   - docs/pkg/models/operations/createtriggerresponse.md
@@ -928,6 +932,7 @@ generatedFiles:
   - docs/pkg/models/shared/v2volume.md
   - docs/pkg/models/shared/v2aggregatebalancesresponse.md
   - docs/pkg/models/shared/v2configinforesponse.md
+  - docs/pkg/models/shared/v2getledgerresponse.md
   - docs/pkg/models/shared/v2ledger.md
   - docs/pkg/models/shared/v2ledgerinforesponse.md
   - docs/pkg/models/shared/v2ledgerinfostorage.md

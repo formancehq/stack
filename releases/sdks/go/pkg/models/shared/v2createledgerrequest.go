@@ -3,7 +3,8 @@
 package shared
 
 type V2CreateLedgerRequest struct {
-	Bucket *string `json:"bucket,omitempty"`
+	Bucket   *string           `json:"bucket,omitempty"`
+	Metadata map[string]string `json:"metadata,omitempty"`
 }
 
 func (o *V2CreateLedgerRequest) GetBucket() *string {
@@ -11,4 +12,11 @@ func (o *V2CreateLedgerRequest) GetBucket() *string {
 		return nil
 	}
 	return o.Bucket
+}
+
+func (o *V2CreateLedgerRequest) GetMetadata() map[string]string {
+	if o == nil {
+		return nil
+	}
+	return o.Metadata
 }

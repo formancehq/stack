@@ -123,6 +123,7 @@ func main() {
 * [V2ListTransactions](docs/sdks/ledger/README.md#v2listtransactions) - List transactions from a ledger
 * [V2ReadStats](docs/sdks/ledger/README.md#v2readstats) - Get statistics from a ledger
 * [V2RevertTransaction](docs/sdks/ledger/README.md#v2reverttransaction) - Revert a ledger transaction by its ID
+* [V2UpdateLedgerMetadata](docs/sdks/ledger/README.md#v2updateledgermetadata) - Update ledger metadata
 
 ### [Orchestration](docs/sdks/orchestration/README.md)
 
