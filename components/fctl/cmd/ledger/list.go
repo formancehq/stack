@@ -2,6 +2,7 @@ package ledger
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -69,10 +70,10 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 	tableData := fctl.Map(c.store.Ledgers, func(ledger shared.V2Ledger) []string {
 		return []string{
-			ledger.Name,
+			ledger.Name, ledger.AddedAt.Format(time.RFC3339Nano), fctl.MetadataAsShortString(ledger.Metadata),
 		}
 	})
-	tableData = fctl.Prepend(tableData, []string{"Name"})
+	tableData = fctl.Prepend(tableData, []string{"Name", "Created at", "Metadata"})
 	return pterm.DefaultTable.
 		WithHasHeader().
 		WithWriter(cmd.OutOrStdout()).

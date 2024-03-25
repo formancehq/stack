@@ -1,7 +1,6 @@
-package accounts
+package ledger
 
 import (
-	"github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/pterm/pterm"
@@ -28,8 +27,8 @@ func NewDeleteMetadataController() *DeleteMetadataController {
 }
 
 func NewDeleteMetadataCommand() *cobra.Command {
-	return fctl.NewCommand("delete-metadata <address> <key>",
-		fctl.WithShortDescription("Delete metadata on account (Start from ledger v2 api)"),
+	return fctl.NewCommand("delete-metadata <ledger-name> <key>",
+		fctl.WithShortDescription("Delete metadata on a ledger (Start from ledger v2 api)"),
 		fctl.WithAliases("dm", "del-meta"),
 		fctl.WithConfirmFlag(),
 		fctl.WithArgs(cobra.MinimumNArgs(2)),
@@ -45,14 +44,13 @@ func (c *DeleteMetadataController) Run(cmd *cobra.Command, args []string) (fctl.
 
 	store := fctl.GetStackStore(cmd.Context())
 
-	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to set a metadata on account %s", args[0]) {
+	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to set a metadata on ledger %s", args[0]) {
 		return nil, fctl.ErrMissingApproval
 	}
 
-	response, err := store.Client().Ledger.V2DeleteAccountMetadata(cmd.Context(), operations.V2DeleteAccountMetadataRequest{
-		Address: args[0],
-		Key:     args[1],
-		Ledger:  fctl.GetString(cmd, internal.LedgerFlag),
+	response, err := store.Client().Ledger.V2DeleteLedgerMetadata(cmd.Context(), operations.V2DeleteLedgerMetadataRequest{
+		Key:    args[1],
+		Ledger: args[0],
 	})
 	if err != nil {
 		return nil, err

@@ -2,7 +2,6 @@ package ledger
 
 import (
 	"fmt"
-
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -43,6 +42,7 @@ func NewCreateCommand() *cobra.Command {
 		fctl.WithAliases("c", "cr"),
 		fctl.WithShortDescription("Create a new ledger (starting from ledger v2)"),
 		fctl.WithStringFlag(bucketNameFlag, "", "Bucket on which install the new ledger"),
+		fctl.WithStringSliceFlag(c.metadataFlag, []string{}, "Metadata to apply on the newly created ledger"),
 		fctl.WithConfirmFlag(),
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithController[*CreateStore](c),
@@ -59,9 +59,15 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, fctl.ErrMissingApproval
 	}
 
+	metadata, err := fctl.ParseMetadata(fctl.GetStringSlice(cmd, c.metadataFlag))
+	if err != nil {
+		return nil, err
+	}
+
 	response, err := store.Client().Ledger.V2CreateLedger(cmd.Context(), operations.V2CreateLedgerRequest{
 		V2CreateLedgerRequest: &shared.V2CreateLedgerRequest{
-			Bucket: pointer.For(fctl.GetString(cmd, bucketNameFlag)),
+			Bucket:   pointer.For(fctl.GetString(cmd, bucketNameFlag)),
+			Metadata: metadata,
 		},
 		Ledger: args[0],
 	})

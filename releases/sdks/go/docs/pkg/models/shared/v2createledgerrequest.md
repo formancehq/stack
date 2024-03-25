@@ -3,6 +3,7 @@
 
 ## Fields
 
-| Field              | Type               | Required           | Description        |
-| ------------------ | ------------------ | ------------------ | ------------------ |
-| `Bucket`           | **string*          | :heavy_minus_sign: | N/A                |
+| Field               | Type                | Required            | Description         | Example             |
+| ------------------- | ------------------- | ------------------- | ------------------- | ------------------- |
+| `Bucket`            | **string*           | :heavy_minus_sign:  | N/A                 |                     |
+| `Metadata`          | map[string]*string* | :heavy_minus_sign:  | N/A                 | {"admin":"true"}    |

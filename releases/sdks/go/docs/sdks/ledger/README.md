@@ -31,6 +31,7 @@
 * [V2CreateLedger](#v2createledger) - Create a ledger
 * [V2CreateTransaction](#v2createtransaction) - Create a new transaction to a ledger
 * [V2DeleteAccountMetadata](#v2deleteaccountmetadata) - Delete metadata by key
+* [V2DeleteLedgerMetadata](#v2deleteledgermetadata) - Delete ledger metadata by key
 * [V2DeleteTransactionMetadata](#v2deletetransactionmetadata) - Delete metadata by key
 * [V2GetAccount](#v2getaccount) - Get account by its address
 * [V2GetBalancesAggregated](#v2getbalancesaggregated) - Get the aggregated balances from selected accounts
@@ -44,6 +45,7 @@
 * [V2ListTransactions](#v2listtransactions) - List transactions from a ledger
 * [V2ReadStats](#v2readstats) - Get statistics from a ledger
 * [V2RevertTransaction](#v2reverttransaction) - Revert a ledger transaction by its ID
+* [V2UpdateLedgerMetadata](#v2updateledgermetadata) - Update ledger metadata
 
 ## CreateTransactions
 
@@ -1562,7 +1564,11 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Ledger.V2CreateLedger(ctx, operations.V2CreateLedgerRequest{
-        V2CreateLedgerRequest: &shared.V2CreateLedgerRequest{},
+        V2CreateLedgerRequest: &shared.V2CreateLedgerRequest{
+            Metadata: map[string]string{
+                "admin": "true",
+            },
+        },
         Ledger: "ledger001",
     })
     if err != nil {
@@ -1729,6 +1735,62 @@ func main() {
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
 | sdkerrors.SDKError | 4xx-5xx            | */*                |
+
+## V2DeleteLedgerMetadata
+
+Delete ledger metadata by key
+
+### Example Usage
+
+```go
+package main
+
+import(
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
+	"context"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"log"
+	"net/http"
+)
+
+func main() {
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
+
+    ctx := context.Background()
+    res, err := s.Ledger.V2DeleteLedgerMetadata(ctx, operations.V2DeleteLedgerMetadataRequest{
+        Key: "foo",
+        Ledger: "ledger001",
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    if res.StatusCode == http.StatusOK {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                                                                | Type                                                                                                     | Required                                                                                                 | Description                                                                                              |
+| -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                    | [context.Context](https://pkg.go.dev/context#Context)                                                    | :heavy_check_mark:                                                                                       | The context to use for the request.                                                                      |
+| `request`                                                                                                | [operations.V2DeleteLedgerMetadataRequest](../../pkg/models/operations/v2deleteledgermetadatarequest.md) | :heavy_check_mark:                                                                                       | The request object to use for the request.                                                               |
+
+
+### Response
+
+**[*operations.V2DeleteLedgerMetadataResponse](../../pkg/models/operations/v2deleteledgermetadataresponse.md), error**
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | 400                       | application/json          |
+| sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
 ## V2DeleteTransactionMetadata
 
@@ -1979,7 +2041,7 @@ func main() {
         log.Fatal(err)
     }
 
-    if res.V2Ledger != nil {
+    if res.V2GetLedgerResponse != nil {
         // handle response
     }
 }
@@ -2440,6 +2502,64 @@ func main() {
 ### Response
 
 **[*operations.V2RevertTransactionResponse](../../pkg/models/operations/v2reverttransactionresponse.md), error**
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | 400                       | application/json          |
+| sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
+
+## V2UpdateLedgerMetadata
+
+Update ledger metadata
+
+### Example Usage
+
+```go
+package main
+
+import(
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
+	"context"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"log"
+	"net/http"
+)
+
+func main() {
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
+
+    ctx := context.Background()
+    res, err := s.Ledger.V2UpdateLedgerMetadata(ctx, operations.V2UpdateLedgerMetadataRequest{
+        RequestBody: map[string]string{
+            "admin": "true",
+        },
+        Ledger: "ledger001",
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    if res.StatusCode == http.StatusOK {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                                                                | Type                                                                                                     | Required                                                                                                 | Description                                                                                              |
+| -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                    | [context.Context](https://pkg.go.dev/context#Context)                                                    | :heavy_check_mark:                                                                                       | The context to use for the request.                                                                      |
+| `request`                                                                                                | [operations.V2UpdateLedgerMetadataRequest](../../pkg/models/operations/v2updateledgermetadatarequest.md) | :heavy_check_mark:                                                                                       | The request object to use for the request.                                                               |
+
+
+### Response
+
+**[*operations.V2UpdateLedgerMetadataResponse](../../pkg/models/operations/v2updateledgermetadataresponse.md), error**
 | Error Object              | Status Code               | Content Type              |
 | ------------------------- | ------------------------- | ------------------------- |
 | sdkerrors.V2ErrorResponse | 400                       | application/json          |

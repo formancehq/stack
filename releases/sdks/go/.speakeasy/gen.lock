@@ -1,7 +1,7 @@
 lockVersion: 2.0.0
 id: 7eac0a45-60a2-40bb-9e85-26bd77ec2a6d
 management:
-  docChecksum: fca2d184b689029c38090555d6e4ec21
+  docChecksum: 20f83dad7abe00c72141a48e75466b72
   docVersion: v0.0.0
   speakeasyVersion: internal
   generationVersion: 2.237.2
@@ -86,6 +86,7 @@ generatedFiles:
   - /pkg/models/operations/v2createledger.go
   - /pkg/models/operations/v2createtransaction.go
   - /pkg/models/operations/v2deleteaccountmetadata.go
+  - /pkg/models/operations/v2deleteledgermetadata.go
   - /pkg/models/operations/v2deletetransactionmetadata.go
   - /pkg/models/operations/v2getaccount.go
   - /pkg/models/operations/v2getbalancesaggregated.go
@@ -99,6 +100,7 @@ generatedFiles:
   - /pkg/models/operations/v2listtransactions.go
   - /pkg/models/operations/v2readstats.go
   - /pkg/models/operations/v2reverttransaction.go
+  - /pkg/models/operations/v2updateledgermetadata.go
   - /pkg/models/operations/cancelevent.go
   - /pkg/models/operations/createtrigger.go
   - /pkg/models/operations/createworkflow.go
@@ -277,6 +279,7 @@ generatedFiles:
   - /pkg/models/shared/v2volume.go
   - /pkg/models/shared/v2aggregatebalancesresponse.go
   - /pkg/models/shared/v2configinforesponse.go
+  - /pkg/models/shared/v2getledgerresponse.go
   - /pkg/models/shared/v2ledger.go
   - /pkg/models/shared/v2ledgerinforesponse.go
   - /pkg/models/shared/v2ledgerinfo.go
@@ -618,6 +621,8 @@ generatedFiles:
   - docs/pkg/models/operations/v2createtransactionresponse.md
   - docs/pkg/models/operations/v2deleteaccountmetadatarequest.md
   - docs/pkg/models/operations/v2deleteaccountmetadataresponse.md
+  - docs/pkg/models/operations/v2deleteledgermetadatarequest.md
+  - docs/pkg/models/operations/v2deleteledgermetadataresponse.md
   - docs/pkg/models/operations/v2deletetransactionmetadatarequest.md
   - docs/pkg/models/operations/v2deletetransactionmetadataresponse.md
   - docs/pkg/models/operations/v2getaccountrequest.md
@@ -643,6 +648,8 @@ generatedFiles:
   - docs/pkg/models/operations/v2readstatsresponse.md
   - docs/pkg/models/operations/v2reverttransactionrequest.md
   - docs/pkg/models/operations/v2reverttransactionresponse.md
+  - docs/pkg/models/operations/v2updateledgermetadatarequest.md
+  - docs/pkg/models/operations/v2updateledgermetadataresponse.md
   - docs/pkg/models/operations/canceleventrequest.md
   - docs/pkg/models/operations/canceleventresponse.md
   - docs/pkg/models/operations/createtriggerresponse.md
@@ -928,6 +935,7 @@ generatedFiles:
   - docs/pkg/models/shared/v2volume.md
   - docs/pkg/models/shared/v2aggregatebalancesresponse.md
   - docs/pkg/models/shared/v2configinforesponse.md
+  - docs/pkg/models/shared/v2getledgerresponse.md
   - docs/pkg/models/shared/v2ledger.md
   - docs/pkg/models/shared/v2ledgerinforesponse.md
   - docs/pkg/models/shared/v2ledgerinfostorage.md

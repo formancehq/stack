@@ -4,23 +4,31 @@ package operations
 
 import (
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"net/http"
 )
 
-type V2GetLedgerRequest struct {
+type V2DeleteLedgerMetadataRequest struct {
+	// Key to remove.
+	Key string `pathParam:"style=simple,explode=false,name=key"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
 }
 
-func (o *V2GetLedgerRequest) GetLedger() string {
+func (o *V2DeleteLedgerMetadataRequest) GetKey() string {
+	if o == nil {
+		return ""
+	}
+	return o.Key
+}
+
+func (o *V2DeleteLedgerMetadataRequest) GetLedger() string {
 	if o == nil {
 		return ""
 	}
 	return o.Ledger
 }
 
-type V2GetLedgerResponse struct {
+type V2DeleteLedgerMetadataResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
 	// HTTP response status code for this operation
@@ -29,41 +37,32 @@ type V2GetLedgerResponse struct {
 	RawResponse *http.Response
 	// Error
 	V2ErrorResponse *sdkerrors.V2ErrorResponse
-	// OK
-	V2GetLedgerResponse *shared.V2GetLedgerResponse
 }
 
-func (o *V2GetLedgerResponse) GetContentType() string {
+func (o *V2DeleteLedgerMetadataResponse) GetContentType() string {
 	if o == nil {
 		return ""
 	}
 	return o.ContentType
 }
 
-func (o *V2GetLedgerResponse) GetStatusCode() int {
+func (o *V2DeleteLedgerMetadataResponse) GetStatusCode() int {
 	if o == nil {
 		return 0
 	}
 	return o.StatusCode
 }
 
-func (o *V2GetLedgerResponse) GetRawResponse() *http.Response {
+func (o *V2DeleteLedgerMetadataResponse) GetRawResponse() *http.Response {
 	if o == nil {
 		return nil
 	}
 	return o.RawResponse
 }
 
-func (o *V2GetLedgerResponse) GetV2ErrorResponse() *sdkerrors.V2ErrorResponse {
+func (o *V2DeleteLedgerMetadataResponse) GetV2ErrorResponse() *sdkerrors.V2ErrorResponse {
 	if o == nil {
 		return nil
 	}
 	return o.V2ErrorResponse
-}
-
-func (o *V2GetLedgerResponse) GetV2GetLedgerResponse() *shared.V2GetLedgerResponse {
-	if o == nil {
-		return nil
-	}
-	return o.V2GetLedgerResponse
 }
