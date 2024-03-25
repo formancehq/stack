@@ -76,7 +76,7 @@ func (s *Store) GetLedger(ctx context.Context, name string) (*Ledger, error) {
 func (s *Store) UpdateLedgerMetadata(ctx context.Context, name string, m metadata.Metadata) error {
 	_, err := s.db.NewUpdate().
 		Model(&Ledger{}).
-		Set("metadata = ?", m).
+		Set("metadata = metadata || ?", m).
 		Where("ledger = ?", name).
 		Exec(ctx)
 	return err
