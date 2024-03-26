@@ -18,7 +18,7 @@ import (
 
 func Get(ctx core.Context, stack string, keys ...string) (*string, error) {
 	keys = Flatten(Map(keys, func(from string) []string {
-		return strings.Split(from, ".")
+		return splitKey(from)
 	}))
 	allSettingsTargetingStack := &v1beta1.SettingsList{}
 	if err := ctx.GetClient().List(ctx, allSettingsTargetingStack, client.MatchingFields{
@@ -327,7 +327,7 @@ func findMatchingSettings(settings []v1beta1.Settings, keys ...string) (*string,
 }
 
 func matchSetting(setting v1beta1.Settings, keys ...string) bool {
-	settingKeyParts := strings.Split(setting.Spec.Key, ".")
+	settingKeyParts := splitKey(setting.Spec.Key)
 	for i, settingKeyPart := range settingKeyParts {
 		if settingKeyPart == "*" {
 			continue
@@ -340,7 +340,24 @@ func matchSetting(setting v1beta1.Settings, keys ...string) bool {
 }
 
 func splitKey(key string) []string {
-	return strings.Split(key, ".")
+	segments := ""
+	needQuote := false
+	for _, v := range key {
+		switch v {
+		case '"':
+			needQuote = !needQuote
+		case '.':
+			if !needQuote {
+				segments += " "
+				continue
+			}
+			segments += string(v)
+		default:
+			segments += string(v)
+		}
+	}
+
+	return strings.Split(segments, " ")
 }
 
 func sortSettingsByPriority(a, b v1beta1.Settings) int {
