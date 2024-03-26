@@ -308,8 +308,11 @@ func GetMapOrEmpty(ctx core.Context, stack string, keys ...string) (map[string]s
 func findMatchingSettings(settings []v1beta1.Settings, keys ...string) (*string, error) {
 
 	// Keys can be passed as "a.b.c", instead of "a", "b", "c"
+	// Keys can be passed as "a.b.*", instead of "a", "b", "*"
+	// Keys can be passed as "a.*.c", instead of "a", "*", "c"
+	// Keys can be passed as "a."*.*".c, instead of "a", "b", "c"
 	keys = Flatten(Map(keys, func(from string) []string {
-		return strings.Split(from, ".")
+		return splitKey(from)
 	}))
 
 	slices.SortFunc(settings, sortSettingsByPriority)
@@ -336,6 +339,10 @@ func matchSetting(setting v1beta1.Settings, keys ...string) bool {
 	return true
 }
 
+func splitKey(key string) []string {
+	return strings.Split(key, ".")
+}
+
 func sortSettingsByPriority(a, b v1beta1.Settings) int {
 	switch {
 	case a.IsWildcard() && !b.IsWildcard():
@@ -343,8 +350,8 @@ func sortSettingsByPriority(a, b v1beta1.Settings) int {
 	case !a.IsWildcard() && b.IsWildcard():
 		return -1
 	}
-	aKeys := strings.Split(a.Spec.Key, ".")
-	bKeys := strings.Split(b.Spec.Key, ".")
+	aKeys := splitKey(a.Spec.Key)
+	bKeys := splitKey(b.Spec.Key)
 
 	for i := 0; i < len(aKeys); i++ {
 		if aKeys[i] == bKeys[i] {
