@@ -83,7 +83,10 @@ func NewRootCommand() *cobra.Command {
 		}),
 	)
 
-	publish.InitCLIFlags(cmd)
+	publish.InitCLIFlags(cmd, func(cd *publish.ConfigDefault) {
+		// We want to reconnect forever
+		cd.PublisherNatsMaxReconnect = -1
+	})
 	auth.InitAuthFlags(cmd.PersistentFlags())
 	bunconnect.InitFlags(cmd.PersistentFlags())
 	iam.InitFlags(cmd.PersistentFlags())
@@ -121,6 +124,9 @@ func commonOptions(cmd *cobra.Command) (fx.Option, error) {
 		auth.CLIAuthModule(),
 		workflow.NewModule(viper.GetString(temporalTaskQueueFlag)),
 		triggers.NewModule(viper.GetString(temporalTaskQueueFlag)),
+		fx.Provide(func() *bunconnect.ConnectionOptions {
+			return connectionOptions
+		}),
 		fx.Provide(func() *http.Client {
 			httpClient := &http.Client{
 				Transport: otlp.NewRoundTripper(http.DefaultTransport, viper.GetBool(service.DebugFlag)),
