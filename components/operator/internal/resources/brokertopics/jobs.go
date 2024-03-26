@@ -2,13 +2,15 @@ package brokertopics
 
 import (
 	"fmt"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/jobs"
+	"github.com/formancehq/operator/internal/resources/registries"
 	corev1 "k8s.io/api/core/v1"
 )
 
-func createJob(ctx core.Context, topic *v1beta1.BrokerTopic, brokerURI *v1beta1.URI) error {
+func createJob(ctx core.Context, topic *v1beta1.BrokerTopic, stack *v1beta1.Stack, brokerURI *v1beta1.URI) error {
 	const script = `
 	set -xe
 	index=$(nats --server $NATS_URI stream ls -j | jq "index(\"$TOPIC\")")
@@ -24,8 +26,12 @@ func createJob(ctx core.Context, topic *v1beta1.BrokerTopic, brokerURI *v1beta1.
 	fi
 `
 
+	natsBoxImage, err := registries.GetNastBoxImage(ctx, stack, "0.14.1")
+	if err != nil {
+		return err
+	}
 	return jobs.Handle(ctx, topic, "create-topic", corev1.Container{
-		Image: "natsio/nats-box:0.14.1",
+		Image: natsBoxImage,
 		Name:  "create-topic",
 		Args:  core.ShellScript(script),
 		Env: []corev1.EnvVar{

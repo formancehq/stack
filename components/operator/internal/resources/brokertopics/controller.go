@@ -50,7 +50,7 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, topic *v1beta1.BrokerTopi
 
 	switch {
 	case brokerURI.Scheme == "nats":
-		if err := createJob(ctx, topic, brokerURI); err != nil {
+		if err := createJob(ctx, topic, stack, brokerURI); err != nil {
 			return err
 		}
 	}
