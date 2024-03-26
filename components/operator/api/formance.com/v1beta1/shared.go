@@ -281,6 +281,7 @@ func init() {
 }
 
 const (
-	StackLabel = "formance.com/stack"
-	SkipLabel  = "formance.com/skip"
+	StackLabel          = "formance.com/stack"
+	SkipLabel           = "formance.com/skip"
+	CreatedByAgentLabel = "formance.com/created-by-agent"
 )

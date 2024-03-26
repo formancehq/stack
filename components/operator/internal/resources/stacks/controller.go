@@ -2,12 +2,14 @@ package stacks
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"reflect"
 	"sort"
 	"strings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
+	"github.com/formancehq/operator/internal/core"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -108,7 +110,7 @@ func areDependentReady(ctx Context, stack *v1beta1.Stack) error {
 	return nil
 }
 
-func RetrieveReferenceModules(ctx Context, stack *v1beta1.Stack) error {
+func retrieveReferenceModules(ctx Context, stack *v1beta1.Stack) error {
 	setKind := map[string]interface{}{}
 	for _, rtype := range ctx.GetScheme().AllKnownTypes() {
 		v := reflect.New(rtype).Interface()
@@ -154,20 +156,28 @@ func RetrieveReferenceModules(ctx Context, stack *v1beta1.Stack) error {
 }
 
 func Reconcile(ctx Context, stack *v1beta1.Stack) error {
-	_, _, err := CreateOrUpdate[*corev1.Namespace](ctx, types.NamespacedName{
+	errAlreadyExist := errors.New("namespace already exists")
+	if _, _, err := CreateOrUpdate(ctx, types.NamespacedName{
 		Name: stack.Name,
-	})
-	if err != nil {
+	},
+		func(ns *corev1.Namespace) error {
+			_, stackCreatedByAgent := stack.GetLabels()[v1beta1.CreatedByAgentLabel]
+			if ns.ResourceVersion == "" || stackCreatedByAgent {
+				return nil
+			}
+
+			return errAlreadyExist
+		}, core.WithController[*corev1.Namespace](ctx.GetScheme(), stack)); err != nil {
+		if !errors.Is(err, errAlreadyExist) {
+			return err
+		}
+	}
+
+	if err := retrieveReferenceModules(ctx, stack); err != nil {
 		return err
 	}
 
-	err = RetrieveReferenceModules(ctx, stack)
-	if err != nil {
-		return err
-	}
-
-	err = areDependentReady(ctx, stack)
-	if err != nil {
+	if err := areDependentReady(ctx, stack); err != nil {
 		return err
 	}
 
@@ -188,13 +198,6 @@ func Clean(ctx Context, t *v1beta1.Stack) error {
 	}
 
 	logger.Info("All dependencies removed, remove namespace")
-	ns := &corev1.Namespace{}
-	ns.SetName(t.Name)
-	if err := ctx.GetClient().Delete(ctx, ns); err != nil {
-		return err
-	}
-
-	logger.Info("Stack cleaned.")
 
 	return nil
 }
