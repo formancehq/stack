@@ -25,13 +25,21 @@ func TranslateImage(ctx core.Context, stackName, image string) (string, error) {
 		path = repositoryParts[1]
 	}
 
+	imageOverride, err := settings.GetStringOrEmpty(ctx, stackName, "registries", registry, "images", path, "rewrite")
+	if err != nil {
+		return "", err
+	}
+	if imageOverride == "" {
+		imageOverride = path
+	}
+
 	registryEndpoint, err := settings.GetStringOrEmpty(ctx, stackName, "registries", registry, "endpoint")
 	if err != nil {
 		return "", err
 	}
 	if registryEndpoint == "" {
-		return image, nil
+		registryEndpoint = registry
 	}
 
-	return fmt.Sprintf("%s/%s:%s", registryEndpoint, path, parts[1]), nil
+	return fmt.Sprintf("%s/%s:%s", registryEndpoint, imageOverride, parts[1]), nil
 }
