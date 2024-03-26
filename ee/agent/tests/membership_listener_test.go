@@ -52,10 +52,11 @@ var _ = Describe("Membership listener", func() {
 		)
 		BeforeEach(func() {
 			stackName := uuid.NewString()
+			wrong := uuid.NewString()
 			By("Creating a wrong client", func() {
 				client := &v1beta1.AuthClient{
 					ObjectMeta: metav1.ObjectMeta{
-						Name: "wrong",
+						Name: wrong,
 						Labels: map[string]string{
 							"formance.com/created-by-agent": "true",
 							"formance.com/stack":            stackName,
@@ -65,7 +66,7 @@ var _ = Describe("Membership listener", func() {
 						StackDependency: v1beta1.StackDependency{
 							Stack: stackName,
 						},
-						ID:     "wrong",
+						ID:     wrong,
 						Public: true,
 					},
 				}
@@ -84,6 +85,12 @@ var _ = Describe("Membership listener", func() {
 						"foo":     "bar",
 						"foo.foo": "bar",
 						"foo-foo": "bar",
+					},
+					AdditionalAnnotations: map[string]string{
+						"foo":     "bar",
+						"foo.foo": "bar",
+						"foo-foo": "bar",
+						"foo_foo": "@bar",
 					},
 					StaticClients: []*generated.AuthClient{
 						{
@@ -146,6 +153,12 @@ var _ = Describe("Membership listener", func() {
 			Expect(stack.Labels).To(HaveKeyWithValue("formance.com/foo", "bar"))
 			Expect(stack.Labels).To(HaveKeyWithValue("formance.com/foo.foo", "bar"))
 			Expect(stack.Labels).To(HaveKeyWithValue("formance.com/foo-foo", "bar"))
+		})
+		It("Should have additional annotations", func() {
+			Expect(stack.Annotations).To(HaveKeyWithValue("formance.com/foo", "bar"))
+			Expect(stack.Annotations).To(HaveKeyWithValue("formance.com/foo.foo", "bar"))
+			Expect(stack.Annotations).To(HaveKeyWithValue("formance.com/foo-foo", "bar"))
+			Expect(stack.Annotations).To(HaveKeyWithValue("formance.com/foo_foo", "@bar"))
 		})
 		It("Should create all required crds cluster side", func() {
 			auth := &v1beta1.Auth{}

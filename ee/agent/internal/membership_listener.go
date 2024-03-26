@@ -12,7 +12,6 @@ import (
 	"github.com/alitto/pond"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/components/agent/internal/generated"
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/api/equality"
@@ -104,17 +103,29 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 		versions = "default"
 	}
 
-	additionalLabels := collectionutils.ConvertMap(membershipStack.AdditionalLabels, func(value string) any {
-		return value
-	})
+	additionalLabels := map[string]any{}
+	for key, value := range membershipStack.AdditionalLabels {
+		additionalLabels["formance.com/"+key] = value
+	}
+
+	additionalAnnotations := map[string]any{}
+	for key, value := range membershipStack.AdditionalAnnotations {
+		additionalAnnotations["formance.com/"+key] = value
+	}
+
+	metadata := map[string]any{
+		"annotations": additionalAnnotations,
+		"labels":      additionalLabels,
+	}
 
 	stack, err := c.createOrUpdate(ctx, v1beta1.GroupVersion.WithKind("Stack"), membershipStack.ClusterName, membershipStack.ClusterName, nil, map[string]any{
+		"metadata": metadata,
 		"spec": map[string]any{
 			"versionsFromFile": versions,
 			"disabled":         membershipStack.Disabled,
 			"enableAudit":      membershipStack.EnableAudit,
 		},
-	}, additionalLabels)
+	})
 	if err != nil {
 		sharedlogging.FromContext(ctx).Errorf("Unable to create stack cluster side: %s", err)
 		return
@@ -136,12 +147,18 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 			continue
 		}
 
-		if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, gvk, map[string]any{}, additionalLabels); err != nil {
+		if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, gvk, map[string]any{
+			"metadata": map[string]any{
+				"annotations": additionalAnnotations,
+				"labels":      additionalLabels,
+			},
+		}); err != nil {
 			sharedlogging.FromContext(ctx).Errorf("Unable to create module %s cluster side: %s", gvk.Kind, err)
 		}
 	}
 
 	if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, v1beta1.GroupVersion.WithKind("Auth"), map[string]any{
+		"metadata": metadata,
 		"spec": map[string]any{
 			"delegatedOIDCServer": map[string]any{
 				"issuer":       membershipStack.AuthConfig.Issuer,
@@ -149,7 +166,7 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 				"clientSecret": membershipStack.AuthConfig.ClientSecret,
 			},
 		},
-	}, additionalLabels); err != nil {
+	}); err != nil {
 		sharedlogging.FromContext(ctx).Errorf("Unable to create module Auth cluster side: %s", err)
 	}
 
@@ -158,6 +175,7 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 		parts := strings.Split(stack.GetName(), "-")
 
 		if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, v1beta1.GroupVersion.WithKind("Stargate"), map[string]any{
+			"metadata": metadata,
 			"spec": map[string]any{
 				"organizationID": parts[0],
 				"stackID":        parts[1],
@@ -168,7 +186,7 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 					"clientSecret": membershipStack.AuthConfig.ClientSecret,
 				},
 			},
-		}, additionalLabels); err != nil {
+		}); err != nil {
 			sharedlogging.FromContext(ctx).Errorf("Unable to create module Stargate cluster side: %s", err)
 		}
 	} else {
@@ -181,13 +199,14 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 	}
 
 	if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, v1beta1.GroupVersion.WithKind("Gateway"), map[string]any{
+		"metadata": metadata,
 		"spec": map[string]any{
 			"ingress": map[string]any{
 				"host":   fmt.Sprintf("%s.%s", stack.GetName(), c.clientInfo.BaseUrl.Host),
 				"scheme": c.clientInfo.BaseUrl.Scheme,
 			},
 		},
-	}, additionalLabels); client.IgnoreNotFound(err) != nil {
+	}); client.IgnoreNotFound(err) != nil {
 		sharedlogging.FromContext(ctx).Errorf("Unable to create module Stargate cluster side: %s", err)
 	}
 
@@ -195,11 +214,12 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 	for _, client := range membershipStack.StaticClients {
 		authClient, err := c.createOrUpdateStackDependency(ctx, fmt.Sprintf("%s-%s", stack.GetName(), client.Id), stack.GetName(),
 			stack, v1beta1.GroupVersion.WithKind("AuthClient"), map[string]any{
+				"metadata": metadata,
 				"spec": map[string]any{
 					"id":     client.Id,
 					"public": client.Public,
 				},
-			}, additionalLabels)
+			})
 		if err != nil {
 			sharedlogging.FromContext(ctx).Errorf("Unable to create AuthClient cluster side: %s", err)
 		}
@@ -301,7 +321,7 @@ func (c *membershipListener) enableStack(ctx context.Context, stack *generated.E
 	sharedlogging.FromContext(ctx).Infof("Stack %s enabled", stack.ClusterName)
 }
 
-func (c *membershipListener) createOrUpdate(ctx context.Context, gvk schema.GroupVersionKind, name string, stackName string, owner *metav1.OwnerReference, content map[string]any, additionalLabel map[string]any) (*unstructured.Unstructured, error) {
+func (c *membershipListener) createOrUpdate(ctx context.Context, gvk schema.GroupVersionKind, name string, stackName string, owner *metav1.OwnerReference, content map[string]any) (*unstructured.Unstructured, error) {
 
 	logger := sharedlogging.FromContext(ctx).WithFields(map[string]any{
 		"gvk": gvk,
@@ -311,10 +331,10 @@ func (c *membershipListener) createOrUpdate(ctx context.Context, gvk schema.Grou
 		content["metadata"] = map[string]any{}
 	}
 
-	content["metadata"].(map[string]any)["labels"] = map[string]any{}
-	for k, v := range additionalLabel {
-		content["metadata"].(map[string]any)["labels"].(map[string]any)["formance.com/"+k] = v
+	if content["metadata"].(map[string]any)["labels"] == nil {
+		content["metadata"].(map[string]any)["labels"] = map[string]any{}
 	}
+
 	content["metadata"].(map[string]any)["labels"].(map[string]any)["formance.com/created-by-agent"] = "true"
 	content["metadata"].(map[string]any)["labels"].(map[string]any)["formance.com/stack"] = stackName
 	content["metadata"].(map[string]any)["name"] = name
@@ -379,7 +399,7 @@ func (c *membershipListener) createOrUpdate(ctx context.Context, gvk schema.Grou
 	return u, nil
 }
 
-func (c *membershipListener) createOrUpdateStackDependency(ctx context.Context, name string, stackName string, stack *unstructured.Unstructured, gvk schema.GroupVersionKind, content map[string]any, additionalLabel map[string]any) (*unstructured.Unstructured, error) {
+func (c *membershipListener) createOrUpdateStackDependency(ctx context.Context, name string, stackName string, stack *unstructured.Unstructured, gvk schema.GroupVersionKind, content map[string]any) (*unstructured.Unstructured, error) {
 	if _, ok := content["spec"]; !ok {
 		content["spec"] = map[string]any{}
 	}
@@ -391,7 +411,7 @@ func (c *membershipListener) createOrUpdateStackDependency(ctx context.Context, 
 			Kind:       "Stack",
 			Name:       stack.GetName(),
 			UID:        stack.GetUID(),
-		}, content, additionalLabel)
+		}, content)
 }
 
 func NewMembershipListener(restClient *rest.RESTClient, clientInfo ClientInfo, mapper meta.RESTMapper,
