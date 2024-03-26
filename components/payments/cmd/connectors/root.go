@@ -40,7 +40,10 @@ func NewConnectors(
 	otlp.InitOTLPFlags(server.Flags())
 	otlptraces.InitOTLPTracesFlags(server.Flags())
 	otlpmetrics.InitOTLPMetricsFlags(server.Flags())
-	publish.InitCLIFlags(server)
+	publish.InitCLIFlags(server, func(cd *publish.ConfigDefault) {
+		// We want to reconnect forever
+		cd.PublisherNatsMaxReconnect = -1
+	})
 	iam.InitFlags(server.Flags())
 	auth.InitAuthFlags(server.Flags())
 

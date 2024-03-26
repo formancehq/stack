@@ -41,7 +41,9 @@ func NewAPI(
 	otlptraces.InitOTLPTracesFlags(server.Flags())
 	otlpmetrics.InitOTLPMetricsFlags(server.Flags())
 	auth.InitAuthFlags(server.Flags())
-	publish.InitCLIFlags(server)
+	publish.InitCLIFlags(server, func(cd *publish.ConfigDefault) {
+		cd.PublisherNatsMaxReconnect = -1
+	})
 	bunconnect.InitFlags(server.Flags())
 	iam.InitFlags(server.Flags())
 

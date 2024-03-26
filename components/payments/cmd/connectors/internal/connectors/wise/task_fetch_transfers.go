@@ -85,7 +85,6 @@ func fetchTransfers(
 			return err
 		}
 
-		fmt.Println("TOTO", amount)
 		batchElement := ingestion.PaymentBatchElement{
 			Payment: &models.Payment{
 				ID: models.PaymentID{
