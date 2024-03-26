@@ -26,7 +26,10 @@ func NewRootCommand() *cobra.Command {
 	}
 
 	otlptraces.InitOTLPTracesFlags(root.PersistentFlags())
-	publish.InitCLIFlags(root)
+	publish.InitCLIFlags(root, func(cd *publish.ConfigDefault) {
+		// We want to reconnect forever
+		cd.PublisherNatsMaxReconnect = -1
+	})
 	auth.InitAuthFlags(root.PersistentFlags())
 	flag.Init(root.PersistentFlags())
 	bunconnect.InitFlags(root.PersistentFlags())
