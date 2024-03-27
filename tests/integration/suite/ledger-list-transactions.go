@@ -1044,6 +1044,27 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.StatusCode).To(Equal(200))
 			transactionCursorResponse = response.V2TransactionsCursorResponse
 			Expect(transactionCursorResponse.Cursor.Data).Should(HaveLen(0))
+
+			By("using $not operator on account 'world'", func() {
+				response, err = Client().Ledger.V2ListTransactions(
+					TestContext(),
+					operations.V2ListTransactionsRequest{
+						Ledger: "default",
+						Expand: pointer.For("volumes"),
+						RequestBody: map[string]interface{}{
+							"$not": map[string]any{
+								"$match": map[string]any{
+									"account": "foo:bar",
+								},
+							},
+						},
+					},
+				)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(response.StatusCode).To(Equal(200))
+				transactionCursorResponse = response.V2TransactionsCursorResponse
+				Expect(transactionCursorResponse.Cursor.Data).Should(HaveLen(2))
+			})
 		})
 		It("should be gettable on api", func() {
 			response, err := Client().Ledger.V2GetTransaction(

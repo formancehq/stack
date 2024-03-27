@@ -221,6 +221,26 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				Metadata: metadata1,
 			}))
 		})
+		It("should be listable on api using $not filter", func() {
+			response, err := Client().Ledger.V2ListAccounts(
+				TestContext(),
+				operations.V2ListAccountsRequest{
+					Ledger: "default",
+					RequestBody: map[string]interface{}{
+						"$not": map[string]any{
+							"$match": map[string]any{
+								"address": "world",
+							},
+						},
+					},
+				},
+			)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
+
+			accountsCursorResponse := response.V2AccountsCursorResponse
+			Expect(accountsCursorResponse.Cursor.Data).To(HaveLen(2))
+		})
 	})
 
 	When("counting and listing accounts empty", func() {
