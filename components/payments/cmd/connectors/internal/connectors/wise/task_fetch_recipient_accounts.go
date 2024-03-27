@@ -14,8 +14,13 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
+	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
 )
+
+type fetchRecipientAccountsState struct {
+	LastSeekPosition uint64 `json:"last_seek_position"`
+}
 
 func taskFetchRecipientAccounts(wiseClient *client.Client, profileID uint64) task.Task {
 	return func(
@@ -23,6 +28,7 @@ func taskFetchRecipientAccounts(wiseClient *client.Client, profileID uint64) tas
 		taskID models.TaskID,
 		connectorID models.ConnectorID,
 		ingester ingestion.Ingester,
+		resolver task.StateResolver,
 	) error {
 		ctx, span := connectors.StartSpan(
 			ctx,
@@ -33,15 +39,33 @@ func taskFetchRecipientAccounts(wiseClient *client.Client, profileID uint64) tas
 		)
 		defer span.End()
 
-		recipientAccounts, err := wiseClient.GetRecipientAccounts(ctx, profileID)
-		if err != nil {
-			otel.RecordError(span, err)
-			return err
+		state := task.MustResolveTo(ctx, resolver, fetchRecipientAccountsState{})
+
+		for {
+			recipientAccounts, err := wiseClient.GetRecipientAccounts(ctx, profileID, pageSize, state.LastSeekPosition)
+			if err != nil {
+				// Retryable errors already handled by the function
+				otel.RecordError(span, err)
+				return err
+			}
+
+			if err := ingestRecipientAccountsBatch(ctx, connectorID, ingester, recipientAccounts.Content); err != nil {
+				// Retryable errors already handled by the function
+				otel.RecordError(span, err)
+				return err
+			}
+
+			if recipientAccounts.SeekPositionForNext == 0 {
+				// No more data to fetch
+				break
+			}
+
+			state.LastSeekPosition = recipientAccounts.SeekPositionForNext
 		}
 
-		if err := ingestRecipientAccountsBatch(ctx, connectorID, ingester, recipientAccounts); err != nil {
+		if err := ingester.UpdateTaskState(ctx, state); err != nil {
 			otel.RecordError(span, err)
-			return err
+			return errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		return nil
@@ -58,7 +82,7 @@ func ingestRecipientAccountsBatch(
 	for _, account := range accounts {
 		raw, err := json.Marshal(account)
 		if err != nil {
-			return err
+			return errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		accountsBatch = append(accountsBatch, &models.Account{
@@ -70,14 +94,14 @@ func ingestRecipientAccountsBatch(
 			Reference:    fmt.Sprintf("%d", account.ID),
 			ConnectorID:  connectorID,
 			DefaultAsset: currency.FormatAsset(supportedCurrenciesWithDecimal, account.Currency),
-			AccountName:  account.HolderName,
+			AccountName:  account.Name.FullName,
 			Type:         models.AccountTypeExternal,
 			RawData:      raw,
 		})
 	}
 
 	if err := ingester.IngestAccounts(ctx, accountsBatch); err != nil {
-		return err
+		return errors.Wrap(task.ErrRetryable, err.Error())
 	}
 
 	return nil

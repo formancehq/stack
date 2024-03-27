@@ -10,6 +10,7 @@ import (
 
 const (
 	defaultPollingPeriod = 2 * time.Minute
+	pageSize             = 100
 )
 
 type Config struct {

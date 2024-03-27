@@ -23,7 +23,7 @@ func (w *Client) GetProfiles(ctx context.Context) ([]Profile, error) {
 
 	var profiles []Profile
 
-	res, err := w.httpClient.Get(w.endpoint("v1/profiles"))
+	res, err := w.httpClient.Get(w.endpoint("v2/profiles"))
 	if err != nil {
 		return profiles, err
 	}
