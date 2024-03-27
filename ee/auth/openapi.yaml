@@ -7,6 +7,8 @@ info:
 paths:
   /.well-known/openid-configuration:
     get:
+      summary: Retrieve OpenID connect well-knowns.
+      operationId: getOIDCWellKnowns
       responses:
         200:
           description: |
