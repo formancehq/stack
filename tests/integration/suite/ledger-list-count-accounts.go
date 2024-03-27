@@ -390,15 +390,15 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(err).To(Succeed())
 		})
 		When("getting account in the present", func() {
-			It("should ignore future transaction", func() {
+			It("should ignore future transaction on effective volumes", func() {
 				accountResponse, err := Client().Ledger.V2GetAccount(TestContext(), operations.V2GetAccountRequest{
 					Address: "foo",
-					Expand:  pointer.For("volumes"),
+					Expand:  pointer.For("effectiveVolumes"),
 					Ledger:  "default",
-					Pit:     pointer.For(time.Now()),
+					Pit:     pointer.For(time.Now().Add(time.Minute)),
 				})
 				Expect(err).To(Succeed())
-				Expect(accountResponse.V2AccountResponse.Data.Volumes["USD"].Balance).To(Equal(big.NewInt(100)))
+				Expect(accountResponse.V2AccountResponse.Data.EffectiveVolumes["USD"].Balance).To(Equal(big.NewInt(100)))
 			})
 		})
 	})
