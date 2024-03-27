@@ -24,7 +24,7 @@ func TestMonitor(t *testing.T) {
 	)
 	messages, err := pubSub.Subscribe(context.Background(), "testing")
 	require.NoError(t, err)
-	p := topicmapper.NewTopicMapperPublisherDecorator(pubSub, map[string]string{
+	p := topicmapper.NewPublisherDecorator(pubSub, map[string]string{
 		"*": "testing",
 	})
 	m := NewLedgerMonitor(p, uuid.New())

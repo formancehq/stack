@@ -83,10 +83,7 @@ func NewRootCommand() *cobra.Command {
 		}),
 	)
 
-	publish.InitCLIFlags(cmd, func(cd *publish.ConfigDefault) {
-		// We want to reconnect forever
-		cd.PublisherNatsMaxReconnect = -1
-	})
+	publish.InitCLIFlags(cmd)
 	auth.InitAuthFlags(cmd.PersistentFlags())
 	bunconnect.InitFlags(cmd.PersistentFlags())
 	iam.InitFlags(cmd.PersistentFlags())
