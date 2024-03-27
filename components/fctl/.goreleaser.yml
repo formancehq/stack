@@ -54,6 +54,10 @@ brews:
       zsh_completion.install "completions/fctl.zsh" => "_fctl"
       fish_completion.install "completions/fctl.fish"
 
+furies:
+  - account: formance
+    ids:
+      - fctl
 
 release:
   prerelease: auto
