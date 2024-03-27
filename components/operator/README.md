@@ -186,6 +186,7 @@ Available settings:
 | deployments.`<deployment-name>`.containers.`<container-name>`.run-as                     | Map    | user=X, group=X     |
 | caddy.image                                                                              | string |                     | Caddy image                                                          |
 | registries.`<name>`.endpoint                                                             | string |                     | Spécify a custom endpoint for a specific docker repository           |
+| registries.`<name>`.images.`<path>`.rewrite                                              | string    |  formancehq/example         | Allow to rewrite the image path |
 | search.batching                                                                          | Map    | period=1s, count=10 | Override default batching parameters                                 |
 | services.`<service-name>`.annotations                                                    | Map    |                     | Allow to specify custom annotations to apply on created k8s services |
 

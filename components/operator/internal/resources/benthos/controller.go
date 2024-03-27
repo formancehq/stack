@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/resourcereferences"
 
 	"github.com/formancehq/operator/internal/resources/services"
@@ -292,6 +293,10 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 		return streams[i].Name < streams[j].Name
 	})
 
+	benthosImage, err := registries.GetBenthosImage(ctx, stack, "v4.23.1-es")
+	if err != nil {
+		return err
+	}
 	_, err = deployments.CreateOrUpdate(ctx, b, "benthos",
 		resourcereferences.Annotate[*appsv1.Deployment]("elasticsearch-secret-hash", resourceReference),
 		deployments.WithMatchingLabels("benthos"),
@@ -299,7 +304,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 		deployments.WithInitContainers(b.Spec.InitContainers...),
 		deployments.WithContainers(corev1.Container{
 			Name:    "benthos",
-			Image:   "public.ecr.aws/formance-internal/jeffail/benthos:v4.23.1-es",
+			Image:   benthosImage,
 			Env:     env,
 			Command: cmd,
 			Ports: []corev1.ContainerPort{{
