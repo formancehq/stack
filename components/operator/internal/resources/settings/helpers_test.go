@@ -94,6 +94,17 @@ func TestFindMatchingSettings(t *testing.T) {
 			key:            "resource-requirements.payments.containers.payments.limits",
 			expectedResult: "memory=1024Mi",
 		},
+		{
+			settings: []settings{
+				{
+					key:        "resource-requirements.\"ghcr.io\".images.ledger.rewrite",
+					value:      "example",
+					isWildcard: false,
+				},
+			},
+			key:            "resource-requirements.\"ghcr.io\".images.ledger.rewrite",
+			expectedResult: "example",
+		},
 	}
 	for i, tc := range testCases {
 		tc := tc

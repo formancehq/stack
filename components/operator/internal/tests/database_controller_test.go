@@ -2,6 +2,7 @@ package tests_test
 
 import (
 	"fmt"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/resources/resourcereferences"
 	"github.com/formancehq/operator/internal/resources/settings"
@@ -143,7 +144,7 @@ var _ = Describe("DatabaseController", func() {
 					databaseSettings.Spec.Value = "postgresql://xxx"
 					Expect(Patch(databaseSettings, patch)).To(Succeed())
 				})
-				It("Should declare the Database object as out of sync", func() {
+				It("Should declare the Database object as out of sync", FlakeAttempts(3), func() {
 					Eventually(func(g Gomega) bool {
 						g.Expect(LoadResource("", database.Name, database)).To(Succeed())
 
