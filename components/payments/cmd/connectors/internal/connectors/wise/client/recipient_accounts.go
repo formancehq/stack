@@ -11,33 +11,45 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 )
 
-type RecipientAccount struct {
-	ID         uint64 `json:"id"`
-	Profile    uint64 `json:"profile"`
-	Currency   string `json:"currency"`
-	HolderName string `json:"accountHolderName"`
+type RecipientAccountsResponse struct {
+	Content                []*RecipientAccount `json:"content"`
+	SeekPositionForCurrent uint64              `json:"seekPositionForCurrent"`
+	SeekPositionForNext    uint64              `json:"seekPositionForNext"`
+	Size                   int                 `json:"size"`
 }
 
-func (w *Client) GetRecipientAccounts(ctx context.Context, profileID uint64) ([]*RecipientAccount, error) {
+type RecipientAccount struct {
+	ID       uint64 `json:"id"`
+	Profile  uint64 `json:"profileId"`
+	Currency string `json:"currency"`
+	Name     struct {
+		FullName string `json:"fullName"`
+	} `json:"name"`
+}
+
+func (w *Client) GetRecipientAccounts(ctx context.Context, profileID uint64, pageSize int, seekPositionForNext uint64) (*RecipientAccountsResponse, error) {
 	f := connectors.ClientMetrics(ctx, "wise", "list_recipient_accounts")
 	now := time.Now()
 	defer f(ctx, now)
 
-	var recipientAccounts []*RecipientAccount
-
 	req, err := http.NewRequestWithContext(ctx,
-		http.MethodGet, w.endpoint("v1/accounts"), http.NoBody)
+		http.MethodGet, w.endpoint("v2/accounts"), http.NoBody)
 	if err != nil {
 		return nil, err
 	}
 
 	q := req.URL.Query()
 	q.Add("profile", fmt.Sprintf("%d", profileID))
+	q.Add("size", fmt.Sprintf("%d", pageSize))
+	q.Add("sort", "id,asc")
+	if seekPositionForNext > 0 {
+		q.Add("seekPosition", fmt.Sprintf("%d", seekPositionForNext))
+	}
 	req.URL.RawQuery = q.Encode()
 
 	res, err := w.httpClient.Do(req)
 	if err != nil {
-		return recipientAccounts, err
+		return nil, err
 	}
 	defer res.Body.Close()
 
@@ -50,6 +62,7 @@ func (w *Client) GetRecipientAccounts(ctx context.Context, profileID uint64) ([]
 		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
 
+	var recipientAccounts *RecipientAccountsResponse
 	err = json.Unmarshal(body, &recipientAccounts)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal transfers: %w", err)

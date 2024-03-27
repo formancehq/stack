@@ -133,7 +133,7 @@ func fetchTransfers(
 
 func matchTransferStatus(status string) models.PaymentStatus {
 	switch status {
-	case "incoming_payment_waiting", "processing":
+	case "incoming_payment_waiting", "incoming_payment_initiated", "processing":
 		return models.PaymentStatusPending
 	case "funds_converted", "outgoing_payment_sent":
 		return models.PaymentStatusSucceeded
