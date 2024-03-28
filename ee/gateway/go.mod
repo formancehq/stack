@@ -29,6 +29,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.26.4 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.16.15 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.14.11 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/rds/auth v1.3.10 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.2.10 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.5.10 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.7.2 // indirect
@@ -62,6 +63,8 @@ require (
 	github.com/jcmturner/gofork v1.7.6 // indirect
 	github.com/jcmturner/gokrb5/v8 v8.4.4 // indirect
 	github.com/jcmturner/rpc/v2 v2.0.3 // indirect
+	github.com/jinzhu/inflection v1.0.0 // indirect
+	github.com/lib/pq v1.10.9 // indirect
 	github.com/lithammer/shortuuid/v3 v3.0.7 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mastercactapus/proxyprotocol v0.0.4 // indirect
@@ -80,14 +83,26 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/viper v1.15.0 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
+	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
+	github.com/uptrace/bun v1.1.16 // indirect
+	github.com/uptrace/bun/dialect/pgdialect v1.1.16 // indirect
+	github.com/uptrace/bun/extra/bunotel v1.1.16 // indirect
+	github.com/uptrace/opentelemetry-go-extra/otellogrus v0.1.21 // indirect
+	github.com/uptrace/opentelemetry-go-extra/otelsql v0.2.2 // indirect
+	github.com/uptrace/opentelemetry-go-extra/otelutil v0.1.21 // indirect
+	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
+	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
+	github.com/xo/dburl v0.20.2 // indirect
 	github.com/zeebo/blake3 v0.2.3 // indirect
 	go.opentelemetry.io/contrib/propagators/autoprop v0.42.0 // indirect
 	go.opentelemetry.io/contrib/propagators/aws v1.17.0 // indirect
 	go.opentelemetry.io/contrib/propagators/b3 v1.22.0 // indirect
 	go.opentelemetry.io/contrib/propagators/jaeger v1.17.0 // indirect
 	go.opentelemetry.io/contrib/propagators/ot v1.17.0 // indirect
+	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.22.0 // indirect
+	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.22.0 // indirect
 	go.uber.org/dig v1.16.1 // indirect
 	go.uber.org/fx v1.19.1 // indirect
 	go.uber.org/mock v0.3.0 // indirect

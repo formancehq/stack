@@ -26,6 +26,13 @@ func GetBrokerEnvVarsWithPrefix(ctx core.Context, brokerURI *v1beta1.URI, stackN
 
 	ret = append(ret, core.Env(fmt.Sprintf("%sBROKER", prefix), brokerURI.Scheme))
 
+	if brokerURI.Query().Get("circuitBreakerEnabled") == "true" {
+		ret = append(ret, core.Env(fmt.Sprintf("%sPUBLISHER_CIRCUIT_BREAKER_ENABLED", prefix), "true"))
+		if openInterval := brokerURI.Query().Get("circuitBreakerOpenInterval"); openInterval != "" {
+			ret = append(ret, core.Env(fmt.Sprintf("%sPUBLISHER_CIRCUIT_BREAKER_OPEN_INTERVAL_DURATION", prefix), openInterval))
+		}
+	}
+
 	switch {
 	case brokerURI.Scheme == "kafka":
 		ret = append(ret,

@@ -11,6 +11,7 @@ import (
 
 func Module(connectionOptions bunconnect.ConnectionOptions, configEncryptionKey string) fx.Option {
 	return fx.Options(
+		fx.Supply(&connectionOptions),
 		bunconnect.Module(connectionOptions),
 		fx.Provide(func(db *bun.DB) *Storage {
 			return NewStorage(db, configEncryptionKey)
