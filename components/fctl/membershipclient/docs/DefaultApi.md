@@ -1848,9 +1848,9 @@ func main() {
     organizationId := "organizationId_example" // string | 
     stackId := "stackId_example" // string | 
     pageSize := int32(56) // int32 |  (optional)
-    action := "action_example" // string |  (optional)
+    action := openapiclient.Action{String: new(string)} // Action |  (optional)
     userId := "userId_example" // string |  (optional)
-    key := "key_example" // string |  (optional)
+    key := "key->example->subkey" // string |  (optional)
     value := "value_example" // string |  (optional)
 
     configuration := openapiclient.NewConfiguration()
@@ -1884,7 +1884,7 @@ Name | Type | Description  | Notes
 
 
  **pageSize** | **int32** |  | 
- **action** | **string** |  | 
+ **action** | [**Action**](Action.md) |  | 
  **userId** | **string** |  | 
  **key** | **string** |  | 
  **value** | **string** |  | 

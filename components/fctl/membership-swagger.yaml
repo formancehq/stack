@@ -528,7 +528,7 @@ paths:
         - name: action
           in: query
           schema:
-            type: string
+            $ref: "#/components/schemas/Action"
           required: false
         - name: userId
           in: query
@@ -539,6 +539,7 @@ paths:
           in: query
           schema:
             type: string
+            example: "key->example->subkey"
           required: false
         - name: value
           in: query
@@ -1248,6 +1249,41 @@ components:
             openid: Enable OIDC
             email: Ask email access
   schemas:
+    Action:
+      oneOf:
+        - type: string
+          enum:
+            - agents.connected
+            - agents.disconnected
+            - invitations.created
+            - invitations.accepted
+            - invitations.rejected
+            - organizations.created
+            - organizations.updated
+            - organizations.deleted
+            - organizations.user.deleted
+            - organizations.user.updated
+            - regions.created
+            - regions.deleted
+            - users.created
+            - users.deleted
+            - stacks.disposal
+            - stacks.disposal-reset
+            - stacks.warned
+            - stacks.pruned
+            - stacks.status.updated
+            - stacks.created
+            - stacks.updated
+            - stacks.deleted
+            - stacks.restored
+            - stacks.disabled
+            - stacks.enabled
+            - stacks.upgraded
+            - stacks.stargate.enabled
+            - stacks.stargate.disabled
+            - stacks.user.updated
+            - stacks.user.deleted
+            - stacks.reachness.updated
     LogCursor:
       allOf:
         - $ref: "#/components/schemas/Cursor"

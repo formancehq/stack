@@ -6,6 +6,7 @@ api/openapi.yaml
 api_default.go
 client.go
 configuration.go
+docs/Action.md
 docs/AnyRegion.md
 docs/AnyRegionAllOf.md
 docs/CreateInvitationResponse.md
@@ -73,6 +74,7 @@ docs/Version.md
 git_push.sh
 go.mod
 go.sum
+model_action.go
 model_any_region.go
 model_any_region_all_of.go
 model_create_invitation_response.go

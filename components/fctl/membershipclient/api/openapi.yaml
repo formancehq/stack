@@ -615,7 +615,7 @@ paths:
         name: action
         required: false
         schema:
-          type: string
+          $ref: '#/components/schemas/Action'
         style: form
       - explode: true
         in: query
@@ -629,6 +629,7 @@ paths:
         name: key
         required: false
         schema:
+          example: key->example->subkey
           type: string
         style: form
       - explode: true
@@ -1421,6 +1422,41 @@ paths:
       summary: Read user
 components:
   schemas:
+    Action:
+      oneOf:
+      - enum:
+        - agents.connected
+        - agents.disconnected
+        - invitations.created
+        - invitations.accepted
+        - invitations.rejected
+        - organizations.created
+        - organizations.updated
+        - organizations.deleted
+        - organizations.user.deleted
+        - organizations.user.updated
+        - regions.created
+        - regions.deleted
+        - users.created
+        - users.deleted
+        - stacks.disposal
+        - stacks.disposal-reset
+        - stacks.warned
+        - stacks.pruned
+        - stacks.status.updated
+        - stacks.created
+        - stacks.updated
+        - stacks.deleted
+        - stacks.restored
+        - stacks.disabled
+        - stacks.enabled
+        - stacks.upgraded
+        - stacks.stargate.enabled
+        - stacks.stargate.disabled
+        - stacks.user.updated
+        - stacks.user.deleted
+        - stacks.reachness.updated
+        type: string
     LogCursor:
       allOf:
       - $ref: '#/components/schemas/Cursor'

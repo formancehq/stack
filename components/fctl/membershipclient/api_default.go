@@ -3208,7 +3208,7 @@ type ApiListStackLogsRequest struct {
 	organizationId string
 	stackId string
 	pageSize *int32
-	action *string
+	action *Action
 	userId *string
 	key *string
 	value *string
@@ -3219,7 +3219,7 @@ func (r ApiListStackLogsRequest) PageSize(pageSize int32) ApiListStackLogsReques
 	return r
 }
 
-func (r ApiListStackLogsRequest) Action(action string) ApiListStackLogsRequest {
+func (r ApiListStackLogsRequest) Action(action Action) ApiListStackLogsRequest {
 	r.action = &action
 	return r
 }
