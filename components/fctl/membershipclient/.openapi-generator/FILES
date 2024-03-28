@@ -15,6 +15,7 @@ docs/CreateStackRequest.md
 docs/CreateStackRequestAllOf.md
 docs/CreateStackResponse.md
 docs/CreatedPrivateRegionResponse.md
+docs/Cursor.md
 docs/DefaultApi.md
 docs/Error.md
 docs/GetRegionResponse.md
@@ -28,6 +29,9 @@ docs/ListOrganizationResponse.md
 docs/ListRegionsResponse.md
 docs/ListStacksResponse.md
 docs/ListUsersResponse.md
+docs/Log.md
+docs/LogCursor.md
+docs/LogCursorAllOf.md
 docs/Organization.md
 docs/OrganizationAllOf.md
 docs/OrganizationData.md
@@ -78,6 +82,7 @@ model_create_stack_request.go
 model_create_stack_request_all_of.go
 model_create_stack_response.go
 model_created_private_region_response.go
+model_cursor.go
 model_error.go
 model_get_region_response.go
 model_get_region_versions_response.go
@@ -90,6 +95,9 @@ model_list_organization_response.go
 model_list_regions_response.go
 model_list_stacks_response.go
 model_list_users_response.go
+model_log.go
+model_log_cursor.go
+model_log_cursor_all_of.go
 model_organization.go
 model_organization_all_of.go
 model_organization_data.go

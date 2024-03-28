@@ -100,9 +100,11 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**GetStack**](docs/DefaultApi.md#getstack) | **Get** /organizations/{organizationId}/stacks/{stackId} | Find stack
 *DefaultApi* | [**ListInvitations**](docs/DefaultApi.md#listinvitations) | **Get** /me/invitations | List invitations of the user
 *DefaultApi* | [**ListOrganizationInvitations**](docs/DefaultApi.md#listorganizationinvitations) | **Get** /organizations/{organizationId}/invitations | List invitations of the organization
+*DefaultApi* | [**ListOrganizationLogs**](docs/DefaultApi.md#listorganizationlogs) | **Get** /organizations/{organizationId}/logs | List organization logs
 *DefaultApi* | [**ListOrganizations**](docs/DefaultApi.md#listorganizations) | **Get** /organizations | List organizations of the connected user
 *DefaultApi* | [**ListOrganizationsExpanded**](docs/DefaultApi.md#listorganizationsexpanded) | **Get** /organizations/expanded | List organizations of the connected user with expanded data
 *DefaultApi* | [**ListRegions**](docs/DefaultApi.md#listregions) | **Get** /organizations/{organizationId}/regions | List regions
+*DefaultApi* | [**ListStackLogs**](docs/DefaultApi.md#liststacklogs) | **Get** /organizations/{organizationId}/stacks/{stackId}/logs | List stacks logs
 *DefaultApi* | [**ListStackUsersAccesses**](docs/DefaultApi.md#liststackusersaccesses) | **Get** /organizations/{organizationId}/stacks/{stackId}/users | List stack users accesses within an organization
 *DefaultApi* | [**ListStacks**](docs/DefaultApi.md#liststacks) | **Get** /organizations/{organizationId}/stacks | List stacks
 *DefaultApi* | [**ListUsersOfOrganization**](docs/DefaultApi.md#listusersoforganization) | **Get** /organizations/{organizationId}/users | List users of organization
@@ -129,6 +131,7 @@ Class | Method | HTTP request | Description
  - [CreateStackRequestAllOf](docs/CreateStackRequestAllOf.md)
  - [CreateStackResponse](docs/CreateStackResponse.md)
  - [CreatedPrivateRegionResponse](docs/CreatedPrivateRegionResponse.md)
+ - [Cursor](docs/Cursor.md)
  - [Error](docs/Error.md)
  - [GetRegionResponse](docs/GetRegionResponse.md)
  - [GetRegionVersionsResponse](docs/GetRegionVersionsResponse.md)
@@ -141,6 +144,9 @@ Class | Method | HTTP request | Description
  - [ListRegionsResponse](docs/ListRegionsResponse.md)
  - [ListStacksResponse](docs/ListStacksResponse.md)
  - [ListUsersResponse](docs/ListUsersResponse.md)
+ - [Log](docs/Log.md)
+ - [LogCursor](docs/LogCursor.md)
+ - [LogCursorAllOf](docs/LogCursorAllOf.md)
  - [Organization](docs/Organization.md)
  - [OrganizationAllOf](docs/OrganizationAllOf.md)
  - [OrganizationData](docs/OrganizationData.md)
