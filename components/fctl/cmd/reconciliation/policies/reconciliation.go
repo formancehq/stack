@@ -57,7 +57,6 @@ func (c *ReconciliationController) Run(cmd *cobra.Command, args []string) (fctl.
 		return nil, err
 	}
 
-	fmt.Println(args[0], atLedger, atPayments)
 	response, err := store.Client().Reconciliation.Reconcile(cmd.Context(), operations.ReconcileRequest{
 		PolicyID: args[0],
 		ReconciliationRequest: shared.ReconciliationRequest{

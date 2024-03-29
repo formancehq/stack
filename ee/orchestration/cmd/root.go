@@ -121,6 +121,9 @@ func commonOptions(cmd *cobra.Command) (fx.Option, error) {
 		auth.CLIAuthModule(),
 		workflow.NewModule(viper.GetString(temporalTaskQueueFlag)),
 		triggers.NewModule(viper.GetString(temporalTaskQueueFlag)),
+		fx.Provide(func() *bunconnect.ConnectionOptions {
+			return connectionOptions
+		}),
 		fx.Provide(func() *http.Client {
 			httpClient := &http.Client{
 				Transport: otlp.NewRoundTripper(http.DefaultTransport, viper.GetBool(service.DebugFlag)),

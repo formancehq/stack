@@ -11,6 +11,9 @@ import (
 
 func Module(connectionOptions bunconnect.ConnectionOptions) fx.Option {
 	return fx.Options(
+		fx.Provide(func() *bunconnect.ConnectionOptions {
+			return &connectionOptions
+		}),
 		bunconnect.Module(connectionOptions),
 		fx.Provide(func(db *bun.DB) *Storage {
 			return NewStorage(db)
