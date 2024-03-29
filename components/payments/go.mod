@@ -10,6 +10,7 @@ require (
 	github.com/alitto/pond v1.8.3
 	github.com/bombsimon/logrusr/v3 v3.1.0
 	github.com/davecgh/go-spew v1.1.1
+	github.com/formancehq/payments/genericclient v0.0.0-00010101000000-000000000000
 	github.com/formancehq/stack/libs/go-libs v0.0.0-20230221161632-e6dc6a89a85e
 	github.com/get-momo/atlar-v1-go-client v1.2.1
 	github.com/gibson042/canonicaljson-go v1.0.3
@@ -205,3 +206,5 @@ require (
 )
 
 replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
+
+replace github.com/formancehq/payments/genericclient => ./cmd/connectors/internal/connectors/generic/client/generated

@@ -14,6 +14,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/bankingcircle"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currencycloud"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/dummypay"
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors/generic"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/mangopay"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/modulr"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/moneycorp"
@@ -69,6 +70,7 @@ func HTTPModule(serviceInfo api.ServiceInfo, bind, stackURL string) fx.Option {
 		addConnector[moneycorp.Config](moneycorp.NewLoader()),
 		addConnector[atlar.Config](atlar.NewLoader()),
 		addConnector[adyen.Config](adyen.NewLoader()),
+		addConnector[generic.Config](generic.NewLoader()),
 	)
 }
 
