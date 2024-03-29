@@ -8,7 +8,7 @@ import (
 	"github.com/formancehq/payments/genericclient"
 )
 
-func (c *Client) ListAccounts(ctx context.Context, page, pageSize int64, createdAtFrom time.Time) ([]genericclient.Account, error) {
+func (c *Client) ListAccounts(ctx context.Context, page, pageSize int64) ([]genericclient.Account, error) {
 	f := connectors.ClientMetrics(ctx, "generic", "list_accounts")
 	now := time.Now()
 	defer f(ctx, now)
@@ -17,9 +17,6 @@ func (c *Client) ListAccounts(ctx context.Context, page, pageSize int64, created
 		GetAccounts(ctx).
 		Page(page).
 		PageSize(pageSize)
-	if !createdAtFrom.IsZero() {
-		req = req.CreatedAtFrom(createdAtFrom)
-	}
 
 	accounts, _, err := req.Execute()
 	if err != nil {

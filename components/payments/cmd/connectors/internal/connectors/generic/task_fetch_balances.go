@@ -55,6 +55,10 @@ func ingestBalancesBatch(
 	accountID string,
 	balances *genericclient.Balances,
 ) error {
+	if balances == nil {
+		return nil
+	}
+
 	balancesBatch := make([]*models.Balance, 0, len(balances.Balances))
 	for _, balance := range balances.Balances {
 		var amount big.Int

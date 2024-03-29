@@ -3,7 +3,6 @@ package generic
 import (
 	"context"
 	"encoding/json"
-	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/generic/client"
@@ -14,10 +13,6 @@ import (
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
 )
-
-type fetchAccountsState struct {
-	LastCreatedAt time.Time
-}
 
 func taskFetchAccounts(client *client.Client, config *Config) task.Task {
 	return func(
@@ -36,15 +31,8 @@ func taskFetchAccounts(client *client.Client, config *Config) task.Task {
 		)
 		defer span.End()
 
-		state := task.MustResolveTo(ctx, resolver, fetchAccountsState{})
-
-		newState, err := ingestAccounts(ctx, connectorID, client, ingester, scheduler, state)
+		err := ingestAccounts(ctx, connectorID, client, ingester, scheduler)
 		if err != nil {
-			otel.RecordError(span, err)
-			return err
-		}
-
-		if err := ingester.UpdateTaskState(ctx, newState); err != nil {
 			otel.RecordError(span, err)
 			return err
 		}
@@ -77,17 +65,13 @@ func ingestAccounts(
 	client *client.Client,
 	ingester ingestion.Ingester,
 	scheduler task.Scheduler,
-	state fetchAccountsState,
-) (fetchAccountsState, error) {
-	newState := fetchAccountsState{
-		LastCreatedAt: state.LastCreatedAt,
-	}
+) error {
 
 	balancesTasks := make([]models.TaskDescriptor, 0)
 	for page := 1; ; page++ {
-		accounts, err := client.ListAccounts(ctx, int64(page), pageSize, state.LastCreatedAt)
+		accounts, err := client.ListAccounts(ctx, int64(page), pageSize)
 		if err != nil {
-			return fetchAccountsState{}, err
+			return err
 		}
 
 		if len(accounts) == 0 {
@@ -98,7 +82,7 @@ func ingestAccounts(
 		for _, account := range accounts {
 			raw, err := json.Marshal(account)
 			if err != nil {
-				return fetchAccountsState{}, err
+				return err
 			}
 
 			accountsBatch = append(accountsBatch, &models.Account{
@@ -121,16 +105,15 @@ func ingestAccounts(
 				AccountID: account.Id,
 			})
 			if err != nil {
-				return fetchAccountsState{}, err
+				return err
 			}
 
 			balancesTasks = append(balancesTasks, balanceTask)
 
-			newState.LastCreatedAt = account.CreatedAt
 		}
 
 		if err := ingester.IngestAccounts(ctx, ingestion.AccountBatch(accountsBatch)); err != nil {
-			return fetchAccountsState{}, errors.Wrap(task.ErrRetryable, err.Error())
+			return errors.Wrap(task.ErrRetryable, err.Error())
 		}
 
 		for _, balanceTask := range balancesTasks {
@@ -138,10 +121,10 @@ func ingestAccounts(
 				ScheduleOption: models.OPTIONS_RUN_NOW,
 				RestartOption:  models.OPTIONS_RESTART_IF_NOT_ACTIVE,
 			}); err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
-				return fetchAccountsState{}, errors.Wrap(task.ErrRetryable, err.Error())
+				return errors.Wrap(task.ErrRetryable, err.Error())
 			}
 		}
 	}
 
-	return newState, nil
+	return nil
 }
