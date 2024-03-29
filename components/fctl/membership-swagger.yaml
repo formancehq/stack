@@ -520,10 +520,16 @@ paths:
           schema:
             type: string
           required: true
+        - name: cursor
+          in: query
+          schema:
+            type: string
+          required: false
         - name: pageSize
           in: query
           schema:
             type: integer
+            minimum: 1
           required: false
         - name: action
           in: query
@@ -1187,7 +1193,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-
   /organizations/{organizationId}/regions/{regionId}/versions:
     parameters:
       - name: organizationId
@@ -1222,7 +1227,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetRegionVersionsResponse"
-
   /me:
     get:
       summary: Read user
@@ -1250,49 +1254,52 @@ components:
             email: Ask email access
   schemas:
     Action:
-      oneOf:
-        - type: string
-          enum:
-            - agents.connected
-            - agents.disconnected
-            - invitations.created
-            - invitations.accepted
-            - invitations.rejected
-            - organizations.created
-            - organizations.updated
-            - organizations.deleted
-            - organizations.user.deleted
-            - organizations.user.updated
-            - regions.created
-            - regions.deleted
-            - users.created
-            - users.deleted
-            - stacks.disposal
-            - stacks.disposal-reset
-            - stacks.warned
-            - stacks.pruned
-            - stacks.status.updated
-            - stacks.created
-            - stacks.updated
-            - stacks.deleted
-            - stacks.restored
-            - stacks.disabled
-            - stacks.enabled
-            - stacks.upgraded
-            - stacks.stargate.enabled
-            - stacks.stargate.disabled
-            - stacks.user.updated
-            - stacks.user.deleted
-            - stacks.reachness.updated
+      type: string
+      enum:
+        - agents.connected
+        - agents.disconnected
+        - invitations.created
+        - invitations.accepted
+        - invitations.rejected
+        - organizations.created
+        - organizations.updated
+        - organizations.deleted
+        - organizations.user.deleted
+        - organizations.user.updated
+        - regions.created
+        - regions.deleted
+        - users.created
+        - users.deleted
+        - stacks.disposal
+        - stacks.disposal-reset
+        - stacks.warned
+        - stacks.pruned
+        - stacks.status.updated
+        - stacks.created
+        - stacks.updated
+        - stacks.deleted
+        - stacks.restored
+        - stacks.disabled
+        - stacks.enabled
+        - stacks.upgraded
+        - stacks.stargate.enabled
+        - stacks.stargate.disabled
+        - stacks.user.updated
+        - stacks.user.deleted
+        - stacks.reachness.updated
     LogCursor:
-      allOf:
-        - $ref: "#/components/schemas/Cursor"
-        - type: object
-          properties:
-            data:
-              type: array
-              items:
-                $ref: "#/components/schemas/Log"
+      properties:
+        data:
+          allOf:
+            - $ref: "#/components/schemas/Cursor"
+            - type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Log"
+      required:
+        - data
     Log:
       type: object
       required:

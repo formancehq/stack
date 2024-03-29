@@ -15,68 +15,120 @@ import (
 	"fmt"
 )
 
-// Action - struct for Action
-type Action struct {
-	String *string
+// Action the model 'Action'
+type Action string
+
+// List of Action
+const (
+	AGENTS_CONNECTED Action = "agents.connected"
+	AGENTS_DISCONNECTED Action = "agents.disconnected"
+	INVITATIONS_CREATED Action = "invitations.created"
+	INVITATIONS_ACCEPTED Action = "invitations.accepted"
+	INVITATIONS_REJECTED Action = "invitations.rejected"
+	ORGANIZATIONS_CREATED Action = "organizations.created"
+	ORGANIZATIONS_UPDATED Action = "organizations.updated"
+	ORGANIZATIONS_DELETED Action = "organizations.deleted"
+	ORGANIZATIONS_USER_DELETED Action = "organizations.user.deleted"
+	ORGANIZATIONS_USER_UPDATED Action = "organizations.user.updated"
+	REGIONS_CREATED Action = "regions.created"
+	REGIONS_DELETED Action = "regions.deleted"
+	USERS_CREATED Action = "users.created"
+	USERS_DELETED Action = "users.deleted"
+	STACKS_DISPOSAL Action = "stacks.disposal"
+	STACKS_DISPOSAL_RESET Action = "stacks.disposal-reset"
+	STACKS_WARNED Action = "stacks.warned"
+	STACKS_PRUNED Action = "stacks.pruned"
+	STACKS_STATUS_UPDATED Action = "stacks.status.updated"
+	STACKS_CREATED Action = "stacks.created"
+	STACKS_UPDATED Action = "stacks.updated"
+	STACKS_DELETED Action = "stacks.deleted"
+	STACKS_RESTORED Action = "stacks.restored"
+	STACKS_DISABLED Action = "stacks.disabled"
+	STACKS_ENABLED Action = "stacks.enabled"
+	STACKS_UPGRADED Action = "stacks.upgraded"
+	STACKS_STARGATE_ENABLED Action = "stacks.stargate.enabled"
+	STACKS_STARGATE_DISABLED Action = "stacks.stargate.disabled"
+	STACKS_USER_UPDATED Action = "stacks.user.updated"
+	STACKS_USER_DELETED Action = "stacks.user.deleted"
+	STACKS_REACHNESS_UPDATED Action = "stacks.reachness.updated"
+)
+
+// All allowed values of Action enum
+var AllowedActionEnumValues = []Action{
+	"agents.connected",
+	"agents.disconnected",
+	"invitations.created",
+	"invitations.accepted",
+	"invitations.rejected",
+	"organizations.created",
+	"organizations.updated",
+	"organizations.deleted",
+	"organizations.user.deleted",
+	"organizations.user.updated",
+	"regions.created",
+	"regions.deleted",
+	"users.created",
+	"users.deleted",
+	"stacks.disposal",
+	"stacks.disposal-reset",
+	"stacks.warned",
+	"stacks.pruned",
+	"stacks.status.updated",
+	"stacks.created",
+	"stacks.updated",
+	"stacks.deleted",
+	"stacks.restored",
+	"stacks.disabled",
+	"stacks.enabled",
+	"stacks.upgraded",
+	"stacks.stargate.enabled",
+	"stacks.stargate.disabled",
+	"stacks.user.updated",
+	"stacks.user.deleted",
+	"stacks.reachness.updated",
 }
 
-// stringAsAction is a convenience function that returns string wrapped in Action
-func StringAsAction(v *string) Action {
-	return Action{
-		String: v,
+func (v *Action) UnmarshalJSON(src []byte) error {
+	var value string
+	err := json.Unmarshal(src, &value)
+	if err != nil {
+		return err
 	}
-}
-
-
-// Unmarshal JSON data into one of the pointers in the struct
-func (dst *Action) UnmarshalJSON(data []byte) error {
-	var err error
-	match := 0
-	// try to unmarshal data into String
-	err = newStrictDecoder(data).Decode(&dst.String)
-	if err == nil {
-		jsonString, _ := json.Marshal(dst.String)
-		if string(jsonString) == "{}" { // empty struct
-			dst.String = nil
-		} else {
-			match++
+	enumTypeValue := Action(value)
+	for _, existing := range AllowedActionEnumValues {
+		if existing == enumTypeValue {
+			*v = enumTypeValue
+			return nil
 		}
+	}
+
+	return fmt.Errorf("%+v is not a valid Action", value)
+}
+
+// NewActionFromValue returns a pointer to a valid Action
+// for the value passed as argument, or an error if the value passed is not allowed by the enum
+func NewActionFromValue(v string) (*Action, error) {
+	ev := Action(v)
+	if ev.IsValid() {
+		return &ev, nil
 	} else {
-		dst.String = nil
-	}
-
-	if match > 1 { // more than 1 match
-		// reset to nil
-		dst.String = nil
-
-		return fmt.Errorf("data matches more than one schema in oneOf(Action)")
-	} else if match == 1 {
-		return nil // exactly one match
-	} else { // no match
-		return fmt.Errorf("data failed to match schemas in oneOf(Action)")
+		return nil, fmt.Errorf("invalid value '%v' for Action: valid values are %v", v, AllowedActionEnumValues)
 	}
 }
 
-// Marshal data from the first non-nil pointers in the struct to JSON
-func (src Action) MarshalJSON() ([]byte, error) {
-	if src.String != nil {
-		return json.Marshal(&src.String)
+// IsValid return true if the value is valid for the enum, false otherwise
+func (v Action) IsValid() bool {
+	for _, existing := range AllowedActionEnumValues {
+		if existing == v {
+			return true
+		}
 	}
-
-	return nil, nil // no data in oneOf schemas
+	return false
 }
 
-// Get the actual instance
-func (obj *Action) GetActualInstance() (interface{}) {
-	if obj == nil {
-		return nil
-	}
-	if obj.String != nil {
-		return obj.String
-	}
-
-	// all schemas are nil
-	return nil
+// Ptr returns reference to Action value
+func (v Action) Ptr() *Action {
+	return &v
 }
 
 type NullableAction struct {
@@ -114,5 +166,4 @@ func (v *NullableAction) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
 

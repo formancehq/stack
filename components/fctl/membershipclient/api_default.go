@@ -3207,11 +3207,17 @@ type ApiListStackLogsRequest struct {
 	ApiService *DefaultApiService
 	organizationId string
 	stackId string
+	cursor *string
 	pageSize *int32
 	action *Action
 	userId *string
 	key *string
 	value *string
+}
+
+func (r ApiListStackLogsRequest) Cursor(cursor string) ApiListStackLogsRequest {
+	r.cursor = &cursor
+	return r
 }
 
 func (r ApiListStackLogsRequest) PageSize(pageSize int32) ApiListStackLogsRequest {
@@ -3283,6 +3289,9 @@ func (a *DefaultApiService) ListStackLogsExecute(r ApiListStackLogsRequest) (*Lo
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 
+	if r.cursor != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "cursor", r.cursor, "")
+	}
 	if r.pageSize != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "pageSize", r.pageSize, "")
 	}

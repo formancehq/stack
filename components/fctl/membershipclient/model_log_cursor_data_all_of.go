@@ -14,33 +14,33 @@ import (
 	"encoding/json"
 )
 
-// checks if the LogCursorAllOf type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &LogCursorAllOf{}
+// checks if the LogCursorDataAllOf type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &LogCursorDataAllOf{}
 
-// LogCursorAllOf struct for LogCursorAllOf
-type LogCursorAllOf struct {
+// LogCursorDataAllOf struct for LogCursorDataAllOf
+type LogCursorDataAllOf struct {
 	Data []Log `json:"data,omitempty"`
 }
 
-// NewLogCursorAllOf instantiates a new LogCursorAllOf object
+// NewLogCursorDataAllOf instantiates a new LogCursorDataAllOf object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewLogCursorAllOf() *LogCursorAllOf {
-	this := LogCursorAllOf{}
+func NewLogCursorDataAllOf() *LogCursorDataAllOf {
+	this := LogCursorDataAllOf{}
 	return &this
 }
 
-// NewLogCursorAllOfWithDefaults instantiates a new LogCursorAllOf object
+// NewLogCursorDataAllOfWithDefaults instantiates a new LogCursorDataAllOf object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewLogCursorAllOfWithDefaults() *LogCursorAllOf {
-	this := LogCursorAllOf{}
+func NewLogCursorDataAllOfWithDefaults() *LogCursorDataAllOf {
+	this := LogCursorDataAllOf{}
 	return &this
 }
 
 // GetData returns the Data field value if set, zero value otherwise.
-func (o *LogCursorAllOf) GetData() []Log {
+func (o *LogCursorDataAllOf) GetData() []Log {
 	if o == nil || IsNil(o.Data) {
 		var ret []Log
 		return ret
@@ -50,7 +50,7 @@ func (o *LogCursorAllOf) GetData() []Log {
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *LogCursorAllOf) GetDataOk() ([]Log, bool) {
+func (o *LogCursorDataAllOf) GetDataOk() ([]Log, bool) {
 	if o == nil || IsNil(o.Data) {
 		return nil, false
 	}
@@ -58,7 +58,7 @@ func (o *LogCursorAllOf) GetDataOk() ([]Log, bool) {
 }
 
 // HasData returns a boolean if a field has been set.
-func (o *LogCursorAllOf) HasData() bool {
+func (o *LogCursorDataAllOf) HasData() bool {
 	if o != nil && !IsNil(o.Data) {
 		return true
 	}
@@ -67,11 +67,11 @@ func (o *LogCursorAllOf) HasData() bool {
 }
 
 // SetData gets a reference to the given []Log and assigns it to the Data field.
-func (o *LogCursorAllOf) SetData(v []Log) {
+func (o *LogCursorDataAllOf) SetData(v []Log) {
 	o.Data = v
 }
 
-func (o LogCursorAllOf) MarshalJSON() ([]byte, error) {
+func (o LogCursorDataAllOf) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -79,7 +79,7 @@ func (o LogCursorAllOf) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o LogCursorAllOf) ToMap() (map[string]interface{}, error) {
+func (o LogCursorDataAllOf) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Data) {
 		toSerialize["data"] = o.Data
@@ -87,38 +87,38 @@ func (o LogCursorAllOf) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-type NullableLogCursorAllOf struct {
-	value *LogCursorAllOf
+type NullableLogCursorDataAllOf struct {
+	value *LogCursorDataAllOf
 	isSet bool
 }
 
-func (v NullableLogCursorAllOf) Get() *LogCursorAllOf {
+func (v NullableLogCursorDataAllOf) Get() *LogCursorDataAllOf {
 	return v.value
 }
 
-func (v *NullableLogCursorAllOf) Set(val *LogCursorAllOf) {
+func (v *NullableLogCursorDataAllOf) Set(val *LogCursorDataAllOf) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableLogCursorAllOf) IsSet() bool {
+func (v NullableLogCursorDataAllOf) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableLogCursorAllOf) Unset() {
+func (v *NullableLogCursorDataAllOf) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableLogCursorAllOf(val *LogCursorAllOf) *NullableLogCursorAllOf {
-	return &NullableLogCursorAllOf{value: val, isSet: true}
+func NewNullableLogCursorDataAllOf(val *LogCursorDataAllOf) *NullableLogCursorDataAllOf {
+	return &NullableLogCursorDataAllOf{value: val, isSet: true}
 }
 
-func (v NullableLogCursorAllOf) MarshalJSON() ([]byte, error) {
+func (v NullableLogCursorDataAllOf) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableLogCursorAllOf) UnmarshalJSON(src []byte) error {
+func (v *NullableLogCursorDataAllOf) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

@@ -1828,7 +1828,7 @@ Name | Type | Description  | Notes
 
 ## ListStackLogs
 
-> LogCursor ListStackLogs(ctx, organizationId, stackId).PageSize(pageSize).Action(action).UserId(userId).Key(key).Value(value).Execute()
+> LogCursor ListStackLogs(ctx, organizationId, stackId).Cursor(cursor).PageSize(pageSize).Action(action).UserId(userId).Key(key).Value(value).Execute()
 
 List stacks logs
 
@@ -1847,15 +1847,16 @@ import (
 func main() {
     organizationId := "organizationId_example" // string | 
     stackId := "stackId_example" // string | 
+    cursor := "cursor_example" // string |  (optional)
     pageSize := int32(56) // int32 |  (optional)
-    action := openapiclient.Action{String: new(string)} // Action |  (optional)
+    action := openapiclient.Action("agents.connected") // Action |  (optional)
     userId := "userId_example" // string |  (optional)
     key := "key->example->subkey" // string |  (optional)
     value := "value_example" // string |  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.ListStackLogs(context.Background(), organizationId, stackId).PageSize(pageSize).Action(action).UserId(userId).Key(key).Value(value).Execute()
+    resp, r, err := apiClient.DefaultApi.ListStackLogs(context.Background(), organizationId, stackId).Cursor(cursor).PageSize(pageSize).Action(action).UserId(userId).Key(key).Value(value).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ListStackLogs``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -1883,6 +1884,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
 
+ **cursor** | **string** |  | 
  **pageSize** | **int32** |  | 
  **action** | [**Action**](Action.md) |  | 
  **userId** | **string** |  | 
