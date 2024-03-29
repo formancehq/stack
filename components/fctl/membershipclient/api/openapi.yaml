@@ -155,7 +155,7 @@ paths:
       summary: Update organization
   /organizations/{organizationId}/logs:
     get:
-      operationId: listOrganizationLogs
+      operationId: listLogs
       parameters:
       - explode: false
         in: path
@@ -166,9 +166,24 @@ paths:
         style: simple
       - explode: true
         in: query
+        name: stackId
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
         name: pageSize
         required: false
         schema:
+          minimum: 1
           type: integer
         style: form
       - explode: true
@@ -176,7 +191,7 @@ paths:
         name: action
         required: false
         schema:
-          type: string
+          $ref: '#/components/schemas/Action'
         style: form
       - explode: true
         in: query
@@ -206,7 +221,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/LogCursor'
           description: Cursor of logs
-      summary: List organization logs
+      summary: List logs
   /organizations/{organizationId}/users:
     get:
       operationId: listUsersOfOrganization
@@ -585,76 +600,6 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: Not Authorized
       summary: Update stack
-  /organizations/{organizationId}/stacks/{stackId}/logs:
-    get:
-      operationId: listStackLogs
-      parameters:
-      - explode: false
-        in: path
-        name: organizationId
-        required: true
-        schema:
-          type: string
-        style: simple
-      - explode: false
-        in: path
-        name: stackId
-        required: true
-        schema:
-          type: string
-        style: simple
-      - explode: true
-        in: query
-        name: cursor
-        required: false
-        schema:
-          type: string
-        style: form
-      - explode: true
-        in: query
-        name: pageSize
-        required: false
-        schema:
-          minimum: 1
-          type: integer
-        style: form
-      - explode: true
-        in: query
-        name: action
-        required: false
-        schema:
-          $ref: '#/components/schemas/Action'
-        style: form
-      - explode: true
-        in: query
-        name: userId
-        required: false
-        schema:
-          type: string
-        style: form
-      - explode: true
-        in: query
-        name: key
-        required: false
-        schema:
-          example: key->example->subkey
-          type: string
-        style: form
-      - explode: true
-        in: query
-        name: value
-        required: false
-        schema:
-          type: string
-        style: form
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LogCursor'
-          description: Cursor of logs
-      summary: List stacks logs
   /organizations/{organizationId}/stacks/{stackId}/users:
     get:
       operationId: listStackUsersAccesses

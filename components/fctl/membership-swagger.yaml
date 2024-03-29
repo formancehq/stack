@@ -147,23 +147,34 @@ paths:
           description: Organization deleted
   /organizations/{organizationId}/logs:
     get:
-      summary: List organization logs
-      operationId: listOrganizationLogs
+      summary: List logs
+      operationId: listLogs
       parameters:
         - name: organizationId
           in: path
           schema:
             type: string
           required: true
+        - name: stackId
+          in: query
+          schema:
+            type: string
+          required: false
+        - name: cursor
+          in: query
+          schema:
+            type: string
+          required: false
         - name: pageSize
           in: query
           schema:
             type: integer
+            minimum: 1
           required: false
         - name: action
           in: query
           schema:
-            type: string
+            $ref: "#/components/schemas/Action"
           required: false
         - name: userId
           in: query
@@ -505,60 +516,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /organizations/{organizationId}/stacks/{stackId}/logs:
-    get:
-      summary: List stacks logs
-      operationId: listStackLogs
-      parameters:
-        - name: organizationId
-          in: path
-          schema:
-            type: string
-          required: true
-        - name: stackId
-          in: path
-          schema:
-            type: string
-          required: true
-        - name: cursor
-          in: query
-          schema:
-            type: string
-          required: false
-        - name: pageSize
-          in: query
-          schema:
-            type: integer
-            minimum: 1
-          required: false
-        - name: action
-          in: query
-          schema:
-            $ref: "#/components/schemas/Action"
-          required: false
-        - name: userId
-          in: query
-          schema:
-            type: string
-          required: false
-        - name: key
-          in: query
-          schema:
-            type: string
-            example: "key->example->subkey"
-          required: false
-        - name: value
-          in: query
-          schema:
-            type: string
-          required: false
-      responses:
-        200:
-          description: Cursor of logs
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/LogCursor"
   /organizations/{organizationId}/stacks/{stackId}/users:
     get:
       summary: List stack users accesses within an organization
