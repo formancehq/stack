@@ -135,5 +135,5 @@ func (c *HistoryController) Run(cmd *cobra.Command, args []string) (fctl.Rendera
 }
 
 func (c *HistoryController) Render(cmd *cobra.Command, args []string) error {
-	return printer.Log(cmd.OutOrStdout(), c.store.Cursor, fctl.GetBool(cmd, displayDataFlag))
+	return printer.LogCursor(cmd.OutOrStdout(), c.store.Cursor, fctl.GetBool(cmd, displayDataFlag))
 }

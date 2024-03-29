@@ -10,7 +10,7 @@ import (
 	"github.com/pterm/pterm"
 )
 
-func Log(writer io.Writer, cursor *membershipclient.LogCursorData, withData bool) error {
+func LogCursor(writer io.Writer, cursor *membershipclient.LogCursorData, withData bool) error {
 	header := []string{"Identifier", "User", "Date", "Action"}
 
 	if withData {
