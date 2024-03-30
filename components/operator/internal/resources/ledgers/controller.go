@@ -19,7 +19,6 @@ package ledgers
 import (
 	_ "embed"
 	"fmt"
-
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/benthosstreams"
@@ -33,7 +32,6 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 //+kubebuilder:rbac:groups=formance.com,resources=ledgers,verbs=get;list;watch;create;update;patch;delete
@@ -61,29 +59,16 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, versio
 		isV2 = true
 	}
 
-	search := &v1beta1.Search{}
-	hasSearch, err := HasDependency(ctx, stack.Name, search)
-	if err != nil {
+	if err := benthosstreams.LoadFromFileSystem(ctx, benthos.Streams, ledger, "streams/ledger", "ingestion"); err != nil {
 		return err
 	}
-	if hasSearch {
-		streamsVersion := "v1.0.0"
-		if isV2 {
-			streamsVersion = "v2.0.0"
-		}
-		if err := benthosstreams.LoadFromFileSystem(ctx, benthos.Streams, ledger, "streams/ledger/"+streamsVersion); err != nil {
-			return err
-		}
 
-		if err := benthosstreams.LoadFromFileSystem(ctx, reindexStreams, ledger, fmt.Sprintf("assets/reindex/%s", streamsVersion)); err != nil {
-			return err
-		}
-	} else {
-		if err := ctx.GetClient().DeleteAllOf(ctx, &v1beta1.BenthosStream{}, client.MatchingLabels{
-			"service": "ledger",
-		}); err != nil {
-			return err
-		}
+	streamsVersion := "v1.0.0"
+	if isV2 {
+		streamsVersion = "v2.0.0"
+	}
+	if err := benthosstreams.LoadFromFileSystem(ctx, reindexStreams, ledger, fmt.Sprintf("assets/reindex/%s", streamsVersion), "reindex"); err != nil {
+		return err
 	}
 
 	_, err = createReindexCronJob(ctx, ledger)

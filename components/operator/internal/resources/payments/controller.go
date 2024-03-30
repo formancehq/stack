@@ -26,16 +26,14 @@ import (
 	"github.com/pkg/errors"
 	batchv1 "k8s.io/api/batch/v1"
 
-	"github.com/formancehq/operator/internal/resources/benthosstreams"
-	"github.com/formancehq/search/benthos"
-	"golang.org/x/mod/semver"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
+	"github.com/formancehq/operator/internal/resources/benthosstreams"
 	"github.com/formancehq/operator/internal/resources/brokertopics"
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/gatewayhttpapis"
+	"github.com/formancehq/search/benthos"
+	"golang.org/x/mod/semver"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 )
@@ -109,21 +107,8 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, p *v1beta1.Payments, version s
 		}
 	}
 
-	search := &v1beta1.Search{}
-	hasSearch, err := HasDependency(ctx, stack.Name, search)
-	if err != nil {
+	if err := benthosstreams.LoadFromFileSystem(ctx, benthos.Streams, p, "streams/payments", "ingestion"); err != nil {
 		return err
-	}
-	if hasSearch {
-		if err := benthosstreams.LoadFromFileSystem(ctx, benthos.Streams, p, "streams/payments/v0.0.0"); err != nil {
-			return err
-		}
-	} else {
-		if err := ctx.GetClient().DeleteAllOf(ctx, &v1beta1.BenthosStream{}, client.MatchingLabels{
-			"service": "payments",
-		}); err != nil {
-			return err
-		}
 	}
 
 	if err := gatewayhttpapis.Create(ctx, p,
