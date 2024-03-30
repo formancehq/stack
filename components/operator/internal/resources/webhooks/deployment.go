@@ -7,7 +7,6 @@ import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/auths"
-	"github.com/formancehq/operator/internal/resources/brokertopicconsumers"
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
@@ -18,7 +17,7 @@ import (
 	v1 "k8s.io/api/core/v1"
 )
 
-func deploymentEnvVars(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumers brokertopicconsumers.Consumers) ([]v1.EnvVar, error) {
+func deploymentEnvVars(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database) ([]v1.EnvVar, error) {
 
 	brokerURI, err := settings.RequireURL(ctx, stack.Name, "broker.dsn")
 	if err != nil {
@@ -65,14 +64,14 @@ func deploymentEnvVars(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1
 	return env, nil
 }
 
-func createAPIDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumers brokertopicconsumers.Consumers, version string, withWorker bool) error {
+func createAPIDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumer *v1beta1.BrokerConsumer, version string, withWorker bool) error {
 
 	image, err := registries.GetImage(ctx, stack, "webhooks", version)
 	if err != nil {
 		return err
 	}
 
-	env, err := deploymentEnvVars(ctx, stack, webhooks, database, consumers)
+	env, err := deploymentEnvVars(ctx, stack, webhooks, database)
 	if err != nil {
 		return err
 	}
@@ -85,8 +84,8 @@ func createAPIDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1bet
 	}
 	if withWorker {
 		env = append(env, core.Env("WORKER", "true"))
-		env = append(env, core.Env("KAFKA_TOPICS", strings.Join(Map(consumers, func(from *v1beta1.BrokerTopicConsumer) string {
-			return fmt.Sprintf("%s-%s", stack.Name, from.Spec.Service)
+		env = append(env, core.Env("KAFKA_TOPICS", strings.Join(Map(consumer.Spec.Services, func(from string) string {
+			return fmt.Sprintf("%s-%s", stack.Name, from)
 		}), " ")))
 	}
 
@@ -111,21 +110,21 @@ func createAPIDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1bet
 	return err
 }
 
-func createWorkerDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumers brokertopicconsumers.Consumers, version string, withWorker bool) error {
+func createWorkerDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumer *v1beta1.BrokerConsumer, version string) error {
 
 	image, err := registries.GetImage(ctx, stack, "webhooks", version)
 	if err != nil {
 		return err
 	}
 
-	env, err := deploymentEnvVars(ctx, stack, webhooks, database, consumers)
+	env, err := deploymentEnvVars(ctx, stack, webhooks, database)
 	if err != nil {
 		return err
 	}
 
 	env = append(env, core.Env("WORKER", "true"))
-	env = append(env, core.Env("KAFKA_TOPICS", strings.Join(Map(consumers, func(from *v1beta1.BrokerTopicConsumer) string {
-		return fmt.Sprintf("%s-%s", stack.Name, from.Spec.Service)
+	env = append(env, core.Env("KAFKA_TOPICS", strings.Join(Map(consumer.Spec.Services, func(from string) string {
+		return fmt.Sprintf("%s-%s", stack.Name, from)
 	}), " ")))
 
 	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
@@ -146,15 +145,15 @@ func createWorkerDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1
 	return err
 }
 
-func createSingleDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumers brokertopicconsumers.Consumers, version string) error {
-	return createAPIDeployment(ctx, stack, webhooks, database, consumers, version, true)
+func createSingleDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumer *v1beta1.BrokerConsumer, version string) error {
+	return createAPIDeployment(ctx, stack, webhooks, database, consumer, version, true)
 }
 
-func createDualDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumers brokertopicconsumers.Consumers, version string) error {
-	if err := createAPIDeployment(ctx, stack, webhooks, database, consumers, version, false); err != nil {
+func createDualDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumer *v1beta1.BrokerConsumer, version string) error {
+	if err := createAPIDeployment(ctx, stack, webhooks, database, consumer, version, false); err != nil {
 		return err
 	}
-	if err := createWorkerDeployment(ctx, stack, webhooks, database, consumers, version, false); err != nil {
+	if err := createWorkerDeployment(ctx, stack, webhooks, database, consumer, version); err != nil {
 		return err
 	}
 

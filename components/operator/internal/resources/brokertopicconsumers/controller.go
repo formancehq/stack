@@ -17,107 +17,62 @@ limitations under the License.
 package brokertopicconsumers
 
 import (
+	"fmt"
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
-	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
-	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
-	"sigs.k8s.io/controller-runtime/pkg/log"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
+	"sort"
 )
 
 //+kubebuilder:rbac:groups=formance.com,resources=brokertopicconsumers,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=formance.com,resources=brokertopicconsumers/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=brokertopicconsumers/finalizers,verbs=update
 
-func Reconcile(ctx Context, stack *v1beta1.Stack, topicQuery *v1beta1.BrokerTopicConsumer) error {
+func Reconcile(ctx Context, _ *v1beta1.Stack, topicQuery *v1beta1.BrokerTopicConsumer) error {
 
-	topic := &v1beta1.BrokerTopic{}
-	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
-		Name: GetObjectName(topicQuery.Spec.Stack, topicQuery.Spec.Service),
-	}, topic); err != nil {
-		if !errors.IsNotFound(err) {
-			return err
+	l := &v1beta1.BrokerTopicConsumerList{}
+	if err := ctx.GetClient().List(ctx, l, client.MatchingFields{
+		"stack":     topicQuery.Spec.Stack,
+		"queriedBy": topicQuery.Spec.QueriedBy,
+	}); err != nil {
+		return err
+	}
+
+	_, _, err := CreateOrUpdate(ctx, types.NamespacedName{
+		Namespace: topicQuery.Spec.Stack,
+		Name:      fmt.Sprintf("%s-%s", topicQuery.Spec.Stack, topicQuery.Spec.QueriedBy),
+	}, func(t *v1beta1.BrokerConsumer) error {
+		t.Spec.Stack = topicQuery.Spec.Stack
+		t.Spec.QueriedBy = topicQuery.Spec.QueriedBy
+
+	l:
+		for _, expectService := range Map(l.Items, func(from v1beta1.BrokerTopicConsumer) string {
+			return from.Spec.Service
+		}) {
+			for _, actualService := range t.Spec.Services {
+				if actualService == expectService {
+					continue l
+				}
+			}
+			t.Spec.Services = append(t.Spec.Services, expectService)
 		}
-		topic = &v1beta1.BrokerTopic{
-			ObjectMeta: ctrl.ObjectMeta{
-				Name: GetObjectName(topicQuery.Spec.Stack, topicQuery.Spec.Service),
-			},
-			Spec: v1beta1.BrokerTopicSpec{
-				StackDependency: v1beta1.StackDependency{
-					Stack: topicQuery.Spec.Stack,
-				},
-				Service: topicQuery.Spec.Service,
-			},
-		}
-		if err := controllerutil.SetOwnerReference(topicQuery, topic, ctx.GetScheme()); err != nil {
-			return err
-		}
-		if err := ctx.GetClient().Create(ctx, topic); err != nil {
-			return err
-		}
+
+		sort.Strings(t.Spec.Services)
+
+		t.SetOwnerReferences(topicQuery.OwnerReferences)
+
 		return nil
-	} else {
-		patch := client.MergeFrom(topic.DeepCopy())
-		if err := controllerutil.SetOwnerReference(topicQuery, topic, ctx.GetScheme()); err != nil {
-			return err
-		}
-		if err := ctx.GetClient().Patch(ctx, topic, patch); err != nil {
-			return err
-		}
-	}
-
-	if !topic.Status.Ready {
-		return NewPendingError()
-	}
-
-	return nil
+	})
+	return err
 }
-
-//func Delete(ctx Context, topicQuery *v1beta1.BrokerTopicConsumer) error {
-//	topic := &v1beta1.BrokerTopic{}
-//	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
-//		Name: GetObjectName(topicQuery.Spec.Stack, topicQuery.Spec.Service),
-//	}, topic); err != nil {
-//		if !errors.IsNotFound(err) {
-//			return err
-//		}
-//	} else {
-//		if err := controllerutil.RemoveOwnerReference(topicQuery, topic, ctx.GetScheme()); err != nil {
-//			return err
-//		}
-//		if err := ctx.GetClient().Update(ctx, topic); err != nil {
-//			return err
-//		}
-//	}
-//
-//	return nil
-//}
 
 func init() {
 	Init(
-		WithStackDependencyReconciler(Reconcile,
-			WithWatch[*v1beta1.BrokerTopicConsumer, *v1beta1.BrokerTopic](func(ctx Context, object *v1beta1.BrokerTopic) []reconcile.Request {
-				list := v1beta1.BrokerTopicConsumerList{}
-				if err := ctx.GetClient().List(ctx, &list, client.MatchingFields{
-					".spec.service": object.Spec.Service,
-					"stack":         object.Spec.Stack,
-				}); err != nil {
-					log.FromContext(ctx).Error(err, "listing topic queries")
-					return []reconcile.Request{}
-				}
-
-				return MapObjectToReconcileRequests(
-					Map(list.Items, ToPointer[v1beta1.BrokerTopicConsumer])...,
-				)
-			}),
-			//WithFinalizer[*v1beta1.BrokerTopicConsumer](gcFinalizer, Delete),
-		),
-		WithSimpleIndex[*v1beta1.BrokerTopicConsumer](".spec.service", func(t *v1beta1.BrokerTopicConsumer) string {
-			return t.Spec.Service
+		WithStackDependencyReconciler(Reconcile),
+		WithSimpleIndex[*v1beta1.BrokerTopicConsumer]("queriedBy", func(t *v1beta1.BrokerTopicConsumer) string {
+			return t.Spec.QueriedBy
 		}),
 	)
 }

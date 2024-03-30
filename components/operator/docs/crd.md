@@ -13,6 +13,7 @@ Package v1beta1 contains API Schema definitions for the formance v1beta1 API gro
 - [AuthClient](#authclient)
 - [Benthos](#benthos)
 - [BenthosStream](#benthosstream)
+- [BrokerConsumer](#brokerconsumer)
 - [BrokerTopic](#brokertopic)
 - [BrokerTopicConsumer](#brokertopicconsumer)
 - [Database](#database)
@@ -239,6 +240,44 @@ _Appears in:_
 
 
 
+#### BrokerConsumer
+
+
+
+BrokerConsumer is the Schema for the brokerconsumers API
+
+
+
+
+
+| Field | Description | Default | Validation |
+| --- | --- | --- | --- |
+| `apiVersion` _string_ | `formance.com/v1beta1` | | |
+| `kind` _string_ | `BrokerConsumer` | | |
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |  |  |
+| `spec` _[BrokerConsumerSpec](#brokerconsumerspec)_ |  |  |  |
+
+
+#### BrokerConsumerSpec
+
+
+
+BrokerConsumerSpec defines the desired state of BrokerConsumer
+
+
+
+_Appears in:_
+- [BrokerConsumer](#brokerconsumer)
+
+| Field | Description | Default | Validation |
+| --- | --- | --- | --- |
+| `stack` _string_ |  |  |  |
+| `services` _string array_ |  |  |  |
+| `queriedBy` _string_ |  |  |  |
+
+
+
+
 #### BrokerTopic
 
 
@@ -327,6 +366,7 @@ _Appears in:_
 - [AuthStatus](#authstatus)
 - [BenthosStatus](#benthosstatus)
 - [BenthosStreamStatus](#benthosstreamstatus)
+- [BrokerConsumerStatus](#brokerconsumerstatus)
 - [BrokerTopicConsumerStatus](#brokertopicconsumerstatus)
 - [BrokerTopicStatus](#brokertopicstatus)
 - [DatabaseStatus](#databasestatus)
@@ -1041,6 +1081,7 @@ _Appears in:_
 - [AuthSpec](#authspec)
 - [BenthosSpec](#benthosspec)
 - [BenthosStreamSpec](#benthosstreamspec)
+- [BrokerConsumerSpec](#brokerconsumerspec)
 - [BrokerTopicConsumerSpec](#brokertopicconsumerspec)
 - [BrokerTopicSpec](#brokertopicspec)
 - [DatabaseSpec](#databasespec)

@@ -19,7 +19,7 @@ package orchestrations
 import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
-	"github.com/formancehq/operator/internal/resources/brokertopicconsumers"
+	"github.com/formancehq/operator/internal/resources/brokerconsumers"
 	"github.com/formancehq/operator/internal/resources/brokertopics"
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/gatewayhttpapis"
@@ -47,7 +47,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, o *v1beta1.Orchestration, vers
 		return err
 	}
 
-	consumers, err := brokertopicconsumers.CreateOrUpdateOnAllServices(ctx, o)
+	consumer, err := brokerconsumers.CreateOrUpdateOnAllServices(ctx, o)
 	if err != nil {
 		return err
 	}
@@ -85,8 +85,8 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, o *v1beta1.Orchestration, vers
 			}
 		}
 
-		if consumers.Ready() {
-			if err := createDeployment(ctx, stack, o, database, authClient, consumers, image); err != nil {
+		if consumer.Status.Ready {
+			if err := createDeployment(ctx, stack, o, database, authClient, consumer, image); err != nil {
 				return err
 			}
 		}
@@ -98,7 +98,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, o *v1beta1.Orchestration, vers
 func init() {
 	Init(
 		WithModuleReconciler(Reconcile,
-			WithOwn[*v1beta1.Orchestration](&v1beta1.BrokerTopicConsumer{}),
+			WithOwn[*v1beta1.Orchestration](&v1beta1.BrokerConsumer{}),
 			WithOwn[*v1beta1.Orchestration](&v1beta1.AuthClient{}),
 			WithOwn[*v1beta1.Orchestration](&appsv1.Deployment{}),
 			WithOwn[*v1beta1.Orchestration](&v1beta1.GatewayHTTPAPI{}),

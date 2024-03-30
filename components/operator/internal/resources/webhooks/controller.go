@@ -19,7 +19,7 @@ package webhooks
 import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
-	"github.com/formancehq/operator/internal/resources/brokertopicconsumers"
+	"github.com/formancehq/operator/internal/resources/brokerconsumers"
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/gatewayhttpapis"
 	"github.com/formancehq/operator/internal/resources/jobs"
@@ -40,7 +40,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, ve
 		return err
 	}
 
-	consumers, err := brokertopicconsumers.CreateOrUpdateOnAllServices(ctx, webhooks)
+	consumer, err := brokerconsumers.CreateOrUpdateOnAllServices(ctx, webhooks)
 	if err != nil {
 		return err
 	}
@@ -77,13 +77,13 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, ve
 			}
 		}
 
-		if consumers.Ready() {
+		if consumer.Status.Ready {
 			if IsGreaterOrEqual(version, "v0.7.1") {
-				if err := createSingleDeployment(ctx, stack, webhooks, database, consumers, version); err != nil {
+				if err := createSingleDeployment(ctx, stack, webhooks, database, consumer, version); err != nil {
 					return err
 				}
 			} else {
-				if err := createDualDeployment(ctx, stack, webhooks, database, consumers, version); err != nil {
+				if err := createDualDeployment(ctx, stack, webhooks, database, consumer, version); err != nil {
 					return err
 				}
 			}
@@ -96,6 +96,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, ve
 func init() {
 	Init(
 		WithModuleReconciler(Reconcile,
+			WithOwn[*v1beta1.Webhooks](&v1beta1.BrokerConsumer{}),
 			WithOwn[*v1beta1.Webhooks](&appsv1.Deployment{}),
 			WithOwn[*v1beta1.Webhooks](&v1beta1.GatewayHTTPAPI{}),
 			WithOwn[*v1beta1.Webhooks](&batchv1.Job{}),

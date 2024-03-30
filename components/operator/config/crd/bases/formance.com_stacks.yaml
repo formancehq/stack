@@ -3,7 +3,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.13.0
+    controller-gen.kubebuilder.io/version: v0.14.0
   name: stacks.formance.com
 spec:
   group: formance.com
@@ -45,23 +45,28 @@ spec:
         description: Stack is the Schema for the stacks API
         properties:
           apiVersion:
-            description: 'APIVersion defines the versioned schema of this representation
-              of an object. Servers should convert recognized schemas to the latest
-              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
             type: string
           kind:
-            description: 'Kind is a string value representing the REST resource this
-              object represents. Servers may infer this from the endpoint the client
-              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
             type: string
           metadata:
             type: object
           spec:
-            description: StackSpec defines the desired state of Stack The version
-              of the stack can be specified using either the field `version` or the
-              `versionsFromFile` field. The `version` field will have priority over
-              `versionFromFile` If `versions` and `versionsFromFile` are not specified,
-              "latest" will be used.
+            description: |-
+              StackSpec defines the desired state of Stack
+              The version of the stack can be specified using either the field `version` or the `versionsFromFile` field.
+              The `version` field will have priority over `versionFromFile`
+              If `versions` and `versionsFromFile` are not specified, "latest" will be used.
             properties:
               debug:
                 type: boolean
@@ -72,13 +77,15 @@ spec:
               enableAudit:
                 type: boolean
               version:
-                description: Version allow to specify the version of the components
+                description: |-
+                  Version allow to specify the version of the components
                   Must be a valid docker tag
                 type: string
               versionsFromFile:
-                description: VersionsFromFile allow to specify a formance.com/Versions
-                  object which contains individual versions for each component. Must
-                  reference a valid formance.com/Versions object
+                description: |-
+                  VersionsFromFile allow to specify a formance.com/Versions object which contains individual versions
+                  for each component.
+                  Must reference a valid formance.com/Versions object
                 type: string
             type: object
           status:

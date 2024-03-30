@@ -1,0 +1,12 @@
+apiVersion: formance.com/v1beta1
+kind: BrokerConsumer
+metadata:
+  labels:
+    app.kubernetes.io/name: brokerconsumer
+    app.kubernetes.io/instance: brokerconsumer-sample
+    app.kubernetes.io/part-of: operatorv2
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: operatorv2
+  name: brokerconsumer-sample
+spec:
+  # TODO(user): Add fields here
