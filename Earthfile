@@ -136,25 +136,21 @@ deploy-all-staging:
     ARG --required TAG
     # Only AGENT & OPERATOR are deployed through ARGOCD
     WAIT
-        BUILD --pass-args ./components/+deploy-staging --components=operator --TAG=$TAG
+        BUILD --pass-args ./components/+deploy-staging --components=operator
     END
-
-    BUILD --pass-args ./components/+deploy-staging --components=agent --TAG=$TAG
     
     FOR component IN $(cd ./tools && ls -d */)
-        BUILD --pass-args ./tools/$component+deploy --TAG=$TAG
+        BUILD --pass-args ./tools/$component+deploy-staging 
     END
     
     FOR component IN $(cd ./components && ls -d */)
         IF [ "$component" != "operator" ]
-            BUILD --pass-args ./components/+deploy --components=$component --TAG=$TAG
+            BUILD --pass-args ./components/+deploy-staging --components=$component
         END
     END
     
     FOR component IN $(cd ./ee && ls -d */)
-        IF [ "$component" != "agent" ]
-            BUILD --pass-args ./ee/+deploy --components=$component --TAG=$TAG
-        END
+        BUILD --pass-args ./ee/+deploy-staging --components=$component
     END
 
 tests-all:

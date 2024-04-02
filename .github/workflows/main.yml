@@ -137,15 +137,6 @@ jobs:
           fetch-depth: 0
       - name: Setup Env
         uses: ./.github/actions/env
-      - name: Install and configure kubectl
-        run: |
-          VERSION=$(curl --silent https://storage.googleapis.com/kubernetes-release/release/stable.txt)
-          curl https://storage.googleapis.com/kubernetes-release/release/$VERSION/bin/linux/amd64/kubectl \
-          --progress-bar \
-          --location \
-          --remote-name
-          chmod +x kubectl
-          sudo mv kubectl /usr/local/bin/
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -154,7 +145,6 @@ jobs:
           output-credentials: true
       - name: Update kube config
         run: aws eks update-kubeconfig --name staging-eu-west-1-hosting --region eu-west-1
-      - run: kubectl config use-context arn:aws:eks:eu-west-1:955332203423:cluster/staging-eu-west-1-hosting
       - name: Tailscale
         uses: tailscale/github-action@v2
         with:
@@ -163,11 +153,11 @@ jobs:
           tags: tag:ci
       - name: Deploy all in staging
         env:
-          ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_AUTH_TOKEN }}
+          ARGOCD_REGION_AUTH_TOKEN: ${{ secrets.ARGOCD_REGION_AUTH_TOKEN }}
           TAG: ${{ github.sha }}
         run: >
           earthly  
           --no-output 
-          --secret AUTH_TOKEN=$ARGOCD_AUTH_TOKEN
+          --secret AUTH_TOKEN=$ARGOCD_REGION_AUTH_TOKEN
           +deploy-all-staging
           --TAG=$TAG

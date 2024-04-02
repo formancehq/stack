@@ -9,3 +9,8 @@ deploy:
     FROM core+base-image
     ARG --required components
     BUILD --pass-args ./$components+deploy
+
+deploy-staging:
+    FROM core+base-image
+    ARG --required components
+    BUILD --pass-args ./$components+deploy-staging
