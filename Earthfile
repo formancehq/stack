@@ -132,6 +132,31 @@ deploy-all:
         BUILD --pass-args ./ee/+deploy --components=$component
     END
 
+deploy-all-staging:
+    ARG --required TAG
+    # Only AGENT & OPERATOR are deployed through ARGOCD
+    WAIT
+        BUILD --pass-args ./components/+deploy-staging --components=operator --TAG=$TAG
+    END
+
+    BUILD --pass-args ./components/+deploy-staging --components=agent --TAG=$TAG
+    
+    FOR component IN $(cd ./tools && ls -d */)
+        BUILD --pass-args ./tools/$component+deploy --TAG=$TAG
+    END
+    
+    FOR component IN $(cd ./components && ls -d */)
+        IF [ "$component" != "operator" ]
+            BUILD --pass-args ./components/+deploy --components=$component --TAG=$TAG
+        END
+    END
+    
+    FOR component IN $(cd ./ee && ls -d */)
+        IF [ "$component" != "agent" ]
+            BUILD --pass-args ./ee/+deploy --components=$component --TAG=$TAG
+        END
+    END
+
 tests-all:
     LOCALLY
     FOR component IN $(cd ./components && ls -d */)
