@@ -145,6 +145,59 @@ paths:
                 $ref: "#/components/schemas/Error"
         204:
           description: Organization deleted
+  /organizations/{organizationId}/logs:
+    get:
+      summary: List logs
+      operationId: listLogs
+      parameters:
+        - name: organizationId
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: stackId
+          in: query
+          schema:
+            type: string
+          required: false
+        - name: cursor
+          in: query
+          schema:
+            type: string
+          required: false
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+          required: false
+        - name: action
+          in: query
+          schema:
+            $ref: "#/components/schemas/Action"
+          required: false
+        - name: userId
+          in: query
+          schema:
+            type: string
+          required: false
+        - name: key
+          in: query
+          schema:
+            type: string
+          required: false
+        - name: value
+          in: query
+          schema:
+            type: string
+          required: false
+      responses:
+        200:
+          description: Cursor of logs
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LogCursor"
   /organizations/{organizationId}/users:
     get:
       summary: List users of organization
@@ -1097,7 +1150,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-
   /organizations/{organizationId}/regions/{regionId}/versions:
     parameters:
       - name: organizationId
@@ -1132,7 +1184,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetRegionVersionsResponse"
-
   /me:
     get:
       summary: Read user
@@ -1159,6 +1210,100 @@ components:
             openid: Enable OIDC
             email: Ask email access
   schemas:
+    Action:
+      type: string
+      enum:
+        - agents.connected
+        - agents.disconnected
+        - invitations.created
+        - invitations.accepted
+        - invitations.rejected
+        - organizations.created
+        - organizations.updated
+        - organizations.deleted
+        - organizations.user.deleted
+        - organizations.user.updated
+        - regions.created
+        - regions.deleted
+        - users.created
+        - users.deleted
+        - stacks.disposal
+        - stacks.disposal-reset
+        - stacks.warned
+        - stacks.pruned
+        - stacks.status.updated
+        - stacks.created
+        - stacks.updated
+        - stacks.deleted
+        - stacks.restored
+        - stacks.disabled
+        - stacks.enabled
+        - stacks.upgraded
+        - stacks.stargate.enabled
+        - stacks.stargate.disabled
+        - stacks.user.updated
+        - stacks.user.deleted
+        - stacks.reachness.updated
+    LogCursor:
+      properties:
+        data:
+          allOf:
+            - $ref: "#/components/schemas/Cursor"
+            - type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Log"
+      required:
+        - data
+    Log:
+      type: object
+      required:
+        - seq
+        - organizationId
+        - userId
+        - action
+        - date
+        - data
+      properties:
+        seq:
+          type: string
+          example: 1e6f8b6e-1b6b-4b3b-8b3b-1b6b4b3b8b3b
+        organizationId:
+          type: string
+        userId:
+          type: string
+        action:
+          type: string
+        date:
+          type: string
+          format: date-time
+        data:
+          type: object
+    Cursor:
+      type: object
+      required:
+        - pageSize
+        - hasMore
+        - data
+      properties:
+        pageSize:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 1000
+          example: 15
+        hasMore:
+          type: boolean
+          example: false
+        previous:
+          type: string
+          example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
+        next:
+          type: string
+          example: ""
+
     CreatePrivateRegionRequest:
       type: object
       properties:

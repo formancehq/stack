@@ -153,6 +153,75 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: Error
       summary: Update organization
+  /organizations/{organizationId}/logs:
+    get:
+      operationId: listLogs
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: stackId
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: pageSize
+        required: false
+        schema:
+          minimum: 1
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: action
+        required: false
+        schema:
+          $ref: '#/components/schemas/Action'
+        style: form
+      - explode: true
+        in: query
+        name: userId
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: key
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: value
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogCursor'
+          description: Cursor of logs
+      summary: List logs
   /organizations/{organizationId}/users:
     get:
       operationId: listUsersOfOrganization
@@ -1306,6 +1375,94 @@ paths:
       summary: Read user
 components:
   schemas:
+    Action:
+      enum:
+      - agents.connected
+      - agents.disconnected
+      - invitations.created
+      - invitations.accepted
+      - invitations.rejected
+      - organizations.created
+      - organizations.updated
+      - organizations.deleted
+      - organizations.user.deleted
+      - organizations.user.updated
+      - regions.created
+      - regions.deleted
+      - users.created
+      - users.deleted
+      - stacks.disposal
+      - stacks.disposal-reset
+      - stacks.warned
+      - stacks.pruned
+      - stacks.status.updated
+      - stacks.created
+      - stacks.updated
+      - stacks.deleted
+      - stacks.restored
+      - stacks.disabled
+      - stacks.enabled
+      - stacks.upgraded
+      - stacks.stargate.enabled
+      - stacks.stargate.disabled
+      - stacks.user.updated
+      - stacks.user.deleted
+      - stacks.reachness.updated
+      type: string
+    LogCursor:
+      example:
+        data: null
+      properties:
+        data:
+          $ref: '#/components/schemas/LogCursor_data'
+      required:
+      - data
+    Log:
+      properties:
+        seq:
+          example: 1e6f8b6e-1b6b-4b3b-8b3b-1b6b4b3b8b3b
+          type: string
+        organizationId:
+          type: string
+        userId:
+          type: string
+        action:
+          type: string
+        date:
+          format: date-time
+          type: string
+        data:
+          type: object
+      required:
+      - action
+      - data
+      - date
+      - organizationId
+      - seq
+      - userId
+      type: object
+    Cursor:
+      properties:
+        pageSize:
+          example: 15
+          format: int64
+          maximum: 1000
+          minimum: 1
+          type: integer
+        hasMore:
+          example: false
+          type: boolean
+        previous:
+          example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
+          type: string
+        next:
+          example: ""
+          type: string
+      required:
+      - data
+      - hasMore
+      - pageSize
+      type: object
     CreatePrivateRegionRequest:
       example:
         name: name
@@ -1853,6 +2010,17 @@ components:
       required:
       - data
       type: object
+    LogCursor_data_allOf:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Log'
+          type: array
+      type: object
+    LogCursor_data:
+      allOf:
+      - $ref: '#/components/schemas/Cursor'
+      - $ref: '#/components/schemas/LogCursor_data_allOf'
     PrivateRegion_allOf_secret:
       properties:
         lastDigits:

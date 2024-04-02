@@ -2596,6 +2596,170 @@ func (a *DefaultApiService) ListInvitationsExecute(r ApiListInvitationsRequest) 
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
+type ApiListLogsRequest struct {
+	ctx context.Context
+	ApiService *DefaultApiService
+	organizationId string
+	stackId *string
+	cursor *string
+	pageSize *int32
+	action *Action
+	userId *string
+	key *string
+	value *string
+}
+
+func (r ApiListLogsRequest) StackId(stackId string) ApiListLogsRequest {
+	r.stackId = &stackId
+	return r
+}
+
+func (r ApiListLogsRequest) Cursor(cursor string) ApiListLogsRequest {
+	r.cursor = &cursor
+	return r
+}
+
+func (r ApiListLogsRequest) PageSize(pageSize int32) ApiListLogsRequest {
+	r.pageSize = &pageSize
+	return r
+}
+
+func (r ApiListLogsRequest) Action(action Action) ApiListLogsRequest {
+	r.action = &action
+	return r
+}
+
+func (r ApiListLogsRequest) UserId(userId string) ApiListLogsRequest {
+	r.userId = &userId
+	return r
+}
+
+func (r ApiListLogsRequest) Key(key string) ApiListLogsRequest {
+	r.key = &key
+	return r
+}
+
+func (r ApiListLogsRequest) Value(value string) ApiListLogsRequest {
+	r.value = &value
+	return r
+}
+
+func (r ApiListLogsRequest) Execute() (*LogCursor, *http.Response, error) {
+	return r.ApiService.ListLogsExecute(r)
+}
+
+/*
+ListLogs List logs
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param organizationId
+ @return ApiListLogsRequest
+*/
+func (a *DefaultApiService) ListLogs(ctx context.Context, organizationId string) ApiListLogsRequest {
+	return ApiListLogsRequest{
+		ApiService: a,
+		ctx: ctx,
+		organizationId: organizationId,
+	}
+}
+
+// Execute executes the request
+//  @return LogCursor
+func (a *DefaultApiService) ListLogsExecute(r ApiListLogsRequest) (*LogCursor, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *LogCursor
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.ListLogs")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/organizations/{organizationId}/logs"
+	localVarPath = strings.Replace(localVarPath, "{"+"organizationId"+"}", url.PathEscape(parameterValueToString(r.organizationId, "organizationId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	if r.stackId != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "stackId", r.stackId, "")
+	}
+	if r.cursor != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "cursor", r.cursor, "")
+	}
+	if r.pageSize != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "pageSize", r.pageSize, "")
+	}
+	if r.action != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "action", r.action, "")
+	}
+	if r.userId != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "userId", r.userId, "")
+	}
+	if r.key != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "key", r.key, "")
+	}
+	if r.value != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "value", r.value, "")
+	}
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
 type ApiListOrganizationInvitationsRequest struct {
 	ctx context.Context
 	ApiService *DefaultApiService

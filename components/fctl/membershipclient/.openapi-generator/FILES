@@ -6,6 +6,7 @@ api/openapi.yaml
 api_default.go
 client.go
 configuration.go
+docs/Action.md
 docs/AnyRegion.md
 docs/AnyRegionAllOf.md
 docs/CreateInvitationResponse.md
@@ -15,6 +16,7 @@ docs/CreateStackRequest.md
 docs/CreateStackRequestAllOf.md
 docs/CreateStackResponse.md
 docs/CreatedPrivateRegionResponse.md
+docs/Cursor.md
 docs/DefaultApi.md
 docs/Error.md
 docs/GetRegionResponse.md
@@ -28,6 +30,10 @@ docs/ListOrganizationResponse.md
 docs/ListRegionsResponse.md
 docs/ListStacksResponse.md
 docs/ListUsersResponse.md
+docs/Log.md
+docs/LogCursor.md
+docs/LogCursorData.md
+docs/LogCursorDataAllOf.md
 docs/Organization.md
 docs/OrganizationAllOf.md
 docs/OrganizationData.md
@@ -69,6 +75,7 @@ docs/Version.md
 git_push.sh
 go.mod
 go.sum
+model_action.go
 model_any_region.go
 model_any_region_all_of.go
 model_create_invitation_response.go
@@ -78,6 +85,7 @@ model_create_stack_request.go
 model_create_stack_request_all_of.go
 model_create_stack_response.go
 model_created_private_region_response.go
+model_cursor.go
 model_error.go
 model_get_region_response.go
 model_get_region_versions_response.go
@@ -90,6 +98,10 @@ model_list_organization_response.go
 model_list_regions_response.go
 model_list_stacks_response.go
 model_list_users_response.go
+model_log.go
+model_log_cursor.go
+model_log_cursor_data.go
+model_log_cursor_data_all_of.go
 model_organization.go
 model_organization_all_of.go
 model_organization_data.go

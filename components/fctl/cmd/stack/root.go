@@ -21,6 +21,7 @@ func NewCommand() *cobra.Command {
 			NewRestoreStackCommand(),
 			NewUpdateCommand(),
 			NewUpgradeCommand(),
+			NewHistoryCommand(),
 			users.NewCommand(),
 		),
 		fctl.WithPersistentPreRunE(func(cmd *cobra.Command, args []string) error {

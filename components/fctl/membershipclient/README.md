@@ -99,6 +99,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**GetServerInfo**](docs/DefaultApi.md#getserverinfo) | **Get** /_info | Get server info
 *DefaultApi* | [**GetStack**](docs/DefaultApi.md#getstack) | **Get** /organizations/{organizationId}/stacks/{stackId} | Find stack
 *DefaultApi* | [**ListInvitations**](docs/DefaultApi.md#listinvitations) | **Get** /me/invitations | List invitations of the user
+*DefaultApi* | [**ListLogs**](docs/DefaultApi.md#listlogs) | **Get** /organizations/{organizationId}/logs | List logs
 *DefaultApi* | [**ListOrganizationInvitations**](docs/DefaultApi.md#listorganizationinvitations) | **Get** /organizations/{organizationId}/invitations | List invitations of the organization
 *DefaultApi* | [**ListOrganizations**](docs/DefaultApi.md#listorganizations) | **Get** /organizations | List organizations of the connected user
 *DefaultApi* | [**ListOrganizationsExpanded**](docs/DefaultApi.md#listorganizationsexpanded) | **Get** /organizations/expanded | List organizations of the connected user with expanded data
@@ -120,6 +121,7 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
+ - [Action](docs/Action.md)
  - [AnyRegion](docs/AnyRegion.md)
  - [AnyRegionAllOf](docs/AnyRegionAllOf.md)
  - [CreateInvitationResponse](docs/CreateInvitationResponse.md)
@@ -129,6 +131,7 @@ Class | Method | HTTP request | Description
  - [CreateStackRequestAllOf](docs/CreateStackRequestAllOf.md)
  - [CreateStackResponse](docs/CreateStackResponse.md)
  - [CreatedPrivateRegionResponse](docs/CreatedPrivateRegionResponse.md)
+ - [Cursor](docs/Cursor.md)
  - [Error](docs/Error.md)
  - [GetRegionResponse](docs/GetRegionResponse.md)
  - [GetRegionVersionsResponse](docs/GetRegionVersionsResponse.md)
@@ -141,6 +144,10 @@ Class | Method | HTTP request | Description
  - [ListRegionsResponse](docs/ListRegionsResponse.md)
  - [ListStacksResponse](docs/ListStacksResponse.md)
  - [ListUsersResponse](docs/ListUsersResponse.md)
+ - [Log](docs/Log.md)
+ - [LogCursor](docs/LogCursor.md)
+ - [LogCursorData](docs/LogCursorData.md)
+ - [LogCursorDataAllOf](docs/LogCursorDataAllOf.md)
  - [Organization](docs/Organization.md)
  - [OrganizationAllOf](docs/OrganizationAllOf.md)
  - [OrganizationData](docs/OrganizationData.md)

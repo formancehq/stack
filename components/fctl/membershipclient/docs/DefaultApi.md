@@ -25,6 +25,7 @@ Method | HTTP request | Description
 [**GetServerInfo**](DefaultApi.md#GetServerInfo) | **Get** /_info | Get server info
 [**GetStack**](DefaultApi.md#GetStack) | **Get** /organizations/{organizationId}/stacks/{stackId} | Find stack
 [**ListInvitations**](DefaultApi.md#ListInvitations) | **Get** /me/invitations | List invitations of the user
+[**ListLogs**](DefaultApi.md#ListLogs) | **Get** /organizations/{organizationId}/logs | List logs
 [**ListOrganizationInvitations**](DefaultApi.md#ListOrganizationInvitations) | **Get** /organizations/{organizationId}/invitations | List invitations of the organization
 [**ListOrganizations**](DefaultApi.md#ListOrganizations) | **Get** /organizations | List organizations of the connected user
 [**ListOrganizationsExpanded**](DefaultApi.md#ListOrganizationsExpanded) | **Get** /organizations/expanded | List organizations of the connected user with expanded data
@@ -1470,6 +1471,88 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**ListInvitationsResponse**](ListInvitationsResponse.md)
+
+### Authorization
+
+[oauth2](../README.md#oauth2)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## ListLogs
+
+> LogCursor ListLogs(ctx, organizationId).StackId(stackId).Cursor(cursor).PageSize(pageSize).Action(action).UserId(userId).Key(key).Value(value).Execute()
+
+List logs
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
+)
+
+func main() {
+    organizationId := "organizationId_example" // string | 
+    stackId := "stackId_example" // string |  (optional)
+    cursor := "cursor_example" // string |  (optional)
+    pageSize := int32(56) // int32 |  (optional)
+    action := openapiclient.Action("agents.connected") // Action |  (optional)
+    userId := "userId_example" // string |  (optional)
+    key := "key_example" // string |  (optional)
+    value := "value_example" // string |  (optional)
+
+    configuration := openapiclient.NewConfiguration()
+    apiClient := openapiclient.NewAPIClient(configuration)
+    resp, r, err := apiClient.DefaultApi.ListLogs(context.Background(), organizationId).StackId(stackId).Cursor(cursor).PageSize(pageSize).Action(action).UserId(userId).Key(key).Value(value).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ListLogs``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `ListLogs`: LogCursor
+    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.ListLogs`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**organizationId** | **string** |  | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiListLogsRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+ **stackId** | **string** |  | 
+ **cursor** | **string** |  | 
+ **pageSize** | **int32** |  | 
+ **action** | [**Action**](Action.md) |  | 
+ **userId** | **string** |  | 
+ **key** | **string** |  | 
+ **value** | **string** |  | 
+
+### Return type
+
+[**LogCursor**](LogCursor.md)
 
 ### Authorization
 
