@@ -53,6 +53,7 @@ deploy:
     RUN kubectl patch Versions.formance.com default -p "{\"spec\":{\"payments\": \"${tag}\"}}" --type=merge
 
 deploy-staging:
+    COPY (stack+cluster-credentials/*) .
     BUILD --pass-args core+deployer-staging-module --MODULE=payments
 
 lint:

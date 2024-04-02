@@ -132,6 +132,13 @@ deploy-all:
         BUILD --pass-args ./ee/+deploy --components=$component
     END
 
+cluster-credentials:
+    FROM core+base-image
+    COPY .kube/config .kube/config
+    COPY --dir .aws .aws
+    SAVE ARTIFACT .kube/config
+    SAVE ARTIFACT .aws
+
 deploy-all-staging:
     ARG --required TAG
     # Only AGENT & OPERATOR are deployed through ARGOCD

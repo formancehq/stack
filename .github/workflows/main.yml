@@ -154,10 +154,12 @@ jobs:
       - name: Deploy all in staging
         env:
           ARGOCD_REGION_AUTH_TOKEN: ${{ secrets.ARGOCD_REGION_AUTH_TOKEN }}
+          STAGING_KUBECONTEXT: ${{ secrets.STAGING_KUBECONTEXT }}
           TAG: ${{ github.sha }}
         run: >
           earthly  
           --no-output 
           --secret AUTH_TOKEN=$ARGOCD_REGION_AUTH_TOKEN
+          --secret STAGING_KUBECONTEXT=$STAGING_KUBECONTEXT
           +deploy-all-staging
           --TAG=$TAG
