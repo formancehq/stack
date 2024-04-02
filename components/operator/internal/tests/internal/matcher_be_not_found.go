@@ -10,6 +10,9 @@ import (
 type beNotFound struct{}
 
 func (b beNotFound) Match(actual interface{}) (success bool, err error) {
+	if actual == nil {
+		return false, nil
+	}
 	err, ok := actual.(error)
 	if !ok {
 		return false, fmt.Errorf("expected error type, got %T", actual)
@@ -18,11 +21,11 @@ func (b beNotFound) Match(actual interface{}) (success bool, err error) {
 }
 
 func (b beNotFound) FailureMessage(actual interface{}) (message string) {
-	return "should be not found"
+	return fmt.Sprintf("should be not found, got %v", actual)
 }
 
 func (b beNotFound) NegatedFailureMessage(actual interface{}) (message string) {
-	return "should be found"
+	return fmt.Sprintf("should be found, got %v", actual)
 }
 
 var _ gomegaTypes.GomegaMatcher = (*beNotFound)(nil)

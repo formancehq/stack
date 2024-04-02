@@ -23,7 +23,7 @@ func ForObjectController[T v1beta1.Object](controller ObjectController[T]) Objec
 				object.SetError(err.Error())
 			} else {
 				object.SetReady(true)
-				object.SetError("")
+				object.SetError("Up to date")
 			}
 		}
 
@@ -69,7 +69,7 @@ func ForResource[T v1beta1.Dependent](ctrl StackDependentObjectController[T]) St
 	return func(ctx Context, stack *v1beta1.Stack, reconcilerOptions *ReconcilerOptions[T], req T) error {
 		// notes(gfyrag): We attach the database object to the stack as owner
 		// this way, even if the controller is removed, the Database object will not be removed until
-		// the stack is removed. This allows us to remove a module and re-add it later if we wants.
+		// the stack is removed. This allows us to remove a module and re-add it later if we want.
 		hasOwnerReferenceOnStack, err := HasOwnerReference(ctx, stack, req)
 		if err != nil {
 			return err

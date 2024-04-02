@@ -144,7 +144,7 @@ var _ = Describe("DatabaseController", func() {
 					databaseSettings.Spec.Value = "postgresql://xxx"
 					Expect(Patch(databaseSettings, patch)).To(Succeed())
 				})
-				It("Should declare the Database object as out of sync", FlakeAttempts(3), func() {
+				It("Should declare the Database object as out of sync", func() {
 					Eventually(func(g Gomega) bool {
 						g.Expect(LoadResource("", database.Name, database)).To(Succeed())
 

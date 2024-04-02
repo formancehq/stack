@@ -12,7 +12,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-var _ = Describe("StackController", FlakeAttempts(3), func() {
+var _ = Describe("StackController", func() {
 	Context("When creating a stack", func() {
 		var (
 			stack *v1beta1.Stack
@@ -82,9 +82,11 @@ var _ = Describe("StackController", FlakeAttempts(3), func() {
 					versions.Spec["ledger"] = "5678"
 				})
 				It("should resolve to the correct version", func() {
-					version, err := core.GetModuleVersion(TestContext(), stack, &v1beta1.Ledger{})
-					Expect(err).To(Succeed())
-					Expect(version).To(Equal("5678"))
+					Eventually(func(g Gomega) string {
+						version, err := core.GetModuleVersion(TestContext(), stack, &v1beta1.Ledger{})
+						g.Expect(err).To(Succeed())
+						return version
+					}).Should(Equal("5678"))
 				})
 			})
 		})
@@ -129,14 +131,21 @@ var _ = Describe("StackController", FlakeAttempts(3), func() {
 					databaseSettings = settings.New(uuid.NewString(), "postgres.*.uri", "postgresql://localhost", stack.Name)
 					Expect(Create(databaseSettings)).Should(Succeed())
 				})
-				JustAfterEach(func() {
-					Expect(Delete(databaseSettings)).To(Succeed())
-				})
 				JustBeforeEach(func() {
+
+					database := &v1beta1.Database{}
+					Eventually(func(g Gomega) bool {
+						g.Expect(LoadResource("", stack.Name+"-ledger", database)).To(BeNil())
+						return database.Status.Ready
+					}).Should(BeTrue())
+
 					Eventually(func() bool {
 						Expect(LoadResource("", ledger.Name, ledger)).To(Succeed())
 						return ledger.Status.Ready
 					}).Should(BeTrue())
+				})
+				JustAfterEach(func() {
+					Expect(Delete(databaseSettings)).To(Succeed())
 				})
 				It("the stack should be ready", func() {
 					Eventually(func() bool {
@@ -153,6 +162,9 @@ var _ = Describe("StackController", FlakeAttempts(3), func() {
 				It("Should also delete the module", func() {
 					Eventually(func(g Gomega) error {
 						return LoadResource("", ledger.Name, ledger)
+					}).Should(BeNotFound())
+					Eventually(func(g Gomega) error {
+						return LoadResource("", stack.Name+"-ledger", &v1beta1.Database{})
 					}).Should(BeNotFound())
 					Eventually(func(g Gomega) error {
 						return LoadResource("", stack.Name, stack)

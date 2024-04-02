@@ -135,10 +135,10 @@ tests:
     ARG GOPROXY
     ARG updateTestData=0
     ENV UPDATE_TEST_DATA=$updateTestData
-    ARG focus
+    ARG args=
     RUN --mount=type=cache,id=gomod,target=$GOPATH/pkg/mod \
         --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
-        ginkgo --focus=$focus -p ./...
+        ginkgo $args -p ./...
     IF [ "$updateTestData" = "1" ]
         SAVE ARTIFACT internal/tests/testdata AS LOCAL internal/tests/testdata
     END

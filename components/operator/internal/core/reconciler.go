@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 	"reflect"
-	"strings"
-
 	"sigs.k8s.io/controller-runtime/pkg/log"
+	"strings"
+	"time"
 
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -250,21 +250,25 @@ func reconcileObject[T client.Object](mgr Manager, controller ObjectController[T
 
 				if err := f(reconcileContext, object); err != nil {
 					if IsApplicationError(err) {
+						log.FromContext(ctx).Info(fmt.Sprintf("Finalizer respond with error: %s", err))
 						return reconcile.Result{}, nil
 					}
 					return reconcile.Result{}, errors.Wrapf(err, "executing finalizer '%s'", name)
 				}
 
-				patch := client.MergeFrom(object.DeepCopyObject().(T))
 				if controllerutil.RemoveFinalizer(object, name) {
-					if err := mgr.GetClient().Patch(ctx, object, patch); err != nil {
+					if err := mgr.GetClient().Update(ctx, object); err != nil {
 						if apierrors.IsConflict(err) {
+							log.FromContext(ctx).Info(fmt.Sprintf("Catching conflict error: %s", err))
 							return reconcile.Result{Requeue: true}, nil
 						}
 						return reconcile.Result{}, errors.Wrapf(err, "patching resource to remove finalizer '%s'", name)
 					}
+
+					log.FromContext(ctx).Info(fmt.Sprintf("Finalizer %s removed", name))
 				}
 			}
+			log.FromContext(ctx).Info("All finalizers executed, can definitely delete the resource")
 
 			return reconcile.Result{}, nil
 		}
@@ -306,6 +310,12 @@ func reconcileObject[T client.Object](mgr Manager, controller ObjectController[T
 				return ctrl.Result{}, nil
 			}
 			return ctrl.Result{}, errors.Wrap(err, "patching resource to update status")
+		}
+
+		if reconcilerError != nil && err.Error() == errors.Wrap(NewPendingError(), "reconciling resource").Error() {
+			return ctrl.Result{
+				RequeueAfter: time.Second,
+			}, nil
 		}
 
 		if apierrors.IsConflict(reconcilerError) {

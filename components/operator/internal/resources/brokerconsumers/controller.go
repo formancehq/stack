@@ -85,8 +85,8 @@ func init() {
 			WithWatch[*v1beta1.BrokerConsumer, *v1beta1.BrokerTopic](func(ctx Context, object *v1beta1.BrokerTopic) []reconcile.Request {
 				list := v1beta1.BrokerTopicConsumerList{}
 				if err := ctx.GetClient().List(ctx, &list, client.MatchingFields{
-					".spec.service": object.Spec.Service,
-					"stack":         object.Spec.Stack,
+					"queriedBy": object.Spec.Service,
+					"stack":     object.Spec.Stack,
 				}); err != nil {
 					log.FromContext(ctx).Error(err, "listing topic queries")
 					return []reconcile.Request{}

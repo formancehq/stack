@@ -33,8 +33,8 @@ var Search = internal.NewModule("search").
 				"-t", "/config/templates/*.yaml",
 				"-r", "/config/resources/*.yaml",
 				"streams",
-				"/config/streams/ledger/*/*.yaml",
-				"/config/streams/payments/*/*.yaml",
+				"/config/streams/ledger/*.yaml",
+				"/config/streams/payments/*.yaml",
 			}).
 			WithEnv(func(test *internal.Test) []string {
 				return []string{
