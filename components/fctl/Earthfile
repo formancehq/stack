@@ -18,6 +18,9 @@ deploy:
 tests:
     RUN echo "not implemented"
 
+deploy-staging:
+    RUN echo "not implemented"
+
 sources:
     WORKDIR src
     COPY --pass-args (releases+sdk-generate/go) /src/releases/sdks/go

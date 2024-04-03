@@ -69,8 +69,7 @@ deploy:
     RUN kubectl patch Versions.formance.com default -p "{\"spec\":{\"ledger\": \"${tag}\"}}" --type=merge
 
 deploy-staging:
-    COPY (stack+cluster-credentials/*) .
-    BUILD --pass-args core+deployer-staging-module --MODULE=ledger
+    BUILD --pass-args stack+deployer-module --MODULE=ledger
 
 lint:
     FROM core+builder-image

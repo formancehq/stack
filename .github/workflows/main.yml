@@ -143,8 +143,6 @@ jobs:
           role-to-assume: arn:aws:iam::955332203423:role/github-access
           aws-region: eu-west-1
           output-credentials: true
-      - name: Update kube config
-        run: aws eks update-kubeconfig --name staging-eu-west-1-hosting --region eu-west-1
       - name: Tailscale
         uses: tailscale/github-action@v2
         with:
@@ -153,13 +151,19 @@ jobs:
           tags: tag:ci
       - name: Deploy all in staging
         env:
+          # Only Region deployment need the token in order to deploy with argocd
           ARGOCD_REGION_AUTH_TOKEN: ${{ secrets.ARGOCD_REGION_AUTH_TOKEN }}
-          STAGING_KUBECONTEXT: ${{ secrets.STAGING_KUBECONTEXT }}
+          # Only for module
+          STAGING_CLUSTER_KUBECONTEXT_NAME: ${{ secrets.STAGING_CLUSTER_KUBECONTEXT_NAME }}
+          STAGING_CLUSTER_NAME: ${{ secrets.STAGING_CLUSTER_NAME }}
+          STAGING_CLUSTER_REGION: ${{ secrets.STAGING_CLUSTER_REGION }}
           TAG: ${{ github.sha }}
         run: >
           earthly  
           --no-output 
           --secret AUTH_TOKEN=$ARGOCD_REGION_AUTH_TOKEN
-          --secret STAGING_KUBECONTEXT=$STAGING_KUBECONTEXT
+          --secret CLUSTER_KUBECONTEXT_NAME=$STAGING_CLUSTER_KUBECONTEXT_NAME
+          --secret CLUSTER_NAME=$STAGING_CLUSTER_NAME
+          --secret CLUSTER_REGION=$STAGING_CLUSTER_REGION
           +deploy-all-staging
           --TAG=$TAG
