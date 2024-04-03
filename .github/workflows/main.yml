@@ -119,11 +119,6 @@ jobs:
   Deploy:
     runs-on: "ubuntu-latest"
     if: github.ref == 'refs/heads/main'
-    environment:
-      name: staging
-    permissions:
-      id-token: write
-      contents: read
     needs:
       - GoReleaser
       - Main
@@ -135,14 +130,6 @@ jobs:
       - uses: 'actions/checkout@v4'
         with:
           fetch-depth: 0
-      - name: Setup Env
-        uses: ./.github/actions/env
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::955332203423:role/github-access
-          aws-region: eu-west-1
-          output-credentials: true
       - name: Tailscale
         uses: tailscale/github-action@v2
         with:
