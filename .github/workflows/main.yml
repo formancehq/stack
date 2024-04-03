@@ -119,11 +119,6 @@ jobs:
   Deploy:
     runs-on: "ubuntu-latest"
     if: github.ref == 'refs/heads/main'
-    environment:
-      name: staging
-    permissions:
-      id-token: write
-      contents: read
     needs:
       - GoReleaser
       - Main
@@ -135,38 +130,27 @@ jobs:
       - uses: 'actions/checkout@v4'
         with:
           fetch-depth: 0
-      - name: Setup Env
-        uses: ./.github/actions/env
-      - name: Install and configure kubectl
-        run: |
-          VERSION=$(curl --silent https://storage.googleapis.com/kubernetes-release/release/stable.txt)
-          curl https://storage.googleapis.com/kubernetes-release/release/$VERSION/bin/linux/amd64/kubectl \
-          --progress-bar \
-          --location \
-          --remote-name
-          chmod +x kubectl
-          sudo mv kubectl /usr/local/bin/
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Tailscale
+        uses: tailscale/github-action@v2
         with:
-          role-to-assume: arn:aws:iam::955332203423:role/github-access
-          aws-region: eu-west-1
-          output-credentials: true
-      - name: Update kube config
-        run: aws eks update-kubeconfig --name staging-eu-west-1-hosting --region eu-west-1
-      - run: kubectl config use-context arn:aws:eks:eu-west-1:955332203423:cluster/staging-eu-west-1-hosting
-      - name: Deploy in staging
-        run: |
-          kubectl set image deployment -n formance-system agent agent=ghcr.io/formancehq/agent:${GITHUB_SHA}
-          kubectl set image deployment -n formance-system operator operator=ghcr.io/formancehq/operator:${GITHUB_SHA}
-          kubectl patch Versions.formance.com default -p "{\"spec\":{\"ledger\": \"${GITHUB_SHA}\"}}" --type=merge
-          kubectl patch Versions.formance.com default -p "{\"spec\":{\"payments\": \"${GITHUB_SHA}\"}}" --type=merge
-          kubectl patch Versions.formance.com default -p "{\"spec\":{\"auth\": \"${GITHUB_SHA}\"}}" --type=merge
-          kubectl patch Versions.formance.com default -p "{\"spec\":{\"gateway\": \"${GITHUB_SHA}\"}}" --type=merge
-          kubectl patch Versions.formance.com default -p "{\"spec\":{\"orchestration\": \"${GITHUB_SHA}\"}}" --type=merge
-          kubectl patch Versions.formance.com default -p "{\"spec\":{\"reconciliation\": \"${GITHUB_SHA}\"}}" --type=merge
-          kubectl patch Versions.formance.com default -p "{\"spec\":{\"search\": \"${GITHUB_SHA}\"}}" --type=merge
-          kubectl patch Versions.formance.com default -p "{\"spec\":{\"stargate\": \"${GITHUB_SHA}\"}}" --type=merge
-          kubectl patch Versions.formance.com default -p "{\"spec\":{\"wallets\": \"${GITHUB_SHA}\"}}" --type=merge
-          kubectl patch Versions.formance.com default -p "{\"spec\":{\"webhooks\": \"${GITHUB_SHA}\"}}" --type=merge
-          kubectl patch Versions.formance.com default -p "{\"spec\":{\"operator-utils\": \"${GITHUB_SHA}\"}}" --type=merge
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+      - name: Deploy all in staging
+        env:
+          # Only Region deployment need the token in order to deploy with argocd
+          ARGOCD_REGION_AUTH_TOKEN: ${{ secrets.ARGOCD_REGION_AUTH_TOKEN }}
+          # Only for module
+          STAGING_CLUSTER_KUBECONTEXT_NAME: ${{ secrets.STAGING_CLUSTER_KUBECONTEXT_NAME }}
+          STAGING_CLUSTER_NAME: ${{ secrets.STAGING_CLUSTER_NAME }}
+          STAGING_CLUSTER_REGION: ${{ secrets.STAGING_CLUSTER_REGION }}
+          TAG: ${{ github.sha }}
+        run: >
+          earthly  
+          --no-output 
+          --secret AUTH_TOKEN=$ARGOCD_REGION_AUTH_TOKEN
+          --secret CLUSTER_KUBECONTEXT_NAME=$STAGING_CLUSTER_KUBECONTEXT_NAME
+          --secret CLUSTER_NAME=$STAGING_CLUSTER_NAME
+          --secret CLUSTER_REGION=$STAGING_CLUSTER_REGION
+          +deploy-all-staging
+          --TAG=$TAG

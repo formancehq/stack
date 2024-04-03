@@ -62,10 +62,25 @@ deploy:
         --set server.address=$user.$tld:443 \
         formance-membership-agent ./helm
 
+deploy-staging:
+    FROM --pass-args core+base-argocd 
+
+    ARG --required TAG
+
+    ARG APPLICATION=staging-eu-west-1-hosting-regions
+    LET SERVER=argocd.internal.formance.cloud
+    
+    RUN --secret AUTH_TOKEN \
+        argocd app set $APPLICATION \ 
+        --parameter agent.image.tag=$TAG \
+        --auth-token=$AUTH_TOKEN --server=$SERVER --grpc-web
+
+    BUILD --pass-args core+deploy-staging
+
 pre-commit:
     BUILD --pass-args +helm-validate
     WAIT
-      BUILD --pass-args +tidy
+        BUILD --pass-args +tidy
     END
     BUILD --pass-args +lint
 

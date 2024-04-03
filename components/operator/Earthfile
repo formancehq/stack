@@ -85,7 +85,6 @@ deploy:
     RUN helm upgrade --namespace formance-system --install formance-operator \
         --wait \
         --create-namespace \
-        --create-namespace \
         --set image.tag=$tag .
     WORKDIR /
     COPY .earthly .earthly
@@ -95,6 +94,20 @@ deploy:
     RUN --secret tld helm upgrade --install operator-configuration ./configuration \
         --namespace formance-system \
         --set gateway.fallback=https://console.$user.$tld
+
+deploy-staging:
+    FROM --pass-args core+base-argocd 
+    ARG --required TAG
+
+    ARG APPLICATION=staging-eu-west-1-hosting-regions
+    LET SERVER=argocd.internal.formance.cloud
+    
+    RUN --secret AUTH_TOKEN \
+        argocd app set $APPLICATION \ 
+        --parameter operator.image.tag=$TAG \
+        --auth-token=$AUTH_TOKEN --server=$SERVER --grpc-web
+
+    BUILD --pass-args core+deploy-staging
 
 lint:
     FROM core+builder-image

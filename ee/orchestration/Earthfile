@@ -63,6 +63,9 @@ deploy:
     FROM --pass-args core+vcluster-deployer-image
     RUN kubectl patch Versions.formance.com default -p "{\"spec\":{\"orchestration\": \"${tag}\"}}" --type=merge
 
+deploy-staging:
+    BUILD --pass-args stack+deployer-module --MODULE=orchestration
+
 lint:
     FROM core+builder-image
     COPY (+sources/*) /src

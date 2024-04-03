@@ -60,9 +60,12 @@ deploy:
     FROM --pass-args core+vcluster-deployer-image
     RUN kubectl patch Versions.formance.com default -p "{\"spec\":{\"auth\": \"${tag}\"}}" --type=merge
 
+deploy-staging:
+    BUILD --pass-args stack+deployer-module --MODULE=auth
+
 pre-commit:
     WAIT
-      BUILD --pass-args +tidy
+        BUILD --pass-args +tidy
     END
     BUILD --pass-args +lint
 

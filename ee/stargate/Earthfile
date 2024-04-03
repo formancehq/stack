@@ -50,6 +50,9 @@ deploy:
     FROM --pass-args core+vcluster-deployer-image
     RUN kubectl patch Versions.formance.com default -p "{\"spec\":{\"stargate\": \"${tag}\"}}" --type=merge
 
+deploy-staging:
+    BUILD --pass-args stack+deployer-module --MODULE=stargate
+
 lint:
     FROM core+builder-image
     COPY (+sources/*) /src
