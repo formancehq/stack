@@ -244,6 +244,32 @@ rules:
 - apiGroups:
   - formance.com
   resources:
+  - brokerconsumers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - brokerconsumers/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - brokerconsumers/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
   - brokertopicconsumers
   verbs:
   - create

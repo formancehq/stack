@@ -3,29 +3,25 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.14.0
-  name: gatewayhttpapis.formance.com
+  name: brokerconsumers.formance.com
 spec:
   group: formance.com
   names:
-    kind: GatewayHTTPAPI
-    listKind: GatewayHTTPAPIList
-    plural: gatewayhttpapis
-    singular: gatewayhttpapi
+    kind: BrokerConsumer
+    listKind: BrokerConsumerList
+    plural: brokerconsumers
+    singular: brokerconsumer
   scope: Cluster
   versions:
   - additionalPrinterColumns:
-    - description: Stack
-      jsonPath: .spec.stack
-      name: Stack
-      type: string
-    - description: Ready
-      jsonPath: .status.ready
-      name: Ready
+    - description: Listened services
+      jsonPath: .spec.services
+      name: Services
       type: string
     name: v1beta1
     schema:
       openAPIV3Schema:
-        description: GatewayHTTPAPI is the Schema for the HTTPAPIs API
+        description: BrokerConsumer is the Schema for the brokerconsumers API
         properties:
           apiVersion:
             description: |-
@@ -45,38 +41,22 @@ spec:
           metadata:
             type: object
           spec:
-            description: GatewayHTTPAPISpec defines the desired state of GatewayHTTPAPI
+            description: BrokerConsumerSpec defines the desired state of BrokerConsumer
             properties:
-              healthCheckEndpoint:
-                description: Health check endpoint
+              queriedBy:
                 type: string
-              name:
-                description: Name indicates prefix api
-                type: string
-              rules:
-                description: Rules
+              services:
                 items:
-                  properties:
-                    methods:
-                      items:
-                        type: string
-                      type: array
-                    path:
-                      type: string
-                    secured:
-                      type: boolean
-                  required:
-                  - path
-                  type: object
+                  type: string
                 type: array
               stack:
                 type: string
             required:
-            - name
-            - rules
+            - queriedBy
+            - services
             type: object
           status:
-            description: GatewayHTTPAPIStatus defines the observed state of GatewayHTTPAPI
+            description: BrokerConsumerStatus defines the observed state of BrokerConsumer
             properties:
               info:
                 type: string

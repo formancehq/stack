@@ -47,7 +47,7 @@ func createAuthClient(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 
 func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.Orchestration,
 	database *v1beta1.Database, client *v1beta1.AuthClient,
-	consumers []*v1beta1.BrokerTopicConsumer, image string) error {
+	consumer *v1beta1.BrokerConsumer, image string) error {
 
 	env := make([]v1.EnvVar, 0)
 	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, LowerCamelCaseKind(ctx, orchestration))
@@ -95,8 +95,8 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 		Env("TEMPORAL_ADDRESS", temporalURI.Host),
 		Env("TEMPORAL_NAMESPACE", temporalURI.Path[1:]),
 		Env("WORKER", "true"),
-		Env("TOPICS", strings.Join(collectionutils.Map(consumers, func(from *v1beta1.BrokerTopicConsumer) string {
-			return fmt.Sprintf("%s-%s", stack.Name, from.Spec.Service)
+		Env("TOPICS", strings.Join(collectionutils.Map(consumer.Spec.Services, func(from string) string {
+			return fmt.Sprintf("%s-%s", stack.Name, from)
 		}), " ")),
 	)
 

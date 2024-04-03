@@ -34,7 +34,7 @@ build-image:
 
 controller-gen:
     FROM core+builder-image
-    DO --pass-args core+GO_INSTALL --package=sigs.k8s.io/controller-tools/cmd/controller-gen@v0.13.0
+    DO --pass-args core+GO_INSTALL --package=sigs.k8s.io/controller-tools/cmd/controller-gen@v0.14.0
 
 manifests:
     FROM --pass-args +controller-gen

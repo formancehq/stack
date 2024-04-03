@@ -11,10 +11,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-var _ = Describe("BrokerTopicConsumer", func() {
-	Context("When creating a BrokerTopicConsumer", func() {
+var _ = Describe("BrokerConsumer", func() {
+	Context("When creating a BrokerConsumer", func() {
 		var (
-			brokerTopicConsumer   *v1beta1.BrokerTopicConsumer
+			brokerConsumer        *v1beta1.BrokerConsumer
 			brokerNatsDSNSettings *v1beta1.Settings
 			stack                 *v1beta1.Stack
 		)
@@ -26,54 +26,54 @@ var _ = Describe("BrokerTopicConsumer", func() {
 			Expect(Create(stack)).To(BeNil())
 			brokerNatsDSNSettings = settings.New(uuid.NewString(), "broker.dsn", "nats://localhost:1234", stack.Name)
 			Expect(Create(brokerNatsDSNSettings)).To(BeNil())
-			brokerTopicConsumer = &v1beta1.BrokerTopicConsumer{
+			brokerConsumer = &v1beta1.BrokerConsumer{
 				ObjectMeta: RandObjectMeta(),
-				Spec: v1beta1.BrokerTopicConsumerSpec{
-					Service:   "ledger",
+				Spec: v1beta1.BrokerConsumerSpec{
+					Services:  []string{"ledger"},
 					QueriedBy: "orchestration",
 					StackDependency: v1beta1.StackDependency{
 						Stack: stack.Name,
 					},
 				},
 			}
-			Expect(Create(brokerTopicConsumer)).To(Succeed())
+			Expect(Create(brokerConsumer)).To(Succeed())
 		})
 		AfterEach(func() {
 			Expect(Delete(stack)).To(Succeed())
 			Expect(Delete(brokerNatsDSNSettings)).To(Succeed())
-			Expect(client.IgnoreNotFound(Delete(brokerTopicConsumer))).To(Succeed())
+			Expect(client.IgnoreNotFound(Delete(brokerConsumer))).To(Succeed())
 		})
 		It("Should create a BrokerTopic", func() {
 			t := &v1beta1.BrokerTopic{}
 			Eventually(func(g Gomega) *v1beta1.BrokerTopic {
 				g.Expect(Get(core.GetResourceName(
-					core.GetObjectName(stack.Name, brokerTopicConsumer.Spec.Service)), t)).To(Succeed())
+					core.GetObjectName(stack.Name, brokerConsumer.Spec.Services[0])), t)).To(Succeed())
 				return t
-			}).Should(BeOwnedBy(brokerTopicConsumer))
+			}).Should(BeOwnedBy(brokerConsumer))
 		})
 		Context("Then when the BrokerTopic is ready", func() {
 			t := &v1beta1.BrokerTopic{}
 			BeforeEach(func() {
 				Eventually(func(g Gomega) bool {
 					g.Expect(Get(core.GetResourceName(
-						core.GetObjectName(stack.Name, brokerTopicConsumer.Spec.Service)), t)).To(Succeed())
+						core.GetObjectName(stack.Name, brokerConsumer.Spec.Services[0])), t)).To(Succeed())
 					return t.Status.Ready
 				}).Should(BeTrue())
 			})
-			It("Should set the BrokerTopicConsumer to ready status", func() {
+			It("Should set the BrokerConsumer to ready status", func() {
 				Eventually(func(g Gomega) bool {
-					g.Expect(LoadResource("", brokerTopicConsumer.Name, brokerTopicConsumer)).To(Succeed())
+					g.Expect(LoadResource("", brokerConsumer.Name, brokerConsumer)).To(Succeed())
 
-					return brokerTopicConsumer.Status.Ready
+					return brokerConsumer.Status.Ready
 				}).Should(BeTrue())
 			})
-			Context("Then create a new BrokerTopicConsumer on the same service", func() {
-				brokerTopicConsumer2 := &v1beta1.BrokerTopicConsumer{}
+			Context("Then create a new BrokerConsumer on the same service", func() {
+				brokerTopicConsumer2 := &v1beta1.BrokerConsumer{}
 				BeforeEach(func() {
-					brokerTopicConsumer2 = &v1beta1.BrokerTopicConsumer{
+					brokerTopicConsumer2 = &v1beta1.BrokerConsumer{
 						ObjectMeta: RandObjectMeta(),
-						Spec: v1beta1.BrokerTopicConsumerSpec{
-							Service:   brokerTopicConsumer.Spec.Service,
+						Spec: v1beta1.BrokerConsumerSpec{
+							Services:  []string{brokerConsumer.Spec.Services[0]},
 							QueriedBy: "webhooks",
 							StackDependency: v1beta1.StackDependency{
 								Stack: stack.Name,
@@ -92,16 +92,16 @@ var _ = Describe("BrokerTopicConsumer", func() {
 						return brokerTopicConsumer2.Status.Ready
 					}).Should(BeTrue())
 				})
-				Context("Then first BrokerTopicConsumer object", func() {
+				Context("Then first BrokerConsumer object", func() {
 					BeforeEach(func() {
-						Expect(Delete(brokerTopicConsumer)).To(Succeed())
+						Expect(Delete(brokerConsumer)).To(Succeed())
 					})
 					It("Should remove the service from the queries of the topic", func() {
 						Eventually(func(g Gomega) *v1beta1.BrokerTopic {
 							topic := &v1beta1.BrokerTopic{}
-							g.Expect(Get(core.GetResourceName(core.GetObjectName(stack.Name, brokerTopicConsumer.Spec.Service)), topic)).To(Succeed())
+							g.Expect(Get(core.GetResourceName(core.GetObjectName(stack.Name, brokerConsumer.Spec.Services[0])), topic)).To(Succeed())
 							return topic
-						}).ShouldNot(BeControlledBy(brokerTopicConsumer))
+						}).ShouldNot(BeControlledBy(brokerConsumer))
 					})
 				})
 			})

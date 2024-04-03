@@ -115,10 +115,10 @@ var _ = Describe("OrchestrationController", func() {
 				return LoadResource("", core.GetObjectName(stack.Name, "orchestration"), authClient)
 			}).Should(Succeed())
 		})
-		It("Should create a new BrokerTopicConsumer object for the ledger", func() {
-			authClient := &v1beta1.BrokerTopicConsumer{}
+		It("Should create a new BrokerConsumer object", func() {
+			consumer := &v1beta1.BrokerConsumer{}
 			Eventually(func() error {
-				return LoadResource("", core.GetObjectName(stack.Name, "orchestration-ledger"), authClient)
+				return LoadResource("", orchestration.Name+"-orchestration", consumer)
 			}).Should(Succeed())
 		})
 	})
