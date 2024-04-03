@@ -44,7 +44,7 @@ versions:
       gateway: v2.0.0-rc.18
       ledger: v1.10.14
       operator-utils: v2.0.0-rc.18
-    v1.O:
+    v1.0:
       orchestration: v0.2.1
       reconciliation: v0.1.0
       search: v0.10.0
