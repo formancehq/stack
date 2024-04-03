@@ -63,5 +63,4 @@ deploy:
     RUN kubectl patch Versions.formance.com default -p "{\"spec\":{\"operator-utils\": \"${tag}\"}}" --type=merge
 
 deploy-staging:
-    FROM core+base-image
-    BUILD --pass-args stack+deployer-module --MODULE=operator-utils
+    BUILD --pass-args stack+deployer-module --MODULE="operator-utils"

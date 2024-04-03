@@ -97,7 +97,6 @@ deploy:
 
 deploy-staging:
     FROM --pass-args core+base-argocd 
-
     ARG --required TAG
 
     ARG APPLICATION=staging-eu-west-1-hosting-regions

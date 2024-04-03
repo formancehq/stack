@@ -133,11 +133,12 @@ deploy-all:
     END
 
 deployer-module:
+    FROM --pass-args core+base-image
     ARG --required MODULE
-    ARG --require TAG
+    ARG --required TAG
 
-    LET ARGS="--parameters=versions.files.default.$MODULE=$TAG"
-    FROM core+deployer-module --ARGS=$ARGS --TAG=$TAG
+    LET ARGS="--parameter=versions.files.default.$MODULE=$TAG"
+    FROM --pass-args core+deployer-module --ARGS=$ARGS --TAG=$TAG
 
 deploy-all-staging:
     FROM +sources --LOCATION=.
