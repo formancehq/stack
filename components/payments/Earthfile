@@ -78,3 +78,19 @@ tidy:
     COPY --pass-args (+sources/src) /src
     WORKDIR /src/components/payments
     DO --pass-args stack+GO_TIDY
+
+generate-generic-connector-client:
+    FROM openapitools/openapi-generator-cli:v6.6.0
+    WORKDIR /src
+    COPY cmd/connectors/internal/connectors/generic/client/generic-openapi.yaml .
+    RUN docker-entrypoint.sh generate \
+        -i ./generic-openapi.yaml \
+        -g go \
+        -o ./generated \
+        --git-user-id=formancehq \
+        --git-repo-id=payments \
+        -p packageVersion=latest \
+        -p isGoSubmodule=true \
+        -p packageName=genericclient
+    RUN rm -rf ./generated/test
+    SAVE ARTIFACT ./generated AS LOCAL ./cmd/connectors/internal/connectors/generic/client/generated

@@ -10,6 +10,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/configtemplate"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currencycloud"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/dummypay"
+	"github.com/formancehq/payments/cmd/connectors/internal/connectors/generic"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/mangopay"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/modulr"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/moneycorp"
@@ -34,6 +35,7 @@ func connectorConfigsHandler() http.HandlerFunc {
 			wise.Config{},
 			mangopay.Config{},
 			moneycorp.Config{},
+			generic.Config{},
 		)
 
 		err := json.NewEncoder(w).Encode(api.BaseResponse[configtemplate.Configs]{

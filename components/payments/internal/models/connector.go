@@ -119,6 +119,7 @@ const (
 	ConnectorProviderMoneycorp     ConnectorProvider = "MONEYCORP"
 	ConnectorProviderAtlar         ConnectorProvider = "ATLAR"
 	ConnectorProviderAdyen         ConnectorProvider = "ADYEN"
+	ConnectorProviderGeneric       ConnectorProvider = "GENERIC"
 )
 
 func (p ConnectorProvider) String() string {
@@ -151,6 +152,8 @@ func ConnectorProviderFromString(s string) (ConnectorProvider, error) {
 		return ConnectorProviderAtlar, nil
 	case "ADYEN":
 		return ConnectorProviderAdyen, nil
+	case "GENERIC":
+		return ConnectorProviderGeneric, nil
 	default:
 		return "", errors.New("unknown connector provider")
 	}
