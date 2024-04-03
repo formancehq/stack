@@ -167,5 +167,33 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				})
 			})
 		})
+		Then("reverting it at effective date", func() {
+			BeforeEach(func() {
+				response, err := Client().Ledger.V2RevertTransaction(
+					TestContext(),
+					operations.V2RevertTransactionRequest{
+						Ledger:          "default",
+						ID:              createTransactionResponse.Data.ID,
+						AtEffectiveDate: pointer.For(true),
+					},
+				)
+				Expect(err).To(Succeed())
+				Expect(response.StatusCode).To(Equal(201))
+			})
+			It("should revert the original transaction at date of the original tx", func() {
+				response, err := Client().Ledger.V2GetTransaction(
+					TestContext(),
+					operations.V2GetTransactionRequest{
+						Ledger: "default",
+						ID:     createTransactionResponse.Data.ID,
+					},
+				)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(response.StatusCode).To(Equal(200))
+
+				Expect(response.V2GetTransactionResponse.Data.Reverted).To(BeTrue())
+				Expect(response.V2GetTransactionResponse.Data.Timestamp).To(Equal(createTransactionResponse.Data.Timestamp))
+			})
+		})
 	})
 })

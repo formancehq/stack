@@ -39,7 +39,7 @@ func printCommonInformation(
 	tableData = append(tableData, []string{"Source", "Destination", "Asset", "Amount"})
 	for _, posting := range postings {
 		tableData = append(tableData, []string{
-			posting.Source, posting.Destination, posting.Asset, fmt.Sprint(posting.Amount),
+			posting.GetSource(), posting.GetDestination(), posting.GetAsset(), posting.GetAmount().String(),
 		})
 	}
 
@@ -55,19 +55,19 @@ func printCommonInformation(
 	return nil
 }
 
-func PrintExpandedTransaction(out io.Writer, transaction shared.Transaction) error {
+func PrintExpandedTransaction(out io.Writer, transaction ExpandedTransaction) error {
 
 	if err := printCommonInformation(
 		out,
-		transaction.Txid,
+		transaction.GetID(),
 		func() string {
-			if transaction.Reference == nil {
+			if transaction.GetReference() == nil {
 				return ""
 			}
-			return *transaction.Reference
+			return *transaction.GetReference()
 		}(),
-		transaction.Postings,
-		transaction.Timestamp,
+		transaction.GetPostings(),
+		transaction.GetTimestamp(),
 	); err != nil {
 		return err
 	}
@@ -75,10 +75,10 @@ func PrintExpandedTransaction(out io.Writer, transaction shared.Transaction) err
 	fctl.Section.WithWriter(out).Println("Summary")
 	tableData := pterm.TableData{}
 	tableData = append(tableData, []string{"Account", "Asset", "Movement", "Final balance"})
-	for account, postCommitVolume := range transaction.PostCommitVolumes {
+	for account, postCommitVolume := range transaction.GetPostCommitVolumes() {
 		for asset, volumes := range postCommitVolume {
 			movement := big.NewInt(0)
-			movement = movement.Sub(volumes.Balance, (transaction.PreCommitVolumes)[account][asset].Balance)
+			movement = movement.Sub(volumes.Balance, (transaction.GetPreCommitVolumes())[account][asset].Balance)
 			movementStr := fmt.Sprint(movement)
 			if movement.Cmp(big.NewInt(0)) > 0 {
 				movementStr = "+" + movementStr
@@ -97,29 +97,87 @@ func PrintExpandedTransaction(out io.Writer, transaction shared.Transaction) err
 	}
 
 	fmt.Fprintln(out, "")
-	if err := PrintMetadata(out, collectionutils.ConvertMap(transaction.Metadata, collectionutils.ToFmtString[any])); err != nil {
+	if err := PrintMetadata(out, transaction.GetMetadata()); err != nil {
 		return err
 	}
 	return nil
 }
 
-func PrintTransaction(out io.Writer, transaction shared.Transaction) error {
+type Transaction interface {
+	GetReference() *string
+	GetID() *big.Int
+	GetPostings() []shared.Posting
+	GetTimestamp() time.Time
+	GetMetadata() map[string]string
+}
+
+type v2Transaction struct {
+	shared.V2Transaction
+}
+
+func (t v2Transaction) GetPostings() []shared.Posting {
+	return collectionutils.Map(t.V2Transaction.GetPostings(), func(from shared.V2Posting) shared.Posting {
+		return shared.Posting{
+			Amount:      from.GetAmount(),
+			Asset:       from.GetAsset(),
+			Destination: from.GetDestination(),
+			Source:      from.GetSource(),
+		}
+	})
+}
+
+var _ Transaction = (*v2Transaction)(nil)
+
+func WrapV2Transaction(transaction shared.V2Transaction) *v2Transaction {
+	return &v2Transaction{
+		V2Transaction: transaction,
+	}
+}
+
+type v1Transaction struct {
+	shared.Transaction
+}
+
+func (t v1Transaction) GetID() *big.Int {
+	return t.Transaction.GetTxid()
+}
+
+func (t v1Transaction) GetMetadata() map[string]string {
+	return collectionutils.ConvertMap(t.Transaction.Metadata, collectionutils.ToFmtString)
+}
+
+var _ Transaction = (*v1Transaction)(nil)
+
+func WrapV1Transaction(transaction shared.Transaction) *v1Transaction {
+	return &v1Transaction{
+		Transaction: transaction,
+	}
+}
+
+type ExpandedTransaction interface {
+	Transaction
+	GetPreCommitVolumes() map[string]map[string]shared.Volume
+	GetPostCommitVolumes() map[string]map[string]shared.Volume
+}
+
+func PrintTransaction(out io.Writer, transaction Transaction) error {
 
 	reference := ""
-	if transaction.Reference != nil {
-		reference = *transaction.Reference
+	if transaction.GetReference() != nil {
+		reference = *transaction.GetReference()
 	}
 	if err := printCommonInformation(
 		out,
-		transaction.Txid,
+		transaction.GetID(),
 		reference,
-		transaction.Postings,
-		transaction.Timestamp,
+		transaction.GetPostings(),
+		transaction.GetTimestamp(),
 	); err != nil {
 		return err
 	}
 
-	if err := PrintMetadata(out, collectionutils.ConvertMap(transaction.Metadata, collectionutils.ToFmtString[string])); err != nil {
+	// collectionutils.ConvertMap(transaction.Metadata, collectionutils.ToFmtString[string])
+	if err := PrintMetadata(out, transaction.GetMetadata()); err != nil {
 		return err
 	}
 	return nil

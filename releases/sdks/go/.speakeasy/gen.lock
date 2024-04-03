@@ -1,7 +1,7 @@
 lockVersion: 2.0.0
 id: 7eac0a45-60a2-40bb-9e85-26bd77ec2a6d
 management:
-  docChecksum: 20f83dad7abe00c72141a48e75466b72
+  docChecksum: 8501dcc6098570928e5740ce480516da
   docVersion: v0.0.0
   speakeasyVersion: internal
   generationVersion: 2.237.2
@@ -47,8 +47,8 @@ generatedFiles:
   - pkg/utils/retries.go
   - pkg/utils/security.go
   - pkg/utils/utils.go
+  - /pkg/models/operations/getoidcwellknowns.go
   - /pkg/models/operations/getversions.go
-  - /pkg/models/operations/getapiauthwellknownopenidconfiguration.go
   - /pkg/models/operations/createclient.go
   - /pkg/models/operations/createsecret.go
   - /pkg/models/operations/deleteclient.go
@@ -548,8 +548,8 @@ generatedFiles:
   - /pkg/models/sdkerrors/v2error.go
   - /pkg/models/sdkerrors/walletserrorresponse.go
   - /pkg/models/sdkerrors/webhookserrorresponse.go
+  - docs/pkg/models/operations/getoidcwellknownsresponse.md
   - docs/pkg/models/operations/getversionsresponse.md
-  - docs/pkg/models/operations/getapiauthwellknownopenidconfigurationresponse.md
   - docs/pkg/models/operations/createclientresponse.md
   - docs/pkg/models/operations/createsecretrequest.md
   - docs/pkg/models/operations/createsecretresponse.md

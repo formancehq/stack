@@ -37,6 +37,7 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"log"
+	"net/http"
 )
 
 func main() {
@@ -47,12 +48,12 @@ func main() {
 	)
 
 	ctx := context.Background()
-	res, err := s.GetVersions(ctx)
+	res, err := s.GetOIDCWellKnowns(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if res.GetVersionsResponse != nil {
+	if res.StatusCode == http.StatusOK {
 		// handle response
 	}
 }
@@ -65,8 +66,8 @@ func main() {
 
 ### [Formance SDK](docs/sdks/formance/README.md)
 
+* [GetOIDCWellKnowns](docs/sdks/formance/README.md#getoidcwellknowns) - Retrieve OpenID connect well-knowns.
 * [GetVersions](docs/sdks/formance/README.md#getversions) - Show stack version information
-* [GetAPIAuthWellKnownOpenidConfiguration](docs/sdks/formance/README.md#getapiauthwellknownopenidconfiguration)
 
 ### [Auth](docs/sdks/auth/README.md)
 
@@ -335,6 +336,7 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"log"
+	"net/http"
 )
 
 func main() {
@@ -346,12 +348,12 @@ func main() {
 	)
 
 	ctx := context.Background()
-	res, err := s.GetVersions(ctx)
+	res, err := s.GetOIDCWellKnowns(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if res.GetVersionsResponse != nil {
+	if res.StatusCode == http.StatusOK {
 		// handle response
 	}
 }
@@ -370,6 +372,7 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"log"
+	"net/http"
 )
 
 func main() {
@@ -381,12 +384,12 @@ func main() {
 	)
 
 	ctx := context.Background()
-	res, err := s.GetVersions(ctx)
+	res, err := s.GetOIDCWellKnowns(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if res.GetVersionsResponse != nil {
+	if res.StatusCode == http.StatusOK {
 		// handle response
 	}
 }
@@ -443,6 +446,7 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"log"
+	"net/http"
 )
 
 func main() {
@@ -453,12 +457,12 @@ func main() {
 	)
 
 	ctx := context.Background()
-	res, err := s.GetVersions(ctx)
+	res, err := s.GetOIDCWellKnowns(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if res.GetVersionsResponse != nil {
+	if res.StatusCode == http.StatusOK {
 		// handle response
 	}
 }

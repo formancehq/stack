@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-type GetAPIAuthWellKnownOpenidConfigurationResponse struct {
+type GetOIDCWellKnownsResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
 	// HTTP response status code for this operation
@@ -15,21 +15,21 @@ type GetAPIAuthWellKnownOpenidConfigurationResponse struct {
 	RawResponse *http.Response
 }
 
-func (o *GetAPIAuthWellKnownOpenidConfigurationResponse) GetContentType() string {
+func (o *GetOIDCWellKnownsResponse) GetContentType() string {
 	if o == nil {
 		return ""
 	}
 	return o.ContentType
 }
 
-func (o *GetAPIAuthWellKnownOpenidConfigurationResponse) GetStatusCode() int {
+func (o *GetOIDCWellKnownsResponse) GetStatusCode() int {
 	if o == nil {
 		return 0
 	}
 	return o.StatusCode
 }
 
-func (o *GetAPIAuthWellKnownOpenidConfigurationResponse) GetRawResponse() *http.Response {
+func (o *GetOIDCWellKnownsResponse) GetRawResponse() *http.Response {
 	if o == nil {
 		return nil
 	}

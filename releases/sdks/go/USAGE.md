@@ -7,6 +7,7 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"log"
+	"net/http"
 )
 
 func main() {
@@ -17,12 +18,12 @@ func main() {
 	)
 
 	ctx := context.Background()
-	res, err := s.GetVersions(ctx)
+	res, err := s.GetOIDCWellKnowns(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if res.GetVersionsResponse != nil {
+	if res.StatusCode == http.StatusOK {
 		// handle response
 	}
 }

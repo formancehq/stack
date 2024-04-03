@@ -118,5 +118,5 @@ func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 
 // TODO: This need to use the ui.NewListModel
 func (c *SendController) Render(cmd *cobra.Command, args []string) error {
-	return internal.PrintTransaction(cmd.OutOrStdout(), *c.store.Transaction)
+	return internal.PrintTransaction(cmd.OutOrStdout(), internal.WrapV1Transaction(*c.store.Transaction))
 }

@@ -1,4 +1,4 @@
-# GetAPIAuthWellKnownOpenidConfigurationResponse
+# GetOIDCWellKnownsResponse
 
 
 ## Fields

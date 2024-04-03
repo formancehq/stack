@@ -173,5 +173,5 @@ func (c *NumController) Run(cmd *cobra.Command, args []string) (fctl.Renderable,
 }
 
 func (c *NumController) Render(cmd *cobra.Command, args []string) error {
-	return internal.PrintTransaction(cmd.OutOrStdout(), *c.store.Transaction)
+	return internal.PrintTransaction(cmd.OutOrStdout(), internal.WrapV1Transaction(*c.store.Transaction))
 }

@@ -95,5 +95,5 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
 	fmt.Fprintln(cmd.OutOrStdout())
 
 	return fctl.PrintMetadata(cmd.OutOrStdout(),
-		collectionutils.ConvertMap(c.store.Account.Metadata, collectionutils.ToFmtString[string]))
+		collectionutils.ConvertMap(c.store.Account.Metadata, collectionutils.ToFmtString))
 }

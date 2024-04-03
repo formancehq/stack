@@ -11,6 +11,8 @@ import (
 )
 
 type V2RevertTransactionRequest struct {
+	// Revert transaction at effective date of the original tx
+	AtEffectiveDate *bool `queryParam:"style=form,explode=true,name=atEffectiveDate"`
 	// Force revert
 	Force *bool `queryParam:"style=form,explode=true,name=force"`
 	// Transaction ID.
@@ -28,6 +30,13 @@ func (v *V2RevertTransactionRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	return nil
+}
+
+func (o *V2RevertTransactionRequest) GetAtEffectiveDate() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.AtEffectiveDate
 }
 
 func (o *V2RevertTransactionRequest) GetForce() *bool {
