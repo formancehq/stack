@@ -25,9 +25,46 @@ agent:
     id: "aws-eu-west-1-sandbox"
     baseUrl: https://sandbox.formance.cloud
     authentication:
-        mode: bearer
-        issuer: https://app.formance.cloud/api
-        clientID: "REGION_ID"
-        clientSecret: ""
+      mode: bearer
+      issuer: https://app.formance.cloud/api
+      clientID: "REGION_ID"
+      clientSecret: ""
 versions:
   create: true
+  files:
+    default:
+      orchestration: v0.2.1
+      reconciliation: v0.1.0
+      search: v0.10.0
+      auth: v0.4.4
+      wallets: v0.4.6
+      webhooks: v2.0.0-rc.18
+      payments: v1.0.0-rc.5
+      stargate: v0.1.10
+      gateway: v2.0.0-rc.18
+      ledger: v1.10.14
+      operator-utils: v2.0.0-rc.18
+    v1.O:
+      orchestration: v0.2.1
+      reconciliation: v0.1.0
+      search: v0.10.0
+      auth: v0.4.4
+      wallets: v0.4.6
+      webhooks: v2.0.0-rc.18
+      payments: v1.0.0-rc.5
+      stargate: v0.1.10
+      gateway: v2.0.0-rc.18
+      ledger: v1.10.14
+      operator-utils: v2.0.0-rc.18
+    v2.0:
+      ledger: v2.0.0-rc.18
+      search: v2.0.0-rc.18
+      stargate: v2.0.0-rc.18
+      auth: v2.0.0-rc.18
+      wallets: v2.0.0-rc.18
+      webhooks: v2.0.0-rc.18
+      gateway: v2.0.0-rc.18
+      payments: v2.0.0-rc.18
+      orchestration: v2.0.0-rc.18
+      reconciliation: v2.0.0-rc.18
+      operator-utils: v2.0.0-rc.18

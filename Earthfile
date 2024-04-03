@@ -132,38 +132,12 @@ deploy-all:
         BUILD --pass-args ./ee/+deploy --components=$component
     END
 
-# Context: We are in the CI
-# We already are logged to github, AWS and EKS
-# AWS Configure Action use AWS CLI and .aws directory with appropriate token
-# Then by updating the eks context with aws cli we can use kubectl wich also populate .kube
-cluster-credentials:
-    FROM core+base-image
-    COPY .kube/config .kube/config
-    COPY --dir .aws .aws
-    SAVE ARTIFACT .kube
-    SAVE ARTIFACT .aws
-
 deployer-module:
-    FROM --pass-args core+base-image
-    
-    RUN apk update && \
-        apk add --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community kubectl aws-cli
-    
-    WORKDIR /root
-
-    COPY (+cluster-credentials/.kube) .kube
-    COPY (+cluster-credentials/.aws) .aws
-    
-    RUN --secret CLUSTER_NAME \
-        --secret CLUSTER_REGION \
-        aws eks update-kubeconfig --name $CLUSTER_NAME  --region $CLUSTER_REGION
-
-    # putting STAGING_KUBECONTEXT as secret does not hide it as kubectl is printing it
-    RUN --secret CLUSTER_KUBECONTEXT_NAME kubectl config use-context $CLUSTER_KUBECONTEXT_NAME
-
     ARG --required MODULE
-    ARG --required TAG
-    RUN kubectl patch Versions.formance.com default -p "{\"spec\":{\"${MODULE}\": \"${TAG}\"}}" --type=merge
+    ARG --require TAG
+
+    LET ARGS="--parameters=versions.files.default.$MODULE=$TAG"
+    FROM core+deployer-module --ARGS=$ARGS --TAG=$TAG
 
 deploy-all-staging:
     FROM +sources --LOCATION=.

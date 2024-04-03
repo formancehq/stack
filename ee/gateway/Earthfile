@@ -46,7 +46,6 @@ deploy:
 
 deploy-staging:
     BUILD --pass-args stack+deployer-module --MODULE=gateway
-
 lint:
     FROM core+builder-image
     COPY (+sources/*) /src
