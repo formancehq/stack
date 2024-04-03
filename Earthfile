@@ -135,7 +135,7 @@ deploy-all:
 # Context: We are in the CI
 # We already are logged to github, AWS and EKS
 # AWS Configure Action use AWS CLI and .aws directory with appropriate token
-# Then by updating the eks context with aws cli we can use kubectl wich also popule .kube
+# Then by updating the eks context with aws cli we can use kubectl wich also populate .kube
 cluster-credentials:
     FROM core+base-image
     COPY .kube/config .kube/config
