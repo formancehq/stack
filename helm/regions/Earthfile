@@ -14,6 +14,19 @@ sources:
   COPY --dir templates /src/templates
   SAVE ARTIFACT /src
 
+replace-v2-values:
+  FROM core+base-image
+  RUN apk add yq jq
+  COPY values.yaml .
+  
+  ARG --required TAG
+  LET SERVICES = $(yq eval -o=j '.versions.files."v2.0" | keys' ./values.yaml | jq -c '.[]')
+  FOR SERVICE IN $SERVICES
+    RUN yq -i '.versions.files."v2.0".'$SERVICE=\"$TAG\" ./values.yaml
+  END
+
+  SAVE ARTIFACT ./values.yaml AS LOCAL values.yaml
+
 helm-validate:
   FROM core+helm-base
   WORKDIR /src
