@@ -67,12 +67,18 @@ tidy:
     WORKDIR /src/components/fctl
     DO --pass-args stack+GO_TIDY
 
+membership-openapi:
+    FROM core+base-image
+    WORKDIR /src
+    COPY membership-swagger.yaml openapi.yaml
+    SAVE ARTIFACT openapi.yaml
+
 generate-membership-client:
     FROM openapitools/openapi-generator-cli:v6.6.0
     WORKDIR /src
-    COPY membership-swagger.yaml .
+    COPY (+membership-openapi/openapi.yaml) .
     RUN docker-entrypoint.sh generate \
-        -i ./membership-swagger.yaml \
+        -i ./openapi.yaml \
         -g go \
         -o ./membershipclient \
         --git-user-id=formancehq \
