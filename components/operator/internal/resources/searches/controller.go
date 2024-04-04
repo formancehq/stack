@@ -180,7 +180,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 	}
 
 	if err := cleanConsumers(ctx, search); err != nil {
-		return err
+		return fmt.Errorf("failed to clean consumers for search: %w", err)
 	}
 
 	return err
