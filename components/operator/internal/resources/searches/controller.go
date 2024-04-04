@@ -114,7 +114,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 
 	_, err = brokerconsumers.CreateOrUpdateOnAllServices(ctx, search)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create or update broker consumers for search: %w", err)
 	}
 
 	batching := search.Spec.Batching
