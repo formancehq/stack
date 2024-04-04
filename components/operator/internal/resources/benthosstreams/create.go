@@ -3,6 +3,7 @@ package benthosstreams
 import (
 	"embed"
 	"fmt"
+
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 

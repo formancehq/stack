@@ -1,11 +1,12 @@
 package core
 
 import (
+	"strings"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"golang.org/x/mod/semver"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"strings"
 )
 
 func GetModuleVersion(ctx Context, stack *v1beta1.Stack, module v1beta1.Module) (string, error) {

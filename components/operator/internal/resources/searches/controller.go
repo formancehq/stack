@@ -17,9 +17,11 @@ limitations under the License.
 package searches
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/formancehq/operator/internal/resources/brokerconsumers"
 	v1 "k8s.io/api/batch/v1"
-	"strconv"
 
 	"github.com/formancehq/operator/internal/resources/gateways"
 	"github.com/formancehq/operator/internal/resources/resourcereferences"

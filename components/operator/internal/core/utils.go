@@ -6,10 +6,11 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"io/fs"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"path/filepath"
 	"reflect"
 	"strings"
+
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"k8s.io/apimachinery/pkg/api/equality"
