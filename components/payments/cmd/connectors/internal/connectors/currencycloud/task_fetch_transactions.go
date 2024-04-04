@@ -157,9 +157,9 @@ func ingestTransactions(
 func matchTransactionType(transactionType string) models.PaymentType {
 	switch transactionType {
 	case "credit":
-		return models.PaymentTypePayOut
-	case "debit":
 		return models.PaymentTypePayIn
+	case "debit":
+		return models.PaymentTypePayOut
 	}
 
 	return models.PaymentTypeOther
