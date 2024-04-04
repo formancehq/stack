@@ -34,3 +34,32 @@ func Cursor(writer io.Writer, cursor *membershipclient.Cursor) error {
 
 	return nil
 }
+
+type CursorArgs struct {
+	HasMore  bool
+	Next     *string
+	PageSize int64
+	Previous *string
+}
+
+func AddCursorRowsToTable(tableData [][]string, cursor CursorArgs) [][]string {
+	cursorRows := make([][]string, 0)
+	cursorRows = append(cursorRows, []string{pterm.LightCyan("HasMore"), fmt.Sprintf("%v", cursor.HasMore)})
+	cursorRows = append(cursorRows, []string{pterm.LightCyan("PageSize"), fmt.Sprintf("%d", cursor.PageSize)})
+	cursorRows = append(cursorRows, []string{pterm.LightCyan("Next"), func() string {
+		if cursor.Next == nil {
+			return ""
+		}
+		return *cursor.Next
+	}()})
+	cursorRows = append(cursorRows, []string{pterm.LightCyan("Previous"), func() string {
+		if cursor.Previous == nil {
+			return ""
+		}
+		return *cursor.Previous
+	}()})
+
+	tableData = append(tableData, cursorRows...)
+
+	return tableData
+}
