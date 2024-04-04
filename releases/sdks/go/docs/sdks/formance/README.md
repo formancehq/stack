@@ -18,8 +18,58 @@ and standard method from web, mobile and desktop applications.
 
 ### Available Operations
 
+* [GetOIDCWellKnowns](#getoidcwellknowns) - Retrieve OpenID connect well-knowns.
 * [GetVersions](#getversions) - Show stack version information
-* [GetAPIAuthWellKnownOpenidConfiguration](#getapiauthwellknownopenidconfiguration)
+
+## GetOIDCWellKnowns
+
+Retrieve OpenID connect well-knowns.
+
+### Example Usage
+
+```go
+package main
+
+import(
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
+	"context"
+	"log"
+	"net/http"
+)
+
+func main() {
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
+
+    ctx := context.Background()
+    res, err := s.GetOIDCWellKnowns(ctx)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    if res.StatusCode == http.StatusOK {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                             | Type                                                  | Required                                              | Description                                           |
+| ----------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------- |
+| `ctx`                                                 | [context.Context](https://pkg.go.dev/context#Context) | :heavy_check_mark:                                    | The context to use for the request.                   |
+
+
+### Response
+
+**[*operations.GetOIDCWellKnownsResponse](../../pkg/models/operations/getoidcwellknownsresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## GetVersions
 
@@ -66,54 +116,6 @@ func main() {
 ### Response
 
 **[*operations.GetVersionsResponse](../../pkg/models/operations/getversionsresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
-
-## GetAPIAuthWellKnownOpenidConfiguration
-
-### Example Usage
-
-```go
-package main
-
-import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
-	"log"
-	"net/http"
-)
-
-func main() {
-    s := v2.New(
-        v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
-        }),
-    )
-
-    ctx := context.Background()
-    res, err := s.GetAPIAuthWellKnownOpenidConfiguration(ctx)
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    if res.StatusCode == http.StatusOK {
-        // handle response
-    }
-}
-```
-
-### Parameters
-
-| Parameter                                             | Type                                                  | Required                                              | Description                                           |
-| ----------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------- |
-| `ctx`                                                 | [context.Context](https://pkg.go.dev/context#Context) | :heavy_check_mark:                                    | The context to use for the request.                   |
-
-
-### Response
-
-**[*operations.GetAPIAuthWellKnownOpenidConfigurationResponse](../../pkg/models/operations/getapiauthwellknownopenidconfigurationresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
 | sdkerrors.SDKError | 4xx-5xx            | */*                |

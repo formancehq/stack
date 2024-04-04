@@ -8,8 +8,9 @@ import (
 )
 
 type V2BulkElementRevertTransactionData struct {
-	Force *bool    `json:"force,omitempty"`
-	ID    *big.Int `json:"id"`
+	AtEffectiveDate *bool    `json:"atEffectiveDate,omitempty"`
+	Force           *bool    `json:"force,omitempty"`
+	ID              *big.Int `json:"id"`
 }
 
 func (v V2BulkElementRevertTransactionData) MarshalJSON() ([]byte, error) {
@@ -21,6 +22,13 @@ func (v *V2BulkElementRevertTransactionData) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	return nil
+}
+
+func (o *V2BulkElementRevertTransactionData) GetAtEffectiveDate() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.AtEffectiveDate
 }
 
 func (o *V2BulkElementRevertTransactionData) GetForce() *bool {

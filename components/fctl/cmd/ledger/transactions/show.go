@@ -74,5 +74,5 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 }
 
 func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
-	return internal.PrintExpandedTransaction(cmd.OutOrStdout(), c.store.Transaction)
+	return internal.PrintExpandedTransaction(cmd.OutOrStdout(), internal.WrapV1Transaction(c.store.Transaction))
 }
