@@ -5,7 +5,7 @@ image:
   repository: ghcr.io/formancehq/agent
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: v2.0.0-rc.18
+  tag: v2.0.0-rc.19
 
 imagePullSecrets: []
 nameOverride: ""
