@@ -141,26 +141,29 @@ deployer-module:
     FROM --pass-args core+deployer-module --ARGS=$ARGS --TAG=$TAG
 
 deploy-all-staging:
-    FROM +sources --LOCATION=.
-    WORKDIR /out
+    LOCALLY
     
-    ARG --required TAG
-    # Only AGENT & OPERATOR are deployed through ARGOCD
     WAIT
         BUILD --pass-args ./components/+deploy-staging --components=operator
     END
+
     FOR component IN $(cd ./tools && ls -d */)
-        BUILD --pass-args ./tools/$component+deploy-staging
+        BUILD --pass-args ./tools/$component+deploy-staging --WITH_SYNC=false
     END
     
     FOR component IN $(cd ./components && ls -d */)
         IF [ "$component" != "operator" ]
-            BUILD --pass-args ./components/+deploy-staging --components=$component
+            BUILD --pass-args ./components/+deploy-staging --components=$component --WITH_SYNC=false
         END
     END
     
     FOR component IN $(cd ./ee && ls -d */)
-        BUILD --pass-args ./ee/+deploy-staging --components=$component
+        BUILD --pass-args ./ee/+deploy-staging --components=$component --WITH_SYNC=false
+    END
+
+    # Sync regions
+    WAIT
+        BUILD core+deploy-staging --APPLICATION=staging-eu-west-1-hosting-regions
     END
 
 tests-all:
