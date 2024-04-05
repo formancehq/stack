@@ -274,4 +274,18 @@ pipeline:
               }
 
 output:
-  resource: elasticsearch
+  switch:
+    cases:
+      - check: this.action != null
+        output:
+          resource: elasticsearch
+      - output:
+          http_client:
+            url: ${OPENSEARCH_URL}/${OPENSEARCH_INDEX}/_delete_by_query
+            verb: POST
+            headers:
+              Content-Type: application/json
+            basic_auth:
+              enabled: ${BASIC_AUTH_ENABLED}
+              username: ${BASIC_AUTH_USERNAME}
+              password: ${BASIC_AUTH_PASSWORD}
