@@ -63,3 +63,9 @@ connectorConfig := shared.CreateConnectorConfigAtlarConfig(shared.AtlarConfig{/*
 connectorConfig := shared.CreateConnectorConfigAdyenConfig(shared.AdyenConfig{/* values here */})
 ```
 
+### GenericConfig
+
+```go
+connectorConfig := shared.CreateConnectorConfigGenericConfig(shared.GenericConfig{/* values here */})
+```
+

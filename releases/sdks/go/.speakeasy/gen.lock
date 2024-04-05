@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 7eac0a45-60a2-40bb-9e85-26bd77ec2a6d
 management:
-  docChecksum: 8501dcc6098570928e5740ce480516da
+  docChecksum: d4e5697bddcdba35da19c0796474e656
   docVersion: v0.0.0
   speakeasyVersion: internal
   generationVersion: 2.237.2
-  releaseVersion: v0.0.0
-  configChecksum: 50130ac1de5d0825ab31d45fbe3aac35
+  releaseVersion: 0.0.1
+  configChecksum: c299152255ec1caf1aad2b6fbca6bdc9
 features:
   go:
     constsAndDefaults: 0.1.2
@@ -490,6 +490,7 @@ generatedFiles:
   - /pkg/models/shared/moneycorpconfig.go
   - /pkg/models/shared/atlarconfig.go
   - /pkg/models/shared/adyenconfig.go
+  - /pkg/models/shared/genericconfig.go
   - /pkg/models/shared/connectorsresponse.go
   - /pkg/models/shared/bankaccountscursor.go
   - /pkg/models/shared/connectorsconfigsresponse.go
@@ -1198,6 +1199,7 @@ generatedFiles:
   - docs/pkg/models/shared/moneycorpconfig.md
   - docs/pkg/models/shared/atlarconfig.md
   - docs/pkg/models/shared/adyenconfig.md
+  - docs/pkg/models/shared/genericconfig.md
   - docs/pkg/models/shared/connectorsresponsedata.md
   - docs/pkg/models/shared/connectorsresponse.md
   - docs/pkg/models/shared/bankaccountscursorcursor.md

@@ -15,3 +15,4 @@
 | `ConnectorMoneycorp`     | MONEYCORP                |
 | `ConnectorAtlar`         | ATLAR                    |
 | `ConnectorAdyen`         | ADYEN                    |
+| `ConnectorGeneric`       | GENERIC                  |
