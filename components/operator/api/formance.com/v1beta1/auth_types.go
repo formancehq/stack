@@ -46,6 +46,8 @@ type AuthStatus struct {
 	ModuleStatus `json:",inline"`
 	//+optional
 	Clients []string `json:"clients"`
+	//+optional
+	Testing bool `json:"testing"`
 }
 
 //+kubebuilder:object:root=true
