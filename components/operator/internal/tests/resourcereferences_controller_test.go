@@ -63,6 +63,29 @@ var _ = Describe("ResourceReferenceController", func() {
 				}).Should(Succeed())
 			}
 			It("Should replicate the secret to the stack namespace", shouldHaveReplicatedSecret)
+			When("updating the original secret", func() {
+				BeforeEach(func() {
+					shouldHaveReplicatedSecret()
+					patch := client.MergeFrom(secret.DeepCopy())
+					secret.Data = map[string][]byte{
+						"foo": []byte("bar"),
+					}
+					secret.Annotations = map[string]string{
+						"hello": "world",
+					}
+					Expect(Patch(secret, patch)).To(Succeed())
+				})
+				It("Should update the copied secret", func() {
+					replicatedSecret := &corev1.Secret{}
+					Eventually(func(g Gomega) bool {
+						g.Expect(LoadResource(stack.Name, resourceReference.Spec.Name, replicatedSecret)).To(Succeed())
+						g.Expect(replicatedSecret.Data).To(Equal(secret.Data))
+						g.Expect(replicatedSecret.Annotations).To(Equal(secret.Annotations))
+
+						return true
+					}).Should(BeTrue())
+				})
+			})
 			Context("then when updating the referenced secret to a new one", func() {
 				var newSecret *corev1.Secret
 				BeforeEach(func() {
@@ -82,11 +105,13 @@ var _ = Describe("ResourceReferenceController", func() {
 					resourceReference.Spec.Name = newSecret.Name
 					Expect(Patch(resourceReference, patch)).To(Succeed())
 				})
-				It("Should replicate the new secret to the stack namespace", shouldHaveReplicatedSecret)
-				It("Should remove old replicated secret", func() {
-					Eventually(func() error {
-						return LoadResource(stack.Name, secret.Name, &corev1.Secret{})
-					}).Should(BeNotFound())
+				It("should replicate the secret and remove the old one", func() {
+					By("Should replicate the new secret to the stack namespace", shouldHaveReplicatedSecret)
+					By("Should remove old replicated secret", func() {
+						Eventually(func() error {
+							return LoadResource(stack.Name, secret.Name, &corev1.Secret{})
+						}).Should(BeNotFound())
+					})
 				})
 			})
 		})
