@@ -1,7 +1,7 @@
 input:
   event_bus:
     topic: audit
-    consumer_group: search-audit
+    consumer_group: search
 
 pipeline:
   processors:

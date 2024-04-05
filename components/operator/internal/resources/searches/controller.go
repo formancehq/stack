@@ -17,7 +17,11 @@ limitations under the License.
 package searches
 
 import (
+	"fmt"
 	"strconv"
+
+	"github.com/formancehq/operator/internal/resources/brokerconsumers"
+	v1 "k8s.io/api/batch/v1"
 
 	"github.com/formancehq/operator/internal/resources/gateways"
 	"github.com/formancehq/operator/internal/resources/resourcereferences"
@@ -110,6 +114,11 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 		return err
 	}
 
+	_, err = brokerconsumers.CreateOrUpdateOnAllServices(ctx, search)
+	if err != nil {
+		return fmt.Errorf("failed to create or update broker consumers for search: %w", err)
+	}
+
 	batching := search.Spec.Batching
 	if batching == nil {
 
@@ -172,6 +181,10 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 		return err
 	}
 
+	if err := cleanConsumers(ctx, search); err != nil {
+		return fmt.Errorf("failed to clean consumers for search: %w", err)
+	}
+
 	return err
 }
 
@@ -183,6 +196,7 @@ func init() {
 			WithOwn[*v1beta1.Search](&v1beta1.Benthos{}),
 			WithOwn[*v1beta1.Search](&v1beta1.GatewayHTTPAPI{}),
 			WithOwn[*v1beta1.Search](&appsv1.Deployment{}),
+			WithOwn[*v1beta1.Search](&v1.Job{}),
 		),
 	)
 }

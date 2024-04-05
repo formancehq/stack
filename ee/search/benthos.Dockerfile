@@ -4,4 +4,4 @@ COPY benthos /config
 ENV ELASTICSEARCH_BATCHING_COUNT 50
 ENV ELASTICSEARCH_BATCHING_PERIOD 1s
 ENV TOPIC_PREFIX=""
-CMD ["-c", "config.yml", "-r", "/config/resources/*.yaml", "-t", "/config/templates/*.yaml", "streams", "/config/streams/ledger/v2.0.0/*.yaml", "/config/streams/payments/v0.0.0/*.yaml"]
+CMD ["-c", "config.yml", "-r", "/config/resources/*.yaml", "-t", "/config/templates/*.yaml", "streams", "/config/streams/ledger/*.yaml", "/config/streams/payments/*.yaml"]

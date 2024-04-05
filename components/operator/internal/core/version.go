@@ -1,11 +1,12 @@
 package core
 
 import (
-	"golang.org/x/mod/semver"
 	"strings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
+	"golang.org/x/mod/semver"
 	"k8s.io/apimachinery/pkg/types"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func GetModuleVersion(ctx Context, stack *v1beta1.Stack, module v1beta1.Module) (string, error) {
@@ -17,21 +18,23 @@ func GetModuleVersion(ctx Context, stack *v1beta1.Stack, module v1beta1.Module) 
 	}
 	if stack.Spec.VersionsFromFile != "" {
 		versions := &v1beta1.Versions{}
-		if err := ctx.GetClient().Get(ctx, types.NamespacedName{
+		err := ctx.GetClient().Get(ctx, types.NamespacedName{
 			Name: stack.Spec.VersionsFromFile,
-		}, versions); err != nil {
+		}, versions)
+		if client.IgnoreNotFound(err) != nil {
 			return "", err
 		}
+		if err == nil {
+			kinds, _, err := ctx.GetScheme().ObjectKinds(module)
+			if err != nil {
+				return "", err
+			}
+			kind := strings.ToLower(kinds[0].Kind)
 
-		kinds, _, err := ctx.GetScheme().ObjectKinds(module)
-		if err != nil {
-			return "", err
-		}
-		kind := strings.ToLower(kinds[0].Kind)
-
-		version, ok := versions.Spec[kind]
-		if ok && version != "" {
-			return version, nil
+			version, ok := versions.Spec[kind]
+			if ok && version != "" {
+				return version, nil
+			}
 		}
 	}
 

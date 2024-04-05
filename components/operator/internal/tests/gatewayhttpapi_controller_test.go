@@ -63,7 +63,7 @@ var _ = Describe("GatewayHTTPAPI", func() {
 			JustAfterEach(func() {
 				Expect(Delete(annotationsSettings)).To(Succeed())
 			})
-			It("should add annotations to the service", FlakeAttempts(3), func() {
+			It("should add annotations to the service", func() {
 				Eventually(func(g Gomega) bool {
 					service := &corev1.Service{}
 					g.Expect(LoadResource(stack.Name, "ledger", service)).To(Succeed())

@@ -18,12 +18,13 @@ package brokertopicconsumers
 
 import (
 	"fmt"
+	"sort"
+
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sort"
 )
 
 //+kubebuilder:rbac:groups=formance.com,resources=brokertopicconsumers,verbs=get;list;watch;create;update;patch;delete

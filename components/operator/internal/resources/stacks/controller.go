@@ -43,7 +43,6 @@ import (
 
 func areDependentReady(ctx Context, stack *v1beta1.Stack) error {
 	pendingResources := make([]string, 0)
-	setInfo := map[string][]string{}
 	for _, rtype := range ctx.GetScheme().AllKnownTypes() {
 		v := reflect.New(rtype).Interface()
 		var r v1beta1.Dependent
@@ -67,44 +66,28 @@ func areDependentReady(ctx Context, stack *v1beta1.Stack) error {
 
 		for _, item := range l.Items {
 			content := item.UnstructuredContent()
-			if content["status"] != nil {
-				status := content["status"].(map[string]interface{})
-
-				if status["info"] != nil {
-					if setInfo[status["info"].(string)] == nil {
-						setInfo[status["info"].(string)] = []string{}
-					}
-					setInfo[status["info"].(string)] = append(setInfo[status["info"].(string)], item.GetKind())
-					continue
-				}
-
-				if status["ready"] != nil {
-					isReady := status["ready"].(bool)
-					if !isReady {
-						pendingResources = append(pendingResources, fmt.Sprintf("%s: %s", item.GetObjectKind().GroupVersionKind().Kind, item.GetName()))
-					}
-					continue
-				}
-
+			if content["status"] == nil {
 				pendingResources = append(pendingResources, fmt.Sprintf("%s: %s", item.GetObjectKind().GroupVersionKind().Kind, item.GetName()))
+				continue
+			}
+
+			status := content["status"].(map[string]interface{})
+			if status["ready"] == nil {
+				pendingResources = append(pendingResources, fmt.Sprintf("%s: %s", item.GetObjectKind().GroupVersionKind().Kind, item.GetName()))
+				continue
+			}
+
+			isReady := status["ready"].(bool)
+			if !isReady {
+				pendingResources = append(pendingResources, fmt.Sprintf("%s: %s", item.GetObjectKind().GroupVersionKind().Kind, item.GetName()))
+				continue
 			}
 		}
 
 	}
 
-	if len(pendingResources) > 0 || len(setInfo) > 0 {
-		str := ""
-		for k, v := range setInfo {
-			str += fmt.Sprintf(`"%s" on Kinds(%s)`, k, strings.Join(v, ", "))
-		}
-
-		if len(pendingResources) > 0 {
-			if len(setInfo) > 0 {
-				str += ", "
-			}
-			str += fmt.Sprintf("pending resources: %s", strings.Join(pendingResources, ", "))
-		}
-		return NewApplicationError("Still pending dependent: %s ", str)
+	if len(pendingResources) > 0 {
+		return NewApplicationError("Still pending dependent: %s ", strings.Join(pendingResources, ","))
 	}
 
 	return nil
@@ -193,11 +176,13 @@ func Clean(ctx Context, t *v1beta1.Stack) error {
 		return err
 	}
 
+	logger.Info("All modules removed")
+
 	if err := deleteResources(ctx, t, logger); err != nil {
 		return err
 	}
 
-	logger.Info("All dependencies removed, remove namespace")
+	logger.Info("All dependencies removed")
 
 	return nil
 }
@@ -268,8 +253,11 @@ func deleteResources(ctx Context, stack *v1beta1.Stack, logger logr.Logger) erro
 		stillExistingResources = stillExistingResources || len(l.Items) > 0
 
 		for _, item := range l.Items {
-			if err := ctx.GetClient().Delete(ctx, &item); client.IgnoreNotFound(err) != nil {
-				return err
+			if item.GetDeletionTimestamp().IsZero() {
+				logger.Info(fmt.Sprintf("Delete resource %s", item.GetName()))
+				if err := ctx.GetClient().Delete(ctx, &item); client.IgnoreNotFound(err) != nil {
+					return err
+				}
 			}
 		}
 	}

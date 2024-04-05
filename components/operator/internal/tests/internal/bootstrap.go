@@ -38,6 +38,7 @@ var (
 	testEnv    *envtest.Environment
 	restConfig *rest.Config
 	k8sClient  client.Client
+	coreMgr    core.Manager
 )
 
 func GetScheme() *runtime.Scheme {
@@ -48,7 +49,7 @@ var _ = BeforeSuite(func() {
 	logf.SetLogger(zap.New(zap.WriteTo(os.Stdout), zap.UseDevMode(true)))
 	ctx, cancel = context.WithCancel(context.Background())
 
-	SetDefaultEventuallyTimeout(20 * time.Second)
+	SetDefaultEventuallyTimeout(10 * time.Second)
 
 	_, filename, _, _ := osRuntime.Caller(0)
 
@@ -93,6 +94,10 @@ var _ = BeforeSuite(func() {
 		},
 	})
 	Expect(err).ToNot(HaveOccurred())
+	coreMgr = core.NewDefaultManager(mgr, core.Platform{
+		Region:      "testing",
+		Environment: "testing",
+	})
 
 	Expect(core.Setup(mgr, core.Platform{
 		Region:      "us-west-1",
@@ -222,8 +227,5 @@ func Client() client.Client {
 }
 
 func TestContext() core.Context {
-	return core.NewContext(k8sClient, scheme.Scheme, core.Platform{
-		Region:      "testing",
-		Environment: "testing",
-	}, ctx)
+	return core.NewContext(coreMgr, ctx)
 }

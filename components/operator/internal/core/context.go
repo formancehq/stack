@@ -16,30 +16,26 @@ type Context interface {
 
 type defaultContext struct {
 	context.Context
-	client   client.Client
-	scheme   *runtime.Scheme
-	platform Platform
+	mgr Manager
 }
 
 func (d defaultContext) GetPlatform() Platform {
-	return d.platform
+	return d.mgr.GetPlatform()
 }
 
 func (d defaultContext) GetClient() client.Client {
-	return d.client
+	return d.mgr.GetClient()
 }
 
 func (d defaultContext) GetScheme() *runtime.Scheme {
-	return d.scheme
+	return d.mgr.GetScheme()
 }
 
 var _ Context = &defaultContext{}
 
-func NewContext(client client.Client, scheme *runtime.Scheme, platform Platform, ctx context.Context) *defaultContext {
+func NewContext(mgr Manager, ctx context.Context) *defaultContext {
 	return &defaultContext{
-		Context:  ctx,
-		client:   client,
-		scheme:   scheme,
-		platform: platform,
+		Context: ctx,
+		mgr:     mgr,
 	}
 }
