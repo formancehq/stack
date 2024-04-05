@@ -34,9 +34,9 @@ jobs:
         run: |
           hasChanged=$(git status --porcelain) 
           if (( $(echo ${#hasChanged}) != 0 )); then
-              git status
-              echo "There are changes in the repository"
-              exit 1
+            git status
+            echo "There are changes in the repository"
+            exit 1
           fi
 
   Main:
