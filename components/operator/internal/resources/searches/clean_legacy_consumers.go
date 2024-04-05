@@ -22,7 +22,6 @@ func cleanConsumers(ctx Context, search *v1beta1.Search) error {
 	}
 
 	const script = `
-	set -xe
 	for service in ledger payments audit; do
 		for consumer in search-ledgerv2 search-payments-resets search-audit; do 
 			index=$(nats --server $NATS_URI consumer ls $STACK-$service -j | jq "index(\"$consumer\")")
