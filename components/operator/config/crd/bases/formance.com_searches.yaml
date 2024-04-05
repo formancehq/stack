@@ -155,6 +155,10 @@ spec:
                 type: string
               ready:
                 type: boolean
+              topicCleaned:
+                description: TopicCleaned is used to flag stacks where the topics
+                  have been cleaned (still search-ledgerv2 and co consumers)
+                type: boolean
             type: object
         type: object
     served: true
