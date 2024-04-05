@@ -26,7 +26,6 @@ jobs:
       - name: Get changed files
         id: changed-files
         run: >
-          #!/bin/bash
           hasChanged=$(git status --porcelain) 
           if (( $(echo ${#hasChanged}) != 0 )); then
               git status
