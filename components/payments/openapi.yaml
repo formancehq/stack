@@ -1237,6 +1237,7 @@ components:
         - MONEYCORP
         - ATLAR
         - ADYEN
+        - GENERIC
     TransferInitiationStatus:
       type: string
       enum:
@@ -1264,6 +1265,7 @@ components:
         - $ref: '#/components/schemas/MoneycorpConfig'
         - $ref: '#/components/schemas/AtlarConfig'
         - $ref: '#/components/schemas/AdyenConfig'
+        - $ref: '#/components/schemas/GenericConfig'
     StripeConfig:
       type: object
       required:
@@ -1395,6 +1397,28 @@ components:
           example: '60s'
           description: |
             The frequency at which the connector will try to fetch new BalanceTransaction objects from Banking Circle API.
+          default: '120s'
+    GenericConfig:
+      type: object
+      required:
+        - name
+        - apiKey
+        - endpoint
+      properties:
+        name:
+          type: string
+          example: 'My Generic Account'
+        apiKey:
+          type: string
+          example: 'XXX'
+        endpoint:
+          type: string
+          example: 'XXX'
+        pollingPeriod:
+          type: string
+          example: '60s'
+          description: |
+            The frequency at which the connector will try to fetch new BalanceTransaction objects from the API.
           default: '120s'
     MangoPayConfig:
       type: object

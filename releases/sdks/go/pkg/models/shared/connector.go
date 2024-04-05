@@ -20,6 +20,7 @@ const (
 	ConnectorMoneycorp     Connector = "MONEYCORP"
 	ConnectorAtlar         Connector = "ATLAR"
 	ConnectorAdyen         Connector = "ADYEN"
+	ConnectorGeneric       Connector = "GENERIC"
 )
 
 func (e Connector) ToPointer() *Connector {
@@ -51,6 +52,8 @@ func (e *Connector) UnmarshalJSON(data []byte) error {
 	case "ATLAR":
 		fallthrough
 	case "ADYEN":
+		fallthrough
+	case "GENERIC":
 		*e = Connector(v)
 		return nil
 	default:

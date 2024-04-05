@@ -19,6 +19,7 @@ func NewInstallCommand() *cobra.Command {
 			NewMangoPayCommand(),
 			NewMoneycorpCommand(),
 			NewAtlarCommand(),
+			NewGenericCommand(),
 		),
 	)
 }
