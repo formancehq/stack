@@ -35,6 +35,9 @@ type SearchStatus struct {
 	ModuleStatus `json:",inline"`
 	//+optional
 	ElasticSearchURI *URI `json:"elasticSearchURI,omitempty"`
+	// TopicCleaned is used to flag stacks where the topics have been cleaned (still search-ledgerv2 and co consumers)
+	//+optional
+	TopicCleaned bool `json:"topicCleaned,omitempty"`
 }
 
 //+kubebuilder:object:root=true
