@@ -30,6 +30,7 @@ jobs:
           SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
       - name: Get changed files
         id: changed-files
+        shell: bash
         run: >
           hasChanged=$(git status --porcelain) 
           if (( $(echo ${#hasChanged}) != 0 )); then
