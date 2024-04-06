@@ -11,12 +11,17 @@ type Context interface {
 	context.Context
 	GetClient() client.Client
 	GetScheme() *runtime.Scheme
+	GetAPIReader() client.Reader
 	GetPlatform() Platform
 }
 
 type defaultContext struct {
 	context.Context
 	mgr Manager
+}
+
+func (d defaultContext) GetAPIReader() client.Reader {
+	return d.mgr.GetAPIReader()
 }
 
 func (d defaultContext) GetPlatform() Platform {

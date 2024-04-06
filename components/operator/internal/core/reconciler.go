@@ -4,10 +4,9 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"sigs.k8s.io/controller-runtime/pkg/log"
 	"strings"
 	"time"
-
-	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -55,10 +54,15 @@ type ReconcilerOptionsWatch struct {
 
 type Finalizer[T client.Object] func(ctx Context, t T) error
 
+type finalizerConfig[T client.Object] struct {
+	name string
+	fn   Finalizer[T]
+}
+
 type ReconcilerOptions[T client.Object] struct {
 	Owns       map[client.Object][]builder.OwnsOption
 	Watchers   map[client.Object]ReconcilerOptionsWatch
-	Finalizers map[string]Finalizer[T]
+	Finalizers []finalizerConfig[T]
 	Raws       []func(Context, *builder.Builder) error
 }
 
@@ -95,7 +99,10 @@ func BuildReconcileRequests(ctx context.Context, client client.Client, scheme *r
 
 func WithFinalizer[T client.Object](name string, callback Finalizer[T]) ReconcilerOption[T] {
 	return func(r *ReconcilerOptions[T]) {
-		r.Finalizers[name] = callback
+		r.Finalizers = append(r.Finalizers, finalizerConfig[T]{
+			name: name,
+			fn:   callback,
+		})
 	}
 }
 
@@ -164,9 +171,8 @@ func withReconciler[T client.Object](controller ObjectController[T], opts ...Rec
 	return func(mgr Manager) error {
 
 		options := ReconcilerOptions[T]{
-			Owns:       map[client.Object][]builder.OwnsOption{},
-			Watchers:   map[client.Object]ReconcilerOptionsWatch{},
-			Finalizers: map[string]Finalizer[T]{},
+			Owns:     map[client.Object][]builder.OwnsOption{},
+			Watchers: map[client.Object]ReconcilerOptionsWatch{},
 		}
 		for _, opt := range opts {
 			opt(&options)
@@ -243,30 +249,32 @@ func reconcileObject[T client.Object](mgr Manager, controller ObjectController[T
 		reconcileContext := NewContext(mgr, ctx)
 		if !object.GetDeletionTimestamp().IsZero() {
 			log.FromContext(ctx).Info("Resource " + request.Name + " deleted, calling finalizers...")
-			for name, f := range reconcilerOptions.Finalizers {
+			for _, f := range reconcilerOptions.Finalizers {
 
-				if !Contains(object.GetFinalizers(), name) {
+				if !Contains(object.GetFinalizers(), f.name) {
 					continue
 				}
 
-				if err := f(reconcileContext, object); err != nil {
+				if err := f.fn(reconcileContext, object); err != nil {
 					if IsApplicationError(err) {
 						log.FromContext(ctx).Info(fmt.Sprintf("Finalizer respond with error: %s", err))
-						return reconcile.Result{}, nil
+						return reconcile.Result{
+							RequeueAfter: time.Second,
+						}, nil
 					}
-					return reconcile.Result{}, errors.Wrapf(err, "executing finalizer '%s'", name)
+					return reconcile.Result{}, errors.Wrapf(err, "executing finalizer '%s'", f.name)
 				}
 
-				if controllerutil.RemoveFinalizer(object, name) {
+				if controllerutil.RemoveFinalizer(object, f.name) {
 					if err := mgr.GetClient().Update(ctx, object); err != nil {
 						if apierrors.IsConflict(err) {
 							log.FromContext(ctx).Info(fmt.Sprintf("Catching conflict error: %s", err))
 							return reconcile.Result{Requeue: true}, nil
 						}
-						return reconcile.Result{}, errors.Wrapf(err, "patching resource to remove finalizer '%s'", name)
+						return reconcile.Result{}, errors.Wrapf(err, "patching resource to remove finalizer '%s'", f.name)
 					}
 
-					log.FromContext(ctx).Info(fmt.Sprintf("Finalizer %s removed", name))
+					log.FromContext(ctx).Info(fmt.Sprintf("Finalizer %s removed", f.name))
 				}
 			}
 			log.FromContext(ctx).Info("All finalizers executed, can definitely delete the resource")
@@ -276,13 +284,13 @@ func reconcileObject[T client.Object](mgr Manager, controller ObjectController[T
 
 		log.FromContext(ctx).Info("Reconcile " + request.Name)
 		missingFinalizers := make([]string, 0)
-		for name := range reconcilerOptions.Finalizers {
-			if !Contains(object.GetFinalizers(), name) {
-				missingFinalizers = append(missingFinalizers, name)
+		for _, f := range reconcilerOptions.Finalizers {
+			if !Contains(object.GetFinalizers(), f.name) {
+				missingFinalizers = append(missingFinalizers, f.name)
 			}
 		}
 		if len(missingFinalizers) > 0 {
-			log.FromContext(ctx).Info(fmt.Sprintf("Adding finalizers %s", object.GetFinalizers()))
+			log.FromContext(ctx).Info(fmt.Sprintf("Adding finalizers %s", missingFinalizers))
 			patch := client.MergeFrom(object.DeepCopyObject().(T))
 			finalizers := object.GetFinalizers()
 			finalizers = append(finalizers, missingFinalizers...)
@@ -311,12 +319,6 @@ func reconcileObject[T client.Object](mgr Manager, controller ObjectController[T
 				return ctrl.Result{}, nil
 			}
 			return ctrl.Result{}, errors.Wrap(err, "patching resource to update status")
-		}
-
-		if reconcilerError != nil && err.Error() == errors.Wrap(NewPendingError(), "reconciling resource").Error() {
-			return ctrl.Result{
-				RequeueAfter: time.Second,
-			}, nil
 		}
 
 		if apierrors.IsConflict(reconcilerError) {
@@ -352,11 +354,9 @@ func WithStackDependencyReconciler[T v1beta1.Dependent](fn func(ctx Context, sta
 
 func WithResourceReconciler[T v1beta1.Dependent](fn func(ctx Context, stack *v1beta1.Stack, req T) error, opts ...ReconcilerOption[T]) Initializer {
 	return withStackDependencyReconciler(
-		ForStackDependency(
-			ForResource(func(ctx Context, stack *v1beta1.Stack, reconcilerOptions *ReconcilerOptions[T], req T) error {
-				return fn(ctx, stack, req)
-			}),
-		),
+		ForStackDependency(func(ctx Context, stack *v1beta1.Stack, reconcilerOptions *ReconcilerOptions[T], req T) error {
+			return fn(ctx, stack, req)
+		}),
 		opts...)
 }
 
