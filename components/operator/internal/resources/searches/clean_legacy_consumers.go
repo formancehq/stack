@@ -26,7 +26,7 @@ func cleanConsumers(ctx Context, search *v1beta1.Search) error {
 		for consumer in search-ledgerv2 search-payments-resets search-audit; do 
 			index=$(nats --server $NATS_URI consumer ls $STACK-$service -j | jq "index(\"$consumer\")")
 			if [ "$index" != "null" ]; then
-				nats --server $NATS_URI consumer rm $STACK-$service $consumer -f
+				nats --server $NATS_URI consumer rm $STACK-$service $consumer -f || true
 			fi
 		done
 	done

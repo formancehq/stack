@@ -15,7 +15,6 @@ Package v1beta1 contains API Schema definitions for the formance v1beta1 API gro
 - [BenthosStream](#benthosstream)
 - [BrokerConsumer](#brokerconsumer)
 - [BrokerTopic](#brokertopic)
-- [BrokerTopicConsumer](#brokertopicconsumer)
 - [Database](#database)
 - [Gateway](#gateway)
 - [GatewayHTTPAPI](#gatewayhttpapi)
@@ -296,44 +295,6 @@ BrokerTopic is the Schema for the brokertopics API
 | `spec` _[BrokerTopicSpec](#brokertopicspec)_ |  |  |  |
 
 
-#### BrokerTopicConsumer
-
-
-
-BrokerTopicConsumer is the Schema for the brokertopicconsumers API
-
-
-
-
-
-| Field | Description | Default | Validation |
-| --- | --- | --- | --- |
-| `apiVersion` _string_ | `formance.com/v1beta1` | | |
-| `kind` _string_ | `BrokerTopicConsumer` | | |
-| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |  |  |
-| `spec` _[BrokerTopicConsumerSpec](#brokertopicconsumerspec)_ |  |  |  |
-
-
-#### BrokerTopicConsumerSpec
-
-
-
-BrokerTopicConsumerSpec defines the desired state of BrokerTopicConsumer
-
-
-
-_Appears in:_
-- [BrokerTopicConsumer](#brokertopicconsumer)
-
-| Field | Description | Default | Validation |
-| --- | --- | --- | --- |
-| `stack` _string_ |  |  |  |
-| `service` _string_ |  |  |  |
-| `queriedBy` _string_ |  |  |  |
-
-
-
-
 #### BrokerTopicSpec
 
 
@@ -367,7 +328,6 @@ _Appears in:_
 - [BenthosStatus](#benthosstatus)
 - [BenthosStreamStatus](#benthosstreamstatus)
 - [BrokerConsumerStatus](#brokerconsumerstatus)
-- [BrokerTopicConsumerStatus](#brokertopicconsumerstatus)
 - [BrokerTopicStatus](#brokertopicstatus)
 - [DatabaseStatus](#databasestatus)
 - [GatewayHTTPAPIStatus](#gatewayhttpapistatus)
@@ -1082,7 +1042,6 @@ _Appears in:_
 - [BenthosSpec](#benthosspec)
 - [BenthosStreamSpec](#benthosstreamspec)
 - [BrokerConsumerSpec](#brokerconsumerspec)
-- [BrokerTopicConsumerSpec](#brokertopicconsumerspec)
 - [BrokerTopicSpec](#brokertopicspec)
 - [DatabaseSpec](#databasespec)
 - [GatewayHTTPAPISpec](#gatewayhttpapispec)
