@@ -33,10 +33,6 @@ func TransactionIDOrLastN(ctx context.Context, ledgerClient *formance.Formance, 
 			return nil, err
 		}
 
-		if response.ErrorResponse != nil {
-			return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
-		}
-
 		if response.StatusCode >= 300 {
 			return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 		}

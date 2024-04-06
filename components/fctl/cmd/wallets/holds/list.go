@@ -1,8 +1,6 @@
 package holds
 
 import (
-	"fmt"
-
 	"github.com/formancehq/fctl/cmd/wallets/internal"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
@@ -71,14 +69,6 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	response, err := store.Client().Wallets.GetHolds(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "getting holds")
-	}
-
-	if response.WalletsErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.WalletsErrorResponse.ErrorCode, response.WalletsErrorResponse.ErrorMessage)
-	}
-
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
 	c.store.Holds = response.GetHoldsResponse.Cursor.Data

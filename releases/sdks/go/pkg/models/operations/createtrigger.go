@@ -12,8 +12,6 @@ type CreateTriggerResponse struct {
 	ContentType string
 	// Created trigger
 	CreateTriggerResponse *shared.CreateTriggerResponse
-	// General error
-	Error *shared.Error
 	// HTTP response status code for this operation
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
@@ -32,13 +30,6 @@ func (o *CreateTriggerResponse) GetCreateTriggerResponse() *shared.CreateTrigger
 		return nil
 	}
 	return o.CreateTriggerResponse
-}
-
-func (o *CreateTriggerResponse) GetError() *shared.Error {
-	if o == nil {
-		return nil
-	}
-	return o.Error
 }
 
 func (o *CreateTriggerResponse) GetStatusCode() int {

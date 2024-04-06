@@ -3,7 +3,6 @@
 package operations
 
 import (
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"net/http"
 )
@@ -36,8 +35,6 @@ type V2ListInstancesResponse struct {
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
-	// General error
-	V2Error *sdkerrors.V2Error
 	// List of workflow instances
 	V2ListRunsResponse *shared.V2ListRunsResponse
 }
@@ -61,13 +58,6 @@ func (o *V2ListInstancesResponse) GetRawResponse() *http.Response {
 		return nil
 	}
 	return o.RawResponse
-}
-
-func (o *V2ListInstancesResponse) GetV2Error() *sdkerrors.V2Error {
-	if o == nil {
-		return nil
-	}
-	return o.V2Error
 }
 
 func (o *V2ListInstancesResponse) GetV2ListRunsResponse() *shared.V2ListRunsResponse {

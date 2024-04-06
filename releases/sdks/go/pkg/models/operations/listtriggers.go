@@ -10,8 +10,6 @@ import (
 type ListTriggersResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
-	// General error
-	Error *shared.Error
 	// List of triggers
 	ListTriggersResponse *shared.ListTriggersResponse
 	// HTTP response status code for this operation
@@ -25,13 +23,6 @@ func (o *ListTriggersResponse) GetContentType() string {
 		return ""
 	}
 	return o.ContentType
-}
-
-func (o *ListTriggersResponse) GetError() *shared.Error {
-	if o == nil {
-		return nil
-	}
-	return o.Error
 }
 
 func (o *ListTriggersResponse) GetListTriggersResponse() *shared.ListTriggersResponse {

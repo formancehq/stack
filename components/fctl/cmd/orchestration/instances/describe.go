@@ -55,14 +55,6 @@ func (c *InstancesDescribeController) Run(cmd *cobra.Command, args []string) (fc
 		return nil, err
 	}
 
-	if response.Error != nil {
-		return nil, fmt.Errorf("%s: %s", response.Error.ErrorCode, response.Error.ErrorMessage)
-	}
-
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
-	}
-
 	c.store.WorkflowInstancesHistory = response.GetWorkflowInstanceHistoryResponse.Data
 
 	return c, nil
@@ -156,14 +148,6 @@ func printStage(cmd *cobra.Command, i int, client *formance.Formance, id string,
 		})
 		if err != nil {
 			return err
-		}
-
-		if stageResponse.Error != nil {
-			return fmt.Errorf("%s: %s", stageResponse.Error.ErrorCode, stageResponse.Error.ErrorMessage)
-		}
-
-		if stageResponse.StatusCode >= 300 {
-			return fmt.Errorf("unexpected status code: %d", stageResponse.StatusCode)
 		}
 
 		for _, historyStage := range stageResponse.GetWorkflowInstanceHistoryStageResponse.Data {

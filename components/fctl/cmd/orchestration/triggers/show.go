@@ -1,7 +1,6 @@
 package triggers
 
 import (
-	"fmt"
 	"time"
 
 	fctl "github.com/formancehq/fctl/pkg"
@@ -51,14 +50,6 @@ func (c *TriggersShowController) Run(cmd *cobra.Command, args []string) (fctl.Re
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "reading trigger")
-	}
-
-	if res.Error != nil {
-		return nil, fmt.Errorf("%s: %s", res.Error.ErrorCode, res.Error.ErrorMessage)
-	}
-
-	if res.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
 	}
 
 	c.store.Trigger = res.ReadTriggerResponse.Data

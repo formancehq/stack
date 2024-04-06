@@ -10,8 +10,6 @@ import (
 type ListWorkflowsResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
-	// General error
-	Error *shared.Error
 	// List of workflows
 	ListWorkflowsResponse *shared.ListWorkflowsResponse
 	// HTTP response status code for this operation
@@ -25,13 +23,6 @@ func (o *ListWorkflowsResponse) GetContentType() string {
 		return ""
 	}
 	return o.ContentType
-}
-
-func (o *ListWorkflowsResponse) GetError() *shared.Error {
-	if o == nil {
-		return nil
-	}
-	return o.Error
 }
 
 func (o *ListWorkflowsResponse) GetListWorkflowsResponse() *shared.ListWorkflowsResponse {

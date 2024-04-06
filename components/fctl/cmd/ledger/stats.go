@@ -54,14 +54,6 @@ func (c *StatsController) Run(cmd *cobra.Command, args []string) (fctl.Renderabl
 		return nil, err
 	}
 
-	if response.ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
-	}
-
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
-	}
-
 	c.store.Stats = response.StatsResponse.Data
 
 	return c, nil

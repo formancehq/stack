@@ -1,7 +1,7 @@
 lockVersion: 2.0.0
 id: 7eac0a45-60a2-40bb-9e85-26bd77ec2a6d
 management:
-  docChecksum: 24774d581a47b35b5d38476eb5f8dd2e
+  docChecksum: 335c1bfd81a8491ca4db608c84cf35a4
   docVersion: v0.0.0
   speakeasyVersion: internal
   generationVersion: 2.237.2
@@ -294,7 +294,6 @@ generatedFiles:
   - /pkg/models/shared/v2statsresponse.go
   - /pkg/models/shared/v2stats.go
   - /pkg/models/shared/v2reverttransactionresponse.go
-  - /pkg/models/shared/error.go
   - /pkg/models/shared/createtriggerresponse.go
   - /pkg/models/shared/trigger.go
   - /pkg/models/shared/triggerdata.go
@@ -505,7 +504,6 @@ generatedFiles:
   - /pkg/models/shared/reversetransferinitiationrequest.go
   - /pkg/models/shared/updatetransferinitiationstatusrequest.go
   - /pkg/models/shared/updatebankaccountmetadatarequest.go
-  - /pkg/models/shared/reconciliationerrorresponse.go
   - /pkg/models/shared/policyresponse.go
   - /pkg/models/shared/policy.go
   - /pkg/models/shared/policyrequest.go
@@ -535,9 +533,9 @@ generatedFiles:
   - /pkg/models/shared/getwalletsummaryresponse.go
   - /pkg/models/shared/listbalancesresponse.go
   - /pkg/models/shared/listwalletsresponse.go
-  - /pkg/models/shared/webhookserrorsenum.go
   - /pkg/models/shared/configresponse.go
   - /pkg/models/shared/webhooksconfig.go
+  - /pkg/models/shared/webhookserrorsenum.go
   - /pkg/models/shared/configchangesecret.go
   - /pkg/models/shared/configsresponse.go
   - /pkg/models/shared/configuser.go
@@ -546,7 +544,9 @@ generatedFiles:
   - /pkg/models/shared/security.go
   - /pkg/models/sdkerrors/errorresponse.go
   - /pkg/models/sdkerrors/v2errorresponse.go
+  - /pkg/models/sdkerrors/error.go
   - /pkg/models/sdkerrors/v2error.go
+  - /pkg/models/sdkerrors/reconciliationerrorresponse.go
   - /pkg/models/sdkerrors/walletserrorresponse.go
   - /pkg/models/sdkerrors/webhookserrorresponse.go
   - docs/pkg/models/operations/getoidcwellknownsresponse.md
@@ -958,8 +958,6 @@ generatedFiles:
   - docs/pkg/models/shared/v2statsresponse.md
   - docs/pkg/models/shared/v2stats.md
   - docs/pkg/models/shared/v2reverttransactionresponse.md
-  - docs/pkg/models/shared/errorcode.md
-  - docs/pkg/models/shared/error.md
   - docs/pkg/models/shared/createtriggerresponse.md
   - docs/pkg/models/shared/trigger.md
   - docs/pkg/models/shared/triggerdata.md
@@ -1227,7 +1225,6 @@ generatedFiles:
   - docs/pkg/models/shared/status.md
   - docs/pkg/models/shared/updatetransferinitiationstatusrequest.md
   - docs/pkg/models/shared/updatebankaccountmetadatarequest.md
-  - docs/pkg/models/shared/reconciliationerrorresponse.md
   - docs/pkg/models/shared/policyresponse.md
   - docs/pkg/models/shared/policy.md
   - docs/pkg/models/shared/policyrequest.md
@@ -1266,9 +1263,9 @@ generatedFiles:
   - docs/pkg/models/shared/listbalancesresponse.md
   - docs/pkg/models/shared/listwalletsresponsecursor.md
   - docs/pkg/models/shared/listwalletsresponse.md
-  - docs/pkg/models/shared/webhookserrorsenum.md
   - docs/pkg/models/shared/configresponse.md
   - docs/pkg/models/shared/webhooksconfig.md
+  - docs/pkg/models/shared/webhookserrorsenum.md
   - docs/pkg/models/shared/configchangesecret.md
   - docs/pkg/models/shared/configsresponsecursor.md
   - docs/pkg/models/shared/configsresponse.md
@@ -1279,8 +1276,11 @@ generatedFiles:
   - docs/pkg/models/sdkerrors/errorresponse.md
   - docs/pkg/models/sdkerrors/v2errorresponse.md
   - docs/pkg/models/sdkerrors/errorcode.md
-  - docs/pkg/models/sdkerrors/v2error.md
+  - docs/pkg/models/sdkerrors/error.md
   - docs/pkg/models/sdkerrors/schemaserrorcode.md
+  - docs/pkg/models/sdkerrors/v2error.md
+  - docs/pkg/models/sdkerrors/reconciliationerrorresponse.md
+  - docs/pkg/models/sdkerrors/schemaswalletserrorresponseerrorcode.md
   - docs/pkg/models/sdkerrors/walletserrorresponse.md
   - docs/pkg/models/sdkerrors/webhookserrorresponse.md
   - docs/sdks/formance/README.md

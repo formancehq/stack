@@ -1,7 +1,6 @@
 package webhooks
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
@@ -43,14 +42,6 @@ func (c *ListWebhookController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 	response, err := store.Client().Webhooks.GetManyConfigs(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "listing all config")
-	}
-
-	if response.WebhooksErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.WebhooksErrorResponse.ErrorCode, response.WebhooksErrorResponse.ErrorMessage)
-	}
-
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
 	c.store.Webhooks = response.ConfigsResponse.Cursor.Data

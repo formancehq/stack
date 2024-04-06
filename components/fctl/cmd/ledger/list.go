@@ -1,7 +1,6 @@
 package ledger
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
@@ -52,14 +51,6 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	response, err := store.Client().Ledger.V2ListLedgers(cmd.Context(), operations.V2ListLedgersRequest{})
 	if err != nil {
 		return nil, err
-	}
-
-	if response.V2ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.V2ErrorResponse.ErrorCode, response.V2ErrorResponse.ErrorMessage)
-	}
-
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
 	c.store.Ledgers = response.V2LedgerListResponse.Cursor.Data

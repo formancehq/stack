@@ -1,7 +1,7 @@
 {
   "paths": {
     "x-speakeasy-errors": {
-      "statusCodes": ["4XX", "5XX"]
+      "statusCodes": ["default"]
     }
   }
 }

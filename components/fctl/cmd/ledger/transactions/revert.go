@@ -1,8 +1,6 @@
 package transactions
 
 import (
-	"fmt"
-
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 
 	"github.com/formancehq/fctl/cmd/ledger/internal"
@@ -69,13 +67,6 @@ func (c *RevertController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		if err != nil {
 			return nil, err
 		}
-		if response.V2ErrorResponse != nil {
-			return nil, fmt.Errorf("%s: %s", response.V2ErrorResponse.ErrorCode, response.V2ErrorResponse.ErrorMessage)
-		}
-
-		if response.StatusCode >= 300 {
-			return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
-		}
 
 		c.store.Transaction = internal.WrapV2Transaction(response.V2RevertTransactionResponse.Data)
 	} else {
@@ -87,13 +78,6 @@ func (c *RevertController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		response, err := store.Client().Ledger.RevertTransaction(cmd.Context(), request)
 		if err != nil {
 			return nil, err
-		}
-		if response.ErrorResponse != nil {
-			return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
-		}
-
-		if response.StatusCode >= 300 {
-			return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 		}
 
 		c.store.Transaction = internal.WrapV1Transaction(response.TransactionResponse.Data)

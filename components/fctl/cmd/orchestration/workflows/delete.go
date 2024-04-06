@@ -1,8 +1,6 @@
 package workflows
 
 import (
-	"fmt"
-
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/pterm/pterm"
@@ -44,7 +42,7 @@ func (c *WorkflowsDeleteController) GetStore() *WorkflowsDeleteStore {
 func (c *WorkflowsDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	store := fctl.GetStackStore(cmd.Context())
 
-	response, err := store.Client().Orchestration.DeleteWorkflow(
+	_, err := store.Client().Orchestration.DeleteWorkflow(
 		cmd.Context(),
 		operations.DeleteWorkflowRequest{
 			FlowID: args[0],
@@ -53,14 +51,6 @@ func (c *WorkflowsDeleteController) Run(cmd *cobra.Command, args []string) (fctl
 
 	if err != nil {
 		return nil, err
-	}
-
-	if response.Error != nil {
-		return nil, fmt.Errorf("%s: %s", response.Error.ErrorCode, response.Error.ErrorMessage)
-	}
-
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
 	c.store.WorkflowId = args[0]

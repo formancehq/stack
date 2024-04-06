@@ -1,8 +1,6 @@
 package wallets
 
 import (
-	"fmt"
-
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/pkg/errors"
@@ -59,7 +57,7 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
-	response, err := store.Client().Wallets.UpdateWallet(cmd.Context(), operations.UpdateWalletRequest{
+	_, err = store.Client().Wallets.UpdateWallet(cmd.Context(), operations.UpdateWalletRequest{
 		RequestBody: &operations.UpdateWalletRequestBody{
 			Metadata: metadata,
 		},
@@ -67,14 +65,6 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "updating wallet")
-	}
-
-	if response.WalletsErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.WalletsErrorResponse.ErrorCode, response.WalletsErrorResponse.ErrorMessage)
-	}
-
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
 	c.store.Success = true

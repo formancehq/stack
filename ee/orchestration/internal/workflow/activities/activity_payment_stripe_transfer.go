@@ -2,9 +2,7 @@ package activities
 
 import (
 	"context"
-	"fmt"
 	"math/big"
-	"net/http"
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"go.temporal.io/sdk/activity"
@@ -43,21 +41,12 @@ func (a Activities) StripeTransfer(ctx context.Context, request StripeTransferRe
 		Validated:            validated,
 	}
 
-	response, err := a.client.Payments.
-		CreateTransferInitiation(
-			ctx,
-			ti,
-		)
+	_, err := a.client.Payments.CreateTransferInitiation(ctx, ti)
 	if err != nil {
 		return err
 	}
 
-	switch response.StatusCode {
-	case http.StatusOK:
-		return nil
-	default:
-		return fmt.Errorf("unexpected status code: %d", response.StatusCode)
-	}
+	return nil
 }
 
 var StripeTransferActivity = Activities{}.StripeTransfer

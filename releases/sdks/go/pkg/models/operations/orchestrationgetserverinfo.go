@@ -10,8 +10,6 @@ import (
 type OrchestrationgetServerInfoResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
-	// General error
-	Error *shared.Error
 	// Server information
 	ServerInfo *shared.ServerInfo
 	// HTTP response status code for this operation
@@ -25,13 +23,6 @@ func (o *OrchestrationgetServerInfoResponse) GetContentType() string {
 		return ""
 	}
 	return o.ContentType
-}
-
-func (o *OrchestrationgetServerInfoResponse) GetError() *shared.Error {
-	if o == nil {
-		return nil
-	}
-	return o.Error
 }
 
 func (o *OrchestrationgetServerInfoResponse) GetServerInfo() *shared.ServerInfo {

@@ -7,7 +7,6 @@ import (
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -25,13 +24,6 @@ func (a Activities) ConfirmHold(ctx context.Context, request ConfirmHoldRequest)
 	)
 	if err != nil {
 		return err
-	}
-
-	if response.WalletsErrorResponse != nil {
-		return temporal.NewApplicationError(
-			response.WalletsErrorResponse.ErrorMessage,
-			string(response.WalletsErrorResponse.ErrorCode),
-		)
 	}
 
 	switch response.StatusCode {

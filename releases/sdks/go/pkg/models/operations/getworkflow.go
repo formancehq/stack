@@ -22,8 +22,6 @@ func (o *GetWorkflowRequest) GetFlowID() string {
 type GetWorkflowResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
-	// General error
-	Error *shared.Error
 	// The workflow
 	GetWorkflowResponse *shared.GetWorkflowResponse
 	// HTTP response status code for this operation
@@ -37,13 +35,6 @@ func (o *GetWorkflowResponse) GetContentType() string {
 		return ""
 	}
 	return o.ContentType
-}
-
-func (o *GetWorkflowResponse) GetError() *shared.Error {
-	if o == nil {
-		return nil
-	}
-	return o.Error
 }
 
 func (o *GetWorkflowResponse) GetGetWorkflowResponse() *shared.GetWorkflowResponse {

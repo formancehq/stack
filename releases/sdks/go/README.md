@@ -263,7 +263,7 @@ Handling errors in this SDK should largely match your expectations.  All operati
 
 | Error Object            | Status Code             | Content Type            |
 | ----------------------- | ----------------------- | ----------------------- |
-| sdkerrors.ErrorResponse | 400,404                 | application/json        |
+| sdkerrors.ErrorResponse | default                 | application/json        |
 | sdkerrors.SDKError      | 4xx-5xx                 | */*                     |
 
 ### Example
@@ -279,6 +279,7 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"log"
+	"math/big"
 )
 
 func main() {
@@ -289,12 +290,26 @@ func main() {
 	)
 
 	ctx := context.Background()
-	res, err := s.Ledger.AddMetadataToAccount(ctx, operations.AddMetadataToAccountRequest{
-		RequestBody: map[string]interface{}{
-			"key": "string",
+	res, err := s.Ledger.CreateTransactions(ctx, operations.CreateTransactionsRequest{
+		Transactions: shared.Transactions{
+			Transactions: []shared.TransactionData{
+				shared.TransactionData{
+					Metadata: map[string]interface{}{
+						"key": "string",
+					},
+					Postings: []shared.Posting{
+						shared.Posting{
+							Amount:      big.NewInt(100),
+							Asset:       "COIN",
+							Destination: "users:002",
+							Source:      "users:001",
+						},
+					},
+					Reference: v2.String("ref:001"),
+				},
+			},
 		},
-		Address: "users:001",
-		Ledger:  "ledger001",
+		Ledger: "ledger001",
 	})
 	if err != nil {
 

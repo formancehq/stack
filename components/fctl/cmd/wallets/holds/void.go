@@ -1,8 +1,6 @@
 package holds
 
 import (
-	"fmt"
-
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/pkg/errors"
@@ -49,20 +47,12 @@ func (c *VoidController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	request := operations.VoidHoldRequest{
 		HoldID: args[0],
 	}
-	response, err := store.Client().Wallets.VoidHold(cmd.Context(), request)
+	_, err := store.Client().Wallets.VoidHold(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "voiding hold")
 	}
 
-	if response.WalletsErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.WalletsErrorResponse.ErrorCode, response.WalletsErrorResponse.ErrorMessage)
-	}
-
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
-	}
-
-	c.store.Success = true //Todo: check status code 204/200
+	c.store.Success = true
 	c.store.HoldId = args[0]
 
 	return c, nil

@@ -1,8 +1,6 @@
 package webhooks
 
 import (
-	"fmt"
-
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/pkg/errors"
@@ -51,16 +49,6 @@ func (c *DesactivateWebhookController) Run(cmd *cobra.Command, args []string) (f
 	}
 
 	c.store.Success = !response.ConfigResponse.Data.Active
-
-	// Check if there is an error
-	if response.WebhooksErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.WebhooksErrorResponse.ErrorCode, response.WebhooksErrorResponse.ErrorMessage)
-	}
-
-	// Check if the status code is >= 300
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
-	}
 
 	return c, nil
 }

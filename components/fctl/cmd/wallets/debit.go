@@ -122,14 +122,6 @@ func (c *DebitWalletController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		return nil, errors.Wrap(err, "debiting wallet")
 	}
 
-	if response.WalletsErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.WalletsErrorResponse.ErrorCode, response.WalletsErrorResponse.ErrorMessage)
-	}
-
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
-	}
-
 	if response.DebitWalletResponse != nil {
 		c.store.HoldID = &response.DebitWalletResponse.Data.ID
 	}

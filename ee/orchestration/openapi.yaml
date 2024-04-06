@@ -461,8 +461,6 @@ paths:
       responses:
         "204":
           description: Trigger deleted
-        "404":
-          $ref: '#/components/responses/V2ErrorResponse'
         default:
           $ref: '#/components/responses/V2ErrorResponse'
   /v2/triggers/{triggerID}/test:
@@ -586,10 +584,6 @@ paths:
       responses:
         "204":
           description: No content
-        "400":
-          $ref: '#/components/responses/V2ErrorResponse'
-        "404":
-          $ref: '#/components/responses/V2ErrorResponse'
         default:
           $ref: '#/components/responses/V2ErrorResponse'
   /v2/workflows/{workflowID}/instances:

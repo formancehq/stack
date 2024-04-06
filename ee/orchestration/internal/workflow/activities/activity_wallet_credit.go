@@ -2,16 +2,12 @@ package activities
 
 import (
 	"context"
-	"fmt"
-	"net/http"
 	stdtime "time"
 
 	"github.com/formancehq/stack/libs/go-libs/time"
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"github.com/pkg/errors"
-	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -32,7 +28,7 @@ type CreditWalletRequestPayload struct {
 }
 
 func (a Activities) CreditWallet(ctx context.Context, request CreditWalletRequest) error {
-	response, err := a.client.Wallets.CreditWallet(
+	_, err := a.client.Wallets.CreditWallet(
 		ctx,
 		operations.CreditWalletRequest{
 			CreditWalletRequest: &shared.CreditWalletRequest{
@@ -55,21 +51,7 @@ func (a Activities) CreditWallet(ctx context.Context, request CreditWalletReques
 		return err
 	}
 
-	switch response.StatusCode {
-	case http.StatusNoContent:
-		return nil
-	case http.StatusNotFound:
-		return errors.New("wallet not found")
-	default:
-		if response.WalletsErrorResponse != nil {
-			return temporal.NewApplicationError(
-				response.WalletsErrorResponse.ErrorMessage,
-				string(response.WalletsErrorResponse.ErrorCode),
-			)
-		}
-
-		return fmt.Errorf("unexpected status code: %d", response.StatusCode)
-	}
+	return nil
 }
 
 var CreditWalletActivity = Activities{}.CreditWallet

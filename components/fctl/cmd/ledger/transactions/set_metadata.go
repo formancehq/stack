@@ -1,8 +1,6 @@
 package transactions
 
 import (
-	"fmt"
-
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 
 	"github.com/formancehq/fctl/cmd/ledger/internal"
@@ -73,14 +71,6 @@ func (c *SetMetadataController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 	response, err := store.Client().Ledger.AddMetadataOnTransaction(cmd.Context(), request)
 	if err != nil {
 		return nil, err
-	}
-
-	if response.ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
-	}
-
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
 	c.store.Success = response.StatusCode == 204

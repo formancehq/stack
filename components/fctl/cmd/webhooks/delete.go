@@ -1,8 +1,6 @@
 package webhooks
 
 import (
-	"fmt"
-
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
@@ -51,25 +49,12 @@ func (c *DeleteWebhookController) Run(cmd *cobra.Command, args []string) (fctl.R
 	request := operations.DeleteConfigRequest{
 		ID: args[0],
 	}
-	response, err := store.Client().Webhooks.DeleteConfig(cmd.Context(), request)
+	_, err := store.Client().Webhooks.DeleteConfig(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "deleting config")
 	}
 
-	if response.WebhooksErrorResponse != nil {
-		if response.WebhooksErrorResponse.ErrorCode == "NOT_FOUND" {
-			c.store.ErrorResponse = response.WebhooksErrorResponse
-			c.store.Success = false
-			return c, nil
-		}
-		return nil, fmt.Errorf("%s: %s", response.WebhooksErrorResponse.ErrorCode, response.WebhooksErrorResponse.ErrorMessage)
-	}
-
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
-	}
-
-	c.store.Success = response.StatusCode == 200
+	c.store.Success = true
 
 	return c, nil
 }

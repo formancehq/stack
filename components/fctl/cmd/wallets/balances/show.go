@@ -1,8 +1,6 @@
 package balances
 
 import (
-	"fmt"
-
 	"github.com/formancehq/fctl/cmd/wallets/internal"
 	"github.com/formancehq/fctl/cmd/wallets/internal/views"
 	fctl "github.com/formancehq/fctl/pkg"
@@ -62,14 +60,6 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	response, err := store.Client().Wallets.GetBalance(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "getting balance")
-	}
-
-	if response.WalletsErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.WalletsErrorResponse.ErrorCode, response.WalletsErrorResponse.ErrorMessage)
-	}
-
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
 	c.store.Balance = response.GetBalanceResponse.Data
