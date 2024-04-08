@@ -2,7 +2,6 @@ package gateways
 
 import (
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/formancehq/operator/internal/resources/settings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -33,7 +32,6 @@ func CreateCaddyfile(ctx core.Context, stack *v1beta1.Stack,
 
 	if stack.Spec.EnableAudit && auditTopic != nil {
 		data["EnableAudit"] = true
-		spew.Dump(auditTopic)
 		data["Broker"] = auditTopic.Status.URI.Scheme
 	}
 

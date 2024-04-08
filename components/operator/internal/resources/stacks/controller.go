@@ -204,9 +204,7 @@ func deleteModules(ctx Context, stack *v1beta1.Stack, logger logr.Logger) error 
 
 		l := &unstructured.UnstructuredList{}
 		l.SetGroupVersionKind(gvk)
-		if err := ctx.GetAPIReader().List(ctx, l, client.MatchingFields{
-			//"stack": stack.Name,
-		}); err != nil {
+		if err := ctx.GetAPIReader().List(ctx, l); err != nil {
 			return err
 		}
 
@@ -249,9 +247,7 @@ func deleteResources(ctx Context, stack *v1beta1.Stack, logger logr.Logger) erro
 
 		l := &unstructured.UnstructuredList{}
 		l.SetGroupVersionKind(gvk)
-		if err := ctx.GetAPIReader().List(ctx, l, client.MatchingFields{
-			//"stack": stack.Name,
-		}); err != nil {
+		if err := ctx.GetAPIReader().List(ctx, l); err != nil {
 			return err
 		}
 
