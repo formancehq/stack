@@ -32,6 +32,9 @@ services:
 
   temporalite:
     container_name: temporalite
+    build:
+      context: .
+      dockerfile: temporalite.Dockerfile
     image: temporalite
     ports:
     - 7233:7233
