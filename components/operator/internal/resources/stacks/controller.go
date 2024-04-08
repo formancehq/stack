@@ -2,9 +2,9 @@ package stacks
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/pkg/errors"
 	"reflect"
 	"sort"
 	"strings"

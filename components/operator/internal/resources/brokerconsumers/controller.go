@@ -19,14 +19,11 @@ package brokerconsumers
 import (
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
-	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
-	"sigs.k8s.io/controller-runtime/pkg/log"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
 //+kubebuilder:rbac:groups=formance.com,resources=brokerconsumers,verbs=get;list;watch;create;update;patch;delete
@@ -85,21 +82,6 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, topicQuery *v1beta1.BrokerCons
 
 func init() {
 	Init(
-		WithStackDependencyReconciler(Reconcile,
-			WithWatch[*v1beta1.BrokerConsumer, *v1beta1.BrokerTopic](func(ctx Context, object *v1beta1.BrokerTopic) []reconcile.Request {
-				list := v1beta1.BrokerTopicConsumerList{}
-				if err := ctx.GetClient().List(ctx, &list, client.MatchingFields{
-					"queriedBy": object.Spec.Service,
-					"stack":     object.Spec.Stack,
-				}); err != nil {
-					log.FromContext(ctx).Error(err, "listing topic queries")
-					return []reconcile.Request{}
-				}
-
-				return MapObjectToReconcileRequests(
-					Map(list.Items, ToPointer[v1beta1.BrokerTopicConsumer])...,
-				)
-			}),
-		),
+		WithStackDependencyReconciler(Reconcile),
 	)
 }

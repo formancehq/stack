@@ -68,9 +68,9 @@ var _ = Describe("BrokerConsumer", func() {
 				}).Should(BeTrue())
 			})
 			Context("Then create a new BrokerConsumer on the same service", func() {
-				brokerTopicConsumer2 := &v1beta1.BrokerConsumer{}
+				brokerConsumer2 := &v1beta1.BrokerConsumer{}
 				BeforeEach(func() {
-					brokerTopicConsumer2 = &v1beta1.BrokerConsumer{
+					brokerConsumer2 = &v1beta1.BrokerConsumer{
 						ObjectMeta: RandObjectMeta(),
 						Spec: v1beta1.BrokerConsumerSpec{
 							Services:  []string{brokerConsumer.Spec.Services[0]},
@@ -80,16 +80,16 @@ var _ = Describe("BrokerConsumer", func() {
 							},
 						},
 					}
-					Expect(Create(brokerTopicConsumer2)).To(Succeed())
+					Expect(Create(brokerConsumer2)).To(Succeed())
 				})
 				AfterEach(func() {
-					Expect(client.IgnoreNotFound(Delete(brokerTopicConsumer2))).To(Succeed())
+					Expect(client.IgnoreNotFound(Delete(brokerConsumer2))).To(Succeed())
 				})
 				It("Should be set to ready too", func() {
 					Eventually(func(g Gomega) bool {
-						g.Expect(LoadResource("", brokerTopicConsumer2.Name, brokerTopicConsumer2)).To(Succeed())
+						g.Expect(LoadResource("", brokerConsumer2.Name, brokerConsumer2)).To(Succeed())
 
-						return brokerTopicConsumer2.Status.Ready
+						return brokerConsumer2.Status.Ready
 					}).Should(BeTrue())
 				})
 				Context("Then first BrokerConsumer object", func() {
