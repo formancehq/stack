@@ -567,6 +567,12 @@ func (s *DefaultTaskScheduler) runTaskOnce(
 
 loop:
 	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+		}
+
 		err := runF()
 		switch {
 		case err == nil:
