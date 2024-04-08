@@ -39,6 +39,7 @@
 * [V2GetLedger](#v2getledger) - Get a ledger
 * [V2GetLedgerInfo](#v2getledgerinfo) - Get information about a ledger
 * [V2GetTransaction](#v2gettransaction) - Get transaction from a ledger by its ID
+* [V2GetVolumesWithBalances](#v2getvolumeswithbalances) - Get list of volumes with balances for (account/asset)
 * [V2ListAccounts](#v2listaccounts) - List accounts from a ledger
 * [V2ListLedgers](#v2listledgers) - List ledgers
 * [V2ListLogs](#v2listlogs) - List the logs from a ledger
@@ -2170,6 +2171,62 @@ func main() {
 | ------------------------- | ------------------------- | ------------------------- |
 | sdkerrors.V2ErrorResponse | 404                       | application/json          |
 | sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
+
+## V2GetVolumesWithBalances
+
+Get list of volumes with balances for (account/asset)
+
+### Example Usage
+
+```go
+package main
+
+import(
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
+	"context"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"log"
+)
+
+func main() {
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
+
+    ctx := context.Background()
+    res, err := s.Ledger.V2GetVolumesWithBalances(ctx, operations.V2GetVolumesWithBalancesRequest{
+        RequestBody: map[string]interface{}{
+            "key": "string",
+        },
+        Ledger: "ledger001",
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    if res.V2VolumesWithBalanceCursorResponse != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                                                                    | Type                                                                                                         | Required                                                                                                     | Description                                                                                                  |
+| ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
+| `ctx`                                                                                                        | [context.Context](https://pkg.go.dev/context#Context)                                                        | :heavy_check_mark:                                                                                           | The context to use for the request.                                                                          |
+| `request`                                                                                                    | [operations.V2GetVolumesWithBalancesRequest](../../pkg/models/operations/v2getvolumeswithbalancesrequest.md) | :heavy_check_mark:                                                                                           | The request object to use for the request.                                                                   |
+
+
+### Response
+
+**[*operations.V2GetVolumesWithBalancesResponse](../../pkg/models/operations/v2getvolumeswithbalancesresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
 
 ## V2ListAccounts
 
