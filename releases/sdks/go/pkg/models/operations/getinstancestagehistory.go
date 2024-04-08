@@ -31,8 +31,6 @@ func (o *GetInstanceStageHistoryRequest) GetNumber() int64 {
 type GetInstanceStageHistoryResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
-	// General error
-	Error *shared.Error
 	// The workflow instance stage history
 	GetWorkflowInstanceHistoryStageResponse *shared.GetWorkflowInstanceHistoryStageResponse
 	// HTTP response status code for this operation
@@ -46,13 +44,6 @@ func (o *GetInstanceStageHistoryResponse) GetContentType() string {
 		return ""
 	}
 	return o.ContentType
-}
-
-func (o *GetInstanceStageHistoryResponse) GetError() *shared.Error {
-	if o == nil {
-		return nil
-	}
-	return o.Error
 }
 
 func (o *GetInstanceStageHistoryResponse) GetGetWorkflowInstanceHistoryStageResponse() *shared.GetWorkflowInstanceHistoryStageResponse {

@@ -2,11 +2,8 @@ package activities
 
 import (
 	"context"
-	"fmt"
-	"net/http"
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
-	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -15,7 +12,7 @@ type VoidHoldRequest struct {
 }
 
 func (a Activities) VoidHold(ctx context.Context, request VoidHoldRequest) error {
-	response, err := a.client.Wallets.VoidHold(
+	_, err := a.client.Wallets.VoidHold(
 		ctx,
 		operations.VoidHoldRequest{
 			HoldID: request.ID,
@@ -25,19 +22,7 @@ func (a Activities) VoidHold(ctx context.Context, request VoidHoldRequest) error
 		return err
 	}
 
-	if response.WalletsErrorResponse != nil {
-		return temporal.NewApplicationError(
-			response.WalletsErrorResponse.ErrorMessage,
-			string(response.WalletsErrorResponse.ErrorCode),
-		)
-	}
-
-	switch response.StatusCode {
-	case http.StatusNoContent:
-		return nil
-	default:
-		return fmt.Errorf("unexpected status code: %d", response.StatusCode)
-	}
+	return nil
 }
 
 var VoidHoldActivity = Activities{}.VoidHold

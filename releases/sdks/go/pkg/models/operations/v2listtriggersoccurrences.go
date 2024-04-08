@@ -3,7 +3,6 @@
 package operations
 
 import (
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"net/http"
 )
@@ -27,8 +26,6 @@ type V2ListTriggersOccurrencesResponse struct {
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
-	// General error
-	V2Error *sdkerrors.V2Error
 	// List of triggers occurrences
 	V2ListTriggersOccurrencesResponse *shared.V2ListTriggersOccurrencesResponse
 }
@@ -52,13 +49,6 @@ func (o *V2ListTriggersOccurrencesResponse) GetRawResponse() *http.Response {
 		return nil
 	}
 	return o.RawResponse
-}
-
-func (o *V2ListTriggersOccurrencesResponse) GetV2Error() *sdkerrors.V2Error {
-	if o == nil {
-		return nil
-	}
-	return o.V2Error
 }
 
 func (o *V2ListTriggersOccurrencesResponse) GetV2ListTriggersOccurrencesResponse() *shared.V2ListTriggersOccurrencesResponse {

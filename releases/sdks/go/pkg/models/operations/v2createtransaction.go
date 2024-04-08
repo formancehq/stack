@@ -3,7 +3,6 @@
 package operations
 
 import (
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"net/http"
 )
@@ -59,8 +58,6 @@ type V2CreateTransactionResponse struct {
 	RawResponse *http.Response
 	// OK
 	V2CreateTransactionResponse *shared.V2CreateTransactionResponse
-	// Error
-	V2ErrorResponse *sdkerrors.V2ErrorResponse
 }
 
 func (o *V2CreateTransactionResponse) GetContentType() string {
@@ -89,11 +86,4 @@ func (o *V2CreateTransactionResponse) GetV2CreateTransactionResponse() *shared.V
 		return nil
 	}
 	return o.V2CreateTransactionResponse
-}
-
-func (o *V2CreateTransactionResponse) GetV2ErrorResponse() *sdkerrors.V2ErrorResponse {
-	if o == nil {
-		return nil
-	}
-	return o.V2ErrorResponse
 }

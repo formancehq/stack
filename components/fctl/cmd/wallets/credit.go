@@ -106,17 +106,9 @@ func (c *CreditWalletController) Run(cmd *cobra.Command, args []string) (fctl.Re
 			Balance:  formance.String(fctl.GetString(cmd, c.balanceFlag)),
 		},
 	}
-	response, err := store.Client().Wallets.CreditWallet(cmd.Context(), request)
+	_, err = store.Client().Wallets.CreditWallet(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "crediting wallet")
-	}
-
-	if response.WalletsErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.WalletsErrorResponse.ErrorCode, response.WalletsErrorResponse.ErrorMessage)
-	}
-
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
 	c.store.Success = true

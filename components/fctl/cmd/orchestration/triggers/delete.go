@@ -1,8 +1,6 @@
 package triggers
 
 import (
-	"fmt"
-
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/pkg/errors"
@@ -44,19 +42,11 @@ func (c *TriggersDeleteController) GetStore() *TriggersDeleteStore {
 
 func (c *TriggersDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	store := fctl.GetStackStore(cmd.Context())
-	res, err := store.Client().Orchestration.DeleteTrigger(cmd.Context(), operations.DeleteTriggerRequest{
+	_, err := store.Client().Orchestration.DeleteTrigger(cmd.Context(), operations.DeleteTriggerRequest{
 		TriggerID: args[0],
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "deleting trigger")
-	}
-
-	if res.Error != nil {
-		return nil, fmt.Errorf("%s: %s", res.Error.ErrorCode, res.Error.ErrorMessage)
-	}
-
-	if res.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
 	}
 
 	c.store.Success = true

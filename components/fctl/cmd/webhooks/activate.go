@@ -1,8 +1,6 @@
 package webhooks
 
 import (
-	"fmt"
-
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/pkg/errors"
@@ -40,17 +38,9 @@ func (c *ActivateWebhookController) Run(cmd *cobra.Command, args []string) (fctl
 	request := operations.ActivateConfigRequest{
 		ID: args[0],
 	}
-	response, err := store.Client().Webhooks.ActivateConfig(cmd.Context(), request)
+	_, err := store.Client().Webhooks.ActivateConfig(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "activating config")
-	}
-
-	if response.WebhooksErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.WebhooksErrorResponse.ErrorCode, response.WebhooksErrorResponse.ErrorMessage)
-	}
-
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
 	return c, nil

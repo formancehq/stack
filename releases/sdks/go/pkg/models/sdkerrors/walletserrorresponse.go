@@ -7,20 +7,20 @@ import (
 	"fmt"
 )
 
-type SchemasErrorCode string
+type SchemasWalletsErrorResponseErrorCode string
 
 const (
-	SchemasErrorCodeValidation       SchemasErrorCode = "VALIDATION"
-	SchemasErrorCodeInternalError    SchemasErrorCode = "INTERNAL_ERROR"
-	SchemasErrorCodeInsufficientFund SchemasErrorCode = "INSUFFICIENT_FUND"
-	SchemasErrorCodeHoldClosed       SchemasErrorCode = "HOLD_CLOSED"
+	SchemasWalletsErrorResponseErrorCodeValidation       SchemasWalletsErrorResponseErrorCode = "VALIDATION"
+	SchemasWalletsErrorResponseErrorCodeInternalError    SchemasWalletsErrorResponseErrorCode = "INTERNAL_ERROR"
+	SchemasWalletsErrorResponseErrorCodeInsufficientFund SchemasWalletsErrorResponseErrorCode = "INSUFFICIENT_FUND"
+	SchemasWalletsErrorResponseErrorCodeHoldClosed       SchemasWalletsErrorResponseErrorCode = "HOLD_CLOSED"
 )
 
-func (e SchemasErrorCode) ToPointer() *SchemasErrorCode {
+func (e SchemasWalletsErrorResponseErrorCode) ToPointer() *SchemasWalletsErrorResponseErrorCode {
 	return &e
 }
 
-func (e *SchemasErrorCode) UnmarshalJSON(data []byte) error {
+func (e *SchemasWalletsErrorResponseErrorCode) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
@@ -33,17 +33,17 @@ func (e *SchemasErrorCode) UnmarshalJSON(data []byte) error {
 	case "INSUFFICIENT_FUND":
 		fallthrough
 	case "HOLD_CLOSED":
-		*e = SchemasErrorCode(v)
+		*e = SchemasWalletsErrorResponseErrorCode(v)
 		return nil
 	default:
-		return fmt.Errorf("invalid value for SchemasErrorCode: %v", v)
+		return fmt.Errorf("invalid value for SchemasWalletsErrorResponseErrorCode: %v", v)
 	}
 }
 
 // WalletsErrorResponse - Error
 type WalletsErrorResponse struct {
-	ErrorCode    SchemasErrorCode `json:"errorCode"`
-	ErrorMessage string           `json:"errorMessage"`
+	ErrorCode    SchemasWalletsErrorResponseErrorCode `json:"errorCode"`
+	ErrorMessage string                               `json:"errorMessage"`
 }
 
 var _ error = &WalletsErrorResponse{}

@@ -3,7 +3,6 @@
 package operations
 
 import (
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"net/http"
 )
@@ -27,8 +26,6 @@ type V2GetLedgerResponse struct {
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
-	// Error
-	V2ErrorResponse *sdkerrors.V2ErrorResponse
 	// OK
 	V2GetLedgerResponse *shared.V2GetLedgerResponse
 }
@@ -52,13 +49,6 @@ func (o *V2GetLedgerResponse) GetRawResponse() *http.Response {
 		return nil
 	}
 	return o.RawResponse
-}
-
-func (o *V2GetLedgerResponse) GetV2ErrorResponse() *sdkerrors.V2ErrorResponse {
-	if o == nil {
-		return nil
-	}
-	return o.V2ErrorResponse
 }
 
 func (o *V2GetLedgerResponse) GetV2GetLedgerResponse() *shared.V2GetLedgerResponse {

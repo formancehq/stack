@@ -22,8 +22,6 @@ func (o *ListTriggersOccurrencesRequest) GetTriggerID() string {
 type ListTriggersOccurrencesResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
-	// General error
-	Error *shared.Error
 	// List of triggers occurrences
 	ListTriggersOccurrencesResponse *shared.ListTriggersOccurrencesResponse
 	// HTTP response status code for this operation
@@ -37,13 +35,6 @@ func (o *ListTriggersOccurrencesResponse) GetContentType() string {
 		return ""
 	}
 	return o.ContentType
-}
-
-func (o *ListTriggersOccurrencesResponse) GetError() *shared.Error {
-	if o == nil {
-		return nil
-	}
-	return o.Error
 }
 
 func (o *ListTriggersOccurrencesResponse) GetListTriggersOccurrencesResponse() *shared.ListTriggersOccurrencesResponse {

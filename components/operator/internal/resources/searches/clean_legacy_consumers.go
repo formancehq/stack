@@ -21,6 +21,7 @@ func cleanConsumers(ctx Context, search *v1beta1.Search) error {
 		return nil
 	}
 
+	//todo: better handle errors
 	const script = `
 	for service in ledger payments audit; do
 		for consumer in search-ledgerv2 search-payments-resets search-audit; do 

@@ -105,48 +105,40 @@ func Execute() {
 			os.Exit(1)
 		case fctl.IsInvalidAuthentication(err):
 			pterm.Error.WithWriter(os.Stderr).Printfln("Your authentication is invalid, please login :)")
-		case extractOpenAPIErrorMessage(err) != nil:
-			pterm.Error.WithWriter(os.Stderr).Printfln(extractOpenAPIErrorMessage(err).Error())
-			os.Exit(2)
 		default:
-			pterm.Error.WithWriter(os.Stderr).Printfln(err.Error())
-			os.Exit(255)
-		}
-	}
-}
-
-func extractOpenAPIErrorMessage(err error) error {
-	if err == nil {
-		return nil
-	}
-
-	if err := unwrapOpenAPIError(err); err != nil {
-		return errors.New(err.ErrorMessage)
-	}
-
-	return err
-}
-
-func unwrapOpenAPIError(err error) *sdkerrors.V2Error {
-	openapiError := &membershipclient.GenericOpenAPIError{}
-	if errors.As(err, &openapiError) {
-		body := openapiError.Body()
-		// Actually, each api redefine errors response
-		// So OpenAPI generator generate an error structure for every service
-		// Manually unmarshal errorResponse allow us to handle only one ErrorResponse
-		// It will be refined once the monorepo fully ready
-		errResponse := api.ErrorResponse{}
-		if err := json.Unmarshal(body, &errResponse); err != nil {
-			return nil
-		}
-
-		if errResponse.ErrorCode != "" {
-			return &sdkerrors.V2Error{
-				ErrorCode:    sdkerrors.ErrorCode(errResponse.ErrorCode),
-				ErrorMessage: errResponse.ErrorMessage,
+			// notes(gfyrag): not a clean assertion but following errors does not implements standard Is() helper for errors
+			switch err := err.(type) {
+			case *sdkerrors.ErrorResponse:
+				printErrorResponse(err)
+			case *sdkerrors.V2ErrorResponse:
+				printV2ErrorResponse(err)
+			case *membershipclient.GenericOpenAPIError:
+				body := err.Body()
+				errResponse := api.ErrorResponse{}
+				if err := json.Unmarshal(body, &errResponse); err != nil {
+					panic(err)
+				}
+				printError(errResponse.ErrorCode, errResponse.ErrorMessage, &errResponse.Details)
+			default:
+				pterm.Error.WithWriter(os.Stderr).Printfln(err.Error())
+				os.Exit(255)
 			}
 		}
 	}
+}
 
-	return nil
+func printError(code string, message string, details *string) {
+	pterm.Error.WithWriter(os.Stderr).Printfln("Got error with code %s: %s", code, message)
+	if details != nil && *details != "" {
+		pterm.Error.WithWriter(os.Stderr).Printfln("Details:\r\n%s", *details)
+	}
+	os.Exit(2)
+}
+
+func printV2ErrorResponse(target *sdkerrors.V2ErrorResponse) {
+	printError(string(target.ErrorCode), target.ErrorMessage, target.Details)
+}
+
+func printErrorResponse(target *sdkerrors.ErrorResponse) {
+	printError(string(target.ErrorCode), target.ErrorMessage, target.Details)
 }

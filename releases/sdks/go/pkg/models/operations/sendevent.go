@@ -3,7 +3,6 @@
 package operations
 
 import (
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"net/http"
 )
 
@@ -41,8 +40,6 @@ func (o *SendEventRequest) GetInstanceID() string {
 type SendEventResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
-	// General error
-	Error *shared.Error
 	// HTTP response status code for this operation
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
@@ -54,13 +51,6 @@ func (o *SendEventResponse) GetContentType() string {
 		return ""
 	}
 	return o.ContentType
-}
-
-func (o *SendEventResponse) GetError() *shared.Error {
-	if o == nil {
-		return nil
-	}
-	return o.Error
 }
 
 func (o *SendEventResponse) GetStatusCode() int {

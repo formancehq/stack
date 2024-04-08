@@ -298,14 +298,10 @@ func (m *Manager) Credit(ctx context.Context, credit Credit) error {
 
 func (m *Manager) CreateTransaction(ctx context.Context, postTransaction PostTransaction) error {
 	if _, err := m.client.CreateTransaction(ctx, m.ledgerName, postTransaction); err != nil {
-		apiErr, ok := err.(GenericOpenAPIError)
-		if ok {
-			respErr, ok := apiErr.Model().(sdkerrors.WalletsErrorResponse)
-			if ok {
-				switch respErr.ErrorCode {
-				case sdkerrors.SchemasErrorCodeInsufficientFund:
-					return ErrInsufficientFundError
-				}
+		switch err := err.(type) {
+		case *sdkerrors.WalletsErrorResponse:
+			if err.ErrorCode == sdkerrors.SchemasWalletsErrorResponseErrorCodeInsufficientFund {
+				return ErrInsufficientFundError
 			}
 		}
 

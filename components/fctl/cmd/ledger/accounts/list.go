@@ -1,8 +1,6 @@
 package accounts
 
 import (
-	"fmt"
-
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 
 	"github.com/formancehq/fctl/cmd/ledger/internal"
@@ -74,14 +72,6 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	rsp, err := store.Client().Ledger.ListAccounts(cmd.Context(), request)
 	if err != nil {
 		return nil, err
-	}
-
-	if rsp.ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", rsp.ErrorResponse.ErrorCode, rsp.ErrorResponse.ErrorMessage)
-	}
-
-	if rsp.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", rsp.StatusCode)
 	}
 
 	c.store.Accounts = rsp.AccountsCursorResponse.Cursor.Data

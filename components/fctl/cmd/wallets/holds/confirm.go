@@ -1,7 +1,6 @@
 package holds
 
 import (
-	"fmt"
 	"math/big"
 
 	fctl "github.com/formancehq/fctl/pkg"
@@ -65,17 +64,9 @@ func (c *ConfirmController) Run(cmd *cobra.Command, args []string) (fctl.Rendera
 			Final:  &final,
 		},
 	}
-	response, err := store.Client().Wallets.ConfirmHold(cmd.Context(), request)
+	_, err := store.Client().Wallets.ConfirmHold(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "confirming hold")
-	}
-
-	if response.WalletsErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.WalletsErrorResponse.ErrorCode, response.WalletsErrorResponse.ErrorMessage)
-	}
-
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
 	c.store.Success = true //Todo: check status code

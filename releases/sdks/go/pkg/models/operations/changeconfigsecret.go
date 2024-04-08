@@ -3,7 +3,6 @@
 package operations
 
 import (
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"net/http"
 )
@@ -37,8 +36,6 @@ type ChangeConfigSecretResponse struct {
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
-	// Error
-	WebhooksErrorResponse *sdkerrors.WebhooksErrorResponse
 }
 
 func (o *ChangeConfigSecretResponse) GetConfigResponse() *shared.ConfigResponse {
@@ -67,11 +64,4 @@ func (o *ChangeConfigSecretResponse) GetRawResponse() *http.Response {
 		return nil
 	}
 	return o.RawResponse
-}
-
-func (o *ChangeConfigSecretResponse) GetWebhooksErrorResponse() *sdkerrors.WebhooksErrorResponse {
-	if o == nil {
-		return nil
-	}
-	return o.WebhooksErrorResponse
 }

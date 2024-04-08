@@ -2,7 +2,6 @@ package activities
 
 import (
 	"context"
-	"net/http"
 	stdtime "time"
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
@@ -17,16 +16,6 @@ import (
 // CreateTransactionResponse - OK
 type CreateTransactionResponse struct {
 	Data []shared.Transaction `json:"data"`
-}
-
-type CreateTransactionWrapper struct {
-	ContentType string
-	// OK
-	CreateTransactionResponse *CreateTransactionResponse
-	// Error
-	ErrorResponse *shared.Error
-	StatusCode    int
-	RawResponse   *http.Response
 }
 
 type CreateTransactionRequest struct {

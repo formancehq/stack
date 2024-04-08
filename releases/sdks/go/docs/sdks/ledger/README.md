@@ -115,9 +115,10 @@ func main() {
 ### Response
 
 **[*operations.CreateTransactionsResponse](../../pkg/models/operations/createtransactionsresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object            | Status Code             | Content Type            |
+| ----------------------- | ----------------------- | ----------------------- |
+| sdkerrors.ErrorResponse | default                 | application/json        |
+| sdkerrors.SDKError      | 4xx-5xx                 | */*                     |
 
 ## AddMetadataOnTransaction
 
@@ -174,9 +175,10 @@ func main() {
 ### Response
 
 **[*operations.AddMetadataOnTransactionResponse](../../pkg/models/operations/addmetadataontransactionresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object            | Status Code             | Content Type            |
+| ----------------------- | ----------------------- | ----------------------- |
+| sdkerrors.ErrorResponse | default                 | application/json        |
+| sdkerrors.SDKError      | 4xx-5xx                 | */*                     |
 
 ## AddMetadataToAccount
 
@@ -234,7 +236,7 @@ func main() {
 **[*operations.AddMetadataToAccountResponse](../../pkg/models/operations/addmetadatatoaccountresponse.md), error**
 | Error Object            | Status Code             | Content Type            |
 | ----------------------- | ----------------------- | ----------------------- |
-| sdkerrors.ErrorResponse | 400,404                 | application/json        |
+| sdkerrors.ErrorResponse | default                 | application/json        |
 | sdkerrors.SDKError      | 4xx-5xx                 | */*                     |
 
 ## CountAccounts
@@ -291,9 +293,10 @@ func main() {
 ### Response
 
 **[*operations.CountAccountsResponse](../../pkg/models/operations/countaccountsresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object            | Status Code             | Content Type            |
+| ----------------------- | ----------------------- | ----------------------- |
+| sdkerrors.ErrorResponse | default                 | application/json        |
+| sdkerrors.SDKError      | 4xx-5xx                 | */*                     |
 
 ## CountTransactions
 
@@ -350,9 +353,10 @@ func main() {
 ### Response
 
 **[*operations.CountTransactionsResponse](../../pkg/models/operations/counttransactionsresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object            | Status Code             | Content Type            |
+| ----------------------- | ----------------------- | ----------------------- |
+| sdkerrors.ErrorResponse | default                 | application/json        |
+| sdkerrors.SDKError      | 4xx-5xx                 | */*                     |
 
 ## CreateTransaction
 
@@ -434,7 +438,7 @@ func main() {
 **[*operations.CreateTransactionResponse](../../pkg/models/operations/createtransactionresponse.md), error**
 | Error Object            | Status Code             | Content Type            |
 | ----------------------- | ----------------------- | ----------------------- |
-| sdkerrors.ErrorResponse | 400                     | application/json        |
+| sdkerrors.ErrorResponse | default                 | application/json        |
 | sdkerrors.SDKError      | 4xx-5xx                 | */*                     |
 
 ## GetAccount
@@ -487,9 +491,10 @@ func main() {
 ### Response
 
 **[*operations.GetAccountResponse](../../pkg/models/operations/getaccountresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object            | Status Code             | Content Type            |
+| ----------------------- | ----------------------- | ----------------------- |
+| sdkerrors.ErrorResponse | default                 | application/json        |
+| sdkerrors.SDKError      | 4xx-5xx                 | */*                     |
 
 ## GetBalances
 
@@ -543,9 +548,10 @@ func main() {
 ### Response
 
 **[*operations.GetBalancesResponse](../../pkg/models/operations/getbalancesresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object            | Status Code             | Content Type            |
+| ----------------------- | ----------------------- | ----------------------- |
+| sdkerrors.ErrorResponse | default                 | application/json        |
+| sdkerrors.SDKError      | 4xx-5xx                 | */*                     |
 
 ## GetBalancesAggregated
 
@@ -597,9 +603,10 @@ func main() {
 ### Response
 
 **[*operations.GetBalancesAggregatedResponse](../../pkg/models/operations/getbalancesaggregatedresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object            | Status Code             | Content Type            |
+| ----------------------- | ----------------------- | ----------------------- |
+| sdkerrors.ErrorResponse | default                 | application/json        |
+| sdkerrors.SDKError      | 4xx-5xx                 | */*                     |
 
 ## GetInfo
 
@@ -646,9 +653,10 @@ func main() {
 ### Response
 
 **[*operations.GetInfoResponse](../../pkg/models/operations/getinforesponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object            | Status Code             | Content Type            |
+| ----------------------- | ----------------------- | ----------------------- |
+| sdkerrors.ErrorResponse | default                 | application/json        |
+| sdkerrors.SDKError      | 4xx-5xx                 | */*                     |
 
 ## GetLedgerInfo
 
@@ -699,9 +707,10 @@ func main() {
 ### Response
 
 **[*operations.GetLedgerInfoResponse](../../pkg/models/operations/getledgerinforesponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object            | Status Code             | Content Type            |
+| ----------------------- | ----------------------- | ----------------------- |
+| sdkerrors.ErrorResponse | default                 | application/json        |
+| sdkerrors.SDKError      | 4xx-5xx                 | */*                     |
 
 ## GetMapping
 
@@ -752,9 +761,10 @@ func main() {
 ### Response
 
 **[*operations.GetMappingResponse](../../pkg/models/operations/getmappingresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object            | Status Code             | Content Type            |
+| ----------------------- | ----------------------- | ----------------------- |
+| sdkerrors.ErrorResponse | default                 | application/json        |
+| sdkerrors.SDKError      | 4xx-5xx                 | */*                     |
 
 ## GetTransaction
 
@@ -807,9 +817,10 @@ func main() {
 ### Response
 
 **[*operations.GetTransactionResponse](../../pkg/models/operations/gettransactionresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object            | Status Code             | Content Type            |
+| ----------------------- | ----------------------- | ----------------------- |
+| sdkerrors.ErrorResponse | default                 | application/json        |
+| sdkerrors.SDKError      | 4xx-5xx                 | */*                     |
 
 ## ListAccounts
 
@@ -868,9 +879,10 @@ func main() {
 ### Response
 
 **[*operations.ListAccountsResponse](../../pkg/models/operations/listaccountsresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object            | Status Code             | Content Type            |
+| ----------------------- | ----------------------- | ----------------------- |
+| sdkerrors.ErrorResponse | default                 | application/json        |
+| sdkerrors.SDKError      | 4xx-5xx                 | */*                     |
 
 ## ListLogs
 
@@ -923,9 +935,10 @@ func main() {
 ### Response
 
 **[*operations.ListLogsResponse](../../pkg/models/operations/listlogsresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object            | Status Code             | Content Type            |
+| ----------------------- | ----------------------- | ----------------------- |
+| sdkerrors.ErrorResponse | default                 | application/json        |
+| sdkerrors.SDKError      | 4xx-5xx                 | */*                     |
 
 ## ListTransactions
 
@@ -985,9 +998,10 @@ func main() {
 ### Response
 
 **[*operations.ListTransactionsResponse](../../pkg/models/operations/listtransactionsresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object            | Status Code             | Content Type            |
+| ----------------------- | ----------------------- | ----------------------- |
+| sdkerrors.ErrorResponse | default                 | application/json        |
+| sdkerrors.SDKError      | 4xx-5xx                 | */*                     |
 
 ## ReadStats
 
@@ -1039,9 +1053,10 @@ func main() {
 ### Response
 
 **[*operations.ReadStatsResponse](../../pkg/models/operations/readstatsresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object            | Status Code             | Content Type            |
+| ----------------------- | ----------------------- | ----------------------- |
+| sdkerrors.ErrorResponse | default                 | application/json        |
+| sdkerrors.SDKError      | 4xx-5xx                 | */*                     |
 
 ## RevertTransaction
 
@@ -1094,9 +1109,10 @@ func main() {
 ### Response
 
 **[*operations.RevertTransactionResponse](../../pkg/models/operations/reverttransactionresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object            | Status Code             | Content Type            |
+| ----------------------- | ----------------------- | ----------------------- |
+| sdkerrors.ErrorResponse | default                 | application/json        |
+| sdkerrors.SDKError      | 4xx-5xx                 | */*                     |
 
 ## ~~RunScript~~
 
@@ -1229,9 +1245,10 @@ func main() {
 ### Response
 
 **[*operations.UpdateMappingResponse](../../pkg/models/operations/updatemappingresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object            | Status Code             | Content Type            |
+| ----------------------- | ----------------------- | ----------------------- |
+| sdkerrors.ErrorResponse | default                 | application/json        |
+| sdkerrors.SDKError      | 4xx-5xx                 | */*                     |
 
 ## V2AddMetadataOnTransaction
 
@@ -1291,7 +1308,7 @@ func main() {
 **[*operations.V2AddMetadataOnTransactionResponse](../../pkg/models/operations/v2addmetadataontransactionresponse.md), error**
 | Error Object              | Status Code               | Content Type              |
 | ------------------------- | ------------------------- | ------------------------- |
-| sdkerrors.V2ErrorResponse | 400,404                   | application/json          |
+| sdkerrors.V2ErrorResponse | default                   | application/json          |
 | sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
 ## V2AddMetadataToAccount
@@ -1351,7 +1368,7 @@ func main() {
 **[*operations.V2AddMetadataToAccountResponse](../../pkg/models/operations/v2addmetadatatoaccountresponse.md), error**
 | Error Object              | Status Code               | Content Type              |
 | ------------------------- | ------------------------- | ------------------------- |
-| sdkerrors.V2ErrorResponse | 400,404                   | application/json          |
+| sdkerrors.V2ErrorResponse | default                   | application/json          |
 | sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
 ## V2CountAccounts
@@ -1407,9 +1424,10 @@ func main() {
 ### Response
 
 **[*operations.V2CountAccountsResponse](../../pkg/models/operations/v2countaccountsresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | default                   | application/json          |
+| sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
 ## V2CountTransactions
 
@@ -1464,9 +1482,10 @@ func main() {
 ### Response
 
 **[*operations.V2CountTransactionsResponse](../../pkg/models/operations/v2counttransactionsresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | default                   | application/json          |
+| sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
 ## V2CreateBulk
 
@@ -1533,9 +1552,10 @@ func main() {
 ### Response
 
 **[*operations.V2CreateBulkResponse](../../pkg/models/operations/v2createbulkresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | default                   | application/json          |
+| sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
 ## V2CreateLedger
 
@@ -1594,7 +1614,7 @@ func main() {
 **[*operations.V2CreateLedgerResponse](../../pkg/models/operations/v2createledgerresponse.md), error**
 | Error Object              | Status Code               | Content Type              |
 | ------------------------- | ------------------------- | ------------------------- |
-| sdkerrors.V2ErrorResponse | 400                       | application/json          |
+| sdkerrors.V2ErrorResponse | default                   | application/json          |
 | sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
 ## V2CreateTransaction
@@ -1677,7 +1697,7 @@ func main() {
 **[*operations.V2CreateTransactionResponse](../../pkg/models/operations/v2createtransactionresponse.md), error**
 | Error Object              | Status Code               | Content Type              |
 | ------------------------- | ------------------------- | ------------------------- |
-| sdkerrors.V2ErrorResponse | 400                       | application/json          |
+| sdkerrors.V2ErrorResponse | default                   | application/json          |
 | sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
 ## V2DeleteAccountMetadata
@@ -1789,7 +1809,7 @@ func main() {
 **[*operations.V2DeleteLedgerMetadataResponse](../../pkg/models/operations/v2deleteledgermetadataresponse.md), error**
 | Error Object              | Status Code               | Content Type              |
 | ------------------------- | ------------------------- | ------------------------- |
-| sdkerrors.V2ErrorResponse | 400                       | application/json          |
+| sdkerrors.V2ErrorResponse | default                   | application/json          |
 | sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
 ## V2DeleteTransactionMetadata
@@ -1847,7 +1867,7 @@ func main() {
 **[*operations.V2DeleteTransactionMetadataResponse](../../pkg/models/operations/v2deletetransactionmetadataresponse.md), error**
 | Error Object              | Status Code               | Content Type              |
 | ------------------------- | ------------------------- | ------------------------- |
-| sdkerrors.V2ErrorResponse | 400                       | application/json          |
+| sdkerrors.V2ErrorResponse | default                   | application/json          |
 | sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
 ## V2GetAccount
@@ -1900,9 +1920,10 @@ func main() {
 ### Response
 
 **[*operations.V2GetAccountResponse](../../pkg/models/operations/v2getaccountresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | default                   | application/json          |
+| sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
 ## V2GetBalancesAggregated
 
@@ -1956,9 +1977,10 @@ func main() {
 ### Response
 
 **[*operations.V2GetBalancesAggregatedResponse](../../pkg/models/operations/v2getbalancesaggregatedresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | default                   | application/json          |
+| sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
 ## V2GetInfo
 
@@ -2005,9 +2027,10 @@ func main() {
 ### Response
 
 **[*operations.V2GetInfoResponse](../../pkg/models/operations/v2getinforesponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | default                   | application/json          |
+| sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
 ## V2GetLedger
 
@@ -2058,9 +2081,10 @@ func main() {
 ### Response
 
 **[*operations.V2GetLedgerResponse](../../pkg/models/operations/v2getledgerresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | default                   | application/json          |
+| sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
 ## V2GetLedgerInfo
 
@@ -2111,9 +2135,10 @@ func main() {
 ### Response
 
 **[*operations.V2GetLedgerInfoResponse](../../pkg/models/operations/v2getledgerinforesponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | default                   | application/json          |
+| sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
 ## V2GetTransaction
 
@@ -2168,7 +2193,7 @@ func main() {
 **[*operations.V2GetTransactionResponse](../../pkg/models/operations/v2gettransactionresponse.md), error**
 | Error Object              | Status Code               | Content Type              |
 | ------------------------- | ------------------------- | ------------------------- |
-| sdkerrors.V2ErrorResponse | 404                       | application/json          |
+| sdkerrors.V2ErrorResponse | default                   | application/json          |
 | sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
 ## V2ListAccounts
@@ -2226,7 +2251,7 @@ func main() {
 **[*operations.V2ListAccountsResponse](../../pkg/models/operations/v2listaccountsresponse.md), error**
 | Error Object              | Status Code               | Content Type              |
 | ------------------------- | ------------------------- | ------------------------- |
-| sdkerrors.V2ErrorResponse | 400                       | application/json          |
+| sdkerrors.V2ErrorResponse | default                   | application/json          |
 | sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
 ## V2ListLedgers
@@ -2278,9 +2303,10 @@ func main() {
 ### Response
 
 **[*operations.V2ListLedgersResponse](../../pkg/models/operations/v2listledgersresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | default                   | application/json          |
+| sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
 ## V2ListLogs
 
@@ -2335,9 +2361,10 @@ func main() {
 ### Response
 
 **[*operations.V2ListLogsResponse](../../pkg/models/operations/v2listlogsresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | default                   | application/json          |
+| sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
 ## V2ListTransactions
 
@@ -2394,7 +2421,7 @@ func main() {
 **[*operations.V2ListTransactionsResponse](../../pkg/models/operations/v2listtransactionsresponse.md), error**
 | Error Object              | Status Code               | Content Type              |
 | ------------------------- | ------------------------- | ------------------------- |
-| sdkerrors.V2ErrorResponse | 400,404                   | application/json          |
+| sdkerrors.V2ErrorResponse | default                   | application/json          |
 | sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
 ## V2ReadStats
@@ -2447,9 +2474,10 @@ func main() {
 ### Response
 
 **[*operations.V2ReadStatsResponse](../../pkg/models/operations/v2readstatsresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | default                   | application/json          |
+| sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
 ## V2RevertTransaction
 
@@ -2504,7 +2532,7 @@ func main() {
 **[*operations.V2RevertTransactionResponse](../../pkg/models/operations/v2reverttransactionresponse.md), error**
 | Error Object              | Status Code               | Content Type              |
 | ------------------------- | ------------------------- | ------------------------- |
-| sdkerrors.V2ErrorResponse | 400                       | application/json          |
+| sdkerrors.V2ErrorResponse | default                   | application/json          |
 | sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
 ## V2UpdateLedgerMetadata
@@ -2562,5 +2590,5 @@ func main() {
 **[*operations.V2UpdateLedgerMetadataResponse](../../pkg/models/operations/v2updateledgermetadataresponse.md), error**
 | Error Object              | Status Code               | Content Type              |
 | ------------------------- | ------------------------- | ------------------------- |
-| sdkerrors.V2ErrorResponse | 400                       | application/json          |
+| sdkerrors.V2ErrorResponse | default                   | application/json          |
 | sdkerrors.SDKError        | 4xx-5xx                   | */*                       |

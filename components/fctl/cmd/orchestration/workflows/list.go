@@ -1,7 +1,6 @@
 package workflows
 
 import (
-	"fmt"
 	"time"
 
 	fctl "github.com/formancehq/fctl/pkg"
@@ -57,14 +56,6 @@ func (c *WorkflowsListController) Run(cmd *cobra.Command, args []string) (fctl.R
 	response, err := store.Client().Orchestration.ListWorkflows(cmd.Context())
 	if err != nil {
 		return nil, err
-	}
-
-	if response.Error != nil {
-		return nil, fmt.Errorf("%s: %s", response.Error.ErrorCode, response.Error.ErrorMessage)
-	}
-
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
 	c.store.Workflows = fctl.Map(response.ListWorkflowsResponse.Data, func(src shared.Workflow) Workflow {

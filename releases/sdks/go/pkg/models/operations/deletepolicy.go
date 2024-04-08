@@ -3,7 +3,6 @@
 package operations
 
 import (
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"net/http"
 )
 
@@ -26,8 +25,6 @@ type DeletePolicyResponse struct {
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
-	// Error response
-	ReconciliationErrorResponse *shared.ReconciliationErrorResponse
 }
 
 func (o *DeletePolicyResponse) GetContentType() string {
@@ -49,11 +46,4 @@ func (o *DeletePolicyResponse) GetRawResponse() *http.Response {
 		return nil
 	}
 	return o.RawResponse
-}
-
-func (o *DeletePolicyResponse) GetReconciliationErrorResponse() *shared.ReconciliationErrorResponse {
-	if o == nil {
-		return nil
-	}
-	return o.ReconciliationErrorResponse
 }

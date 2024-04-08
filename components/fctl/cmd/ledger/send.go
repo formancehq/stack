@@ -104,14 +104,6 @@ func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	if response.ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
-	}
-
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code %d when creating transaction", response.StatusCode)
-	}
-
 	c.store.Transaction = &response.TransactionsResponse.Data[0]
 	return c, nil
 }

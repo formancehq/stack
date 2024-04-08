@@ -147,7 +147,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 					Expect(err).NotTo(Succeed())
 					sdkError := &sdkerrors.WalletsErrorResponse{}
 					Expect(errors.As(err, &sdkError)).To(BeTrue())
-					Expect(sdkError.ErrorCode).To(Equal(sdkerrors.SchemasErrorCodeValidation))
+					Expect(sdkError.ErrorCode).To(Equal(sdkerrors.SchemasWalletsErrorResponseErrorCodeValidation))
 				})
 			})
 			Then("debiting it using negative amount", func() {
@@ -165,7 +165,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 					Expect(err).NotTo(Succeed())
 					sdkError := &sdkerrors.WalletsErrorResponse{}
 					Expect(errors.As(err, &sdkError)).To(BeTrue())
-					Expect(sdkError.ErrorCode).To(Equal(sdkerrors.SchemasErrorCodeValidation))
+					Expect(sdkError.ErrorCode).To(Equal(sdkerrors.SchemasWalletsErrorResponseErrorCodeValidation))
 				})
 			})
 			Then("debiting it using invalid asset", func() {
@@ -183,7 +183,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 					Expect(err).NotTo(Succeed())
 					sdkError := &sdkerrors.WalletsErrorResponse{}
 					Expect(errors.As(err, &sdkError)).To(BeTrue())
-					Expect(sdkError.ErrorCode).To(Equal(sdkerrors.SchemasErrorCodeValidation))
+					Expect(sdkError.ErrorCode).To(Equal(sdkerrors.SchemasWalletsErrorResponseErrorCodeValidation))
 				})
 			})
 		})

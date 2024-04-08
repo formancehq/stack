@@ -1,7 +1,6 @@
 package workflows
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/formancehq/fctl/cmd/orchestration/internal"
@@ -78,14 +77,6 @@ func (c *WorkflowsRunController) Run(cmd *cobra.Command, args []string) (fctl.Re
 		return nil, err
 	}
 
-	if response.Error != nil {
-		return nil, fmt.Errorf("%s: %s", response.Error.ErrorCode, response.Error.ErrorMessage)
-	}
-
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
-	}
-
 	c.wait = wait
 	c.store.WorkflowInstance = response.RunWorkflowResponse.Data
 	return c, nil
@@ -100,14 +91,6 @@ func (c *WorkflowsRunController) Render(cmd *cobra.Command, args []string) error
 		})
 		if err != nil {
 			panic(err)
-		}
-
-		if w.Error != nil {
-			panic(fmt.Sprintf("%s: %s", w.Error.ErrorCode, w.Error.ErrorMessage))
-		}
-
-		if w.StatusCode >= 300 {
-			panic(fmt.Sprintf("unexpected status code: %d", w.StatusCode))
 		}
 
 		return internal.PrintWorkflowInstance(cmd.OutOrStdout(), w.GetWorkflowResponse.Data, c.store.WorkflowInstance)

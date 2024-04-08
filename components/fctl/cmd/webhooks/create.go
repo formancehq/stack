@@ -1,7 +1,6 @@
 package webhooks
 
 import (
-	"fmt"
 	"net/url"
 
 	fctl "github.com/formancehq/fctl/pkg"
@@ -61,14 +60,6 @@ func (c *CreateWebhookController) Run(cmd *cobra.Command, args []string) (fctl.R
 
 	if err != nil {
 		return nil, errors.Wrap(err, "creating config")
-	}
-
-	if response.WebhooksErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.WebhooksErrorResponse.ErrorCode, response.WebhooksErrorResponse.ErrorMessage)
-	}
-
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
 	c.store.Webhook = response.ConfigResponse.Data

@@ -1,8 +1,6 @@
 package ledger
 
 import (
-	"fmt"
-
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/pterm/pterm"
@@ -62,14 +60,6 @@ func (c *SetMetadataController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 	response, err := store.Client().Ledger.V2UpdateLedgerMetadata(cmd.Context(), request)
 	if err != nil {
 		return nil, err
-	}
-
-	if response.V2ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.V2ErrorResponse.ErrorCode, response.V2ErrorResponse.ErrorMessage)
-	}
-
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
 	c.store.Success = response.StatusCode == 204

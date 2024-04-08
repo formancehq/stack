@@ -56,14 +56,6 @@ func (c *WorkflowsShowController) Run(cmd *cobra.Command, args []string) (fctl.R
 		return nil, err
 	}
 
-	if response.Error != nil {
-		return nil, fmt.Errorf("%s: %s", response.Error.ErrorCode, response.Error.ErrorMessage)
-	}
-
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
-	}
-
 	c.store.Workflow = response.GetWorkflowResponse.Data
 
 	return c, nil

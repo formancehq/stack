@@ -1,8 +1,6 @@
 package wallets
 
 import (
-	"fmt"
-
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/pkg/errors"
@@ -66,14 +64,6 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	response, err := store.Client().Wallets.CreateWallet(cmd.Context(), &request)
 	if err != nil {
 		return nil, errors.Wrap(err, "creating wallet")
-	}
-
-	if response.WalletsErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.WalletsErrorResponse.ErrorCode, response.WalletsErrorResponse.ErrorMessage)
-	}
-
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
 
 	c.store.WalletID = response.CreateWalletResponse.Data.ID

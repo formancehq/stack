@@ -17,6 +17,7 @@ const (
 	ErrorsEnumNoScript          ErrorsEnum = "NO_SCRIPT"
 	ErrorsEnumCompilationFailed ErrorsEnum = "COMPILATION_FAILED"
 	ErrorsEnumMetadataOverride  ErrorsEnum = "METADATA_OVERRIDE"
+	ErrorsEnumNotFound          ErrorsEnum = "NOT_FOUND"
 )
 
 func (e ErrorsEnum) ToPointer() *ErrorsEnum {
@@ -42,6 +43,8 @@ func (e *ErrorsEnum) UnmarshalJSON(data []byte) error {
 	case "COMPILATION_FAILED":
 		fallthrough
 	case "METADATA_OVERRIDE":
+		fallthrough
+	case "NOT_FOUND":
 		*e = ErrorsEnum(v)
 		return nil
 	default:

@@ -1,5 +1,7 @@
 # ReconciliationErrorResponse
 
+Error response
+
 
 ## Fields
 

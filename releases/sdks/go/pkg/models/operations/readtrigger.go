@@ -22,8 +22,6 @@ func (o *ReadTriggerRequest) GetTriggerID() string {
 type ReadTriggerResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
-	// General error
-	Error *shared.Error
 	// A specific trigger
 	ReadTriggerResponse *shared.ReadTriggerResponse
 	// HTTP response status code for this operation
@@ -37,13 +35,6 @@ func (o *ReadTriggerResponse) GetContentType() string {
 		return ""
 	}
 	return o.ContentType
-}
-
-func (o *ReadTriggerResponse) GetError() *shared.Error {
-	if o == nil {
-		return nil
-	}
-	return o.Error
 }
 
 func (o *ReadTriggerResponse) GetReadTriggerResponse() *shared.ReadTriggerResponse {

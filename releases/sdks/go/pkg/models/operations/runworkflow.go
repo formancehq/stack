@@ -39,8 +39,6 @@ func (o *RunWorkflowRequest) GetWorkflowID() string {
 type RunWorkflowResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
-	// General error
-	Error *shared.Error
 	// The workflow instance
 	RunWorkflowResponse *shared.RunWorkflowResponse
 	// HTTP response status code for this operation
@@ -54,13 +52,6 @@ func (o *RunWorkflowResponse) GetContentType() string {
 		return ""
 	}
 	return o.ContentType
-}
-
-func (o *RunWorkflowResponse) GetError() *shared.Error {
-	if o == nil {
-		return nil
-	}
-	return o.Error
 }
 
 func (o *RunWorkflowResponse) GetRunWorkflowResponse() *shared.RunWorkflowResponse {

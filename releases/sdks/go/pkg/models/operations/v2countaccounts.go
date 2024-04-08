@@ -3,7 +3,6 @@
 package operations
 
 import (
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/utils"
 	"net/http"
 	"time"
@@ -56,8 +55,6 @@ type V2CountAccountsResponse struct {
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
-	// Error
-	V2ErrorResponse *sdkerrors.V2ErrorResponse
 }
 
 func (o *V2CountAccountsResponse) GetContentType() string {
@@ -86,11 +83,4 @@ func (o *V2CountAccountsResponse) GetRawResponse() *http.Response {
 		return nil
 	}
 	return o.RawResponse
-}
-
-func (o *V2CountAccountsResponse) GetV2ErrorResponse() *sdkerrors.V2ErrorResponse {
-	if o == nil {
-		return nil
-	}
-	return o.V2ErrorResponse
 }

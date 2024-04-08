@@ -2,9 +2,10 @@ package activities
 
 import (
 	"context"
-	"fmt"
-	"net/http"
 	stdtime "time"
+
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
+	"github.com/pkg/errors"
 
 	"github.com/formancehq/stack/libs/go-libs/time"
 
@@ -54,22 +55,14 @@ func (a Activities) DebitWallet(ctx context.Context, request DebitWalletRequest)
 		},
 	)
 	if err != nil {
+		walletErrorResponse := &sdkerrors.WalletsErrorResponse{}
+		if errors.As(err, &walletErrorResponse) {
+			return nil, temporal.NewApplicationError(walletErrorResponse.ErrorMessage, string(walletErrorResponse.ErrorCode))
+		}
 		return nil, err
 	}
 
-	if response.WalletsErrorResponse != nil {
-		return nil, temporal.NewApplicationError(
-			response.WalletsErrorResponse.ErrorMessage,
-			string(response.WalletsErrorResponse.ErrorCode),
-		)
-	}
-
-	switch response.StatusCode {
-	case http.StatusNoContent, http.StatusCreated:
-		return response.DebitWalletResponse, nil
-	default:
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
-	}
+	return response.DebitWalletResponse, nil
 }
 
 var DebitWalletActivity = Activities{}.DebitWallet

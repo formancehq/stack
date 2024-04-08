@@ -3,7 +3,6 @@
 package operations
 
 import (
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
 	"net/http"
 )
 
@@ -40,9 +39,7 @@ func (o *CountAccountsRequest) GetMetadata() map[string]interface{} {
 type CountAccountsResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
-	// Error
-	ErrorResponse *sdkerrors.ErrorResponse
-	Headers       map[string][]string
+	Headers     map[string][]string
 	// HTTP response status code for this operation
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
@@ -54,13 +51,6 @@ func (o *CountAccountsResponse) GetContentType() string {
 		return ""
 	}
 	return o.ContentType
-}
-
-func (o *CountAccountsResponse) GetErrorResponse() *sdkerrors.ErrorResponse {
-	if o == nil {
-		return nil
-	}
-	return o.ErrorResponse
 }
 
 func (o *CountAccountsResponse) GetHeaders() map[string][]string {

@@ -2,13 +2,9 @@ package activities
 
 import (
 	"context"
-	"errors"
-	"fmt"
-	"net/http"
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -27,21 +23,7 @@ func (a Activities) GetWallet(ctx context.Context, request GetWalletRequest) (*s
 		return nil, err
 	}
 
-	switch response.StatusCode {
-	case http.StatusOK:
-		return response.GetWalletResponse, nil
-	case http.StatusNotFound:
-		return nil, errors.New("wallet not found")
-	default:
-		if response.WalletsErrorResponse != nil {
-			return nil, temporal.NewApplicationError(
-				response.WalletsErrorResponse.ErrorMessage,
-				string(response.WalletsErrorResponse.ErrorCode),
-			)
-		}
-
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
-	}
+	return response.GetWalletResponse, nil
 }
 
 var GetWalletActivity = Activities{}.GetWallet

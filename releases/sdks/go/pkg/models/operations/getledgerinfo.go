@@ -3,7 +3,6 @@
 package operations
 
 import (
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"net/http"
 )
@@ -23,8 +22,6 @@ func (o *GetLedgerInfoRequest) GetLedger() string {
 type GetLedgerInfoResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
-	// Error
-	ErrorResponse *sdkerrors.ErrorResponse
 	// OK
 	LedgerInfoResponse *shared.LedgerInfoResponse
 	// HTTP response status code for this operation
@@ -38,13 +35,6 @@ func (o *GetLedgerInfoResponse) GetContentType() string {
 		return ""
 	}
 	return o.ContentType
-}
-
-func (o *GetLedgerInfoResponse) GetErrorResponse() *sdkerrors.ErrorResponse {
-	if o == nil {
-		return nil
-	}
-	return o.ErrorResponse
 }
 
 func (o *GetLedgerInfoResponse) GetLedgerInfoResponse() *shared.LedgerInfoResponse {

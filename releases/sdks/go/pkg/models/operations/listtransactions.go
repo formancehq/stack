@@ -3,7 +3,6 @@
 package operations
 
 import (
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/utils"
 	"net/http"
@@ -135,8 +134,6 @@ func (o *ListTransactionsRequest) GetStartTime() *time.Time {
 type ListTransactionsResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
-	// Error
-	ErrorResponse *sdkerrors.ErrorResponse
 	// HTTP response status code for this operation
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
@@ -150,13 +147,6 @@ func (o *ListTransactionsResponse) GetContentType() string {
 		return ""
 	}
 	return o.ContentType
-}
-
-func (o *ListTransactionsResponse) GetErrorResponse() *sdkerrors.ErrorResponse {
-	if o == nil {
-		return nil
-	}
-	return o.ErrorResponse
 }
 
 func (o *ListTransactionsResponse) GetStatusCode() int {

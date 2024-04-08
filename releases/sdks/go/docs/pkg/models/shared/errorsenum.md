@@ -12,3 +12,4 @@
 | `ErrorsEnumNoScript`          | NO_SCRIPT                     |
 | `ErrorsEnumCompilationFailed` | COMPILATION_FAILED            |
 | `ErrorsEnumMetadataOverride`  | METADATA_OVERRIDE             |
+| `ErrorsEnumNotFound`          | NOT_FOUND                     |

@@ -16,8 +16,6 @@ type CreatePolicyResponse struct {
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
-	// Error response
-	ReconciliationErrorResponse *shared.ReconciliationErrorResponse
 }
 
 func (o *CreatePolicyResponse) GetContentType() string {
@@ -46,11 +44,4 @@ func (o *CreatePolicyResponse) GetRawResponse() *http.Response {
 		return nil
 	}
 	return o.RawResponse
-}
-
-func (o *CreatePolicyResponse) GetReconciliationErrorResponse() *shared.ReconciliationErrorResponse {
-	if o == nil {
-		return nil
-	}
-	return o.ReconciliationErrorResponse
 }

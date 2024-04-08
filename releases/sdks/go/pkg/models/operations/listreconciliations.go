@@ -42,8 +42,6 @@ type ListReconciliationsResponse struct {
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
-	// Error response
-	ReconciliationErrorResponse *shared.ReconciliationErrorResponse
 }
 
 func (o *ListReconciliationsResponse) GetContentType() string {
@@ -72,11 +70,4 @@ func (o *ListReconciliationsResponse) GetRawResponse() *http.Response {
 		return nil
 	}
 	return o.RawResponse
-}
-
-func (o *ListReconciliationsResponse) GetReconciliationErrorResponse() *shared.ReconciliationErrorResponse {
-	if o == nil {
-		return nil
-	}
-	return o.ReconciliationErrorResponse
 }

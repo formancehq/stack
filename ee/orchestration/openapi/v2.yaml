@@ -90,9 +90,6 @@ paths:
         204:
           description: Trigger deleted
 
-        "404":
-          $ref: '#/components/responses/V2ErrorResponse'
-
         default:
           $ref: '#/components/responses/V2ErrorResponse'
 
@@ -218,12 +215,6 @@ paths:
       operationId: v2DeleteWorkflow
       responses:
         default:
-          $ref: '#/components/responses/V2ErrorResponse'
-
-        "404":
-          $ref: '#/components/responses/V2ErrorResponse'
-
-        "400":
           $ref: '#/components/responses/V2ErrorResponse'
 
         204:

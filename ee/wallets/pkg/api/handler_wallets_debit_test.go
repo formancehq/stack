@@ -38,36 +38,10 @@ func compareJSON(t *testing.T, expected, actual any) {
 type testCase struct {
 	name                    string
 	request                 wallet.DebitRequest
-	postTransactionError    *apiErrorMock
+	postTransactionError    *sdkerrors.WalletsErrorResponse
 	expectedPostTransaction func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction
 	expectedStatusCode      int
 	expectedErrorCode       string
-}
-
-type apiErrorMock struct {
-	ErrorCode    sdkerrors.SchemasErrorCode `json:"errorCode,omitempty"`
-	ErrorMessage string                     `json:"errorMessage,omitempty"`
-}
-
-func (a *apiErrorMock) Model() any {
-	if a == nil {
-		return nil
-	}
-	return sdkerrors.WalletsErrorResponse{
-		ErrorCode:    a.ErrorCode,
-		ErrorMessage: a.ErrorMessage,
-	}
-}
-
-func (a *apiErrorMock) Error() string {
-	if a == nil {
-		return ""
-	}
-	by, err := json.Marshal(a)
-	if err != nil {
-		panic(err)
-	}
-	return string(by)
 }
 
 var now = time.Now()
@@ -165,8 +139,8 @@ var walletDebitTestCases = []testCase{
 		request: wallet.DebitRequest{
 			Amount: wallet.NewMonetary(big.NewInt(100), "USD"),
 		},
-		postTransactionError: &apiErrorMock{
-			ErrorCode: sdkerrors.SchemasErrorCodeInsufficientFund,
+		postTransactionError: &sdkerrors.WalletsErrorResponse{
+			ErrorCode: sdkerrors.SchemasWalletsErrorResponseErrorCodeInsufficientFund,
 		},
 		expectedStatusCode: http.StatusBadRequest,
 		expectedErrorCode:  string(shared.ErrorsEnumInsufficientFund),

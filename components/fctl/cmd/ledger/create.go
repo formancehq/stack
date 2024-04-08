@@ -1,8 +1,6 @@
 package ledger
 
 import (
-	"fmt"
-
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -65,7 +63,7 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
-	response, err := store.Client().Ledger.V2CreateLedger(cmd.Context(), operations.V2CreateLedgerRequest{
+	_, err = store.Client().Ledger.V2CreateLedger(cmd.Context(), operations.V2CreateLedgerRequest{
 		V2CreateLedgerRequest: &shared.V2CreateLedgerRequest{
 			Bucket:   pointer.For(fctl.GetString(cmd, bucketNameFlag)),
 			Metadata: metadata,
@@ -74,14 +72,6 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	})
 	if err != nil {
 		return nil, err
-	}
-
-	if response.V2ErrorResponse != nil {
-		return nil, fmt.Errorf("%s: %s", response.V2ErrorResponse.ErrorCode, response.V2ErrorResponse.ErrorMessage)
-	}
-
-	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status code %d when creating ledger", response.StatusCode)
 	}
 
 	return c, nil

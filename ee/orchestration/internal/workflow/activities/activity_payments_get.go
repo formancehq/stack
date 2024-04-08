@@ -2,9 +2,6 @@ package activities
 
 import (
 	"context"
-	"errors"
-	"fmt"
-	"net/http"
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -26,14 +23,7 @@ func (a Activities) GetPayment(ctx context.Context, request GetPaymentRequest) (
 		return nil, err
 	}
 
-	switch response.StatusCode {
-	case http.StatusOK:
-		return response.PaymentResponse, nil
-	case http.StatusNotFound:
-		return nil, errors.New("payment not found")
-	default:
-		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
-	}
+	return response.PaymentResponse, nil
 }
 
 var GetPaymentActivity = Activities{}.GetPayment

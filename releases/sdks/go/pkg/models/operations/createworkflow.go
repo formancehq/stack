@@ -12,8 +12,6 @@ type CreateWorkflowResponse struct {
 	ContentType string
 	// Created workflow
 	CreateWorkflowResponse *shared.CreateWorkflowResponse
-	// General error
-	Error *shared.Error
 	// HTTP response status code for this operation
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
@@ -32,13 +30,6 @@ func (o *CreateWorkflowResponse) GetCreateWorkflowResponse() *shared.CreateWorkf
 		return nil
 	}
 	return o.CreateWorkflowResponse
-}
-
-func (o *CreateWorkflowResponse) GetError() *shared.Error {
-	if o == nil {
-		return nil
-	}
-	return o.Error
 }
 
 func (o *CreateWorkflowResponse) GetStatusCode() int {
