@@ -38,6 +38,7 @@ func Create(ctx core.Context, stack *v1beta1.Stack, owner interface {
 			return nil
 		},
 		core.WithController[*v1beta1.Database](ctx.GetScheme(), owner),
+		core.WithOwner[*v1beta1.Database](ctx.GetScheme(), stack),
 	)
 	if err != nil {
 		condition.Message = err.Error()

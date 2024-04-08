@@ -33,7 +33,7 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=brokerconsumers/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=brokerconsumers/finalizers,verbs=update
 
-func Reconcile(ctx Context, _ *v1beta1.Stack, topicQuery *v1beta1.BrokerConsumer) error {
+func Reconcile(ctx Context, stack *v1beta1.Stack, topicQuery *v1beta1.BrokerConsumer) error {
 
 	for _, service := range topicQuery.Spec.Services {
 		topic := &v1beta1.BrokerTopic{}
@@ -55,6 +55,10 @@ func Reconcile(ctx Context, _ *v1beta1.Stack, topicQuery *v1beta1.BrokerConsumer
 				},
 			}
 			if err := controllerutil.SetOwnerReference(topicQuery, topic, ctx.GetScheme()); err != nil {
+				return err
+			}
+
+			if err := controllerutil.SetOwnerReference(stack, topic, ctx.GetScheme()); err != nil {
 				return err
 			}
 			if err := ctx.GetClient().Create(ctx, topic); err != nil {

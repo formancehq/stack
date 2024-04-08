@@ -48,6 +48,7 @@ var _ = Describe("BrokerTopicController", func() {
 			}
 			// notes(gfyrag): add a "fake" owner reference to prevent automatic deletion
 			Expect(controllerutil.SetOwnerReference(brokerDSNSettings, brokerTopic, GetScheme())).To(Succeed())
+			Expect(controllerutil.SetOwnerReference(stack, brokerTopic, GetScheme())).To(Succeed())
 			Expect(Create(brokerTopic)).To(Succeed())
 		})
 		AfterEach(func() {

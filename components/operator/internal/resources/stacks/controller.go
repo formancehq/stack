@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"reflect"
 	"sort"
 	"strings"
@@ -203,17 +204,19 @@ func deleteModules(ctx Context, stack *v1beta1.Stack, logger logr.Logger) error 
 
 		l := &unstructured.UnstructuredList{}
 		l.SetGroupVersionKind(gvk)
-		if err := ctx.GetClient().List(ctx, l, client.MatchingFields{
-			"stack": stack.Name,
-		}); err != nil {
+		if err := ctx.GetAPIReader().List(ctx, l); err != nil {
 			return err
 		}
 
-		stillExistingModules = stillExistingModules || len(l.Items) > 0
+		items := collectionutils.Filter(l.Items, func(u unstructured.Unstructured) bool {
+			return u.Object["spec"].(map[string]any)["stack"].(string) == stack.Name
+		})
 
-		for _, item := range l.Items {
+		stillExistingModules = stillExistingModules || len(items) > 0
+
+		for _, item := range items {
 			if item.GetDeletionTimestamp().IsZero() {
-				logger.Info(fmt.Sprintf("Delete module %s", item.GetName()))
+				logger.Info(fmt.Sprintf("Delete module %s [%s]", item.GetName(), gvk))
 				if err := ctx.GetClient().Delete(ctx, &item); client.IgnoreNotFound(err) != nil {
 					return err
 				}
@@ -244,17 +247,19 @@ func deleteResources(ctx Context, stack *v1beta1.Stack, logger logr.Logger) erro
 
 		l := &unstructured.UnstructuredList{}
 		l.SetGroupVersionKind(gvk)
-		if err := ctx.GetClient().List(ctx, l, client.MatchingFields{
-			"stack": stack.Name,
-		}); err != nil {
+		if err := ctx.GetAPIReader().List(ctx, l); err != nil {
 			return err
 		}
 
-		stillExistingResources = stillExistingResources || len(l.Items) > 0
+		items := collectionutils.Filter(l.Items, func(u unstructured.Unstructured) bool {
+			return u.Object["spec"].(map[string]any)["stack"].(string) == stack.Name
+		})
 
-		for _, item := range l.Items {
+		stillExistingResources = stillExistingResources || len(items) > 0
+
+		for _, item := range items {
 			if item.GetDeletionTimestamp().IsZero() {
-				logger.Info(fmt.Sprintf("Delete resource %s", item.GetName()))
+				logger.Info(fmt.Sprintf("Delete resource %s [%s]", item.GetName(), gvk))
 				if err := ctx.GetClient().Delete(ctx, &item); client.IgnoreNotFound(err) != nil {
 					return err
 				}
@@ -281,24 +286,37 @@ func init() {
 				for _, rtype := range ctx.GetScheme().AllKnownTypes() {
 					v := reflect.New(rtype).Interface()
 
-					switch v.(type) {
+					switch v := v.(type) {
 					case v1beta1.Module:
-						b.Watches(v.(v1beta1.Module), handler.EnqueueRequestsFromMapFunc(func(watchContext context.Context, object client.Object) []reconcile.Request {
+						u := &unstructured.Unstructured{}
+						gvk, err := apiutil.GVKForObject(v, ctx.GetScheme())
+						if err != nil {
+							return err
+						}
+						u.SetGroupVersionKind(gvk)
+
+						b.Watches(u, handler.EnqueueRequestsFromMapFunc(func(watchContext context.Context, object client.Object) []reconcile.Request {
 							return []reconcile.Request{{
 								NamespacedName: types.NamespacedName{
-									Name: object.(v1beta1.Module).GetStack(),
+									Name: object.(*unstructured.Unstructured).Object["spec"].(map[string]any)["stack"].(string),
 								},
 							}}
 						}))
 					case v1beta1.Resource:
-						b.Watches(v.(v1beta1.Resource), handler.EnqueueRequestsFromMapFunc(func(watchContext context.Context, object client.Object) []reconcile.Request {
+						u := &unstructured.Unstructured{}
+						gvk, err := apiutil.GVKForObject(v, ctx.GetScheme())
+						if err != nil {
+							return err
+						}
+						u.SetGroupVersionKind(gvk)
+
+						b.Watches(u, handler.EnqueueRequestsFromMapFunc(func(watchContext context.Context, object client.Object) []reconcile.Request {
 							return []reconcile.Request{{
 								NamespacedName: types.NamespacedName{
-									Name: object.(v1beta1.Resource).GetStack(),
+									Name: object.(*unstructured.Unstructured).Object["spec"].(map[string]any)["stack"].(string),
 								},
 							}}
 						}))
-
 					}
 				}
 

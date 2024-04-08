@@ -157,6 +157,11 @@ var _ = Describe("StackController", func() {
 			})
 			When("deleting the stack", func() {
 				JustBeforeEach(func() {
+					Eventually(func() []string {
+						err := LoadResource("", stack.Name, stack)
+						Expect(err).ToNot(HaveOccurred())
+						return stack.Finalizers
+					}).ShouldNot(BeEmpty())
 					Expect(Delete(stack)).To(Succeed())
 				})
 				It("Should also delete the module", func() {

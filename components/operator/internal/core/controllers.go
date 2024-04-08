@@ -11,6 +11,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
 type ObjectController[T client.Object] func(ctx Context, reconcilerOptions *ReconcilerOptions[T], req T) error
@@ -61,42 +62,11 @@ func ForStackDependency[T v1beta1.Dependent](ctrl StackDependentObjectController
 			}
 		}
 
+		if !stack.GetDeletionTimestamp().IsZero() {
+			return NewStackNotFoundError()
+		}
+
 		return ctrl(ctx, stack, reconcilerOptions, t)
-	}
-}
-
-func ForResource[T v1beta1.Dependent](ctrl StackDependentObjectController[T]) StackDependentObjectController[T] {
-	return func(ctx Context, stack *v1beta1.Stack, reconcilerOptions *ReconcilerOptions[T], req T) error {
-		// notes(gfyrag): We attach the database object to the stack as owner
-		// this way, even if the controller is removed, the Database object will not be removed until
-		// the stack is removed. This allows us to remove a module and re-add it later if we want.
-		hasOwnerReferenceOnStack, err := HasOwnerReference(ctx, stack, req)
-		if err != nil {
-			return err
-		}
-		if !hasOwnerReferenceOnStack {
-			patch := client.MergeFrom(req.DeepCopyObject().(T))
-
-			gvk, err := apiutil.GVKForObject(stack, ctx.GetScheme())
-			if err != nil {
-				return err
-			}
-
-			ownerReferences := req.GetOwnerReferences()
-			ownerReferences = append(ownerReferences, metav1.OwnerReference{
-				APIVersion: gvk.GroupVersion().String(),
-				Kind:       gvk.Kind,
-				UID:        stack.GetUID(),
-				Name:       stack.GetName(),
-			})
-			req.SetOwnerReferences(ownerReferences)
-
-			if err := ctx.GetClient().Patch(ctx, req, patch); err != nil {
-				return err
-			}
-		}
-
-		return ctrl(ctx, stack, reconcilerOptions, req)
 	}
 }
 
@@ -123,6 +93,7 @@ func ForModule[T v1beta1.Module](underlyingController ModuleController[T]) Stack
 			if err := ctx.GetClient().Patch(ctx, t, patch); err != nil {
 				return errors.Wrap(err, "patching object to add owner reference on stack")
 			}
+			log.FromContext(ctx).Info("Add owner reference on stack")
 		}
 
 		if stack.Spec.Disabled {

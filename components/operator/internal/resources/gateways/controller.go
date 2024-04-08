@@ -87,7 +87,8 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, gateway *v1beta1.Gateway, vers
 
 func createAuditTopic(ctx Context, stack *v1beta1.Stack, gateway *v1beta1.Gateway) (*v1beta1.BrokerTopic, error) {
 	if stack.Spec.EnableAudit && gateway.Spec.CompareVersion(stack, "v0.2.0") > 0 {
-		topic, err := brokertopics.CreateOrUpdate(ctx, stack, gateway, "gateway", "audit")
+		topic, err := brokertopics.CreateOrUpdate(ctx, stack, gateway, "gateway", "audit",
+			WithOwner[*v1beta1.BrokerTopic](ctx.GetScheme(), stack))
 		if err != nil {
 			return nil, err
 		}

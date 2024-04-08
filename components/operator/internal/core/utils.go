@@ -85,6 +85,7 @@ func WithOwner[T client.Object](scheme *runtime.Scheme, owner client.Object) Obj
 		if err := controllerutil.SetOwnerReference(owner, t, scheme); err != nil {
 			panic(err)
 		}
+
 		return nil
 	}
 }
