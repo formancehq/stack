@@ -25,14 +25,13 @@ jobs:
           SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
       - name: Get changed files
         id: changed-files
-        run: >
+        run: |
           hasChanged=$(git status --porcelain) 
           if (( $(echo ${#hasChanged}) != 0 )); then
               git status
               echo "There are changes in the repository"
               exit 1
           fi
-
 
   Extract:
     name: Extract
