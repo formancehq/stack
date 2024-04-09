@@ -45,7 +45,7 @@ func New(store Store, locker Locker, compiler *Compiler, referencer *Referencer,
 		compiler:   compiler,
 		lastTXID:   big.NewInt(-1),
 		referencer: referencer,
-		Batcher:    batching.NewBatcher(store.InsertLogs, 1, 4096),
+		Batcher:    batching.NewBatcher(store.InsertLogs, 1, 50),
 		monitor:    monitor,
 	}
 }
