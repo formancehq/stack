@@ -1,9 +1,9 @@
 dependencies:
 - name: agent
   repository: file://../../ee/agent/helm
-  version: v2.0.0-rc.19
+  version: v2.0.0-rc.20
 - name: operator
   repository: file://../../components/operator/helm
-  version: v2.0.0-rc.19
-digest: sha256:8f3879ec8ecbfd12347d14890333ea9b616311784b243f46b57a9313c1bb4b4b
-generated: "2024-04-04T20:01:13.148027959Z"
+  version: v2.0.0-rc.20
+digest: sha256:8d24e5343a18201909f77a6ef48d7438773e6fef09aa8f06178e7b39ecc068ef
+generated: "2024-04-09T12:39:50.332698188Z"
