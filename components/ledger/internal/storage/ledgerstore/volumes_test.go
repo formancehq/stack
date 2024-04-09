@@ -337,7 +337,7 @@ func TestGetVolumesWithBalances(t *testing.T) {
 					PITFilterForVolumes{
 						PITFilter:        PITFilter{PIT: &now, OOT: &previous_oot},
 						UseInsertionDate: false,
-					}).WithQueryBuilder(query.Match("address", "account:1"))),
+					}).WithQueryBuilder(query.Match("account", "account:1"))),
 		)
 
 		require.NoError(t, err)
