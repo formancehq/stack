@@ -17,15 +17,15 @@ type V2GetVolumesWithBalancesRequest struct {
 	// No other parameters can be set when this parameter is set.
 	//
 	Cursor  *string    `queryParam:"style=form,explode=true,name=cursor"`
-	EndTime *time.Time `queryParam:"style=form,explode=true,name=end-time"`
+	EndTime *time.Time `queryParam:"style=form,explode=true,name=endTime"`
 	// Use insertion date instead of effective date
-	InsertionDate *bool `queryParam:"style=form,explode=true,name=insertion-date"`
+	InsertionDate *bool `queryParam:"style=form,explode=true,name=insertionDate"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
 	// The maximum number of results to return per page.
 	//
 	PageSize  *int64     `queryParam:"style=form,explode=true,name=pageSize"`
-	StartTime *time.Time `queryParam:"style=form,explode=true,name=start-time"`
+	StartTime *time.Time `queryParam:"style=form,explode=true,name=startTime"`
 }
 
 func (v V2GetVolumesWithBalancesRequest) MarshalJSON() ([]byte, error) {

@@ -47,7 +47,6 @@ func TestGetVolumes(t *testing.T) {
 				},
 
 				UseInsertionDate: false,
-
 			}).
 				WithPageSize(v2.DefaultPageSize),
 		},

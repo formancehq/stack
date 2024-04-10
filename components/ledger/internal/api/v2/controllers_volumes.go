@@ -25,7 +25,6 @@ func getVolumesWithBalances(w http.ResponseWriter, r *http.Request) {
 		getVolumesWithBalancesQuery := ledgerstore.NewGetVolumesWithBalancesQuery(*options)
 		return pointer.For(getVolumesWithBalancesQuery), nil
 
-
 	})
 
 	if err != nil {
