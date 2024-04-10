@@ -1,7 +1,6 @@
 package v2
 
 import (
-
 	"net/http"
 
 	"github.com/formancehq/ledger/internal/api/backend"
@@ -25,6 +24,7 @@ func getVolumesWithBalances(w http.ResponseWriter, r *http.Request) {
 
 		getVolumesWithBalancesQuery := ledgerstore.NewGetVolumesWithBalancesQuery(*options)
 		return pointer.For(getVolumesWithBalancesQuery), nil
+
 
 	})
 

@@ -55,12 +55,12 @@ func paginateWithOffset[FILTERS any, RETURN any](s *Store, ctx context.Context,
 func paginateWithOffsetWithoutModel[FILTERS any, RETURN any](s *Store, ctx context.Context,
 	q *bunpaginate.OffsetPaginatedQuery[FILTERS], builders ...func(query *bun.SelectQuery) *bun.SelectQuery) (*bunpaginate.Cursor[RETURN], error) {
 
-	
+
 	query := s.bucket.db.NewSelect()
 	for _, builder := range builders {
 		query = query.Apply(builder)
 	}
-	
+
 
 	return bunpaginate.UsingOffsetWithoutModel[FILTERS, RETURN](ctx, query, *q)
 }

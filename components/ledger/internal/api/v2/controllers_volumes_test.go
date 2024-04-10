@@ -45,7 +45,9 @@ func TestGetVolumes(t *testing.T) {
 					PIT: &before,
 					OOT: &zero,
 				},
+
 				UseInsertionDate: false,
+
 			}).
 				WithPageSize(v2.DefaultPageSize),
 		},
@@ -118,6 +120,7 @@ func TestGetVolumes(t *testing.T) {
 			if testCase.queryParams != nil {
 				params = testCase.queryParams
 			}
+
 			params.Set("end-time", before.Format(time.RFC3339Nano))
 			req.URL.RawQuery = params.Encode()
 
