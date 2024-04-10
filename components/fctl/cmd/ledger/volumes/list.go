@@ -149,7 +149,7 @@ func NewListController() *ListController {
 		pageSizeFlag:         "page-size",
 		addressFlag:          "address",
 		pitFlag:              "end-time",
-		ootFlag:              "start-ime",
+		ootFlag:              "start-time",
 		useInsertionDateFlag: "insertion-date",
 	}
 }

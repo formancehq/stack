@@ -113,14 +113,14 @@ func TestGetVolumes(t *testing.T) {
 
 			router := v2.NewRouter(backend, nil, metrics.NewNoOpRegistry(), auth.NewNoAuth())
 
-			req := httptest.NewRequest(http.MethodGet, "/xxx/volumes?end-time="+before.Format(time.RFC3339Nano), bytes.NewBufferString(testCase.body))
+			req := httptest.NewRequest(http.MethodGet, "/xxx/volumes?endTime="+before.Format(time.RFC3339Nano), bytes.NewBufferString(testCase.body))
 			rec := httptest.NewRecorder()
 			params := url.Values{}
 			if testCase.queryParams != nil {
 				params = testCase.queryParams
 			}
 
-			params.Set("end-time", before.Format(time.RFC3339Nano))
+			params.Set("endTime", before.Format(time.RFC3339Nano))
 			req.URL.RawQuery = params.Encode()
 
 			router.ServeHTTP(rec, req)
