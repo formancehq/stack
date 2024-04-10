@@ -42,29 +42,20 @@ func fetch[T any](s *Store, addModel bool, ctx context.Context, builders ...func
 func paginateWithOffset[FILTERS any, RETURN any](s *Store, ctx context.Context,
 	q *bunpaginate.OffsetPaginatedQuery[FILTERS], builders ...func(query *bun.SelectQuery) *bun.SelectQuery) (*bunpaginate.Cursor[RETURN], error) {
 
-	//var ret RETURN
 	query := s.bucket.db.NewSelect()
 	for _, builder := range builders {
 		query = query.Apply(builder)
 	}
-	//if query.GetModel() == nil && query.GetTableName() == "" {
-	//	query = query.Model(ret)
-	//}
-
 	return bunpaginate.UsingOffset[FILTERS, RETURN](ctx, query, *q)
 }
 
 func paginateWithOffsetWithoutModel[FILTERS any, RETURN any](s *Store, ctx context.Context,
 	q *bunpaginate.OffsetPaginatedQuery[FILTERS], builders ...func(query *bun.SelectQuery) *bun.SelectQuery) (*bunpaginate.Cursor[RETURN], error) {
 
-	//var ret RETURN
 	query := s.bucket.db.NewSelect()
 	for _, builder := range builders {
 		query = query.Apply(builder)
 	}
-	//if query.GetModel() == nil && query.GetTableName() == "" {
-	//	query = query.Model(ret)
-	//}
 
 	return bunpaginate.UsingOffsetWithoutModel[FILTERS, RETURN](ctx, query, *q)
 }

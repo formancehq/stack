@@ -16,8 +16,8 @@ import (
 )
 
 func getPITOOTFilter(r *http.Request) (*ledgerstore.PITFilter, error) {
-	pitString := r.URL.Query().Get("end-time")
-	ootString := r.URL.Query().Get("start-time")
+	pitString := r.URL.Query().Get("endTime")
+	ootString := r.URL.Query().Get("startTime")
 
 	pit := time.Now()
 	oot := time.Time{}
@@ -80,7 +80,7 @@ func getPITOOTFilterForVolumes(r *http.Request) (*ledgerstore.PITFilterForVolume
 		return nil, err
 	}
 
-	useInsertionDate := sharedapi.QueryParamBool(r, "insertion-date")
+	useInsertionDate := sharedapi.QueryParamBool(r, "insertionDate")
 
 	return &ledgerstore.PITFilterForVolumes{
 		PITFilter:        *pit,

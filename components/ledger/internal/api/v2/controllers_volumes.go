@@ -19,9 +19,11 @@ func getVolumesWithBalances(w http.ResponseWriter, r *http.Request) {
 	query, err := bunpaginate.Extract[ledgerstore.GetVolumesWithBalancesQuery](r, func() (*ledgerstore.GetVolumesWithBalancesQuery, error) {
 		options, err := getPaginatedQueryOptionsOfPITOOTFilterForVolumes(r)
 		if err != nil {
-			sharedapi.BadRequest(w, ErrValidation, err)
+			return nil, err
 		}
-		return pointer.For(ledgerstore.NewGetVolumesWithBalancesQuery(*options)), nil
+
+		getVolumesWithBalancesQuery := ledgerstore.NewGetVolumesWithBalancesQuery(*options)
+		return pointer.For(getVolumesWithBalancesQuery), nil
 
 	})
 

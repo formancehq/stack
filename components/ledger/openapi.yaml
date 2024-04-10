@@ -2090,19 +2090,19 @@ paths:
           schema:
             type: string
             example: ledger001
-        - name: end-time
+        - name: endTime
           in: query
           required: false
           schema:
             type: string
             format: date-time
-        - name: start-time
+        - name: startTime
           in: query
           required: false
           schema:
             type: string
             format: date-time
-        - name: insertion-date
+        - name: insertionDate
           in: query
           description: Use insertion date instead of effective date
           required: false
