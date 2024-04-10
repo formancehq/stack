@@ -14,10 +14,13 @@ import (
 )
 
 const (
-	metadataID         = "id"
-	metadataBaseUrl    = "baseUrl"
-	metadataProduction = "production"
-	metadataVersion    = "version"
+	metadataID           = "id"
+	metadataBaseUrl      = "baseUrl"
+	metadataProduction   = "production"
+	metadataVersion      = "version"
+	metadataCapabilities = "capabilities"
+
+	capabilityEE = "EE"
 )
 
 type membershipClient struct {
@@ -31,6 +34,27 @@ type membershipClient struct {
 	orders         chan *generated.Order
 	opts           []grpc.DialOption
 	address        string
+}
+
+func (c *membershipClient) connectMetadata(ctx context.Context) (metadata.MD, error) {
+
+	md, err := c.authenticator.authenticate(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "authenticating client")
+	}
+
+	md.Append(metadataID, c.clientInfo.ID)
+	md.Append(metadataBaseUrl, c.clientInfo.BaseUrl.String())
+	md.Append(metadataProduction, func() string {
+		if c.clientInfo.Production {
+			return "true"
+		}
+		return "false"
+	}())
+	md.Append(metadataVersion, c.clientInfo.Version)
+	md.Append(metadataCapabilities, capabilityEE)
+
+	return md, nil
 }
 
 func (c *membershipClient) connect(ctx context.Context) error {
@@ -50,20 +74,10 @@ func (c *membershipClient) connect(ctx context.Context) error {
 	sharedlogging.FromContext(ctx).Info("Connected to GRPC server!")
 	c.serverClient = generated.NewServerClient(conn)
 
-	md, err := c.authenticator.authenticate(ctx)
+	md, err := c.connectMetadata(ctx)
 	if err != nil {
-		return errors.Wrap(err, "authenticating client")
+		return err
 	}
-
-	md.Append(metadataID, c.clientInfo.ID)
-	md.Append(metadataBaseUrl, c.clientInfo.BaseUrl.String())
-	md.Append(metadataProduction, func() string {
-		if c.clientInfo.Production {
-			return "true"
-		}
-		return "false"
-	}())
-	md.Append(metadataVersion, c.clientInfo.Version)
 
 	connectContext := metadata.NewOutgoingContext(c.connectContext, md)
 	connectClient, err := c.serverClient.Join(connectContext)
