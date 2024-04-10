@@ -2964,10 +2964,13 @@ components:
           type: string
         input:
           type: integer
+          format: bigint
         output:
           type: integer
+          format: bigint
         balance:
           type: integer
+          format: bigint
       required:
         - account
         - asset

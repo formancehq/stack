@@ -91,18 +91,18 @@ var _ = WithModules([]*Module{modules.Ledger}, func(){
 			Expect(len(ret.Cursor.Data)).To(Equal(4))
 			for _, volume := range ret.Cursor.Data {
 				if volume.Account == "account:user1" {
-					Expect(volume.Balance).To(Equal(int64(150)))
+					Expect(volume.Balance).To(Equal(big.NewInt(150)))
 				}
 				if volume.Account == "account:user2" {
-					Expect(volume.Balance).To(Equal(int64(50)))
+					Expect(volume.Balance).To(Equal(big.NewInt(50)))
 				}
 
 				if volume.Account == "bank" {
-					Expect(volume.Balance).To(Equal(int64(200)))
+					Expect(volume.Balance).To(Equal(big.NewInt(200)))
 				}
 
 				if volume.Account == "world" {
-					Expect(volume.Balance).To(Equal(int64(-400)))
+					Expect(volume.Balance).To(Equal(big.NewInt(-400)))
 				}
 
 			}
@@ -136,14 +136,14 @@ var _ = WithModules([]*Module{modules.Ledger}, func(){
 				//fmt.Println(fmt.Sprintf("%s | %s | %d | %d | %d", volume.Account, volume.Asset, volume.Input, volume.Output, volume.Balance))
 
 				if volume.Account == "account:user1" {
-					Expect(volume.Balance).To(Equal(int64(25)))
+					Expect(volume.Balance).To(Equal(big.NewInt(25)))
 				}
 				if volume.Account == "account:user2" {
-					Expect(volume.Balance).To(Equal(int64(200)))
+					Expect(volume.Balance).To(Equal(big.NewInt(200)))
 				}
 
 				if volume.Account == "world" {
-					Expect(volume.Balance).To(Equal(int64(-225)))
+					Expect(volume.Balance).To(Equal(big.NewInt(-225)))
 				}
 
 			}
@@ -177,10 +177,10 @@ var _ = WithModules([]*Module{modules.Ledger}, func(){
 				//fmt.Println(fmt.Sprintf("%s | %s | %d | %d | %d", volume.Account, volume.Asset, volume.Input, volume.Output, volume.Balance))
 
 				if volume.Account == "account:user1" {
-					Expect(volume.Balance).To(Equal(int64(150)))
+					Expect(volume.Balance).To(Equal(big.NewInt(150)))
 				}
 				if volume.Account == "account:user2" {
-					Expect(volume.Balance).To(Equal(int64(50)))
+					Expect(volume.Balance).To(Equal(big.NewInt(50)))
 				}
 				
 			}
@@ -213,10 +213,10 @@ var _ = WithModules([]*Module{modules.Ledger}, func(){
 			for _, volume := range ret.Cursor.Data {
 				//fmt.Println(fmt.Sprintf("%s | %s | %d | %d | %d", volume.Account, volume.Asset, volume.Input, volume.Output, volume.Balance))
 				if volume.Account == "account:user1" {
-					Expect(volume.Balance).To(Equal(int64(200)))
+					Expect(volume.Balance).To(Equal(big.NewInt(200)))
 				}
 				if volume.Account == "account:user2" {
-					Expect(volume.Balance).To(Equal(int64(150)))
+					Expect(volume.Balance).To(Equal(big.NewInt(150)))
 				}
 				
 				
