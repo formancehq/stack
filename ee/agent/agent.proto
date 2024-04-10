@@ -57,6 +57,11 @@ message Stack {
   bool enableAudit = 9;
   map<string, string> additionalLabels = 10;
   map<string, string> additionalAnnotations = 11;
+  repeated Module modules = 12;
+}
+
+message Module {
+  string name = 1;
 }
 
 enum StackStatus {
