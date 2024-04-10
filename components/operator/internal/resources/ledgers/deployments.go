@@ -2,12 +2,13 @@ package ledgers
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/brokertopics"
+	"k8s.io/apimachinery/pkg/types"
 	"strconv"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/auths"
-	"github.com/formancehq/operator/internal/resources/brokertopics"
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
@@ -248,22 +249,26 @@ func createBaseLedgerContainer(v2 bool) *corev1.Container {
 
 func createLedgerContainerFull(ctx core.Context, stack *v1beta1.Stack, v2 bool) (*corev1.Container, error) {
 	container := createBaseLedgerContainer(v2)
-	topic, err := brokertopics.Find(ctx, stack, "ledger")
-	if err != nil {
+
+	var broker *v1beta1.Broker
+	if t, err := brokertopics.Find(ctx, stack, "ledger"); err != nil {
 		return nil, err
+	} else if t != nil && t.Status.Ready {
+		broker = &v1beta1.Broker{}
+		if err := ctx.GetClient().Get(ctx, types.NamespacedName{
+			Name: stack.Name,
+		}, broker); err != nil {
+			return nil, err
+		}
 	}
 
-	if topic != nil {
-		if !topic.Status.Ready {
-			return nil, core.NewApplicationError("topic %s is not yet ready", topic.Name)
-		}
-
+	if broker != nil {
 		prefix := ""
 		if !v2 {
 			prefix = "NUMARY_"
 		}
 
-		brokerEnvVar, err := settings.GetBrokerEnvVarsWithPrefix(ctx, topic.Status.URI, stack.Name, "ledger", prefix)
+		brokerEnvVar, err := settings.GetBrokerEnvVarsWithPrefix(ctx, broker.Status.URI, stack.Name, "ledger", prefix)
 		if err != nil {
 			return nil, err
 		}

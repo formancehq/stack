@@ -2,9 +2,7 @@ package tests_test
 
 import (
 	"fmt"
-
 	"github.com/formancehq/operator/internal/core"
-
 	"github.com/formancehq/operator/internal/resources/settings"
 	"github.com/google/uuid"
 
@@ -192,31 +190,43 @@ var _ = Describe("GatewayController", func() {
 			})
 		})
 		Context("With audit enabled", func() {
-			var brokerNatsDSNSettings *v1beta1.Settings
+			var (
+				brokerNatsDSNSettings *v1beta1.Settings
+				consumer              *v1beta1.BrokerConsumer
+			)
 			BeforeEach(func() {
 				stack.Spec.EnableAudit = true
 				brokerNatsDSNSettings = settings.New(uuid.NewString(), "broker.dsn", "nats://localhost:1234", stack.Name)
+				consumer = &v1beta1.BrokerConsumer{
+					ObjectMeta: RandObjectMeta(),
+					Spec: v1beta1.BrokerConsumerSpec{
+						StackDependency: v1beta1.StackDependency{
+							Stack: stack.Name,
+						},
+						Services: []string{"gateway"},
+					},
+				}
 			})
 			JustBeforeEach(func() {
 				Expect(Create(brokerNatsDSNSettings)).To(BeNil())
+				Expect(Create(consumer)).To(Succeed())
 			})
 			JustAfterEach(func() {
+				Expect(Delete(consumer)).To(Succeed())
 				Expect(Delete(brokerNatsDSNSettings)).To(Succeed())
-
 			})
 			It("Should create a topic", func() {
 				Eventually(func() error {
 					topic := &v1beta1.BrokerTopic{}
-					return LoadResource("", fmt.Sprintf("%s-audit", stack.GetName()), topic)
+					return LoadResource("", fmt.Sprintf("%s-gateway", stack.GetName()), topic)
 				}).Should(Succeed())
 			})
 			It("Should adapt the Caddyfile", func() {
 				cm := &corev1.ConfigMap{}
-				Eventually(func(g Gomega) error {
-					return LoadResource(stack.Name, "gateway", cm)
-				}).Should(Succeed())
-				Expect(cm.Data["Caddyfile"]).To(
-					MatchGoldenFile("gateway-controller", "configmap-with-audit.yaml"))
+				Eventually(func(g Gomega) string {
+					g.Expect(LoadResource(stack.Name, "gateway", cm)).To(Succeed())
+					return cm.Data["Caddyfile"]
+				}).Should(MatchGoldenFile("gateway-controller", "configmap-with-audit.yaml"))
 			})
 		})
 		Context("With otlp enabled", func() {

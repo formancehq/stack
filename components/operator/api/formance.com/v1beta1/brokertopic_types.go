@@ -30,8 +30,6 @@ type BrokerTopicSpec struct {
 // BrokerTopicStatus defines the observed state of BrokerTopic
 type BrokerTopicStatus struct {
 	CommonStatus `json:",inline"`
-	//+optional
-	URI *URI `json:"uri,omitempty"`
 }
 
 //+kubebuilder:object:root=true

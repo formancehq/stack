@@ -19,22 +19,25 @@ func (e *ApplicationError) Is(err error) bool {
 	return ok
 }
 
-func NewApplicationError(msg string, args ...any) *ApplicationError {
-	return &ApplicationError{
-		message: fmt.Sprintf(msg, args...),
-	}
+func (e *ApplicationError) WithMessage(msg string, args ...any) *ApplicationError {
+	e.message = fmt.Sprintf(msg, args...)
+	return e
+}
+
+func NewApplicationError() *ApplicationError {
+	return &ApplicationError{}
 }
 
 func NewStackNotFoundError() *ApplicationError {
-	return NewApplicationError("stack not found")
+	return NewApplicationError().WithMessage("stack not found")
 }
 
 func NewPendingError() *ApplicationError {
-	return NewApplicationError("pending")
+	return NewApplicationError().WithMessage("pending")
 }
 
 func NewMissingSettingsError(msg string) *ApplicationError {
-	return NewApplicationError(msg)
+	return NewApplicationError().WithMessage(msg)
 }
 
 func IsApplicationError(err error) bool {

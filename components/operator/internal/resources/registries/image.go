@@ -31,7 +31,7 @@ func GetBenthosImage(ctx core.Context, stack *v1beta1.Stack, version string) (st
 		fmt.Sprintf("public.ecr.aws/formance-internal/jeffail/benthos:%s", NormalizeVersion(version)))
 }
 
-func GetNastBoxImage(ctx core.Context, stack *v1beta1.Stack, version string) (string, error) {
+func GetNatsBoxImage(ctx core.Context, stack *v1beta1.Stack, version string) (string, error) {
 	return TranslateImage(ctx, stack.Name,
 		fmt.Sprintf("docker.io/natsio/nats-box:%s", NormalizeVersion(version)))
 }
