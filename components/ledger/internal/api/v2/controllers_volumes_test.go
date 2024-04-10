@@ -45,6 +45,7 @@ func TestGetVolumes(t *testing.T) {
 					PIT: &before,
 					OOT: &zero,
 				},
+				UseInsertionDate: false,
 			}).
 				WithPageSize(v2.DefaultPageSize),
 		},
@@ -61,15 +62,15 @@ func TestGetVolumes(t *testing.T) {
 				WithPageSize(v2.DefaultPageSize),
 		},
 		{
-			name: "using address",
-			body: `{"$match": { "address": "foo" }}`,
+			name: "using account",
+			body: `{"$match": { "account": "foo" }}`,
 			expectQuery: ledgerstore.NewPaginatedQueryOptions(ledgerstore.PITFilterForVolumes{
 				PITFilter: ledgerstore.PITFilter{
 					PIT: &before,
 					OOT: &zero,
 				},
 			}).
-				WithQueryBuilder(query.Match("address", "foo")).
+				WithQueryBuilder(query.Match("account", "foo")).
 				WithPageSize(v2.DefaultPageSize),
 		},
 		{
@@ -111,13 +112,13 @@ func TestGetVolumes(t *testing.T) {
 
 			router := v2.NewRouter(backend, nil, metrics.NewNoOpRegistry(), auth.NewNoAuth())
 
-			req := httptest.NewRequest(http.MethodGet, "/xxx/volumes?pit="+before.Format(time.RFC3339Nano), bytes.NewBufferString(testCase.body))
+			req := httptest.NewRequest(http.MethodGet, "/xxx/volumes?end-time="+before.Format(time.RFC3339Nano), bytes.NewBufferString(testCase.body))
 			rec := httptest.NewRecorder()
 			params := url.Values{}
 			if testCase.queryParams != nil {
 				params = testCase.queryParams
 			}
-			params.Set("pit", before.Format(time.RFC3339Nano))
+			params.Set("end-time", before.Format(time.RFC3339Nano))
 			req.URL.RawQuery = params.Encode()
 
 			router.ServeHTTP(rec, req)
