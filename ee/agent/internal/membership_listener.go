@@ -6,12 +6,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"reflect"
 	"strings"
 
 	"github.com/alitto/pond"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/components/agent/internal/generated"
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/api/equality"
@@ -65,9 +65,11 @@ type ClientInfo struct {
 type membershipListener struct {
 	clientInfo ClientInfo
 	restClient *rest.RESTClient
-	restMapper meta.RESTMapper
-	orders     MembershipClient
-	wp         *pond.WorkerPool
+
+	stacksModules InMemoryStacksModules
+	restMapper    meta.RESTMapper
+	orders        MembershipClient
+	wp            *pond.WorkerPool
 }
 
 func (c *membershipListener) Start(ctx context.Context) {
@@ -83,6 +85,9 @@ func (c *membershipListener) Start(ctx context.Context) {
 				sharedlogging.FromContext(ctx).Infof("Got message from membership: %T", msg.GetMessage())
 				switch msg := msg.Message.(type) {
 				case *generated.Order_ExistingStack:
+					c.stacksModules[msg.ExistingStack.ClusterName] = collectionutils.Map(msg.ExistingStack.Modules, func(module *generated.Module) string {
+						return module.Name
+					})
 					c.syncExistingStack(ctx, msg.ExistingStack)
 				case *generated.Order_DeletedStack:
 					c.deleteStack(ctx, msg.DeletedStack)
@@ -131,43 +136,41 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 		return
 	}
 
-	for gvk, rtype := range scheme.Scheme.AllKnownTypes() {
-		object := reflect.New(rtype).Interface()
-		if module, ok := object.(v1beta1.Module); !ok {
-			continue
-		} else {
-			// Currently, ee modules are not supported by membership
-			if module.IsEE() {
-				continue
+	for _, module := range membershipStack.Modules {
+		switch module.Name {
+		case "Auth":
+			if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, v1beta1.GroupVersion.WithKind(module.Name), map[string]any{
+				"metadata": metadata,
+				"spec": map[string]any{
+					"delegatedOIDCServer": map[string]any{
+						"issuer":       membershipStack.AuthConfig.Issuer,
+						"clientID":     membershipStack.AuthConfig.ClientId,
+						"clientSecret": membershipStack.AuthConfig.ClientSecret,
+					},
+				},
+			}); err != nil {
+				sharedlogging.FromContext(ctx).Errorf("Unable to create module Auth cluster side: %s", err)
+			}
+		case "Gateway":
+			if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, v1beta1.GroupVersion.WithKind(module.Name), map[string]any{
+				"metadata": metadata,
+				"spec": map[string]any{
+					"ingress": map[string]any{
+						"host":   fmt.Sprintf("%s.%s", stack.GetName(), c.clientInfo.BaseUrl.Host),
+						"scheme": c.clientInfo.BaseUrl.Scheme,
+					},
+				},
+			}); client.IgnoreNotFound(err) != nil {
+				sharedlogging.FromContext(ctx).Errorf("Unable to create module Stargate cluster side: %s", err)
+			}
+		default:
+			gvk := v1beta1.GroupVersion.WithKind(module.Name)
+			if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, gvk, map[string]any{
+				"metadata": metadata,
+			}); err != nil {
+				sharedlogging.FromContext(ctx).Errorf("Unable to create module %s cluster side: %s", gvk.Kind, err)
 			}
 		}
-		// Stargate, Auth, and Gateway modules must be configured with specific values.
-		// So exclude them from automatic module creation.
-		if gvk.Kind == "Stargate" || gvk.Kind == "Auth" || gvk.Kind == "Gateway" {
-			continue
-		}
-
-		if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, gvk, map[string]any{
-			"metadata": map[string]any{
-				"annotations": additionalAnnotations,
-				"labels":      additionalLabels,
-			},
-		}); err != nil {
-			sharedlogging.FromContext(ctx).Errorf("Unable to create module %s cluster side: %s", gvk.Kind, err)
-		}
-	}
-
-	if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, v1beta1.GroupVersion.WithKind("Auth"), map[string]any{
-		"metadata": metadata,
-		"spec": map[string]any{
-			"delegatedOIDCServer": map[string]any{
-				"issuer":       membershipStack.AuthConfig.Issuer,
-				"clientID":     membershipStack.AuthConfig.ClientId,
-				"clientSecret": membershipStack.AuthConfig.ClientSecret,
-			},
-		},
-	}); err != nil {
-		sharedlogging.FromContext(ctx).Errorf("Unable to create module Auth cluster side: %s", err)
 	}
 
 	stargateName := fmt.Sprintf("%s-stargate", membershipStack.ClusterName)
@@ -198,20 +201,14 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 		}
 	}
 
-	if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, v1beta1.GroupVersion.WithKind("Gateway"), map[string]any{
-		"metadata": metadata,
-		"spec": map[string]any{
-			"ingress": map[string]any{
-				"host":   fmt.Sprintf("%s.%s", stack.GetName(), c.clientInfo.BaseUrl.Host),
-				"scheme": c.clientInfo.BaseUrl.Scheme,
-			},
-		},
-	}); client.IgnoreNotFound(err) != nil {
-		sharedlogging.FromContext(ctx).Errorf("Unable to create module Stargate cluster side: %s", err)
-	}
+	c.syncAuthClients(ctx, metadata, stack, membershipStack.StaticClients)
 
+	sharedlogging.FromContext(ctx).Infof("Stack %s updated cluster side", stack.GetName())
+}
+
+func (c *membershipListener) syncAuthClients(ctx context.Context, metadata map[string]any, stack *unstructured.Unstructured, staticClients []*generated.AuthClient) {
 	syncAuthClients := make([]*unstructured.Unstructured, 0)
-	for _, client := range membershipStack.StaticClients {
+	for _, client := range staticClients {
 		authClient, err := c.createOrUpdateStackDependency(ctx, fmt.Sprintf("%s-%s", stack.GetName(), client.Id), stack.GetName(),
 			stack, v1beta1.GroupVersion.WithKind("AuthClient"), map[string]any{
 				"metadata": metadata,
@@ -237,8 +234,7 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 		sharedlogging.FromContext(ctx).Errorf("Unable to list AuthClient cluster side: %s", err)
 	}
 
-	// Here i need to find all AuthClients that differ from syncAuthClients and delete them
-	authClientsToDelete := Reduce(authClientList.Items, func(acc []string, item unstructured.Unstructured) []string {
+	authClientsToDelete := collectionutils.Reduce(authClientList.Items, func(acc []string, item unstructured.Unstructured) []string {
 		for _, syncAuthClient := range syncAuthClients {
 			if syncAuthClient.GetName() == item.GetName() {
 				return acc
@@ -257,16 +253,6 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 			sharedlogging.FromContext(ctx).Errorf("Unable to delete AuthClient %s cluster side: %s", name, err)
 		}
 	}
-
-	sharedlogging.FromContext(ctx).Infof("Stack %s updated cluster side", stack.GetName())
-}
-
-func Reduce[TYPE any, ACC any](input []TYPE, reducer func(ACC, TYPE) ACC, initial ACC) ACC {
-	ret := initial
-	for _, i := range input {
-		ret = reducer(ret, i)
-	}
-	return ret
 }
 
 func (c *membershipListener) deleteStack(ctx context.Context, stack *generated.DeletedStack) {
@@ -415,12 +401,13 @@ func (c *membershipListener) createOrUpdateStackDependency(ctx context.Context, 
 }
 
 func NewMembershipListener(restClient *rest.RESTClient, clientInfo ClientInfo, mapper meta.RESTMapper,
-	orders MembershipClient) *membershipListener {
+	orders MembershipClient, stacksModules InMemoryStacksModules) *membershipListener {
 	return &membershipListener{
-		restClient: restClient,
-		clientInfo: clientInfo,
-		restMapper: mapper,
-		orders:     orders,
-		wp:         pond.New(5, 5),
+		restClient:    restClient,
+		clientInfo:    clientInfo,
+		stacksModules: stacksModules,
+		restMapper:    mapper,
+		orders:        orders,
+		wp:            pond.New(5, 5),
 	}
 }

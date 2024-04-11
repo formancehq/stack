@@ -9,13 +9,21 @@ import (
 	"k8s.io/client-go/tools/cache"
 )
 
-func GetExpectedModules() []string {
-	return []string{
-		"Stargate", "Wallets", "Ledger", "Payments", "Webhooks", "Auth", "Orchestration", "Search", "Gateway",
-	}
+type StackEventHandler struct {
+	logger sharedlogging.Logger
+	cache.ResourceEventHandlerFuncs
 }
 
-func StacksEventHandler(logger sharedlogging.Logger, membershipClient MembershipClient) cache.ResourceEventHandlerFuncs {
+type InMemoryStacksModules map[string][]string
+
+func GetExpectedModules(stackName string, stacks InMemoryStacksModules) []string {
+	if _, ok := stacks[stackName]; !ok {
+		return []string{}
+	}
+	return stacks[stackName]
+}
+
+func NewStackEventHandler(logger sharedlogging.Logger, membershipClient MembershipClient, stacks InMemoryStacksModules) *StackEventHandler {
 	sendStatus := func(stack string, status generated.StackStatus) {
 		if err := membershipClient.Send(&generated.Message{
 			Message: &generated.Message_StatusChanged{
@@ -36,7 +44,7 @@ func StacksEventHandler(logger sharedlogging.Logger, membershipClient Membership
 			}
 
 			if stack.Status.Ready {
-				for _, module := range GetExpectedModules() {
+				for _, module := range GetExpectedModules(stack.Name, stacks) {
 					if !slices.Contains(stack.Status.Modules, module) {
 						return generated.StackStatus_Progressing
 					}
@@ -48,28 +56,48 @@ func StacksEventHandler(logger sharedlogging.Logger, membershipClient Membership
 		}())
 	}
 
-	return cache.ResourceEventHandlerFuncs{
-		AddFunc: func(obj interface{}) {
-			stack := convertUnstructured[*v1beta1.Stack](obj)
-			logger.Infof("Stack '%s' added", stack.Name)
-			sendStatusFromStack(stack)
-		},
-		UpdateFunc: func(oldObj, newObj interface{}) {
+	return &StackEventHandler{
+		logger: logger,
+		ResourceEventHandlerFuncs: cache.ResourceEventHandlerFuncs{
+			AddFunc: func(obj interface{}) {
 
-			oldStack := convertUnstructured[*v1beta1.Stack](oldObj)
-			newStack := convertUnstructured[*v1beta1.Stack](newObj)
+				stack := convertUnstructured[*v1beta1.Stack](obj)
+				if _, ok := stacks[stack.Name]; !ok {
+					logger.Debug("Stack '%s' not initialized in memory", stack.Name)
+					return
+				}
 
-			if oldStack.Spec.Disabled == newStack.Spec.Disabled && oldStack.Status.Ready == newStack.Status.Ready {
-				return
-			}
+				logger.Infof("Stack '%s' added", stack.Name)
+				sendStatusFromStack(stack)
+			},
+			UpdateFunc: func(oldObj, newObj interface{}) {
 
-			logger.Infof("Stack '%s' updated", newStack.Name)
-			sendStatusFromStack(newStack)
-		},
-		DeleteFunc: func(obj interface{}) {
-			stack := convertUnstructured[*v1beta1.Stack](obj)
-			logger.Infof("Stack '%s' deleted", stack.Name)
-			sendStatus(stack.Name, generated.StackStatus_Deleted)
+				oldStack := convertUnstructured[*v1beta1.Stack](oldObj)
+				newStack := convertUnstructured[*v1beta1.Stack](newObj)
+
+				if _, ok := stacks[newStack.Name]; !ok {
+					logger.Debug("Stack '%s' not initialized in memory", newStack.Name)
+					return
+				}
+
+				if oldStack.Spec.Disabled == newStack.Spec.Disabled && oldStack.Status.Ready == newStack.Status.Ready {
+					return
+				}
+
+				logger.Infof("Stack '%s' updated", newStack.Name)
+				sendStatusFromStack(newStack)
+			},
+			DeleteFunc: func(obj interface{}) {
+				stack := convertUnstructured[*v1beta1.Stack](obj)
+
+				if _, ok := stacks[stack.Name]; !ok {
+					logger.Debug("Stack '%s' not initialized in memory", stack.Name)
+					return
+				}
+
+				logger.Infof("Stack '%s' deleted", stack.Name)
+				sendStatus(stack.Name, generated.StackStatus_Deleted)
+			},
 		},
 	}
 }
