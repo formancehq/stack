@@ -38,7 +38,6 @@ func Reduce[TYPE any, ACC any](input []TYPE, reducer func(ACC, TYPE) ACC, initia
 	return ret
 }
 
-
 func Flatten[TYPE any](input [][]TYPE) []TYPE {
 	ret := make([]TYPE, 0)
 	for _, types := range input {
