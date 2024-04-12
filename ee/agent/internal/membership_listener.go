@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"reflect"
+	"slices"
 	"strings"
 
 	"github.com/alitto/pond"
@@ -108,20 +110,7 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 		versions = "default"
 	}
 
-	additionalLabels := map[string]any{}
-	for key, value := range membershipStack.AdditionalLabels {
-		additionalLabels["formance.com/"+key] = value
-	}
-
-	additionalAnnotations := map[string]any{}
-	for key, value := range membershipStack.AdditionalAnnotations {
-		additionalAnnotations["formance.com/"+key] = value
-	}
-
-	metadata := map[string]any{
-		"annotations": additionalAnnotations,
-		"labels":      additionalLabels,
-	}
+	metadata := c.generateMetadata(membershipStack)
 
 	stack, err := c.createOrUpdate(ctx, v1beta1.GroupVersion.WithKind("Stack"), membershipStack.ClusterName, membershipStack.ClusterName, nil, map[string]any{
 		"metadata": metadata,
@@ -136,10 +125,48 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 		return
 	}
 
-	for _, module := range membershipStack.Modules {
-		switch module.Name {
+	c.syncModules(ctx, metadata, stack, membershipStack)
+	c.syncStargate(ctx, metadata, stack, membershipStack)
+	c.syncAuthClients(ctx, metadata, stack, membershipStack.StaticClients)
+
+	sharedlogging.FromContext(ctx).Infof("Stack %s updated cluster side", stack.GetName())
+}
+
+func (c *membershipListener) generateMetadata(membershipStack *generated.Stack) map[string]any {
+	additionalLabels := map[string]any{}
+	for key, value := range membershipStack.AdditionalLabels {
+		additionalLabels["formance.com/"+key] = value
+	}
+
+	additionalAnnotations := map[string]any{}
+	for key, value := range membershipStack.AdditionalAnnotations {
+		additionalAnnotations["formance.com/"+key] = value
+	}
+
+	return map[string]any{
+		"annotations": additionalAnnotations,
+		"labels":      additionalLabels,
+	}
+
+}
+func (c *membershipListener) syncModules(ctx context.Context, metadata map[string]any, stack *unstructured.Unstructured, membershipStack *generated.Stack) {
+
+	for gvk, rtype := range scheme.Scheme.AllKnownTypes() {
+		object := reflect.New(rtype).Interface()
+		if _, ok := object.(v1beta1.Module); !ok {
+			continue
+		}
+
+		if !slices.Contains(c.stacksModules[stack.GetName()], gvk.Kind) {
+			if err := c.deleteModule(ctx, gvk, stack.GetName()); err != nil {
+				sharedlogging.FromContext(ctx).Errorf("Unable to get and delete module %s cluster side: %s", gvk.Kind, err)
+			}
+			continue
+		}
+
+		switch gvk.Kind {
 		case "Auth":
-			if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, v1beta1.GroupVersion.WithKind(module.Name), map[string]any{
+			if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, gvk, map[string]any{
 				"metadata": metadata,
 				"spec": map[string]any{
 					"delegatedOIDCServer": map[string]any{
@@ -152,7 +179,7 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 				sharedlogging.FromContext(ctx).Errorf("Unable to create module Auth cluster side: %s", err)
 			}
 		case "Gateway":
-			if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, v1beta1.GroupVersion.WithKind(module.Name), map[string]any{
+			if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, gvk, map[string]any{
 				"metadata": metadata,
 				"spec": map[string]any{
 					"ingress": map[string]any{
@@ -164,15 +191,32 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 				sharedlogging.FromContext(ctx).Errorf("Unable to create module Stargate cluster side: %s", err)
 			}
 		default:
-			gvk := v1beta1.GroupVersion.WithKind(module.Name)
 			if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, gvk, map[string]any{
 				"metadata": metadata,
 			}); err != nil {
 				sharedlogging.FromContext(ctx).Errorf("Unable to create module %s cluster side: %s", gvk.Kind, err)
 			}
 		}
+
+	}
+}
+
+func (c *membershipListener) deleteModule(ctx context.Context, gvk schema.GroupVersionKind, name string) error {
+	if err := c.restClient.Delete().
+		Resource(gvk.Kind).
+		Name(name).
+		Do(ctx).
+		Error(); err != nil {
+		if apierrors.IsNotFound(err) {
+			return nil
+		}
+		return errors.Wrap(err, "Unable to delete object")
 	}
 
+	return nil
+}
+
+func (c *membershipListener) syncStargate(ctx context.Context, metadata map[string]any, stack *unstructured.Unstructured, membershipStack *generated.Stack) {
 	stargateName := fmt.Sprintf("%s-stargate", membershipStack.ClusterName)
 	if membershipStack.StargateConfig != nil && membershipStack.StargateConfig.Enabled {
 		parts := strings.Split(stack.GetName(), "-")
@@ -200,10 +244,6 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 			sharedlogging.FromContext(ctx).Errorf("Unable to delete module Stargate cluster side: %s", err)
 		}
 	}
-
-	c.syncAuthClients(ctx, metadata, stack, membershipStack.StaticClients)
-
-	sharedlogging.FromContext(ctx).Infof("Stack %s updated cluster side", stack.GetName())
 }
 
 func (c *membershipListener) syncAuthClients(ctx context.Context, metadata map[string]any, stack *unstructured.Unstructured, staticClients []*generated.AuthClient) {
