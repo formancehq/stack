@@ -28,6 +28,7 @@ type ListController struct {
 	pitFlag              string
 	ootFlag              string
 	useInsertionDateFlag string
+	groupByFlag          string
 }
 
 var _ fctl.Controller[*ListStore] = (*ListController)(nil)
@@ -68,6 +69,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	cursor := fctl.GetString(cmd, c.cursorFlag)
 	pageSize := int64(fctl.GetInt(cmd, c.pageSizeFlag))
 	useInsertionDate := fctl.GetBool(cmd, c.useInsertionDateFlag)
+	groupBy := int64(fctl.GetInt(cmd, c.groupByFlag))
 
 	pit, err := fctl.GetDateTime(cmd, c.pitFlag)
 	if err != nil {
@@ -96,6 +98,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		Cursor:        &cursor,
 		PageSize:      &pageSize,
 		InsertionDate: &useInsertionDate,
+		GroupBy:       &groupBy,
 	}
 
 	response, err := store.Client().Ledger.V2GetVolumesWithBalances(cmd.Context(), request)
@@ -151,6 +154,7 @@ func NewListController() *ListController {
 		pitFlag:              "end-time",
 		ootFlag:              "start-time",
 		useInsertionDateFlag: "insertion-date",
+		groupByFlag:          "group-by",
 	}
 }
 
@@ -165,6 +169,7 @@ func NewListCommand() *cobra.Command {
 		fctl.WithStringFlag(c.pitFlag, "", "PIT (Point in Time)"),
 		fctl.WithStringFlag(c.ootFlag, "", "OOT (Origin of Time)"),
 		fctl.WithBoolFlag(c.useInsertionDateFlag, false, "Use insertion date"),
+		fctl.WithIntFlag(c.groupByFlag, 0, "Group by level of segment of the address"),
 		fctl.WithStringFlag(c.addressFlag, "", "Filter accounts with address"),
 		fctl.WithStringSliceFlag(c.metadataFlag, []string{}, "Filter accounts with metadata"),
 		fctl.WithStringFlag(c.cursorFlag, "", "Cursor pagination"),
