@@ -1,7 +1,7 @@
 lockVersion: 2.0.0
 id: 7eac0a45-60a2-40bb-9e85-26bd77ec2a6d
 management:
-  docChecksum: 335c1bfd81a8491ca4db608c84cf35a4
+  docChecksum: 8646009790e567c5765861e6b4198959
   docVersion: v0.0.0
   speakeasyVersion: internal
   generationVersion: 2.237.2
@@ -94,6 +94,7 @@ generatedFiles:
   - /pkg/models/operations/v2getledger.go
   - /pkg/models/operations/v2getledgerinfo.go
   - /pkg/models/operations/v2gettransaction.go
+  - /pkg/models/operations/v2getvolumeswithbalances.go
   - /pkg/models/operations/v2listaccounts.go
   - /pkg/models/operations/v2listledgers.go
   - /pkg/models/operations/v2listlogs.go
@@ -286,6 +287,8 @@ generatedFiles:
   - /pkg/models/shared/v2migrationinfo.go
   - /pkg/models/shared/v2gettransactionresponse.go
   - /pkg/models/shared/v2expandedtransaction.go
+  - /pkg/models/shared/v2volumeswithbalancecursorresponse.go
+  - /pkg/models/shared/v2volumeswithbalance.go
   - /pkg/models/shared/v2accountscursorresponse.go
   - /pkg/models/shared/v2ledgerlistresponse.go
   - /pkg/models/shared/v2logscursorresponse.go
@@ -637,6 +640,8 @@ generatedFiles:
   - docs/pkg/models/operations/v2getledgerinforesponse.md
   - docs/pkg/models/operations/v2gettransactionrequest.md
   - docs/pkg/models/operations/v2gettransactionresponse.md
+  - docs/pkg/models/operations/v2getvolumeswithbalancesrequest.md
+  - docs/pkg/models/operations/v2getvolumeswithbalancesresponse.md
   - docs/pkg/models/operations/v2listaccountsrequest.md
   - docs/pkg/models/operations/v2listaccountsresponse.md
   - docs/pkg/models/operations/v2listledgersrequest.md
@@ -945,6 +950,9 @@ generatedFiles:
   - docs/pkg/models/shared/v2migrationinfo.md
   - docs/pkg/models/shared/v2gettransactionresponse.md
   - docs/pkg/models/shared/v2expandedtransaction.md
+  - docs/pkg/models/shared/v2volumeswithbalancecursorresponsecursor.md
+  - docs/pkg/models/shared/v2volumeswithbalancecursorresponse.md
+  - docs/pkg/models/shared/v2volumeswithbalance.md
   - docs/pkg/models/shared/v2accountscursorresponsecursor.md
   - docs/pkg/models/shared/v2accountscursorresponse.md
   - docs/pkg/models/shared/v2ledgerlistresponsecursor.md

@@ -119,6 +119,7 @@ func main() {
 * [V2GetLedger](docs/sdks/ledger/README.md#v2getledger) - Get a ledger
 * [V2GetLedgerInfo](docs/sdks/ledger/README.md#v2getledgerinfo) - Get information about a ledger
 * [V2GetTransaction](docs/sdks/ledger/README.md#v2gettransaction) - Get transaction from a ledger by its ID
+* [V2GetVolumesWithBalances](docs/sdks/ledger/README.md#v2getvolumeswithbalances) - Get list of volumes with balances for (account/asset)
 * [V2ListAccounts](docs/sdks/ledger/README.md#v2listaccounts) - List accounts from a ledger
 * [V2ListLedgers](docs/sdks/ledger/README.md#v2listledgers) - List ledgers
 * [V2ListLogs](docs/sdks/ledger/README.md#v2listlogs) - List the logs from a ledger

@@ -246,6 +246,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 					"pageSize": float64(10),
 					"options": map[string]any{
 						"pit":              now.Format(time.RFC3339),
+						"oot":				nil,
 						"volumes":          false,
 						"effectiveVolumes": false,
 					},
@@ -305,6 +306,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 					"pageSize": float64(10),
 					"options": map[string]any{
 						"pit":              now.Format(time.RFC3339),
+						"oot":				nil,
 						"volumes":          false,
 						"effectiveVolumes": false,
 					},
