@@ -30,7 +30,12 @@ func (opts ConnectionOptions) String() string {
 		opts.DatabaseSourceName, opts.Debug, opts.MaxIdleConns, opts.MaxOpenConns, opts.ConnMaxIdleTime)
 }
 
+const (
+	PingInterval = time.Second
+)
+
 func OpenSQLDB(ctx context.Context, options ConnectionOptions, hooks ...bun.QueryHook) (*bun.DB, error) {
+
 	var (
 		sqldb *sql.DB
 		err   error
@@ -68,11 +73,22 @@ func OpenSQLDB(ctx context.Context, options ConnectionOptions, hooks ...bun.Quer
 		db.AddQueryHook(hook)
 	}
 
-	if err := db.Ping(); err != nil {
-		return nil, err
-	}
+	// Since we loop over PingContext method,
+	// ensure we don't infinite loop by configuring a default deadline of 30 seconds
+	ctx, cancel := context.WithDeadline(ctx, time.Now().Add(30*time.Second))
+	defer cancel()
 
-	return db, nil
+	for {
+		if err := db.PingContext(ctx); err != nil {
+			select {
+			case <-ctx.Done():
+				return nil, ctx.Err()
+			case <-time.After(PingInterval):
+				continue
+			}
+		}
+		return db, nil
+	}
 }
 
 func OpenDBWithSchema(ctx context.Context, connectionOptions ConnectionOptions, schema string, hooks ...bun.QueryHook) (*bun.DB, error) {

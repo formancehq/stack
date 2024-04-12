@@ -79,11 +79,10 @@ func (s *pgServer) GetDatabaseDSN(databaseName string) string {
 		s.config.initialUserPassword, s.GetHost(), s.port, databaseName)
 }
 
-func (s *pgServer) NewDatabase(t TestingT) *pgDatabase {
+func (s *pgServer) NewDatabase(t TestingT, databaseName string) *pgDatabase {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
-	databaseName := uuid.NewString()
 	_, err := s.db.ExecContext(sharedlogging.TestingContext(), fmt.Sprintf(`CREATE DATABASE "%s"`, databaseName))
 	require.NoError(t, err)
 
@@ -127,7 +126,11 @@ func Server() *pgServer {
 }
 
 func NewPostgresDatabase(t TestingT) *pgDatabase {
-	return srv.NewDatabase(t)
+	return srv.NewDatabase(t, uuid.NewString())
+}
+
+func NewNamedPostgresDatabase(t TestingT, name string) *pgDatabase {
+	return srv.NewDatabase(t, name)
 }
 
 func DestroyPostgresServer() error {
@@ -199,11 +202,17 @@ func WithDockerHostConfigOption(opt func(hostConfig *docker.HostConfig)) option 
 	}
 }
 
+const (
+	InitialDatabaseName = "formance"
+	InitialUsername     = "root"
+	InitialPassword     = "root"
+)
+
 var defaultOptions = []option{
 	WithStatusCheckInterval(200 * time.Millisecond),
-	WithInitialUser("root", "root"),
+	WithInitialUser(InitialUsername, InitialPassword),
 	WithMaximumWaitingTime(time.Minute),
-	WithInitialDatabaseName("formance"),
+	WithInitialDatabaseName(InitialDatabaseName),
 	WithContext(context.Background()),
 }
 
