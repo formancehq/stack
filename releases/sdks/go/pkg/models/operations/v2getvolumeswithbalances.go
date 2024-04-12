@@ -18,6 +18,8 @@ type V2GetVolumesWithBalancesRequest struct {
 	//
 	Cursor  *string    `queryParam:"style=form,explode=true,name=cursor"`
 	EndTime *time.Time `queryParam:"style=form,explode=true,name=endTime"`
+	// Group volumes and balance by the level of the segment of the address
+	GroupBy *int64 `queryParam:"style=form,explode=true,name=groupBy"`
 	// Use insertion date instead of effective date
 	InsertionDate *bool `queryParam:"style=form,explode=true,name=insertionDate"`
 	// Name of the ledger.
@@ -58,6 +60,13 @@ func (o *V2GetVolumesWithBalancesRequest) GetEndTime() *time.Time {
 		return nil
 	}
 	return o.EndTime
+}
+
+func (o *V2GetVolumesWithBalancesRequest) GetGroupBy() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.GroupBy
 }
 
 func (o *V2GetVolumesWithBalancesRequest) GetInsertionDate() *bool {
