@@ -278,6 +278,43 @@ var _ = WithModules([]*Module{modules.Ledger}, func(){
 		
 	})
 
+	When(fmt.Sprint("Get Volumes and Balances Filter by address account aggregation by level 1"), func(){
+		
+		It("should be ok", func() {
+			inserDate := true
+			groupBylvl := int64(1)
+			response, err := Client().Ledger.V2GetVolumesWithBalances(
+				TestContext(),
+				operations.V2GetVolumesWithBalancesRequest{
+					InsertionDate: &inserDate,
+					RequestBody: map[string]interface{}{
+						"$match": map[string]any{
+							"account": "account:",
+						},
+					},
+					GroupBy: &groupBylvl,
+					Ledger: "default",
+				},
+			)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
+			ret := response.V2VolumesWithBalanceCursorResponse
+			Expect(len(ret.Cursor.Data)).To(Equal(1))
+			for _, volume := range ret.Cursor.Data {
+				//fmt.Println(fmt.Sprintf("%s | %s | %d | %d | %d", volume.Account, volume.Asset, volume.Input, volume.Output, volume.Balance))
+
+				if volume.Account == "account" {
+					Expect(volume.Balance).To(Equal(big.NewInt(200)))
+				}
+				
+				
+			}
+
+
+		})
+		
+	})
+
 
 
 
