@@ -247,7 +247,7 @@ func (c *membershipListener) syncStargate(ctx context.Context, metadata map[stri
 }
 
 func (c *membershipListener) syncAuthClients(ctx context.Context, metadata map[string]any, stack *unstructured.Unstructured, staticClients []*generated.AuthClient) {
-	syncAuthClients := make([]*unstructured.Unstructured, 0)
+	expectedAuthClients := make([]*unstructured.Unstructured, 0)
 	for _, client := range staticClients {
 		authClient, err := c.createOrUpdateStackDependency(ctx, fmt.Sprintf("%s-%s", stack.GetName(), client.Id), stack.GetName(),
 			stack, v1beta1.GroupVersion.WithKind("AuthClient"), map[string]any{
@@ -260,7 +260,7 @@ func (c *membershipListener) syncAuthClients(ctx context.Context, metadata map[s
 		if err != nil {
 			sharedlogging.FromContext(ctx).Errorf("Unable to create AuthClient cluster side: %s", err)
 		}
-		syncAuthClients = append(syncAuthClients, authClient)
+		expectedAuthClients = append(expectedAuthClients, authClient)
 	}
 
 	authClientList := &unstructured.UnstructuredList{}
@@ -275,8 +275,8 @@ func (c *membershipListener) syncAuthClients(ctx context.Context, metadata map[s
 	}
 
 	authClientsToDelete := collectionutils.Reduce(authClientList.Items, func(acc []string, item unstructured.Unstructured) []string {
-		for _, syncAuthClient := range syncAuthClients {
-			if syncAuthClient.GetName() == item.GetName() {
+		for _, expectedClient := range expectedAuthClients {
+			if expectedClient.GetName() == item.GetName() {
 				return acc
 			}
 		}

@@ -11,6 +11,7 @@ import (
 	"github.com/formancehq/stack/components/agent/internal"
 	"github.com/formancehq/stack/components/agent/internal/generated"
 	. "github.com/formancehq/stack/components/agent/tests/internal"
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -229,6 +230,39 @@ var _ = Describe("Membership listener", func() {
 				Expect(u).To(BeOwnedBy(stack))
 				Expect(u).To(TargetStack(stack))
 			}
+		})
+		When("removing modules", func() {
+			var (
+				moduleToRemove []*generated.Module
+			)
+			BeforeEach(func() {
+				moduleToRemove = []*generated.Module{
+					{
+						Name: "Webhooks",
+					},
+					{
+						Name: "Search",
+					},
+				}
+
+				membershipStack.Modules = collectionutils.Filter(membershipStack.Modules, func(module *generated.Module) bool {
+					return !collectionutils.Contains(moduleToRemove, module)
+				})
+				membershipClient.Orders() <- &generated.Order{
+					Message: &generated.Order_ExistingStack{
+						ExistingStack: membershipStack,
+					},
+				}
+			})
+			It("modules should be removed", func() {
+				for _, module := range moduleToRemove {
+					Eventually(func(g Gomega) error {
+						u := &unstructured.Unstructured{}
+						return LoadResource(module.Name, membershipStack.ClusterName, u)
+					}).Should(HaveOccurred())
+				}
+			})
+
 		})
 		Context("then when disabling the stack", func() {
 			BeforeEach(func() {
