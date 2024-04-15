@@ -36,6 +36,8 @@ type BrokerConsumerStatus struct {
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:printcolumn:name="Services",type=string,JSONPath=".spec.services",description="Listened services"
+//+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Ready"
+//+kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
 
 // BrokerConsumer is the Schema for the brokerconsumers API
 type BrokerConsumer struct {

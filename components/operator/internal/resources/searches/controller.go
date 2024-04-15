@@ -195,6 +195,7 @@ func init() {
 	Init(
 		WithModuleReconciler(Reconcile,
 			WithWatchSettings[*v1beta1.Search](),
+			WithOwn[*v1beta1.Search](&v1beta1.BrokerConsumer{}),
 			WithOwn[*v1beta1.Search](&v1beta1.ResourceReference{}),
 			WithOwn[*v1beta1.Search](&v1beta1.Benthos{}),
 			WithOwn[*v1beta1.Search](&v1beta1.GatewayHTTPAPI{}),

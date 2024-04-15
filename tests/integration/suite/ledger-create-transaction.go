@@ -281,7 +281,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 
 			Expect(err).Should(Equal(&sdkerrors.V2ErrorResponse{
 				ErrorCode:    shared.V2ErrorsEnumInsufficientFund,
-				ErrorMessage: "running numscript: script execution failed: no more fund to withdraw",
+				ErrorMessage: "running numscript: script execution failed: account(s) @bob had/have insufficient funds",
 			}))
 		})
 	})
