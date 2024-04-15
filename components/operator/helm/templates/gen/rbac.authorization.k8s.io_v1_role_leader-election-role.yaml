@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/name: role
     app.kubernetes.io/part-of: operatorv2
   name: leader-election-role
-  namespace: formance-system
+  namespace: '{{ .Release.Namespace }}'
 rules:
 - apiGroups:
   - ""

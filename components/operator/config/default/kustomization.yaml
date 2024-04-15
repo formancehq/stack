@@ -1,5 +1,5 @@
 # Adds namespace to all resources.
-namespace: formance-system
+namespace: "{{ .Release.Namespace }}"
 
 # Labels to add to all resources and selectors.
 #labels:
@@ -8,9 +8,8 @@ namespace: formance-system
 #    someName: someValue
 
 resources:
-- ../crd
-- ../rbac
-- ../manager
+  - ../rbac
+  - ../manager
 # [WEBHOOK] To enable webhook, uncomment all the sections with [WEBHOOK] prefix including the one in
 # crd/kustomization.yaml
 #- ../webhook
@@ -20,11 +19,10 @@ resources:
 #- ../prometheus
 
 patches:
-# Protect the /metrics endpoint by putting it behind auth.
-# If you want your controller-manager to expose the /metrics
-# endpoint w/o any authn/z, please comment the following line.
-- path: manager_auth_proxy_patch.yaml
-
+  # Protect the /metrics endpoint by putting it behind auth.
+  # If you want your controller-manager to expose the /metrics
+  # endpoint w/o any authn/z, please comment the following line.
+  - path: manager_auth_proxy_patch.yaml
 # [WEBHOOK] To enable webhook, uncomment all the sections with [WEBHOOK] prefix including the one in
 # crd/kustomization.yaml
 #- path: manager_webhook_patch.yaml
