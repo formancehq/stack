@@ -18,6 +18,14 @@ spec:
       jsonPath: .spec.services
       name: Services
       type: string
+    - description: Ready
+      jsonPath: .status.ready
+      name: Ready
+      type: string
+    - description: Info
+      jsonPath: .status.info
+      name: Info
+      type: string
     name: v1beta1
     schema:
       openAPIV3Schema:
