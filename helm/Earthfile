@@ -5,29 +5,28 @@ IMPORT $core AS core
 IMPORT .. AS stack
 
 sources:
-  FROM core+base-image
-  WORKDIR /src
-  COPY --dir regions regions
-  SAVE ARTIFACT /src
+    FROM core+base-image
+    WORKDIR /src
+    COPY --dir regions regions
+    SAVE ARTIFACT /src
 
 helm-validate:
-  FROM core+helm-base
-  WORKDIR /src
-  COPY (stack+sources/out --LOCATION=ee/agent/helm) /src/ee/agent/helm
-  COPY (stack+sources/out --LOCATION=components/operator/helm) /src/components/operator/helm
-  WORKDIR /src/helm
-  COPY . .
-  FOR chart IN $(ls -d */)
+    FROM core+helm-base
+    WORKDIR /src
+    COPY (stack+sources/out --LOCATION=ee/agent/helm) /src/ee/agent/helm
+    COPY (stack+sources/out --LOCATION=components/operator/helm) /src/components/operator/helm
     WORKDIR /src/helm
-    COPY ./$chart $chart
-    WORKDIR /src/helm/$chart
-    RUN helm dependency update
-    DO --pass-args core+HELM_VALIDATE
-  END
-
+    COPY . .
+    FOR chart IN $(ls -d */)
+        WORKDIR /src/helm
+        COPY ./$chart $chart
+        WORKDIR /src/helm/$chart
+        RUN helm dependency update
+        DO --pass-args core+HELM_VALIDATE
+    END
 
 pre-commit:
-  BUILD --pass-args ./regions+helm-validate
+    BUILD --pass-args ./regions+helm-validate
 
 publish:
-  BUILD --pass-args ./regions+helm-publish
+    BUILD --pass-args ./regions+helm-publish
