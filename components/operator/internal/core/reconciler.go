@@ -269,7 +269,7 @@ func reconcileObject[T client.Object](mgr Manager, controller ObjectController[T
 					if err := mgr.GetClient().Update(ctx, object); err != nil {
 						if apierrors.IsConflict(err) {
 							log.FromContext(ctx).Info(fmt.Sprintf("Catching conflict error: %s", err))
-							return reconcile.Result{Requeue: true}, nil
+							return reconcile.Result{RequeueAfter: time.Second}, nil
 						}
 						return reconcile.Result{}, errors.Wrapf(err, "patching resource to remove finalizer '%s'", f.name)
 					}

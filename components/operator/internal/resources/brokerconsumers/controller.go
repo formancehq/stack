@@ -22,6 +22,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
@@ -63,7 +64,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, topicQuery *v1beta1.BrokerCons
 			}
 			return nil
 		} else {
-			patch := client.MergeFrom(topic.DeepCopy())
+			patch := client.MergeFromWithOptions(topic.DeepCopy(), client.MergeFromWithOptimisticLock{})
 			if err := controllerutil.SetOwnerReference(topicQuery, topic, ctx.GetScheme()); err != nil {
 				return err
 			}
@@ -82,6 +83,8 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, topicQuery *v1beta1.BrokerCons
 
 func init() {
 	Init(
-		WithStackDependencyReconciler(Reconcile),
+		WithStackDependencyReconciler(Reconcile,
+			WithOwn[*v1beta1.BrokerConsumer](&v1beta1.BrokerTopic{}, builder.MatchEveryOwner),
+		),
 	)
 }
