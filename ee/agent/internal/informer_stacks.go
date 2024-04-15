@@ -63,7 +63,7 @@ func NewStackEventHandler(logger sharedlogging.Logger, membershipClient Membersh
 
 				stack := convertUnstructured[*v1beta1.Stack](obj)
 				if _, ok := stacks[stack.Name]; !ok {
-					logger.Debug("Stack '%s' not initialized in memory", stack.Name)
+					logger.Debugf("Stack '%s' not initialized in memory", stack.Name)
 					return
 				}
 
@@ -76,7 +76,7 @@ func NewStackEventHandler(logger sharedlogging.Logger, membershipClient Membersh
 				newStack := convertUnstructured[*v1beta1.Stack](newObj)
 
 				if _, ok := stacks[newStack.Name]; !ok {
-					logger.Debug("Stack '%s' not initialized in memory", newStack.Name)
+					logger.Debugf("Stack '%s' not initialized in memory", newStack.Name)
 					return
 				}
 
@@ -91,7 +91,7 @@ func NewStackEventHandler(logger sharedlogging.Logger, membershipClient Membersh
 				stack := convertUnstructured[*v1beta1.Stack](obj)
 
 				if _, ok := stacks[stack.Name]; !ok {
-					logger.Debug("Stack '%s' not initialized in memory", stack.Name)
+					logger.Debugf("Stack '%s' not initialized in memory", stack.Name)
 					return
 				}
 
