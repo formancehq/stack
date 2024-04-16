@@ -5,6 +5,8 @@ import (
 	"io"
 	"os"
 
+	"github.com/formancehq/stack/libs/go-libs/errorsutils"
+	"github.com/formancehq/stack/libs/go-libs/licence"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -13,13 +15,10 @@ import (
 
 const DebugFlag = "debug"
 
-func BindFlags(cmd *cobra.Command) {
+func InitCliFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().Bool(DebugFlag, false, "Debug mode")
 	cmd.PersistentFlags().Bool(logging.JsonFormattingLoggerFlag, false, "Format logs as json")
-
-	if err := viper.BindPFlags(cmd.PersistentFlags()); err != nil {
-		panic(err)
-	}
+	licence.InitCLIFlags(cmd)
 }
 
 func IsDebug() bool {
@@ -27,8 +26,9 @@ func IsDebug() bool {
 }
 
 type App struct {
-	options []fx.Option
-	output  io.Writer
+	serviceName string
+	options     []fx.Option
+	output      io.Writer
 }
 
 func (a *App) Run(ctx context.Context) error {
@@ -41,31 +41,46 @@ func (a *App) Run(ctx context.Context) error {
 
 	app := a.newFxApp(logger)
 	if err := app.Start(logging.ContextWithLogger(ctx, logger)); err != nil {
-		return err
+		switch {
+		case errorsutils.IsErrorWithExitCode(err):
+			logger.Errorf("Error: %v", err)
+			// We want to have a specific exit code for the error
+			os.Exit(err.(*errorsutils.ErrorWithExitCode).ExitCode)
+		default:
+			return err
+		}
 	}
 
+	var exitCode int
 	select {
 	case <-ctx.Done():
-	case <-app.Done():
+	case shutdownSignal := <-app.Wait():
 		// <-app.Done() is a signals channel, it means we have to call the
 		// app.Stop in order to gracefully shutdown the app
+		exitCode = shutdownSignal.ExitCode
 	}
 
 	logger.Infof("Stopping app...")
 
-	return app.Stop(logging.ContextWithLogger(contextWithLifecycle(
+	if err := app.Stop(logging.ContextWithLogger(contextWithLifecycle(
 		context.Background(), // Don't reuse original context as it can have been cancelled, and we really need to properly stop the app
 		lifecycleFromContext(ctx),
-	), logger))
-}
+	), logger)); err != nil {
+		return err
+	}
 
-func (a *App) Start(ctx context.Context) error {
-	logger := GetDefaultLogger(a.output)
-	return a.newFxApp(logger).Start(ctx)
+	if exitCode != 0 {
+		os.Exit(exitCode)
+	}
+
+	return nil
 }
 
 func (a *App) newFxApp(logger logging.Logger) *fx.App {
+	licenceOptions := licence.CLIModule(a.serviceName)
+
 	options := append(a.options,
+		licenceOptions,
 		fx.NopLogger,
 		fx.Supply(fx.Annotate(logger, fx.As(new(logging.Logger)))),
 		fx.Invoke(func(lc fx.Lifecycle) {
@@ -92,9 +107,10 @@ func (a *App) newFxApp(logger logging.Logger) *fx.App {
 	return fx.New(options...)
 }
 
-func New(output io.Writer, options ...fx.Option) *App {
+func New(output io.Writer, serviceName string, options ...fx.Option) *App {
 	return &App{
-		options: options,
-		output:  output,
+		serviceName: serviceName,
+		options:     options,
+		output:      output,
 	}
 }
