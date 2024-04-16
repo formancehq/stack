@@ -13,5 +13,9 @@ func init() {
 }
 
 func bindFlagsToViper(cmd *cobra.Command) error {
-	return viper.BindPFlags(cmd.Flags())
+	if err := viper.BindPFlags(cmd.Flags()); err != nil {
+		return err
+	}
+
+	return viper.BindPFlags(cmd.PersistentFlags())
 }

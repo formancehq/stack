@@ -30,6 +30,8 @@ import (
 )
 
 const (
+	serviceName = "auth"
+
 	delegatedClientIDFlag     = "delegated-client-id"
 	delegatedClientSecretFlag = "delegated-client-secret"
 	delegatedIssuerFlag       = "delegated-issuer"
@@ -167,7 +169,7 @@ func newServeCommand() *cobra.Command {
 
 			options = append(options, otlptraces.CLITracesModule())
 
-			return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
+			return service.New(cmd.OutOrStdout(), serviceName, options...).Run(cmd.Context())
 		},
 	}
 
@@ -178,6 +180,7 @@ func newServeCommand() *cobra.Command {
 	cmd.Flags().String(signingKeyFlag, defaultSigningKey, "Signing key")
 	cmd.Flags().String(listenFlag, ":8080", "Listening address")
 	cmd.Flags().String(configFlag, "", "Config file name without extension")
+	service.InitCliFlags(cmd)
 
 	otlptraces.InitOTLPTracesFlags(cmd.Flags())
 	bunconnect.InitFlags(cmd.Flags())

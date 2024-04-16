@@ -45,6 +45,7 @@ func NewRootCommand() *cobra.Command {
 	auth.InitAuthFlags(cmd.PersistentFlags())
 	bunconnect.InitFlags(cmd.PersistentFlags())
 	iam.InitFlags(cmd.PersistentFlags())
+	service.InitCliFlags(cmd)
 
 	serveCmd := newServeCommand(Version)
 	cmd.AddCommand(serveCmd)

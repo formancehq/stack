@@ -54,5 +54,5 @@ func serve(cmd *cobra.Command, _ []string) error {
 		))
 	}
 
-	return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
+	return service.New(cmd.OutOrStdout(), ServiceName, options...).Run(cmd.Context())
 }

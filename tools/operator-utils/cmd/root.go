@@ -41,10 +41,21 @@ func init() {
 	rootCmd.AddCommand(NewDatabaseCommand())
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	service.BindFlags(rootCmd)
+	service.InitCliFlags(rootCmd)
+	if err := bindFlagsToViper(rootCmd); err != nil {
+		panic(err)
+	}
 
 	viper.SetEnvKeyReplacer(EnvVarReplacer)
 	viper.AutomaticEnv()
+}
+
+func bindFlagsToViper(cmd *cobra.Command) error {
+	if err := viper.BindPFlags(cmd.Flags()); err != nil {
+		return err
+	}
+
+	return viper.BindPFlags(cmd.PersistentFlags())
 }
 
 var EnvVarReplacer = strings.NewReplacer(".", "_", "-", "_")

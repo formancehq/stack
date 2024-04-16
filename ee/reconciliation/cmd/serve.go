@@ -55,6 +55,7 @@ func newServeCommand(version string) *cobra.Command {
 		RunE: runServer(version),
 	}
 	cmd.Flags().String(listenFlag, ":8080", "Listening address")
+
 	return cmd
 }
 
@@ -81,7 +82,7 @@ func runServer(version string) func(cmd *cobra.Command, args []string) error {
 			}, viper.GetString(listenFlag)),
 		)
 
-		return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
+		return service.New(cmd.OutOrStdout(), ServiceName, options...).Run(cmd.Context())
 	}
 }
 

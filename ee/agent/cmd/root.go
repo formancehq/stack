@@ -35,7 +35,6 @@ var (
 )
 
 const (
-	debugFlag                      = "debug"
 	kubeConfigFlag                 = "kube-config"
 	serverAddressFlag              = "server-address"
 	tlsEnabledFlag                 = "tls-enabled"
@@ -115,7 +114,7 @@ func runAgent(cmd *cobra.Command, args []string) error {
 		sharedotlptraces.CLITracesModule(),
 	}
 
-	return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
+	return service.New(cmd.OutOrStdout(), ServiceName, options...).Run(cmd.Context())
 }
 
 func newK8SConfig() (*rest.Config, error) {
@@ -198,6 +197,8 @@ func init() {
 	if home := homedir.HomeDir(); home != "" {
 		kubeConfigFilePath = filepath.Join(home, ".kube", "config")
 	}
+
+	service.InitCliFlags(rootCmd)
 	rootCmd.Flags().String(kubeConfigFlag, kubeConfigFilePath, "")
 	rootCmd.Flags().String(serverAddressFlag, "localhost:8081", "")
 	rootCmd.Flags().Bool(tlsEnabledFlag, false, "")
@@ -211,5 +212,4 @@ func init() {
 	rootCmd.Flags().String(baseUrlFlag, "", "")
 	rootCmd.Flags().Bool(productionFlag, false, "Is a production agent")
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	rootCmd.Flags().BoolP(debugFlag, "d", false, "Debug mode")
 }

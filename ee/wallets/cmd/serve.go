@@ -52,7 +52,7 @@ func newServeCommand() *cobra.Command {
 				auth.CLIAuthModule(),
 			}
 
-			return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
+			return service.New(cmd.OutOrStdout(), ServiceName, options...).Run(cmd.Context())
 		},
 	}
 	cmd.Flags().String(stackClientIDFlag, "", "Client ID")
@@ -61,6 +61,7 @@ func newServeCommand() *cobra.Command {
 	cmd.Flags().String(ledgerNameFlag, "wallets-002", "Target ledger")
 	cmd.Flags().String(accountPrefixFlag, "", "Account prefix flag")
 	cmd.Flags().String(listenFlag, ":8080", "Listen address")
+	service.InitCliFlags(cmd)
 	return cmd
 }
 

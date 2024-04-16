@@ -13,6 +13,8 @@ import (
 )
 
 const (
+	serviceName = "stargate"
+
 	organizationIDFlag = "organization-id"
 	stackIDFlag        = "stack-id"
 
@@ -44,7 +46,7 @@ func newClient() *cobra.Command {
 		Short:        "Launch client",
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return app.New(cmd.OutOrStdout(), resolveClientOptions()...).Run(cmd.Context())
+			return app.New(cmd.OutOrStdout(), serviceName, resolveClientOptions()...).Run(cmd.Context())
 		},
 	}
 }

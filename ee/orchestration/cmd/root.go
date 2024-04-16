@@ -62,7 +62,6 @@ func NewRootCommand() *cobra.Command {
 		},
 	}
 	cmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	cmd.PersistentFlags().BoolP(service.DebugFlag, "d", false, "Debug mode")
 	cmd.PersistentFlags().String(stackURLFlag, "", "Stack url")
 	cmd.PersistentFlags().String(stackClientIDFlag, "", "Stack client ID")
 	cmd.PersistentFlags().String(stackClientSecretFlag, "", "Stack client secret")
@@ -87,6 +86,7 @@ func NewRootCommand() *cobra.Command {
 	auth.InitAuthFlags(cmd.PersistentFlags())
 	bunconnect.InitFlags(cmd.PersistentFlags())
 	iam.InitFlags(cmd.PersistentFlags())
+	service.InitCliFlags(cmd)
 
 	return cmd
 }

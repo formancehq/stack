@@ -37,6 +37,7 @@ func runWorker(cmd *cobra.Command, _ []string) error {
 
 	return service.New(
 		cmd.OutOrStdout(),
+		ServiceName,
 		otlp.HttpClientModule(),
 		postgres.NewModule(*connectionOptions),
 		fx.Provide(worker.NewWorkerHandler),
