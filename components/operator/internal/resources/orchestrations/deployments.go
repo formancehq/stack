@@ -4,12 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/formancehq/operator/internal/resources/resourcereferences"
-
-	appsv1 "k8s.io/api/apps/v1"
-
-	"github.com/formancehq/operator/internal/resources/settings"
-
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/authclients"
@@ -17,8 +11,12 @@ import (
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
+	"github.com/formancehq/operator/internal/resources/licence"
+	"github.com/formancehq/operator/internal/resources/resourcereferences"
+	"github.com/formancehq/operator/internal/resources/settings"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
+	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 )
 
@@ -66,7 +64,13 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 		return err
 	}
 
+	licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack)
+	if err != nil {
+		return err
+	}
+
 	env = append(env, gatewayEnv...)
+	env = append(env, licenceEnvVars...)
 	env = append(env, GetDevEnvVars(stack, orchestration)...)
 	env = append(env, postgresEnvVar...)
 

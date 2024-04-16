@@ -10,6 +10,7 @@ import (
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
+	"github.com/formancehq/operator/internal/resources/licence"
 	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
@@ -39,6 +40,13 @@ func deploymentEnvVars(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1
 		return nil, err
 	}
 	env = append(env, gatewayEnv...)
+
+	licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack)
+	if err != nil {
+		return nil, err
+	}
+	env = append(env, licenceEnvVars...)
+
 	env = append(env, core.GetDevEnvVars(stack, webhooks)...)
 
 	authEnvVars, err := auths.ProtectedEnvVars(ctx, stack, "webhooks", webhooks.Spec.Auth)

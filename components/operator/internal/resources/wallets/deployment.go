@@ -7,6 +7,7 @@ import (
 	"github.com/formancehq/operator/internal/resources/auths"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
+	"github.com/formancehq/operator/internal/resources/licence"
 	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/settings"
 	v1 "k8s.io/api/core/v1"
@@ -26,6 +27,13 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, wallets *v1beta1.W
 		return err
 	}
 	env = append(env, gatewayEnv...)
+
+	licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack)
+	if err != nil {
+		return err
+	}
+	env = append(env, licenceEnvVars...)
+
 	env = append(env, core.GetDevEnvVars(stack, wallets)...)
 	if authClient != nil {
 		env = append(env, authclients.GetEnvVars(authClient)...)

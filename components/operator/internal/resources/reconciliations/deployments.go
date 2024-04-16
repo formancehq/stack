@@ -8,6 +8,7 @@ import (
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
+	"github.com/formancehq/operator/internal/resources/licence"
 	"github.com/formancehq/operator/internal/resources/settings"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
@@ -32,7 +33,13 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, reconciliation *v1
 		return err
 	}
 
+	licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack)
+	if err != nil {
+		return err
+	}
+
 	env = append(env, gatewayEnv...)
+	env = append(env, licenceEnvVars...)
 	env = append(env, core.GetDevEnvVars(stack, reconciliation)...)
 	env = append(env, postgresEnvVar...)
 	env = append(env, core.Env("POSTGRES_DATABASE_NAME", "$(POSTGRES_DATABASE)"))
