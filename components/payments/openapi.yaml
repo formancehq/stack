@@ -36,6 +36,7 @@ paths:
         - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/Cursor'
         - $ref: '#/components/parameters/Sort'
+        - $ref: '#/components/parameters/Query'
       responses:
         '200':
           $ref: '#/components/responses/Payments'
