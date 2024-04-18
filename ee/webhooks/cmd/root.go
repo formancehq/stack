@@ -30,7 +30,7 @@ func NewRootCommand() *cobra.Command {
 	flag.Init(root.PersistentFlags())
 	bunconnect.InitFlags(root.PersistentFlags())
 	iam.InitFlags(root.PersistentFlags())
-	service.InitCliFlags(root)
+	service.BindFlags(root)
 
 	root.AddCommand(newServeCommand())
 	root.AddCommand(newWorkerCommand())

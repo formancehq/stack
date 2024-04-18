@@ -15,7 +15,7 @@ import (
 
 const DebugFlag = "debug"
 
-func InitCliFlags(cmd *cobra.Command) {
+func BindFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().Bool(DebugFlag, false, "Debug mode")
 	cmd.PersistentFlags().Bool(logging.JsonFormattingLoggerFlag, false, "Format logs as json")
 	licence.InitCLIFlags(cmd)

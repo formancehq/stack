@@ -36,7 +36,7 @@ func NewAPI(
 	server.Flags().String(configEncryptionKeyFlag, "", "Config encryption key")
 	server.Flags().String(envFlag, "local", "Environment")
 	server.Flags().String(listenFlag, ":8080", "Listen address")
-	service.InitCliFlags(server)
+	service.BindFlags(server)
 
 	otlp.InitOTLPFlags(server.Flags())
 	otlptraces.InitOTLPTracesFlags(server.Flags())

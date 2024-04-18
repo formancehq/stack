@@ -180,7 +180,7 @@ func newServeCommand() *cobra.Command {
 	cmd.Flags().String(signingKeyFlag, defaultSigningKey, "Signing key")
 	cmd.Flags().String(listenFlag, ":8080", "Listening address")
 	cmd.Flags().String(configFlag, "", "Config file name without extension")
-	service.InitCliFlags(cmd)
+	service.BindFlags(cmd)
 
 	otlptraces.InitOTLPTracesFlags(cmd.Flags())
 	bunconnect.InitFlags(cmd.Flags())

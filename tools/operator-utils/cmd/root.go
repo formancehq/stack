@@ -41,7 +41,7 @@ func init() {
 	rootCmd.AddCommand(NewDatabaseCommand())
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	service.InitCliFlags(rootCmd)
+	service.BindFlags(rootCmd)
 	if err := bindFlagsToViper(rootCmd); err != nil {
 		panic(err)
 	}

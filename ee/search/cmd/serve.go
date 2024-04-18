@@ -110,7 +110,7 @@ func NewServer() *cobra.Command {
 	cmd.Flags().Bool(awsIAMEnabledFlag, false, "Use AWS IAM for authentication")
 	iam.InitFlags(cmd.Flags())
 	otlptraces.InitOTLPTracesFlags(cmd.Flags())
-	app.InitCliFlags(cmd)
+	app.BindFlags(cmd)
 
 	return cmd
 }

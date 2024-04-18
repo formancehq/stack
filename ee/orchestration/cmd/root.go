@@ -86,7 +86,7 @@ func NewRootCommand() *cobra.Command {
 	auth.InitAuthFlags(cmd.PersistentFlags())
 	bunconnect.InitFlags(cmd.PersistentFlags())
 	iam.InitFlags(cmd.PersistentFlags())
-	service.InitCliFlags(cmd)
+	service.BindFlags(cmd)
 
 	return cmd
 }

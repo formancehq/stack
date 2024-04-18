@@ -198,7 +198,7 @@ func init() {
 		kubeConfigFilePath = filepath.Join(home, ".kube", "config")
 	}
 
-	service.InitCliFlags(rootCmd)
+	service.BindFlags(rootCmd)
 	rootCmd.Flags().String(kubeConfigFlag, kubeConfigFilePath, "")
 	rootCmd.Flags().String(serverAddressFlag, "localhost:8081", "")
 	rootCmd.Flags().Bool(tlsEnabledFlag, false, "")

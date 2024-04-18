@@ -23,12 +23,12 @@ func (l *Licence) getKey(issuer, kid string) (interface{}, error) {
 		return nil, errors.Wrap(jwt.ErrInvalidKey, "key not found")
 	}
 
-	var rayKey interface{}
-	if err := key.Raw(&rayKey); err != nil {
+	var rawKey interface{}
+	if err := key.Raw(&rawKey); err != nil {
 		return nil, errors.Wrap(err, "failed to get raw key")
 	}
 
-	return rayKey, nil
+	return rawKey, nil
 }
 
 func (l *Licence) validate() error {

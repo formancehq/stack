@@ -73,7 +73,7 @@ func newServeCommand() *cobra.Command {
 
 	cmd.Flags().Bool(workerFlag, false, "Enable worker mode")
 	cmd.Flags().String(listenFlag, ":8080", "Listening address")
-	service.InitCliFlags(cmd)
+	service.BindFlags(cmd)
 
 	return cmd
 }
