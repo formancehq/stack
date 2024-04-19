@@ -35,13 +35,13 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, dat
 		return nil, err
 	}
 
-	licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack)
+	licenceEnv, err := licence.GetLicenceEnvVars(ctx, stack, "auth", auth)
 	if err != nil {
 		return nil, err
 	}
 
 	env = append(env, gatewayEnv...)
-	env = append(env, licenceEnvVars...)
+	env = append(env, licenceEnv...)
 	env = append(env, GetDevEnvVars(stack, auth)...)
 	env = append(env, postgresEnvVar...)
 	env = append(env, Env("CONFIG", "/config/config.yaml"))

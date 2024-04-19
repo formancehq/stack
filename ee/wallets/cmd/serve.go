@@ -6,6 +6,7 @@ import (
 
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/auth"
+	"github.com/formancehq/stack/libs/go-libs/licence"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
@@ -50,9 +51,10 @@ func newServeCommand() *cobra.Command {
 				}, viper.GetString(listenFlag)),
 				otlptraces.CLITracesModule(),
 				auth.CLIAuthModule(),
+				licence.CLIModule(ServiceName),
 			}
 
-			return service.New(cmd.OutOrStdout(), ServiceName, options...).Run(cmd.Context())
+			return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 		},
 	}
 	cmd.Flags().String(stackClientIDFlag, "", "Client ID")
@@ -62,6 +64,7 @@ func newServeCommand() *cobra.Command {
 	cmd.Flags().String(accountPrefixFlag, "", "Account prefix flag")
 	cmd.Flags().String(listenFlag, ":8080", "Listen address")
 	service.BindFlags(cmd)
+	licence.InitCLIFlags(cmd)
 	return cmd
 }
 

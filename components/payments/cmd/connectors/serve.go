@@ -69,7 +69,7 @@ func runServer(version string) func(cmd *cobra.Command, args []string) error {
 			Version: version,
 		}, viper.GetString(listenFlag), viper.GetString(stackURLFlag)))
 
-		return service.New(cmd.OutOrStdout(), serviceName, options...).Run(cmd.Context())
+		return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 	}
 }
 

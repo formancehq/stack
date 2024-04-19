@@ -6,6 +6,7 @@ import (
 
 	"github.com/formancehq/stack/libs/go-libs/aws/iam"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+	"github.com/formancehq/stack/libs/go-libs/licence"
 	"github.com/formancehq/stack/libs/go-libs/service"
 
 	"github.com/formancehq/stack/libs/go-libs/auth"
@@ -31,6 +32,7 @@ func NewRootCommand() *cobra.Command {
 	bunconnect.InitFlags(root.PersistentFlags())
 	iam.InitFlags(root.PersistentFlags())
 	service.BindFlags(root)
+	licence.InitCLIFlags(root)
 
 	root.AddCommand(newServeCommand())
 	root.AddCommand(newWorkerCommand())

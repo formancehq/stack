@@ -8,6 +8,7 @@ import (
 
 	"github.com/formancehq/orchestration/internal/storage"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunmigrate"
+	"github.com/formancehq/stack/libs/go-libs/licence"
 	"github.com/uptrace/bun"
 
 	"github.com/formancehq/stack/libs/go-libs/aws/iam"
@@ -87,6 +88,7 @@ func NewRootCommand() *cobra.Command {
 	bunconnect.InitFlags(cmd.PersistentFlags())
 	iam.InitFlags(cmd.PersistentFlags())
 	service.BindFlags(cmd)
+	licence.InitCLIFlags(cmd)
 
 	return cmd
 }
@@ -119,6 +121,7 @@ func commonOptions(cmd *cobra.Command) (fx.Option, error) {
 		bunconnect.Module(*connectionOptions),
 		publish.CLIPublisherModule("orchestration"),
 		auth.CLIAuthModule(),
+		licence.CLIModule(ServiceName),
 		workflow.NewModule(viper.GetString(temporalTaskQueueFlag)),
 		triggers.NewModule(viper.GetString(temporalTaskQueueFlag)),
 		fx.Provide(func() *bunconnect.ConnectionOptions {

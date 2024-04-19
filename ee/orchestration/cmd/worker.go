@@ -48,7 +48,7 @@ func newWorkerCommand() *cobra.Command {
 				return err
 			}
 
-			return service.New(cmd.OutOrStdout(), ServiceName, commonOptions, workerOptions()).Run(cmd.Context())
+			return service.New(cmd.OutOrStdout(), commonOptions, workerOptions()).Run(cmd.Context())
 		},
 	}
 }

@@ -64,7 +64,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 		return err
 	}
 
-	licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack)
+	licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack, "orchestration", orchestration)
 	if err != nil {
 		return err
 	}

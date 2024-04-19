@@ -9,6 +9,7 @@ import (
 
 	"github.com/formancehq/stack/libs/go-libs/aws/iam"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+	"github.com/formancehq/stack/libs/go-libs/licence"
 
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
@@ -164,12 +165,13 @@ func newServeCommand() *cobra.Command {
 						RedirectURL:  fmt.Sprintf("%s/authorize/callback", viper.GetString(baseUrlFlag)),
 					}),
 					delegatedauth.Module(),
+					licence.CLIModule(serviceName),
 				)
 			}
 
 			options = append(options, otlptraces.CLITracesModule())
 
-			return service.New(cmd.OutOrStdout(), serviceName, options...).Run(cmd.Context())
+			return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 		},
 	}
 
@@ -181,6 +183,7 @@ func newServeCommand() *cobra.Command {
 	cmd.Flags().String(listenFlag, ":8080", "Listening address")
 	cmd.Flags().String(configFlag, "", "Config file name without extension")
 	service.BindFlags(cmd)
+	licence.InitCLIFlags(cmd)
 
 	otlptraces.InitOTLPTracesFlags(cmd.Flags())
 	bunconnect.InitFlags(cmd.Flags())

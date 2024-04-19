@@ -28,7 +28,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, wallets *v1beta1.W
 	}
 	env = append(env, gatewayEnv...)
 
-	licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack)
+	licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack, "wallets", wallets)
 	if err != nil {
 		return err
 	}

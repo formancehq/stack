@@ -16,6 +16,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/formancehq/stack/libs/go-libs/httpclient"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
+	"github.com/formancehq/stack/libs/go-libs/licence"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
@@ -90,11 +91,12 @@ func NewServer() *cobra.Command {
 			)
 
 			options = append(options, otlptraces.CLITracesModule())
+			options = append(options, licence.CLIModule(serviceName))
 			options = append(options, apiModule(serviceName, bind, viper.GetString(stackFlag), api.ServiceInfo{
 				Version: Version,
 			}, esIndex))
 
-			return app.New(cmd.OutOrStdout(), serviceName, options...).Run(cmd.Context())
+			return app.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 		},
 	}
 
@@ -111,6 +113,7 @@ func NewServer() *cobra.Command {
 	iam.InitFlags(cmd.Flags())
 	otlptraces.InitOTLPTracesFlags(cmd.Flags())
 	app.BindFlags(cmd)
+	licence.InitCLIFlags(cmd)
 
 	return cmd
 }

@@ -50,14 +50,8 @@ spec:
             {{- with .Values.operator.region }}
             - --region={{ $.Values.operator.region }}
             {{- end }}
-            {{- with .Values.operator.licence.token }}
-            - --licence-token={{ $.Values.operator.licence.token }}
-            {{- end }}
-            {{- with .Values.operator.licence.issuer }}
-            - --licence-issuer={{ $.Values.operator.licence.issuer }}
-            {{- end }}
-            {{- with .Values.operator.licence.clusterID}}
-            - --licence-cluster-id={{ $.Values.operator.licence.clusterID }}
+            {{- with .Values.operator.licence.secret }}
+            - --licence-secret={{ $.Values.operator.licence.secret }}
             {{- end }}
             {{- if .Values.operator.disableWebhooks }}
             - --disable-webhooks

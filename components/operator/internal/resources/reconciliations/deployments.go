@@ -33,7 +33,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, reconciliation *v1
 		return err
 	}
 
-	licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack)
+	licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack, "reconciliation", reconciliation)
 	if err != nil {
 		return err
 	}

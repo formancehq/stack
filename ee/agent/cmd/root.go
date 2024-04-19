@@ -11,6 +11,7 @@ import (
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/components/agent/internal"
+	"github.com/formancehq/stack/libs/go-libs/licence"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 	sharedotlptraces "github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
@@ -112,9 +113,10 @@ func runAgent(cmd *cobra.Command, args []string) error {
 			Version:    Version,
 		}, dialOptions...),
 		sharedotlptraces.CLITracesModule(),
+		licence.CLIModule(ServiceName),
 	}
 
-	return service.New(cmd.OutOrStdout(), ServiceName, options...).Run(cmd.Context())
+	return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 }
 
 func newK8SConfig() (*rest.Config, error) {
@@ -199,6 +201,7 @@ func init() {
 	}
 
 	service.BindFlags(rootCmd)
+	licence.InitCLIFlags(rootCmd)
 	rootCmd.Flags().String(kubeConfigFlag, kubeConfigFilePath, "")
 	rootCmd.Flags().String(serverAddressFlag, "localhost:8081", "")
 	rootCmd.Flags().Bool(tlsEnabledFlag, false, "")

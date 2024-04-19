@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/licence"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
@@ -53,6 +54,7 @@ func NewRootCommand() *cobra.Command {
 	client.Flags().String(TlsCACertificateFlag, "", "TLS cert file")
 	client.Flags().Bool(TlsInsecureSkipVerifyFlag, false, "TLS insecure skip verify")
 	service.BindFlags(client)
+	licence.InitCLIFlags(client)
 	if err := bindFlagsToViper(client); err != nil {
 		panic(err)
 	}

@@ -20,7 +20,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack,
 		return err
 	}
 
-	licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack)
+	licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack, "gateway", gateway)
 	if err != nil {
 		return err
 	}

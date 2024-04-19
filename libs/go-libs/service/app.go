@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/formancehq/stack/libs/go-libs/errorsutils"
-	"github.com/formancehq/stack/libs/go-libs/licence"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -18,7 +17,6 @@ const DebugFlag = "debug"
 func BindFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().Bool(DebugFlag, false, "Debug mode")
 	cmd.PersistentFlags().Bool(logging.JsonFormattingLoggerFlag, false, "Format logs as json")
-	licence.InitCLIFlags(cmd)
 }
 
 func IsDebug() bool {
@@ -26,9 +24,8 @@ func IsDebug() bool {
 }
 
 type App struct {
-	serviceName string
-	options     []fx.Option
-	output      io.Writer
+	options []fx.Option
+	output  io.Writer
 }
 
 func (a *App) Run(ctx context.Context) error {
@@ -77,10 +74,7 @@ func (a *App) Run(ctx context.Context) error {
 }
 
 func (a *App) newFxApp(logger logging.Logger) *fx.App {
-	licenceOptions := licence.CLIModule(a.serviceName)
-
 	options := append(a.options,
-		licenceOptions,
 		fx.NopLogger,
 		fx.Supply(fx.Annotate(logger, fx.As(new(logging.Logger)))),
 		fx.Invoke(func(lc fx.Lifecycle) {
@@ -107,10 +101,9 @@ func (a *App) newFxApp(logger logging.Logger) *fx.App {
 	return fx.New(options...)
 }
 
-func New(output io.Writer, serviceName string, options ...fx.Option) *App {
+func New(output io.Writer, options ...fx.Option) *App {
 	return &App{
-		serviceName: serviceName,
-		options:     options,
-		output:      output,
+		options: options,
+		output:  output,
 	}
 }

@@ -82,7 +82,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 	}
 	env = append(env, gatewayEnvVars...)
 
-	licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack)
+	licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack, "search", search)
 	if err != nil {
 		return err
 	}

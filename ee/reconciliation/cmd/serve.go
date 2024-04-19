@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+	"github.com/formancehq/stack/libs/go-libs/licence"
 
 	sdk "github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/reconciliation/internal/api"
@@ -80,9 +81,10 @@ func runServer(version string) func(cmd *cobra.Command, args []string) error {
 			api.HTTPModule(sharedapi.ServiceInfo{
 				Version: version,
 			}, viper.GetString(listenFlag)),
+			licence.CLIModule(ServiceName),
 		)
 
-		return service.New(cmd.OutOrStdout(), ServiceName, options...).Run(cmd.Context())
+		return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 	}
 }
 

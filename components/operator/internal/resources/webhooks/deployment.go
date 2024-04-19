@@ -40,13 +40,11 @@ func deploymentEnvVars(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1
 		return nil, err
 	}
 	env = append(env, gatewayEnv...)
-
-	licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack)
+	licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack, "webhooks", webhooks)
 	if err != nil {
 		return nil, err
 	}
 	env = append(env, licenceEnvVars...)
-
 	env = append(env, core.GetDevEnvVars(stack, webhooks)...)
 
 	authEnvVars, err := auths.ProtectedEnvVars(ctx, stack, "webhooks", webhooks.Spec.Auth)

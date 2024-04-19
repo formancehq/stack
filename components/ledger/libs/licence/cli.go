@@ -21,6 +21,7 @@ const (
 
 func InitCLIFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().Bool(LicenceEnabled, false, "Enable licence check")
+	cmd.PersistentFlags().MarkHidden(LicenceEnabled)
 	cmd.PersistentFlags().String(LicenceTokenFlag, "", "Licence token")
 	cmd.PersistentFlags().Duration(LicenceValidateTickFlag, 2*time.Minute, "Licence validate tick")
 	cmd.PersistentFlags().String(LicenceClusterIDFlag, "", "Licence cluster ID")
