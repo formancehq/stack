@@ -305,7 +305,7 @@ func GetMapOrEmpty(ctx core.Context, stack string, keys ...string) (map[string]s
 	return value, nil
 }
 
-func findMatchingSettings(settings []v1beta1.Settings, keys ...string) (*string, error) {
+func findMatchingSettings(settings []v1beta1.Settings, flattenKeys ...string) (*string, error) {
 
 	// Keys can be passed as "a.b.c", instead of "a", "b", "c"
 	// Keys can be passed as "a.b.*", instead of "a", "b", "*"
@@ -314,7 +314,7 @@ func findMatchingSettings(settings []v1beta1.Settings, keys ...string) (*string,
 	slices.SortFunc(settings, sortSettingsByPriority)
 
 	for _, setting := range settings {
-		if matchSetting(setting, keys...) {
+		if matchSetting(setting, flattenKeys...) {
 			return &setting.Spec.Value, nil
 		}
 	}
