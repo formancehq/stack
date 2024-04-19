@@ -19,6 +19,11 @@ func GetLicenceEnvVars(ctx core.Context, stack *v1beta1.Stack, ownerName string,
 			return nil, err
 		}
 	} else {
+		err := resourcereferences.Delete(ctx, owner, ownerName+"-licence")
+		if err != nil {
+			return nil, err
+		}
+
 		ret = append(ret, core.Env("LICENCE_ENABLED", "false"))
 		return ret, nil
 	}
