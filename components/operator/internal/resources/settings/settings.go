@@ -2,7 +2,6 @@ package settings
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
@@ -18,7 +17,7 @@ import (
 func init() {
 	core.Init(
 		core.WithSimpleIndex[*v1beta1.Settings]("keylen", func(t *v1beta1.Settings) string {
-			return fmt.Sprint(len(strings.Split(t.Spec.Key, ".")))
+			return fmt.Sprint(len(splitKeywordWithDot(t.Spec.Key)))
 		}),
 	)
 }

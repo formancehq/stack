@@ -18,7 +18,7 @@ import (
 
 func Get(ctx core.Context, stack string, keys ...string) (*string, error) {
 	keys = Flatten(Map(keys, func(from string) []string {
-		return splitKey(from)
+		return splitKeywordWithDot(from)
 	}))
 	allSettingsTargetingStack := &v1beta1.SettingsList{}
 	if err := ctx.GetClient().List(ctx, allSettingsTargetingStack, client.MatchingFields{
@@ -310,11 +310,7 @@ func findMatchingSettings(settings []v1beta1.Settings, keys ...string) (*string,
 	// Keys can be passed as "a.b.c", instead of "a", "b", "c"
 	// Keys can be passed as "a.b.*", instead of "a", "b", "*"
 	// Keys can be passed as "a.*.c", instead of "a", "*", "c"
-	// Keys can be passed as "a."*.*".c, instead of "a", "b", "c"
-	keys = Flatten(Map(keys, func(from string) []string {
-		return splitKey(from)
-	}))
-
+	// Keys can be passed as "a."*.*".c," instead of "a", "b", "c"
 	slices.SortFunc(settings, sortSettingsByPriority)
 
 	for _, setting := range settings {
@@ -327,7 +323,7 @@ func findMatchingSettings(settings []v1beta1.Settings, keys ...string) (*string,
 }
 
 func matchSetting(setting v1beta1.Settings, keys ...string) bool {
-	settingKeyParts := splitKey(setting.Spec.Key)
+	settingKeyParts := splitKeywordWithDot(setting.Spec.Key)
 	for i, settingKeyPart := range settingKeyParts {
 		if settingKeyPart == "*" {
 			continue
@@ -339,7 +335,7 @@ func matchSetting(setting v1beta1.Settings, keys ...string) bool {
 	return true
 }
 
-func splitKey(key string) []string {
+func splitKeywordWithDot(key string) []string {
 	segments := ""
 	needQuote := false
 	for _, v := range key {
@@ -367,8 +363,8 @@ func sortSettingsByPriority(a, b v1beta1.Settings) int {
 	case !a.IsWildcard() && b.IsWildcard():
 		return -1
 	}
-	aKeys := splitKey(a.Spec.Key)
-	bKeys := splitKey(b.Spec.Key)
+	aKeys := splitKeywordWithDot(a.Spec.Key)
+	bKeys := splitKeywordWithDot(b.Spec.Key)
 
 	for i := 0; i < len(aKeys); i++ {
 		if aKeys[i] == bKeys[i] {
