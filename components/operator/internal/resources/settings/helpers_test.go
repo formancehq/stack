@@ -124,12 +124,12 @@ func TestFindMatchingSettings(t *testing.T) {
 		{
 			settings: []settings{
 				{
-					key:        "registries.\"ghcr.io\".images.ledger.rewrite",
+					key:        `registries."ghcr.io".images.ledger.rewrite`,
 					value:      "example",
 					isWildcard: false,
 				},
 			},
-			key:            "registries.\"ghcr.io\".images.ledger.rewrite",
+			key:            `registries."ghcr.io".images.ledger.rewrite`,
 			expectedResult: "example",
 		},
 		{
@@ -151,7 +151,7 @@ func TestFindMatchingSettings(t *testing.T) {
 					isWildcard: false,
 				},
 			},
-			key:            `registries."docker.io\".images.caddy/caddy.rewrite`,
+			key:            `registries."docker.io".images.caddy/caddy.rewrite`,
 			expectedResult: "example",
 		},
 		{
