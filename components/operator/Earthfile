@@ -74,8 +74,8 @@ helm-update:
     SAVE ARTIFACT helm AS LOCAL helm
 
 deploy:
-    ARG LICENCE_SECRET="licence"
-    ARG LICENCE_TOKEN="eyJhbGciOiJSUzI1NiIsImtpZCI6ImlkIiwidHlwIjoiSldUIn0.eyJhdWQiOlsiYXV0aCIsIm9yY2hlc3RyYXRpb24iLCJzZWFyY2giLCJzdGFyZ2F0ZSIsIndhbGxldHMiLCJ3ZWJob29rcyJdLCJjbHVzdGVySUQiOiJUT0RPIiwiZXhwIjoxNzEzNTcxMjAwLCJpYXQiOjE3MTMyNzI0MTgsImlzcyI6Imh0dHA6Ly9saWNlbmNlLWFwaS5mb3JtYW5jZS5zdmMuY2x1c3Rlci5sb2NhbDo4MDgwL2tleXMiLCJuYmYiOjE3MTMyNzI0MTgsIm9yZ2FuaXphdGlvbklEIjoib2x3d2J2bWV4dGtoIiwic3ViIjoiVE9ETyJ9.Q2GxaYLraGIq6s2P5hhtggTkwhH9ntyThoiBydgRIywEV3-ZbDLXogNgiF7Pa9rb2Tmsb5UmNQzBkay2zKdbPWcbc-JvXetqY0yf2BauhyhCyEED8Buge2pu-n0Yb3Vmcnktm9jf2mE0NZihZgVDZdukKROGf0fnCmmib4pTpztYK8faw2ref_MuulKQFhWkBpNb2c8xsidrPuBfavoY0i739VmeLJvIzcJi0QuIAKbOaIFIi15fQTjUSvtrILvj924E3Mg64PQUt5IQHrLI-C9Otz1rQLl0ztVgNFXJC20Y3z1or4FW8TpVhaqNk0Xl-2gIjMqbTeMWLxTAEHbjrA"
+    ARG LICENCE_SECRET=""
+    ARG LICENCE_TOKEN=""
     ARG LICENCE_ISSUER="http://licence-api.formance.svc.cluster.local:8080/keys"
 
     COPY (+sources/*) /src
