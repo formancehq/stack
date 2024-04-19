@@ -12,7 +12,7 @@ require (
 	github.com/formancehq/payments v0.5.0
 	github.com/formancehq/search v0.5.2
 	github.com/formancehq/stack/libs/events v0.0.0-00010101000000-000000000000
-	github.com/formancehq/stack/libs/go-libs v0.0.0-20230517212829-71aaaacfd130
+	github.com/formancehq/stack/libs/go-libs v0.0.0-20230221161632-e6dc6a89a85e
 	github.com/formancehq/wallets v0.3.0
 	github.com/formancehq/webhooks v0.0.0-00010101000000-000000000000
 	github.com/getkin/kin-openapi v0.114.0
@@ -90,6 +90,7 @@ require (
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/formancehq/payments/genericclient v0.0.0-00010101000000-000000000000 // indirect
+	github.com/formancehq/stack/libs/core v0.0.0-00010101000000-000000000000 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/get-momo/atlar-v1-go-client v1.2.1 // indirect
@@ -281,6 +282,7 @@ replace (
 	github.com/formancehq/payments => ../../components/payments
 	github.com/formancehq/payments/genericclient => ../../components/payments/cmd/connectors/internal/connectors/generic/client/generated
 	github.com/formancehq/search => ../../ee/search
+	github.com/formancehq/stack/libs/core => ../../libs/core
 	github.com/formancehq/stack/libs/events => ../../libs/events
 	github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
 	github.com/formancehq/wallets => ../../ee/wallets
