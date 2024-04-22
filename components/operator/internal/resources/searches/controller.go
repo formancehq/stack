@@ -43,7 +43,7 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=searches/finalizers,verbs=update
 
 func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, version string) error {
-	elasticSearchURI, err := settings.RequireURL(ctx, stack.Name, "elasticsearch.dsn")
+	elasticSearchURI, err := settings.RequireURL(ctx, stack.Name, "elasticsearch", "dsn")
 	if err != nil {
 		return err
 	}
@@ -122,7 +122,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 	batching := search.Spec.Batching
 	if batching == nil {
 
-		batchingMap, err := settings.GetMapOrEmpty(ctx, stack.Name, "search.batching")
+		batchingMap, err := settings.GetMapOrEmpty(ctx, stack.Name, "search","batching")
 		if err != nil {
 			return err
 		}

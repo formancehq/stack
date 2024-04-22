@@ -10,16 +10,12 @@ import (
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
-	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/pkg/errors"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func Get(ctx core.Context, stack string, keys ...string) (*string, error) {
-	keys = Flatten(Map(keys, func(from string) []string {
-		return splitKeywordWithDot(from)
-	}))
 	allSettingsTargetingStack := &v1beta1.SettingsList{}
 	if err := ctx.GetClient().List(ctx, allSettingsTargetingStack, client.MatchingFields{
 		"stack":  stack,
@@ -323,7 +319,7 @@ func findMatchingSettings(settings []v1beta1.Settings, flattenKeys ...string) (*
 }
 
 func matchSetting(setting v1beta1.Settings, keys ...string) bool {
-	settingKeyParts := splitKeywordWithDot(setting.Spec.Key)
+	settingKeyParts := SplitKeywordWithDot(setting.Spec.Key)
 	for i, settingKeyPart := range settingKeyParts {
 		if settingKeyPart == "*" {
 			continue
@@ -335,7 +331,7 @@ func matchSetting(setting v1beta1.Settings, keys ...string) bool {
 	return true
 }
 
-func splitKeywordWithDot(key string) []string {
+func SplitKeywordWithDot(key string) []string {
 	segments := ""
 	needQuote := false
 	for _, v := range key {
@@ -363,8 +359,8 @@ func sortSettingsByPriority(a, b v1beta1.Settings) int {
 	case !a.IsWildcard() && b.IsWildcard():
 		return -1
 	}
-	aKeys := splitKeywordWithDot(a.Spec.Key)
-	bKeys := splitKeywordWithDot(b.Spec.Key)
+	aKeys := SplitKeywordWithDot(a.Spec.Key)
+	bKeys := SplitKeywordWithDot(b.Spec.Key)
 
 	for i := 0; i < len(aKeys); i++ {
 		if aKeys[i] == bKeys[i] {

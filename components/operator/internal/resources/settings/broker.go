@@ -9,7 +9,7 @@ import (
 )
 
 func ResolveBrokerEnvVars(ctx core.Context, stack *v1beta1.Stack, serviceName string) ([]v1.EnvVar, error) {
-	uri, err := RequireURL(ctx, stack.Name, "broker.dsn")
+	uri, err := RequireURL(ctx, stack.Name, "broker", "dsn")
 	if err != nil {
 		return nil, err
 	}

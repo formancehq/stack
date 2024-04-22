@@ -12,7 +12,7 @@ import (
 
 func cleanConsumers(ctx Context, search *v1beta1.Search) error {
 
-	brokerURI, err := settings.RequireURL(ctx, search.Spec.Stack, "broker.dsn")
+	brokerURI, err := settings.RequireURL(ctx, search.Spec.Stack, "broker", "dsn")
 	if err != nil {
 		return err
 	}

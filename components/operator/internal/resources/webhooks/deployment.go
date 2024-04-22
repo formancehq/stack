@@ -19,7 +19,7 @@ import (
 
 func deploymentEnvVars(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database) ([]v1.EnvVar, error) {
 
-	brokerURI, err := settings.RequireURL(ctx, stack.Name, "broker.dsn")
+	brokerURI, err := settings.RequireURL(ctx, stack.Name, "broker","dsn")
 	if err != nil {
 		return nil, err
 	}

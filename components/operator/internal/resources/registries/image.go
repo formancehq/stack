@@ -45,7 +45,7 @@ func GetCaddyImage(ctx core.Context, stack *v1beta1.Stack, version string) (stri
 	}
 
 	defaultCaddyImage := "caddy:2.7.6-alpine"
-	caddyImage, err := settings.GetStringOrDefault(ctx, stack.Name, defaultCaddyImage, "caddy.image")
+	caddyImage, err := settings.GetStringOrDefault(ctx, stack.Name, defaultCaddyImage, "caddy", "image")
 	if err != nil {
 		return "", err
 	}

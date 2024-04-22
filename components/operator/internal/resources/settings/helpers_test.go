@@ -29,7 +29,7 @@ func TestSplitKeywordWithDot(t *testing.T) {
 		tc := tc
 		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
 			t.Parallel()
-			result := splitKeywordWithDot(tc.key)
+			result := SplitKeywordWithDot(tc.key)
 			require.Equal(t, tc.expectedResult, result)
 		})
 	}
@@ -200,7 +200,7 @@ func TestFindMatchingSettings(t *testing.T) {
 					ret.Spec.Stacks = []string{"*"}
 				}
 				return ret
-			}), splitKeywordWithDot(tc.key)...)
+			}), SplitKeywordWithDot(tc.key)...)
 			require.NoError(t, err)
 			require.NotNil(t, value)
 			require.Equal(t, tc.expectedResult, *value)

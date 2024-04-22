@@ -21,7 +21,7 @@ func TranslateImage(ctx core.Context, stackName, image string) (string, error) {
 	registry := organizationImage[0]
 	path := organizationImage[1]
 
-	imageOverride, err := settings.GetStringOrEmpty(ctx, stackName, "registries", `"`+registry+`"`, "images", path, "rewrite")
+	imageOverride, err := settings.GetStringOrEmpty(ctx, stackName, "registries", registry, "images", path, "rewrite")
 	if err != nil {
 		return "", err
 	}
@@ -29,7 +29,7 @@ func TranslateImage(ctx core.Context, stackName, image string) (string, error) {
 		imageOverride = path
 	}
 
-	registryEndpoint, err := settings.GetStringOrEmpty(ctx, stackName, "registries", `"`+registry+`"`, "endpoint")
+	registryEndpoint, err := settings.GetStringOrEmpty(ctx, stackName, "registries", registry, "endpoint")
 	if err != nil {
 		return "", err
 	}

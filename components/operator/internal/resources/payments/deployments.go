@@ -18,7 +18,7 @@ import (
 func getEncryptionKey(ctx core.Context, payments *v1beta1.Payments) (string, error) {
 	encryptionKey := payments.Spec.EncryptionKey
 	if encryptionKey == "" {
-		return settings.GetStringOrEmpty(ctx, payments.Spec.Stack, "payments.encryption-key")
+		return settings.GetStringOrEmpty(ctx, payments.Spec.Stack, "payments", "encryption-key")
 	}
 	return "", nil
 }

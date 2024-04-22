@@ -16,8 +16,8 @@ import (
 
 func init() {
 	core.Init(
-		core.WithSimpleIndex[*v1beta1.Settings]("keylen", func(t *v1beta1.Settings) string {
-			return fmt.Sprint(len(splitKeywordWithDot(t.Spec.Key)))
+		core.WithSimpleIndex("keylen", func(t *v1beta1.Settings) string {
+			return fmt.Sprint(len(SplitKeywordWithDot(t.Spec.Key)))
 		}),
 	)
 }
