@@ -9,6 +9,7 @@ import (
 	"github.com/formancehq/operator/internal/resources/gateways"
 	"github.com/formancehq/operator/internal/resources/licence"
 	"github.com/formancehq/operator/internal/resources/registries"
+	"github.com/formancehq/operator/internal/resources/resourcereferences"
 	"github.com/formancehq/operator/internal/resources/settings"
 	v1 "k8s.io/api/core/v1"
 )
@@ -28,7 +29,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, wallets *v1beta1.W
 	}
 	env = append(env, gatewayEnv...)
 
-	licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack, "wallets", wallets)
+	resourceReference, licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack, "wallets", wallets)
 	if err != nil {
 		return err
 	}
@@ -51,6 +52,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, wallets *v1beta1.W
 	}
 
 	_, err = deployments.CreateOrUpdate(ctx, wallets, "wallets",
+		resourcereferences.Annotate("licence-secret-hash", resourceReference),
 		deployments.WithReplicasFromSettings(ctx, stack),
 		deployments.WithContainers(v1.Container{
 			Name:          "wallets",

@@ -7,6 +7,7 @@ import (
 	"github.com/formancehq/operator/internal/resources/gateways"
 	"github.com/formancehq/operator/internal/resources/licence"
 	"github.com/formancehq/operator/internal/resources/registries"
+	"github.com/formancehq/operator/internal/resources/resourcereferences"
 	"github.com/formancehq/operator/internal/resources/settings"
 	v1 "k8s.io/api/core/v1"
 )
@@ -26,7 +27,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, stargate *v1beta1.
 	}
 	env = append(env, gatewayEnv...)
 
-	licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack, "stargate", stargate)
+	resourceReference, licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack, "stargate", stargate)
 	if err != nil {
 		return err
 	}
@@ -49,6 +50,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, stargate *v1beta1.
 	}
 
 	_, err = deployments.CreateOrUpdate(ctx, stargate, "stargate",
+		resourcereferences.Annotate("licence-secret-hash", resourceReference),
 		deployments.WithReplicasFromSettings(ctx, stack),
 		deployments.WithContainers(v1.Container{
 			Name:          "stargate",

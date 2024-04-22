@@ -16,7 +16,6 @@ import (
 	"github.com/formancehq/operator/internal/resources/settings"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
-	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 )
 
@@ -64,7 +63,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 		return err
 	}
 
-	licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack, "orchestration", orchestration)
+	licenceResourceReference, licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack, "orchestration", orchestration)
 	if err != nil {
 		return err
 	}
@@ -83,9 +82,9 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 		return err
 	}
 
-	var resourceReference *v1beta1.ResourceReference
+	var databaseResourceReference *v1beta1.ResourceReference
 	if secret := temporalURI.Query().Get("secret"); secret != "" {
-		resourceReference, err = resourcereferences.Create(ctx, database, "temporal", secret, &v1.Secret{})
+		databaseResourceReference, err = resourcereferences.Create(ctx, database, "temporal", secret, &v1.Secret{})
 	} else {
 		err = resourcereferences.Delete(ctx, database, "temporal")
 	}
@@ -148,7 +147,8 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 	}
 
 	_, err = deployments.CreateOrUpdate(ctx, orchestration, "orchestration",
-		resourcereferences.Annotate[*appsv1.Deployment]("temporal-secret-hash", resourceReference),
+		resourcereferences.Annotate("temporal-secret-hash", databaseResourceReference),
+		resourcereferences.Annotate("licence-secret-hash", licenceResourceReference),
 		deployments.WithServiceAccountName(serviceAccountName),
 		deployments.WithReplicasFromSettings(ctx, stack),
 		deployments.WithMatchingLabels("orchestration"),

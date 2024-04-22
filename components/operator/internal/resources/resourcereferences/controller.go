@@ -11,7 +11,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
-	. "github.com/formancehq/operator/internal/core"
+	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
 	v1 "k8s.io/api/core/v1"
@@ -30,15 +30,15 @@ import (
 // +kubebuilder:rbac:groups=core,resources=serviceaccounts,verbs=get;list;watch;create;update;patch;delete
 
 func init() {
-	Init(
-		WithStackDependencyReconciler[*v1beta1.ResourceReference](Reconcile,
-			WithWatch[*v1beta1.ResourceReference, *v1.Secret](watchResource[*v1.Secret]),
-			WithWatch[*v1beta1.ResourceReference, *v1.ServiceAccount](watchResource[*v1.ServiceAccount]),
+	core.Init(
+		core.WithStackDependencyReconciler[*v1beta1.ResourceReference](Reconcile,
+			core.WithWatch[*v1beta1.ResourceReference, *v1.Secret](watchResource[*v1.Secret]),
+			core.WithWatch[*v1beta1.ResourceReference, *v1.ServiceAccount](watchResource[*v1.ServiceAccount]),
 		),
 	)
 }
 
-func watchResource[T client.Object](ctx Context, object T) []reconcile.Request {
+func watchResource[T client.Object](ctx core.Context, object T) []reconcile.Request {
 	ret := make([]reconcile.Request, 0)
 
 	// Watch resources created by the ResourceReference
@@ -66,7 +66,7 @@ func watchResource[T client.Object](ctx Context, object T) []reconcile.Request {
 	// Watch resources which should be replicated by the ResourceReferences
 	if object.GetLabels()[v1beta1.StackLabel] != "any" {
 		for _, stack := range strings.Split(object.GetLabels()[v1beta1.StackLabel], ",") {
-			ret = append(ret, BuildReconcileRequests(
+			ret = append(ret, core.BuildReconcileRequests(
 				ctx,
 				ctx.GetClient(),
 				ctx.GetScheme(),
@@ -77,7 +77,7 @@ func watchResource[T client.Object](ctx Context, object T) []reconcile.Request {
 			)...)
 		}
 	} else {
-		ret = append(ret, BuildReconcileRequests(
+		ret = append(ret, core.BuildReconcileRequests(
 			ctx,
 			ctx.GetClient(),
 			ctx.GetScheme(),
@@ -94,7 +94,7 @@ const (
 	RewrittenResourceName = "formance.com/referenced-by-name"
 )
 
-func Reconcile(ctx Context, stack *v1beta1.Stack, req *v1beta1.ResourceReference) error {
+func Reconcile(ctx core.Context, stack *v1beta1.Stack, req *v1beta1.ResourceReference) error {
 	resource, err := findMatchingResource(ctx, stack.Name, *req.Spec.GroupVersionKind, req.Spec.Name)
 	if err != nil {
 		return err
@@ -160,7 +160,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, req *v1beta1.ResourceReference
 			panic(err)
 		}
 
-		hasOwnerReference, err := HasOwnerReference(ctx, req, newResource)
+		hasOwnerReference, err := core.HasOwnerReference(ctx, req, newResource)
 		if err != nil {
 			return err
 		}
@@ -176,13 +176,13 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, req *v1beta1.ResourceReference
 		return err
 	}
 
-	req.Status.Hash = HashFromResources(resource)
+	req.Status.Hash = core.HashFromResources(newResource)
 	req.Status.SyncedResource = req.Spec.Name
 
 	return nil
 }
 
-func findMatchingResource(ctx Context, stack string, gvk metav1.GroupVersionKind, name string) (*unstructured.Unstructured, error) {
+func findMatchingResource(ctx core.Context, stack string, gvk metav1.GroupVersionKind, name string) (*unstructured.Unstructured, error) {
 	requirement, err := labels.NewRequirement(v1beta1.StackLabel, selection.In, []string{stack, AnyValue})
 	if err != nil {
 		return nil, err

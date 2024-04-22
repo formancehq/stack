@@ -82,7 +82,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 	}
 	env = append(env, gatewayEnvVars...)
 
-	licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack, "search", search)
+	resourceReference, licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack, "search", search)
 	if err != nil {
 		return err
 	}
@@ -171,7 +171,8 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 	_, err = deployments.CreateOrUpdate(ctx, search, "search",
 		deployments.WithServiceAccountName(serviceAccountName),
 		deployments.WithReplicasFromSettings(ctx, stack),
-		resourcereferences.Annotate[*appsv1.Deployment]("elasticsearch-secret-hash", resourceReference),
+		resourcereferences.Annotate("elasticsearch-secret-hash", resourceReference),
+		resourcereferences.Annotate("licence-secret-hash", resourceReference),
 		deployments.WithMatchingLabels("search"),
 		deployments.WithContainers(corev1.Container{
 			Name:          "search",

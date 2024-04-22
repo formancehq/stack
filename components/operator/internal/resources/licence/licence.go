@@ -8,31 +8,33 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 )
 
-func GetLicenceEnvVars(ctx core.Context, stack *v1beta1.Stack, ownerName string, owner v1beta1.Dependent) ([]v1.EnvVar, error) {
+func GetLicenceEnvVars(ctx core.Context, stack *v1beta1.Stack, ownerName string, owner v1beta1.Dependent) (*v1beta1.ResourceReference, []v1.EnvVar, error) {
 	ret := make([]v1.EnvVar, 0)
 
 	platform := ctx.GetPlatform()
 
+	var resourceReference *v1beta1.ResourceReference
+	var err error
 	if platform.LicenceSecret != "" {
-		_, err := resourcereferences.Create(ctx, owner, ownerName+"-licence", platform.LicenceSecret, &v1.Secret{})
+		resourceReference, err = resourcereferences.Create(ctx, owner, ownerName+"-licence", platform.LicenceSecret, &v1.Secret{})
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 	} else {
 		err := resourcereferences.Delete(ctx, owner, ownerName+"-licence")
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		ret = append(ret, core.Env("LICENCE_ENABLED", "false"))
-		return ret, nil
+		return nil, ret, nil
 	}
 
 	ns := &v1.Namespace{}
 	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
 		Name: "kube-system",
 	}, ns); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	ret = append(ret, core.Env("LICENCE_ENABLED", "false"))
@@ -42,5 +44,5 @@ func GetLicenceEnvVars(ctx core.Context, stack *v1beta1.Stack, ownerName string,
 	ret = append(ret, core.Env("LICENCE_VALIDATE_TICK", "24h"))
 	ret = append(ret, core.Env("LICENCE_CLUSTER_ID", string(ns.UID)))
 
-	return ret, nil
+	return resourceReference, ret, nil
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
 	"github.com/formancehq/operator/internal/resources/licence"
+	"github.com/formancehq/operator/internal/resources/resourcereferences"
 	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	appsv1 "k8s.io/api/apps/v1"
@@ -35,7 +36,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, dat
 		return nil, err
 	}
 
-	licenceEnv, err := licence.GetLicenceEnvVars(ctx, stack, "auth", auth)
+	resourceReference, licenceEnv, err := licence.GetLicenceEnvVars(ctx, stack, "auth", auth)
 	if err != nil {
 		return nil, err
 	}
@@ -83,6 +84,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, dat
 	}
 
 	return deployments.CreateOrUpdate(ctx, auth, "auth",
+		resourcereferences.Annotate("licence-secret-hash", resourceReference),
 		deployments.WithMatchingLabels("auth"),
 		deployments.WithReplicasFromSettings(ctx, stack),
 		deployments.WithServiceAccountName(serviceAccountName),
