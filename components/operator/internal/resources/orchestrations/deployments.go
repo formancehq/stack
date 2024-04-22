@@ -70,7 +70,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 	env = append(env, GetDevEnvVars(stack, orchestration)...)
 	env = append(env, postgresEnvVar...)
 
-	temporalURI, err := settings.RequireURL(ctx, stack.Name, "temporal.dsn")
+	temporalURI, err := settings.RequireURL(ctx, stack.Name, "temporal","dsn")
 	if err != nil {
 		return err
 	}
@@ -111,12 +111,12 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 	}
 
 	if secret := temporalURI.Query().Get("secret"); secret == "" {
-		temporalTLSCrt, err := settings.GetStringOrEmpty(ctx, stack.Name, "temporal.tls.crt")
+		temporalTLSCrt, err := settings.GetStringOrEmpty(ctx, stack.Name, "temporal", "tls", "crt")
 		if err != nil {
 			return err
 		}
 
-		temporalTLSKey, err := settings.GetStringOrEmpty(ctx, stack.Name, "temporal.tls.key")
+		temporalTLSKey, err := settings.GetStringOrEmpty(ctx, stack.Name, "temporal", "tls", "key")
 		if err != nil {
 			return err
 		}

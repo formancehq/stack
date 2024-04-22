@@ -35,7 +35,7 @@ func GetOTELEnvVarsWithPrefix(ctx core.Context, stack, serviceName, prefix strin
 }
 
 func HasOpenTelemetryTracesEnabled(ctx core.Context, stack string) (bool, error) {
-	v, err := GetURL(ctx, stack, "opentelemetry.traces.dsn")
+	v, err := GetURL(ctx, stack, "opentelemetry", "traces", "dsn")
 	if err != nil {
 		return false, err
 	}

@@ -38,7 +38,7 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, topic *v1beta1.BrokerTopi
 		return nil
 	}
 
-	brokerURI, err := settings.RequireURL(ctx, stack.Name, "broker.dsn")
+	brokerURI, err := settings.RequireURL(ctx, stack.Name, "broker","dsn")
 	if err != nil {
 		return err
 	}

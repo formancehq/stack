@@ -1,6 +1,7 @@
 package payments
 
 import (
+	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/settings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -17,7 +18,7 @@ import (
 func getEncryptionKey(ctx core.Context, payments *v1beta1.Payments) (string, error) {
 	encryptionKey := payments.Spec.EncryptionKey
 	if encryptionKey == "" {
-		return settings.GetStringOrEmpty(ctx, payments.Spec.Stack, "payments.encryption-key")
+		return settings.GetStringOrEmpty(ctx, payments.Spec.Stack, "payments", "encryption-key")
 	}
 	return "", nil
 }
@@ -236,7 +237,7 @@ func createGateway(ctx core.Context, stack *v1beta1.Stack, p *v1beta1.Payments) 
 	env = append(env, otlpEnv...)
 	env = append(env, core.GetDevEnvVars(stack, p)...)
 
-	caddyImage, err := settings.GetStringOrDefault(ctx, stack.Name, "caddy:2.7.6-alpine", "caddy.image")
+	caddyImage, err := registries.GetCaddyImage(ctx, stack, "2.7.6-alpine")
 	if err != nil {
 		return err
 	}

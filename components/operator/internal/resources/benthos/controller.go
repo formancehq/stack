@@ -84,12 +84,12 @@ func createService(ctx Context, b *v1beta1.Benthos) error {
 // TODO(gfyrag): there is a ton of search related configuration
 // We need to this controller and keep it focused on benthos
 func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) error {
-	brokerURI, err := settings.RequireURL(ctx, stack.Name, "broker.dsn")
+	brokerURI, err := settings.RequireURL(ctx, stack.Name, "broker", "dsn")
 	if err != nil {
 		return errors.Wrap(err, "searching broker configuration")
 	}
 
-	elasticSearchURI, err := settings.RequireURL(ctx, stack.Name, "elasticsearch.dsn")
+	elasticSearchURI, err := settings.RequireURL(ctx, stack.Name, "elasticsearch", "dsn")
 	if err != nil {
 		return errors.Wrap(err, "searching elasticsearch configuration")
 	}
