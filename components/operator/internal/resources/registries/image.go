@@ -37,18 +37,19 @@ func GetNastBoxImage(ctx core.Context, stack *v1beta1.Stack, version string) (st
 }
 
 func GetCaddyImage(ctx core.Context, stack *v1beta1.Stack, version string) (string, error) {
+	image := fmt.Sprintf("docker.io/caddy/caddy:%s", NormalizeVersion(version))
 	newCaddyImage, err := TranslateImage(ctx, stack.Name,
-		fmt.Sprintf("docker.io/caddy/caddy:%s", NormalizeVersion(version)))
+		image)
 	if err != nil {
 		return "", err
 	}
 
-	caddyImage, err := settings.GetStringOrDefault(ctx, stack.Name, "caddy:2.7.6-alpine", "caddy.image")
+	defaultCaddyImage := "caddy:2.7.6-alpine"
+	caddyImage, err := settings.GetStringOrDefault(ctx, stack.Name, defaultCaddyImage, "caddy.image")
 	if err != nil {
 		return "", err
 	}
-
-	if newCaddyImage != "" {
+	if newCaddyImage != image && caddyImage == defaultCaddyImage {
 		caddyImage = newCaddyImage
 	}
 
