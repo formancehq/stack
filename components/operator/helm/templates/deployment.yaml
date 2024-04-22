@@ -50,9 +50,7 @@ spec:
             {{- with .Values.operator.region }}
             - --region={{ $.Values.operator.region }}
             {{- end }}
-            {{- with .Values.operator.licence.secret }}
-            - --licence-secret={{ $.Values.operator.licence.secret }}
-            {{- end }}
+            - --licence-secret={{ include "operator.fullname" . }}-licence
             {{- if .Values.operator.disableWebhooks }}
             - --disable-webhooks
             {{- end }}

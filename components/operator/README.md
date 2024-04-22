@@ -171,8 +171,6 @@ Available settings:
 | Key                                                                                      | Type   | Example             | Description                                                          |
 |------------------------------------------------------------------------------------------|--------|---------------------|----------------------------------------------------------------------|
 | aws.service-account                                                                      | string |                     |  AWS Role                                                            |
-| licence.token                                                                            | string |                     | Token to check licence                                               |
-| licence.issuer                                                                           | string |                     | Token issuer                                                         |
 | postgres.`<module-name>`.uri                                                             | URI    |                     | Postgres database configuration                                      |
 | elasticsearch.dsn                                                                        | URI    |                     | Elasticsearch connection URI                                         |
 | temporal.dsn                                                                             | URI    |                     | Temporal URI                                                         |

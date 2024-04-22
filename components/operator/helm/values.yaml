@@ -30,7 +30,6 @@ operator:
   licence:
     token: ""
     issuer: ""
-    secret: ""
 
 podAnnotations: {}
 
