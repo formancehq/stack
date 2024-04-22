@@ -73,7 +73,7 @@ func ingestBalancesBatch(
 				ConnectorID: connectorID,
 			},
 			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, balance.Currency),
-			Balance:       &big.Int{},
+			Balance:       &amount,
 			CreatedAt:     balances.At,
 			LastUpdatedAt: balances.At,
 			ConnectorID:   connectorID,
