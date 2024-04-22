@@ -72,15 +72,10 @@ func NewStackEventHandler(logger sharedlogging.Logger, membershipClient Membersh
 			},
 			UpdateFunc: func(oldObj, newObj interface{}) {
 
-				oldStack := convertUnstructured[*v1beta1.Stack](oldObj)
 				newStack := convertUnstructured[*v1beta1.Stack](newObj)
 
 				if _, ok := stacks[newStack.Name]; !ok {
 					logger.Debugf("Stack '%s' not initialized in memory", newStack.Name)
-					return
-				}
-
-				if oldStack.Spec.Disabled == newStack.Spec.Disabled && oldStack.Status.Ready == newStack.Status.Ready {
 					return
 				}
 
