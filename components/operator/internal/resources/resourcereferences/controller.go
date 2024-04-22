@@ -152,7 +152,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, req *v1beta1.ResourceReference
 
 	_, err = controllerutil.CreateOrUpdate(ctx, ctx.GetClient(), newResource, func() error {
 		content := newResource.UnstructuredContent()
-		if err := mergo.Merge(&content, resource.UnstructuredContent()); err != nil {
+		if err := mergo.MergeWithOverwrite(&content, resource.UnstructuredContent()); err != nil {
 			return err
 		}
 
