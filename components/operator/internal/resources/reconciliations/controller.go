@@ -96,6 +96,7 @@ func init() {
 			WithOwn[*v1beta1.Reconciliation](&v1beta1.AuthClient{}),
 			WithOwn[*v1beta1.Reconciliation](&v1beta1.GatewayHTTPAPI{}),
 			WithOwn[*v1beta1.Reconciliation](&batchv1.Job{}),
+			WithOwn[*v1beta1.Reconciliation](&v1beta1.ResourceReference{}),
 			WithWatchSettings[*v1beta1.Reconciliation](),
 			WithWatchDependency[*v1beta1.Reconciliation](&v1beta1.Ledger{}),
 			WithWatchDependency[*v1beta1.Reconciliation](&v1beta1.Payments{}),

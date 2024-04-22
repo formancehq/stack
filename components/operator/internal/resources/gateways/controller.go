@@ -108,6 +108,7 @@ func init() {
 			WithOwn[*v1beta1.Gateway](&corev1.Service{}),
 			WithOwn[*v1beta1.Gateway](&networkingv1.Ingress{}),
 			WithOwn[*v1beta1.Gateway](&v1beta1.BenthosStream{}),
+			WithOwn[*v1beta1.Gateway](&v1beta1.ResourceReference{}),
 			WithWatchSettings[*v1beta1.Gateway](),
 			WithWatchDependency[*v1beta1.Gateway](&v1beta1.GatewayHTTPAPI{}),
 			WithWatchDependency[*v1beta1.Gateway](&v1beta1.Auth{}),

@@ -39,6 +39,7 @@ func init() {
 		WithModuleReconciler(Reconcile,
 			WithWatchSettings[*v1beta1.Stargate](),
 			WithOwn[*v1beta1.Stargate](&appsv1.Deployment{}),
+			WithOwn[*v1beta1.Stargate](&v1beta1.ResourceReference{}),
 		),
 	)
 }
