@@ -10,50 +10,57 @@ import (
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
+	"github.com/formancehq/operator/internal/resources/licence"
 	"github.com/formancehq/operator/internal/resources/registries"
+	"github.com/formancehq/operator/internal/resources/resourcereferences"
 	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
 	v1 "k8s.io/api/core/v1"
 )
 
-func deploymentEnvVars(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database) ([]v1.EnvVar, error) {
+func deploymentEnvVars(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database) (*v1beta1.ResourceReference, []v1.EnvVar, error) {
 
 	brokerURI, err := settings.RequireURL(ctx, stack.Name, "broker","dsn")
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	if brokerURI == nil {
-		return nil, errors.New("missing broker configuration")
+		return nil, nil, errors.New("missing broker configuration")
 	}
 
 	env := make([]v1.EnvVar, 0)
 	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseKind(ctx, webhooks))
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	env = append(env, otlpEnv...)
 
 	gatewayEnv, err := gateways.EnvVarsIfEnabled(ctx, stack.Name)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	env = append(env, gatewayEnv...)
+	resourceReference, licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack, "webhooks", webhooks)
+	if err != nil {
+		return nil, nil, err
+	}
+	env = append(env, licenceEnvVars...)
 	env = append(env, core.GetDevEnvVars(stack, webhooks)...)
 
 	authEnvVars, err := auths.ProtectedEnvVars(ctx, stack, "webhooks", webhooks.Spec.Auth)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	postgresEnvVar, err := databases.GetPostgresEnvVars(ctx, stack, database)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	brokerEnvVar, err := settings.GetBrokerEnvVars(ctx, brokerURI, stack.Name, "webhooks")
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	env = append(env, authEnvVars...)
@@ -61,7 +68,7 @@ func deploymentEnvVars(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1
 	env = append(env, brokerEnvVar...)
 	env = append(env, core.Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"))
 
-	return env, nil
+	return resourceReference, env, nil
 }
 
 func createAPIDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database, consumer *v1beta1.BrokerConsumer, version string, withWorker bool) error {
@@ -71,7 +78,7 @@ func createAPIDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1bet
 		return err
 	}
 
-	env, err := deploymentEnvVars(ctx, stack, webhooks, database)
+	resourceReference, env, err := deploymentEnvVars(ctx, stack, webhooks, database)
 	if err != nil {
 		return err
 	}
@@ -95,6 +102,7 @@ func createAPIDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1bet
 	}
 
 	_, err = deployments.CreateOrUpdate(ctx, webhooks, "webhooks",
+		resourcereferences.Annotate("licence-secret-hash", resourceReference),
 		deployments.WithReplicasFromSettings(ctx, stack),
 		deployments.WithMatchingLabels("webhooks"),
 		deployments.WithServiceAccountName(serviceAccountName),
@@ -117,7 +125,7 @@ func createWorkerDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1
 		return err
 	}
 
-	env, err := deploymentEnvVars(ctx, stack, webhooks, database)
+	resourceReference, env, err := deploymentEnvVars(ctx, stack, webhooks, database)
 	if err != nil {
 		return err
 	}
@@ -133,6 +141,7 @@ func createWorkerDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1
 	}
 
 	_, err = deployments.CreateOrUpdate(ctx, webhooks, "webhooks-worker",
+		resourcereferences.Annotate("licence-secret-hash", resourceReference),
 		deployments.WithMatchingLabels("webhooks-worker"),
 		deployments.WithServiceAccountName(serviceAccountName),
 		deployments.WithContainers(v1.Container{

@@ -24,6 +24,9 @@ func NewRootCommand() *cobra.Command {
 			return bindFlagsToViper(cmd)
 		},
 	}
+
+	cobra.EnableTraverseRunHooks = true
+
 	cmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	cmd.PersistentFlags().BoolP(service.DebugFlag, "d", false, "Debug mode")
 	cmd.AddCommand(

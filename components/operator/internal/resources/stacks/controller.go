@@ -3,11 +3,12 @@ package stacks
 import (
 	"context"
 	"fmt"
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
-	"github.com/pkg/errors"
 	"reflect"
 	"sort"
 	"strings"
+
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/pkg/errors"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"

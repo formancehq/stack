@@ -4,6 +4,7 @@ import (
 	"github.com/formancehq/stack/ee/stargate/internal/client"
 	"github.com/formancehq/stack/ee/stargate/internal/client/controllers"
 	"github.com/formancehq/stack/ee/stargate/internal/client/interceptors"
+	"github.com/formancehq/stack/libs/go-libs/licence"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	app "github.com/formancehq/stack/libs/go-libs/service"
@@ -13,6 +14,8 @@ import (
 )
 
 const (
+	serviceName = "stargate"
+
 	organizationIDFlag = "organization-id"
 	stackIDFlag        = "stack-id"
 
@@ -56,6 +59,7 @@ func resolveClientOptions() []fx.Option {
 	options = append(options,
 		otlptraces.CLITracesModule(),
 		otlpmetrics.CLIMetricsModule(),
+		licence.CLIModule(serviceName),
 
 		fx.Provide(func() client.WorkerPoolConfig {
 			return client.NewWorkerPoolConfig(

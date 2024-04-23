@@ -74,6 +74,9 @@ helm-update:
     SAVE ARTIFACT helm AS LOCAL helm
 
 deploy:
+    ARG LICENCE_TOKEN=""
+    ARG LICENCE_ISSUER="http://licence-api.formance.svc.cluster.local:8080/keys"
+
     COPY (+sources/*) /src
     LET tag=$(tar cf - /src | sha1sum | awk '{print $1}')
     WAIT
@@ -85,7 +88,9 @@ deploy:
     RUN helm upgrade --namespace formance-system --install formance-operator \
         --wait \
         --create-namespace \
-        --set image.tag=$tag .
+        --set image.tag=$tag . \
+        --set operator.licence.token=$LICENCE_TOKEN \
+        --set operator.licence.issuer=$LICENCE_ISSUER
     WORKDIR /
     COPY .earthly .earthly
     WORKDIR .earthly

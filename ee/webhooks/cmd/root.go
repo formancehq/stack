@@ -6,22 +6,22 @@ import (
 
 	"github.com/formancehq/stack/libs/go-libs/aws/iam"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+	"github.com/formancehq/stack/libs/go-libs/licence"
+	"github.com/formancehq/stack/libs/go-libs/service"
 
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/formancehq/webhooks/cmd/flag"
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func NewRootCommand() *cobra.Command {
 	root := &cobra.Command{
 		Use: "webhooks",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			return errors.Wrap(viper.BindPFlags(cmd.Flags()), "binding viper flags")
+			return bindFlagsToViper(cmd)
 		},
 	}
 
@@ -31,6 +31,8 @@ func NewRootCommand() *cobra.Command {
 	flag.Init(root.PersistentFlags())
 	bunconnect.InitFlags(root.PersistentFlags())
 	iam.InitFlags(root.PersistentFlags())
+	service.BindFlags(root)
+	licence.InitCLIFlags(root)
 
 	root.AddCommand(newServeCommand())
 	root.AddCommand(newWorkerCommand())

@@ -6,4 +6,6 @@ type Platform struct {
 	// Cloud environment where the stack is deployed: staging, production,
 	// sandbox, etc.
 	Environment string
+	// The licence information
+	LicenceSecret string
 }

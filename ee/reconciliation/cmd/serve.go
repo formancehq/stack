@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+	"github.com/formancehq/stack/libs/go-libs/licence"
 
 	sdk "github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/reconciliation/internal/api"
@@ -48,13 +49,11 @@ func stackClientModule() fx.Option {
 
 func newServeCommand(version string) *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "serve",
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			return bindFlagsToViper(cmd)
-		},
+		Use:  "serve",
 		RunE: runServer(version),
 	}
 	cmd.Flags().String(listenFlag, ":8080", "Listening address")
+
 	return cmd
 }
 
@@ -79,6 +78,7 @@ func runServer(version string) func(cmd *cobra.Command, args []string) error {
 			api.HTTPModule(sharedapi.ServiceInfo{
 				Version: version,
 			}, viper.GetString(listenFlag)),
+			licence.CLIModule(ServiceName),
 		)
 
 		return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())

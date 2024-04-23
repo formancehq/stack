@@ -6,6 +6,7 @@ import (
 
 	"github.com/formancehq/stack/libs/go-libs/aws/iam"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+	"github.com/formancehq/stack/libs/go-libs/licence"
 
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
@@ -35,6 +36,8 @@ func NewRootCommand() *cobra.Command {
 		},
 	}
 
+	cobra.EnableTraverseRunHooks = true
+
 	cmd.PersistentFlags().BoolP(service.DebugFlag, "d", false, "Debug mode")
 	cmd.PersistentFlags().String(stackURLFlag, "", "Stack url")
 	cmd.PersistentFlags().String(stackClientIDFlag, "", "Stack client ID")
@@ -45,6 +48,8 @@ func NewRootCommand() *cobra.Command {
 	auth.InitAuthFlags(cmd.PersistentFlags())
 	bunconnect.InitFlags(cmd.PersistentFlags())
 	iam.InitFlags(cmd.PersistentFlags())
+	service.BindFlags(cmd)
+	licence.InitCLIFlags(cmd)
 
 	serveCmd := newServeCommand(Version)
 	cmd.AddCommand(serveCmd)

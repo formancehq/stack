@@ -170,7 +170,7 @@ Available settings:
 
 | Key                                                                                      | Type   | Example             | Description                                                          |
 |------------------------------------------------------------------------------------------|--------|---------------------|----------------------------------------------------------------------|
-| aws.service-account                                                                      | string |                     |  AWS Role |
+| aws.service-account                                                                      | string |                     |  AWS Role                                                            |
 | postgres.`<module-name>`.uri                                                             | URI    |                     | Postgres database configuration                                      |
 | elasticsearch.dsn                                                                        | URI    |                     | Elasticsearch connection URI                                         |
 | temporal.dsn                                                                             | URI    |                     | Temporal URI                                                         |
@@ -180,13 +180,13 @@ Available settings:
 | opentelemetry.traces.dsn                                                                 | URI    |                     | OpenTelemetry collector URI                                          |
 | clear-database                                                                           | bool   | true                | Whether or not remove databases on stack deletion                    |
 | payments.encryption-key                                                                  | string |                     | Payments data encryption key                                         |
-| deployments.`<deployment-name>`.init-containers.`<container-name>`.resource-requirements | Map    | cpu=X, mem=X        |
-| deployments.`<deployment-name>`.containers.`<container-name>`.resource-requirements      | Map    | cpu=X, mem=X        |
-| deployments.`<deployment-name>`.init-containers.`<container-name>`.run-as                | Map    | user=X, group=X     |
-| deployments.`<deployment-name>`.containers.`<container-name>`.run-as                     | Map    | user=X, group=X     |
+| deployments.`<deployment-name>`.init-containers.`<container-name>`.resource-requirements | Map    | cpu=X, mem=X        |                                                                      |
+| deployments.`<deployment-name>`.containers.`<container-name>`.resource-requirements      | Map    | cpu=X, mem=X        |                                                                      |
+| deployments.`<deployment-name>`.init-containers.`<container-name>`.run-as                | Map    | user=X, group=X     |                                                                      |
+| deployments.`<deployment-name>`.containers.`<container-name>`.run-as                     | Map    | user=X, group=X     |                                                                      |
 | caddy.image                                                                              | string |                     | Caddy image                                                          |
 | registries.`<name>`.endpoint                                                             | string |                     | Spécify a custom endpoint for a specific docker repository           |
-| registries.`<name>`.images.`<path>`.rewrite                                              | string    |  formancehq/example         | Allow to rewrite the image path |
+| registries.`<name>`.images.`<path>`.rewrite                                              | string | formancehq/example  | Allow to rewrite the image path                                      |
 | search.batching                                                                          | Map    | period=1s, count=10 | Override default batching parameters                                 |
 | services.`<service-name>`.annotations                                                    | Map    |                     | Allow to specify custom annotations to apply on created k8s services |
 

@@ -20,20 +20,19 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/formancehq/operator/internal/resources/brokerconsumers"
-	v1 "k8s.io/api/batch/v1"
-
-	"github.com/formancehq/operator/internal/resources/gateways"
-	"github.com/formancehq/operator/internal/resources/resourcereferences"
-
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/auths"
+	"github.com/formancehq/operator/internal/resources/brokerconsumers"
 	deployments "github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gatewayhttpapis"
+	"github.com/formancehq/operator/internal/resources/gateways"
+	"github.com/formancehq/operator/internal/resources/licence"
 	. "github.com/formancehq/operator/internal/resources/registries"
+	"github.com/formancehq/operator/internal/resources/resourcereferences"
 	"github.com/formancehq/operator/internal/resources/settings"
 	appsv1 "k8s.io/api/apps/v1"
+	v1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 )
@@ -82,6 +81,12 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 		return err
 	}
 	env = append(env, gatewayEnvVars...)
+
+	resourceReference, licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack, "search", search)
+	if err != nil {
+		return err
+	}
+	env = append(env, licenceEnvVars...)
 
 	env = append(env,
 		Env("OPEN_SEARCH_SERVICE", elasticSearchURI.Host),
@@ -166,7 +171,8 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 	_, err = deployments.CreateOrUpdate(ctx, search, "search",
 		deployments.WithServiceAccountName(serviceAccountName),
 		deployments.WithReplicasFromSettings(ctx, stack),
-		resourcereferences.Annotate[*appsv1.Deployment]("elasticsearch-secret-hash", resourceReference),
+		resourcereferences.Annotate("elasticsearch-secret-hash", resourceReference),
+		resourcereferences.Annotate("licence-secret-hash", resourceReference),
 		deployments.WithMatchingLabels("search"),
 		deployments.WithContainers(corev1.Container{
 			Name:          "search",

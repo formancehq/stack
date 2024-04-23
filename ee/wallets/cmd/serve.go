@@ -6,6 +6,7 @@ import (
 
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/auth"
+	"github.com/formancehq/stack/libs/go-libs/licence"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
@@ -31,9 +32,6 @@ func newServeCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "serve",
 		Aliases: []string{"server"},
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			return bindFlagsToViper(cmd)
-		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			options := []fx.Option{
 				fx.Provide(func() (*http.Client, error) {
@@ -50,6 +48,7 @@ func newServeCommand() *cobra.Command {
 				}, viper.GetString(listenFlag)),
 				otlptraces.CLITracesModule(),
 				auth.CLIAuthModule(),
+				licence.CLIModule(ServiceName),
 			}
 
 			return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
@@ -61,6 +60,8 @@ func newServeCommand() *cobra.Command {
 	cmd.Flags().String(ledgerNameFlag, "wallets-002", "Target ledger")
 	cmd.Flags().String(accountPrefixFlag, "", "Account prefix flag")
 	cmd.Flags().String(listenFlag, ":8080", "Listen address")
+	service.BindFlags(cmd)
+	licence.InitCLIFlags(cmd)
 	return cmd
 }
 

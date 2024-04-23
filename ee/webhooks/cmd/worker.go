@@ -6,6 +6,7 @@ import (
 	"github.com/formancehq/webhooks/pkg/storage/postgres"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+	"github.com/formancehq/stack/libs/go-libs/licence"
 
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 
@@ -38,6 +39,7 @@ func runWorker(cmd *cobra.Command, _ []string) error {
 	return service.New(
 		cmd.OutOrStdout(),
 		otlp.HttpClientModule(),
+		licence.CLIModule(ServiceName),
 		postgres.NewModule(*connectionOptions),
 		fx.Provide(worker.NewWorkerHandler),
 		fx.Invoke(func(lc fx.Lifecycle, h http.Handler) {

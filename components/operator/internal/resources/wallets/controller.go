@@ -63,6 +63,7 @@ func init() {
 			WithOwn[*v1beta1.Wallets](&v1beta1.AuthClient{}),
 			WithOwn[*v1beta1.Wallets](&appsv1.Deployment{}),
 			WithOwn[*v1beta1.Wallets](&v1beta1.GatewayHTTPAPI{}),
+			WithOwn[*v1beta1.Wallets](&v1beta1.ResourceReference{}),
 		),
 	)
 }

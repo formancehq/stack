@@ -39,9 +39,6 @@ func workerOptions() fx.Option {
 func newWorkerCommand() *cobra.Command {
 	return &cobra.Command{
 		Use: "worker",
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			return bindFlagsToViper(cmd)
-		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			commonOptions, err := commonOptions(cmd)
 			if err != nil {
