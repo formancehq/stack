@@ -254,6 +254,17 @@ paths:
           $ref: '#/components/responses/PoolBalances'
 
   /accounts:
+    post:
+      summary: Create an account
+      tags:
+        - Payments
+      operationId: createAccount
+      description: Create an account
+      requestBody:
+        $ref: '#/components/requestBodies/Account'
+      responses:
+        '200':
+          $ref: '#/components/responses/Account'
     get:
       summary: List accounts
       operationId: listAccounts
@@ -868,6 +879,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/PaymentRequest'
+    Account:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AccountRequest'
     Pool:
       required: true
       content:
@@ -1907,7 +1924,7 @@ components:
         accountName:
           type: string
         type:
-          type: string
+          $ref: '#/components/schemas/AccountType'
         pools:
           type: array
           items:
@@ -2175,6 +2192,29 @@ components:
           type: array
           items:
             type: string
+    AccountRequest:
+      type: object
+      required:
+        - reference
+        - connectorID
+        - createdAt
+        - type
+      properties:
+        reference:
+          type: string
+        connectorID:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        type:
+          $ref: '#/components/schemas/AccountType'
+        defaultAsset:
+          type: string
+        accountName:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/AccountMetadata'
     PaymentRequest:
       type: object
       required:
@@ -2298,6 +2338,12 @@ components:
             - FAILED
             - REJECTED
             - VALIDATED
+    AccountType:
+      type: string
+      enum:
+        - UNKNOWN
+        - INTERNAL
+        - EXTERNAL
     PaymentType:
       type: string
       enum:

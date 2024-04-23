@@ -5,6 +5,7 @@
 
 * [AddAccountToPool](#addaccounttopool) - Add an account to a pool
 * [ConnectorsTransfer](#connectorstransfer) - Transfer funds between Connector accounts
+* [CreateAccount](#createaccount) - Create an account
 * [CreateBankAccount](#createbankaccount) - Create a BankAccount in Payments and on the PSP
 * [CreatePayment](#createpayment) - Create a payment
 * [CreatePool](#createpool) - Create a Pool
@@ -159,6 +160,65 @@ func main() {
 ### Response
 
 **[*operations.ConnectorsTransferResponse](../../pkg/models/operations/connectorstransferresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
+
+## CreateAccount
+
+Create an account
+
+### Example Usage
+
+```go
+package main
+
+import(
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
+	"context"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
+	"log"
+)
+
+func main() {
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
+            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+        }),
+    )
+
+    ctx := context.Background()
+    res, err := s.Payments.CreateAccount(ctx, shared.AccountRequest{
+        ConnectorID: "string",
+        CreatedAt: types.MustTimeFromString("2024-08-19T02:15:08.668Z"),
+        Metadata: map[string]string{
+            "key": "string",
+        },
+        Reference: "string",
+        Type: shared.AccountTypeUnknown,
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    if res.PaymentsAccountResponse != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                          | Type                                                               | Required                                                           | Description                                                        |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| `ctx`                                                              | [context.Context](https://pkg.go.dev/context#Context)              | :heavy_check_mark:                                                 | The context to use for the request.                                |
+| `request`                                                          | [shared.AccountRequest](../../pkg/models/shared/accountrequest.md) | :heavy_check_mark:                                                 | The request object to use for the request.                         |
+
+
+### Response
+
+**[*operations.CreateAccountResponse](../../pkg/models/operations/createaccountresponse.md), error**
 | Error Object       | Status Code        | Content Type       |
 | ------------------ | ------------------ | ------------------ |
 | sdkerrors.SDKError | 4xx-5xx            | */*                |

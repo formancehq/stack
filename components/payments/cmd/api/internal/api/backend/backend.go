@@ -14,6 +14,7 @@ import (
 //go:generate mockgen -source backend.go -destination backend_generated.go -package backend . Service
 type Service interface {
 	Ping() error
+	CreateAccount(ctx context.Context, req *service.CreateAccountRequest) (*models.Account, error)
 	ListAccounts(ctx context.Context, q storage.ListAccountsQuery) (*bunpaginate.Cursor[models.Account], error)
 	GetAccount(ctx context.Context, id string) (*models.Account, error)
 	ListBalances(ctx context.Context, q storage.ListBalancesQuery) (*bunpaginate.Cursor[models.Balance], error)

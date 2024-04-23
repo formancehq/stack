@@ -6,12 +6,12 @@ package backend
 
 import (
 	context "context"
-	api "github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	reflect "reflect"
 
 	service "github.com/formancehq/payments/cmd/api/internal/api/service"
 	storage "github.com/formancehq/payments/cmd/api/internal/storage"
 	models "github.com/formancehq/payments/internal/models"
+	bunpaginate "github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	gomock "github.com/golang/mock/gomock"
 	uuid "github.com/google/uuid"
 )
@@ -51,6 +51,21 @@ func (m *MockService) AddAccountToPool(ctx context.Context, poolID string, req *
 func (mr *MockServiceMockRecorder) AddAccountToPool(ctx, poolID, req interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddAccountToPool", reflect.TypeOf((*MockService)(nil).AddAccountToPool), ctx, poolID, req)
+}
+
+// CreateAccount mocks base method.
+func (m *MockService) CreateAccount(ctx context.Context, req *service.CreateAccountRequest) (*models.Account, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateAccount", ctx, req)
+	ret0, _ := ret[0].(*models.Account)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateAccount indicates an expected call of CreateAccount.
+func (mr *MockServiceMockRecorder) CreateAccount(ctx, req interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAccount", reflect.TypeOf((*MockService)(nil).CreateAccount), ctx, req)
 }
 
 // CreatePayment mocks base method.
@@ -173,10 +188,10 @@ func (mr *MockServiceMockRecorder) GetPoolBalance(ctx, poolID, atTime interface{
 }
 
 // ListAccounts mocks base method.
-func (m *MockService) ListAccounts(ctx context.Context, q storage.ListAccountsQuery) (*api.Cursor[models.Account], error) {
+func (m *MockService) ListAccounts(ctx context.Context, q storage.ListAccountsQuery) (*bunpaginate.Cursor[models.Account], error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListAccounts", ctx, q)
-	ret0, _ := ret[0].(*api.Cursor[models.Account])
+	ret0, _ := ret[0].(*bunpaginate.Cursor[models.Account])
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -188,10 +203,10 @@ func (mr *MockServiceMockRecorder) ListAccounts(ctx, q interface{}) *gomock.Call
 }
 
 // ListBalances mocks base method.
-func (m *MockService) ListBalances(ctx context.Context, q storage.ListBalancesQuery) (*api.Cursor[models.Balance], error) {
+func (m *MockService) ListBalances(ctx context.Context, q storage.ListBalancesQuery) (*bunpaginate.Cursor[models.Balance], error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListBalances", ctx, q)
-	ret0, _ := ret[0].(*api.Cursor[models.Balance])
+	ret0, _ := ret[0].(*bunpaginate.Cursor[models.Balance])
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -203,10 +218,10 @@ func (mr *MockServiceMockRecorder) ListBalances(ctx, q interface{}) *gomock.Call
 }
 
 // ListBankAccounts mocks base method.
-func (m *MockService) ListBankAccounts(ctx context.Context, a storage.ListBankAccountQuery) (*api.Cursor[models.BankAccount], error) {
+func (m *MockService) ListBankAccounts(ctx context.Context, a storage.ListBankAccountQuery) (*bunpaginate.Cursor[models.BankAccount], error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListBankAccounts", ctx, a)
-	ret0, _ := ret[0].(*api.Cursor[models.BankAccount])
+	ret0, _ := ret[0].(*bunpaginate.Cursor[models.BankAccount])
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -218,10 +233,10 @@ func (mr *MockServiceMockRecorder) ListBankAccounts(ctx, a interface{}) *gomock.
 }
 
 // ListPayments mocks base method.
-func (m *MockService) ListPayments(ctx context.Context, q storage.ListPaymentsQuery) (*api.Cursor[models.Payment], error) {
+func (m *MockService) ListPayments(ctx context.Context, q storage.ListPaymentsQuery) (*bunpaginate.Cursor[models.Payment], error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListPayments", ctx, q)
-	ret0, _ := ret[0].(*api.Cursor[models.Payment])
+	ret0, _ := ret[0].(*bunpaginate.Cursor[models.Payment])
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -233,10 +248,10 @@ func (mr *MockServiceMockRecorder) ListPayments(ctx, q interface{}) *gomock.Call
 }
 
 // ListPools mocks base method.
-func (m *MockService) ListPools(ctx context.Context, q storage.ListPoolsQuery) (*api.Cursor[models.Pool], error) {
+func (m *MockService) ListPools(ctx context.Context, q storage.ListPoolsQuery) (*bunpaginate.Cursor[models.Pool], error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListPools", ctx, q)
-	ret0, _ := ret[0].(*api.Cursor[models.Pool])
+	ret0, _ := ret[0].(*bunpaginate.Cursor[models.Pool])
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -248,10 +263,10 @@ func (mr *MockServiceMockRecorder) ListPools(ctx, q interface{}) *gomock.Call {
 }
 
 // ListTransferInitiations mocks base method.
-func (m *MockService) ListTransferInitiations(ctx context.Context, q storage.ListTransferInitiationsQuery) (*api.Cursor[models.TransferInitiation], error) {
+func (m *MockService) ListTransferInitiations(ctx context.Context, q storage.ListTransferInitiationsQuery) (*bunpaginate.Cursor[models.TransferInitiation], error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListTransferInitiations", ctx, q)
-	ret0, _ := ret[0].(*api.Cursor[models.TransferInitiation])
+	ret0, _ := ret[0].(*bunpaginate.Cursor[models.TransferInitiation])
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 7eac0a45-60a2-40bb-9e85-26bd77ec2a6d
 management:
-  docChecksum: 9bc2bc896e36e08bc9aa9eba56cb953f
+  docChecksum: 23105794aff37c229c3c414fa37c3882
   docVersion: v0.0.0
   speakeasyVersion: internal
   generationVersion: 2.237.2
-  releaseVersion: v0.0.0
-  configChecksum: 50130ac1de5d0825ab31d45fbe3aac35
+  releaseVersion: 0.0.1
+  configChecksum: c299152255ec1caf1aad2b6fbca6bdc9
 features:
   go:
     constsAndDefaults: 0.1.2
@@ -139,6 +139,7 @@ generatedFiles:
   - /pkg/models/operations/v2sendevent.go
   - /pkg/models/operations/addaccounttopool.go
   - /pkg/models/operations/connectorstransfer.go
+  - /pkg/models/operations/createaccount.go
   - /pkg/models/operations/createbankaccount.go
   - /pkg/models/operations/createpayment.go
   - /pkg/models/operations/createpool.go
@@ -445,6 +446,10 @@ generatedFiles:
   - /pkg/models/shared/transferresponse.go
   - /pkg/models/shared/connector.go
   - /pkg/models/shared/transferrequest.go
+  - /pkg/models/shared/paymentsaccountresponse.go
+  - /pkg/models/shared/paymentsaccount.go
+  - /pkg/models/shared/accounttype.go
+  - /pkg/models/shared/accountrequest.go
   - /pkg/models/shared/bankaccountresponse.go
   - /pkg/models/shared/bankaccount.go
   - /pkg/models/shared/bankaccountrelatedaccounts.go
@@ -500,8 +505,6 @@ generatedFiles:
   - /pkg/models/shared/paymentscursor.go
   - /pkg/models/shared/poolscursor.go
   - /pkg/models/shared/transferinitiationscursor.go
-  - /pkg/models/shared/paymentsaccountresponse.go
-  - /pkg/models/shared/paymentsaccount.go
   - /pkg/models/shared/accountscursor.go
   - /pkg/models/shared/connectorconfigresponse.go
   - /pkg/models/shared/reversetransferinitiationrequest.go
@@ -722,6 +725,7 @@ generatedFiles:
   - docs/pkg/models/operations/addaccounttopoolresponse.md
   - docs/pkg/models/operations/connectorstransferrequest.md
   - docs/pkg/models/operations/connectorstransferresponse.md
+  - docs/pkg/models/operations/createaccountresponse.md
   - docs/pkg/models/operations/createbankaccountresponse.md
   - docs/pkg/models/operations/createpaymentresponse.md
   - docs/pkg/models/operations/createpoolresponse.md
@@ -1135,6 +1139,11 @@ generatedFiles:
   - docs/pkg/models/shared/transferresponse.md
   - docs/pkg/models/shared/connector.md
   - docs/pkg/models/shared/transferrequest.md
+  - docs/pkg/models/shared/paymentsaccountresponse.md
+  - docs/pkg/models/shared/paymentsaccountraw.md
+  - docs/pkg/models/shared/paymentsaccount.md
+  - docs/pkg/models/shared/accounttype.md
+  - docs/pkg/models/shared/accountrequest.md
   - docs/pkg/models/shared/bankaccountresponse.md
   - docs/pkg/models/shared/bankaccount.md
   - docs/pkg/models/shared/bankaccountrelatedaccounts.md
@@ -1223,9 +1232,6 @@ generatedFiles:
   - docs/pkg/models/shared/poolscursor.md
   - docs/pkg/models/shared/transferinitiationscursorcursor.md
   - docs/pkg/models/shared/transferinitiationscursor.md
-  - docs/pkg/models/shared/paymentsaccountresponse.md
-  - docs/pkg/models/shared/paymentsaccountraw.md
-  - docs/pkg/models/shared/paymentsaccount.md
   - docs/pkg/models/shared/cursor.md
   - docs/pkg/models/shared/accountscursor.md
   - docs/pkg/models/shared/connectorconfigresponse.md

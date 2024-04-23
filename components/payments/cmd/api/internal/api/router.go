@@ -51,6 +51,7 @@ func httpRouter(
 	authGroup.Path("/payments/{paymentID}").Methods(http.MethodGet).Handler(readPaymentHandler(b))
 	authGroup.Path("/payments/{paymentID}/metadata").Methods(http.MethodPatch).Handler(updateMetadataHandler(b))
 
+	authGroup.Path("/accounts").Methods(http.MethodPost).Handler(createAccountHandler(b))
 	authGroup.Path("/accounts").Methods(http.MethodGet).Handler(listAccountsHandler(b))
 	authGroup.Path("/accounts/{accountID}").Methods(http.MethodGet).Handler(readAccountHandler(b))
 	authGroup.Path("/accounts/{accountID}/balances").Methods(http.MethodGet).Handler(listBalancesForAccount(b))
