@@ -677,6 +677,7 @@ generatedFiles:
   - docs/pkg/models/operations/getworkflowresponse.md
   - docs/pkg/models/operations/listinstancesrequest.md
   - docs/pkg/models/operations/listinstancesresponse.md
+  - docs/pkg/models/operations/listtriggersrequest.md
   - docs/pkg/models/operations/listtriggersresponse.md
   - docs/pkg/models/operations/listtriggersoccurrencesrequest.md
   - docs/pkg/models/operations/listtriggersoccurrencesresponse.md
@@ -710,6 +711,7 @@ generatedFiles:
   - docs/pkg/models/operations/v2getworkflowresponse.md
   - docs/pkg/models/operations/v2listinstancesrequest.md
   - docs/pkg/models/operations/v2listinstancesresponse.md
+  - docs/pkg/models/operations/v2listtriggersrequest.md
   - docs/pkg/models/operations/v2listtriggersresponse.md
   - docs/pkg/models/operations/v2listtriggersoccurrencesrequest.md
   - docs/pkg/models/operations/v2listtriggersoccurrencesresponse.md

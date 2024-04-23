@@ -150,6 +150,17 @@ var _migrations = []migrations.Migration{
 			return nil
 		},
 	},
+	{
+		Up: func(tx bun.Tx) error {
+			if _, err := tx.Exec(`
+				alter table "triggers"
+				add column name varchar;
+				`); err != nil {
+				return err
+			}
+			return nil
+		},
+	},
 }
 
 func Migrate(ctx context.Context, db *bun.DB) error {

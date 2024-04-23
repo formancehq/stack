@@ -27,6 +27,13 @@ paths:
       description: List triggers
       tags:
       - Orchestration
+      parameters:
+        - name: name
+          in: query
+          description: search by name
+          required: false
+          schema:
+            type: string
       responses:
         200:
           description: List of triggers
@@ -577,6 +584,8 @@ components:
         vars:
           type: object
           additionalProperties: true
+        name:
+          type: string
     Trigger:
       allOf:
       - $ref: '#/components/schemas/TriggerData'

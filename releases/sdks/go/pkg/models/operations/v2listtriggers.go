@@ -7,6 +7,18 @@ import (
 	"net/http"
 )
 
+type V2ListTriggersRequest struct {
+	// search by name
+	Name *string `queryParam:"style=form,explode=true,name=name"`
+}
+
+func (o *V2ListTriggersRequest) GetName() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Name
+}
+
 type V2ListTriggersResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
