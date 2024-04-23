@@ -16,15 +16,17 @@ import (
 
 var _ = Describe("Stacks informer", func() {
 	var (
-		membershipClientMock *internal.MembershipClientMock
+		membershipClientMock  *internal.MembershipClientMock
+		inMemoryStacksModules map[string][]string
 	)
 	BeforeEach(func() {
+		inMemoryStacksModules = map[string][]string{}
 		membershipClientMock = internal.NewMembershipClientMock()
 		dynamicClient, err := dynamic.NewForConfig(restConfig)
 		Expect(err).To(Succeed())
 
 		factory := internal.NewDynamicSharedInformerFactory(dynamicClient)
-		stacksInformer, err := internal.CreateStacksInformer(factory, logging.Testing(), membershipClientMock)
+		stacksInformer, err := internal.CreateStacksInformer(factory, logging.Testing(), membershipClientMock, inMemoryStacksModules)
 		Expect(err).To(Succeed())
 		stopCh := make(chan struct{})
 		go stacksInformer.Run(stopCh)
@@ -48,6 +50,8 @@ var _ = Describe("Stacks informer", func() {
 				Body(stack).
 				Do(context.Background()).
 				Into(stack)).To(Succeed())
+
+			inMemoryStacksModules[stack.Name] = []string{}
 		})
 		It("Should be disabled and have sent a Status_Disabled", func() {
 			Eventually(func() []*generated.Message {
@@ -82,7 +86,7 @@ var _ = Describe("Stacks informer", func() {
 			When("the stack is reconcilled", func() {
 				BeforeEach(func() {
 					stack.Status.Ready = true
-					stack.Status.Modules = internal.GetExpectedModules()
+					stack.Status.Modules = internal.GetExpectedModules(stack.Name, inMemoryStacksModules)
 					Expect(
 						k8sClient.Put().
 							Resource("Stacks").
@@ -120,6 +124,8 @@ var _ = Describe("Stacks informer", func() {
 				Body(stack).
 				Do(context.Background()).
 				Into(stack)).To(Succeed())
+
+			inMemoryStacksModules[stack.Name] = []string{}
 		})
 		It("should have sent a Status_Progressing", func() {
 			Eventually(func() []*generated.Message {
@@ -131,10 +137,9 @@ var _ = Describe("Stacks informer", func() {
 				return nil
 			}).ShouldNot(BeEmpty())
 		})
-		When("the stack is reconcilled", func() {
+		When("all stack dependent are ready", func() {
 			BeforeEach(func() {
 				stack.Status.Ready = true
-				stack.Status.Modules = internal.GetExpectedModules()
 				Expect(
 					k8sClient.Put().
 						Resource("Stacks").
