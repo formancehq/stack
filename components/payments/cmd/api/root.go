@@ -26,6 +26,8 @@ func NewAPI(
 		},
 	}
 
+	cobra.EnableTraverseRunHooks = true
+
 	server := newServer(version)
 	addAutoMigrateCommandFunc(server)
 	root.AddCommand(server)

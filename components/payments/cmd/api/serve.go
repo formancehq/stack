@@ -38,10 +38,7 @@ func newServer(version string) *cobra.Command {
 		Aliases:      []string{"server"},
 		Short:        "Launch server",
 		SilenceUsage: true,
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			return bindFlagsToViper(cmd)
-		},
-		RunE: runServer(version),
+		RunE:         runServer(version),
 	}
 }
 
