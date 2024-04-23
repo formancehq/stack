@@ -45,6 +45,11 @@ func (r *CreateAccountRequest) Validate() error {
 		return errors.New("type is required")
 	}
 
+	_, err := models.AccountTypeFromString(r.Type)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
