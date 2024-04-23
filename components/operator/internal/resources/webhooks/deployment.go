@@ -2,6 +2,7 @@ package webhooks
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/brokers"
 	"strings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -21,7 +22,7 @@ import (
 
 func deploymentEnvVars(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, database *v1beta1.Database) (*v1beta1.ResourceReference, []v1.EnvVar, error) {
 
-	brokerURI, err := settings.RequireURL(ctx, stack.Name, "broker","dsn")
+	brokerURI, err := settings.RequireURL(ctx, stack.Name, "broker", "dsn")
 	if err != nil {
 		return nil, nil, err
 	}
@@ -58,7 +59,7 @@ func deploymentEnvVars(ctx core.Context, stack *v1beta1.Stack, webhooks *v1beta1
 		return nil, nil, err
 	}
 
-	brokerEnvVar, err := settings.GetBrokerEnvVars(ctx, brokerURI, stack.Name, "webhooks")
+	brokerEnvVar, err := brokers.GetBrokerEnvVars(ctx, brokerURI, stack.Name, "webhooks")
 	if err != nil {
 		return nil, nil, err
 	}
@@ -91,9 +92,12 @@ func createAPIDeployment(ctx core.Context, stack *v1beta1.Stack, webhooks *v1bet
 	}
 	if withWorker {
 		env = append(env, core.Env("WORKER", "true"))
-		env = append(env, core.Env("KAFKA_TOPICS", strings.Join(Map(consumer.Spec.Services, func(from string) string {
-			return fmt.Sprintf("%s-%s", stack.Name, from)
-		}), " ")))
+
+		topics, err := brokers.GetTopicsEnvVars(ctx, stack, "KAFKA_TOPICS", consumer.Spec.Services...)
+		if err != nil {
+			return err
+		}
+		env = append(env, topics...)
 	}
 
 	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)

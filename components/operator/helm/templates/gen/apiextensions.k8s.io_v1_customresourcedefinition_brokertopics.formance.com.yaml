@@ -65,8 +65,6 @@ spec:
                 type: string
               ready:
                 type: boolean
-              uri:
-                type: string
             type: object
         type: object
     served: true

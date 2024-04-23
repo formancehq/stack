@@ -3,6 +3,7 @@ package gateways
 import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
+	"github.com/formancehq/operator/internal/resources/brokers"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/licence"
 	"github.com/formancehq/operator/internal/resources/registries"
@@ -31,7 +32,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack,
 	env = append(env, core.GetDevEnvVars(stack, gateway)...)
 
 	if stack.Spec.EnableAudit && broker != nil {
-		brokerEnvVar, err := settings.GetBrokerEnvVars(ctx, broker.Status.URI, stack.Name, "gateway")
+		brokerEnvVar, err := brokers.GetBrokerEnvVars(ctx, broker.Status.URI, stack.Name, "gateway")
 		if err != nil {
 			return err
 		}

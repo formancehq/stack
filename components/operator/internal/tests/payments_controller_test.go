@@ -46,52 +46,54 @@ var _ = Describe("PaymentsController", func() {
 			Expect(Delete(databaseSettings)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 		})
-		It("Should add an owner reference on the stack", func() {
-			Eventually(func(g Gomega) bool {
-				g.Expect(LoadResource("", payments.Name, payments)).To(Succeed())
-				reference, err := core.HasOwnerReference(TestContext(), stack, payments)
-				g.Expect(err).To(BeNil())
-				return reference
-			}).Should(BeTrue())
-		})
-		It("Should create a read deployment with a service", func() {
-			deployment := &appsv1.Deployment{}
-			Eventually(func() error {
-				return LoadResource(stack.Name, "payments-read", deployment)
-			}).Should(Succeed())
-			Expect(deployment).To(BeControlledBy(payments))
+		It("Should create resources", func() {
+			By("Should add an owner reference on the stack", func() {
+				Eventually(func(g Gomega) bool {
+					g.Expect(LoadResource("", payments.Name, payments)).To(Succeed())
+					reference, err := core.HasOwnerReference(TestContext(), stack, payments)
+					g.Expect(err).To(BeNil())
+					return reference
+				}).Should(BeTrue())
+			})
+			By("Should create a read deployment with a service", func() {
+				deployment := &appsv1.Deployment{}
+				Eventually(func() error {
+					return LoadResource(stack.Name, "payments-read", deployment)
+				}).Should(Succeed())
+				Expect(deployment).To(BeControlledBy(payments))
 
-			service := &corev1.Service{}
-			Eventually(func() error {
-				return LoadResource(stack.Name, "payments-read", service)
-			}).Should(Succeed())
-			Expect(service).To(BeControlledBy(payments))
-		})
-		It("Should create a connectors deployment with a service", func() {
-			deployment := &appsv1.Deployment{}
-			Eventually(func() error {
-				return LoadResource(stack.Name, "payments-connectors", deployment)
-			}).Should(Succeed())
-			Expect(deployment).To(BeControlledBy(payments))
+				service := &corev1.Service{}
+				Eventually(func() error {
+					return LoadResource(stack.Name, "payments-read", service)
+				}).Should(Succeed())
+				Expect(service).To(BeControlledBy(payments))
+			})
+			By("Should create a connectors deployment with a service", func() {
+				deployment := &appsv1.Deployment{}
+				Eventually(func() error {
+					return LoadResource(stack.Name, "payments-connectors", deployment)
+				}).Should(Succeed())
+				Expect(deployment).To(BeControlledBy(payments))
 
-			service := &corev1.Service{}
-			Eventually(func() error {
-				return LoadResource(stack.Name, "payments-connectors", service)
-			}).Should(Succeed())
-			Expect(service).To(BeControlledBy(payments))
-		})
-		It("Should create a gateway", func() {
-			deployment := &appsv1.Deployment{}
-			Eventually(func() error {
-				return LoadResource(stack.Name, "payments", deployment)
-			}).Should(Succeed())
-			Expect(deployment).To(BeControlledBy(payments))
-		})
-		It("Should create a new GatewayHTTPAPI object", func() {
-			httpService := &v1beta1.GatewayHTTPAPI{}
-			Eventually(func() error {
-				return LoadResource("", core.GetObjectName(stack.Name, "payments"), httpService)
-			}).Should(Succeed())
+				service := &corev1.Service{}
+				Eventually(func() error {
+					return LoadResource(stack.Name, "payments-connectors", service)
+				}).Should(Succeed())
+				Expect(service).To(BeControlledBy(payments))
+			})
+			By("Should create a gateway", func() {
+				deployment := &appsv1.Deployment{}
+				Eventually(func() error {
+					return LoadResource(stack.Name, "payments", deployment)
+				}).Should(Succeed())
+				Expect(deployment).To(BeControlledBy(payments))
+			})
+			By("Should create a new GatewayHTTPAPI object", func() {
+				httpService := &v1beta1.GatewayHTTPAPI{}
+				Eventually(func() error {
+					return LoadResource("", core.GetObjectName(stack.Name, "payments"), httpService)
+				}).Should(Succeed())
+			})
 		})
 		Context("With Search enabled", func() {
 			var search *v1beta1.Search

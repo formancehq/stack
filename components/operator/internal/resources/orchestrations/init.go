@@ -89,6 +89,8 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, o *v1beta1.Orchestration, vers
 			if err := createDeployment(ctx, stack, o, database, authClient, consumer, image); err != nil {
 				return err
 			}
+		} else {
+			return NewPendingError().WithMessage("waiting for consumers to be ready")
 		}
 	}
 

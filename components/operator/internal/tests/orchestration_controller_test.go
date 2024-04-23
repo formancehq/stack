@@ -2,16 +2,15 @@ package tests_test
 
 import (
 	"fmt"
-
 	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/operator/internal/tests/internal"
 	"github.com/google/uuid"
+	appsv1 "k8s.io/api/apps/v1"
 
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	core "github.com/formancehq/operator/internal/core"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	appsv1 "k8s.io/api/apps/v1"
 )
 
 var _ = Describe("OrchestrationController", func() {
@@ -84,42 +83,44 @@ var _ = Describe("OrchestrationController", func() {
 			Expect(Delete(brokerDSNSettings)).To(Succeed())
 			Expect(Delete(temporalDSNSettings)).To(Succeed())
 		})
-		It("Should add an owner reference on the stack", func() {
-			Eventually(func(g Gomega) bool {
-				g.Expect(LoadResource("", orchestration.Name, orchestration)).To(Succeed())
-				reference, err := core.HasOwnerReference(TestContext(), stack, orchestration)
-				g.Expect(err).To(BeNil())
-				return reference
-			}).Should(BeTrue())
-		})
-		It("Should create a deployment", func() {
-			deployment := &appsv1.Deployment{}
-			Eventually(func() error {
-				return LoadResource(stack.Name, "orchestration", deployment)
-			}).Should(Succeed())
-			Expect(deployment).To(BeControlledBy(orchestration))
-			Expect(deployment.Spec.Template.Spec.Containers[0].Env).To(ContainElements(
-				core.Env("WORKER", "true"),
-				core.Env("TOPICS", fmt.Sprintf("%s-ledger", stack.Name)),
-			))
-		})
-		It("Should create a new GatewayHTTPAPI object", func() {
-			httpService := &v1beta1.GatewayHTTPAPI{}
-			Eventually(func() error {
-				return LoadResource("", core.GetObjectName(stack.Name, "orchestration"), httpService)
-			}).Should(Succeed())
-		})
-		It("Should create a new AuthClient object", func() {
-			authClient := &v1beta1.AuthClient{}
-			Eventually(func() error {
-				return LoadResource("", core.GetObjectName(stack.Name, "orchestration"), authClient)
-			}).Should(Succeed())
-		})
-		It("Should create a new BrokerConsumer object", func() {
-			consumer := &v1beta1.BrokerConsumer{}
-			Eventually(func() error {
-				return LoadResource("", orchestration.Name+"-orchestration", consumer)
-			}).Should(Succeed())
+		It("Should create appropriate components", func() {
+			By("Should add an owner reference on the stack", func() {
+				Eventually(func(g Gomega) bool {
+					g.Expect(LoadResource("", orchestration.Name, orchestration)).To(Succeed())
+					reference, err := core.HasOwnerReference(TestContext(), stack, orchestration)
+					g.Expect(err).To(BeNil())
+					return reference
+				}).Should(BeTrue())
+			})
+			By("Should create a deployment", func() {
+				deployment := &appsv1.Deployment{}
+				Eventually(func() error {
+					return LoadResource(stack.Name, "orchestration", deployment)
+				}).Should(Succeed())
+				Expect(deployment).To(BeControlledBy(orchestration))
+				Expect(deployment.Spec.Template.Spec.Containers[0].Env).To(ContainElements(
+					core.Env("WORKER", "true"),
+					core.Env("TOPICS", fmt.Sprintf("%s.ledger", stack.Name)),
+				))
+			})
+			By("Should create a new GatewayHTTPAPI object", func() {
+				httpService := &v1beta1.GatewayHTTPAPI{}
+				Eventually(func() error {
+					return LoadResource("", core.GetObjectName(stack.Name, "orchestration"), httpService)
+				}).Should(Succeed())
+			})
+			By("Should create a new AuthClient object", func() {
+				authClient := &v1beta1.AuthClient{}
+				Eventually(func() error {
+					return LoadResource("", core.GetObjectName(stack.Name, "orchestration"), authClient)
+				}).Should(Succeed())
+			})
+			By("Should create a new BrokerConsumer object", func() {
+				consumer := &v1beta1.BrokerConsumer{}
+				Eventually(func() error {
+					return LoadResource("", orchestration.Name+"-orchestration", consumer)
+				}).Should(Succeed())
+			})
 		})
 	})
 })

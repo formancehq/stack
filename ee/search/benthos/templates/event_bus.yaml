@@ -40,6 +40,7 @@ mapping: |
       "urls": [env("NATS_URL")],
       "queue": this.consumer_group,
       "subject": env("TOPIC_PREFIX") + this.topic,
-      "durable": this.consumer_group
+      "durable": if env("NATS_BIND") == "true" { this.consumer_group + "_" + this.topic } else { this.consumer_group },
+      "bind": env("NATS_BIND") == "true"
     }
   }}

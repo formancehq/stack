@@ -44,35 +44,37 @@ var _ = Describe("AuthController", func() {
 			Expect(Delete(databaseSettings)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 		})
-		It("Should create a deployment", func() {
-			deployment := &appsv1.Deployment{}
-			Eventually(func() error {
-				return LoadResource(stack.Name, "auth", deployment)
-			}).Should(Succeed())
-			Expect(deployment).To(BeControlledBy(auth))
-			Expect(deployment.Spec.Template.Spec.Containers[0].Env).To(ContainElements(
-				core.Env("BASE_URL", "http://auth:8080"),
-			))
-		})
-		It("Should create a new GatewayHTTPAPI object", func() {
-			httpService := &v1beta1.GatewayHTTPAPI{}
-			Eventually(func() error {
-				return LoadResource("", core.GetObjectName(stack.Name, "auth"), httpService)
-			}).Should(Succeed())
-		})
-		It("Should set the status to ready", func() {
-			Eventually(func(g Gomega) bool {
-				g.Expect(LoadResource("", auth.Name, auth)).To(Succeed())
-				return auth.Status.Ready
-			}).Should(BeTrue())
-		})
-		It("Should add an owner reference on the stack", func() {
-			Eventually(func(g Gomega) bool {
-				g.Expect(LoadResource("", auth.Name, auth)).To(Succeed())
-				reference, err := core.HasOwnerReference(TestContext(), stack, auth)
-				g.Expect(err).To(BeNil())
-				return reference
-			}).Should(BeTrue())
+		It("Should create resources", func() {
+			By("Should create a deployment", func() {
+				deployment := &appsv1.Deployment{}
+				Eventually(func() error {
+					return LoadResource(stack.Name, "auth", deployment)
+				}).Should(Succeed())
+				Expect(deployment).To(BeControlledBy(auth))
+				Expect(deployment.Spec.Template.Spec.Containers[0].Env).To(ContainElements(
+					core.Env("BASE_URL", "http://auth:8080"),
+				))
+			})
+			By("Should create a new GatewayHTTPAPI object", func() {
+				httpService := &v1beta1.GatewayHTTPAPI{}
+				Eventually(func() error {
+					return LoadResource("", core.GetObjectName(stack.Name, "auth"), httpService)
+				}).Should(Succeed())
+			})
+			By("Should set the status to ready", func() {
+				Eventually(func(g Gomega) bool {
+					g.Expect(LoadResource("", auth.Name, auth)).To(Succeed())
+					return auth.Status.Ready
+				}).Should(BeTrue())
+			})
+			By("Should add an owner reference on the stack", func() {
+				Eventually(func(g Gomega) bool {
+					g.Expect(LoadResource("", auth.Name, auth)).To(Succeed())
+					reference, err := core.HasOwnerReference(TestContext(), stack, auth)
+					g.Expect(err).To(BeNil())
+					return reference
+				}).Should(BeTrue())
+			})
 		})
 		Context("Then when disabling the stack", func() {
 			JustBeforeEach(func() {

@@ -71,18 +71,21 @@ func otelEnvVars(ctx core.Context, stack string, monitoringType MonitoringType, 
 		core.Env(fmt.Sprintf("%sOTEL_SERVICE_NAME", prefix), serviceName),
 	}
 
-	resourceAttributes, err := GetMap(ctx, "opentelementry", strings.ToLower(string(monitoringType)), "resource-attributes")
+	resourceAttributes, err := GetMap(ctx, "opentelemetry", strings.ToLower(string(monitoringType)), "resource-attributes")
 	if err != nil {
 		return nil, err
 	}
 
-	if resourceAttributes != nil {
-		resourceAttributesStr := ""
-		for k, v := range resourceAttributes {
-			resourceAttributesStr = fmt.Sprintf("%s%s=%s ", resourceAttributesStr, k, v)
-		}
-		ret = append(ret, core.Env(fmt.Sprintf("%sOTEL_RESOURCE_ATTRIBUTES", prefix), resourceAttributesStr))
+	if resourceAttributes == nil {
+		resourceAttributes = map[string]string{}
 	}
+	resourceAttributes["stack"] = stack
+
+	resourceAttributesStr := ""
+	for k, v := range resourceAttributes {
+		resourceAttributesStr = fmt.Sprintf("%s%s=%s ", resourceAttributesStr, k, v)
+	}
+	ret = append(ret, core.Env(fmt.Sprintf("%sOTEL_RESOURCE_ATTRIBUTES", prefix), resourceAttributesStr))
 
 	return ret, nil
 }

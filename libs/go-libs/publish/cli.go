@@ -44,6 +44,7 @@ const (
 	PublisherNatsURLFlag           = "publisher-nats-url"
 	PublisherNatsMaxReconnectFlag  = "publisher-nats-max-reconnect"
 	PublisherNatsReconnectWaitFlag = "publisher-nats-reconnect-wait"
+	PublisherNatsAutoProvisionFlag = "publisher-nats-auto-provision"
 )
 
 type ConfigDefault struct {
@@ -72,6 +73,7 @@ type ConfigDefault struct {
 	PublisherNatsURL           string
 	PublisherNatsMaxReconnect  int
 	PublisherNatsReconnectWait time.Duration
+	PublisherNatsAutoProvision bool
 }
 
 var (
@@ -97,6 +99,7 @@ var (
 		PublisherNatsURL:                            "",
 		PublisherNatsMaxReconnect:                   -1, // We want to reconnect forever
 		PublisherNatsReconnectWait:                  2 * time.Second,
+		PublisherNatsAutoProvision:                  true,
 	}
 )
 
@@ -144,6 +147,7 @@ func InitNatsCLIFlags(cmd *cobra.Command, options ...func(*ConfigDefault)) {
 	cmd.PersistentFlags().Int(PublisherNatsMaxReconnectFlag, values.PublisherNatsMaxReconnect, "Nats: set the maximum number of reconnect attempts.")
 	cmd.PersistentFlags().Duration(PublisherNatsReconnectWaitFlag, values.PublisherNatsReconnectWait, "Nats: the wait time between reconnect attempts.")
 	cmd.PersistentFlags().String(PublisherNatsURLFlag, values.PublisherNatsURL, "Nats url")
+	cmd.PersistentFlags().Bool(PublisherNatsAutoProvisionFlag, true, "Auto create streams")
 }
 
 func CLIPublisherModule(
@@ -190,6 +194,7 @@ func CLIPublisherModule(
 		options = append(options, NatsModule(
 			viper.GetString(PublisherNatsURLFlag),
 			serviceName,
+			viper.GetBool(PublisherNatsAutoProvisionFlag),
 			nats.Name(serviceName),
 			nats.MaxReconnects(viper.GetInt(PublisherNatsMaxReconnectFlag)),
 			nats.ReconnectWait(viper.GetDuration(PublisherNatsReconnectWaitFlag)),

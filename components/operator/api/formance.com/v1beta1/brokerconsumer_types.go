@@ -25,11 +25,15 @@ type BrokerConsumerSpec struct {
 	StackDependency `json:",inline"`
 	Services        []string `json:"services"`
 	QueriedBy       string   `json:"queriedBy"`
+	//+optional
+	// As the name is optional, if not provided, the name will be the QueriedBy property
+	// This is only applied when using one stream by stack see Mode
+	Name string `json:"name,omitempty"`
 }
 
 // BrokerConsumerStatus defines the observed state of BrokerConsumer
 type BrokerConsumerStatus struct {
-	CommonStatus `json:",inline"`
+	StatusWithConditions `json:",inline"`
 }
 
 //+kubebuilder:object:root=true

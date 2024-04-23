@@ -93,22 +93,6 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, gateway *v1beta1.Gateway, vers
 	return nil
 }
 
-// TODO: React on consumers as others services
-//func createAuditTopic(ctx Context, stack *v1beta1.Stack, gateway *v1beta1.Gateway) (*v1beta1.BrokerTopic, error) {
-//	if stack.Spec.EnableAudit && gateway.Spec.CompareVersion(stack, "v0.2.0") > 0 {
-//		topic, err := brokertopics.CreateOrUpdate(ctx, stack, gateway, "gateway", "audit",
-//			WithOwner[*v1beta1.BrokerTopic](ctx.GetScheme(), stack))
-//		if err != nil {
-//			return nil, err
-//		}
-//		if !topic.Status.Ready {
-//			return nil, NewPendingError()
-//		}
-//		return topic, nil
-//	}
-//	return nil, nil
-//}
-
 func init() {
 	Init(
 		WithModuleReconciler(Reconcile,

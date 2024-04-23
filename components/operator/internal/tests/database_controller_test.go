@@ -91,15 +91,17 @@ var _ = Describe("DatabaseController", func() {
 						Expect(Delete(clearDatabaseSettings)).To(Succeed())
 					})
 				})
-				It("Should create a deletion job", func() {
-					Eventually(func() error {
-						return LoadResource(stack.Name, fmt.Sprintf("%s-drop-database", database.UID), &batchv1.Job{})
-					}).Should(Succeed())
-				})
-				It("Should eventually be deleted", func() {
-					Eventually(func() error {
-						return LoadResource(stack.Name, database.Name, &v1beta1.Database{})
-					}).Should(BeNotFound())
+				It("Should delete the database", func() {
+					By("Should create a deletion job", func() {
+						Eventually(func() error {
+							return LoadResource(stack.Name, fmt.Sprintf("%s-drop-database", database.UID), &batchv1.Job{})
+						}).Should(Succeed())
+					})
+					By("Should eventually be deleted", func() {
+						Eventually(func() error {
+							return LoadResource(stack.Name, database.Name, &v1beta1.Database{})
+						}).Should(BeNotFound())
+					})
 				})
 			})
 			Context("With a settings preventing database cleaning", func() {
@@ -113,15 +115,17 @@ var _ = Describe("DatabaseController", func() {
 						Expect(Delete(clearDatabaseSettings)).To(Succeed())
 					})
 				})
-				It("Should not create a deletion job", func() {
-					Consistently(func() error {
-						return LoadResource(stack.Name, fmt.Sprintf("%s-drop-database", database.Spec.Service), &batchv1.Job{})
-					}, "2s").Should(BeNotFound())
-				})
-				It("Should eventually be deleted", func() {
-					Eventually(func() error {
-						return LoadResource(stack.Name, database.Name, &v1beta1.Database{})
-					}).Should(BeNotFound())
+				It("Should not delete the real database", func() {
+					By("Should not create a deletion job", func() {
+						Consistently(func() error {
+							return LoadResource(stack.Name, fmt.Sprintf("%s-drop-database", database.Spec.Service), &batchv1.Job{})
+						}, "2s").Should(BeNotFound())
+					})
+					By("Should eventually be deleted", func() {
+						Eventually(func() error {
+							return LoadResource(stack.Name, database.Name, &v1beta1.Database{})
+						}).Should(BeNotFound())
+					})
 				})
 			})
 			Context("Then when updating the DatabaseConfiguration object", func() {

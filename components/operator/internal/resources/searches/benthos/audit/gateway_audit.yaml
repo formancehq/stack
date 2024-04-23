@@ -1,6 +1,6 @@
 input:
   event_bus:
-    topic: audit
+    topic: gateway
     consumer_group: search
 
 pipeline:

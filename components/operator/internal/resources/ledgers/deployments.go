@@ -2,6 +2,7 @@ package ledgers
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/brokers"
 	"github.com/formancehq/operator/internal/resources/brokertopics"
 	"k8s.io/apimachinery/pkg/types"
 	"strconv"
@@ -263,18 +264,21 @@ func createLedgerContainerFull(ctx core.Context, stack *v1beta1.Stack, v2 bool) 
 	}
 
 	if broker != nil {
+		if !broker.Status.Ready {
+			return nil, core.NewPendingError().WithMessage("broker not ready")
+		}
 		prefix := ""
 		if !v2 {
 			prefix = "NUMARY_"
 		}
 
-		brokerEnvVar, err := settings.GetBrokerEnvVarsWithPrefix(ctx, broker.Status.URI, stack.Name, "ledger", prefix)
+		brokerEnvVar, err := brokers.GetEnvVarsWithPrefix(ctx, broker.Status.URI, stack.Name, "ledger", prefix)
 		if err != nil {
 			return nil, err
 		}
 
 		container.Env = append(container.Env, brokerEnvVar...)
-		container.Env = append(container.Env, core.Env(fmt.Sprintf("%sPUBLISHER_TOPIC_MAPPING", prefix), "*:"+core.GetObjectName(stack.Name, "ledger")))
+		container.Env = append(container.Env, brokers.GetPublisherEnvVars(stack, broker, "ledger", prefix)...)
 	}
 
 	return container, nil

@@ -29,21 +29,23 @@ var _ = Describe("StackController", func() {
 		JustAfterEach(func() {
 			Expect(client.IgnoreNotFound(Delete(stack))).To(Succeed())
 		})
-		It("Should create a new namespace", func() {
-			Eventually(func() error {
-				return Get(core.GetResourceName(stack.Name), &corev1.Namespace{})
-			}).Should(Succeed())
-		})
-		It("Should resolve to 'latest' version", func() {
-			version, err := core.GetModuleVersion(TestContext(), stack, &v1beta1.Ledger{})
-			Expect(err).To(Succeed())
-			Expect(version).To(Equal("latest"))
-		})
-		It("Should be ready", func() {
-			Eventually(func() bool {
-				Expect(LoadResource("", stack.Name, stack)).To(Succeed())
-				return stack.Status.Ready
-			}).Should(BeTrue())
+		It("Should create resources", func() {
+			By("Should create a new namespace", func() {
+				Eventually(func() error {
+					return Get(core.GetResourceName(stack.Name), &corev1.Namespace{})
+				}).Should(Succeed())
+			})
+			By("Should resolve to 'latest' version", func() {
+				version, err := core.GetModuleVersion(TestContext(), stack, &v1beta1.Ledger{})
+				Expect(err).To(Succeed())
+				Expect(version).To(Equal("latest"))
+			})
+			By("Should be ready", func() {
+				Eventually(func() bool {
+					Expect(LoadResource("", stack.Name, stack)).To(Succeed())
+					return stack.Status.Ready
+				}).Should(BeTrue())
+			})
 		})
 		Context("with version specified", func() {
 			BeforeEach(func() {
@@ -113,17 +115,19 @@ var _ = Describe("StackController", func() {
 			JustAfterEach(func() {
 				Expect(client.IgnoreNotFound(Delete(ledger))).To(Succeed())
 			})
-			It("the stack should not be ready anymore", func() {
-				Eventually(func() bool {
-					Expect(LoadResource("", stack.Name, stack)).To(Succeed())
-					return stack.Status.Ready
-				}).Should(BeFalse())
-			})
-			It("should not be ready", func() {
-				Eventually(func() bool {
-					Expect(LoadResource("", ledger.Name, ledger)).To(Succeed())
-					return ledger.Status.Ready
-				}).Should(BeFalse())
+			It("Should update resources", func() {
+				By("the stack should not be ready anymore", func() {
+					Eventually(func() bool {
+						Expect(LoadResource("", stack.Name, stack)).To(Succeed())
+						return stack.Status.Ready
+					}).Should(BeFalse())
+				})
+				By("should not be ready", func() {
+					Eventually(func() bool {
+						Expect(LoadResource("", ledger.Name, ledger)).To(Succeed())
+						return ledger.Status.Ready
+					}).Should(BeFalse())
+				})
 			})
 			When("each module are ready", func() {
 				var databaseSettings *v1beta1.Settings

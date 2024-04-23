@@ -25,16 +25,32 @@ type BrokerSpec struct {
 	StackDependency `json:",inline"`
 }
 
+// Mode defined how streams are created on the broker (mainly nats)
+type Mode string
+
+const (
+	ModeOneStreamByService = "OneStreamByService"
+	ModeOneStreamByStack   = "OneStreamByStack"
+)
+
 // BrokerStatus defines the observed state of Broker
 type BrokerStatus struct {
 	CommonStatus `json:",inline"`
 	//+optional
 	URI *URI `json:"uri,omitempty"`
+	//+optional
+	Mode Mode `json:"mode"`
+	// Streams created when Mode == ModeOneStreamByService
+	//+optional
+	Streams []string `json:"streams,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
+//+kubebuilder:printcolumn:name="Mode",type=string,JSONPath=".status.mode",description="Mode"
+//+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Ready"
+//+kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
 
 // Broker is the Schema for the brokers API
 type Broker struct {

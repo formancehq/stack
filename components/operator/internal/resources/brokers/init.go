@@ -6,6 +6,10 @@ import (
 	v1 "k8s.io/api/batch/v1"
 )
 
+//+kubebuilder:rbac:groups=formance.com,resources=brokers,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=formance.com,resources=brokers/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=formance.com,resources=brokers/finalizers,verbs=update
+
 func init() {
 	core.Init(
 		core.WithResourceReconciler(Reconcile,
