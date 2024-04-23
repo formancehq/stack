@@ -170,6 +170,7 @@ func main() {
 
 * [AddAccountToPool](docs/sdks/payments/README.md#addaccounttopool) - Add an account to a pool
 * [ConnectorsTransfer](docs/sdks/payments/README.md#connectorstransfer) - Transfer funds between Connector accounts
+* [CreateAccount](docs/sdks/payments/README.md#createaccount) - Create an account
 * [CreateBankAccount](docs/sdks/payments/README.md#createbankaccount) - Create a BankAccount in Payments and on the PSP
 * [CreatePayment](docs/sdks/payments/README.md#createpayment) - Create a payment
 * [CreatePool](docs/sdks/payments/README.md#createpool) - Create a Pool

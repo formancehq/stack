@@ -10,6 +10,7 @@ func NewAccountsCommand() *cobra.Command {
 		fctl.WithAliases("acc", "a", "ac", "account"),
 		fctl.WithShortDescription("Accounts management"),
 		fctl.WithChildCommands(
+			NewCreateCommand(),
 			NewListCommand(),
 			NewShowCommand(),
 			NewListBalanceCommand(),

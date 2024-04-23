@@ -84,7 +84,7 @@ func (c *ListController) Render(cmd *cobra.Command, args []string) error {
 			acc.AccountName,
 			acc.DefaultAsset,
 			acc.DefaultCurrency,
-			acc.Type,
+			string(acc.Type),
 			acc.ConnectorID,
 		}
 	})
