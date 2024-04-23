@@ -32,9 +32,6 @@ func newServeCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "serve",
 		Aliases: []string{"server"},
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			return bindFlagsToViper(cmd)
-		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			options := []fx.Option{
 				fx.Provide(func() (*http.Client, error) {

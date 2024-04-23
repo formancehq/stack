@@ -13,7 +13,7 @@ require (
 	github.com/google/uuid v1.4.0
 	github.com/pkg/errors v0.9.1
 	github.com/riandyrn/otelchi v0.5.1
-	github.com/spf13/cobra v1.6.1
+	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.9.0
 	go.uber.org/fx v1.19.2

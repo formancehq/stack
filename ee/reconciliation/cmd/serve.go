@@ -49,10 +49,7 @@ func stackClientModule() fx.Option {
 
 func newServeCommand(version string) *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "serve",
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			return bindFlagsToViper(cmd)
-		},
+		Use:  "serve",
 		RunE: runServer(version),
 	}
 	cmd.Flags().String(listenFlag, ":8080", "Listening address")

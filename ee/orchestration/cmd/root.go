@@ -62,6 +62,9 @@ func NewRootCommand() *cobra.Command {
 			return bindFlagsToViper(cmd)
 		},
 	}
+
+	cobra.EnableTraverseRunHooks = true
+
 	cmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	cmd.PersistentFlags().String(stackURLFlag, "", "Stack url")
 	cmd.PersistentFlags().String(stackClientIDFlag, "", "Stack client ID")
