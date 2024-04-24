@@ -136,7 +136,6 @@ func (store *Store) buildVolumesWithBalancesQuery(query *bun.SelectQuery, q GetV
 		globalQuery.Where(where, args...)
 	}
 
-	println(fmt.Sprintf("%s", globalQuery))
 	return globalQuery
 }
 
