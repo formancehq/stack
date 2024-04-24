@@ -26,8 +26,8 @@ func (m *MockStore) WithPaymentIDsNotModified(paymentsIDs []models.PaymentID) *M
 	return m
 }
 
-func (m *MockStore) UpsertAccounts(ctx context.Context, accounts []*models.Account) error {
-	return nil
+func (m *MockStore) UpsertAccounts(ctx context.Context, accounts []*models.Account) ([]models.AccountID, error) {
+	return nil, nil
 }
 
 func (m *MockStore) UpsertPayments(ctx context.Context, payments []*models.Payment) ([]*models.PaymentID, error) {

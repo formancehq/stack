@@ -19,7 +19,7 @@ type Store interface {
 	GetConnector(ctx context.Context, connectorID models.ConnectorID) (*models.Connector, error)
 	ListConnectors(ctx context.Context) ([]*models.Connector, error)
 
-	UpsertAccounts(ctx context.Context, accounts []*models.Account) error
+	UpsertAccounts(ctx context.Context, accounts []*models.Account) ([]models.AccountID, error)
 	GetAccount(ctx context.Context, id string) (*models.Account, error)
 
 	CreateBankAccount(ctx context.Context, account *models.BankAccount) error
