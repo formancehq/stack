@@ -27,16 +27,28 @@ func (i *DefaultIngester) IngestAccounts(ctx context.Context, batch AccountBatch
 		"startingAt": startingAt,
 	}).Debugf("Ingest accounts batch")
 
-	if err := i.store.UpsertAccounts(ctx, batch); err != nil {
+	idsInserted, err := i.store.UpsertAccounts(ctx, batch)
+	if err != nil {
 		return fmt.Errorf("error upserting accounts: %w", err)
 	}
 
-	for _, account := range batch {
+	idsInsertedMap := make(map[string]struct{}, len(idsInserted))
+	for idx := range idsInserted {
+		idsInsertedMap[idsInserted[idx].String()] = struct{}{}
+	}
+
+	for accountIdx := range batch {
+		_, ok := idsInsertedMap[batch[accountIdx].ID.String()]
+		if !ok {
+			// No need to publish an event for an already existing payment
+			continue
+		}
+
 		if err := i.publisher.Publish(
 			events.TopicPayments,
 			publish.NewMessage(
 				ctx,
-				i.messages.NewEventSavedAccounts(i.provider, account),
+				i.messages.NewEventSavedAccounts(i.provider, batch[accountIdx]),
 			),
 		); err != nil {
 			logging.FromContext(ctx).Errorf("Publishing message: %w", err)
