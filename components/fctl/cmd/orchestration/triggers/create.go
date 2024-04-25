@@ -16,6 +16,7 @@ type TriggersCreateStore struct {
 }
 type TriggersCreateController struct {
 	store      *TriggersCreateStore
+	nameFlag   string
 	filterFlag string
 	varsFlag   string
 }
@@ -29,6 +30,7 @@ func NewDefaultTriggersCreateStore() *TriggersCreateStore {
 func NewTriggersCreateController() *TriggersCreateController {
 	return &TriggersCreateController{
 		store:      NewDefaultTriggersCreateStore(),
+		nameFlag:   "name",
 		filterFlag: "filter",
 		varsFlag:   "vars",
 	}
@@ -40,6 +42,7 @@ func NewCreateCommand() *cobra.Command {
 		fctl.WithShortDescription("Create a trigger"),
 		fctl.WithArgs(cobra.ExactArgs(2)),
 		fctl.WithController[*TriggersCreateStore](ctrl),
+		fctl.WithStringFlag(ctrl.nameFlag, "", "Trigger's name"),
 		fctl.WithStringFlag(ctrl.filterFlag, "", "Filter events"),
 		fctl.WithStringSliceFlag(ctrl.varsFlag, []string{}, "Variables to pass to the workflow"),
 	)
@@ -54,6 +57,7 @@ func (c *TriggersCreateController) Run(cmd *cobra.Command, args []string) (fctl.
 
 	var (
 		event    = args[0]
+		name     = fctl.GetString(cmd, c.nameFlag)
 		filter   = fctl.GetString(cmd, c.filterFlag)
 		vars     = fctl.GetStringSlice(cmd, c.varsFlag)
 		workflow = args[1]
@@ -61,6 +65,7 @@ func (c *TriggersCreateController) Run(cmd *cobra.Command, args []string) (fctl.
 
 	data := &shared.TriggerData{
 		Event:      event,
+		Name:       &name,
 		WorkflowID: workflow,
 		Vars:       map[string]interface{}{},
 	}

@@ -30,6 +30,12 @@ paths:
       parameters:
         - $ref: '#/components/parameters/Cursor'
         - $ref: '#/components/parameters/PageSize'
+        - name: name
+          in: query
+          description: search by name
+          required: false
+          schema:
+            type: string
       responses:
         200:
           description: List of triggers
@@ -667,6 +673,8 @@ components:
         vars:
           type: object
           additionalProperties: true
+        name:
+          type: string
     V2Trigger:
       allOf:
       - $ref: '#/components/schemas/V2TriggerData'

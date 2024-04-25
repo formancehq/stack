@@ -25,6 +25,13 @@ paths:
       description: List triggers
       tags:
         - Orchestration
+      parameters:
+        - name: name
+          in: query
+          description: search by name
+          required: false
+          schema:
+            type: string
       responses:
         "200":
           description: List of triggers
@@ -400,6 +407,13 @@ paths:
       description: List triggers
       tags:
         - Orchestration
+      parameters:
+        - name: name
+          in: query
+          description: search by name
+          required: false
+          schema:
+            type: string
       responses:
         "200":
           description: List of triggers
@@ -970,6 +984,8 @@ components:
         vars:
           type: object
           additionalProperties: true
+        name:
+          type: string
     Trigger:
       allOf:
         - $ref: '#/components/schemas/TriggerData'
@@ -987,8 +1003,6 @@ components:
       type: object
       required:
         - triggerID
-        - workflowInstanceID
-        - workflowInstance
         - date
         - event
       properties:
@@ -1004,6 +1018,8 @@ components:
         event:
           type: object
           additionalProperties: true
+        error:
+          type: string
     ListTriggersOccurrencesResponse:
       type: object
       properties:
@@ -1159,6 +1175,9 @@ components:
           type: object
           additionalProperties:
             type: string
+        timestamp:
+          type: string
+          format: date-time
     StageDelay:
       type: object
       properties:
@@ -1347,6 +1366,9 @@ components:
         balance:
           type: string
           description: The balance to credit
+        timestamp:
+          type: string
+          format: date-time
       example:
         amount:
           asset: USD/2
@@ -1417,6 +1439,10 @@ components:
           items:
             type: string
             description: A targeted balance (use '*' for all)
+        timestamp:
+          type: string
+          format: date-time
+          description: cannot be used in conjunction with `pending` property
       example:
         amount:
           asset: USD/2
@@ -2099,6 +2125,8 @@ components:
         vars:
           type: object
           additionalProperties: true
+        name:
+          type: string
     V2Trigger:
       allOf:
         - $ref: '#/components/schemas/V2TriggerData'
@@ -2355,6 +2383,9 @@ components:
           type: object
           additionalProperties:
             type: string
+        timestamp:
+          type: string
+          format: date-time
     V2StageDelay:
       type: object
       properties:
@@ -2533,6 +2564,9 @@ components:
         balance:
           type: string
           description: The balance to credit
+        timestamp:
+          type: string
+          format: date-time
       example:
         amount:
           asset: USD/2
@@ -2603,6 +2637,10 @@ components:
           items:
             type: string
             description: A targeted balance (use '*' for all)
+        timestamp:
+          type: string
+          format: date-time
+          description: cannot be used in conjunction with `pending` property
       example:
         amount:
           asset: USD/2
