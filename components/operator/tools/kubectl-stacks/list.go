@@ -3,14 +3,16 @@ package main
 import (
 	"fmt"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/spf13/cobra"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
+	"sort"
 	"text/tabwriter"
 	"time"
 )
 
 func NewListCommand(configFlags *genericclioptions.ConfigFlags) *cobra.Command {
-	return &cobra.Command{
+	ret := &cobra.Command{
 		Use: "list",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -27,11 +29,26 @@ func NewListCommand(configFlags *genericclioptions.ConfigFlags) *cobra.Command {
 				return err
 			}
 
+			stacks := list.Items
+			onlyEnabled, err := cmd.Flags().GetBool("only-enabled")
+			if err != nil {
+				return err
+			}
+			if onlyEnabled {
+				stacks = collectionutils.Filter(stacks, func(stack v1beta1.Stack) bool {
+					return !stack.Spec.Disabled
+				})
+			}
+
+			sort.Slice(stacks, func(i, j int) bool {
+				return stacks[i].CreationTimestamp.Before(&stacks[j].CreationTimestamp)
+			})
+
 			w := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 0, 1, ' ', 0)
-			_, _ = fmt.Fprintln(w, "Name\tAge\tReady")
-			for _, stack := range list.Items {
+			_, _ = fmt.Fprintln(w, "Name\tCreated at\tReady")
+			for _, stack := range stacks {
 				_, _ = fmt.Fprintf(w, "%s\t%s\t%s\r\n", stack.Name,
-					time.Since(stack.CreationTimestamp.Time), func() string {
+					stack.CreationTimestamp.Time.Format(time.RFC3339), func() string {
 						if stack.Status.Ready {
 							return "yes"
 						}
@@ -41,4 +58,8 @@ func NewListCommand(configFlags *genericclioptions.ConfigFlags) *cobra.Command {
 			return w.Flush()
 		},
 	}
+
+	ret.Flags().Bool("only-enabled", false, "Filter only enabled stacks")
+
+	return ret
 }
