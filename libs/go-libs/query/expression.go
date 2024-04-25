@@ -151,6 +151,14 @@ func Gte(key string, value any) keyValue {
 	}
 }
 
+func Exists(key string, value any) keyValue {
+	return keyValue{
+		operator: "$exists",
+		key: key,
+		value: value,
+	}
+}
+
 func singleKey(m map[string]any) (string, any, error) {
 	switch {
 	case len(m) == 0:
@@ -237,7 +245,7 @@ func mapMapToExpression(m map[string]any) (Builder, error) {
 			return nil, errors.Wrap(err, "parsing $and")
 		}
 		return and, nil
-	case "$match", "$gte", "$lte", "$gt", "$lt":
+	case "$match", "$gte", "$lte", "$gt", "$lt", "$exists":
 		match, err := parseKeyValue(operator, value)
 		if err != nil {
 			return nil, errors.Wrapf(err, "parsing %s", operator)
