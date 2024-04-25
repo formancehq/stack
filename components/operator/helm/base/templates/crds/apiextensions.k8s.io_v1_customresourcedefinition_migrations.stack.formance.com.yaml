@@ -1,0 +1,83 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    helm.sh/resource-policy: keep
+  name: migrations.stack.formance.com
+spec:
+  group: stack.formance.com
+  names:
+    kind: Migration
+    listKind: MigrationList
+    plural: migrations
+    singular: migration
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.terminated
+      name: Terminated
+      type: string
+    - description: The migration error
+      jsonPath: .status.error
+      name: Error
+      type: string
+    name: v1beta3
+    schema:
+      openAPIV3Schema:
+        description: Migration is the Schema for the migrations API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: MigrationSpec defines the desired state of Migration
+            properties:
+              configuration:
+                type: string
+              currentVersion:
+                type: string
+              module:
+                type: string
+              postUpgrade:
+                type: boolean
+              targetedVersion:
+                type: string
+              version:
+                type: string
+            required:
+            - configuration
+            - currentVersion
+            - module
+            - postUpgrade
+            - targetedVersion
+            - version
+            type: object
+          status:
+            description: MigrationStatus defines the observed state of Migration
+            properties:
+              error:
+                type: string
+              terminated:
+                type: boolean
+            required:
+            - terminated
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

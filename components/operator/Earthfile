@@ -61,17 +61,22 @@ generate:
 helm-update:
     FROM core+builder-image
     RUN curl -s https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh | bash -s -- 4.5.4 /bin
+    RUN apk add helm
 
     WORKDIR /src
     COPY --pass-args (+manifests/config) /src/config
     COPY --dir helm hack .
 
-    RUN rm -f helm/templates/gen/*
-    RUN rm -f helm/crds/*
-    RUN kustomize build config/default --output helm/templates/gen
-    RUN kustomize build config/crd --output helm/crds
-    RUN rm -f helm/templates/gen/v1_namespace*.yaml
-    RUN rm -f helm/templates/gen/apps_v1_deployment_*.yaml
+    RUN rm -f helm/operator/templates/gen/*
+    RUN rm -f helm/base/templates/crds/*
+
+    RUN kustomize build config/default --output helm/operator/templates/gen
+    RUN kustomize build config/crd --output helm/base/templates/crds
+
+    RUN rm -f helm/operator/templates/gen/v1_namespace*.yaml
+    RUN rm -f helm/operator/templates/gen/apps_v1_deployment_*.yaml
+
+    RUN helm dependencies update ./helm/operator
 
     SAVE ARTIFACT helm AS LOCAL helm
 
@@ -87,12 +92,18 @@ deploy:
     FROM --pass-args core+vcluster-deployer-image
     COPY --pass-args (+helm-update/helm) helm
     WORKDIR helm
-    RUN helm upgrade --namespace formance-system --install formance-operator \
+
+    # When all clients are using the new base CRDS chart, we can uncomment this step
+    # RUN helm upgrade --install --namespace formance-system --install formance-operator-crds \
+    #     --wait \
+    #     --create-namespace ./base
+
+    RUN helm upgrade --install --namespace formance-system --install formance-operator \
         --wait \
         --create-namespace \
-        --set image.tag=$tag . \
+        --set image.tag=$tag \
         --set operator.licence.token=$LICENCE_TOKEN \
-        --set operator.licence.issuer=$LICENCE_ISSUER
+        --set operator.licence.issuer=$LICENCE_ISSUER ./operator
     WORKDIR /
     COPY .earthly .earthly
     WORKDIR .earthly
@@ -184,4 +195,8 @@ helm-validate:
     FROM core+helm-base
     WORKDIR /src
     COPY --pass-args (+helm-update/helm) .
-    DO --pass-args core+HELM_VALIDATE
+    FOR dir IN $(ls -d */)
+        WORKDIR /src/$dir
+        DO --pass-args core+HELM_VALIDATE
+    END
+

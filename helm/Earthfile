@@ -3,30 +3,34 @@ VERSION --arg-scope-and-set --pass-args --use-function-keyword 0.7
 ARG core=github.com/formancehq/earthly
 IMPORT $core AS core
 IMPORT .. AS stack
+IMPORT ../components/operator AS operator
 
 sources:
-    FROM core+base-image
-    WORKDIR /src
-    COPY --dir regions regions
-    SAVE ARTIFACT /src
+  FROM core+base-image
+  WORKDIR /src
+  COPY --dir regions regions
+  SAVE ARTIFACT /src
 
 helm-validate:
-    FROM core+helm-base
-    WORKDIR /src
-    COPY (stack+sources/out --LOCATION=ee/agent/helm) /src/ee/agent/helm
-    COPY (stack+sources/out --LOCATION=components/operator/helm) /src/components/operator/helm
+  FROM core+helm-base
+  WORKDIR /src
+  COPY (stack+sources/out --LOCATION=ee/agent/helm) /src/ee/agent/helm
+  COPY (operator+helm-update/*) /src/components/operator/helm/
+
+  WORKDIR /src/helm
+  COPY . .
+  FOR chart IN $(ls -d */)
     WORKDIR /src/helm
-    COPY . .
-    FOR chart IN $(ls -d */)
-        WORKDIR /src/helm
-        COPY ./$chart $chart
-        WORKDIR /src/helm/$chart
-        RUN helm dependency update
-        DO --pass-args core+HELM_VALIDATE
-    END
+    COPY ./$chart $chart
+    WORKDIR /src/helm/$chart
+    RUN helm dependency update
+    DO --pass-args core+HELM_VALIDATE
+    SAVE ARTIFACT /src/helm/$chart AS LOCAL $chart
+  END
+
 
 pre-commit:
-    BUILD --pass-args ./regions+helm-validate
+  BUILD --pass-args ./regions+helm-validate
 
 publish:
-    BUILD --pass-args ./regions+helm-publish
+  BUILD --pass-args ./regions+helm-publish

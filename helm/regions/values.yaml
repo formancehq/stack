@@ -1,10 +1,13 @@
 operator:
   enabled: true
+
   fullnameOverride: "operator"
   nameOverride: "operator"
+
   image:
     repository: "ghcr.io/formancehq/operator"
     tag: "v2.0.0-rc.23"
+
   operator:
     disableWebhooks: false
     region: "private"
@@ -12,15 +15,26 @@ operator:
     metricsAddr: ":8080"
     probeAddr: ":8081"
     enableLeaderElection: true
+
+  # Deprecated: operator-crds, will be removed in a future release,
+  # please use operator-crds.create to first update crds with `helm.sh/resource-policy: keep`
+  # Then you will be able to disable it and moved to the new chart
+  # If using Helm Release, you will need to set `meta.helm.sh/release-name` and `meta.helm.sh/release-namespace` to the new relase name and namespace
+  operator-crds:
+    create: true
+
 agent:
   enabled: false
+
   image:
     tag: "v2.0.0-rc.23"
+
   server:
     address: "app.formance.cloud:443"
     tls:
       enabled: true
       insecureSkipVerify: true
+
   agent:
     id: "aws-eu-west-1-sandbox"
     baseUrl: https://sandbox.formance.cloud
@@ -29,6 +43,7 @@ agent:
       issuer: https://app.formance.cloud/api
       clientID: "REGION_ID"
       clientSecret: ""
+
 versions:
   create: true
   files:

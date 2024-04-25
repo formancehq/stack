@@ -1,0 +1,71 @@
+# Default values for operator.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/formancehq/operator
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: v2.0.0-rc.23
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+operator:
+  # The region to use for the operator
+  region: "eu-west-1"
+  # The environment to use for the operator
+  env: "staging"
+  # The address the metric endpoint binds to
+  metricsAddr: ":8080"
+  # The address the probe endpoint binds to
+  probeAddr: ":8081"
+  # Enable leader election for controller manager. Enabling this will ensure there is only one active controller manager.
+  enableLeaderElection: true
+  # Licence related configuration
+  licence:
+    token: ""
+    issuer: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  {}
+  # fsGroup: 2000
+
+securityContext:
+  {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+resources:
+  {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+webhooks:
+  enabled: false
+
+operator-crds:
+  create: true

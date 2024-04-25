@@ -20,5 +20,5 @@ dependencies:
     condition: agent.enabled
   - name: operator
     version: v2.0.0-rc.23
-    repository: "file://../../components/operator/helm"
+    repository: "file://../../components/operator/helm/operator"
     condition: operator.enabled
