@@ -57,6 +57,7 @@ func detectBrokerMode(ctx core.Context, stack *v1beta1.Stack, broker *v1beta1.Br
 		return err
 	} else if hasLegacyStream {
 		broker.Status.Mode = v1beta1.ModeOneStreamByService
+		return nil
 	}
 	if ok, err := hasAllVersionsGreaterThan(ctx, stack, "v2.0.0-rc.24"); err != nil {
 		return err
@@ -167,12 +168,12 @@ func deleteBroker(ctx core.Context, broker *v1beta1.Broker) error {
 	case v1beta1.ModeOneStreamByService:
 		script = `
 			for stream in $(nats --server $NATS_URI stream ls -n | grep $STACK); do
-				nats stream rm -f --server $NATS_URI $stream	
+				nats stream info --server $NATS_URI $stream && nats stream rm -f --server $NATS_URI $stream || true	
 			done
 		`
 	case v1beta1.ModeOneStreamByStack:
 		script = `
-			nats stream rm -f --server $NATS_URI $STACK
+			nats stream info --server $NATS_URI $STACK && nats stream rm -f --server $NATS_URI $STACK || true
 		`
 	}
 
@@ -204,7 +205,7 @@ func createOneStreamByStack(ctx core.Context, stack *v1beta1.Stack, broker *v1be
 			--replicas $REPLICAS \
 			--no-allow-direct \
 			$STREAM
-	}`
+	} || true`
 
 	natsBoxImage, err := registries.GetNatsBoxImage(ctx, stack, "0.14.1")
 	if err != nil {
