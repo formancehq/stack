@@ -68,10 +68,10 @@ helm-update:
     COPY --dir helm hack .
 
     RUN rm -f helm/operator/templates/gen/*
-    RUN rm -f helm/base/templates/crds/*
+    RUN rm -f helm/crds/templates/crds/*
 
     RUN kustomize build config/default --output helm/operator/templates/gen
-    RUN kustomize build config/crd --output helm/base/templates/crds
+    RUN kustomize build config/crd --output helm/crds/templates/crds
 
     RUN rm -f helm/operator/templates/gen/v1_namespace*.yaml
     RUN rm -f helm/operator/templates/gen/apps_v1_deployment_*.yaml
