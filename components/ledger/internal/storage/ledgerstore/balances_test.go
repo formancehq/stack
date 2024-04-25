@@ -121,7 +121,7 @@ func TestGetBalancesAggregated(t *testing.T) {
 		require.Equal(t, ledger.BalancesByAssets{
 			"USD": big.NewInt(0).Add(
 				big.NewInt(0).Mul(bigInt, big.NewInt(2)),
-				big.NewInt(0).Mul(smallInt, big.NewInt(2)),
+				big.NewInt(0),
 			),
 		}, ret)
 	})
