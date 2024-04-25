@@ -8,8 +8,31 @@ import (
 )
 
 type V2ListTriggersOccurrencesRequest struct {
+	// Parameter used in pagination requests.
+	// Set to the value of next for the next page of results.
+	// Set to the value of previous for the previous page of results.
+	// No other parameters can be set when this parameter is set.
+	//
+	Cursor *string `queryParam:"style=form,explode=true,name=cursor"`
+	// The maximum number of results to return per page.
+	//
+	PageSize *int64 `queryParam:"style=form,explode=true,name=pageSize"`
 	// The trigger id
 	TriggerID string `pathParam:"style=simple,explode=false,name=triggerID"`
+}
+
+func (o *V2ListTriggersOccurrencesRequest) GetCursor() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Cursor
+}
+
+func (o *V2ListTriggersOccurrencesRequest) GetPageSize() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.PageSize
 }
 
 func (o *V2ListTriggersOccurrencesRequest) GetTriggerID() string {

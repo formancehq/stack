@@ -1,7 +1,7 @@
 lockVersion: 2.0.0
 id: 7eac0a45-60a2-40bb-9e85-26bd77ec2a6d
 management:
-  docChecksum: 23105794aff37c229c3c414fa37c3882
+  docChecksum: c7f9692f27dc9c79dfc926d2b65dcc4f
   docVersion: v0.0.0
   speakeasyVersion: internal
   generationVersion: 2.237.2
@@ -710,9 +710,11 @@ generatedFiles:
   - docs/pkg/models/operations/v2getworkflowresponse.md
   - docs/pkg/models/operations/v2listinstancesrequest.md
   - docs/pkg/models/operations/v2listinstancesresponse.md
+  - docs/pkg/models/operations/v2listtriggersrequest.md
   - docs/pkg/models/operations/v2listtriggersresponse.md
   - docs/pkg/models/operations/v2listtriggersoccurrencesrequest.md
   - docs/pkg/models/operations/v2listtriggersoccurrencesresponse.md
+  - docs/pkg/models/operations/v2listworkflowsrequest.md
   - docs/pkg/models/operations/v2listworkflowsresponse.md
   - docs/pkg/models/operations/v2readtriggerrequest.md
   - docs/pkg/models/operations/v2readtriggerresponse.md

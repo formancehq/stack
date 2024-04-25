@@ -1980,7 +1980,7 @@ func (s *Orchestration) V2ListInstances(ctx context.Context, request operations.
 
 // V2ListTriggers - List triggers
 // List triggers
-func (s *Orchestration) V2ListTriggers(ctx context.Context) (*operations.V2ListTriggersResponse, error) {
+func (s *Orchestration) V2ListTriggers(ctx context.Context, request operations.V2ListTriggersRequest) (*operations.V2ListTriggersResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/orchestration/v2/triggers"
 
@@ -1990,6 +1990,10 @@ func (s *Orchestration) V2ListTriggers(ctx context.Context) (*operations.V2ListT
 	}
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
 
 	client := s.sdkConfiguration.SecurityClient
 
@@ -2060,6 +2064,10 @@ func (s *Orchestration) V2ListTriggersOccurrences(ctx context.Context, request o
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
+	if err := utils.PopulateQueryParams(ctx, req, request, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
+
 	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
@@ -2115,7 +2123,7 @@ func (s *Orchestration) V2ListTriggersOccurrences(ctx context.Context, request o
 
 // V2ListWorkflows - List registered workflows
 // List registered workflows
-func (s *Orchestration) V2ListWorkflows(ctx context.Context) (*operations.V2ListWorkflowsResponse, error) {
+func (s *Orchestration) V2ListWorkflows(ctx context.Context, request operations.V2ListWorkflowsRequest) (*operations.V2ListWorkflowsResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/orchestration/v2/workflows"
 
@@ -2125,6 +2133,10 @@ func (s *Orchestration) V2ListWorkflows(ctx context.Context) (*operations.V2List
 	}
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
 
 	client := s.sdkConfiguration.SecurityClient
 

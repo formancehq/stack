@@ -19,6 +19,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration}, func() {
 		BeforeEach(func() {
 			response, err := Client().Orchestration.V2ListWorkflows(
 				TestContext(),
+				operations.V2ListWorkflowsRequest{},
 			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
@@ -71,6 +72,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration}, func() {
 		JustBeforeEach(func() {
 			response, err := Client().Orchestration.V2ListWorkflows(
 				TestContext(),
+				operations.V2ListWorkflowsRequest{},
 			)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
@@ -96,6 +98,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration}, func() {
 			JustBeforeEach(func() {
 				response, err := Client().Orchestration.V2ListWorkflows(
 					TestContext(),
+					operations.V2ListWorkflowsRequest{},
 				)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(response.StatusCode).To(Equal(200))

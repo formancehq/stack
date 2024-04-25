@@ -13,7 +13,6 @@ import (
 
 func listTriggers(backend api.Backend) func(writer http.ResponseWriter, request *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		query, err := bunpaginate.Extract[triggers.ListTriggersQuery](r, func() (*triggers.ListTriggersQuery, error) {
 			pageSize, err := bunpaginate.GetPageSize(r)
 			if err != nil {
