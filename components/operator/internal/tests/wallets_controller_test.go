@@ -76,36 +76,38 @@ var _ = Describe("WalletsController", func() {
 		AfterEach(func() {
 			Expect(Delete(stack, databaseSettings, resourceLimitsSettings, resourceRequestsSettings)).To(Succeed())
 		})
-		It("Should add an owner reference on the stack", func() {
-			Eventually(func(g Gomega) bool {
-				g.Expect(LoadResource("", wallets.Name, wallets)).To(Succeed())
-				reference, err := core.HasOwnerReference(TestContext(), stack, wallets)
-				g.Expect(err).To(BeNil())
-				return reference
-			}).Should(BeTrue())
-		})
-		It("Should create a deployment", func() {
-			deployment := &appsv1.Deployment{}
-			Eventually(func() error {
-				return LoadResource(stack.Name, "wallets", deployment)
-			}).Should(Succeed())
-			Expect(deployment).To(BeControlledBy(wallets))
-			By("should have set proper resource requirements", func() {
-				Expect(deployment.Spec.Template.Spec.Containers[0].Resources.Limits).NotTo(BeEmpty())
-				Expect(deployment.Spec.Template.Spec.Containers[0].Resources.Requests).NotTo(BeEmpty())
+		It("Should create resources", func() {
+			By("Should add an owner reference on the stack", func() {
+				Eventually(func(g Gomega) bool {
+					g.Expect(LoadResource("", wallets.Name, wallets)).To(Succeed())
+					reference, err := core.HasOwnerReference(TestContext(), stack, wallets)
+					g.Expect(err).To(BeNil())
+					return reference
+				}).Should(BeTrue())
 			})
-		})
-		It("Should create a new GatewayHTTPAPI object", func() {
-			httpService := &v1beta1.GatewayHTTPAPI{}
-			Eventually(func() error {
-				return LoadResource("", core.GetObjectName(stack.Name, "wallets"), httpService)
-			}).Should(Succeed())
-		})
-		It("Should create a new AuthClient object", func() {
-			authClient := &v1beta1.AuthClient{}
-			Eventually(func() error {
-				return LoadResource("", core.GetObjectName(stack.Name, "wallets"), authClient)
-			}).Should(Succeed())
+			By("Should create a deployment", func() {
+				deployment := &appsv1.Deployment{}
+				Eventually(func() error {
+					return LoadResource(stack.Name, "wallets", deployment)
+				}).Should(Succeed())
+				Expect(deployment).To(BeControlledBy(wallets))
+				By("should have set proper resource requirements", func() {
+					Expect(deployment.Spec.Template.Spec.Containers[0].Resources.Limits).NotTo(BeEmpty())
+					Expect(deployment.Spec.Template.Spec.Containers[0].Resources.Requests).NotTo(BeEmpty())
+				})
+			})
+			By("Should create a new GatewayHTTPAPI object", func() {
+				httpService := &v1beta1.GatewayHTTPAPI{}
+				Eventually(func() error {
+					return LoadResource("", core.GetObjectName(stack.Name, "wallets"), httpService)
+				}).Should(Succeed())
+			})
+			By("Should create a new AuthClient object", func() {
+				authClient := &v1beta1.AuthClient{}
+				Eventually(func() error {
+					return LoadResource("", core.GetObjectName(stack.Name, "wallets"), authClient)
+				}).Should(Succeed())
+			})
 		})
 	})
 })

@@ -31,7 +31,7 @@ type DefaultIngester struct {
 }
 
 type Store interface {
-	UpsertAccounts(ctx context.Context, accounts []*models.Account) error
+	UpsertAccounts(ctx context.Context, accounts []*models.Account) ([]models.AccountID, error)
 	UpsertPayments(ctx context.Context, payments []*models.Payment) ([]*models.PaymentID, error)
 	UpsertPaymentsAdjustments(ctx context.Context, paymentsAdjustment []*models.PaymentAdjustment) error
 	UpsertPaymentsMetadata(ctx context.Context, paymentsMetadata []*models.PaymentMetadata) error

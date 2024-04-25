@@ -11,6 +11,7 @@ import (
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/components/agent/internal"
+	"github.com/formancehq/stack/libs/go-libs/licence"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 	sharedotlptraces "github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
@@ -35,7 +36,6 @@ var (
 )
 
 const (
-	debugFlag                      = "debug"
 	kubeConfigFlag                 = "kube-config"
 	serverAddressFlag              = "server-address"
 	tlsEnabledFlag                 = "tls-enabled"
@@ -113,6 +113,7 @@ func runAgent(cmd *cobra.Command, args []string) error {
 			Version:    Version,
 		}, dialOptions...),
 		sharedotlptraces.CLITracesModule(),
+		licence.CLIModule(ServiceName),
 	}
 
 	return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
@@ -198,6 +199,9 @@ func init() {
 	if home := homedir.HomeDir(); home != "" {
 		kubeConfigFilePath = filepath.Join(home, ".kube", "config")
 	}
+
+	service.BindFlags(rootCmd)
+	licence.InitCLIFlags(rootCmd)
 	rootCmd.Flags().String(kubeConfigFlag, kubeConfigFilePath, "")
 	rootCmd.Flags().String(serverAddressFlag, "localhost:8081", "")
 	rootCmd.Flags().Bool(tlsEnabledFlag, false, "")
@@ -211,5 +215,4 @@ func init() {
 	rootCmd.Flags().String(baseUrlFlag, "", "")
 	rootCmd.Flags().Bool(productionFlag, false, "Is a production agent")
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	rootCmd.Flags().BoolP(debugFlag, "d", false, "Debug mode")
 }

@@ -26,6 +26,10 @@ operator:
   probeAddr: ":8081"
   # Enable leader election for controller manager. Enabling this will ensure there is only one active controller manager.
   enableLeaderElection: true
+  # Licence related configuration
+  licence:
+    token: ""
+    issuer: ""
 
 podAnnotations: {}
 

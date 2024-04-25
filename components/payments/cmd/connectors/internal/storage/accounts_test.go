@@ -88,17 +88,21 @@ func testCreateAccounts(t *testing.T, store *storage.Storage) {
 	}
 
 	// Try to insert accounts from a not installed connector
-	err := store.UpsertAccounts(
+	_, err := store.UpsertAccounts(
 		context.Background(),
 		[]*models.Account{accFail},
 	)
 	require.Error(t, err)
 
-	err = store.UpsertAccounts(
+	idsInserted, err := store.UpsertAccounts(
 		context.Background(),
 		[]*models.Account{acc1, acc2, acc3},
 	)
 	require.NoError(t, err)
+	require.Len(t, idsInserted, 3)
+	require.Equal(t, acc1ID, idsInserted[0])
+	require.Equal(t, acc2ID, idsInserted[1])
+	require.Equal(t, acc3ID, idsInserted[2])
 
 	testGetAccount(t, store, acc1.ID, acc1, false)
 	testGetAccount(t, store, acc2.ID, acc2, false)
@@ -139,14 +143,26 @@ func testUpdateAccounts(t *testing.T, store *storage.Storage) {
 		},
 	}
 
-	err := store.UpsertAccounts(
+	idsInserted, err := store.UpsertAccounts(
 		context.Background(),
 		[]*models.Account{acc1Updated},
 	)
 	require.NoError(t, err)
+	require.Len(t, idsInserted, 1)
+	require.Equal(t, acc1ID, idsInserted[0])
 
 	// CreatedAt should not be updated
 	acc1Updated.CreatedAt = acc1T
+	testGetAccount(t, store, acc1Updated.ID, acc1Updated, false)
+
+	// Upsert again with the same values
+	idsInserted, err = store.UpsertAccounts(
+		context.Background(),
+		[]*models.Account{acc1Updated},
+	)
+	require.NoError(t, err)
+	require.Len(t, idsInserted, 0) // Should not be updated or inserted
+
 	testGetAccount(t, store, acc1Updated.ID, acc1Updated, false)
 }
 

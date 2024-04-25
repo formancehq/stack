@@ -26,6 +26,8 @@ func NewAPI(
 		},
 	}
 
+	cobra.EnableTraverseRunHooks = true
+
 	server := newServer(version)
 	addAutoMigrateCommandFunc(server)
 	root.AddCommand(server)
@@ -36,6 +38,7 @@ func NewAPI(
 	server.Flags().String(configEncryptionKeyFlag, "", "Config encryption key")
 	server.Flags().String(envFlag, "local", "Environment")
 	server.Flags().String(listenFlag, ":8080", "Listen address")
+	service.BindFlags(server)
 
 	otlp.InitOTLPFlags(server.Flags())
 	otlptraces.InitOTLPTracesFlags(server.Flags())

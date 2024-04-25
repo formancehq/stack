@@ -10,7 +10,6 @@ import (
 )
 
 const (
-	Debug    = "debug"
 	LogLevel = "log-level"
 	Listen   = "listen"
 	Worker   = "worker"
@@ -37,7 +36,6 @@ var (
 )
 
 func Init(flagSet *pflag.FlagSet) {
-	flagSet.Bool(Debug, false, "Debug mode")
 	flagSet.String(LogLevel, logrus.InfoLevel.String(), "Log level")
 
 	flagSet.String(Listen, DefaultBindAddressServer, "server HTTP bind address")

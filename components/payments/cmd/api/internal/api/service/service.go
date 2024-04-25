@@ -16,6 +16,7 @@ import (
 type Store interface {
 	Ping() error
 	IsConnectorInstalledByConnectorID(ctx context.Context, connectorID models.ConnectorID) (bool, error)
+	UpsertAccounts(ctx context.Context, accounts []*models.Account) error
 	ListAccounts(ctx context.Context, q storage.ListAccountsQuery) (*bunpaginate.Cursor[models.Account], error)
 	GetAccount(ctx context.Context, id string) (*models.Account, error)
 	ListBalances(ctx context.Context, q storage.ListBalancesQuery) (*bunpaginate.Cursor[models.Balance], error)

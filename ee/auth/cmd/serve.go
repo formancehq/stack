@@ -9,6 +9,7 @@ import (
 
 	"github.com/formancehq/stack/libs/go-libs/aws/iam"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+	"github.com/formancehq/stack/libs/go-libs/licence"
 
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
@@ -30,6 +31,8 @@ import (
 )
 
 const (
+	serviceName = "auth"
+
 	delegatedClientIDFlag     = "delegated-client-id"
 	delegatedClientSecretFlag = "delegated-client-secret"
 	delegatedIssuerFlag       = "delegated-issuer"
@@ -87,9 +90,6 @@ func otlpHttpClientModule(debug bool) fx.Option {
 func newServeCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "serve",
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			return bindFlagsToViper(cmd)
-		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if viper.GetString(baseUrlFlag) == "" {
 				return errors.New("base url must be defined")
@@ -162,6 +162,7 @@ func newServeCommand() *cobra.Command {
 						RedirectURL:  fmt.Sprintf("%s/authorize/callback", viper.GetString(baseUrlFlag)),
 					}),
 					delegatedauth.Module(),
+					licence.CLIModule(serviceName),
 				)
 			}
 
@@ -178,6 +179,8 @@ func newServeCommand() *cobra.Command {
 	cmd.Flags().String(signingKeyFlag, defaultSigningKey, "Signing key")
 	cmd.Flags().String(listenFlag, ":8080", "Listening address")
 	cmd.Flags().String(configFlag, "", "Config file name without extension")
+	service.BindFlags(cmd)
+	licence.InitCLIFlags(cmd)
 
 	otlptraces.InitOTLPTracesFlags(cmd.Flags())
 	bunconnect.InitFlags(cmd.Flags())

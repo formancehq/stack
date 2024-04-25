@@ -13,6 +13,7 @@ Package v1beta1 contains API Schema definitions for the formance v1beta1 API gro
 - [AuthClient](#authclient)
 - [Benthos](#benthos)
 - [BenthosStream](#benthosstream)
+- [Broker](#broker)
 - [BrokerConsumer](#brokerconsumer)
 - [BrokerTopic](#brokertopic)
 - [Database](#database)
@@ -239,6 +240,24 @@ _Appears in:_
 
 
 
+#### Broker
+
+
+
+Broker is the Schema for the brokers API
+
+
+
+
+
+| Field | Description | Default | Validation |
+| --- | --- | --- | --- |
+| `apiVersion` _string_ | `formance.com/v1beta1` | | |
+| `kind` _string_ | `Broker` | | |
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |  |  |
+| `spec` _[BrokerSpec](#brokerspec)_ |  |  |  |
+
+
 #### BrokerConsumer
 
 
@@ -273,6 +292,25 @@ _Appears in:_
 | `stack` _string_ |  |  |  |
 | `services` _string array_ |  |  |  |
 | `queriedBy` _string_ |  |  |  |
+| `name` _string_ | As the name is optional, if not provided, the name will be the QueriedBy property<br />This is only applied when using one stream by stack see Mode |  |  |
+
+
+
+
+#### BrokerSpec
+
+
+
+BrokerSpec defines the desired state of Broker
+
+
+
+_Appears in:_
+- [Broker](#broker)
+
+| Field | Description | Default | Validation |
+| --- | --- | --- | --- |
+| `stack` _string_ |  |  |  |
 
 
 
@@ -314,6 +352,8 @@ _Appears in:_
 
 
 
+
+
 #### CommonStatus
 
 
@@ -328,6 +368,7 @@ _Appears in:_
 - [BenthosStatus](#benthosstatus)
 - [BenthosStreamStatus](#benthosstreamstatus)
 - [BrokerConsumerStatus](#brokerconsumerstatus)
+- [BrokerStatus](#brokerstatus)
 - [BrokerTopicStatus](#brokertopicstatus)
 - [DatabaseStatus](#databasestatus)
 - [GatewayHTTPAPIStatus](#gatewayhttpapistatus)
@@ -378,6 +419,7 @@ This struct is intended for direct use as an array at the field path .status.con
 _Appears in:_
 - [AuthStatus](#authstatus)
 - [BenthosStatus](#benthosstatus)
+- [BrokerConsumerStatus](#brokerconsumerstatus)
 - [GatewayStatus](#gatewaystatus)
 - [LedgerStatus](#ledgerstatus)
 - [ModuleStatus](#modulestatus)
@@ -712,6 +754,19 @@ _Appears in:_
 | `retry` _[Duration](#duration)_ |  |  |  |
 
 
+#### Mode
+
+_Underlying type:_ _string_
+
+Mode defined how streams are created on the broker (mainly nats)
+
+
+
+_Appears in:_
+- [BrokerStatus](#brokerstatus)
+
+
+
 
 
 #### ModuleProperties
@@ -1042,6 +1097,7 @@ _Appears in:_
 - [BenthosSpec](#benthosspec)
 - [BenthosStreamSpec](#benthosstreamspec)
 - [BrokerConsumerSpec](#brokerconsumerspec)
+- [BrokerSpec](#brokerspec)
 - [BrokerTopicSpec](#brokertopicspec)
 - [DatabaseSpec](#databasespec)
 - [GatewayHTTPAPISpec](#gatewayhttpapispec)
@@ -1159,6 +1215,7 @@ _Appears in:_
 _Appears in:_
 - [AuthStatus](#authstatus)
 - [BenthosStatus](#benthosstatus)
+- [BrokerConsumerStatus](#brokerconsumerstatus)
 - [GatewayStatus](#gatewaystatus)
 - [LedgerStatus](#ledgerstatus)
 - [ModuleStatus](#modulestatus)
@@ -1188,7 +1245,7 @@ _Validation:_
 
 _Appears in:_
 - [BenthosStatus](#benthosstatus)
-- [BrokerTopicStatus](#brokertopicstatus)
+- [BrokerStatus](#brokerstatus)
 - [DatabaseStatus](#databasestatus)
 - [OrchestrationStatus](#orchestrationstatus)
 - [SearchStatus](#searchstatus)

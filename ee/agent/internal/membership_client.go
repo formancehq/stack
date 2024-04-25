@@ -100,6 +100,9 @@ func (c *membershipClient) sendPong(ctx context.Context) {
 		},
 	}); err != nil {
 		sharedlogging.FromContext(ctx).Errorf("Unable to send pong to server: %s", err)
+		if errors.Is(err, io.EOF) {
+			panic(err)
+		}
 	}
 }
 

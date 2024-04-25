@@ -7,6 +7,8 @@ import (
 
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	"github.com/formancehq/stack/libs/go-libs/query"
+	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
 )
 
@@ -22,14 +24,70 @@ func NewListPaymentsQuery(opts PaginatedQueryOptions[PaymentQuery]) ListPayments
 	}
 }
 
+func (s *Storage) paymentsQueryContext(qb query.Builder) (map[string]string, string, []any, error) {
+	metadata := make(map[string]string)
+
+	where, args, err := qb.Build(query.ContextFn(func(key, operator string, value any) (string, []any, error) {
+		switch {
+		case key == "reference":
+			return fmt.Sprintf("%s %s ?", key, query.DefaultComparisonOperatorsMapping[operator]), []any{value}, nil
+		case metadataRegex.Match([]byte(key)):
+			if operator != "$match" {
+				return "", nil, errors.Wrap(ErrValidation, "'metadata' column can only be used with $match")
+			}
+			match := metadataRegex.FindAllStringSubmatch(key, 3)
+
+			valueString, ok := value.(string)
+			if !ok {
+				return "", nil, errors.Wrap(ErrValidation, fmt.Sprintf("metadata value must be a string, got %T", value))
+			}
+
+			metadata[match[0][1]] = valueString
+
+			// Do nothing here, as we don't want to add this to the query
+			return "", nil, nil
+		default:
+			return "", nil, errors.Wrap(ErrValidation, fmt.Sprintf("unknown key '%s' when building query", key))
+		}
+	}))
+
+	return metadata, where, args, err
+}
+
 func (s *Storage) ListPayments(ctx context.Context, q ListPaymentsQuery) (*bunpaginate.Cursor[models.Payment], error) {
+	var (
+		metadata map[string]string
+		where    string
+		args     []any
+		err      error
+	)
+	if q.Options.QueryBuilder != nil {
+		metadata, where, args, err = s.paymentsQueryContext(q.Options.QueryBuilder)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return PaginateWithOffset[PaginatedQueryOptions[PaymentQuery], models.Payment](s, ctx,
 		(*bunpaginate.OffsetPaginatedQuery[PaginatedQueryOptions[PaymentQuery]])(&q),
 		func(query *bun.SelectQuery) *bun.SelectQuery {
 			query = query.
-				Relation("Connector").
 				Relation("Metadata").
+				Relation("Connector").
 				Relation("Adjustments")
+
+			if where != "" {
+				query = query.Where(where, args...)
+			}
+
+			if len(metadata) > 0 {
+				metadataQuery := s.db.NewSelect().Model((*models.PaymentMetadata)(nil))
+				for key, value := range metadata {
+					metadataQuery = metadataQuery.Where("payment_metadata.key = ? AND payment_metadata.value = ?", key, value)
+				}
+				query = query.With("_metadata", metadataQuery)
+				query = query.Where("payment.id IN (SELECT payment_id FROM _metadata)")
+			}
 
 			if q.Options.Sorter != nil {
 				query = q.Options.Sorter.Apply(query)

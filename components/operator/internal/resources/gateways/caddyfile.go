@@ -10,7 +10,7 @@ import (
 )
 
 func CreateCaddyfile(ctx core.Context, stack *v1beta1.Stack,
-	gateway *v1beta1.Gateway, httpAPIs []*v1beta1.GatewayHTTPAPI, auth *v1beta1.Auth, auditTopic *v1beta1.BrokerTopic) (string, error) {
+	gateway *v1beta1.Gateway, httpAPIs []*v1beta1.GatewayHTTPAPI, auth *v1beta1.Auth, broker *v1beta1.Broker) (string, error) {
 
 	data := map[string]any{
 		"Services": collectionutils.Map(httpAPIs, func(from *v1beta1.GatewayHTTPAPI) v1beta1.GatewayHTTPAPISpec {
@@ -30,9 +30,10 @@ func CreateCaddyfile(ctx core.Context, stack *v1beta1.Stack,
 		}
 	}
 
-	if stack.Spec.EnableAudit && auditTopic != nil {
+	// TODO(gfyrag): Check if search is enabled
+	if stack.Spec.EnableAudit && broker != nil {
 		data["EnableAudit"] = true
-		data["Broker"] = auditTopic.Status.URI.Scheme
+		data["Broker"] = broker.Status.URI.Scheme
 	}
 
 	return settings.ComputeCaddyfile(ctx, stack, Caddyfile, data)

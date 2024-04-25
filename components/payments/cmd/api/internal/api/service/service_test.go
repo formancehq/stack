@@ -49,6 +49,10 @@ func (m *MockStore) GetBalancesAt(ctx context.Context, accountID models.AccountI
 	}, nil
 }
 
+func (m *MockStore) UpsertAccounts(ctx context.Context, accounts []*models.Account) error {
+	return nil
+}
+
 func (m *MockStore) ListAccounts(ctx context.Context, q storage.ListAccountsQuery) (*bunpaginate.Cursor[models.Account], error) {
 	return nil, nil
 }

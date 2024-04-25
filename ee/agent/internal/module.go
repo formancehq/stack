@@ -58,8 +58,8 @@ func CreateVersionsInformer(factory dynamicinformer.DynamicSharedInformerFactory
 }
 
 func CreateStacksInformer(factory dynamicinformer.DynamicSharedInformerFactory,
-	logger logging.Logger, client MembershipClient) (cache.SharedIndexInformer, error) {
-	return createInformer(factory, "stacks", StacksEventHandler(logger, client))
+	logger logging.Logger, client MembershipClient, stacks InMemoryStacksModules) (cache.SharedIndexInformer, error) {
+	return createInformer(factory, "stacks", NewStackEventHandler(logger, client, stacks))
 }
 
 func CreateRestMapper(config *rest.Config) (meta.RESTMapper, error) {
@@ -111,6 +111,9 @@ func NewModule(serverAddress string, authenticator Authenticator, clientInfo Cli
 		}),
 		fx.Provide(func(membershipClient *membershipClient) MembershipClient {
 			return membershipClient
+		}),
+		fx.Provide(func() InMemoryStacksModules {
+			return map[string][]string{}
 		}),
 		fx.Provide(NewMembershipListener),
 		fx.Provide(fx.Annotate(CreateVersionsInformer, fx.ResultTags(`group:"informers"`))),

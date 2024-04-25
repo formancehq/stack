@@ -5,6 +5,7 @@ import (
 	_ "github.com/formancehq/operator/internal/resources/auths"
 	_ "github.com/formancehq/operator/internal/resources/benthos"
 	_ "github.com/formancehq/operator/internal/resources/benthosstreams"
+	_ "github.com/formancehq/operator/internal/resources/brokers"
 	_ "github.com/formancehq/operator/internal/resources/brokertopics"
 	_ "github.com/formancehq/operator/internal/resources/databases"
 	_ "github.com/formancehq/operator/internal/resources/gatewayhttpapis"

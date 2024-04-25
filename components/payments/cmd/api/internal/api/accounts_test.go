@@ -1,6 +1,8 @@
 package api
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -9,19 +11,320 @@ import (
 	"testing"
 	"time"
 
-	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
-
 	"github.com/formancehq/payments/cmd/api/internal/api/service"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/api"
+	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/auth"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/query"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 )
+
+func TestCreateAccounts(t *testing.T) {
+	t.Parallel()
+
+	type testCase struct {
+		name               string
+		req                *service.CreateAccountRequest
+		expectedStatusCode int
+		expectedErrorCode  string
+		serviceError       error
+	}
+
+	connectorID := models.ConnectorID{
+		Reference: uuid.New(),
+		Provider:  models.ConnectorProviderDummyPay,
+	}
+
+	testCases := []testCase{
+		{
+			name: "nomimal",
+			req: &service.CreateAccountRequest{
+				Reference:    "test",
+				ConnectorID:  connectorID.String(),
+				CreatedAt:    time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				DefaultAsset: "USD/2",
+				AccountName:  "test",
+				Type:         "INTERNAL",
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+		},
+		{
+			name: "no default asset, but should still pass",
+			req: &service.CreateAccountRequest{
+				Reference:    "test",
+				ConnectorID:  connectorID.String(),
+				CreatedAt:    time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				DefaultAsset: "",
+				AccountName:  "test",
+				Type:         "INTERNAL",
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+		},
+		{
+			name: "missing reference",
+			req: &service.CreateAccountRequest{
+				ConnectorID:  connectorID.String(),
+				CreatedAt:    time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				DefaultAsset: "USD/2",
+				AccountName:  "test",
+				Type:         "INTERNAL",
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name: "missing connectorID",
+			req: &service.CreateAccountRequest{
+				Reference:    "test",
+				CreatedAt:    time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				DefaultAsset: "USD/2",
+				AccountName:  "test",
+				Type:         "INTERNAL",
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name: "missing createdAt",
+			req: &service.CreateAccountRequest{
+				Reference:    "test",
+				ConnectorID:  connectorID.String(),
+				DefaultAsset: "USD/2",
+				AccountName:  "test",
+				Type:         "INTERNAL",
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name: "createdAt zero",
+			req: &service.CreateAccountRequest{
+				Reference:    "test",
+				ConnectorID:  connectorID.String(),
+				CreatedAt:    time.Time{},
+				DefaultAsset: "USD/2",
+				AccountName:  "test",
+				Type:         "INTERNAL",
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name: "missing accountName",
+			req: &service.CreateAccountRequest{
+				Reference:    "test",
+				ConnectorID:  connectorID.String(),
+				CreatedAt:    time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				DefaultAsset: "USD/2",
+				Type:         "INTERNAL",
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name: "missing type",
+			req: &service.CreateAccountRequest{
+				Reference:    "test",
+				ConnectorID:  connectorID.String(),
+				CreatedAt:    time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				DefaultAsset: "USD/2",
+				AccountName:  "test",
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name: "invalid type",
+			req: &service.CreateAccountRequest{
+				Reference:    "test",
+				ConnectorID:  connectorID.String(),
+				CreatedAt:    time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				DefaultAsset: "USD/2",
+				AccountName:  "test",
+				Type:         "unknown",
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name: "err validation from backend",
+			req: &service.CreateAccountRequest{
+				Reference:    "test",
+				ConnectorID:  connectorID.String(),
+				CreatedAt:    time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				DefaultAsset: "USD/2",
+				AccountName:  "test",
+				Type:         "INTERNAL",
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+			serviceError:       service.ErrValidation,
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name: "ErrNotFound from storage",
+			req: &service.CreateAccountRequest{
+				Reference:    "test",
+				ConnectorID:  connectorID.String(),
+				CreatedAt:    time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				DefaultAsset: "USD/2",
+				AccountName:  "test",
+				Type:         "INTERNAL",
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+			serviceError:       storage.ErrNotFound,
+			expectedStatusCode: http.StatusNotFound,
+			expectedErrorCode:  ErrNotFound,
+		},
+		{
+			name: "ErrDuplicateKeyValue from storage",
+			req: &service.CreateAccountRequest{
+				Reference:    "test",
+				ConnectorID:  connectorID.String(),
+				CreatedAt:    time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				DefaultAsset: "USD/2",
+				AccountName:  "test",
+				Type:         "INTERNAL",
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+			serviceError:       storage.ErrDuplicateKeyValue,
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrUniqueReference,
+		},
+		{
+			name: "other storage errors from storage",
+			req: &service.CreateAccountRequest{
+				Reference:    "test",
+				ConnectorID:  connectorID.String(),
+				CreatedAt:    time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
+				DefaultAsset: "USD/2",
+				AccountName:  "test",
+				Type:         "INTERNAL",
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			},
+			serviceError:       errors.New("some error"),
+			expectedStatusCode: http.StatusInternalServerError,
+			expectedErrorCode:  sharedapi.ErrorInternal,
+		},
+	}
+
+	for _, testCase := range testCases {
+		testCase := testCase
+		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
+			if testCase.expectedStatusCode == 0 {
+				testCase.expectedStatusCode = http.StatusOK
+			}
+
+			createAccountResponse := &models.Account{
+				ID: models.AccountID{
+					Reference:   testCase.req.Reference,
+					ConnectorID: connectorID,
+				},
+				ConnectorID:  connectorID,
+				CreatedAt:    testCase.req.CreatedAt,
+				Reference:    testCase.req.Reference,
+				DefaultAsset: models.Asset(testCase.req.DefaultAsset),
+				AccountName:  testCase.req.AccountName,
+				Type:         models.AccountType(testCase.req.Type),
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			}
+
+			expectedCreateAccountResponse := &accountResponse{
+				ID:              createAccountResponse.ID.String(),
+				Reference:       createAccountResponse.Reference,
+				CreatedAt:       createAccountResponse.CreatedAt,
+				ConnectorID:     createAccountResponse.ConnectorID.String(),
+				Provider:        createAccountResponse.ConnectorID.Provider.String(),
+				DefaultCurrency: createAccountResponse.DefaultAsset.String(),
+				DefaultAsset:    createAccountResponse.DefaultAsset.String(),
+				AccountName:     createAccountResponse.AccountName,
+				Type:            createAccountResponse.Type.String(),
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
+			}
+
+			backend, mockService := newTestingBackend(t)
+			if testCase.expectedStatusCode < 300 && testCase.expectedStatusCode >= 200 {
+				mockService.EXPECT().
+					CreateAccount(gomock.Any(), testCase.req).
+					Return(createAccountResponse, nil)
+			}
+			if testCase.serviceError != nil {
+				mockService.EXPECT().
+					CreateAccount(gomock.Any(), testCase.req).
+					Return(nil, testCase.serviceError)
+			}
+
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
+
+			var body []byte
+			if testCase.req != nil {
+				var err error
+				body, err = json.Marshal(testCase.req)
+				require.NoError(t, err)
+			}
+
+			req := httptest.NewRequest(http.MethodPost, "/accounts", bytes.NewReader(body))
+			rec := httptest.NewRecorder()
+
+			router.ServeHTTP(rec, req)
+
+			require.Equal(t, testCase.expectedStatusCode, rec.Code)
+			if testCase.expectedStatusCode < 300 && testCase.expectedStatusCode >= 200 {
+				var resp sharedapi.BaseResponse[accountResponse]
+				sharedapi.Decode(t, rec.Body, &resp)
+				require.Equal(t, expectedCreateAccountResponse, resp.Data)
+			} else {
+				err := sharedapi.ErrorResponse{}
+				sharedapi.Decode(t, rec.Body, &err)
+				require.EqualValues(t, testCase.expectedErrorCode, err.ErrorCode)
+			}
+		})
+	}
+}
 
 func TestListAccounts(t *testing.T) {
 	t.Parallel()
@@ -153,7 +456,7 @@ func TestListAccounts(t *testing.T) {
 			),
 			serviceError:       errors.New("some error"),
 			expectedStatusCode: http.StatusInternalServerError,
-			expectedErrorCode:  api.ErrorInternal,
+			expectedErrorCode:  sharedapi.ErrorInternal,
 		},
 	}
 
@@ -241,7 +544,7 @@ func TestListAccounts(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := httpRouter(backend, logging.Testing(), api.ServiceInfo{}, auth.NewNoAuth())
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
 
 			req := httptest.NewRequest(http.MethodGet, "/accounts", nil)
 			rec := httptest.NewRecorder()
@@ -251,16 +554,16 @@ func TestListAccounts(t *testing.T) {
 
 			require.Equal(t, testCase.expectedStatusCode, rec.Code)
 			if testCase.expectedStatusCode < 300 && testCase.expectedStatusCode >= 200 {
-				var resp api.BaseResponse[*accountResponse]
-				api.Decode(t, rec.Body, &resp)
+				var resp sharedapi.BaseResponse[*accountResponse]
+				sharedapi.Decode(t, rec.Body, &resp)
 				require.Equal(t, expectedAccountsResponse, resp.Cursor.Data)
 				require.Equal(t, listAccountsResponse.PageSize, resp.Cursor.PageSize)
 				require.Equal(t, listAccountsResponse.HasMore, resp.Cursor.HasMore)
 				require.Equal(t, listAccountsResponse.Next, resp.Cursor.Next)
 				require.Equal(t, listAccountsResponse.Previous, resp.Cursor.Previous)
 			} else {
-				err := api.ErrorResponse{}
-				api.Decode(t, rec.Body, &err)
+				err := sharedapi.ErrorResponse{}
+				sharedapi.Decode(t, rec.Body, &err)
 				require.EqualValues(t, testCase.expectedErrorCode, err.ErrorCode)
 			}
 		})
@@ -335,7 +638,7 @@ func TestGetAccount(t *testing.T) {
 			expectedAccountID:  accountID1,
 			serviceError:       errors.New("some error"),
 			expectedStatusCode: http.StatusInternalServerError,
-			expectedErrorCode:  api.ErrorInternal,
+			expectedErrorCode:  sharedapi.ErrorInternal,
 		},
 	}
 
@@ -416,7 +719,7 @@ func TestGetAccount(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := httpRouter(backend, logging.Testing(), api.ServiceInfo{}, auth.NewNoAuth())
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
 
 			req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/accounts/%s", testCase.accountID), nil)
 			rec := httptest.NewRecorder()
@@ -425,12 +728,12 @@ func TestGetAccount(t *testing.T) {
 
 			require.Equal(t, testCase.expectedStatusCode, rec.Code)
 			if testCase.expectedStatusCode < 300 && testCase.expectedStatusCode >= 200 {
-				var resp api.BaseResponse[accountResponse]
-				api.Decode(t, rec.Body, &resp)
+				var resp sharedapi.BaseResponse[accountResponse]
+				sharedapi.Decode(t, rec.Body, &resp)
 				require.Equal(t, expectedAccountsResponse, resp.Data)
 			} else {
-				err := api.ErrorResponse{}
-				api.Decode(t, rec.Body, &err)
+				err := sharedapi.ErrorResponse{}
+				sharedapi.Decode(t, rec.Body, &err)
 				require.EqualValues(t, testCase.expectedErrorCode, err.ErrorCode)
 			}
 		})

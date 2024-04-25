@@ -66,6 +66,7 @@ func main() {
 		probeAddr            string
 		region               string
 		env                  string
+		licenceSecret        string
 	)
 	flag.StringVar(&metricsAddr, "metrics-bind-address", ":8080", "The address the metric endpoint binds to.")
 	flag.StringVar(&probeAddr, "health-probe-bind-address", ":8081", "The address the probe endpoint binds to.")
@@ -74,6 +75,7 @@ func main() {
 			"Enabling this will ensure there is only one active controller manager.")
 	flag.StringVar(&region, "region", "eu-west-1", "The cloud region in use for the operator")
 	flag.StringVar(&env, "env", "staging", "The current environment in use for the operator")
+	flag.StringVar(&licenceSecret, "licence-secret", "", "The licence secret that contains the token and the issuer")
 	opts := zap.Options{
 		Development: true,
 	}
@@ -115,8 +117,9 @@ func main() {
 	}
 
 	platform := core.Platform{
-		Region:      region,
-		Environment: env,
+		Region:        region,
+		Environment:   env,
+		LicenceSecret: licenceSecret,
 	}
 
 	if err := core.Setup(mgr, platform); err != nil {

@@ -32,9 +32,6 @@ func healthCheckModule() fx.Option {
 func newServeCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "serve",
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			return bindFlagsToViper(cmd)
-		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			commonOptions, err := commonOptions(cmd)
 			if err != nil {
@@ -70,7 +67,10 @@ func newServeCommand() *cobra.Command {
 			return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 		},
 	}
+
 	cmd.Flags().Bool(workerFlag, false, "Enable worker mode")
 	cmd.Flags().String(listenFlag, ":8080", "Listening address")
+	service.BindFlags(cmd)
+
 	return cmd
 }

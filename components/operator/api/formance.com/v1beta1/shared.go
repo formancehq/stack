@@ -131,6 +131,21 @@ func (c *StatusWithConditions) SetCondition(condition Condition) {
 	c.Conditions = append(c.Conditions, condition)
 }
 
+type CheckCondition struct {
+	Reason     string
+	Type       string
+	Generation int64
+}
+
+func (c *StatusWithConditions) CheckCondition(cond CheckCondition) bool {
+	for _, condition := range c.Conditions {
+		if condition.Type == cond.Type && condition.Reason == cond.Reason && condition.ObservedGeneration == cond.Generation && condition.Status == "True" {
+			return true
+		}
+	}
+	return false
+}
+
 type ModuleStatus struct {
 	StatusWithConditions `json:",inline"`
 }

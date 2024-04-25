@@ -10,6 +10,7 @@ func NewPaymentsCommand() *cobra.Command {
 		fctl.WithAliases("p"),
 		fctl.WithShortDescription("Payments management"),
 		fctl.WithChildCommands(
+			NewCreateCommand(),
 			NewListCommand(),
 			NewShowCommand(),
 			NewSetMetadataCommand(),

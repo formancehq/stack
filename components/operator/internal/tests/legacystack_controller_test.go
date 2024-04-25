@@ -78,66 +78,68 @@ var _ = Describe("StackController (legacy)", func() {
 			Expect(Delete(configuration)).To(Succeed())
 			Expect(Delete(versions)).To(Succeed())
 		})
-		It("Should create the Stack object", func() {
-			s := &v1beta1.Stack{}
-			Eventually(func(g Gomega) error {
-				return LoadResource("", stack.Name, s)
-			}).Should(Succeed())
-		})
-		It("Should create the Ledger object", func() {
-			Eventually(func(g Gomega) error {
-				return LoadResource("", stack.Name, &v1beta1.Ledger{})
-			}).Should(Succeed())
-		})
-		It("Should create the Auth object", func() {
-			Eventually(func(g Gomega) error {
-				return LoadResource("", stack.Name, &v1beta1.Auth{})
-			}).Should(Succeed())
-		})
-		It("Should create the Gateway object", func() {
-			Eventually(func(g Gomega) error {
-				return LoadResource("", stack.Name, &v1beta1.Gateway{})
-			}).Should(Succeed())
-		})
-		It("Should create the Orchestration object", func() {
-			Eventually(func(g Gomega) error {
-				return LoadResource("", stack.Name, &v1beta1.Orchestration{})
-			}).Should(Succeed())
-		})
-		It("Should create the Payments object", func() {
-			Eventually(func(g Gomega) error {
-				return LoadResource("", stack.Name, &v1beta1.Payments{})
-			}).Should(Succeed())
-		})
-		It("Should create the Search object", func() {
-			Eventually(func(g Gomega) error {
-				return LoadResource("", stack.Name, &v1beta1.Search{})
-			}).Should(Succeed())
-		})
-		It("Should create the Stargate object", func() {
-			Eventually(func(g Gomega) error {
-				return LoadResource("", stack.Name, &v1beta1.Stargate{})
-			}).Should(Succeed())
-		})
-		It("Should create the Wallets object", func() {
-			Eventually(func(g Gomega) error {
-				return LoadResource("", stack.Name, &v1beta1.Wallets{})
-			}).Should(Succeed())
-		})
-		It("Should create the Webhooks object", func() {
-			Eventually(func(g Gomega) error {
-				return LoadResource("", stack.Name, &v1beta1.Webhooks{})
-			}).Should(Succeed())
-		})
-		It("Should create the Reconciliation object", func() {
-			Eventually(func(g Gomega) error {
-				return LoadResource("", stack.Name, &v1beta1.Reconciliation{})
-			}).Should(Succeed())
-		})
-		It("Should create a AuthClient object", func() {
-			Eventually(func(g Gomega) error {
-				return LoadResource("", fmt.Sprintf("%s-client0", stack.Name), &v1beta1.AuthClient{})
-			}).Should(Succeed())
+		It("Should create all require objects", func() {
+			By("Should create the Stack object", func() {
+				s := &v1beta1.Stack{}
+				Eventually(func(g Gomega) error {
+					return LoadResource("", stack.Name, s)
+				}).Should(Succeed())
+			})
+			By("Should create the Ledger object", func() {
+				Eventually(func(g Gomega) error {
+					return LoadResource("", stack.Name, &v1beta1.Ledger{})
+				}).Should(Succeed())
+			})
+			By("Should create the Auth object", func() {
+				Eventually(func(g Gomega) error {
+					return LoadResource("", stack.Name, &v1beta1.Auth{})
+				}).Should(Succeed())
+			})
+			By("Should create the Gateway object", func() {
+				Eventually(func(g Gomega) error {
+					return LoadResource("", stack.Name, &v1beta1.Gateway{})
+				}).Should(Succeed())
+			})
+			By("Should create the Orchestration object", func() {
+				Eventually(func(g Gomega) error {
+					return LoadResource("", stack.Name, &v1beta1.Orchestration{})
+				}).Should(Succeed())
+			})
+			By("Should create the Payments object", func() {
+				Eventually(func(g Gomega) error {
+					return LoadResource("", stack.Name, &v1beta1.Payments{})
+				}).Should(Succeed())
+			})
+			By("Should create the Search object", func() {
+				Eventually(func(g Gomega) error {
+					return LoadResource("", stack.Name, &v1beta1.Search{})
+				}).Should(Succeed())
+			})
+			By("Should create the Stargate object", func() {
+				Eventually(func(g Gomega) error {
+					return LoadResource("", stack.Name, &v1beta1.Stargate{})
+				}).Should(Succeed())
+			})
+			By("Should create the Wallets object", func() {
+				Eventually(func(g Gomega) error {
+					return LoadResource("", stack.Name, &v1beta1.Wallets{})
+				}).Should(Succeed())
+			})
+			By("Should create the Webhooks object", func() {
+				Eventually(func(g Gomega) error {
+					return LoadResource("", stack.Name, &v1beta1.Webhooks{})
+				}).Should(Succeed())
+			})
+			By("Should create the Reconciliation object", func() {
+				Eventually(func(g Gomega) error {
+					return LoadResource("", stack.Name, &v1beta1.Reconciliation{})
+				}).Should(Succeed())
+			})
+			By("Should create a AuthClient object", func() {
+				Eventually(func(g Gomega) error {
+					return LoadResource("", fmt.Sprintf("%s-client0", stack.Name), &v1beta1.AuthClient{})
+				}).Should(Succeed())
+			})
 		})
 	})
 })

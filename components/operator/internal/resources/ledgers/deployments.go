@@ -2,16 +2,19 @@ package ledgers
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/brokers"
+	"github.com/formancehq/operator/internal/resources/brokertopics"
+	"k8s.io/apimachinery/pkg/types"
 	"strconv"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/auths"
-	"github.com/formancehq/operator/internal/resources/brokertopics"
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
 	"github.com/formancehq/operator/internal/resources/jobs"
+	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/services"
 	"github.com/formancehq/operator/internal/resources/settings"
 	v1 "k8s.io/api/apps/v1"
@@ -247,28 +250,35 @@ func createBaseLedgerContainer(v2 bool) *corev1.Container {
 
 func createLedgerContainerFull(ctx core.Context, stack *v1beta1.Stack, v2 bool) (*corev1.Container, error) {
 	container := createBaseLedgerContainer(v2)
-	topic, err := brokertopics.Find(ctx, stack, "ledger")
-	if err != nil {
+
+	var broker *v1beta1.Broker
+	if t, err := brokertopics.Find(ctx, stack, "ledger"); err != nil {
 		return nil, err
+	} else if t != nil && t.Status.Ready {
+		broker = &v1beta1.Broker{}
+		if err := ctx.GetClient().Get(ctx, types.NamespacedName{
+			Name: stack.Name,
+		}, broker); err != nil {
+			return nil, err
+		}
 	}
 
-	if topic != nil {
-		if !topic.Status.Ready {
-			return nil, core.NewApplicationError("topic %s is not yet ready", topic.Name)
+	if broker != nil {
+		if !broker.Status.Ready {
+			return nil, core.NewPendingError().WithMessage("broker not ready")
 		}
-
 		prefix := ""
 		if !v2 {
 			prefix = "NUMARY_"
 		}
 
-		brokerEnvVar, err := settings.GetBrokerEnvVarsWithPrefix(ctx, topic.Status.URI, stack.Name, "ledger", prefix)
+		brokerEnvVar, err := brokers.GetEnvVarsWithPrefix(ctx, broker.Status.URI, stack.Name, "ledger", prefix)
 		if err != nil {
 			return nil, err
 		}
 
 		container.Env = append(container.Env, brokerEnvVar...)
-		container.Env = append(container.Env, core.Env(fmt.Sprintf("%sPUBLISHER_TOPIC_MAPPING", prefix), "*:"+core.GetObjectName(stack.Name, "ledger")))
+		container.Env = append(container.Env, brokers.GetPublisherEnvVars(stack, broker, "ledger", prefix)...)
 	}
 
 	return container, nil
@@ -301,7 +311,7 @@ func createGatewayDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1b
 	env = append(env, otlpEnv...)
 	env = append(env, core.GetDevEnvVars(stack, ledger)...)
 
-	caddyImage, err := settings.GetStringOrDefault(ctx, stack.Name, "caddy:2.7.6-alpine", "caddy.image")
+	caddyImage, err := registries.GetCaddyImage(ctx, stack, "2.7.6-alpine")
 	if err != nil {
 		return err
 	}

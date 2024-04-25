@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+	"github.com/formancehq/stack/libs/go-libs/licence"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/formancehq/webhooks/cmd/flag"
 	"github.com/formancehq/webhooks/pkg/backoff"
@@ -41,6 +42,7 @@ func serve(cmd *cobra.Command, _ []string) error {
 		postgres.NewModule(*connectionOptions),
 		otlp.HttpClientModule(),
 		server.StartModule(viper.GetString(flag.Listen)),
+		licence.CLIModule(ServiceName),
 	}
 	if viper.GetBool(flag.Worker) {
 		options = append(options, worker.StartModule(

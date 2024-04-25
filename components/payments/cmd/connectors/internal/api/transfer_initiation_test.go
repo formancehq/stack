@@ -354,6 +354,7 @@ func TestCreateTransferInitiations(t *testing.T) {
 					Reference:   "ref1",
 					ConnectorID: connectorID,
 				}.String(),
+				Reference:            "ref1",
 				CreatedAt:            time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
 				ScheduledAt:          time.Date(2023, 11, 22, 8, 0, 0, 0, time.UTC),
 				Description:          createTransferInitiationResponse.Description,

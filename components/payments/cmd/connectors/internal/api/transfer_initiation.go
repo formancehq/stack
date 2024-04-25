@@ -18,6 +18,7 @@ import (
 
 type transferInitiationResponse struct {
 	ID                   string            `json:"id"`
+	Reference            string            `json:"reference"`
 	CreatedAt            time.Time         `json:"createdAt"`
 	ScheduledAt          time.Time         `json:"scheduledAt"`
 	Description          string            `json:"description"`
@@ -70,6 +71,7 @@ func createTransferInitiationHandler(b backend.ServiceBackend) http.HandlerFunc 
 
 		data := &transferInitiationResponse{
 			ID:                   tf.ID.String(),
+			Reference:            tf.ID.Reference,
 			CreatedAt:            tf.CreatedAt,
 			ScheduledAt:          tf.ScheduledAt,
 			Description:          tf.Description,

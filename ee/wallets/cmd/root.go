@@ -27,6 +27,9 @@ func NewRootCommand() *cobra.Command {
 			return nil
 		},
 	}
+
+	cobra.EnableTraverseRunHooks = true
+
 	cmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	cmd.PersistentFlags().BoolP(service.DebugFlag, "d", false, "Debug mode")
 	serverCmd := newServeCommand()

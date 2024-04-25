@@ -1,8 +1,6 @@
 package tests_test
 
 import (
-	"fmt"
-
 	"github.com/formancehq/operator/internal/resources/settings"
 
 	. "github.com/formancehq/operator/internal/tests/internal"
@@ -12,7 +10,6 @@ import (
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	batchv1 "k8s.io/api/batch/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -79,11 +76,6 @@ var _ = Describe("BrokerTopicController", func() {
 				Eventually(func(g Gomega) error {
 					return LoadResource("", brokerTopic.Name, brokerTopic)
 				}).Should(BeNotFound())
-			})
-			It("Should create a brokerTopic deletion job", func() {
-				Eventually(func() error {
-					return LoadResource(stack.Name, fmt.Sprintf("%s-delete-topic", brokerTopic.GetUID()), &batchv1.Job{})
-				}).Should(Succeed())
 			})
 		})
 	})

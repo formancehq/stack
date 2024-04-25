@@ -12,7 +12,7 @@ FROM core+base-image
 sources:
     WORKDIR src
     DO stack+INCLUDE_GO_LIBS --LOCATION libs/go-libs
-    COPY (stack+sources/out --LOCATION=components/ledger) components/ledger
+    COPY (stack+sources/out --LOCATION=libs/core) libs/core
     COPY --pass-args (releases+sdk-generate/go) /src/releases/sdks/go
     WORKDIR /src/ee/wallets
     COPY go.* .

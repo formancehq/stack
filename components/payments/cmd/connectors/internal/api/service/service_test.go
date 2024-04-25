@@ -167,8 +167,8 @@ func (m *MockStore) ListConnectors(ctx context.Context) ([]*models.Connector, er
 	return []*models.Connector{&connectorDummyPay, &connectorBankingCircle}, nil
 }
 
-func (m *MockStore) UpsertAccounts(ctx context.Context, accounts []*models.Account) error {
-	return nil
+func (m *MockStore) UpsertAccounts(ctx context.Context, accounts []*models.Account) ([]models.AccountID, error) {
+	return nil, nil
 }
 
 func (m *MockStore) GetAccount(ctx context.Context, id string) (*models.Account, error) {

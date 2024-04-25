@@ -627,8 +627,25 @@ func (s *DefaultTaskScheduler) runTaskPeriodically(
 		defer s.deleteTask(ctx, holder)
 
 		if e := recover(); e != nil {
-			s.registerTaskError(ctx, holder, e)
-			debug.PrintStack()
+			switch v := e.(type) {
+			case error:
+				if errors.Is(v, pond.ErrSubmitOnStoppedPool) {
+					// In this case, the scheduler is stopped, it means that
+					// either the connector is uninstalled or the service
+					// is stopped. In case of the connector being uninstalled,
+					// it doesn't matter if we send an error or not since
+					// all data will be deleted. In case of the service being
+					// stopped, the task should be restarted on next startup,
+					// so we need to not mark is as an error.
+					return
+				} else {
+					s.registerTaskError(ctx, holder, e)
+					debug.PrintStack()
+				}
+			default:
+				s.registerTaskError(ctx, holder, e)
+				debug.PrintStack()
+			}
 
 			return
 		}

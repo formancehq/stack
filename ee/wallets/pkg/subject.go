@@ -3,7 +3,7 @@ package wallet
 import (
 	"fmt"
 
-	"github.com/formancehq/ledger/pkg/accounts"
+	"github.com/formancehq/stack/libs/core/accounts"
 )
 
 const (

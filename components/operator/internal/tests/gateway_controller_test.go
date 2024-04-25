@@ -2,9 +2,7 @@ package tests_test
 
 import (
 	"fmt"
-
 	"github.com/formancehq/operator/internal/core"
-
 	"github.com/formancehq/operator/internal/resources/settings"
 	"github.com/google/uuid"
 
@@ -64,35 +62,37 @@ var _ = Describe("GatewayController", func() {
 			Expect(Delete(stack)).To(BeNil())
 			Expect(Delete(httpAPI)).To(Succeed())
 		})
-		It("Should add an owner reference on the stack", func() {
-			Eventually(func(g Gomega) bool {
-				g.Expect(LoadResource("", gateway.Name, gateway)).To(Succeed())
-				reference, err := core.HasOwnerReference(TestContext(), stack, gateway)
-				g.Expect(err).To(BeNil())
-				return reference
-			}).Should(BeTrue())
-		})
-		It("Should create a deployment", func() {
-			Eventually(func() error {
-				return LoadResource(stack.Name, "gateway", &appsv1.Deployment{})
-			}).Should(Succeed())
-		})
-		It("Should create a service", func() {
-			Eventually(func() error {
-				return LoadResource(stack.Name, "gateway", &corev1.Service{})
-			}).Should(Succeed())
-		})
-		It("Should create a config map with the Caddyfile", func() {
-			Eventually(func(g Gomega) []string {
-				g.Expect(LoadResource("", gateway.Name, gateway))
+		It("Should create resources", func() {
+			By("Should add an owner reference on the stack", func() {
+				Eventually(func(g Gomega) bool {
+					g.Expect(LoadResource("", gateway.Name, gateway)).To(Succeed())
+					reference, err := core.HasOwnerReference(TestContext(), stack, gateway)
+					g.Expect(err).To(BeNil())
+					return reference
+				}).Should(BeTrue())
+			})
+			By("Should create a deployment", func() {
+				Eventually(func() error {
+					return LoadResource(stack.Name, "gateway", &appsv1.Deployment{})
+				}).Should(Succeed())
+			})
+			By("Should create a service", func() {
+				Eventually(func() error {
+					return LoadResource(stack.Name, "gateway", &corev1.Service{})
+				}).Should(Succeed())
+			})
+			By("Should create a config map with the Caddyfile", func() {
+				Eventually(func(g Gomega) []string {
+					g.Expect(LoadResource("", gateway.Name, gateway))
 
-				return gateway.Status.SyncHTTPAPIs
-			}).Should(ContainElements(httpAPI.Spec.Name))
+					return gateway.Status.SyncHTTPAPIs
+				}).Should(ContainElements(httpAPI.Spec.Name))
 
-			cm := &corev1.ConfigMap{}
-			Expect(LoadResource(stack.Name, "gateway", cm)).To(Succeed())
-			Expect(cm.Data["Caddyfile"]).To(
-				MatchGoldenFile("gateway-controller", "configmap-with-ledger-only.yaml"))
+				cm := &corev1.ConfigMap{}
+				Expect(LoadResource(stack.Name, "gateway", cm)).To(Succeed())
+				Expect(cm.Data["Caddyfile"]).To(
+					MatchGoldenFile("gateway-controller", "configmap-with-ledger-only.yaml"))
+			})
 		})
 		Context("with a host defined", func() {
 			JustBeforeEach(func() {
@@ -192,31 +192,45 @@ var _ = Describe("GatewayController", func() {
 			})
 		})
 		Context("With audit enabled", func() {
-			var brokerNatsDSNSettings *v1beta1.Settings
+			var (
+				brokerNatsDSNSettings *v1beta1.Settings
+				consumer              *v1beta1.BrokerConsumer
+			)
 			BeforeEach(func() {
 				stack.Spec.EnableAudit = true
 				brokerNatsDSNSettings = settings.New(uuid.NewString(), "broker.dsn", "nats://localhost:1234", stack.Name)
+				consumer = &v1beta1.BrokerConsumer{
+					ObjectMeta: RandObjectMeta(),
+					Spec: v1beta1.BrokerConsumerSpec{
+						StackDependency: v1beta1.StackDependency{
+							Stack: stack.Name,
+						},
+						Services: []string{"gateway"},
+					},
+				}
 			})
 			JustBeforeEach(func() {
 				Expect(Create(brokerNatsDSNSettings)).To(BeNil())
+				Expect(Create(consumer)).To(Succeed())
 			})
 			JustAfterEach(func() {
+				Expect(Delete(consumer)).To(Succeed())
 				Expect(Delete(brokerNatsDSNSettings)).To(Succeed())
-
 			})
-			It("Should create a topic", func() {
-				Eventually(func() error {
-					topic := &v1beta1.BrokerTopic{}
-					return LoadResource("", fmt.Sprintf("%s-audit", stack.GetName()), topic)
-				}).Should(Succeed())
-			})
-			It("Should adapt the Caddyfile", func() {
-				cm := &corev1.ConfigMap{}
-				Eventually(func(g Gomega) error {
-					return LoadResource(stack.Name, "gateway", cm)
-				}).Should(Succeed())
-				Expect(cm.Data["Caddyfile"]).To(
-					MatchGoldenFile("gateway-controller", "configmap-with-audit.yaml"))
+			It("Should configure the service", func() {
+				By("Should create a topic", func() {
+					Eventually(func() error {
+						topic := &v1beta1.BrokerTopic{}
+						return LoadResource("", fmt.Sprintf("%s-gateway", stack.GetName()), topic)
+					}).Should(Succeed())
+				})
+				By("Should adapt the Caddyfile", func() {
+					cm := &corev1.ConfigMap{}
+					Eventually(func(g Gomega) string {
+						g.Expect(LoadResource(stack.Name, "gateway", cm)).To(Succeed())
+						return cm.Data["Caddyfile"]
+					}).Should(MatchGoldenFile("gateway-controller", "configmap-with-audit.yaml"))
+				})
 			})
 		})
 		Context("With otlp enabled", func() {
@@ -228,22 +242,24 @@ var _ = Describe("GatewayController", func() {
 			JustAfterEach(func() {
 				Expect(Delete(otelTracesDSNSetting)).To(Succeed())
 			})
-			It("Should adapt the Caddyfile", func() {
-				cm := &corev1.ConfigMap{}
-				Eventually(func(g Gomega) string {
-					g.Expect(LoadResource(stack.Name, "gateway", cm)).To(Succeed())
-					return cm.Data["Caddyfile"]
-				}).Should(MatchGoldenFile("gateway-controller", "configmap-with-opentelemetry.yaml"))
-			})
-			It("Should add env vars to the deployment", func() {
-				Eventually(func(g Gomega) []corev1.EnvVar {
-					d := &appsv1.Deployment{}
-					g.Expect(LoadResource(stack.Name, "gateway", d)).To(Succeed())
-					return d.Spec.Template.Spec.Containers[0].Env
-				}).Should(ContainElements(corev1.EnvVar{
-					Name:  "OTEL_SERVICE_NAME",
-					Value: "gateway",
-				}))
+			It("Should adapt the service", func() {
+				By("Should adapt the Caddyfile", func() {
+					cm := &corev1.ConfigMap{}
+					Eventually(func(g Gomega) string {
+						g.Expect(LoadResource(stack.Name, "gateway", cm)).To(Succeed())
+						return cm.Data["Caddyfile"]
+					}).Should(MatchGoldenFile("gateway-controller", "configmap-with-opentelemetry.yaml"))
+				})
+				By("Should add env vars to the deployment", func() {
+					Eventually(func(g Gomega) []corev1.EnvVar {
+						d := &appsv1.Deployment{}
+						g.Expect(LoadResource(stack.Name, "gateway", d)).To(Succeed())
+						return d.Spec.Template.Spec.Containers[0].Env
+					}).Should(ContainElements(corev1.EnvVar{
+						Name:  "OTEL_SERVICE_NAME",
+						Value: "gateway",
+					}))
+				})
 			})
 		})
 	})

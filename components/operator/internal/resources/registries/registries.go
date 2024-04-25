@@ -9,21 +9,17 @@ import (
 	"github.com/formancehq/operator/internal/core"
 )
 
+// ghcr.io/<organization>/<repository>:<version>
+// public.ecr.aws/<organization>/jeffail/benthos:<version>
+// docker.io/<organization|user>/<image>:<version>
 func TranslateImage(ctx core.Context, stackName, image string) (string, error) {
-
 	parts := strings.Split(image, ":")
 	repository := parts[0]
-	repositoryParts := strings.SplitN(repository, "/", 2)
-	var (
-		registry, path string
-	)
-	if len(repositoryParts) == 1 {
-		registry = "docker.io"
-		path = repository
-	} else {
-		registry = repositoryParts[0]
-		path = repositoryParts[1]
-	}
+	version := parts[1]
+
+	organizationImage := strings.SplitN(repository, "/", 2)
+	registry := organizationImage[0]
+	path := organizationImage[1]
 
 	imageOverride, err := settings.GetStringOrEmpty(ctx, stackName, "registries", registry, "images", path, "rewrite")
 	if err != nil {
@@ -41,5 +37,5 @@ func TranslateImage(ctx core.Context, stackName, image string) (string, error) {
 		registryEndpoint = registry
 	}
 
-	return fmt.Sprintf("%s/%s:%s", registryEndpoint, imageOverride, parts[1]), nil
+	return fmt.Sprintf("%s/%s:%s", registryEndpoint, imageOverride, version), nil
 }

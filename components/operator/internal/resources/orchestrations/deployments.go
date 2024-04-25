@@ -2,13 +2,8 @@ package orchestrations
 
 import (
 	"fmt"
+	"github.com/formancehq/operator/internal/resources/brokers"
 	"strings"
-
-	"github.com/formancehq/operator/internal/resources/resourcereferences"
-
-	appsv1 "k8s.io/api/apps/v1"
-
-	"github.com/formancehq/operator/internal/resources/settings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
@@ -17,7 +12,9 @@ import (
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/formancehq/operator/internal/resources/licence"
+	"github.com/formancehq/operator/internal/resources/resourcereferences"
+	"github.com/formancehq/operator/internal/resources/settings"
 	"github.com/pkg/errors"
 	v1 "k8s.io/api/core/v1"
 )
@@ -66,11 +63,17 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 		return err
 	}
 
+	licenceResourceReference, licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack, "orchestration", orchestration)
+	if err != nil {
+		return err
+	}
+
 	env = append(env, gatewayEnv...)
+	env = append(env, licenceEnvVars...)
 	env = append(env, GetDevEnvVars(stack, orchestration)...)
 	env = append(env, postgresEnvVar...)
 
-	temporalURI, err := settings.RequireURL(ctx, stack.Name, "temporal.dsn")
+	temporalURI, err := settings.RequireURL(ctx, stack.Name, "temporal", "dsn")
 	if err != nil {
 		return err
 	}
@@ -79,9 +82,9 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 		return err
 	}
 
-	var resourceReference *v1beta1.ResourceReference
+	var databaseResourceReference *v1beta1.ResourceReference
 	if secret := temporalURI.Query().Get("secret"); secret != "" {
-		resourceReference, err = resourcereferences.Create(ctx, database, "temporal", secret, &v1.Secret{})
+		databaseResourceReference, err = resourcereferences.Create(ctx, database, "temporal", secret, &v1.Secret{})
 	} else {
 		err = resourcereferences.Delete(ctx, database, "temporal")
 	}
@@ -89,15 +92,18 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 		return err
 	}
 
+	topics, err := brokers.GetTopicsEnvVars(ctx, stack, "TOPICS", consumer.Spec.Services...)
+	if err != nil {
+		return err
+	}
+	env = append(env, topics...)
+
 	env = append(env,
 		Env("POSTGRES_DSN", "$(POSTGRES_URI)"),
 		Env("TEMPORAL_TASK_QUEUE", stack.Name),
 		Env("TEMPORAL_ADDRESS", temporalURI.Host),
 		Env("TEMPORAL_NAMESPACE", temporalURI.Path[1:]),
 		Env("WORKER", "true"),
-		Env("TOPICS", strings.Join(collectionutils.Map(consumer.Spec.Services, func(from string) string {
-			return fmt.Sprintf("%s-%s", stack.Name, from)
-		}), " ")),
 	)
 
 	authEnvVars, err := auths.ProtectedEnvVars(ctx, stack, "orchestration", orchestration.Spec.Auth)
@@ -111,12 +117,12 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 	}
 
 	if secret := temporalURI.Query().Get("secret"); secret == "" {
-		temporalTLSCrt, err := settings.GetStringOrEmpty(ctx, stack.Name, "temporal.tls.crt")
+		temporalTLSCrt, err := settings.GetStringOrEmpty(ctx, stack.Name, "temporal", "tls", "crt")
 		if err != nil {
 			return err
 		}
 
-		temporalTLSKey, err := settings.GetStringOrEmpty(ctx, stack.Name, "temporal.tls.key")
+		temporalTLSKey, err := settings.GetStringOrEmpty(ctx, stack.Name, "temporal", "tls", "key")
 		if err != nil {
 			return err
 		}
@@ -132,7 +138,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 		)
 	}
 
-	brokerEnvVars, err := settings.ResolveBrokerEnvVars(ctx, stack, "orchestration")
+	brokerEnvVars, err := brokers.ResolveBrokerEnvVars(ctx, stack, "orchestration")
 	if err != nil && !errors.Is(err, ErrNotFound) {
 		return err
 	}
@@ -144,7 +150,8 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 	}
 
 	_, err = deployments.CreateOrUpdate(ctx, orchestration, "orchestration",
-		resourcereferences.Annotate[*appsv1.Deployment]("temporal-secret-hash", resourceReference),
+		resourcereferences.Annotate("temporal-secret-hash", databaseResourceReference),
+		resourcereferences.Annotate("licence-secret-hash", licenceResourceReference),
 		deployments.WithServiceAccountName(serviceAccountName),
 		deployments.WithReplicasFromSettings(ctx, stack),
 		deployments.WithMatchingLabels("orchestration"),

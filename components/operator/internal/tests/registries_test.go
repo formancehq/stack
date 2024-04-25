@@ -46,7 +46,7 @@ var _ = Describe("Registries", func() {
 	Context("When overriding image in a settings", func() {
 		var (
 			settings     *v1beta1.Settings
-			registry     = "ghcr.io"
+			registry     = `"ghcr.io"`
 			organization = "formancehq"
 			ledgerpath   = fmt.Sprintf("%s/%s", organization, "ledger")
 			imageRewrite = fmt.Sprintf("%s/%s", organization, "example")

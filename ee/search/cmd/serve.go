@@ -8,17 +8,17 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/config"
 
-	"github.com/formancehq/stack/libs/go-libs/auth"
-	"github.com/formancehq/stack/libs/go-libs/aws/iam"
-	"github.com/formancehq/stack/libs/go-libs/otlp"
-
 	"github.com/formancehq/search/pkg/searchengine"
 	"github.com/formancehq/search/pkg/searchhttp"
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/auth"
+	"github.com/formancehq/stack/libs/go-libs/aws/iam"
 	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/formancehq/stack/libs/go-libs/httpclient"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
+	"github.com/formancehq/stack/libs/go-libs/licence"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	app "github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/gorilla/handlers"
@@ -35,6 +35,8 @@ import (
 )
 
 const (
+	serviceName = "search"
+
 	openSearchServiceFlag    = "open-search-service"
 	openSearchSchemeFlag     = "open-search-scheme"
 	openSearchUsernameFlag   = "open-search-username"
@@ -56,7 +58,7 @@ func NewServer() *cobra.Command {
 		Short:        "Launch the search server",
 		SilenceUsage: true,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			return viper.BindPFlags(cmd.Flags())
+			return bindFlagsToViper(cmd)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -89,7 +91,8 @@ func NewServer() *cobra.Command {
 			)
 
 			options = append(options, otlptraces.CLITracesModule())
-			options = append(options, apiModule("search", bind, viper.GetString(stackFlag), api.ServiceInfo{
+			options = append(options, licence.CLIModule(serviceName))
+			options = append(options, apiModule(serviceName, bind, viper.GetString(stackFlag), api.ServiceInfo{
 				Version: Version,
 			}, esIndex))
 
@@ -109,6 +112,8 @@ func NewServer() *cobra.Command {
 	cmd.Flags().Bool(awsIAMEnabledFlag, false, "Use AWS IAM for authentication")
 	iam.InitFlags(cmd.Flags())
 	otlptraces.InitOTLPTracesFlags(cmd.Flags())
+	app.BindFlags(cmd)
+	licence.InitCLIFlags(cmd)
 
 	return cmd
 }

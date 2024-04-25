@@ -23,7 +23,7 @@ type PaymentsAccount struct {
 	Provider        *string             `json:"provider,omitempty"`
 	Raw             *PaymentsAccountRaw `json:"raw"`
 	Reference       string              `json:"reference"`
-	Type            string              `json:"type"`
+	Type            AccountType         `json:"type"`
 }
 
 func (p PaymentsAccount) MarshalJSON() ([]byte, error) {
@@ -114,9 +114,9 @@ func (o *PaymentsAccount) GetReference() string {
 	return o.Reference
 }
 
-func (o *PaymentsAccount) GetType() string {
+func (o *PaymentsAccount) GetType() AccountType {
 	if o == nil {
-		return ""
+		return AccountType("")
 	}
 	return o.Type
 }
