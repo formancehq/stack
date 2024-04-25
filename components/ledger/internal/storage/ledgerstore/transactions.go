@@ -254,7 +254,7 @@ func (store *Store) transactionQueryContext(qb query.Builder, q GetTransactionsQ
 				key = "transactions_metadata.metadata"
 			}
 
-			return fmt.Sprintf("%s -> ? IS NOT NULL", key), []any{value}, nil 
+			return fmt.Sprintf("%s -> ? IS NOT NULL", key), []any{value}, nil
 		default:
 			return "", nil, newErrInvalidQuery("unknown key '%s' when building query", key)
 		}

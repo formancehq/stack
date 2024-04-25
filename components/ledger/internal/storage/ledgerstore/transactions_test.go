@@ -1077,7 +1077,6 @@ func TestGetTransactions(t *testing.T) {
 				Data:     Reverse(expandLogs(logs...)[3:5]...),
 			},
 		},
-	
 	}
 
 	for _, tc := range testCases {
@@ -1097,7 +1096,7 @@ func TestGetTransactions(t *testing.T) {
 
 				count, err := store.CountTransactions(ctx, NewGetTransactionsQuery(tc.query))
 				require.NoError(t, err)
-				
+
 				require.EqualValues(t, len(tc.expected.Data), count)
 			}
 		})

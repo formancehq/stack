@@ -362,13 +362,11 @@ func TestGetVolumesWithBalances(t *testing.T) {
 		volumes, err := store.GetVolumesWithBalances(ctx,
 			NewGetVolumesWithBalancesQuery(
 				NewPaginatedQueryOptions(
-					FiltersForVolumes{
-					}).WithQueryBuilder(query.Exists("metadata", "category"))),
+					FiltersForVolumes{}).WithQueryBuilder(query.Exists("metadata", "category"))),
 		)
 
 		require.NoError(t, err)
 		require.Len(t, volumes.Data, 2)
-
 
 	})
 
@@ -378,13 +376,11 @@ func TestGetVolumesWithBalances(t *testing.T) {
 		volumes, err := store.GetVolumesWithBalances(ctx,
 			NewGetVolumesWithBalancesQuery(
 				NewPaginatedQueryOptions(
-					FiltersForVolumes{
-					}).WithQueryBuilder(query.Exists("metadata", "foo"))),
+					FiltersForVolumes{}).WithQueryBuilder(query.Exists("metadata", "foo"))),
 		)
 
 		require.NoError(t, err)
 		require.Len(t, volumes.Data, 1)
-
 
 	})
 
