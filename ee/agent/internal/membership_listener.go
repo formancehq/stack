@@ -73,6 +73,11 @@ type membershipListener struct {
 	orders        MembershipClient
 	wp            *pond.WorkerPool
 }
+func getExpectedModules() []string {
+	return []string{
+		"Stargate", "Wallets", "Ledger", "Payments", "Webhooks", "Auth", "Orchestration", "Search", "Gateway",
+	}
+}
 
 func (c *membershipListener) Start(ctx context.Context) {
 	defer c.wp.StopAndWait()
@@ -87,6 +92,14 @@ func (c *membershipListener) Start(ctx context.Context) {
 				sharedlogging.FromContext(ctx).Infof("Got message from membership: %T", msg.GetMessage())
 				switch msg := msg.Message.(type) {
 				case *generated.Order_ExistingStack:
+					if msg.ExistingStack.Modules == nil || len(msg.ExistingStack.Modules) == 0{
+						msg.ExistingStack.Modules = make([]*generated.Module, 0)
+						for _, module := range getExpectedModules() {
+							msg.ExistingStack.Modules = append(msg.ExistingStack.Modules, &generated.Module{
+								Name: module,
+							})
+						}
+					}
 					c.stacksModules[msg.ExistingStack.ClusterName] = collectionutils.Map(msg.ExistingStack.Modules, func(module *generated.Module) string {
 						return module.Name
 					})
