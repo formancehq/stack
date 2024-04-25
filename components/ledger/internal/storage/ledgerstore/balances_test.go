@@ -58,7 +58,7 @@ func TestGetBalancesAggregated(t *testing.T) {
 			TargetID:   "users:2",
 			Key:        "category",
 		}),
-		ledger.NewSetMetadataOnAccountLog(time.Now(), "users:1", metadata.Metadata{"category": "1"}).WithDate(now.Add(time.Minute)),
+		ledger.NewSetMetadataOnAccountLog(time.Now(), "users:1", metadata.Metadata{"category": "premium"}).WithDate(now.Add(time.Minute)),
 		ledger.NewSetMetadataOnAccountLog(time.Now(), "users:2", metadata.Metadata{"category": "2"}).WithDate(now.Add(time.Minute)),
 		ledger.NewSetMetadataOnAccountLog(time.Now(), "world", metadata.Metadata{"foo": "bar"}).WithDate(now.Add(time.Minute)),
 	}
