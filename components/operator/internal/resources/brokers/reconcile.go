@@ -83,7 +83,11 @@ func hasAllVersionsGreaterThan(ctx core.Context, stack *v1beta1.Stack, ref strin
 		}, versions); err != nil {
 			return false, err
 		}
-		for _, v := range versions.Spec {
+		for service, v := range versions.Spec {
+			// notes(gfyrag): control is stick to version v1.7.0
+			if service == "control" {
+				continue
+			}
 			if !semver.IsValid(v) {
 				continue
 			}
