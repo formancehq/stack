@@ -72,6 +72,9 @@ func detectBrokerMode(ctx core.Context, stack *v1beta1.Stack, broker *v1beta1.Br
 func hasAllVersionsGreaterThan(ctx core.Context, stack *v1beta1.Stack, ref string) (bool, error) {
 	switch {
 	case stack.Spec.Version != "":
+		if !semver.IsValid(stack.Spec.Version) {
+			return true, nil
+		}
 		return semver.Compare(stack.Spec.Version, ref) >= 0, nil
 	case stack.Spec.VersionsFromFile != "":
 		versions := &v1beta1.Versions{}
@@ -81,6 +84,9 @@ func hasAllVersionsGreaterThan(ctx core.Context, stack *v1beta1.Stack, ref strin
 			return false, err
 		}
 		for _, v := range versions.Spec {
+			if !semver.IsValid(v) {
+				continue
+			}
 			if semver.Compare(v, ref) < 0 {
 				return false, nil
 			}
