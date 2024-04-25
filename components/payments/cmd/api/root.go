@@ -32,8 +32,6 @@ func NewAPI(
 	addAutoMigrateCommandFunc(server)
 	root.AddCommand(server)
 
-	root.PersistentFlags().Bool(service.DebugFlag, false, "Debug mode")
-
 	server.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	server.Flags().String(configEncryptionKeyFlag, "", "Config encryption key")
 	server.Flags().String(envFlag, "local", "Environment")

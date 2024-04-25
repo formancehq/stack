@@ -8,7 +8,6 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/bun/bunmigrate"
 	"github.com/uptrace/bun"
 
-	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
 )
 
@@ -28,7 +27,6 @@ func NewRootCommand() *cobra.Command {
 	cobra.EnableTraverseRunHooks = true
 
 	cmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	cmd.PersistentFlags().BoolP(service.DebugFlag, "d", false, "Debug mode")
 	cmd.AddCommand(
 		newServeCommand(),
 		newVersionCommand(),

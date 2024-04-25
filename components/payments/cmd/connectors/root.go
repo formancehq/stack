@@ -31,8 +31,6 @@ func NewConnectors(
 	addAutoMigrateCommandFunc(server)
 	root.AddCommand(server)
 
-	root.PersistentFlags().Bool(service.DebugFlag, false, "Debug mode")
-
 	server.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	server.Flags().String(postgresURIFlag, "postgres://localhost/payments", "PostgreSQL DB address")
 	server.Flags().String(configEncryptionKeyFlag, "", "Config encryption key")
