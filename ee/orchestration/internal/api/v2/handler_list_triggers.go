@@ -18,8 +18,13 @@ func listTriggers(backend api.Backend) func(writer http.ResponseWriter, request 
 			if err != nil {
 				return nil, err
 			}
+
+			var name string = ""
+			name = r.URL.Query().Get("name")
+
 			return &triggers.ListTriggersQuery{
 				PageSize: pageSize,
+				Options:  triggers.ListTriggerParams{Name: name},
 			}, nil
 		})
 		if err != nil {

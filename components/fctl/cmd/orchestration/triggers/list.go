@@ -4,6 +4,7 @@ import (
 	"time"
 
 	fctl "github.com/formancehq/fctl/pkg"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
@@ -14,7 +15,8 @@ type TriggersListStore struct {
 	WorkflowTrigger []shared.Trigger `json:"workflowTriggers"`
 }
 type TriggersListController struct {
-	store *TriggersListStore
+	store    *TriggersListStore
+	nameFlag string
 }
 
 var _ fctl.Controller[*TriggersListStore] = (*TriggersListController)(nil)
@@ -34,6 +36,7 @@ func NewListCommand() *cobra.Command {
 	return fctl.NewCommand("list",
 		fctl.WithShortDescription("List all workflows triggers"),
 		fctl.WithAliases("ls", "l"),
+		fctl.WithStringFlag(c.nameFlag, "", "Search by name"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
 		fctl.WithController[*TriggersListStore](c),
 	)
@@ -45,8 +48,11 @@ func (c *TriggersListController) GetStore() *TriggersListStore {
 
 func (c *TriggersListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	store := fctl.GetStackStore(cmd.Context())
+	var name = fctl.GetString(cmd, c.nameFlag)
+	response, err := store.Client().Orchestration.ListTriggers(cmd.Context(), operations.ListTriggersRequest{
+		Name: &name,
+	})
 
-	response, err := store.Client().Orchestration.ListTriggers(cmd.Context())
 	if err != nil {
 		return nil, err
 	}
@@ -71,6 +77,7 @@ func (c *TriggersListController) Render(cmd *cobra.Command, args []string) error
 					func(src shared.Trigger) []string {
 						return []string{
 							src.ID,
+							*src.Name,
 							src.WorkflowID,
 							src.CreatedAt.Format(time.RFC3339),
 							src.Event,
@@ -82,7 +89,7 @@ func (c *TriggersListController) Render(cmd *cobra.Command, args []string) error
 							}(),
 						}
 					}),
-				[]string{"ID", "Workflow ID", "Created at", "Event", "Filter"},
+				[]string{"ID", "Name", "Workflow ID", "Created at", "Event", "Filter"},
 			),
 		).Render(); err != nil {
 		return errors.Wrap(err, "rendering table")

@@ -62,6 +62,7 @@ func (c *TriggersShowController) Render(cmd *cobra.Command, args []string) error
 	fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Information")
 	tableData := pterm.TableData{}
 	tableData = append(tableData, []string{pterm.LightCyan("ID"), c.store.Trigger.ID})
+	tableData = append(tableData, []string{pterm.LightCyan("Name"), *c.store.Trigger.Name})
 	tableData = append(tableData, []string{pterm.LightCyan("Created at"), c.store.Trigger.CreatedAt.Format(time.RFC3339)})
 	tableData = append(tableData, []string{pterm.LightCyan("Workflow ID"), c.store.Trigger.WorkflowID})
 	tableData = append(tableData, []string{pterm.LightCyan("Event"), c.store.Trigger.Event})
