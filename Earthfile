@@ -220,6 +220,20 @@ tests:
     BUILD --pass-args +tests-all
     BUILD --pass-args +tests-integration
 
+helm-publish:
+    LOCALLY
+    BUILD --pass-args ./helm/+publish
+    BUILD --pass-args ./components/operator+helm-publish
+
+HELM_PUBLISH:
+    FUNCTION
+    WITH DOCKER
+        RUN --secret GITHUB_TOKEN echo $GITHUB_TOKEN | docker login ghcr.io -u NumaryBot --password-stdin
+    END
+    WITH DOCKER
+        RUN helm push *.tgz oci://ghcr.io/formancehq/helm
+    END
+
 INCLUDE_GO_LIBS:
     FUNCTION
     ARG --required LOCATION

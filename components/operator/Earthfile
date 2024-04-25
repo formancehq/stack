@@ -199,3 +199,12 @@ helm-validate:
         DO --pass-args core+HELM_VALIDATE
     END
 
+
+helm-publish:
+    FROM core+helm-base
+    WORKDIR /src
+    COPY --pass-args (+helm-update/helm) .
+    FOR dir IN $(ls -d */)
+        WORKDIR /src/$dir
+        DO --pass-args stack+HELM_PUBLISH
+    END
