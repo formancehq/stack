@@ -19,6 +19,7 @@ import (
 type handleJobConfiguration struct {
 	preCreate func() error
 	mutators  []core.ObjectMutator[*batchv1.Job]
+	validator func(job *batchv1.Job) bool
 }
 
 type HandleJobOption func(configuration *handleJobConfiguration)
@@ -42,10 +43,29 @@ func WithServiceAccount(serviceAccountName string) HandleJobOption {
 	})
 }
 
+func WithPodFailurePolicy(p batchv1.PodFailurePolicy) HandleJobOption {
+	return Mutator(func(t *batchv1.Job) error {
+		t.Spec.PodFailurePolicy = &p
+		return nil
+	})
+}
+
+func WithValidator(v func(job *batchv1.Job) bool) HandleJobOption {
+	return func(configuration *handleJobConfiguration) {
+		configuration.validator = v
+	}
+}
+
+var defaultOptions = []HandleJobOption{
+	WithValidator(func(job *batchv1.Job) bool {
+		return job.Status.Succeeded > 0
+	}),
+}
+
 func Handle(ctx core.Context, owner v1beta1.Dependent, jobName string, container v1.Container, options ...HandleJobOption) error {
 
 	configuration := &handleJobConfiguration{}
-	for _, option := range options {
+	for _, option := range append(defaultOptions, options...) {
 		option(configuration)
 	}
 
@@ -59,7 +79,7 @@ func Handle(ctx core.Context, owner v1beta1.Dependent, jobName string, container
 		return err
 	}
 
-	if job.Status.Succeeded > 0 {
+	if configuration.validator(job) {
 		return nil
 	}
 
@@ -104,6 +124,10 @@ func Handle(ctx core.Context, owner v1beta1.Dependent, jobName string, container
 		if err := mutator(job); err != nil {
 			return err
 		}
+	}
+
+	if job.Spec.PodFailurePolicy != nil {
+		job.Spec.Template.Spec.RestartPolicy = v1.RestartPolicyNever
 	}
 
 	if err := controllerutil.SetControllerReference(owner, job, ctx.GetScheme()); err != nil {

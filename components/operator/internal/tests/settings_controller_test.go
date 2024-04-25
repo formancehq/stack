@@ -37,14 +37,16 @@ var _ = Describe("SettingsController", func() {
 			Expect(Delete(stack)).To(Succeed())
 			Expect(Delete(setting)).To(Succeed())
 		})
-		It("Should have created the setting", func() {
-			Expect(LoadResource("", setting.Name, &v1beta1.Settings{})).To(Succeed())
-		})
-		It("Sould be able to retrieve the settings", func() {
-			str, err := helperSettings.Get(TestContext(), stack.Name, helperSettings.SplitKeywordWithDot(setting.Spec.Key)...)
-			Expect(err).To(BeNil())
-			Expect(str).ToNot(BeNil())
-			Expect(*str).To(Equal(setting.Spec.Value))
+		It("Should create resources", func() {
+			By("Should have created the setting", func() {
+				Expect(LoadResource("", setting.Name, &v1beta1.Settings{})).To(Succeed())
+			})
+			By("Sould be able to retrieve the settings", func() {
+				str, err := helperSettings.Get(TestContext(), stack.Name, helperSettings.SplitKeywordWithDot(setting.Spec.Key)...)
+				Expect(err).To(BeNil())
+				Expect(str).ToNot(BeNil())
+				Expect(*str).To(Equal(setting.Spec.Value))
+			})
 		})
 	})
 	When("Creating a settings", func() {
@@ -75,14 +77,16 @@ var _ = Describe("SettingsController", func() {
 			Expect(Delete(setting)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 		})
-		It("Should have created the setting", func() {
-			Expect(LoadResource("", setting.Name, &v1beta1.Settings{})).To(Succeed())
-		})
-		It("Sould be able to retrieve the settings", func() {
-			str, err := helperSettings.Get(TestContext(), stack.Name, helperSettings.SplitKeywordWithDot(setting.Spec.Key)...)
-			Expect(err).To(BeNil())
-			Expect(str).ToNot(BeNil())
-			Expect(*str).To(Equal(setting.Spec.Value))
+		It("Should create resources", func() {
+			By("Should have created the setting", func() {
+				Expect(LoadResource("", setting.Name, &v1beta1.Settings{})).To(Succeed())
+			})
+			By("Sould be able to retrieve the settings", func() {
+				str, err := helperSettings.Get(TestContext(), stack.Name, helperSettings.SplitKeywordWithDot(setting.Spec.Key)...)
+				Expect(err).To(BeNil())
+				Expect(str).ToNot(BeNil())
+				Expect(*str).To(Equal(setting.Spec.Value))
+			})
 		})
 	})
 	When("Creating a settings with escaped key", func() {
@@ -111,14 +115,16 @@ var _ = Describe("SettingsController", func() {
 			Expect(Delete(setting)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 		})
-		It("Should create a settings", func() {
-			Expect(LoadResource("", setting.Name, &v1beta1.Settings{})).To(Succeed())
-		})
-		It("Sould be able to retrieve the settings", func() {
-			str, err := helperSettings.Get(TestContext(), stack.Name, helperSettings.SplitKeywordWithDot(setting.Spec.Key)...)
-			Expect(err).To(BeNil())
-			Expect(str).ToNot(BeNil())
-			Expect(*str).To(Equal(setting.Spec.Value))
+		It("Should create resources", func() {
+			By("Should create a settings", func() {
+				Expect(LoadResource("", setting.Name, &v1beta1.Settings{})).To(Succeed())
+			})
+			By("Sould be able to retrieve the settings", func() {
+				str, err := helperSettings.Get(TestContext(), stack.Name, helperSettings.SplitKeywordWithDot(setting.Spec.Key)...)
+				Expect(err).To(BeNil())
+				Expect(str).ToNot(BeNil())
+				Expect(*str).To(Equal(setting.Spec.Value))
+			})
 		})
 	})
 })

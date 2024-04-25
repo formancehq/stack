@@ -1,37 +1,16 @@
-/*
-Copyright 2023.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-
 package benthos
 
 import (
 	"embed"
 	"fmt"
-	"sort"
-
-	"github.com/formancehq/operator/internal/resources/registries"
-	"github.com/formancehq/operator/internal/resources/resourcereferences"
-
-	"github.com/formancehq/operator/internal/resources/services"
-	"github.com/formancehq/operator/internal/resources/settings"
-	"k8s.io/apimachinery/pkg/util/intstr"
-
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/deployments"
+	"github.com/formancehq/operator/internal/resources/registries"
+	"github.com/formancehq/operator/internal/resources/resourcereferences"
 	benthosOperator "github.com/formancehq/operator/internal/resources/searches/benthos"
+	"github.com/formancehq/operator/internal/resources/services"
+	"github.com/formancehq/operator/internal/resources/settings"
 	"github.com/formancehq/search/benthos"
 	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
@@ -39,7 +18,9 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sort"
 )
 
 //+kubebuilder:rbac:groups=formance.com,resources=benthos,verbs=get;list;watch;create;update;patch;delete
@@ -110,9 +91,27 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 		return err
 	}
 
+	broker := &v1beta1.Broker{}
+	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
+		Name: stack.Name,
+	}, broker); err != nil {
+		return err
+	}
+	if !broker.Status.Ready {
+		return NewPendingError().WithMessage("broker not ready")
+	}
+
+	var topicPrefix string
+	switch broker.Status.Mode {
+	case v1beta1.ModeOneStreamByService:
+		topicPrefix = b.Spec.Stack + "-"
+	case v1beta1.ModeOneStreamByStack:
+		topicPrefix = b.Spec.Stack + "."
+	}
+
 	env := []corev1.EnvVar{
 		Env("OPENSEARCH_URL", elasticSearchURI.WithoutQuery().String()),
-		Env("TOPIC_PREFIX", b.Spec.Stack+"-"),
+		Env("TOPIC_PREFIX", topicPrefix),
 		Env("OPENSEARCH_INDEX", "stacks"),
 		Env("STACK", b.Spec.Stack),
 	}
@@ -150,6 +149,9 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 	}
 	if brokerURI.Scheme == "nats" {
 		env = append(env, Env("NATS_URL", brokerURI.Host))
+		if broker.Status.Mode == v1beta1.ModeOneStreamByStack {
+			env = append(env, Env("NATS_BIND", "true"))
+		}
 	}
 	if secret := elasticSearchURI.Query().Get("secret"); elasticSearchURI.User != nil || secret != "" {
 		env = append(env, Env("BASIC_AUTH_ENABLED", "true"))
@@ -347,16 +349,4 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 	)
 
 	return err
-}
-
-func init() {
-	Init(
-		WithStackDependencyReconciler(Reconcile,
-			WithWatchSettings[*v1beta1.Benthos](),
-			WithWatchDependency[*v1beta1.Benthos](&v1beta1.BenthosStream{}),
-			WithOwn[*v1beta1.Benthos](&corev1.ConfigMap{}),
-			WithOwn[*v1beta1.Benthos](&appsv1.Deployment{}),
-			WithOwn[*v1beta1.Benthos](&v1beta1.ResourceReference{}),
-		),
-	)
 }

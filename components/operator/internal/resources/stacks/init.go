@@ -85,11 +85,11 @@ func areDependentReady(ctx Context, stack *v1beta1.Stack) error {
 				continue
 			}
 		}
-
 	}
 
 	if len(pendingResources) > 0 {
-		return NewApplicationError("Still pending dependent: %s ", strings.Join(pendingResources, ","))
+		return NewApplicationError().
+			WithMessage("Still pending dependent: %s ", strings.Join(pendingResources, ","))
 	}
 
 	return nil

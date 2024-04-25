@@ -1,5 +1,5 @@
 /*
-Copyright 2022.
+Copyright 2023.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,61 +20,72 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// BrokerTopicSpec defines the desired state of BrokerTopic
-type BrokerTopicSpec struct {
+// BrokerSpec defines the desired state of Broker
+type BrokerSpec struct {
 	StackDependency `json:",inline"`
-	//+required
-	Service string `json:"service"`
 }
 
-// BrokerTopicStatus defines the observed state of BrokerTopic
-type BrokerTopicStatus struct {
+// Mode defined how streams are created on the broker (mainly nats)
+type Mode string
+
+const (
+	ModeOneStreamByService = "OneStreamByService"
+	ModeOneStreamByStack   = "OneStreamByStack"
+)
+
+// BrokerStatus defines the observed state of Broker
+type BrokerStatus struct {
 	CommonStatus `json:",inline"`
+	//+optional
+	URI *URI `json:"uri,omitempty"`
+	//+optional
+	Mode Mode `json:"mode"`
+	// Streams created when Mode == ModeOneStreamByService
+	//+optional
+	Streams []string `json:"streams,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
-//+kubebuilder:printcolumn:name="Stack",type=string,JSONPath=".spec.stack",description="Stack"
+//+kubebuilder:printcolumn:name="Mode",type=string,JSONPath=".status.mode",description="Mode"
 //+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Ready"
 //+kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
 
-// BrokerTopic is the Schema for the brokertopics API
-type BrokerTopic struct {
+// Broker is the Schema for the brokers API
+type Broker struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   BrokerTopicSpec   `json:"spec,omitempty"`
-	Status BrokerTopicStatus `json:"status,omitempty"`
+	Spec   BrokerSpec   `json:"spec,omitempty"`
+	Status BrokerStatus `json:"status,omitempty"`
 }
 
-func (in *BrokerTopic) SetReady(b bool) {
-	in.Status.Ready = b
+func (in *Broker) SetReady(ready bool) {
+	in.Status.SetReady(ready)
 }
 
-func (in *BrokerTopic) IsReady() bool {
+func (in *Broker) IsReady() bool {
 	return in.Status.Ready
 }
 
-func (in *BrokerTopic) SetError(s string) {
-	in.Status.Info = s
+func (in *Broker) SetError(s string) {
+	in.Status.SetError(s)
 }
 
-func (a *BrokerTopic) GetStack() string {
-	return a.Spec.Stack
+func (in *Broker) GetStack() string {
+	return in.Spec.GetStack()
 }
-
-func (a *BrokerTopic) isResource() {}
 
 //+kubebuilder:object:root=true
 
-// BrokerTopicList contains a list of BrokerTopic
-type BrokerTopicList struct {
+// BrokerList contains a list of Broker
+type BrokerList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []BrokerTopic `json:"items"`
+	Items           []Broker `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&BrokerTopic{}, &BrokerTopicList{})
+	SchemeBuilder.Register(&Broker{}, &BrokerList{})
 }

@@ -15,6 +15,7 @@ mapping: |
       "processors": [
         {
           "log": {
+            "level": "DEBUG",
             "message": "unable to handle message ${! content() }"
           }
         },

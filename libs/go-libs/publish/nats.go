@@ -33,10 +33,9 @@ func NewNatsSubscriberWithConn(conn *nats.Conn, logger watermill.LoggerAdapter, 
 	return wNats.NewSubscriberWithNatsConn(conn, config.GetSubscriberSubscriptionConfig(), logger)
 }
 
-func NatsModule(url, serviceName string, natsOptions ...nats.Option) fx.Option {
+func NatsModule(url, serviceName string, autoProvision bool, natsOptions ...nats.Option) fx.Option {
 	jetStreamConfig := wNats.JetStreamConfig{
-		AutoProvision: true,
-		DurablePrefix: serviceName,
+		AutoProvision: autoProvision,
 	}
 	return fx.Options(
 		fx.Provide(NewNatsConn),

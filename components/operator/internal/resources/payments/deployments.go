@@ -1,13 +1,15 @@
 package payments
 
 import (
+	"github.com/formancehq/operator/internal/resources/brokers"
+	"github.com/formancehq/operator/internal/resources/brokertopics"
 	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/settings"
+	"k8s.io/apimachinery/pkg/types"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/auths"
-	"github.com/formancehq/operator/internal/resources/brokertopics"
 	"github.com/formancehq/operator/internal/resources/databases"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
@@ -71,23 +73,29 @@ func createFullDeployment(ctx core.Context, stack *v1beta1.Stack,
 	}
 	env = append(env, authEnvVars...)
 
-	topic, err := brokertopics.Find(ctx, stack, "payments")
-	if err != nil {
+	var broker *v1beta1.Broker
+	if t, err := brokertopics.Find(ctx, stack, "payments"); err != nil {
 		return err
+	} else if t != nil && t.Status.Ready {
+		broker = &v1beta1.Broker{}
+		if err := ctx.GetClient().Get(ctx, types.NamespacedName{
+			Name: stack.Name,
+		}, broker); err != nil {
+			return err
+		}
 	}
 
-	if topic != nil {
-		if !topic.Status.Ready {
-			return core.NewApplicationError("topic %s is not yet ready", topic.Name)
+	if broker != nil {
+		if !broker.Status.Ready {
+			return core.NewPendingError().WithMessage("broker not ready")
 		}
-
-		brokerEnvVar, err := settings.GetBrokerEnvVars(ctx, topic.Status.URI, stack.Name, "payments")
+		brokerEnvVar, err := brokers.GetBrokerEnvVars(ctx, broker.Status.URI, stack.Name, "payments")
 		if err != nil {
 			return err
 		}
 
 		env = append(env, brokerEnvVar...)
-		env = append(env, core.Env("PUBLISHER_TOPIC_MAPPING", "*:"+core.GetObjectName(stack.Name, "payments")))
+		env = append(env, brokers.GetPublisherEnvVars(stack, broker, "payments", "")...)
 	}
 
 	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
@@ -169,23 +177,26 @@ func createConnectorsDeployment(ctx core.Context, stack *v1beta1.Stack, payments
 		return err
 	}
 
-	topic, err := brokertopics.Find(ctx, stack, "payments")
-	if err != nil {
+	var broker *v1beta1.Broker
+	if t, err := brokertopics.Find(ctx, stack, "payments"); err != nil {
 		return err
+	} else if t != nil && t.Status.Ready {
+		broker = &v1beta1.Broker{}
+		if err := ctx.GetClient().Get(ctx, types.NamespacedName{
+			Name: stack.Name,
+		}, broker); err != nil {
+			return err
+		}
 	}
 
-	if topic != nil {
-		if !topic.Status.Ready {
-			return core.NewApplicationError("topic %s is not yet ready", topic.Name)
-		}
-
-		brokerEnvVar, err := settings.GetBrokerEnvVars(ctx, topic.Status.URI, stack.Name, "payments")
+	if broker != nil {
+		brokerEnvVar, err := brokers.GetBrokerEnvVars(ctx, broker.Status.URI, stack.Name, "payments")
 		if err != nil {
 			return err
 		}
 
 		env = append(env, brokerEnvVar...)
-		env = append(env, core.Env("PUBLISHER_TOPIC_MAPPING", "*:"+core.GetObjectName(stack.Name, "payments")))
+		env = append(env, brokers.GetPublisherEnvVars(stack, broker, "payments", "")...)
 	}
 
 	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)

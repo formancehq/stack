@@ -1,23 +1,22 @@
----
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.14.0
-  name: brokertopics.formance.com
+  name: brokers.formance.com
 spec:
   group: formance.com
   names:
-    kind: BrokerTopic
-    listKind: BrokerTopicList
-    plural: brokertopics
-    singular: brokertopic
+    kind: Broker
+    listKind: BrokerList
+    plural: brokers
+    singular: broker
   scope: Cluster
   versions:
   - additionalPrinterColumns:
-    - description: Stack
-      jsonPath: .spec.stack
-      name: Stack
+    - description: Mode
+      jsonPath: .status.mode
+      name: Mode
       type: string
     - description: Ready
       jsonPath: .status.ready
@@ -30,7 +29,7 @@ spec:
     name: v1beta1
     schema:
       openAPIV3Schema:
-        description: BrokerTopic is the Schema for the brokertopics API
+        description: Broker is the Schema for the brokers API
         properties:
           apiVersion:
             description: |-
@@ -50,22 +49,29 @@ spec:
           metadata:
             type: object
           spec:
-            description: BrokerTopicSpec defines the desired state of BrokerTopic
+            description: BrokerSpec defines the desired state of Broker
             properties:
-              service:
-                type: string
               stack:
                 type: string
-            required:
-            - service
             type: object
           status:
-            description: BrokerTopicStatus defines the observed state of BrokerTopic
+            description: BrokerStatus defines the observed state of Broker
             properties:
               info:
                 type: string
+              mode:
+                description: Mode defined how streams are created on the broker (mainly
+                  nats)
+                type: string
               ready:
                 type: boolean
+              streams:
+                description: Streams created when Mode == ModeOneStreamByService
+                items:
+                  type: string
+                type: array
+              uri:
+                type: string
             type: object
         type: object
     served: true

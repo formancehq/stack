@@ -18,20 +18,26 @@ func Create(ctx core.Context, owner interface {
 	client.Object
 	GetStack() string
 	SetCondition(condition v1beta1.Condition)
-}, services ...string) (*v1beta1.BrokerConsumer, error) {
+}, name string, services ...string) (*v1beta1.BrokerConsumer, error) {
 	queriedBy := strings.ToLower(owner.GetObjectKind().GroupVersionKind().Kind)
 
 	sort.Strings(services)
 
+	brokerConsumerName := fmt.Sprintf("%s-%s", owner.GetName(),
+		strings.ToLower(owner.GetObjectKind().GroupVersionKind().Kind),
+	)
+	if name != "" {
+		brokerConsumerName += "-" + name
+	}
+
 	brokerConsumer, _, err := core.CreateOrUpdate[*v1beta1.BrokerConsumer](ctx, types.NamespacedName{
-		Name: fmt.Sprintf("%s-%s", owner.GetName(),
-			strings.ToLower(owner.GetObjectKind().GroupVersionKind().Kind),
-		),
+		Name: brokerConsumerName,
 	},
 		func(t *v1beta1.BrokerConsumer) error {
 			t.Spec.QueriedBy = queriedBy
 			t.Spec.Stack = owner.GetStack()
 			t.Spec.Services = services
+			t.Spec.Name = name
 
 			return nil
 		},
@@ -58,7 +64,7 @@ func CreateOrUpdateOnAllServices(ctx core.Context, consumer interface {
 		return u.GetKind() != consumer.GetObjectKind().GroupVersionKind().Kind
 	})
 
-	return Create(ctx, consumer, Map(filteredServices, func(from unstructured.Unstructured) string {
+	return Create(ctx, consumer, "", Map(filteredServices, func(from unstructured.Unstructured) string {
 		return strings.ToLower(from.GetKind())
 	})...)
 }

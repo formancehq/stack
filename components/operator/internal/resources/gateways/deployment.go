@@ -3,6 +3,7 @@ package gateways
 import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
+	"github.com/formancehq/operator/internal/resources/brokers"
 	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/licence"
 	"github.com/formancehq/operator/internal/resources/registries"
@@ -13,7 +14,7 @@ import (
 
 func createDeployment(ctx core.Context, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway, caddyfileConfigMap *v1.ConfigMap,
-	auditTopic *v1beta1.BrokerTopic, version string) error {
+	broker *v1beta1.Broker, version string) error {
 
 	env := GetEnvVars(gateway)
 	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseKind(ctx, gateway))
@@ -30,8 +31,8 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack,
 	env = append(env, licenceEnvVars...)
 	env = append(env, core.GetDevEnvVars(stack, gateway)...)
 
-	if stack.Spec.EnableAudit && auditTopic != nil {
-		brokerEnvVar, err := settings.GetBrokerEnvVars(ctx, auditTopic.Status.URI, stack.Name, "gateway")
+	if stack.Spec.EnableAudit && broker != nil {
+		brokerEnvVar, err := brokers.GetBrokerEnvVars(ctx, broker.Status.URI, stack.Name, "gateway")
 		if err != nil {
 			return err
 		}

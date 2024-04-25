@@ -4,14 +4,14 @@ kind: Versions
 metadata:
   name: default
 spec:
-  auth: local
+  auth: latest
   control: v.1.7.0
-  gateway: local
-  ledger: local
-  orchestration: local
-  payments: local
-  reconciliation: local
-  search: local
-  wallets: local
-  webhooks: local
-  stargate: local
+  gateway: latest
+  ledger: latest
+  orchestration: latest
+  payments: latest
+  reconciliation: latest
+  search: latest
+  wallets: latest
+  webhooks: latest
+  stargate: latest
