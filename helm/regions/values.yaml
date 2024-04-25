@@ -16,10 +16,12 @@ operator:
     probeAddr: ":8081"
     enableLeaderElection: true
 
-  # Use `components/operator/helm/base` to install crds
+  # Warning: This is a sensitive value
+  # Only Helm Release are impacted on first install.
+  # Use `components/operator/helm/crds` to install crds separately
   # Deprecated: operator-crds, will be removed in a future release,
-  # please use operator-crds.create to first update crds with `helm.sh/resource-policy: keep`
-  # Then you will be able to disable it and moved to the new chart `components/operator/helm/base`
+  # please use operator-crds.create:true, to first update crds with `helm.sh/resource-policy: keep`
+  # Then you will be able to disable it and moved to the new chart `components/operator/helm/crds`
   # If using Helm Release, you will need to set `meta.helm.sh/release-name` and `meta.helm.sh/release-namespace` to the new relase name and namespace
   operator-crds:
     create: true
