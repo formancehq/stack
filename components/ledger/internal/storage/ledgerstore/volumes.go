@@ -74,7 +74,6 @@ func (store *Store) volumesQueryContext(qb lquery.Builder, q GetVolumesWithBalan
 				return fmt.Sprintf("%s -> ? IS NOT NULL", key), []any{value}, nil
 			case balanceRegex.Match([]byte(key)):
 				match := balanceRegex.FindAllStringSubmatch(key, 2)
-				println(match)
 				return fmt.Sprintf(`balance %s ?  and asset = ?`, convertOperatorToSQL()), []any{value, match[0][1]}, nil
 			default:
 				return "", nil, newErrInvalidQuery("unknown key '%s' when building query", key)
