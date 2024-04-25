@@ -144,9 +144,7 @@ func TestGetBalancesAggregated(t *testing.T) {
 
 	t.Run("using a filter exist on metadata", func(t *testing.T) {
 		t.Parallel()
-		ret, err := store.GetAggregatedBalances(ctx, NewGetAggregatedBalancesQuery(PITFilter{
-			
-		}, query.Exists("metadata", "category"), false))
+		ret, err := store.GetAggregatedBalances(ctx, NewGetAggregatedBalancesQuery(PITFilter{}, query.Exists("metadata", "category"), false))
 		require.NoError(t, err)
 		require.Equal(t, ledger.BalancesByAssets{
 			"USD": big.NewInt(0).Add(

@@ -154,8 +154,8 @@ func Gte(key string, value any) keyValue {
 func Exists(key string, value any) keyValue {
 	return keyValue{
 		operator: "$exists",
-		key: key,
-		value: value,
+		key:      key,
+		value:    value,
 	}
 }
 

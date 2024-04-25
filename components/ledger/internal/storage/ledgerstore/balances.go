@@ -50,7 +50,7 @@ func (store *Store) GetAggregatedBalances(ctx context.Context, q GetAggregatedBa
 				return key + " @> ?", []any{map[string]any{
 					match[0][1]: value,
 				}}, nil
-			
+
 			case key == "metadata":
 				if operator != "$exists" {
 					return "", nil, newErrInvalidQuery("'metadata' key filter can only be used with $exists")
@@ -60,8 +60,8 @@ func (store *Store) GetAggregatedBalances(ctx context.Context, q GetAggregatedBa
 				if q.PIT != nil && !q.PIT.IsZero() {
 					key = "am.metadata"
 				}
-	
-				return fmt.Sprintf("%s -> ? IS NOT NULL", key), []any{value}, nil 
+
+				return fmt.Sprintf("%s -> ? IS NOT NULL", key), []any{value}, nil
 			default:
 				return "", nil, newErrInvalidQuery("unknown key '%s' when building query", key)
 			}

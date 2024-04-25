@@ -189,7 +189,7 @@ func TestGetAccounts(t *testing.T) {
 			WithQueryBuilder(query.Exists("metadata", "foo")),
 		))
 		require.NoError(t, err)
-		require.Len(t, accounts.Data, 2) 
+		require.Len(t, accounts.Data, 2)
 
 		accounts, err = store.GetAccountsWithVolumes(ctx, NewGetAccountsQuery(NewPaginatedQueryOptions(PITFilterWithVolumes{}).
 			WithQueryBuilder(query.Exists("metadata", "category")),
