@@ -18,6 +18,7 @@ var _ = Describe("Stacks informer", func() {
 	var (
 		membershipClientMock  *internal.MembershipClientMock
 		inMemoryStacksModules map[string][]string
+		startListener         func()
 	)
 	BeforeEach(func() {
 		inMemoryStacksModules = map[string][]string{}
@@ -26,13 +27,14 @@ var _ = Describe("Stacks informer", func() {
 		Expect(err).To(Succeed())
 
 		factory := internal.NewDynamicSharedInformerFactory(dynamicClient)
-		stacksInformer, err := internal.CreateStacksInformer(factory, logging.Testing(), membershipClientMock, inMemoryStacksModules)
-		Expect(err).To(Succeed())
-		stopCh := make(chan struct{})
-		go stacksInformer.Run(stopCh)
-		DeferCleanup(func() {
-			close(stopCh)
-		})
+		Expect(internal.CreateStacksInformer(factory, logging.Testing(), membershipClientMock, inMemoryStacksModules)).To(Succeed())
+		startListener = func() {
+			stopCh := make(chan struct{})
+			factory.Start(stopCh)
+			DeferCleanup(func() {
+				close(stopCh)
+			})
+		}
 	})
 	When("a stack is created on the cluster disabled", func() {
 		var stack *v1beta1.Stack
@@ -52,6 +54,15 @@ var _ = Describe("Stacks informer", func() {
 				Into(stack)).To(Succeed())
 
 			inMemoryStacksModules[stack.Name] = []string{}
+
+			startListener()
+
+			DeferCleanup(func() {
+				Expect(k8sClient.Delete().
+					Resource("Stacks").
+					Name(stack.Name).
+					Do(context.Background()).Error()).To(Succeed())
+			})
 		})
 		It("Should be disabled and have sent a Status_Disabled", func() {
 			Eventually(func() []*generated.Message {
@@ -100,7 +111,7 @@ var _ = Describe("Stacks informer", func() {
 				It("should have sent a Status_Ready", func() {
 					Eventually(func() []*generated.Message {
 						for _, message := range membershipClientMock.GetMessages() {
-							if message.GetStatusChanged() != nil && message.GetStatusChanged().Status == generated.StackStatus_Ready {
+							if message.GetStatusChanged() != nil && message.GetStatusChanged().Status == generated.StackStatus_Ready && message.GetStatusChanged().ClusterName == stack.Name {
 								return membershipClientMock.GetMessages()
 							}
 						}
@@ -126,6 +137,9 @@ var _ = Describe("Stacks informer", func() {
 				Into(stack)).To(Succeed())
 
 			inMemoryStacksModules[stack.Name] = []string{}
+
+			startListener()
+
 		})
 		It("should have sent a Status_Progressing", func() {
 			Eventually(func() []*generated.Message {
