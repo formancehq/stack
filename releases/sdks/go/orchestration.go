@@ -693,7 +693,7 @@ func (s *Orchestration) ListInstances(ctx context.Context, request operations.Li
 
 // ListTriggers - List triggers
 // List triggers
-func (s *Orchestration) ListTriggers(ctx context.Context) (*operations.ListTriggersResponse, error) {
+func (s *Orchestration) ListTriggers(ctx context.Context, request operations.ListTriggersRequest) (*operations.ListTriggersResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/api/orchestration/triggers"
 
@@ -703,6 +703,10 @@ func (s *Orchestration) ListTriggers(ctx context.Context) (*operations.ListTrigg
 	}
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
+
+	if err := utils.PopulateQueryParams(ctx, req, request, nil); err != nil {
+		return nil, fmt.Errorf("error populating query params: %w", err)
+	}
 
 	client := s.sdkConfiguration.SecurityClient
 
