@@ -59,7 +59,6 @@ func NewRootCommand() *cobra.Command {
 		panic(err)
 	}
 
-	root.PersistentFlags().Bool(service.DebugFlag, false, "Debug mode")
 	otlptraces.InitOTLPTracesFlags(root.PersistentFlags())
 	otlpmetrics.InitOTLPMetricsFlags(root.PersistentFlags())
 
