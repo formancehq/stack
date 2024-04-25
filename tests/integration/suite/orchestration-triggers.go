@@ -1,6 +1,11 @@
 package suite
 
 import (
+	"math/big"
+	"net/http"
+	"net/http/httptest"
+	"time"
+
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	orchestrationevents "github.com/formancehq/orchestration/pkg/events"
@@ -13,10 +18,6 @@ import (
 	"github.com/nats-io/nats.go"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"math/big"
-	"net/http"
-	"net/http/httptest"
-	"time"
 )
 
 var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledger}, func() {
@@ -83,7 +84,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 			Expect(createTriggerResponse.StatusCode).To(Equal(201))
 			Expect(createTriggerResponse.CreateTriggerResponse.Data.ID).NotTo(BeEmpty())
 
-			listTriggersResponse, err := Client().Orchestration.V2ListTriggers(TestContext())
+			listTriggersResponse, err := Client().Orchestration.V2ListTriggers(TestContext(), operations.V2ListTriggersRequest{})
 			Expect(err).To(BeNil())
 			Expect(listTriggersResponse.V2ListTriggersResponse.Cursor.Data).Should(HaveLen(1))
 		})
@@ -174,7 +175,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 				Expect(err).To(BeNil())
 			})
 			It("should not appear on list", func() {
-				listTriggersResponse, err := Client().Orchestration.V2ListTriggers(TestContext())
+				listTriggersResponse, err := Client().Orchestration.V2ListTriggers(TestContext(), operations.V2ListTriggersRequest{})
 				Expect(err).To(BeNil())
 				Expect(listTriggersResponse.V2ListTriggersResponse.Cursor.Data).Should(HaveLen(0))
 			})
