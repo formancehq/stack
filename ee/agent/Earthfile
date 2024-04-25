@@ -100,6 +100,7 @@ grpc-generate:
     COPY $protoName .
     DO core+GRPC_GEN --protoName=$protoName
     SAVE ARTIFACT generated AS LOCAL internal/generated
+
 tests:
     FROM core+builder-image
     RUN apk update && apk add bash
@@ -112,11 +113,18 @@ tests:
     COPY --pass-args ../../components/operator+manifests/config /src/components/operator/config
     WORKDIR /src/ee/agent
     COPY tests tests
+    COPY internal internal
     ARG GOPROXY
     ARG focus
+    
     RUN --mount=type=cache,id=gomod,target=$GOPATH/pkg/mod \
         --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
-        ginkgo --focus=$focus ./tests/...
+        go test ./internal/...
+
+    RUN --mount=type=cache,id=gomod,target=$GOPATH/pkg/mod \
+        --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
+        ginkgo --focus=$focus -p ./tests/...
+    
 
 helm-validate:
     FROM core+helm-base
