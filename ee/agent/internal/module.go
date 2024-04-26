@@ -22,7 +22,7 @@ import (
 )
 
 func NewDynamicSharedInformerFactory(client *dynamic.DynamicClient) dynamicinformer.DynamicSharedInformerFactory {
-	return dynamicinformer.NewDynamicSharedInformerFactory(client, 5*time.Second)
+	return dynamicinformer.NewDynamicSharedInformerFactory(client, 2500*time.Millisecond)
 }
 
 func runInformers(lc fx.Lifecycle, factory dynamicinformer.DynamicSharedInformerFactory) {

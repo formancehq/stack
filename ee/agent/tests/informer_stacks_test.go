@@ -176,4 +176,36 @@ var _ = Describe("Stacks informer", func() {
 			})
 		})
 	})
+	When("Stack is deleted", func() {
+		BeforeEach(func() {
+			stack := &v1beta1.Stack{
+				ObjectMeta: v1.ObjectMeta{
+					Name: uuid.NewString(),
+				},
+			}
+			Expect(k8sClient.Post().
+				Resource("Stacks").
+				Body(stack).
+				Do(context.Background()).
+				Into(stack)).To(Succeed())
+
+			startListener()
+			inMemoryStacksModules[stack.Name] = []string{}
+
+			Expect(k8sClient.Delete().
+				Resource("Stacks").
+				Name(stack.Name).
+				Do(context.Background()).Error()).To(Succeed())
+		})
+		It("should have sent a Stack_Deleted", func() {
+			Eventually(func() []*generated.Message {
+				for _, message := range membershipClientMock.GetMessages() {
+					if message.GetStackDeleted() != nil {
+						return membershipClientMock.GetMessages()
+					}
+				}
+				return nil
+			}).ShouldNot(BeEmpty())
+		})
+	})
 })

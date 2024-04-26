@@ -77,6 +77,22 @@ var _ = Describe("Membership listener", func() {
 			})
 
 			By("Creating a stack", func() {
+				modules := make([]*generated.Module, 0)
+				for gvk, rtype := range scheme.Scheme.AllKnownTypes() {
+					object := reflect.New(rtype).Interface()
+					if _, ok := object.(v1beta1.Module); !ok {
+						continue
+					}
+
+					if gvk.Kind == "Stargate" {
+						continue
+					}
+
+					modules = append(modules, &generated.Module{
+						Name: gvk.Kind,
+					})
+				}
+
 				membershipStack = &generated.Stack{
 					ClusterName: stackName,
 					AuthConfig: &generated.AuthConfig{
@@ -105,32 +121,7 @@ var _ = Describe("Membership listener", func() {
 							Public: true,
 						},
 					},
-					Modules: []*generated.Module{
-						{
-							Name: "Auth",
-						},
-						{
-							Name: "Gateway",
-						},
-						{
-							Name: "Ledger",
-						},
-						{
-							Name: "Payments",
-						},
-						{
-							Name: "Wallets",
-						},
-						{
-							Name: "Orchestration",
-						},
-						{
-							Name: "Webhooks",
-						},
-						{
-							Name: "Search",
-						},
-					},
+					Modules: modules,
 				}
 				membershipClient.Orders() <- &generated.Order{
 					Message: &generated.Order_ExistingStack{
@@ -146,7 +137,6 @@ var _ = Describe("Membership listener", func() {
 		It("Should have sync auth client", func() {
 			clients := &unstructured.UnstructuredList{}
 			Eventually(func(g Gomega) []unstructured.Unstructured {
-
 				g.Expect(k8sClient.Get().Resource("AuthClients").VersionedParams(&metav1.ListOptions{
 					LabelSelector: "formance.com/created-by-agent=true,formance.com/stack=" + membershipStack.ClusterName,
 				}, scheme.ParameterCodec).Do(context.Background()).Into(clients)).To(Succeed())
@@ -216,7 +206,8 @@ var _ = Describe("Membership listener", func() {
 				if _, ok := object.(v1beta1.Module); !ok {
 					continue
 				}
-				if gvk.Kind == "Reconciliation" || gvk.Kind == "Stargate" { // EE modules, not actually enabled
+
+				if gvk.Kind == "Stargate" {
 					continue
 				}
 
