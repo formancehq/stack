@@ -104,7 +104,7 @@ func TestGetVolumes(t *testing.T) {
 					OOT: &zero,
 				},
 			}).WithPageSize(v2.DefaultPageSize).WithQueryBuilder(query.Exists("metadata", "foo")),
-		},	
+		},
 		{
 			name: "using balance filter",
 			body: `{"$gte": { "balance[EUR]": 50 }}`,
@@ -114,7 +114,7 @@ func TestGetVolumes(t *testing.T) {
 					OOT: &zero,
 				},
 			}).WithQueryBuilder(query.Gte("balance[EUR]", float64(50))).
-			WithPageSize(v2.DefaultPageSize),
+				WithPageSize(v2.DefaultPageSize),
 		},
 	}
 

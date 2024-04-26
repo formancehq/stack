@@ -356,7 +356,21 @@ func TestGetVolumesWithBalances(t *testing.T) {
 
 	})
 
-	t.Run("Using exists metadata filter", func(t *testing.T) {
+	t.Run("Using Metadata regex", func(t *testing.T) {
+		t.Parallel()
+
+		volumes, err := store.GetVolumesWithBalances(ctx,
+			NewGetVolumesWithBalancesQuery(
+				NewPaginatedQueryOptions(
+					FiltersForVolumes{}).WithQueryBuilder(query.Match("metadata[foo]", "bar"))),
+		)
+
+		require.NoError(t, err)
+		require.Len(t, volumes.Data, 1)
+
+	})
+
+	t.Run("Using exists metadata filter 1", func(t *testing.T) {
 		t.Parallel()
 
 		volumes, err := store.GetVolumesWithBalances(ctx,
@@ -370,7 +384,7 @@ func TestGetVolumesWithBalances(t *testing.T) {
 
 	})
 
-	t.Run("Using exists metadata filter", func(t *testing.T) {
+	t.Run("Using exists metadata filter 2", func(t *testing.T) {
 		t.Parallel()
 
 		volumes, err := store.GetVolumesWithBalances(ctx,

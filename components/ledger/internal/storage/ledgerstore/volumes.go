@@ -3,11 +3,12 @@ package ledgerstore
 import (
 	"context"
 	"fmt"
+	"regexp"
+
 	ledger "github.com/formancehq/ledger/internal"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	lquery "github.com/formancehq/stack/libs/go-libs/query"
 	"github.com/uptrace/bun"
-	"regexp"
 )
 
 func (store *Store) volumesQueryContext(qb lquery.Builder, q GetVolumesWithBalancesQuery) (string, []any, bool, error) {
@@ -60,7 +61,7 @@ func (store *Store) volumesQueryContext(qb lquery.Builder, q GetVolumesWithBalan
 				}
 				useMetadata = true
 				match := metadataRegex.FindAllStringSubmatch(key, 3)
-				key := "accounts.metadata"
+				key := "metadata"
 
 				return key + " @> ?", []any{map[string]any{
 					match[0][1]: value,
@@ -69,7 +70,8 @@ func (store *Store) volumesQueryContext(qb lquery.Builder, q GetVolumesWithBalan
 				if operator != "$exists" {
 					return "", nil, newErrInvalidQuery("'metadata' key filter can only be used with $exists")
 				}
-				key := "accounts.metadata"
+				useMetadata = true
+				key := "metadata"
 
 				return fmt.Sprintf("%s -> ? IS NOT NULL", key), []any{value}, nil
 			case balanceRegex.Match([]byte(key)):
@@ -107,12 +109,12 @@ func (store *Store) buildVolumesWithBalancesQuery(query *bun.SelectQuery, q GetV
 		Table("moves")
 
 	if useMetadata {
-		query = query.
+		query = query.ColumnExpr("accounts.metadata as metadata").
 			Join(`join lateral (	
 		select metadata
 		from accounts a 
 		where a.seq = moves.accounts_seq
-		) accounts on true`)
+		) accounts on true`).Group("metadata")
 	}
 
 	query = query.
@@ -136,6 +138,10 @@ func (store *Store) buildVolumesWithBalancesQuery(query *bun.SelectQuery, q GetV
 			GroupExpr("account, asset")
 	} else {
 		globalQuery = globalQuery.ColumnExpr("account_address as account, asset, input, output, balance")
+	}
+
+	if useMetadata {
+		globalQuery = globalQuery.Column("metadata")
 	}
 
 	if where != "" {
