@@ -215,10 +215,13 @@ func (c *membershipListener) syncModules(ctx context.Context, metadata map[strin
 	}
 }
 
-func (c *membershipListener) deleteModule(ctx context.Context, gvk schema.GroupVersionKind, name string) error {
+func (c *membershipListener) deleteModule(ctx context.Context, gvk schema.GroupVersionKind, stackName string) error {
 	if err := c.restClient.Delete().
 		Resource(gvk.Kind).
-		Name(name).
+		VersionedParams(
+			&metav1.ListOptions{
+				LabelSelector: "formance.com/created-by-agent=true,formance.com/stack=" + stackName,
+			}, scheme.ParameterCodec).
 		Do(ctx).
 		Error(); err != nil {
 		if apierrors.IsNotFound(err) {

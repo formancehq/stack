@@ -2,7 +2,9 @@ package tests
 
 import (
 	"context"
+	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/components/agent/internal"
@@ -15,6 +17,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes/scheme"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 var _ = Describe("Informer modules", func() {
@@ -58,21 +61,25 @@ var _ = Describe("Informer modules", func() {
 				unstructuredObj.Object["kind"] = gvk.Kind
 				unstructuredObj.Object["metadata"] = map[string]interface{}{
 					"name": name,
+					"labels": map[string]interface{}{
+						"formance.com/stack":            name,
+						"formance.com/created-by-agent": "true",
+					},
 				}
 
-				By("Creating the module", func() {
+				By(fmt.Sprintf("Creating the module %s", gvk.Kind), func() {
 					Expect(k8sClient.Post().
 						Resource(resource).
 						Body(unstructuredObj).
 						Name(name).Do(context.Background()).Error()).To(Succeed())
 
 					DeferCleanup(func() {
-						Expect(k8sClient.Delete().Resource(resource).Name(name).Do(context.Background()).Error()).To(Succeed())
+						Expect(client.IgnoreNotFound(k8sClient.Delete().Resource(resource).Name(name).Do(context.Background()).Error())).To(Succeed())
 					})
 
 				})
 
-				By("Loading then updating status", func() {
+				By(fmt.Sprintf("Loading then updating status %s", gvk.Kind), func() {
 					Eventually(func() error {
 						return LoadResource(resource, name, unstructuredObj)
 					}).Should(Succeed())
@@ -131,27 +138,61 @@ var _ = Describe("Informer modules", func() {
 			})
 			It("Should have sent ModuleStatusChanged", func() {
 				for gvk, module := range modules {
-					Eventually(func(g Gomega) bool {
-						for _, message := range membershipClientMock.GetMessages() {
-							if msg := message.GetModuleStatusChanged(); msg != nil &&
-								msg.Vk.Kind == gvk.Kind &&
-								msg.Vk.Version == gvk.Version &&
-								msg.ClusterName == module.GetName() {
+					By(fmt.Sprintf("Checking the module %s", gvk.Kind), func() {
+						Eventually(func(g Gomega) bool {
+							for _, message := range membershipClientMock.GetMessages() {
+								if msg := message.GetModuleStatusChanged(); msg != nil &&
+									msg.Vk.Kind == gvk.Kind &&
+									msg.Vk.Version == gvk.Version &&
+									msg.ClusterName == module.GetName() {
 
-								status, _, _ := unstructured.NestedMap(module.Object, "status")
+									status, _, _ := unstructured.NestedMap(module.Object, "status")
 
-								g.Expect(msg.Status.AsMap()["info"]).ToNot(BeNil())
-								g.Expect(msg.Status.AsMap()["ready"]).To(BeFalse())
+									g.Expect(msg.Status.AsMap()["info"]).ToNot(BeNil())
+									g.Expect(msg.Status.AsMap()["ready"]).To(BeFalse())
 
-								for k, value := range status {
-									g.Expect(msg.Status.AsMap()[k]).To(Equal(value))
+									for k, value := range status {
+										g.Expect(msg.Status.AsMap()[k]).To(Equal(value))
+									}
+									return true
 								}
-								return true
 							}
-						}
-						return false
-					}).Should(BeTrue())
+							return false
+						}).Should(BeTrue())
+					})
 				}
+			})
+			When("A module is deleted", func() {
+				var moduleDeleted *unstructured.Unstructured
+				BeforeEach(func() {
+					for gvk, module := range modules {
+						if gvk.Kind != "Reconciliation" {
+							continue
+						}
+						By(fmt.Sprintf("Deleting the module %s", gvk.Kind), func() {
+							moduleDeleted = module
+							restMapping, err := restMapper.RESTMapping(gvk.GroupKind(), gvk.Version)
+							Expect(err).ToNot(HaveOccurred())
+
+							Expect(k8sClient.Delete().Resource(restMapping.Resource.Resource).Name(module.GetName()).Do(context.Background()).Error()).To(Succeed())
+						})
+					}
+				})
+				It("Should have sent ModuleDeleted", func() {
+					By(fmt.Sprintf("Checking message received for %s", moduleDeleted.GetKind()), func() {
+						Eventually(func(g Gomega) bool {
+							for _, message := range membershipClientMock.GetMessages() {
+								if msg := message.GetModuleDeleted(); msg != nil &&
+									msg.Vk.Kind == moduleDeleted.GetKind() &&
+									msg.Vk.Version == strings.Split(moduleDeleted.GetAPIVersion(), "/")[1] &&
+									msg.ClusterName == moduleDeleted.GetName() {
+									return true
+								}
+							}
+							return false
+						}).Should(BeTrue())
+					})
+				})
 			})
 		})
 	})
