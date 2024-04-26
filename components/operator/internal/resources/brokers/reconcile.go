@@ -59,7 +59,7 @@ func detectBrokerMode(ctx core.Context, stack *v1beta1.Stack, broker *v1beta1.Br
 		broker.Status.Mode = v1beta1.ModeOneStreamByService
 		return nil
 	}
-	if ok, err := hasAllVersionsGreaterThan(ctx, stack, "v2.0.0-rc.24"); err != nil {
+	if ok, err := hasAllVersionsGreaterThan(ctx, stack, "v2.0.0-rc.25"); err != nil {
 		return err
 	} else if ok {
 		broker.Status.Mode = v1beta1.ModeOneStreamByStack
