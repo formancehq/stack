@@ -90,8 +90,10 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**DeleteStack**](docs/DefaultApi.md#deletestack) | **Delete** /organizations/{organizationId}/stacks/{stackId} | Delete stack
 *DefaultApi* | [**DeleteStackUserAccess**](docs/DefaultApi.md#deletestackuseraccess) | **Delete** /organizations/{organizationId}/stacks/{stackId}/users/{userId} | Delete stack user access role within an organization
 *DefaultApi* | [**DeleteUserFromOrganization**](docs/DefaultApi.md#deleteuserfromorganization) | **Delete** /organizations/{organizationId}/users/{userId} | delete user from organization
+*DefaultApi* | [**DisableModule**](docs/DefaultApi.md#disablemodule) | **Delete** /organizations/{organizationId}/stacks/{stackId}/modules | disable module
 *DefaultApi* | [**DisableStack**](docs/DefaultApi.md#disablestack) | **Put** /organizations/{organizationId}/stacks/{stackId}/disable | Disable stack
 *DefaultApi* | [**DisableStargate**](docs/DefaultApi.md#disablestargate) | **Put** /organizations/{organizationId}/stacks/{stackId}/stargate/disable | Disable stargate on a stack
+*DefaultApi* | [**EnableModule**](docs/DefaultApi.md#enablemodule) | **Post** /organizations/{organizationId}/stacks/{stackId}/modules | enable module
 *DefaultApi* | [**EnableStack**](docs/DefaultApi.md#enablestack) | **Put** /organizations/{organizationId}/stacks/{stackId}/enable | Enable stack
 *DefaultApi* | [**EnableStargate**](docs/DefaultApi.md#enablestargate) | **Put** /organizations/{organizationId}/stacks/{stackId}/stargate/enable | Enable stargate on a stack
 *DefaultApi* | [**GetRegion**](docs/DefaultApi.md#getregion) | **Get** /organizations/{organizationId}/regions/{regionId} | Get region
@@ -100,6 +102,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**GetStack**](docs/DefaultApi.md#getstack) | **Get** /organizations/{organizationId}/stacks/{stackId} | Find stack
 *DefaultApi* | [**ListInvitations**](docs/DefaultApi.md#listinvitations) | **Get** /me/invitations | List invitations of the user
 *DefaultApi* | [**ListLogs**](docs/DefaultApi.md#listlogs) | **Get** /organizations/{organizationId}/logs | List logs
+*DefaultApi* | [**ListModules**](docs/DefaultApi.md#listmodules) | **Get** /organizations/{organizationId}/stacks/{stackId}/modules | List modules of a stack
 *DefaultApi* | [**ListOrganizationInvitations**](docs/DefaultApi.md#listorganizationinvitations) | **Get** /organizations/{organizationId}/invitations | List invitations of the organization
 *DefaultApi* | [**ListOrganizations**](docs/DefaultApi.md#listorganizations) | **Get** /organizations | List organizations of the connected user
 *DefaultApi* | [**ListOrganizationsExpanded**](docs/DefaultApi.md#listorganizationsexpanded) | **Get** /organizations/expanded | List organizations of the connected user with expanded data
@@ -138,6 +141,7 @@ Class | Method | HTTP request | Description
  - [Invitation](docs/Invitation.md)
  - [InvitationClaim](docs/InvitationClaim.md)
  - [ListInvitationsResponse](docs/ListInvitationsResponse.md)
+ - [ListModulesResponse](docs/ListModulesResponse.md)
  - [ListOrganizationExpandedResponse](docs/ListOrganizationExpandedResponse.md)
  - [ListOrganizationExpandedResponseDataInner](docs/ListOrganizationExpandedResponseDataInner.md)
  - [ListOrganizationResponse](docs/ListOrganizationResponse.md)
@@ -148,6 +152,7 @@ Class | Method | HTTP request | Description
  - [LogCursor](docs/LogCursor.md)
  - [LogCursorData](docs/LogCursorData.md)
  - [LogCursorDataAllOf](docs/LogCursorDataAllOf.md)
+ - [Module](docs/Module.md)
  - [Organization](docs/Organization.md)
  - [OrganizationAllOf](docs/OrganizationAllOf.md)
  - [OrganizationData](docs/OrganizationData.md)

@@ -368,6 +368,109 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /organizations/{organizationId}/stacks/{stackId}/modules:
+    get:
+      summary: List modules of a stack
+      operationId: listModules
+      parameters:
+        - name: organizationId
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: stackId
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: List of modules
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListModulesResponse"
+        403:
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: enable module
+      operationId: enableModule
+      parameters:
+        - name: organizationId
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: stackId
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: name
+          in: query
+          schema:
+            type: string
+          required: true
+      responses:
+        202:
+          description: Module enabled
+        400:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        403:
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      summary: disable module
+      operationId: disableModule
+      parameters:
+        - name: organizationId
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: stackId
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: name
+          in: query
+          schema:
+            type: string
+          required: true
+      responses:
+        202:
+          description: Module disabled
+        400:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        403:
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /organizations/{organizationId}/stacks/{stackId}/upgrade:
     put:
       summary: Upgrade stack
@@ -1210,6 +1313,36 @@ components:
             openid: Enable OIDC
             email: Ask email access
   schemas:
+    Module:
+      type: object
+      required:
+        - name
+        - state
+        - status
+        - lastStatusUpdate
+        - lastStateUpdate
+      properties:
+        name:
+          type: string
+        state:
+          type: string
+        status:
+          type: string
+        lastStatusUpdate:
+          type: string
+          format: date-time
+        lastStateUpdate:
+          type: string
+          format: date-time
+    ListModulesResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Module"
     Action:
       type: string
       enum:

@@ -24,6 +24,7 @@ docs/GetRegionVersionsResponse.md
 docs/Invitation.md
 docs/InvitationClaim.md
 docs/ListInvitationsResponse.md
+docs/ListModulesResponse.md
 docs/ListOrganizationExpandedResponse.md
 docs/ListOrganizationExpandedResponseDataInner.md
 docs/ListOrganizationResponse.md
@@ -34,6 +35,7 @@ docs/Log.md
 docs/LogCursor.md
 docs/LogCursorData.md
 docs/LogCursorDataAllOf.md
+docs/Module.md
 docs/Organization.md
 docs/OrganizationAllOf.md
 docs/OrganizationData.md
@@ -92,6 +94,7 @@ model_get_region_versions_response.go
 model_invitation.go
 model_invitation_claim.go
 model_list_invitations_response.go
+model_list_modules_response.go
 model_list_organization_expanded_response.go
 model_list_organization_expanded_response_data_inner.go
 model_list_organization_response.go
@@ -102,6 +105,7 @@ model_log.go
 model_log_cursor.go
 model_log_cursor_data.go
 model_log_cursor_data_all_of.go
+model_module.go
 model_organization.go
 model_organization_all_of.go
 model_organization_data.go

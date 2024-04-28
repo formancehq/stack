@@ -2,10 +2,12 @@ package store
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
+	"golang.org/x/mod/semver"
 )
 
 const key = "_stack"
@@ -53,4 +55,29 @@ func NewMembershipStackStore(cmd *cobra.Command) error {
 	cmd.SetContext(ContextWithStore(cmd.Context(), StackNode(store, organization)))
 
 	return nil
+}
+
+func (cns *StackNodeStore) CheckAgentVersion(version string) func(cmd *cobra.Command, args []string) error {
+	return func(cmd *cobra.Command, args []string) error {
+		stack, err := fctl.ResolveStack(cmd, cns.Config, cns.organizationId)
+		if err != nil {
+			return err
+		}
+
+		region, _, err := cns.Client().GetRegion(cmd.Context(), cns.organizationId, stack.RegionID).Execute()
+		if err != nil {
+			return err
+		}
+
+		if !semver.IsValid(*region.Data.Version) {
+			return nil
+		}
+
+		if semver.Compare(*region.Data.Version, version) >= 0 {
+			return nil
+		}
+
+		return fmt.Errorf("unsupported membership server version: %s", version)
+	}
+
 }

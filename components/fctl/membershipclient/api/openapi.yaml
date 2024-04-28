@@ -435,6 +435,124 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: Not Authorized
       summary: Create stack
+  /organizations/{organizationId}/stacks/{stackId}/modules:
+    delete:
+      operationId: disableModule
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: stackId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: name
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "202":
+          description: Module disabled
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not Authorized
+      summary: disable module
+    get:
+      operationId: listModules
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: stackId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListModulesResponse'
+          description: List of modules
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not Authorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error
+      summary: List modules of a stack
+    post:
+      operationId: enableModule
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: stackId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: name
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "202":
+          description: Module enabled
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not Authorized
+      summary: enable module
   /organizations/{organizationId}/stacks/{stackId}/upgrade:
     put:
       operationId: upgradeStack
@@ -1375,6 +1493,54 @@ paths:
       summary: Read user
 components:
   schemas:
+    Module:
+      example:
+        lastStateUpdate: 2000-01-23T04:56:07.000+00:00
+        name: name
+        lastStatusUpdate: 2000-01-23T04:56:07.000+00:00
+        state: state
+        status: status
+      properties:
+        name:
+          type: string
+        state:
+          type: string
+        status:
+          type: string
+        lastStatusUpdate:
+          format: date-time
+          type: string
+        lastStateUpdate:
+          format: date-time
+          type: string
+      required:
+      - lastStateUpdate
+      - lastStatusUpdate
+      - name
+      - state
+      - status
+      type: object
+    ListModulesResponse:
+      example:
+        data:
+        - lastStateUpdate: 2000-01-23T04:56:07.000+00:00
+          name: name
+          lastStatusUpdate: 2000-01-23T04:56:07.000+00:00
+          state: state
+          status: status
+        - lastStateUpdate: 2000-01-23T04:56:07.000+00:00
+          name: name
+          lastStatusUpdate: 2000-01-23T04:56:07.000+00:00
+          state: state
+          status: status
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Module'
+          type: array
+      required:
+      - data
+      type: object
     Action:
       enum:
       - agents.connected
