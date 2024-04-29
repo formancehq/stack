@@ -241,11 +241,7 @@ func createGateway(ctx core.Context, stack *v1beta1.Stack, p *v1beta1.Payments) 
 	}
 
 	env := make([]v1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseKind(ctx, p))
-	if err != nil {
-		return err
-	}
-	env = append(env, otlpEnv...)
+
 	env = append(env, core.GetDevEnvVars(stack, p)...)
 
 	caddyImage, err := registries.GetCaddyImage(ctx, stack, "2.7.6-alpine")
@@ -255,7 +251,7 @@ func createGateway(ctx core.Context, stack *v1beta1.Stack, p *v1beta1.Payments) 
 
 	_, err = deployments.CreateOrUpdate(ctx, p, "payments",
 		deployments.WithReplicasFromSettings(ctx, stack),
-		settings.ConfigureCaddy(caddyfileConfigMap, caddyImage, env),
+		settings.ConfigureCaddy(ctx, stack, p, caddyfileConfigMap, caddyImage, env),
 		deployments.WithMatchingLabels("payments"),
 		// notes(gfyrag): reset init containers in case of upgrading from v1 to v2
 		deployments.WithInitContainers(),

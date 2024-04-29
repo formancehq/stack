@@ -17,17 +17,11 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack,
 	broker *v1beta1.Broker, version string) error {
 
 	env := GetEnvVars(gateway)
-	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseKind(ctx, gateway))
-	if err != nil {
-		return err
-	}
-
 	resourceReference, licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack, "gateway", gateway)
 	if err != nil {
 		return err
 	}
 
-	env = append(env, otlpEnv...)
 	env = append(env, licenceEnvVars...)
 	env = append(env, core.GetDevEnvVars(stack, gateway)...)
 
@@ -48,7 +42,7 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack,
 	_, err = deployments.CreateOrUpdate(ctx, gateway, "gateway",
 		resourcereferences.Annotate("licence-secret-hash", resourceReference),
 		deployments.WithReplicasFromSettings(ctx, stack),
-		settings.ConfigureCaddy(caddyfileConfigMap, image, env),
+		settings.ConfigureCaddy(ctx, stack, gateway, caddyfileConfigMap, image, env),
 		deployments.WithMatchingLabels("gateway"),
 	)
 
