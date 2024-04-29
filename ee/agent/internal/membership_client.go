@@ -20,23 +20,27 @@ const (
 	metadataVersion      = "version"
 	metadataCapabilities = "capabilities"
 
-	capabilityEE = "EE"
+	capabilityEE         = "EE"
+	capabilityModuleList = "moduleList"
 )
 
 type membershipClient struct {
-	clientInfo     ClientInfo
-	stopChan       chan chan error
+	clientInfo ClientInfo
+	stopChan   chan chan error
+
 	serverClient   generated.ServerClient
 	connectClient  generated.Server_ConnectClient
 	connectContext context.Context
 	connectCancel  func()
 	authenticator  Authenticator
-	orders         chan *generated.Order
-	opts           []grpc.DialOption
-	address        string
+
+	orders chan *generated.Order
+	opts   []grpc.DialOption
+
+	address string
 }
 
-func (c *membershipClient) connectMetadata(ctx context.Context) (metadata.MD, error) {
+func (c *membershipClient) connectMetadata(ctx context.Context, modules []string) (metadata.MD, error) {
 
 	md, err := c.authenticator.authenticate(ctx)
 	if err != nil {
@@ -52,12 +56,13 @@ func (c *membershipClient) connectMetadata(ctx context.Context) (metadata.MD, er
 		return "false"
 	}())
 	md.Append(metadataVersion, c.clientInfo.Version)
-	md.Append(metadataCapabilities, capabilityEE)
+	md.Append(metadataCapabilities, capabilityEE, capabilityModuleList)
+	md.Append(capabilityModuleList, modules...)
 
 	return md, nil
 }
 
-func (c *membershipClient) connect(ctx context.Context) error {
+func (c *membershipClient) connect(ctx context.Context, modules []string) error {
 	sharedlogging.FromContext(ctx).WithFields(map[string]any{
 		"id": c.clientInfo.ID,
 	}).Infof("Establish connection to server")
@@ -74,7 +79,7 @@ func (c *membershipClient) connect(ctx context.Context) error {
 	sharedlogging.FromContext(ctx).Info("Connected to GRPC server!")
 	c.serverClient = generated.NewServerClient(conn)
 
-	md, err := c.connectMetadata(ctx)
+	md, err := c.connectMetadata(ctx, modules)
 	if err != nil {
 		return err
 	}
