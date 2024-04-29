@@ -97,6 +97,15 @@ func NewStackEventHandler(logger sharedlogging.Logger, membershipClient Membersh
 		},
 		DeleteFunc: func(obj interface{}) {
 			stack := obj.(*unstructured.Unstructured)
+			if err := membershipClient.Send(&generated.Message{
+				Message: &generated.Message_StackDeleted{
+					StackDeleted: &generated.DeletedStack{
+						ClusterName: stack.GetName(),
+					},
+				},
+			}); err != nil {
+				logger.Errorf("Unable to send stack delete to server: %s", err)
+			}
 
 			if _, ok := stacks[stack.GetName()]; !ok {
 				logger.Debugf("Stack '%s' not initialized in memory", stack.GetName())
@@ -111,15 +120,6 @@ func NewStackEventHandler(logger sharedlogging.Logger, membershipClient Membersh
 			}
 			sendStatus(InterpretedStatus(stack), stack.GetName(), status)
 
-			if err := membershipClient.Send(&generated.Message{
-				Message: &generated.Message_StackDeleted{
-					StackDeleted: &generated.DeletedStack{
-						ClusterName: stack.GetName(),
-					},
-				},
-			}); err != nil {
-				logger.Errorf("Unable to send stack delete to server: %s", err)
-			}
 		},
 	}
 }
