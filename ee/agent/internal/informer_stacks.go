@@ -74,6 +74,10 @@ func NewStackEventHandler(logger sharedlogging.Logger, membershipClient Membersh
 				return
 			}
 
+			if status == nil {
+				return
+			}
+
 			logger.Infof("Stack '%s' added", stack.GetName())
 			sendStatus(InterpretedStatus(stack), stack.GetName(), status)
 		},
@@ -89,6 +93,10 @@ func NewStackEventHandler(logger sharedlogging.Logger, membershipClient Membersh
 			status, err := getStatus(newStack)
 			if err != nil {
 				logger.Errorf("Unable to generate message stack update: %s", err)
+				return
+			}
+
+			if status == nil {
 				return
 			}
 
@@ -116,6 +124,9 @@ func NewStackEventHandler(logger sharedlogging.Logger, membershipClient Membersh
 			status, err := getStatus(stack)
 			if err != nil {
 				logger.Errorf("Unable to generate message stack update: %s", err)
+				return
+			}
+			if status == nil {
 				return
 			}
 			sendStatus(InterpretedStatus(stack), stack.GetName(), status)

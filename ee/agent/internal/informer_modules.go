@@ -49,7 +49,7 @@ func getStatus(unstructuredModule *unstructured.Unstructured) (*structpb.Struct,
 	}
 
 	if !found {
-		return nil, errors.New("status not found")
+		return nil, nil
 	}
 
 	status, err = Restrict[v1beta1.StatusWithConditions](status)
@@ -91,6 +91,10 @@ func NewModuleEventHandler(logger logging.Logger, membershipClient MembershipCli
 				return
 			}
 
+			if status == nil {
+				return
+			}
+
 			message := fromUnstructuredToModuleStatusChanged(unstructuredModule, status)
 			if err := membershipClient.Send(message); err != nil {
 				logger.Errorf("Unable to send message module added: %s", err)
@@ -112,7 +116,7 @@ func NewModuleEventHandler(logger logging.Logger, membershipClient MembershipCli
 				return
 			}
 
-			if reflect.DeepEqual(oldStatus, newStatus) {
+			if newStatus == nil || reflect.DeepEqual(oldStatus, newStatus) {
 				return
 			}
 
