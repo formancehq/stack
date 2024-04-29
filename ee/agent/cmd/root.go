@@ -23,8 +23,6 @@ import (
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 	"k8s.io/client-go/kubernetes/scheme"
-	"k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
 )
 
@@ -36,7 +34,6 @@ var (
 )
 
 const (
-	kubeConfigFlag                 = "kube-config"
 	serverAddressFlag              = "server-address"
 	tlsEnabledFlag                 = "tls-enabled"
 	tlsInsecureSkipVerifyFlag      = "tls-insecure-skip-verify"
@@ -104,7 +101,7 @@ func runAgent(cmd *cobra.Command, args []string) error {
 	}
 
 	options := []fx.Option{
-		fx.Provide(newK8SConfig),
+		fx.Provide(internal.NewK8SConfig()),
 		fx.NopLogger,
 		internal.NewModule(serverAddress, authenticator, internal.ClientInfo{
 			ID:         agentID,
@@ -117,23 +114,6 @@ func runAgent(cmd *cobra.Command, args []string) error {
 	}
 
 	return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
-}
-
-func newK8SConfig() (*rest.Config, error) {
-	config, err := rest.InClusterConfig()
-	if err != nil {
-		sharedlogging.Info("Does not seems to be in cluster, trying to load k8s client from kube config file")
-		config, err = clientcmd.BuildConfigFromFlags("", viper.GetString(kubeConfigFlag))
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	config.GroupVersion = &v1beta1.GroupVersion
-	config.NegotiatedSerializer = scheme.Codecs.WithoutConversion()
-	config.APIPath = "/apis"
-
-	return config, nil
 }
 
 func createAuthenticator(agentID string) (internal.Authenticator, error) {
@@ -202,7 +182,7 @@ func init() {
 
 	service.BindFlags(rootCmd)
 	licence.InitCLIFlags(rootCmd)
-	rootCmd.Flags().String(kubeConfigFlag, kubeConfigFilePath, "")
+	rootCmd.Flags().String(internal.KubeConfigFlag, kubeConfigFilePath, "")
 	rootCmd.Flags().String(serverAddressFlag, "localhost:8081", "")
 	rootCmd.Flags().Bool(tlsEnabledFlag, false, "")
 	rootCmd.Flags().Bool(tlsInsecureSkipVerifyFlag, false, "")

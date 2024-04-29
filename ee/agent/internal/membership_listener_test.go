@@ -2,6 +2,7 @@ package internal
 
 import (
 	"context"
+	"fmt"
 	"path/filepath"
 	osRuntime "runtime"
 	"testing"
@@ -17,7 +18,13 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
 )
 
-func test(t *testing.T, fn func(context.Context, *rest.RESTClient, meta.RESTMapper)) {
+type testConfig struct {
+	restConfig *rest.Config
+	mapper     meta.RESTMapper
+	client     *rest.RESTClient
+}
+
+func test(t *testing.T, fn func(context.Context, *testConfig)) {
 	_, filename, _, _ := osRuntime.Caller(0)
 	apiServer := envtest.APIServer{}
 	apiServer.Configure().
@@ -37,6 +44,7 @@ func test(t *testing.T, fn func(context.Context, *rest.RESTClient, meta.RESTMapp
 	}
 
 	restConfig, err := testEnv.Start()
+
 	require.NoError(t, err)
 
 	restConfig.GroupVersion = &v1beta1.GroupVersion
@@ -49,7 +57,16 @@ func test(t *testing.T, fn func(context.Context, *rest.RESTClient, meta.RESTMapp
 	mapper, err := CreateRestMapper(restConfig)
 	require.NoError(t, err)
 
-	fn(logging.TestingContext(), k8sClient, mapper)
+	t.Cleanup(
+		func() {
+			require.NoError(t, testEnv.Stop())
+		},
+	)
+	fn(logging.TestingContext(), &testConfig{
+		restConfig: restConfig,
+		mapper:     mapper,
+		client:     k8sClient,
+	})
 }
 func TestDeleteModule(t *testing.T) {
 
@@ -68,7 +85,7 @@ func TestDeleteModule(t *testing.T) {
 			withLabels: false,
 		},
 	}
-	test(t, func(ctx context.Context, k8sClient *rest.RESTClient, mapper meta.RESTMapper) {
+	test(t, func(ctx context.Context, testConfig *testConfig) {
 		t.Parallel()
 
 		for _, tc := range testCases {
@@ -87,20 +104,30 @@ func TestDeleteModule(t *testing.T) {
 					}
 				}
 
-				require.NoError(t, k8sClient.Post().Resource("Reconciliations").Body(&recon).Do(ctx).Error())
+				require.NoError(t, testConfig.client.Post().Resource("Reconciliations").Body(&recon).Do(ctx).Error())
 				orders := NewMembershipClientMock()
 
 				membershipListener := NewMembershipListener(
-					k8sClient, ClientInfo{}, mapper, orders, nil)
+					testConfig.client, ClientInfo{}, testConfig.mapper, orders, nil)
 
 				if tc.withLabels {
 					require.NoError(t, membershipListener.deleteModule(ctx, recon.GroupVersionKind(), stackName))
 				}
 
 				if !tc.withLabels {
-					require.NoError(t, k8sClient.Get().Resource("Reconciliations").Name(recon.Name).Do(ctx).Error())
+					require.NoError(t, testConfig.client.Get().Resource("Reconciliations").Name(recon.Name).Do(ctx).Error())
 				}
 			})
 		}
+	})
+}
+
+func TestRetrieveModuleList(t *testing.T) {
+	t.Parallel()
+	test(t, func(ctx context.Context, testConfig *testConfig) {
+		modules, err := retrieveModuleList(ctx, testConfig.restConfig)
+		require.NoError(t, err)
+		fmt.Println(modules)
+		require.NotEmpty(t, modules)
 	})
 }
