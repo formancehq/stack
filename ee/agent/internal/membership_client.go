@@ -21,7 +21,7 @@ const (
 	metadataCapabilities = "capabilities"
 
 	capabilityEE         = "EE"
-	capabilityModuleList = "moduleList"
+	capabilityModuleList = "MODULE_LIST"
 )
 
 type membershipClient struct {

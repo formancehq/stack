@@ -34,6 +34,7 @@ var (
 )
 
 const (
+	kubeConfigFlag                 = "kube-config"
 	serverAddressFlag              = "server-address"
 	tlsEnabledFlag                 = "tls-enabled"
 	tlsInsecureSkipVerifyFlag      = "tls-insecure-skip-verify"
@@ -100,8 +101,13 @@ func runAgent(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	restConfig, err := internal.NewK8SConfig(viper.GetString(kubeConfigFlag))
+	if err != nil {
+		return err
+	}
+
 	options := []fx.Option{
-		fx.Provide(internal.NewK8SConfig()),
+		fx.Supply(restConfig),
 		fx.NopLogger,
 		internal.NewModule(serverAddress, authenticator, internal.ClientInfo{
 			ID:         agentID,
@@ -182,7 +188,7 @@ func init() {
 
 	service.BindFlags(rootCmd)
 	licence.InitCLIFlags(rootCmd)
-	rootCmd.Flags().String(internal.KubeConfigFlag, kubeConfigFilePath, "")
+	rootCmd.Flags().String(kubeConfigFlag, kubeConfigFilePath, "")
 	rootCmd.Flags().String(serverAddressFlag, "localhost:8081", "")
 	rootCmd.Flags().Bool(tlsEnabledFlag, false, "")
 	rootCmd.Flags().Bool(tlsInsecureSkipVerifyFlag, false, "")
