@@ -276,6 +276,7 @@ func (c *membershipListener) syncAuthClients(ctx context.Context, metadata map[s
 			})
 		if err != nil {
 			sharedlogging.FromContext(ctx).Errorf("Unable to create AuthClient cluster side: %s", err)
+			continue
 		}
 		expectedAuthClients = append(expectedAuthClients, authClient)
 	}
@@ -384,7 +385,7 @@ func (c *membershipListener) createOrUpdate(ctx context.Context, gvk schema.Grou
 
 	restMapping, err := c.restMapper.RESTMapping(gvk.GroupKind())
 	if err != nil {
-		panic(err)
+		return nil, errors.Wrap(err, "getting rest mapping")
 	}
 
 	u := &unstructured.Unstructured{}
