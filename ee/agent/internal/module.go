@@ -10,7 +10,6 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
-	"github.com/spf13/viper"
 	"go.uber.org/fx"
 	"google.golang.org/grpc"
 	"k8s.io/apiextensions-apiserver/pkg/apis/apiextensions"
@@ -47,15 +46,11 @@ func runInformers(lc fx.Lifecycle, factory dynamicinformer.DynamicSharedInformer
 	})
 }
 
-const (
-	KubeConfigFlag = "kube-config"
-)
-
-func NewK8SConfig() (*rest.Config, error) {
+func NewK8SConfig(kubeConfigPath string) (*rest.Config, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		logging.Info("Does not seems to be in cluster, trying to load k8s client from kube config file")
-		config, err = clientcmd.BuildConfigFromFlags("", viper.GetString(KubeConfigFlag))
+		config, err = clientcmd.BuildConfigFromFlags("", kubeConfigPath)
 		if err != nil {
 			return nil, err
 		}

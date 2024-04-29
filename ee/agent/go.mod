@@ -22,6 +22,7 @@ require (
 	golang.org/x/oauth2 v0.16.0
 	google.golang.org/grpc v1.61.1
 	google.golang.org/protobuf v1.33.0
+	k8s.io/apiextensions-apiserver v0.29.0
 	k8s.io/apimachinery v0.29.0
 	k8s.io/client-go v0.29.0
 	sigs.k8s.io/controller-runtime v0.17.1
@@ -117,7 +118,6 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/api v0.29.0 // indirect
-	k8s.io/apiextensions-apiserver v0.29.0 // indirect
 	k8s.io/klog/v2 v2.110.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20231214164306-ab13479f8bf8 // indirect
 	k8s.io/utils v0.0.0-20240102154912-e7106e64919e // indirect
