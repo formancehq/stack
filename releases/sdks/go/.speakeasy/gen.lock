@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 7eac0a45-60a2-40bb-9e85-26bd77ec2a6d
 management:
-  docChecksum: eaeccb9f1f64979f40bf258870f5aa6c
+  docChecksum: c4a8a7592b4debf103fc5bda2646dcc8
   docVersion: v0.0.0
   speakeasyVersion: internal
   generationVersion: 2.237.2
-  releaseVersion: v0.0.0
-  configChecksum: 50130ac1de5d0825ab31d45fbe3aac35
+  releaseVersion: 0.0.1
+  configChecksum: c299152255ec1caf1aad2b6fbca6bdc9
 features:
   go:
     constsAndDefaults: 0.1.2
@@ -442,6 +442,7 @@ generatedFiles:
   - /pkg/models/shared/v2listworkflowsresponse.go
   - /pkg/models/shared/v2readtriggerresponse.go
   - /pkg/models/shared/v2runworkflowresponse.go
+  - /pkg/models/shared/paymentserrorsenum.go
   - /pkg/models/shared/addaccounttopoolrequest.go
   - /pkg/models/shared/transferresponse.go
   - /pkg/models/shared/connector.go
@@ -552,6 +553,7 @@ generatedFiles:
   - /pkg/models/sdkerrors/v2errorresponse.go
   - /pkg/models/sdkerrors/error.go
   - /pkg/models/sdkerrors/v2error.go
+  - /pkg/models/sdkerrors/paymentserrorresponse.go
   - /pkg/models/sdkerrors/reconciliationerrorresponse.go
   - /pkg/models/sdkerrors/walletserrorresponse.go
   - /pkg/models/sdkerrors/webhookserrorresponse.go
@@ -1138,6 +1140,7 @@ generatedFiles:
   - docs/pkg/models/shared/v2listworkflowsresponse.md
   - docs/pkg/models/shared/v2readtriggerresponse.md
   - docs/pkg/models/shared/v2runworkflowresponse.md
+  - docs/pkg/models/shared/paymentserrorsenum.md
   - docs/pkg/models/shared/addaccounttopoolrequest.md
   - docs/pkg/models/shared/transferresponse.md
   - docs/pkg/models/shared/connector.md
@@ -1296,6 +1299,7 @@ generatedFiles:
   - docs/pkg/models/sdkerrors/error.md
   - docs/pkg/models/sdkerrors/schemaserrorcode.md
   - docs/pkg/models/sdkerrors/v2error.md
+  - docs/pkg/models/sdkerrors/paymentserrorresponse.md
   - docs/pkg/models/sdkerrors/reconciliationerrorresponse.md
   - docs/pkg/models/sdkerrors/schemaswalletserrorresponseerrorcode.md
   - docs/pkg/models/sdkerrors/walletserrorresponse.md
