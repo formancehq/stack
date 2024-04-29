@@ -2,6 +2,7 @@ package settings
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 	"text/template"
 
@@ -15,13 +16,39 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 )
 
-func ConfigureCaddy(caddyfile *v1.ConfigMap, image string, env []v1.EnvVar) core.ObjectMutator[*appsv1.Deployment] {
+func ConfigureCaddy(ctx core.Context, stack *v1beta1.Stack, owner v1beta1.Object, caddyfile *v1.ConfigMap, image string, env []v1.EnvVar) core.ObjectMutator[*appsv1.Deployment] {
 	return func(t *appsv1.Deployment) error {
+
+		otlpEnv, err := GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseKind(ctx, owner))
+		if err != nil {
+			return err
+		}
+		if len(otlpEnv) > 0 {
+			env = append(env, otlpEnv...)
+			scheme := "https"
+			for _, envVar := range env {
+				if envVar.Name == "OTEL_TRACES_EXPORTER_OTLP_INSECURE" {
+					if envVar.Value == "true" {
+						scheme = "http"
+					}
+					break
+				}
+			}
+			env = append(env, core.Env("OTEL_EXPORTER_OTLP_TRACES_ENDPOINT", fmt.Sprintf("%s://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)", scheme)))
+			env = append(env, core.Env("OTEL_EXPORTER_OTLP_PROTOCOL", "$(OTEL_TRACES_EXPORTER_OTLP_MODE)"))
+		}
+
 		t.Spec.Template.Annotations = collectionutils.MergeMaps(t.Spec.Template.Annotations, map[string]string{
 			"caddyfile-hash": core.HashFromConfigMaps(caddyfile),
 		})
 		t.Spec.Template.Spec.Volumes = []v1.Volume{
 			volumeFromConfigMap("caddyfile", caddyfile),
+			{
+				Name: "data",
+				VolumeSource: v1.VolumeSource{
+					EmptyDir: &v1.EmptyDirVolumeSource{},
+				},
+			},
 		}
 		t.Spec.Template.Spec.Containers = []v1.Container{
 			{
@@ -35,7 +62,8 @@ func ConfigureCaddy(caddyfile *v1.ConfigMap, image string, env []v1.EnvVar) core
 				Image: image,
 				Env:   env,
 				VolumeMounts: []v1.VolumeMount{
-					core.NewVolumeMount("caddyfile", "/gateway"),
+					core.NewVolumeMount("caddyfile", "/gateway", true),
+					core.NewVolumeMount("data", "/data", false),
 				},
 				Ports: []v1.ContainerPort{{
 					Name:          "http",
