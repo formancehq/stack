@@ -11,9 +11,11 @@ import (
 func NewModule(taskQueue string) fx.Option {
 	ret := []fx.Option{
 		fx.Provide(func(db *bun.DB, temporalClient client.Client) *WorkflowManager {
-			return NewManager(db, temporalClient, taskQueue)
+			return NewManager(db, temporalClient, taskQueue, true)
 		}),
-		fx.Provide(fx.Annotate(NewWorkflows, fx.ResultTags(`group:"workflows"`), fx.As(new(any)))),
+		fx.Provide(fx.Annotate(func() *Workflows {
+			return NewWorkflows(true)
+		}, fx.ResultTags(`group:"workflows"`), fx.As(new(any)))),
 		fx.Provide(fx.Annotate(activities.New, fx.ResultTags(`group:"activities"`), fx.As(new(any)))),
 		fx.Provide(fx.Annotate(NewActivities, fx.ResultTags(`group:"activities"`), fx.As(new(any)))),
 	}
