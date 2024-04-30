@@ -9,7 +9,9 @@ import (
 
 const SearchAttributeWorkflowID = "OrchestrationWorkflowID"
 
-type Workflows struct{}
+type Workflows struct {
+	includeSearchAttributes bool
+}
 
 func (r Workflows) Initiate(ctx workflow.Context, input Input) (*Instance, error) {
 	instance := &Instance{}
@@ -27,13 +29,18 @@ func (r Workflows) Initiate(ctx workflow.Context, input Input) (*Instance, error
 		return nil, err
 	}
 
+	searchAttributes := map[string]any{}
+	if r.includeSearchAttributes {
+		searchAttributes = map[string]interface{}{
+			SearchAttributeWorkflowID: input.Workflow.ID,
+		}
+	}
+
 	if err := workflow.ExecuteChildWorkflow(
 		workflow.WithChildOptions(ctx, workflow.ChildWorkflowOptions{
 			ParentClosePolicy: enums.PARENT_CLOSE_POLICY_ABANDON,
 			WorkflowID:        workflow.GetInfo(ctx).WorkflowExecution.ID + "-main",
-			SearchAttributes: map[string]interface{}{
-				SearchAttributeWorkflowID: input.Workflow.ID,
-			},
+			SearchAttributes:  searchAttributes,
 		}),
 		Run,
 		input,
@@ -73,6 +80,8 @@ func (r Workflows) Run(ctx workflow.Context, i Input, instance Instance) error {
 var Initiate = Workflows{}.Initiate
 var Run = Workflows{}.Run
 
-func NewWorkflows() *Workflows {
-	return &Workflows{}
+func NewWorkflows(includeSearchAttributes bool) *Workflows {
+	return &Workflows{
+		includeSearchAttributes: includeSearchAttributes,
+	}
 }
