@@ -5,15 +5,16 @@ go 1.21.6
 require (
 	github.com/docker/docker v24.0.9+incompatible
 	github.com/egymgmbh/go-prefix-writer v0.0.0-20180609083313-7326ea162eca
-	github.com/formancehq/auth v0.3.1
+	github.com/formancehq/auth v0.0.0-00010101000000-000000000000
 	github.com/formancehq/formance-sdk-go/v2 v2.0.0-00010101000000-000000000000
-	github.com/formancehq/ledger v1.9.0
+	github.com/formancehq/ledger v0.0.0-00010101000000-000000000000
 	github.com/formancehq/orchestration v0.0.0-00010101000000-000000000000
-	github.com/formancehq/payments v0.5.0
-	github.com/formancehq/search v0.5.2
+	github.com/formancehq/payments v0.0.0-00010101000000-000000000000
+	github.com/formancehq/reconciliation v0.0.0-00010101000000-000000000000
+	github.com/formancehq/search v0.0.0-00010101000000-000000000000
 	github.com/formancehq/stack/libs/events v0.0.0-00010101000000-000000000000
 	github.com/formancehq/stack/libs/go-libs v0.0.0-20230221161632-e6dc6a89a85e
-	github.com/formancehq/wallets v0.3.0
+	github.com/formancehq/wallets v0.0.0-00010101000000-000000000000
 	github.com/formancehq/webhooks v0.0.0-00010101000000-000000000000
 	github.com/getkin/kin-openapi v0.114.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
@@ -28,7 +29,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.8.0
-	github.com/spf13/viper v1.15.0
+	github.com/spf13/viper v1.17.0
 	github.com/uptrace/bun v1.1.17
 	github.com/uptrace/bun/dialect/pgdialect v1.1.17
 	github.com/uptrace/bun/driver/pgdriver v1.1.14
@@ -72,7 +73,7 @@ require (
 	github.com/bombsimon/logrusr/v3 v3.1.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
 	github.com/containerd/continuity v0.3.0 // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.2.0 // indirect
 	github.com/dnwe/otelsarama v0.0.0-20231212173111-631a0a53d5d4 // indirect
 	github.com/docker/cli v23.0.1+incompatible // indirect
@@ -96,7 +97,7 @@ require (
 	github.com/get-momo/atlar-v1-go-client v1.2.1 // indirect
 	github.com/gibson042/canonicaljson-go v1.0.3 // indirect
 	github.com/go-chi/chi v4.1.2+incompatible // indirect
-	github.com/go-chi/chi/v5 v5.0.8 // indirect
+	github.com/go-chi/chi/v5 v5.0.10 // indirect
 	github.com/go-chi/cors v1.2.1 // indirect
 	github.com/go-chi/render v1.0.2 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
@@ -144,7 +145,11 @@ require (
 	github.com/imdario/mergo v0.3.13 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/invopop/yaml v0.1.0 // indirect
+	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
+	github.com/jackc/pgconn v1.14.3 // indirect
+	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
+	github.com/jackc/pgproto3/v2 v2.3.3 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jcmturner/aescts/v2 v2.0.0 // indirect
@@ -185,25 +190,27 @@ require (
 	github.com/opensearch-project/opensearch-go v1.1.0 // indirect
 	github.com/opensearch-project/opensearch-go/v2 v2.3.0 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
-	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
+	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
 	github.com/perimeterx/marshmallow v1.1.4 // indirect
 	github.com/pierrec/lz4/v4 v4.1.18 // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/riandyrn/otelchi v0.5.1 // indirect
 	github.com/robfig/cron v1.2.0 // indirect
 	github.com/rs/cors v1.10.0 // indirect
+	github.com/sagikazarmark/locafero v0.3.0 // indirect
+	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/shirou/gopsutil/v3 v3.23.12 // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
-	github.com/spf13/afero v1.9.3 // indirect
-	github.com/spf13/cast v1.5.0 // indirect
-	github.com/spf13/jwalterweatherman v1.1.0 // indirect
+	github.com/sourcegraph/conc v0.3.0 // indirect
+	github.com/spf13/afero v1.10.0 // indirect
+	github.com/spf13/cast v1.5.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/stripe/stripe-go/v72 v72.122.0 // indirect
-	github.com/subosito/gotenv v1.4.2 // indirect
+	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/tidwall/gjson v1.14.4 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
@@ -250,12 +257,13 @@ require (
 	go.temporal.io/sdk v1.21.1 // indirect
 	go.temporal.io/sdk/contrib/opentelemetry v0.2.0 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
-	go.uber.org/dig v1.16.1 // indirect
-	go.uber.org/fx v1.19.2 // indirect
+	go.uber.org/dig v1.17.0 // indirect
+	go.uber.org/fx v1.20.1 // indirect
 	go.uber.org/mock v0.3.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
 	golang.org/x/crypto v0.21.0 // indirect
+	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
 	golang.org/x/mod v0.15.0 // indirect
 	golang.org/x/net v0.21.0 // indirect
 	golang.org/x/sync v0.5.0 // indirect
@@ -281,6 +289,7 @@ replace (
 	github.com/formancehq/orchestration => ../../ee/orchestration
 	github.com/formancehq/payments => ../../components/payments
 	github.com/formancehq/payments/genericclient => ../../components/payments/cmd/connectors/internal/connectors/generic/client/generated
+	github.com/formancehq/reconciliation => ../../ee/reconciliation
 	github.com/formancehq/search => ../../ee/search
 	github.com/formancehq/stack/libs/core => ../../libs/core
 	github.com/formancehq/stack/libs/events => ../../libs/events

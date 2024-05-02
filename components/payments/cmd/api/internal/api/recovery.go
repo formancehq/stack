@@ -3,6 +3,9 @@ package api
 import (
 	"context"
 	"net/http"
+
+	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/pkg/errors"
 )
 
 func recoveryHandler(reporter func(ctx context.Context, e interface{})) func(h http.Handler) http.Handler {
@@ -10,7 +13,7 @@ func recoveryHandler(reporter func(ctx context.Context, e interface{})) func(h h
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			defer func() {
 				if e := recover(); e != nil {
-					w.WriteHeader(http.StatusInternalServerError)
+					api.InternalServerError(w, r, errors.New("Internal Server Error"))
 					reporter(r.Context(), e)
 				}
 			}()

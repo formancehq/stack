@@ -31,8 +31,9 @@ var Payments = internal.NewModule("payments").
 			switch {
 			case strings.HasPrefix(path, "/payments"):
 				return true
-			case strings.HasPrefix(path, "/accounts"),
-				strings.HasPrefix(path, "/bank-accounts"),
+			case strings.HasPrefix(path, "/accounts"):
+				return method == http.MethodGet || method == http.MethodPost
+			case strings.HasPrefix(path, "/bank-accounts"),
 				strings.HasPrefix(path, "/transfer-initiations"):
 				return method == http.MethodGet
 			default:
