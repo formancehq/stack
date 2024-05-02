@@ -3,6 +3,8 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.14.0
+  labels:
+    formance.com/kind: module
   name: stargates.formance.com
 spec:
   group: formance.com

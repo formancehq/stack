@@ -3,14 +3,20 @@ package internal
 import (
 	"context"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
 	"go.uber.org/fx"
 	"google.golang.org/grpc"
+	"k8s.io/apiextensions-apiserver/pkg/apis/apiextensions"
+	v1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
+	apiextensionsv1client "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/dynamic"
@@ -19,6 +25,7 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/restmapper"
 	"k8s.io/client-go/tools/cache"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 func NewDynamicSharedInformerFactory(client *dynamic.DynamicClient) dynamicinformer.DynamicSharedInformerFactory {
@@ -37,6 +44,23 @@ func runInformers(lc fx.Lifecycle, factory dynamicinformer.DynamicSharedInformer
 			return nil
 		},
 	})
+}
+
+func NewK8SConfig(kubeConfigPath string) (*rest.Config, error) {
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		logging.Info("Does not seems to be in cluster, trying to load k8s client from kube config file")
+		config, err = clientcmd.BuildConfigFromFlags("", kubeConfigPath)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	config.GroupVersion = &v1beta1.GroupVersion
+	config.NegotiatedSerializer = scheme.Codecs.WithoutConversion()
+	config.APIPath = "/apis"
+
+	return config, nil
 }
 
 func createInformer(factory dynamicinformer.DynamicSharedInformerFactory, resource string, handler cache.ResourceEventHandler) error {
@@ -112,20 +136,46 @@ func CreateRestMapper(config *rest.Config) (meta.RESTMapper, error) {
 	return restmapper.NewDiscoveryRESTMapper(groupResources), nil
 }
 
-func runMembershipClient(lc fx.Lifecycle, client *membershipClient, logger logging.Logger) {
+func retrieveModuleList(ctx context.Context, config *rest.Config) ([]string, error) {
+	config = rest.CopyConfig(config)
+	config.GroupVersion = &apiextensions.SchemeGroupVersion
+
+	apiextensionsClient, err := apiextensionsv1client.NewForConfig(config)
+	if err != nil {
+		return nil, err
+	}
+
+	crds, err := apiextensionsClient.CustomResourceDefinitions().List(ctx, metav1.ListOptions{
+		LabelSelector: "formance.com/kind=module",
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return collectionutils.Map(crds.Items, func(item v1.CustomResourceDefinition) string {
+		return strings.Split(item.Name, ".")[0]
+	}), nil
+}
+
+func runMembershipClient(lc fx.Lifecycle, membershipClient *membershipClient, logger logging.Logger, config *rest.Config) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			if err := client.connect(logging.ContextWithLogger(ctx, logger)); err != nil {
+			modules, err := retrieveModuleList(ctx, config)
+			if err != nil {
+				return err
+			}
+
+			if err := membershipClient.connect(logging.ContextWithLogger(ctx, logger), modules); err != nil {
 				return err
 			}
 			go func() {
-				if err := client.Start(logging.ContextWithLogger(context.Background(), logger)); err != nil {
+				if err := membershipClient.Start(logging.ContextWithLogger(context.Background(), logger)); err != nil {
 					panic(err)
 				}
 			}()
 			return nil
 		},
-		OnStop: client.Stop,
+		OnStop: membershipClient.Stop,
 	})
 }
 
