@@ -56,7 +56,7 @@ func NewMembershipStackStore(cmd *cobra.Command) error {
 	return nil
 }
 
-func (cns *StackNodeStore) CheckRegionCapability(key string, checker func([]string) bool) func(cmd *cobra.Command, args []string) (err error) {
+func (cns *StackNodeStore) CheckRegionCapability(key string, checker func([]any) bool) func(cmd *cobra.Command, args []string) (err error) {
 	return func(cmd *cobra.Command, args []string) (err error) {
 		stack, err := fctl.ResolveStack(cmd, cns.Config, cns.organizationId)
 		if err != nil {
@@ -74,8 +74,11 @@ func (cns *StackNodeStore) CheckRegionCapability(key string, checker func([]stri
 		}
 
 		if value, ok := capabilities[key]; ok {
-			if !checker(value.([]string)) {
-				return fmt.Errorf("unsupported membership server version: %s", value)
+			if values := value.([]interface{}); len(values) > 0 {
+				if !checker(values) {
+					return fmt.Errorf("unsupported membership server version: %s", value)
+				}
+
 			}
 		}
 		return

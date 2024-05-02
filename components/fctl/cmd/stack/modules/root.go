@@ -21,7 +21,7 @@ func NewCommand() *cobra.Command {
 			}
 
 			store := store.GetStore(cmd.Context())
-			if err := store.CheckRegionCapability(string(membershipclient.MODULE_LIST), func(s []string) bool {
+			if err := store.CheckRegionCapability(string(membershipclient.MODULE_LIST), func(s []any) bool {
 				return len(s) > 0
 			})(cmd, args); err != nil {
 				return err
