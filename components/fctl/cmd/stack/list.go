@@ -137,9 +137,7 @@ func (c *StackListController) Render(cmd *cobra.Command, args []string) error {
 			} else {
 				if stack.Status != "DELETED" {
 					data = append(data, "")
-
 				} else {
-
 					data = append(data, "<retention period>")
 				}
 			}

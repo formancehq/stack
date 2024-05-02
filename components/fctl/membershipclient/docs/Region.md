@@ -10,12 +10,13 @@ Name | Type | Description | Notes
 **Active** | **bool** |  | 
 **LastPing** | Pointer to **time.Time** |  | [optional] 
 **Name** | **string** |  | 
+**Capabilities** | [**RegionCapability**](RegionCapability.md) |  | 
 
 ## Methods
 
 ### NewRegion
 
-`func NewRegion(id string, baseUrl string, createdAt string, active bool, name string, ) *Region`
+`func NewRegion(id string, baseUrl string, createdAt string, active bool, name string, capabilities RegionCapability, ) *Region`
 
 NewRegion instantiates a new Region object
 This constructor will assign default values to properties that have it defined,
@@ -153,6 +154,26 @@ and a boolean to check if the value has been set.
 `func (o *Region) SetName(v string)`
 
 SetName sets Name field to given value.
+
+
+### GetCapabilities
+
+`func (o *Region) GetCapabilities() RegionCapability`
+
+GetCapabilities returns the Capabilities field if non-nil, zero value otherwise.
+
+### GetCapabilitiesOk
+
+`func (o *Region) GetCapabilitiesOk() (*RegionCapability, bool)`
+
+GetCapabilitiesOk returns a tuple with the Capabilities field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetCapabilities
+
+`func (o *Region) SetCapabilities(v RegionCapability)`
+
+SetCapabilities sets Capabilities field to given value.
 
 
 

@@ -91,7 +91,7 @@ func (c *StackDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 
 	query := store.Client().DeleteStack(cmd.Context(), store.OrganizationId(), stack.Id)
 	if fctl.GetBool(cmd, forceFlag) {
-		if isValid := fctl.ValidateMembershipServerVersion(cmd.Context(), store.Client(), "v0.27.1"); isValid != nil {
+		if isValid := fctl.CheckMembershipVersion("v0.27.1")(cmd, args); isValid != nil {
 			return nil, isValid
 		}
 		query = query.Force(true)

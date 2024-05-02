@@ -26,6 +26,7 @@ type AnyRegion struct {
 	Active bool `json:"active"`
 	LastPing *time.Time `json:"lastPing,omitempty"`
 	Name string `json:"name"`
+	Capabilities RegionCapability `json:"capabilities"`
 	ClientID *string `json:"clientID,omitempty"`
 	OrganizationID *string `json:"organizationID,omitempty"`
 	Creator *User `json:"creator,omitempty"`
@@ -38,13 +39,14 @@ type AnyRegion struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewAnyRegion(id string, baseUrl string, createdAt string, active bool, name string, public bool) *AnyRegion {
+func NewAnyRegion(id string, baseUrl string, createdAt string, active bool, name string, capabilities RegionCapability, public bool) *AnyRegion {
 	this := AnyRegion{}
 	this.Id = id
 	this.BaseUrl = baseUrl
 	this.CreatedAt = createdAt
 	this.Active = active
 	this.Name = name
+	this.Capabilities = capabilities
 	this.Public = public
 	return &this
 }
@@ -207,6 +209,30 @@ func (o *AnyRegion) GetNameOk() (*string, bool) {
 // SetName sets field value
 func (o *AnyRegion) SetName(v string) {
 	o.Name = v
+}
+
+// GetCapabilities returns the Capabilities field value
+func (o *AnyRegion) GetCapabilities() RegionCapability {
+	if o == nil {
+		var ret RegionCapability
+		return ret
+	}
+
+	return o.Capabilities
+}
+
+// GetCapabilitiesOk returns a tuple with the Capabilities field value
+// and a boolean to check if the value has been set.
+func (o *AnyRegion) GetCapabilitiesOk() (*RegionCapability, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Capabilities, true
+}
+
+// SetCapabilities sets field value
+func (o *AnyRegion) SetCapabilities(v RegionCapability) {
+	o.Capabilities = v
 }
 
 // GetClientID returns the ClientID field value if set, zero value otherwise.
@@ -411,6 +437,7 @@ func (o AnyRegion) ToMap() (map[string]interface{}, error) {
 		toSerialize["lastPing"] = o.LastPing
 	}
 	toSerialize["name"] = o.Name
+	toSerialize["capabilities"] = o.Capabilities
 	if !IsNil(o.ClientID) {
 		toSerialize["clientID"] = o.ClientID
 	}

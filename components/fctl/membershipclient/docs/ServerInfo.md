@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Version** | **string** |  | 
+**Capabilities** | Pointer to [**[]Capability**](Capability.md) |  | [optional] 
 
 ## Methods
 
@@ -44,6 +45,31 @@ and a boolean to check if the value has been set.
 
 SetVersion sets Version field to given value.
 
+
+### GetCapabilities
+
+`func (o *ServerInfo) GetCapabilities() []Capability`
+
+GetCapabilities returns the Capabilities field if non-nil, zero value otherwise.
+
+### GetCapabilitiesOk
+
+`func (o *ServerInfo) GetCapabilitiesOk() (*[]Capability, bool)`
+
+GetCapabilitiesOk returns a tuple with the Capabilities field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetCapabilities
+
+`func (o *ServerInfo) SetCapabilities(v []Capability)`
+
+SetCapabilities sets Capabilities field to given value.
+
+### HasCapabilities
+
+`func (o *ServerInfo) HasCapabilities() bool`
+
+HasCapabilities returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

@@ -20,6 +20,7 @@ var _ MappedNullable = &ServerInfo{}
 // ServerInfo struct for ServerInfo
 type ServerInfo struct {
 	Version string `json:"version"`
+	Capabilities []Capability `json:"capabilities,omitempty"`
 }
 
 // NewServerInfo instantiates a new ServerInfo object
@@ -64,6 +65,38 @@ func (o *ServerInfo) SetVersion(v string) {
 	o.Version = v
 }
 
+// GetCapabilities returns the Capabilities field value if set, zero value otherwise.
+func (o *ServerInfo) GetCapabilities() []Capability {
+	if o == nil || IsNil(o.Capabilities) {
+		var ret []Capability
+		return ret
+	}
+	return o.Capabilities
+}
+
+// GetCapabilitiesOk returns a tuple with the Capabilities field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ServerInfo) GetCapabilitiesOk() ([]Capability, bool) {
+	if o == nil || IsNil(o.Capabilities) {
+		return nil, false
+	}
+	return o.Capabilities, true
+}
+
+// HasCapabilities returns a boolean if a field has been set.
+func (o *ServerInfo) HasCapabilities() bool {
+	if o != nil && !IsNil(o.Capabilities) {
+		return true
+	}
+
+	return false
+}
+
+// SetCapabilities gets a reference to the given []Capability and assigns it to the Capabilities field.
+func (o *ServerInfo) SetCapabilities(v []Capability) {
+	o.Capabilities = v
+}
+
 func (o ServerInfo) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -75,6 +108,9 @@ func (o ServerInfo) MarshalJSON() ([]byte, error) {
 func (o ServerInfo) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["version"] = o.Version
+	if !IsNil(o.Capabilities) {
+		toSerialize["capabilities"] = o.Capabilities
+	}
 	return toSerialize, nil
 }
 

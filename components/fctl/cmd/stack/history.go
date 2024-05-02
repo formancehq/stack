@@ -2,13 +2,11 @@ package stack
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/formancehq/fctl/cmd/stack/store"
 	"github.com/formancehq/fctl/membershipclient"
 	"github.com/formancehq/fctl/pkg/printer"
-	"golang.org/x/mod/semver"
 
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
@@ -59,18 +57,7 @@ func NewHistoryCommand() *cobra.Command {
 		fctl.WithStringFlag(cursorFlag, "", "Cursor"),
 		fctl.WithIntFlag(pageSizeFlag, 10, "Page size"),
 		fctl.WithPreRunE(func(cmd *cobra.Command, args []string) error {
-			store := store.GetStore(cmd.Context())
-
-			version := fctl.MembershipServerInfo(cmd.Context(), store.Client())
-			if !semver.IsValid(version) {
-				return nil
-			}
-
-			if semver.Compare(version, "v0.29.0") >= 0 {
-				return nil
-			}
-
-			return fmt.Errorf("unsupported membership server version: %s", version)
+			return fctl.CheckMembershipVersion("v0.29.0")(cmd, args)
 		}),
 		fctl.WithController(NewHistoryController()),
 	)

@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 **Active** | **bool** |  | 
 **LastPing** | Pointer to **time.Time** |  | [optional] 
 **Name** | **string** |  | 
+**Capabilities** | [**RegionCapability**](RegionCapability.md) |  | 
 **ClientID** | Pointer to **string** |  | [optional] 
 **OrganizationID** | Pointer to **string** |  | [optional] 
 **Creator** | Pointer to [**User**](User.md) |  | [optional] 
@@ -21,7 +22,7 @@ Name | Type | Description | Notes
 
 ### NewAnyRegion
 
-`func NewAnyRegion(id string, baseUrl string, createdAt string, active bool, name string, public bool, ) *AnyRegion`
+`func NewAnyRegion(id string, baseUrl string, createdAt string, active bool, name string, capabilities RegionCapability, public bool, ) *AnyRegion`
 
 NewAnyRegion instantiates a new AnyRegion object
 This constructor will assign default values to properties that have it defined,
@@ -159,6 +160,26 @@ and a boolean to check if the value has been set.
 `func (o *AnyRegion) SetName(v string)`
 
 SetName sets Name field to given value.
+
+
+### GetCapabilities
+
+`func (o *AnyRegion) GetCapabilities() RegionCapability`
+
+GetCapabilities returns the Capabilities field if non-nil, zero value otherwise.
+
+### GetCapabilitiesOk
+
+`func (o *AnyRegion) GetCapabilitiesOk() (*RegionCapability, bool)`
+
+GetCapabilitiesOk returns a tuple with the Capabilities field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetCapabilities
+
+`func (o *AnyRegion) SetCapabilities(v RegionCapability)`
+
+SetCapabilities sets Capabilities field to given value.
 
 
 ### GetClientID
