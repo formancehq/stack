@@ -1824,9 +1824,10 @@ components:
         status:
           type: string
           enum:
-            - pending
-            - accepted
-            - rejected
+            - PENDING
+            - ACCEPTED
+            - REJECTED
+            - CANCELLED
         creationDate:
           type: string
           format: date-time
