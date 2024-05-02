@@ -3,7 +3,6 @@ package internal
 import (
 	"context"
 	"reflect"
-	"strings"
 	"time"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -153,7 +152,7 @@ func retrieveModuleList(ctx context.Context, config *rest.Config) ([]string, err
 	}
 
 	return collectionutils.Map(crds.Items, func(item v1.CustomResourceDefinition) string {
-		return strings.Split(item.Name, ".")[0]
+		return item.Status.AcceptedNames.Singular
 	}), nil
 }
 
