@@ -2072,13 +2072,28 @@ components:
           type: string
         name:
           type: string
+        capabilities:
+          $ref: '#/components/schemas/RegionCapability'
       required:
       - active
       - baseUrl
+      - capabilities
       - createdAt
       - id
       - name
       type: object
+    RegionCapability:
+      properties:
+        MODULE_LIST:
+          items:
+            type: string
+          type: array
+      type: object
+    RegionCapabilityKeys:
+      enum:
+      - MODULE_LIST
+      - EE
+      type: string
     ListOrganizationExpandedResponse:
       example:
         data:
@@ -2118,13 +2133,25 @@ components:
       type: object
     ServerInfo:
       example:
+        capabilities:
+        - ""
+        - ""
         version: version
       properties:
         version:
           type: string
+        capabilities:
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Capability'
+          type: array
       required:
       - version
       type: object
+    Capability:
+      enum:
+      - MODULE_SELECTION
+      type: string
     Version:
       example:
         versions:

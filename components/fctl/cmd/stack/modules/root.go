@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/formancehq/fctl/cmd/stack/store"
+	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
 )
@@ -20,11 +21,13 @@ func NewCommand() *cobra.Command {
 			}
 
 			store := store.GetStore(cmd.Context())
-			if err := store.CheckAgentVersion("v2.0.0-rc.25")(cmd, args); err != nil {
+			if err := store.CheckRegionCapability(string(membershipclient.MODULE_LIST), func(s []string) bool {
+				return len(s) > 0
+			})(cmd, args); err != nil {
 				return err
 			}
 
-			if err := fctl.CheckMembershipVersion("v0.30.0")(cmd, args); err != nil {
+			if err := fctl.CheckMembershipCapabilities(membershipclient.MODULE_SELECTION)(cmd, args); err != nil {
 				return err
 			}
 			return nil

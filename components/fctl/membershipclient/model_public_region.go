@@ -26,6 +26,7 @@ type PublicRegion struct {
 	Active bool `json:"active"`
 	LastPing *time.Time `json:"lastPing,omitempty"`
 	Name string `json:"name"`
+	Capabilities RegionCapability `json:"capabilities"`
 	Production bool `json:"production"`
 }
 
@@ -33,13 +34,14 @@ type PublicRegion struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPublicRegion(id string, baseUrl string, createdAt string, active bool, name string, production bool) *PublicRegion {
+func NewPublicRegion(id string, baseUrl string, createdAt string, active bool, name string, capabilities RegionCapability, production bool) *PublicRegion {
 	this := PublicRegion{}
 	this.Id = id
 	this.BaseUrl = baseUrl
 	this.CreatedAt = createdAt
 	this.Active = active
 	this.Name = name
+	this.Capabilities = capabilities
 	this.Production = production
 	return &this
 }
@@ -204,6 +206,30 @@ func (o *PublicRegion) SetName(v string) {
 	o.Name = v
 }
 
+// GetCapabilities returns the Capabilities field value
+func (o *PublicRegion) GetCapabilities() RegionCapability {
+	if o == nil {
+		var ret RegionCapability
+		return ret
+	}
+
+	return o.Capabilities
+}
+
+// GetCapabilitiesOk returns a tuple with the Capabilities field value
+// and a boolean to check if the value has been set.
+func (o *PublicRegion) GetCapabilitiesOk() (*RegionCapability, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Capabilities, true
+}
+
+// SetCapabilities sets field value
+func (o *PublicRegion) SetCapabilities(v RegionCapability) {
+	o.Capabilities = v
+}
+
 // GetProduction returns the Production field value
 func (o *PublicRegion) GetProduction() bool {
 	if o == nil {
@@ -246,6 +272,7 @@ func (o PublicRegion) ToMap() (map[string]interface{}, error) {
 		toSerialize["lastPing"] = o.LastPing
 	}
 	toSerialize["name"] = o.Name
+	toSerialize["capabilities"] = o.Capabilities
 	toSerialize["production"] = o.Production
 	return toSerialize, nil
 }

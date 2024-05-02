@@ -1880,6 +1880,7 @@ components:
         - active
         - createdAt
         - name
+        - capabilities
       properties:
         id:
           type: string
@@ -1895,6 +1896,20 @@ components:
           format: date-time
         name:
           type: string
+        capabilities:
+          $ref: "#/components/schemas/RegionCapability"
+    RegionCapability:
+      type: object
+      properties:
+        MODULE_LIST:
+          type: array
+          items:
+            type: string
+    RegionCapabilityKeys:
+      type: string
+      enum:
+        - MODULE_LIST
+        - EE
     ListOrganizationExpandedResponse:
       type: object
       properties:
@@ -1938,7 +1953,15 @@ components:
       properties:
         version:
           type: string
-
+        capabilities:
+          type: array
+          items:
+            allOf:
+              - $ref: "#/components/schemas/Capability"
+    Capability:
+      type: string
+      enum:
+        - MODULE_SELECTION
     Version:
       type: object
       required:

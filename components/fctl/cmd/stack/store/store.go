@@ -7,7 +7,6 @@ import (
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/spf13/cobra"
-	"golang.org/x/mod/semver"
 )
 
 const key = "_stack"
@@ -57,27 +56,28 @@ func NewMembershipStackStore(cmd *cobra.Command) error {
 	return nil
 }
 
-func (cns *StackNodeStore) CheckAgentVersion(version string) func(cmd *cobra.Command, args []string) error {
-	return func(cmd *cobra.Command, args []string) error {
+func (cns *StackNodeStore) CheckRegionCapability(key string, checker func([]string) bool) func(cmd *cobra.Command, args []string) (err error) {
+	return func(cmd *cobra.Command, args []string) (err error) {
 		stack, err := fctl.ResolveStack(cmd, cns.Config, cns.organizationId)
 		if err != nil {
-			return err
+			return
 		}
 
 		region, _, err := cns.Client().GetRegion(cmd.Context(), cns.organizationId, stack.RegionID).Execute()
 		if err != nil {
-			return err
+			return
 		}
 
-		if !semver.IsValid(*region.Data.Version) {
-			return nil
+		capabilities, err := fctl.StructToMap(region.Data.Capabilities)
+		if err != nil {
+			return
 		}
 
-		if semver.Compare(*region.Data.Version, version) >= 0 {
-			return nil
+		if value, ok := capabilities[key]; ok {
+			if !checker(value.([]string)) {
+				return fmt.Errorf("unsupported membership server version: %s", value)
+			}
 		}
-
-		return fmt.Errorf("unsupported membership server version: %s", version)
+		return
 	}
-
 }

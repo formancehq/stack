@@ -61,15 +61,15 @@ func NewMembershipClient(cmd *cobra.Command, cfg *Config) (*MembershipClient, er
 	return client, nil
 }
 
-func MembershipServerInfo(ctx context.Context, client *membershipclient.DefaultApiService) string {
+func MembershipServerInfo(ctx context.Context, client *membershipclient.DefaultApiService) (*membershipclient.ServerInfo, error) {
 	serverInfo, response, err := client.GetServerInfo(ctx).Execute()
 	if err != nil {
-		return fmt.Sprintf("Error: %s", err)
+		return nil, err
 	}
 	if response.StatusCode != 200 {
-		return fmt.Sprintf("Error: %s", response.Status)
+		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 	}
-	return serverInfo.Version
+	return serverInfo, nil
 }
 
 func NewStackClient(cmd *cobra.Command, cfg *Config, stack *membershipclient.Stack) (*formance.Formance, error) {
