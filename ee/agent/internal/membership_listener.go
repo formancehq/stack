@@ -102,7 +102,7 @@ func (c *membershipListener) Start(ctx context.Context) {
 						}
 					}
 					c.stacksModules[msg.ExistingStack.ClusterName] = collectionutils.Map(msg.ExistingStack.Modules, func(module *generated.Module) string {
-						return module.Name
+						return strings.ToUpper(string(module.Name[0])) + module.Name[1:]
 					})
 					c.syncExistingStack(ctx, msg.ExistingStack)
 				case *generated.Order_DeletedStack:
