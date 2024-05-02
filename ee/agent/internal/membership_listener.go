@@ -14,6 +14,7 @@ import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/components/agent/internal/generated"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/api/equality"
@@ -216,6 +217,7 @@ func (c *membershipListener) syncModules(ctx context.Context, metadata map[strin
 }
 
 func (c *membershipListener) deleteModule(ctx context.Context, gvk schema.GroupVersionKind, stackName string) error {
+	logging.FromContext(ctx).Debugf("Deleting module %s", gvk.Kind)
 	if err := c.restClient.Delete().
 		Resource(gvk.Kind).
 		VersionedParams(
