@@ -269,6 +269,7 @@ func TestCreateAccounts(t *testing.T) {
 				Metadata: map[string]string{
 					"foo": "bar",
 				},
+				PoolAccounts: make([]*models.PoolAccounts, 0),
 			}
 
 			expectedCreateAccountResponse := &accountResponse{
@@ -284,6 +285,7 @@ func TestCreateAccounts(t *testing.T) {
 				Metadata: map[string]string{
 					"foo": "bar",
 				},
+				Pools: make([]uuid.UUID, 0),
 			}
 
 			backend, mockService := newTestingBackend(t)

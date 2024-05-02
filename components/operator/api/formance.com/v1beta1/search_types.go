@@ -40,13 +40,13 @@ type SearchStatus struct {
 	TopicCleaned bool `json:"topicCleaned,omitempty"`
 }
 
-//+kubebuilder:object:root=true
-//+kubebuilder:subresource:status
-//+kubebuilder:resource:scope=Cluster
-//+kubebuilder:printcolumn:name="Stack",type=string,JSONPath=".spec.stack",description="Stack"
-//+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
-//+kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
-
+// +kubebuilder:object:root=true
+// +kubebuilder:subresource:status
+// +kubebuilder:resource:scope=Cluster
+// +kubebuilder:printcolumn:name="Stack",type=string,JSONPath=".spec.stack",description="Stack"
+// +kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
+// +kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
+// +kubebuilder:metadata:labels=formance.com/kind=module
 // Search is the Schema for the searches API
 type Search struct {
 	metav1.TypeMeta   `json:",inline"`

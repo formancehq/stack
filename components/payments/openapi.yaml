@@ -12,8 +12,10 @@ paths:
       tags:
         - Payments
       responses:
-        200:
+        "200":
           $ref: '#/components/responses/ServerInfo'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
 
   /payments:
     post:
@@ -25,8 +27,10 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/Payment'
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/Payment'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
     get:
       summary: List payments
       operationId: listPayments
@@ -38,8 +42,10 @@ paths:
         - $ref: '#/components/parameters/Sort'
         - $ref: '#/components/parameters/Query'
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/Payments'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
 
   /payments/{paymentId}:
     get:
@@ -50,8 +56,10 @@ paths:
       parameters:
         - $ref: '#/components/parameters/PaymentId'
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/Payment'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
 
   /payments/{paymentId}/metadata:
     patch:
@@ -64,8 +72,10 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/UpdateMetadata'
       responses:
-        '204':
+        "204":
           $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
 
   /transfer-initiations:
     get:
@@ -79,8 +89,10 @@ paths:
         - $ref: '#/components/parameters/Sort'
         - $ref: '#/components/parameters/Query'
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/TransferInitiations'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
     post:
       summary: Create a TransferInitiation
       tags:
@@ -90,8 +102,10 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/TransferInitiation'
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/TransferInitiation'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
 
   /transfer-initiations/{transferId}:
     get:
@@ -102,8 +116,10 @@ paths:
       parameters:
         - $ref: '#/components/parameters/TransferId'
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/TransferInitiation'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
     delete:
       summary: Delete a transfer initiation
       operationId: deleteTransferInitiation
@@ -113,8 +129,10 @@ paths:
       parameters:
         - $ref: '#/components/parameters/TransferId'
       responses:
-        '204':
+        "204":
           $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
 
   /transfer-initiations/{transferId}/status:
     post:
@@ -128,8 +146,10 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/UpdateTransferInitiationStatus'
       responses:
-        '204':
+        "204":
           $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
   
   /transfer-initiations/{transferId}/reverse:
     post:
@@ -143,8 +163,10 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/ReverseTransferInitiation'
       responses:
-        '204':
+        "204":
           $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
 
   /transfer-initiations/{transferId}/retry:
     post:
@@ -156,8 +178,10 @@ paths:
       parameters:
         - $ref: '#/components/parameters/TransferId'
       responses:
-        '204':
+        "204":
           $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
 
   /pools:
     get:
@@ -171,8 +195,10 @@ paths:
         - $ref: '#/components/parameters/Sort'
         - $ref: '#/components/parameters/Query'
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/Pools'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
     post:
       summary: Create a Pool
       tags:
@@ -182,8 +208,10 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/Pool'
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/Pool'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
   /pools/{poolId}:
     get:
       summary: Get a Pool
@@ -193,8 +221,10 @@ paths:
       parameters:
         - $ref: '#/components/parameters/PoolId'
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/Pool'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
     delete:
       summary: Delete a Pool
       operationId: deletePool
@@ -204,8 +234,10 @@ paths:
       parameters:
         - $ref: '#/components/parameters/PoolId'
       responses:
-        '204':
+        "204":
           $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
   /pools/{poolId}/accounts:
     post:
       summary: Add an account to a pool
@@ -218,8 +250,10 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/AddAccountToPool'
       responses:
-        '204':
+        "204":
           $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
   /pools/{poolId}/accounts/{accountId}:
     delete:
       summary: Remove an account from a pool
@@ -231,8 +265,10 @@ paths:
         - $ref: '#/components/parameters/PoolId'
         - $ref: '#/components/parameters/AccountId'
       responses:
-        '204':
+        "204":
           $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
   /pools/{poolId}/balances:
     get:
       summary: Get pool balances
@@ -250,8 +286,10 @@ paths:
             type: string
             format: date-time
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/PoolBalances'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
 
   /accounts:
     post:
@@ -263,8 +301,10 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/Account'
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/Account'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
     get:
       summary: List accounts
       operationId: listAccounts
@@ -274,6 +314,7 @@ paths:
         - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/Cursor'
         - $ref: '#/components/parameters/Sort'
+        - $ref: '#/components/parameters/Query'
       requestBody:
         content:
           application/json:
@@ -281,8 +322,10 @@ paths:
               type: object
               additionalProperties: true
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/Accounts'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
 
   /accounts/{accountId}:
     get:
@@ -293,8 +336,10 @@ paths:
       parameters:
         - $ref: '#/components/parameters/AccountId'
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/Account'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
 
   /accounts/{accountId}/balances:
     get:
@@ -341,8 +386,10 @@ paths:
         - $ref: '#/components/parameters/Cursor'
         - $ref: '#/components/parameters/Sort'
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/AccountBalances'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
 
   /bank-accounts:
     post:
@@ -354,8 +401,10 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/BankAccount'
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/BankAccount'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
     get:
       summary: List bank accounts created by user on Formance
       operationId: listBankAccounts
@@ -367,8 +416,10 @@ paths:
         - $ref: '#/components/parameters/Sort'
       description: List all bank accounts created by user on Formance.
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/BankAccounts'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
 
   /bank-accounts/{bankAccountId}:
     get:
@@ -379,8 +430,10 @@ paths:
       parameters:
         - $ref: '#/components/parameters/BankAccountId'
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/BankAccount'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
 
   /bank-accounts/{bankAccountId}/forward:
     post:
@@ -393,8 +446,10 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/ForwardBankAccount'
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/BankAccount'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
 
   /bank-accounts/{bankAccountId}/metadata:
     patch:
@@ -407,8 +462,10 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/UpdateBankAccountMetadata'
       responses:
-        '204':
+        "204":
           $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
 
   /connectors:
     get:
@@ -418,8 +475,10 @@ paths:
         - Payments
       description: List all installed connectors.
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/Connectors'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
 
   /connectors/configs:
     get:
@@ -429,8 +488,10 @@ paths:
         - Payments
       description: List the configs of each available connector.
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/ConnectorsConfigs'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
 
   /connectors/{connector}:
     post:
@@ -444,8 +505,10 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/ConnectorConfig'
       responses:
-        '201':
+        "201":
           $ref: '#/components/responses/ConnectorInstalled'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
     delete:
       summary: Uninstall a connector
       deprecated: true
@@ -456,8 +519,10 @@ paths:
       parameters:
         - $ref: '#/components/parameters/Connector'
       responses:
-        '204':
+        "204":
           $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
   /connectors/{connector}/{connectorId}:
     delete:
       summary: Uninstall a connector
@@ -469,8 +534,10 @@ paths:
         - $ref: '#/components/parameters/Connector'
         - $ref: '#/components/parameters/ConnectorID'
       responses:
-        '204':
+        "204":
           $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
 
   /connectors/{connector}/config:
     get:
@@ -483,8 +550,11 @@ paths:
       parameters:
         - $ref: '#/components/parameters/Connector'
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/ConnectorConfig'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
+
   /connectors/{connector}/{connectorId}/config:
     post:
       summary: Update the config of a connector
@@ -498,8 +568,10 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/ConnectorConfig'
       responses:
-        '204':
+        "204":
           $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
     get:
       summary: Read the config of a connector
       operationId: readConnectorConfigV1
@@ -510,8 +582,10 @@ paths:
         - $ref: '#/components/parameters/Connector'
         - $ref: '#/components/parameters/ConnectorID'
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/ConnectorConfig'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
 
   /connectors/{connector}/reset:
     post:
@@ -526,8 +600,10 @@ paths:
       parameters:
         - $ref: '#/components/parameters/Connector'
       responses:
-        '204':
+        "204":
           $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
   /connectors/{connector}/{connectorId}/reset:
     post:
       summary: Reset a connector
@@ -541,8 +617,10 @@ paths:
         - $ref: '#/components/parameters/Connector'
         - $ref: '#/components/parameters/ConnectorID'
       responses:
-        '204':
+        "204":
           $ref: '#/components/responses/NoContent'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
   
   /connectors/{connector}/tasks:
     get:
@@ -557,8 +635,11 @@ paths:
         - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/Cursor'
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/Tasks'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
+
   /connectors/{connector}/{connectorId}/tasks:
     get:
       summary: List tasks from a connector
@@ -572,8 +653,10 @@ paths:
         - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/Cursor'
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/Tasks'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
 
   /connectors/{connector}/tasks/{taskId}:
     get:
@@ -587,8 +670,11 @@ paths:
         - $ref: '#/components/parameters/Connector'
         - $ref: '#/components/parameters/TaskId'
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/Task'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
+
   /connectors/{connector}/{connectorId}/tasks/{taskId}:
     get:
       summary: Read a specific task of the connector
@@ -601,8 +687,10 @@ paths:
         - $ref: '#/components/parameters/ConnectorID'
         - $ref: '#/components/parameters/TaskId'
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/Task'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
 
   /connectors/{connector}/transfers:
     post:
@@ -616,8 +704,10 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/Transfer'
       responses:
-        '200':
+        "200":
           $ref: '#/components/responses/Transfer'
+        default:
+          $ref: '#/components/responses/PaymentsErrorResponse'
   
 # ---------------------- COMPONENTS ----------------------
 components:
@@ -733,6 +823,12 @@ components:
   responses:
     NoContent:
       description: No content
+    PaymentsErrorResponse:
+      description: Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PaymentsErrorResponse'
     ServerInfo:
       description: Server information
       content:
@@ -2399,3 +2495,21 @@ components:
       properties:
         version:
           type: string
+    PaymentsErrorResponse:
+      type: object
+      required:
+        - errorCode
+        - errorMessage
+      properties:
+        errorCode:
+          $ref: '#/components/schemas/PaymentsErrorsEnum'
+        errorMessage:
+          type: string
+          example: "[VALIDATION] missing reference"
+    PaymentsErrorsEnum:
+      type: string
+      enum:
+        - INTERNAL
+        - VALIDATION
+        - NOT_FOUND
+      example: VALIDATION

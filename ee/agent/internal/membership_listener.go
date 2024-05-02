@@ -14,6 +14,7 @@ import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/components/agent/internal/generated"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/api/equality"
@@ -102,7 +103,7 @@ func (c *membershipListener) Start(ctx context.Context) {
 						}
 					}
 					c.stacksModules[msg.ExistingStack.ClusterName] = collectionutils.Map(msg.ExistingStack.Modules, func(module *generated.Module) string {
-						return module.Name
+						return strings.ToUpper(string(module.Name[0])) + module.Name[1:]
 					})
 					c.syncExistingStack(ctx, msg.ExistingStack)
 				case *generated.Order_DeletedStack:
@@ -216,6 +217,7 @@ func (c *membershipListener) syncModules(ctx context.Context, metadata map[strin
 }
 
 func (c *membershipListener) deleteModule(ctx context.Context, gvk schema.GroupVersionKind, stackName string) error {
+	logging.FromContext(ctx).Debugf("Deleting module %s", gvk.Kind)
 	if err := c.restClient.Delete().
 		Resource(gvk.Kind).
 		VersionedParams(
@@ -276,6 +278,7 @@ func (c *membershipListener) syncAuthClients(ctx context.Context, metadata map[s
 			})
 		if err != nil {
 			sharedlogging.FromContext(ctx).Errorf("Unable to create AuthClient cluster side: %s", err)
+			continue
 		}
 		expectedAuthClients = append(expectedAuthClients, authClient)
 	}
@@ -384,7 +387,7 @@ func (c *membershipListener) createOrUpdate(ctx context.Context, gvk schema.Grou
 
 	restMapping, err := c.restMapper.RESTMapping(gvk.GroupKind())
 	if err != nil {
-		panic(err)
+		return nil, errors.Wrap(err, "getting rest mapping")
 	}
 
 	u := &unstructured.Unstructured{}

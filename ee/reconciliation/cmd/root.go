@@ -6,6 +6,7 @@ import (
 
 	"github.com/formancehq/stack/libs/go-libs/aws/iam"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunmigrate"
 	"github.com/formancehq/stack/libs/go-libs/licence"
 
 	"github.com/formancehq/stack/libs/go-libs/auth"
@@ -13,6 +14,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -51,6 +53,7 @@ func NewRootCommand() *cobra.Command {
 	licence.InitCLIFlags(cmd)
 
 	serveCmd := newServeCommand(Version)
+	addAutoMigrateCommand(serveCmd)
 	cmd.AddCommand(serveCmd)
 	versionCmd := newVersionCommand()
 	cmd.AddCommand(versionCmd)
@@ -67,5 +70,15 @@ func exitWithCode(code int, v ...any) {
 func Execute() {
 	if err := NewRootCommand().Execute(); err != nil {
 		exitWithCode(1, err)
+	}
+}
+
+func addAutoMigrateCommand(cmd *cobra.Command) {
+	cmd.Flags().Bool(autoMigrateFlag, false, "Auto migrate database")
+	cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
+		if viper.GetBool(autoMigrateFlag) {
+			return bunmigrate.Run(cmd, args, Migrate)
+		}
+		return nil
 	}
 }

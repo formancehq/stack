@@ -81,6 +81,7 @@ func createAccountHandler(b backend.Backend) http.HandlerFunc {
 			AccountName:     account.AccountName,
 			Type:            account.Type.String(),
 			Raw:             account.RawData,
+			Pools:           make([]uuid.UUID, 0),
 		}
 
 		if account.Metadata != nil {

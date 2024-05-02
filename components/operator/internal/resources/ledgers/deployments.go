@@ -304,11 +304,6 @@ func createGatewayDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1b
 	}
 
 	env := make([]corev1.EnvVar, 0)
-	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseKind(ctx, ledger))
-	if err != nil {
-		return err
-	}
-	env = append(env, otlpEnv...)
 	env = append(env, core.GetDevEnvVars(stack, ledger)...)
 
 	caddyImage, err := registries.GetCaddyImage(ctx, stack, "2.7.6-alpine")
@@ -317,7 +312,7 @@ func createGatewayDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1b
 	}
 
 	_, err = deployments.CreateOrUpdate(ctx, ledger, "ledger-gateway",
-		settings.ConfigureCaddy(caddyfileConfigMap, caddyImage, env),
+		settings.ConfigureCaddy(ctx, stack, ledger, caddyfileConfigMap, caddyImage, env),
 		deployments.WithReplicasFromSettings(ctx, stack),
 		deployments.WithMatchingLabels("ledger"),
 	)

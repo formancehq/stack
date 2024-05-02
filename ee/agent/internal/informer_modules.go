@@ -109,19 +109,14 @@ func NewModuleEventHandler(logger logging.Logger, membershipClient MembershipCli
 			oldStatus, err := getStatus(oldVersions)
 			if err != nil {
 				logger.Errorf("Unable to get status from old versions: %s", err)
-				return
 			}
-			newStatus, err2 := getStatus(newVersions)
-			if err2 != nil {
-				logger.Errorf("Unable to get status from new versions: %s", err2)
-				return
-			}
-
-			if newStatus == nil {
+			newStatus, err := getStatus(newVersions)
+			if err != nil {
+				logger.Errorf("Unable to get status from new versions: %s", err)
 				return
 			}
 
-			if reflect.DeepEqual(oldStatus, newStatus) {
+			if newStatus == nil || reflect.DeepEqual(oldStatus, newStatus) {
 				return
 			}
 

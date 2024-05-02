@@ -84,6 +84,16 @@ func WithVolumes(volumes ...corev1.Volume) func(t *appsv1.Deployment) error {
 	}
 }
 
+func WithVolumeMounts(mounts ...corev1.VolumeMount) func(t *appsv1.Deployment) error {
+	return func(t *appsv1.Deployment) error {
+		for _, container := range t.Spec.Template.Spec.Containers {
+			container.VolumeMounts = mounts
+		}
+
+		return nil
+	}
+}
+
 func CreateOrUpdate(ctx core.Context, owner interface {
 	client.Object
 	GetStack() string

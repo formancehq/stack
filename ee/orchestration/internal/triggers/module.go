@@ -20,7 +20,7 @@ func NewModule(taskQueue string) fx.Option {
 		}),
 		fx.Provide(
 			fx.Annotate(func() *triggerWorkflow {
-				return NewWorkflow(taskQueue)
+				return NewWorkflow(taskQueue, true)
 			}, fx.As(new(any)), fx.ResultTags(`group:"workflows"`)),
 		),
 		fx.Provide(
