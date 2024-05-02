@@ -111,8 +111,10 @@ func TestDeleteModule(t *testing.T) {
 					testConfig.client, ClientInfo{}, testConfig.mapper, orders, nil)
 
 				if tc.withLabels {
-					resource, err := testConfig.mapper.RESTMapping(recon.GroupVersionKind().GroupKind(), recon.GroupVersionKind().Version)
+					gvk := v1beta1.GroupVersion.WithKind("Reconciliation")
+					resource, err := testConfig.mapper.RESTMapping(gvk.GroupKind(), gvk.Version)
 					require.NoError(t, err)
+
 					require.NoError(t, membershipListener.deleteModule(ctx, resource.Resource, stackName))
 				}
 
