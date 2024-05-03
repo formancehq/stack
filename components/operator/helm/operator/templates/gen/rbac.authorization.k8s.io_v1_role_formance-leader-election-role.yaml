@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: role
     app.kubernetes.io/part-of: operatorv2
-  name: leader-election-role
+  name: formance-leader-election-role
   namespace: '{{ .Release.Namespace }}'
 rules:
 - apiGroups:

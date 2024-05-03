@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: clusterrole
     app.kubernetes.io/part-of: operatorv2
-  name: proxy-role
+  name: formance-proxy-role
 rules:
 - apiGroups:
   - authentication.k8s.io

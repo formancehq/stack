@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/name: service
     app.kubernetes.io/part-of: operatorv2
     control-plane: controller-manager
-  name: controller-manager-metrics-service
+  name: formance-controller-manager-metrics-service
   namespace: '{{ .Release.Namespace }}'
 spec:
   ports:

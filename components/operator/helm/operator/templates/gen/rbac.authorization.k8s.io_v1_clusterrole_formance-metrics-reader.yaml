@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: clusterrole
     app.kubernetes.io/part-of: operatorv2
-  name: metrics-reader
+  name: formance-metrics-reader
 rules:
 - nonResourceURLs:
   - /metrics

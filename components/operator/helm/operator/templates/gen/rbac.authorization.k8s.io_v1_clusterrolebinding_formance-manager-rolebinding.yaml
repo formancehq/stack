@@ -1,20 +1,19 @@
 apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
+kind: ClusterRoleBinding
 metadata:
   labels:
     app.kubernetes.io/component: rbac
     app.kubernetes.io/created-by: operatorv2
-    app.kubernetes.io/instance: leader-election-rolebinding
+    app.kubernetes.io/instance: manager-rolebinding
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: rolebinding
+    app.kubernetes.io/name: clusterrolebinding
     app.kubernetes.io/part-of: operatorv2
-  name: leader-election-rolebinding
-  namespace: '{{ .Release.Namespace }}'
+  name: formance-manager-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: leader-election-role
+  kind: ClusterRole
+  name: formance-manager-role
 subjects:
 - kind: ServiceAccount
-  name: controller-manager
+  name: formance-controller-manager
   namespace: '{{ .Release.Namespace }}'

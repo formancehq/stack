@@ -17,13 +17,13 @@ spec:
       {{- end }}
       labels:
         {{- include "operator.selectorLabels" . | nindent 8 }}
-        control-plane: controller-manager
+        control-plane: formance-controller-manager
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: controller-manager
+      serviceAccountName: formance-controller-manager
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
