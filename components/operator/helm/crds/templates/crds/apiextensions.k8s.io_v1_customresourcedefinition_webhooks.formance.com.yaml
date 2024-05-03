@@ -3,9 +3,9 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.14.0
+    helm.sh/resource-policy: keep
   labels:
     formance.com/kind: module
-    helm.sh/resource-policy: keep
   name: webhooks.formance.com
 spec:
   group: formance.com

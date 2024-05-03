@@ -30,17 +30,8 @@ resources:
   - bases/formance.com_brokers.yaml
 #+kubebuilder:scaffold:crdkustomizeresource
 
-patches:
-  - target:
-      group: apiextensions.k8s.io
-      version: v1
-      kind: CustomResourceDefinition
-    patch: |-
-      - op: add
-        path: /metadata/annotations
-        value:
-          "helm.sh/resource-policy": keep
-
+commonAnnotations:
+  helm.sh/resource-policy: keep
 # [WEBHOOK] To enable webhook, uncomment all the sections with [WEBHOOK] prefix.
 # patches here are for enabling the conversion webhook for each CRD
 #- path: patches/webhook_in_databases.yaml
