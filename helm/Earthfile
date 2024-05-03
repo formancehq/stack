@@ -25,8 +25,8 @@ helm-validate:
     WORKDIR /src/helm/$chart
     RUN helm dependency update
     DO --pass-args core+HELM_VALIDATE
-    SAVE ARTIFACT /src/helm/$chart AS LOCAL $chart
   END
+  SAVE ARTIFACT /src/helm/* AS LOCAL .
 
 
 pre-commit:
