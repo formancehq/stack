@@ -161,7 +161,6 @@ func TestWorldSourceNew(t *testing.T) {
 
 // TODO
 func TestNoEmptyPostingsNew(t *testing.T) {
-	t.Skip()
 
 	tc := NewTestCase()
 	tc.compile(t, `send [GEM 2] (

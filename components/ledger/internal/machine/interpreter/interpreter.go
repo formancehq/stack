@@ -78,6 +78,10 @@ func Reconcile(senders []Sender, receivers []Receiver) ([]Posting, error) {
 			postingAmount = sender.Monetary
 		}
 
+		if postingAmount == 0 {
+			continue
+		}
+
 		var postingToMerge *Posting
 		if len(postings) != 0 {
 			posting := &postings[len(postings)-1]
