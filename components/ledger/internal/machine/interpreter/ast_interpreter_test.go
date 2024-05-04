@@ -289,10 +289,7 @@ func TestSourceOverlappingNew(t *testing.T) {
 	test(t, tc)
 }
 
-// TODO fix parsing
 func TestSourceComplexNew(t *testing.T) {
-	t.Skip()
-
 	tc := NewTestCase()
 	tc.compile(t, `vars {
 		monetary $max
@@ -304,7 +301,7 @@ func TestSourceComplexNew(t *testing.T) {
 				@b
 				@c
 			}
-			remaining from max [COIN 120] from @d
+			50% from max [COIN 120] from @d
 		}
 		destination = @platform
 	)`)
