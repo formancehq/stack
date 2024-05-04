@@ -159,9 +159,7 @@ func TestWorldSourceNew(t *testing.T) {
 	test(t, tc)
 }
 
-// TODO
 func TestNoEmptyPostingsNew(t *testing.T) {
-
 	tc := NewTestCase()
 	tc.compile(t, `send [GEM 2] (
 		source = @world
