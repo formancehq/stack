@@ -70,3 +70,14 @@ func TestReconcileWhenSendersAreSplit(t *testing.T) {
 		},
 	})
 }
+
+func TestReconcileOverlapping(t *testing.T) {
+	runReconcileTestCase(t, ReconcileTestCase{
+		Senders:   []Sender{{"src1", 1}, {"src2", 10}, {"src2", 20}},
+		Receivers: []Receiver{{"d", 31}},
+		Expected: []Posting{
+			{"src1", "d", 1},
+			{"src2", "d", 30},
+		},
+	})
+}

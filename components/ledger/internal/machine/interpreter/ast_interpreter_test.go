@@ -255,10 +255,7 @@ func TestSourceAllotmentNew(t *testing.T) {
 	test(t, tc)
 }
 
-// TODO fix parser
 func TestSourceOverlappingNew(t *testing.T) {
-	t.Skip()
-
 	tc := NewTestCase()
 	tc.compile(t, `send [COIN 99] (
 		source = {
@@ -267,7 +264,7 @@ func TestSourceOverlappingNew(t *testing.T) {
 				@a
 			}
 			30% from @a
-			remaining from @a
+			55% from @a
 		}
 		destination = @world
 	)`)

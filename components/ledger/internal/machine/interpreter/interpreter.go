@@ -78,11 +78,23 @@ func Reconcile(senders []Sender, receivers []Receiver) ([]Posting, error) {
 			postingAmount = sender.Monetary
 		}
 
-		postings = append(postings, Posting{
-			Source:      sender.Name,
-			Destination: receiver.Name,
-			Amount:      postingAmount,
-		})
+		var postingToMerge *Posting
+		if len(postings) != 0 {
+			posting := &postings[len(postings)-1]
+			if posting.Source == sender.Name && posting.Destination == receiver.Name {
+				postingToMerge = posting
+			}
+		}
+
+		if postingToMerge == nil {
+			postings = append(postings, Posting{
+				Source:      sender.Name,
+				Destination: receiver.Name,
+				Amount:      postingAmount,
+			})
+		} else {
+			postingToMerge.Amount += postingAmount
+		}
 	}
 
 	slices.Reverse(postings)
