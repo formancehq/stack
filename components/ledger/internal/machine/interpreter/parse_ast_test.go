@@ -117,3 +117,32 @@ func TestParseAllottedPercSource(t *testing.T) {
 
 	require.Equal(t, &expected, got.Program, "Program should be the same.")
 }
+
+func TestParseAllottedDest(t *testing.T) {
+	got := CompileFull(`send [COIN 42] (
+		source = @src
+		destination = {
+			1/3 to @d1
+			2/3 to @d2
+		}
+	)`)
+
+	if len(got.Errors) != 0 {
+		t.Fatalf(`Unexpected compilation errors = %#v`, got.Errors)
+	}
+
+	expected := Program{
+		Statements: []SendStatement{
+			{
+				Amount: 42,
+				Source: &AccountSrc{"src"},
+				Destination: &AllottedDest{[]Allotment[Destination]{
+					{*big.NewRat(1, 3), &AccountDest{Name: "d1"}},
+					{*big.NewRat(2, 3), &AccountDest{Name: "d2"}},
+				}},
+			},
+		},
+	}
+
+	require.Equal(t, &expected, got.Program, "Program should be the same.")
+}

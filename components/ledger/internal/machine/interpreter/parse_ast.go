@@ -299,9 +299,34 @@ func (p *parseVisitor) visitDestination(c parser.IDestinationContext) (Destinati
 
 		return nil, nil
 	case *parser.DestAllotmentContext:
-		// err := p.VisitDestinationAllotment(c.DestinationAllotment())
-		// return err
-		return nil, nil
+		portions, err := p.visitAllotmentPortions(c.DestinationAllotment().GetPortions())
+		if err != nil {
+			return nil, err
+		}
+
+		dests := c.DestinationAllotment().GetDests()
+
+		allotedDest := AllottedDest{}
+
+		for i, portion := range portions {
+			switch c := dests[i].(type) {
+			case *parser.IsKeptContext:
+				panic("TODO handle kept dest")
+
+			case *parser.IsDestinationContext:
+				dest, err := p.visitDestination(c.Destination())
+				if err != nil {
+					return nil, err
+				}
+
+				allotedDest.Allotments = append(allotedDest.Allotments, Allotment[Destination]{
+					Ratio: portion,
+					Value: dest,
+				})
+			}
+		}
+
+		return &allotedDest, nil
 	default:
 		return nil, InternalError(c)
 	}
