@@ -128,6 +128,223 @@ func TestInsufficientFunds(t *testing.T) {
 	test(t, tc)
 }
 
+func TestWorldSourceNew(t *testing.T) {
+	tc := NewTestCase()
+	tc.compile(t, `send [GEM 15] (
+		source = {
+			@a
+			@world
+		}
+		destination = @b
+	)`)
+	tc.setBalance("a", "GEM", 1)
+	tc.expected = CaseResult{
+		Printed: []machine.Value{},
+		Postings: []Posting{
+			{
+
+				Amount:      1,
+				Source:      "a",
+				Destination: "b",
+			},
+			{
+
+				Amount:      14,
+				Source:      "world",
+				Destination: "b",
+			},
+		},
+		Error: nil,
+	}
+	test(t, tc)
+}
+
+// TODO
+func TestNoEmptyPostingsNew(t *testing.T) {
+	t.Skip()
+
+	tc := NewTestCase()
+	tc.compile(t, `send [GEM 2] (
+		source = @world
+		destination = {
+			90% to @a
+			10% to @b
+		}
+	)`)
+	tc.expected = CaseResult{
+		Printed: []machine.Value{},
+		Postings: []Posting{
+			{
+				Amount:      2,
+				Source:      "world",
+				Destination: "a",
+			},
+		},
+		Error: nil,
+	}
+	test(t, tc)
+}
+
+func TestAllocateDontTakeTooMuchNew(t *testing.T) {
+	tc := NewTestCase()
+	tc.compile(t, `send [CREDIT 200] (
+		source = {
+			@users:001
+			@users:002
+		}
+		destination = {
+			1/2 to @foo
+			1/2 to @bar
+		}
+	)`)
+	tc.setBalance("users:001", "CREDIT", 100)
+	tc.setBalance("users:002", "CREDIT", 110)
+	tc.expected = CaseResult{
+		Printed: []machine.Value{},
+		Postings: []Posting{
+			{
+				Amount:      100,
+				Source:      "users:001",
+				Destination: "foo",
+			},
+			{
+				Amount:      100,
+				Source:      "users:002",
+				Destination: "bar",
+			},
+		},
+		Error: nil,
+	}
+	test(t, tc)
+}
+
+func TestSourceAllotmentNew(t *testing.T) {
+	tc := NewTestCase()
+	tc.compile(t, `send [COIN 100] (
+		source = {
+			60% from @a
+			35.5% from @b
+			4.5% from @c
+		}
+		destination = @d
+	)`)
+	tc.setBalance("a", "COIN", 100)
+	tc.setBalance("b", "COIN", 100)
+	tc.setBalance("c", "COIN", 100)
+	tc.expected = CaseResult{
+		Printed: []machine.Value{},
+		Postings: []Posting{
+			{
+				Amount:      61,
+				Source:      "a",
+				Destination: "d",
+			},
+			{
+				Amount:      35,
+				Source:      "b",
+				Destination: "d",
+			},
+			{
+				Amount:      4,
+				Source:      "c",
+				Destination: "d",
+			},
+		},
+		Error: nil,
+	}
+	test(t, tc)
+}
+
+// TODO fix parser
+func TestSourceOverlappingNew(t *testing.T) {
+	t.Skip()
+
+	tc := NewTestCase()
+	tc.compile(t, `send [COIN 99] (
+		source = {
+			15% from {
+				@b
+				@a
+			}
+			30% from @a
+			remaining from @a
+		}
+		destination = @world
+	)`)
+	tc.setBalance("a", "COIN", 99)
+	tc.setBalance("b", "COIN", 3)
+	tc.expected = CaseResult{
+		Printed: []machine.Value{},
+		Postings: []Posting{
+			{
+				Amount:      3,
+				Source:      "b",
+				Destination: "world",
+			},
+			{
+				Amount:      96,
+				Source:      "a",
+				Destination: "world",
+			},
+		},
+		Error: nil,
+	}
+	test(t, tc)
+}
+
+// TODO fix parsing
+func TestSourceComplexNew(t *testing.T) {
+	t.Skip()
+
+	tc := NewTestCase()
+	tc.compile(t, `vars {
+		monetary $max
+	}
+	send [COIN 200] (
+		source = {
+			50% from {
+				max [COIN 4] from @a
+				@b
+				@c
+			}
+			remaining from max [COIN 120] from @d
+		}
+		destination = @platform
+	)`)
+
+	tc.setBalance("a", "COIN", 1000)
+	tc.setBalance("b", "COIN", 40)
+	tc.setBalance("c", "COIN", 1000)
+	tc.setBalance("d", "COIN", 1000)
+	tc.expected = CaseResult{
+		Printed: []machine.Value{},
+		Postings: []Posting{
+			{
+				Amount:      4,
+				Source:      "a",
+				Destination: "platform",
+			},
+			{
+				Amount:      40,
+				Source:      "b",
+				Destination: "platform",
+			},
+			{
+				Amount:      56,
+				Source:      "c",
+				Destination: "platform",
+			},
+			{
+				Amount:      100,
+				Source:      "d",
+				Destination: "platform",
+			},
+		},
+		Error: nil,
+	}
+	test(t, tc)
+}
+
 // ---- Test utilities
 type CaseResult struct {
 	Printed       []machine.Value
