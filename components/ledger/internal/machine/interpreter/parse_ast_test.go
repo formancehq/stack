@@ -171,3 +171,37 @@ func TestParseMaxedSource(t *testing.T) {
 
 	require.Equal(t, &expected, got.Program, "Program should be the same.")
 }
+
+func TestParseMaxedDestination(t *testing.T) {
+	got := CompileFull(`send [COIN 42] (
+		source = @src
+		destination = {
+			max [COIN 100] to @d1
+			remaining to @d2
+		}
+	)`)
+
+	if len(got.Errors) != 0 {
+		t.Fatalf(`Unexpected compilation errors = %#v`, got.Errors)
+	}
+
+	expected := Program{
+		Statements: []SendStatement{
+			{
+				Amount: 42,
+				Source: &AccountSrc{"src"},
+				Destination: &SeqDest{
+					[]Destination{
+						&CappedDest{
+							Cap:         100,
+							Destination: &AccountDest{"d1"},
+						},
+						&AccountDest{"d2"},
+					},
+				},
+			},
+		},
+	}
+
+	require.Equal(t, &expected, got.Program, "Program should be the same.")
+}

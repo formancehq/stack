@@ -256,32 +256,42 @@ func (p *parseVisitor) visitDestination(c parser.IDestinationContext) (Destinati
 		return &AccountDest{Name: string(*account)}, nil
 
 	case *parser.DestInOrderContext:
-		// dests := c.DestinationInOrder().GetDests()
-		// amounts := c.DestinationInOrder().GetAmounts()
-		// n := len(dests)
+		amounts := c.DestinationInOrder().GetAmounts()
+		dests := c.DestinationInOrder().GetDests()
+		dests = append(dests, c.DestinationInOrder().GetRemainingDest())
 
-		// for i := 0; i < n; i++ {
-		// 	ty, _, compErr := p.VisitExpr(amounts[i], true)
-		// 	if compErr != nil {
-		// 		return compErr
-		// 	}
-		// 	if ty != machine.TypeMonetary {
-		// 		return LogicError(c, errors.New("wrong type: expected monetary as max"))
-		// 	}
+		destSeq := SeqDest{}
+		for i, dest := range dests {
 
-		// 	if compErr != nil {
-		// 		return compErr
-		// 	}
+			var maxMon *machine.MonetaryInt
+			if i < len(amounts) {
+				amtLit := amounts[i].(*parser.ExprLiteralContext).GetLit()
+				mon, err := p.visitMonetaryLit(amtLit)
+				if err != nil {
+					return nil, err
+				}
+				maxMon = mon
+			}
 
-		// 	if err != nil {
-		// 		return LogicError(c, err)
-		// 	}
+			switch dest := dest.(type) {
+			case *parser.IsKeptContext:
+				panic("TODO kept context")
+			case *parser.IsDestinationContext:
+				nestedDest, err := p.visitDestination(dest.Destination())
+				if err != nil {
+					return nil, err
+				}
+				if maxMon != nil {
+					nestedDest = &CappedDest{
+						Cap:         int64(maxMon.Uint64()),
+						Destination: nestedDest,
+					}
+				}
+				destSeq.Destinations = append(destSeq.Destinations, nestedDest)
+			}
+		}
 
-		// }
-
-		// cerr := p.VisitKeptOrDestination(c.DestinationInOrder().GetRemainingDest())
-
-		return nil, nil
+		return &destSeq, nil
 	case *parser.DestAllotmentContext:
 		portions, err := p.visitAllotmentPortions(c.DestinationAllotment().GetPortions())
 		if err != nil {
