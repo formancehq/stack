@@ -33,6 +33,37 @@ func TestSend(t *testing.T) {
 	test(t, tc)
 }
 
+func TestSource(t *testing.T) {
+	tc := NewTestCase()
+	tc.compile(t, `send [GEM 15] (
+		source = {
+			@users:001
+			@payments:001
+		}
+		destination = @users:002
+	)`)
+
+	tc.setBalance("users:001", "GEM", 3)
+	tc.setBalance("payments:001", "GEM", 12)
+	tc.expected = CaseResult{
+		Printed: []machine.Value{},
+		Postings: []Posting{
+			{
+				Amount:      3,
+				Source:      "users:001",
+				Destination: "users:002",
+			},
+			{
+				Amount:      12,
+				Source:      "payments:001",
+				Destination: "users:002",
+			},
+		},
+		Error: nil,
+	}
+	test(t, tc)
+}
+
 // ---- Test utilities
 type CaseResult struct {
 	Printed       []machine.Value

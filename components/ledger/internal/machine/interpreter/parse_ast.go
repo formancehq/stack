@@ -187,56 +187,40 @@ func (p *parseVisitor) visitSource(c parser.ISourceContext) (Source, *CompileErr
 		// for k, v := range accounts {
 		// 	neededAccounts[k] = v
 		// }
-		// p.AppendInstruction(program.OP_TAKE_MAX)
 		// err := p.Bump(1)
 		// if err != nil {
 		// 	return nil, nil, nil, LogicError(c, err)
 		// }
-		// p.AppendInstruction(program.OP_REPAY)
 		// if subsourceFallback != nil {
 		// 	p.PushAddress(machine.Address(*subsourceFallback))
 		// 	err := p.Bump(2)
 		// 	if err != nil {
 		// 		return nil, nil, nil, LogicError(c, err)
 		// 	}
-		// 	p.AppendInstruction(program.OP_TAKE_ALWAYS)
 		// 	err = p.PushInteger(machine.NewNumber(2))
 		// 	if err != nil {
 		// 		return nil, nil, nil, LogicError(c, err)
 		// 	}
-		// 	p.AppendInstruction(program.OP_FUNDING_ASSEMBLE)
 		// } else {
 		// 	err := p.Bump(1)
 		// 	if err != nil {
 		// 		return nil, nil, nil, LogicError(c, err)
 		// 	}
-		// 	p.AppendInstruction(program.OP_DELETE)
 		// }
 
 	case *parser.SrcInOrderContext:
-		panic("TODO handle inorder")
-		// sources := c.SourceInOrder().GetSources()
-		// n := len(sources)
-		// for i := 0; i < n; i++ {
-		// 	accounts, emptied, subsourceFallback, compErr := p.visitSource(sources[i], pushAsset, isAll)
-		// 	if compErr != nil {
-		// 		return nil, nil, nil, compErr
-		// 	}
-		// 	fallback = subsourceFallback
-		// 	if subsourceFallback != nil && i != n-1 {
-		// 		return nil, nil, nil, LogicError(c, errors.New("an unbounded subsource can only be in last position"))
-		// 	}
-		// 	for k, v := range accounts {
-		// 		neededAccounts[k] = v
-		// 	}
-		// 	for k, v := range emptied {
-		// 		if _, ok := emptiedAccounts[k]; ok {
-		// 			return nil, nil, nil, LogicError(sources[i], fmt.Errorf("%v is already empty at this stage", p.resources[k]))
-		// 		}
-		// 		emptiedAccounts[k] = v
-		// 	}
-		// }
+		seq := &SeqSrc{}
 
+		for _, source := range c.SourceInOrder().GetSources() {
+			src, err := p.visitSource(source)
+			if err != nil {
+				return nil, err
+			}
+
+			seq.Sources = append(seq.Sources, src)
+		}
+
+		return seq, nil
 	}
 
 	return nil, nil
