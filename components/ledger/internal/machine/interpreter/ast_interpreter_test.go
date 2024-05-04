@@ -64,6 +64,46 @@ func TestSource(t *testing.T) {
 	test(t, tc)
 }
 
+func TestAllocation(t *testing.T) {
+	tc := NewTestCase()
+	tc.compile(t, `vars {
+		account $rider
+		account $driver
+	}
+	send [GEM 15] (
+		source = @users:001
+		destination = {
+			80% to @users:002
+			8% to @a
+			12% to @b
+		}
+	)`)
+
+	tc.setBalance("users:001", "GEM", 15)
+	tc.expected = CaseResult{
+		Printed: []machine.Value{},
+		Postings: []Posting{
+			{
+				Amount:      13,
+				Source:      "users:001",
+				Destination: "users:002",
+			},
+			{
+				Amount:      1,
+				Source:      "users:001",
+				Destination: "a",
+			},
+			{
+				Amount:      1,
+				Source:      "users:001",
+				Destination: "b",
+			},
+		},
+		Error: nil,
+	}
+	test(t, tc)
+}
+
 // ---- Test utilities
 type CaseResult struct {
 	Printed       []machine.Value

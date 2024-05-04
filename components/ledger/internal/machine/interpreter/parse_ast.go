@@ -2,6 +2,7 @@ package interpreter
 
 import (
 	"fmt"
+	"math/big"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/formancehq/ledger/internal/machine"
@@ -124,7 +125,27 @@ func (p *parseVisitor) visitSend(c *parser.SendContext) (*SendStatement, *Compil
 		statement.Source = src
 
 	case *parser.SrcAllotmentContext:
-		panic("TODO handle src allotment")
+		portions, err := p.visitAllotmentPortions(c.SourceAllotment().GetPortions())
+		if err != nil {
+			return nil, err
+		}
+
+		sources := c.SourceAllotment().GetSources()
+
+		allottedSrc := &AllottedSrc{}
+		for i, portion := range portions {
+			source, err := p.visitSource(sources[i])
+			if err != nil {
+				return nil, err
+			}
+
+			allottedSrc.Allotments = append(allottedSrc.Allotments, Allotment[Source]{
+				Ratio: portion,
+				Value: source,
+			})
+		}
+
+		statement.Source = allottedSrc
 	}
 
 	dest, err := p.visitDestination(c.GetDest())
@@ -273,6 +294,28 @@ func (p *parseVisitor) visitDestination(c parser.IDestinationContext) (Destinati
 	default:
 		return nil, InternalError(c)
 	}
+}
+
+func (p *parseVisitor) visitAllotmentPortions(portions []parser.IAllotmentPortionContext) ([]big.Rat, *CompileError) {
+	var result []big.Rat
+	for _, c := range portions {
+		switch c := c.(type) {
+		case *parser.AllotmentPortionConstContext:
+			portion, err := machine.ParsePortionSpecific(c.GetText())
+			if err != nil {
+				return nil, LogicError(c, err)
+			}
+			result = append(result, *portion.Specific)
+
+		case *parser.AllotmentPortionVarContext:
+			panic("TODO handle vars in allotment")
+
+		case *parser.AllotmentPortionRemainingContext:
+			panic("TODO handle remaining")
+
+		}
+	}
+	return result, nil
 }
 
 func LogicError(c antlr.ParserRuleContext, err error) *CompileError {
