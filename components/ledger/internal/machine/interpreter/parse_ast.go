@@ -106,23 +106,14 @@ func (p *parseVisitor) visitScript(c parser.IScriptContext) (*Program, *CompileE
 	return program, nil
 }
 
-func (p *parseVisitor) visitSend(c *parser.SendContext) (*SendStatement, *CompileError) {
-	statement := SendStatement{}
-
-	monExpr := c.GetMon().(*parser.ExprLiteralContext)
-	mon, err := p.visitMonetaryLit(monExpr.GetLit())
-	if err != nil {
-		return nil, err
-	}
-	statement.Amount = int64(mon.Uint64())
-
+func (p *parseVisitor) visitTopLevelSource(c *parser.SendContext) (Source, *CompileError) {
 	switch c := c.GetSrc().(type) {
 	case *parser.SrcContext:
 		src, err := p.visitSource(c.Source())
 		if err != nil {
 			return nil, err
 		}
-		statement.Source = src
+		return src, nil
 
 	case *parser.SrcAllotmentContext:
 		portions, err := p.visitAllotmentPortions(c.SourceAllotment().GetPortions())
@@ -145,8 +136,28 @@ func (p *parseVisitor) visitSend(c *parser.SendContext) (*SendStatement, *Compil
 			})
 		}
 
-		statement.Source = allottedSrc
+		return allottedSrc, nil
+
+	default:
+		panic("TODO Unhandled source")
 	}
+}
+
+func (p *parseVisitor) visitSend(c *parser.SendContext) (*SendStatement, *CompileError) {
+	statement := SendStatement{}
+
+	monExpr := c.GetMon().(*parser.ExprLiteralContext)
+	mon, err := p.visitMonetaryLit(monExpr.GetLit())
+	if err != nil {
+		return nil, err
+	}
+	statement.Amount = int64(mon.Uint64())
+
+	src, err := p.visitTopLevelSource(c)
+	if err != nil {
+		return nil, err
+	}
+	statement.Source = src
 
 	dest, err := p.visitDestination(c.GetDest())
 	if err != nil {
