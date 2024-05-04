@@ -1,7 +1,6 @@
 package interpreter
 
 import (
-	"errors"
 	"math/big"
 	"testing"
 
@@ -104,6 +103,31 @@ func TestAllocation(t *testing.T) {
 	test(t, tc)
 }
 
+func TestInsufficientFunds(t *testing.T) {
+	tc := NewTestCase()
+	tc.compile(t, `vars {
+		account $balance
+		account $payment
+		account $seller
+	}
+	send [GEM 16] (
+		source = {
+			@users:001
+			@payments:001
+		}
+		destination = @users:002
+	)`)
+
+	tc.setBalance("users:001", "GEM", 3)
+	tc.setBalance("payments:001", "GEM", 12)
+	tc.expected = CaseResult{
+		Printed:  []machine.Value{},
+		Postings: []Posting{},
+		Error:    MissingFundsErr{Missing: 1},
+	}
+	test(t, tc)
+}
+
 // ---- Test utilities
 type CaseResult struct {
 	Printed       []machine.Value
@@ -158,7 +182,7 @@ func test(t *testing.T, testCase TestCase) {
 	postings, err := EvalSend(statement.Amount, testCase.balances, statement.Source, statement.Destination)
 
 	if expected.Error != nil {
-		require.True(t, errors.Is(err, expected.Error), "got wrong error, want: %v, got: %v", expected.Error, err)
+		require.Equal(t, err, expected.Error, "got wrong error, want: %#v, got: %#v", expected.Error, err)
 		if expected.ErrorContains != "" {
 			require.ErrorContains(t, err, expected.ErrorContains)
 		}
