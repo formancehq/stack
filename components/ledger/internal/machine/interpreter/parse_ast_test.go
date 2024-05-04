@@ -146,3 +146,28 @@ func TestParseAllottedDest(t *testing.T) {
 
 	require.Equal(t, &expected, got.Program, "Program should be the same.")
 }
+
+func TestParseMaxedSource(t *testing.T) {
+	got := CompileFull(`send [COIN 42] (
+		source = max [COIN 100] from @src
+		destination = @dest
+	)`)
+
+	if len(got.Errors) != 0 {
+		t.Fatalf(`Unexpected compilation errors = %#v`, got.Errors)
+	}
+
+	expected := Program{
+		Statements: []SendStatement{
+			{
+				Amount: 42,
+				Source: &CappedSrc{
+					Cap:    100,
+					Source: &AccountSrc{"src"}},
+				Destination: &AccountDest{"dest"},
+			},
+		},
+	}
+
+	require.Equal(t, &expected, got.Program, "Program should be the same.")
+}

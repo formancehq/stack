@@ -204,41 +204,25 @@ func (p *parseVisitor) visitSource(c parser.ISourceContext) (Source, *CompileErr
 		return &AccountSrc{Name: string(*account)}, nil
 
 	case *parser.SrcMaxedContext:
-		panic("TODO handle maxed")
-		// accounts, _, subsourceFallback, compErr := p.visitSource(c.SourceMaxed().GetSrc(), pushAsset, false)
-		// if compErr != nil {
-		// 	return nil, nil, nil, compErr
-		// }
-		// ty, _, compErr := p.visitExpr(c.SourceMaxed().GetMax(), true)
-		// if compErr != nil {
-		// 	return nil, nil, nil, compErr
-		// }
-		// if ty != machine.TypeMonetary {
-		// 	return nil, nil, nil, LogicError(c, errors.New("wrong type: expected monetary as max"))
-		// }
-		// for k, v := range accounts {
-		// 	neededAccounts[k] = v
-		// }
-		// err := p.Bump(1)
-		// if err != nil {
-		// 	return nil, nil, nil, LogicError(c, err)
-		// }
-		// if subsourceFallback != nil {
-		// 	p.PushAddress(machine.Address(*subsourceFallback))
-		// 	err := p.Bump(2)
-		// 	if err != nil {
-		// 		return nil, nil, nil, LogicError(c, err)
-		// 	}
-		// 	err = p.PushInteger(machine.NewNumber(2))
-		// 	if err != nil {
-		// 		return nil, nil, nil, LogicError(c, err)
-		// 	}
-		// } else {
-		// 	err := p.Bump(1)
-		// 	if err != nil {
-		// 		return nil, nil, nil, LogicError(c, err)
-		// 	}
-		// }
+		maxed := c.SourceMaxed()
+		src := maxed.GetSrc()
+
+		nestedSrc, err := p.visitSource(src)
+		if err != nil {
+			return nil, err
+		}
+
+		capLit := maxed.GetMax().(*parser.ExprLiteralContext).GetLit()
+		cap, err := p.visitMonetaryLit(capLit)
+		if err != nil {
+			return nil, err
+		}
+
+		cappedSrc := CappedSrc{
+			Cap:    int64(cap.Uint64()),
+			Source: nestedSrc,
+		}
+		return &cappedSrc, nil
 
 	case *parser.SrcInOrderContext:
 		seq := &SeqSrc{}
