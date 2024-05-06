@@ -10,8 +10,8 @@ type AccountSrc struct {
 }
 
 type CappedSrc struct {
-	Source Source
 	Cap    int64
+	Source Source
 }
 
 type SeqSrc struct {
@@ -42,6 +42,9 @@ func (s *AccountSrc) trySending(monetary int64, ctx *evalSourceCtx) int64 {
 		Name:     s.Name,
 		Monetary: monetary,
 	})
+	if ctx.Balances != nil {
+		ctx.Balances[s.Name] -= monetary
+	}
 
 	return monetary
 }

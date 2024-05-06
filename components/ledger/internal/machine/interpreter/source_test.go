@@ -220,3 +220,23 @@ func TestComplexAllotmentOfUneven(t *testing.T) {
 		},
 	})
 }
+
+func TestUpdateBalance(t *testing.T) {
+	runSourceTestCase(t, &SourceTestCase{
+		Monetary: 200,
+		Balances: map[string]int64{
+			"src": 100,
+		},
+		Source: &SeqSrc{
+			[]Source{
+				&AccountSrc{"src"},
+				&AccountSrc{"src"},
+			},
+		},
+		Expected: []Sender{
+			{"src", 100},
+			{"src", 0},
+		},
+		ExpectedErr: MissingFundsErr{Missing: 100},
+	})
+}
