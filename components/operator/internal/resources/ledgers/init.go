@@ -71,9 +71,20 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, versio
 		return err
 	}
 
-	_, err = createReindexCronJob(ctx, ledger)
+	hasDependency, err := HasDependency(ctx, stack.Name, &v1beta1.Search{})
 	if err != nil {
 		return err
+	}
+	if hasDependency {
+		_, err = createReindexCronJob(ctx, ledger)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = deleteReindexCronJob(ctx, ledger)
+		if err != nil {
+			return err
+		}
 	}
 
 	if database.Status.Ready {

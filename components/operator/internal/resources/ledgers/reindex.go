@@ -1,7 +1,7 @@
 package ledgers
 
 import (
-	"fmt"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
@@ -14,7 +14,7 @@ import (
 func createReindexCronJob(ctx core.Context, ledger *v1beta1.Ledger) (*batchv1.CronJob, error) {
 	cronJob, _, err := core.CreateOrUpdate[*batchv1.CronJob](ctx, types.NamespacedName{
 		Namespace: ledger.Spec.Stack,
-		Name:      fmt.Sprintf("reindex-ledger"),
+		Name:      "reindex-ledger",
 	}, func(t *batchv1.CronJob) error {
 		t.Spec = batchv1.CronJobSpec{
 			Suspend:  pointer.For(true),
@@ -40,4 +40,11 @@ func createReindexCronJob(ctx core.Context, ledger *v1beta1.Ledger) (*batchv1.Cr
 		return nil
 	}, core.WithController[*batchv1.CronJob](ctx.GetScheme(), ledger))
 	return cronJob, err
+}
+
+func deleteReindexCronJob(ctx core.Context, ledger *v1beta1.Ledger) error {
+	cronJob := &batchv1.CronJob{}
+	cronJob.SetNamespace(ledger.Spec.Stack)
+	cronJob.SetName("reindex-ledger")
+	return client.IgnoreNotFound(ctx.GetClient().Delete(ctx, cronJob))
 }
