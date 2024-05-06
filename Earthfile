@@ -136,35 +136,40 @@ deployer-module:
     FROM --pass-args core+base-image
     ARG --required MODULE
     ARG --required TAG
-
+    
     LET ARGS="--parameter=versions.files.default.$MODULE=$TAG"
     FROM --pass-args core+deployer-module --ARGS=$ARGS --TAG=$TAG
 
-deploy-all-staging:
+staging-application-set:
     LOCALLY
-    
-    WAIT
-        BUILD --pass-args ./components/+deploy-staging --components=operator
-    END
+    ARG TAG=latest
+    LET PARAMETERS=""
 
-    FOR component IN $(cd ./tools && ls -d */)
-        BUILD --pass-args ./tools/$component+deploy-staging --WITH_SYNC=false
-    END
-    
-    FOR component IN $(cd ./components && ls -d */)
-        IF [ "$component" != "operator" ]
-            BUILD --pass-args ./components/+deploy-staging --components=$component --WITH_SYNC=false
+    WAIT 
+        FOR component IN $(cd ./tools && ls -d */ | sed 's/.$//')
+            SET PARAMETERS="$PARAMETERS --parameter versions.files.default.$component=$TAG"
         END
-    END
-    
-    FOR component IN $(cd ./ee && ls -d */)
-        BUILD --pass-args ./ee/+deploy-staging --components=$component --WITH_SYNC=false
-    END
+        
+        FOR component IN $(cd ./components && ls -d */ | sed 's/.$//')
+            IF [ "$component" != "operator"  ]  && [ "$component" != "fctl" ]
+                SET PARAMETERS="$PARAMETERS --parameter versions.files.default.$component=$TAG"
+            END
+        END
+        
+        FOR component IN $(cd ./ee && ls -d */ | sed 's/.$//')
+            IF [ "$component" != "agent"  ]
+                SET PARAMETERS="$PARAMETERS --parameter versions.files.default.$component=$TAG"
+            END
+        END
 
-    # Sync regions
-    WAIT
-        BUILD core+deploy-staging --APPLICATION=staging-eu-west-1-hosting-regions
+        SET PARAMETERS="$PARAMETERS --parameter agent.image.tag=$TAG"
+        SET PARAMETERS="$PARAMETERS --parameter operator.image.tag=$TAG"
     END
+    BUILD --pass-args core+application-set --ARGS=$PARAMETERS --WITH_SYNC=false
+    
+
+staging-application-sync:
+    BUILD core+application-sync --APPLICATION=staging-eu-west-1-hosting-regions
 
 tests-all:
     LOCALLY
