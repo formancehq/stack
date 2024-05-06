@@ -51,14 +51,16 @@ func createBatchElement(
 			return ingestion.PaymentBatchElement{}, false
 		}
 
-		payment = &models.Payment{
-			ID: models.PaymentID{
-				PaymentReference: models.PaymentReference{
-					Reference: balanceTransaction.ID,
-					Type:      models.PaymentTypePayIn,
-				},
-				ConnectorID: connectorID,
+		paymentID := models.PaymentID{
+			PaymentReference: models.PaymentReference{
+				Reference: balanceTransaction.ID,
+				Type:      models.PaymentTypePayIn,
 			},
+			ConnectorID: connectorID,
+		}
+		createdAt := time.Unix(balanceTransaction.Created, 0)
+		payment = &models.Payment{
+			ID:            paymentID,
 			Reference:     balanceTransaction.ID,
 			ConnectorID:   connectorID,
 			Type:          models.PaymentTypePayIn,
@@ -68,7 +70,8 @@ func createBatchElement(
 			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, transactionCurrency),
 			RawData:       rawData,
 			Scheme:        models.PaymentScheme(balanceTransaction.Source.Charge.PaymentMethodDetails.Card.Brand),
-			CreatedAt:     time.Unix(balanceTransaction.Created, 0),
+			CreatedAt:     createdAt,
+			Metadata:      computeMetadata(paymentID, createdAt, balanceTransaction.Source.Charge.Metadata, balanceTransaction.Source.Charge.PaymentIntent.Metadata),
 		}
 
 		if account != "" {
@@ -85,6 +88,15 @@ func createBatchElement(
 		if !ok {
 			return ingestion.PaymentBatchElement{}, false
 		}
+
+		paymentID := models.PaymentID{
+			PaymentReference: models.PaymentReference{
+				Reference: balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
+				Type:      models.PaymentTypePayIn,
+			},
+			ConnectorID: connectorID,
+		}
+		createdAt := time.Unix(balanceTransaction.Source.Refund.Charge.Created, 0)
 		// Created when a credit card charge refund is initiated.
 		// If you authorize and capture separately and the capture amount is
 		// less than the initial authorization, you see a balance transaction
@@ -92,13 +104,7 @@ func createBatchElement(
 		// transaction of type refund for the uncaptured portion.
 		// cf https://stripe.com/docs/reports/balance-transaction-types
 		payment = &models.Payment{
-			ID: models.PaymentID{
-				PaymentReference: models.PaymentReference{
-					Reference: balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
-					Type:      models.PaymentTypePayIn,
-				},
-				ConnectorID: connectorID,
-			},
+			ID:            paymentID,
 			Reference:     balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
 			ConnectorID:   connectorID,
 			Type:          models.PaymentTypePayIn,
@@ -108,7 +114,8 @@ func createBatchElement(
 			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, transactionCurrency),
 			RawData:       rawData,
 			Scheme:        models.PaymentScheme(balanceTransaction.Source.Refund.Charge.PaymentMethodDetails.Card.Brand),
-			CreatedAt:     time.Unix(balanceTransaction.Source.Refund.Charge.Created, 0),
+			CreatedAt:     createdAt,
+			Metadata:      computeMetadata(paymentID, createdAt, balanceTransaction.Source.Refund.Metadata, balanceTransaction.Source.Refund.PaymentIntent.Metadata),
 		}
 
 		if account != "" {
@@ -140,6 +147,15 @@ func createBatchElement(
 		if !ok {
 			return ingestion.PaymentBatchElement{}, false
 		}
+
+		paymentID := models.PaymentID{
+			PaymentReference: models.PaymentReference{
+				Reference: balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
+				Type:      models.PaymentTypePayIn,
+			},
+			ConnectorID: connectorID,
+		}
+		createdAt := time.Unix(balanceTransaction.Source.Refund.Charge.Created, 0)
 		// Created when a credit card charge refund is initiated.
 		// If you authorize and capture separately and the capture amount is
 		// less than the initial authorization, you see a balance transaction
@@ -147,13 +163,7 @@ func createBatchElement(
 		// transaction of type refund for the uncaptured portion.
 		// cf https://stripe.com/docs/reports/balance-transaction-types
 		payment = &models.Payment{
-			ID: models.PaymentID{
-				PaymentReference: models.PaymentReference{
-					Reference: balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
-					Type:      models.PaymentTypePayIn,
-				},
-				ConnectorID: connectorID,
-			},
+			ID:            paymentID,
 			Reference:     balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
 			ConnectorID:   connectorID,
 			Type:          models.PaymentTypePayIn,
@@ -163,7 +173,8 @@ func createBatchElement(
 			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, transactionCurrency),
 			RawData:       rawData,
 			Scheme:        models.PaymentScheme(balanceTransaction.Source.Refund.Charge.PaymentMethodDetails.Card.Brand),
-			CreatedAt:     time.Unix(balanceTransaction.Source.Refund.Charge.Created, 0),
+			CreatedAt:     createdAt,
+			Metadata:      computeMetadata(paymentID, createdAt, balanceTransaction.Source.Refund.Metadata, balanceTransaction.Source.Refund.PaymentIntent.Metadata),
 		}
 
 		if account != "" {
@@ -195,14 +206,16 @@ func createBatchElement(
 			return ingestion.PaymentBatchElement{}, false
 		}
 
-		payment = &models.Payment{
-			ID: models.PaymentID{
-				PaymentReference: models.PaymentReference{
-					Reference: balanceTransaction.ID,
-					Type:      models.PaymentTypePayIn,
-				},
-				ConnectorID: connectorID,
+		paymentID := models.PaymentID{
+			PaymentReference: models.PaymentReference{
+				Reference: balanceTransaction.ID,
+				Type:      models.PaymentTypePayIn,
 			},
+			ConnectorID: connectorID,
+		}
+		createdAt := time.Unix(balanceTransaction.Created, 0)
+		payment = &models.Payment{
+			ID:            paymentID,
 			Reference:     balanceTransaction.ID,
 			ConnectorID:   connectorID,
 			Type:          models.PaymentTypePayIn,
@@ -212,7 +225,8 @@ func createBatchElement(
 			RawData:       rawData,
 			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, transactionCurrency),
 			Scheme:        models.PaymentSchemeOther,
-			CreatedAt:     time.Unix(balanceTransaction.Created, 0),
+			CreatedAt:     createdAt,
+			Metadata:      computeMetadata(paymentID, createdAt, balanceTransaction.Source.Charge.Metadata, balanceTransaction.Source.Charge.PaymentIntent.Metadata),
 		}
 
 		if account != "" {
@@ -229,6 +243,15 @@ func createBatchElement(
 		if !ok {
 			return ingestion.PaymentBatchElement{}, false
 		}
+
+		paymentID := models.PaymentID{
+			PaymentReference: models.PaymentReference{
+				Reference: balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
+				Type:      models.PaymentTypePayIn,
+			},
+			ConnectorID: connectorID,
+		}
+		createdAt := time.Unix(balanceTransaction.Source.Refund.Charge.Created, 0)
 		// Created when a credit card charge refund is initiated.
 		// If you authorize and capture separately and the capture amount is
 		// less than the initial authorization, you see a balance transaction
@@ -236,13 +259,7 @@ func createBatchElement(
 		// transaction of type refund for the uncaptured portion.
 		// cf https://stripe.com/docs/reports/balance-transaction-types
 		payment = &models.Payment{
-			ID: models.PaymentID{
-				PaymentReference: models.PaymentReference{
-					Reference: balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
-					Type:      models.PaymentTypePayIn,
-				},
-				ConnectorID: connectorID,
-			},
+			ID:            paymentID,
 			Reference:     balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
 			ConnectorID:   connectorID,
 			Type:          models.PaymentTypePayIn,
@@ -252,7 +269,8 @@ func createBatchElement(
 			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, transactionCurrency),
 			Scheme:        models.PaymentSchemeOther,
 			RawData:       rawData,
-			CreatedAt:     time.Unix(balanceTransaction.Source.Refund.Charge.Created, 0),
+			CreatedAt:     createdAt,
+			Metadata:      computeMetadata(paymentID, createdAt, balanceTransaction.Source.Refund.Charge.Metadata, balanceTransaction.Source.Refund.Charge.PaymentIntent.Metadata),
 		}
 
 		if account != "" {
@@ -284,6 +302,15 @@ func createBatchElement(
 		if !ok {
 			return ingestion.PaymentBatchElement{}, false
 		}
+
+		paymentID := models.PaymentID{
+			PaymentReference: models.PaymentReference{
+				Reference: balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
+				Type:      models.PaymentTypePayIn,
+			},
+			ConnectorID: connectorID,
+		}
+		createdAt := time.Unix(balanceTransaction.Source.Refund.Charge.Created, 0)
 		// Created when a credit card charge refund is initiated.
 		// If you authorize and capture separately and the capture amount is
 		// less than the initial authorization, you see a balance transaction
@@ -291,13 +318,7 @@ func createBatchElement(
 		// transaction of type refund for the uncaptured portion.
 		// cf https://stripe.com/docs/reports/balance-transaction-types
 		payment = &models.Payment{
-			ID: models.PaymentID{
-				PaymentReference: models.PaymentReference{
-					Reference: balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
-					Type:      models.PaymentTypePayIn,
-				},
-				ConnectorID: connectorID,
-			},
+			ID:            paymentID,
 			Reference:     balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
 			ConnectorID:   connectorID,
 			Type:          models.PaymentTypePayIn,
@@ -307,7 +328,8 @@ func createBatchElement(
 			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, transactionCurrency),
 			Scheme:        models.PaymentSchemeOther,
 			RawData:       rawData,
-			CreatedAt:     time.Unix(balanceTransaction.Source.Refund.Charge.Created, 0),
+			CreatedAt:     createdAt,
+			Metadata:      computeMetadata(paymentID, createdAt, balanceTransaction.Source.Refund.Charge.Metadata, balanceTransaction.Source.Refund.Charge.PaymentIntent.Metadata),
 		}
 
 		if account != "" {
@@ -339,14 +361,16 @@ func createBatchElement(
 			return ingestion.PaymentBatchElement{}, false
 		}
 
-		payment = &models.Payment{
-			ID: models.PaymentID{
-				PaymentReference: models.PaymentReference{
-					Reference: balanceTransaction.ID,
-					Type:      models.PaymentTypePayOut,
-				},
-				ConnectorID: connectorID,
+		paymentID := models.PaymentID{
+			PaymentReference: models.PaymentReference{
+				Reference: balanceTransaction.ID,
+				Type:      models.PaymentTypePayOut,
 			},
+			ConnectorID: connectorID,
+		}
+		createdAt := time.Unix(balanceTransaction.Created, 0)
+		payment = &models.Payment{
+			ID:            paymentID,
 			Reference:     balanceTransaction.ID,
 			ConnectorID:   connectorID,
 			Type:          models.PaymentTypePayOut,
@@ -365,7 +389,8 @@ func createBatchElement(
 
 				return models.PaymentSchemeUnknown
 			}(),
-			CreatedAt: time.Unix(balanceTransaction.Created, 0),
+			CreatedAt: createdAt,
+			Metadata:  computeMetadata(paymentID, createdAt, balanceTransaction.Source.Payout.Metadata),
 		}
 
 		if account != "" {
@@ -376,14 +401,16 @@ func createBatchElement(
 		}
 
 	case stripe.BalanceTransactionTypePayoutFailure:
-		payment = &models.Payment{
-			ID: models.PaymentID{
-				PaymentReference: models.PaymentReference{
-					Reference: balanceTransaction.Source.Payout.BalanceTransaction.ID,
-					Type:      models.PaymentTypePayOut,
-				},
-				ConnectorID: connectorID,
+		paymentID := models.PaymentID{
+			PaymentReference: models.PaymentReference{
+				Reference: balanceTransaction.Source.Payout.BalanceTransaction.ID,
+				Type:      models.PaymentTypePayOut,
 			},
+			ConnectorID: connectorID,
+		}
+		createdAt := time.Unix(balanceTransaction.Source.Payout.Created, 0)
+		payment = &models.Payment{
+			ID:            paymentID,
 			Reference:     balanceTransaction.Source.Payout.BalanceTransaction.ID,
 			ConnectorID:   connectorID,
 			Type:          models.PaymentTypePayOut,
@@ -402,7 +429,8 @@ func createBatchElement(
 
 				return models.PaymentSchemeUnknown
 			}(),
-			CreatedAt: time.Unix(balanceTransaction.Source.Payout.Created, 0),
+			CreatedAt: createdAt,
+			Metadata:  computeMetadata(paymentID, createdAt, balanceTransaction.Source.Payout.Metadata),
 		}
 
 		if account != "" {
@@ -427,14 +455,16 @@ func createBatchElement(
 		}
 
 	case stripe.BalanceTransactionTypePayoutCancel:
-		payment = &models.Payment{
-			ID: models.PaymentID{
-				PaymentReference: models.PaymentReference{
-					Reference: balanceTransaction.Source.Payout.BalanceTransaction.ID,
-					Type:      models.PaymentTypePayOut,
-				},
-				ConnectorID: connectorID,
+		paymentID := models.PaymentID{
+			PaymentReference: models.PaymentReference{
+				Reference: balanceTransaction.Source.Payout.BalanceTransaction.ID,
+				Type:      models.PaymentTypePayOut,
 			},
+			ConnectorID: connectorID,
+		}
+		createdAt := time.Unix(balanceTransaction.Source.Payout.Created, 0)
+		payment = &models.Payment{
+			ID:            paymentID,
 			Reference:     balanceTransaction.Source.Payout.BalanceTransaction.ID,
 			ConnectorID:   connectorID,
 			Type:          models.PaymentTypePayOut,
@@ -453,7 +483,8 @@ func createBatchElement(
 
 				return models.PaymentSchemeUnknown
 			}(),
-			CreatedAt: time.Unix(balanceTransaction.Source.Payout.Created, 0),
+			CreatedAt: createdAt,
+			Metadata:  computeMetadata(paymentID, createdAt, balanceTransaction.Source.Payout.Metadata),
 		}
 
 		if account != "" {
@@ -484,14 +515,16 @@ func createBatchElement(
 			return ingestion.PaymentBatchElement{}, false
 		}
 
-		payment = &models.Payment{
-			ID: models.PaymentID{
-				PaymentReference: models.PaymentReference{
-					Reference: balanceTransaction.ID,
-					Type:      models.PaymentTypeTransfer,
-				},
-				ConnectorID: connectorID,
+		paymentID := models.PaymentID{
+			PaymentReference: models.PaymentReference{
+				Reference: balanceTransaction.ID,
+				Type:      models.PaymentTypeTransfer,
 			},
+			ConnectorID: connectorID,
+		}
+		createdAt := time.Unix(balanceTransaction.Created, 0)
+		payment = &models.Payment{
+			ID:            paymentID,
 			Reference:     balanceTransaction.ID,
 			ConnectorID:   connectorID,
 			Type:          models.PaymentTypeTransfer,
@@ -501,7 +534,8 @@ func createBatchElement(
 			RawData:       rawData,
 			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, string(balanceTransaction.Source.Transfer.Currency)),
 			Scheme:        models.PaymentSchemeOther,
-			CreatedAt:     time.Unix(balanceTransaction.Created, 0),
+			CreatedAt:     createdAt,
+			Metadata:      computeMetadata(paymentID, createdAt, balanceTransaction.Source.Transfer.Metadata),
 		}
 
 		if balanceTransaction.Source.Transfer.Destination != nil {
@@ -519,17 +553,19 @@ func createBatchElement(
 		}
 
 	case stripe.BalanceTransactionTypeTransferRefund:
+		paymentID := models.PaymentID{
+			PaymentReference: models.PaymentReference{
+				Reference: balanceTransaction.Source.Transfer.BalanceTransaction.ID,
+				Type:      models.PaymentTypeTransfer,
+			},
+			ConnectorID: connectorID,
+		}
+		createdAt := time.Unix(balanceTransaction.Source.Transfer.Created, 0)
 		// Two things to insert here: the balance transaction at the origin
 		// of the refund and the balance transaction of the refund, which is an
 		// adjustment of the origin.
 		payment = &models.Payment{
-			ID: models.PaymentID{
-				PaymentReference: models.PaymentReference{
-					Reference: balanceTransaction.Source.Transfer.BalanceTransaction.ID,
-					Type:      models.PaymentTypeTransfer,
-				},
-				ConnectorID: connectorID,
-			},
+			ID:            paymentID,
 			Reference:     balanceTransaction.Source.Transfer.BalanceTransaction.ID,
 			ConnectorID:   connectorID,
 			Type:          models.PaymentTypeTransfer,
@@ -539,7 +575,8 @@ func createBatchElement(
 			RawData:       rawData,
 			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, string(balanceTransaction.Source.Transfer.Currency)),
 			Scheme:        models.PaymentSchemeOther,
-			CreatedAt:     time.Unix(balanceTransaction.Source.Transfer.Created, 0),
+			CreatedAt:     createdAt,
+			Metadata:      computeMetadata(paymentID, createdAt, balanceTransaction.Source.Transfer.Metadata),
 		}
 
 		if balanceTransaction.Source.Transfer.Destination != nil {
@@ -572,17 +609,20 @@ func createBatchElement(
 		}
 
 	case stripe.BalanceTransactionTypeTransferCancel:
+		paymentID := models.PaymentID{
+			PaymentReference: models.PaymentReference{
+				Reference: balanceTransaction.Source.Transfer.BalanceTransaction.ID,
+				Type:      models.PaymentTypeTransfer,
+			},
+			ConnectorID: connectorID,
+		}
+		createdAt := time.Unix(balanceTransaction.Source.Transfer.Created, 0)
+
 		// Two things to insert here: the balance transaction at the origin
 		// of the refund and the balance transaction of the refund, which is an
 		// adjustment of the origin.
 		payment = &models.Payment{
-			ID: models.PaymentID{
-				PaymentReference: models.PaymentReference{
-					Reference: balanceTransaction.Source.Transfer.BalanceTransaction.ID,
-					Type:      models.PaymentTypeTransfer,
-				},
-				ConnectorID: connectorID,
-			},
+			ID:            paymentID,
 			Reference:     balanceTransaction.Source.Transfer.BalanceTransaction.ID,
 			ConnectorID:   connectorID,
 			Type:          models.PaymentTypeTransfer,
@@ -592,7 +632,8 @@ func createBatchElement(
 			RawData:       rawData,
 			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, string(balanceTransaction.Source.Transfer.Currency)),
 			Scheme:        models.PaymentSchemeOther,
-			CreatedAt:     time.Unix(balanceTransaction.Source.Transfer.Created, 0),
+			CreatedAt:     createdAt,
+			Metadata:      computeMetadata(paymentID, createdAt, balanceTransaction.Source.Transfer.Metadata),
 		}
 
 		if balanceTransaction.Source.Transfer.Destination != nil {
@@ -625,17 +666,19 @@ func createBatchElement(
 		}
 
 	case stripe.BalanceTransactionTypeTransferFailure:
+		paymentID := models.PaymentID{
+			PaymentReference: models.PaymentReference{
+				Reference: balanceTransaction.Source.Transfer.BalanceTransaction.ID,
+				Type:      models.PaymentTypeTransfer,
+			},
+			ConnectorID: connectorID,
+		}
+		createdAt := time.Unix(balanceTransaction.Source.Transfer.Created, 0)
 		// Two things to insert here: the balance transaction at the origin
 		// of the refund and the balance transaction of the refund, which is an
 		// adjustment of the origin.
 		payment = &models.Payment{
-			ID: models.PaymentID{
-				PaymentReference: models.PaymentReference{
-					Reference: balanceTransaction.Source.Transfer.BalanceTransaction.ID,
-					Type:      models.PaymentTypeTransfer,
-				},
-				ConnectorID: connectorID,
-			},
+			ID:            paymentID,
 			Reference:     balanceTransaction.Source.Transfer.BalanceTransaction.ID,
 			ConnectorID:   connectorID,
 			Type:          models.PaymentTypeTransfer,
@@ -645,7 +688,8 @@ func createBatchElement(
 			RawData:       rawData,
 			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, string(balanceTransaction.Source.Transfer.Currency)),
 			Scheme:        models.PaymentSchemeOther,
-			CreatedAt:     time.Unix(balanceTransaction.Source.Transfer.Created, 0),
+			CreatedAt:     createdAt,
+			Metadata:      computeMetadata(paymentID, createdAt, balanceTransaction.Source.Transfer.Metadata),
 		}
 
 		if balanceTransaction.Source.Transfer.Destination != nil {
@@ -700,14 +744,17 @@ func createBatchElement(
 			paymentStatus = models.PaymentStatusPending
 		}
 
-		payment = &models.Payment{
-			ID: models.PaymentID{
-				PaymentReference: models.PaymentReference{
-					Reference: balanceTransaction.Source.Dispute.Charge.BalanceTransaction.ID,
-					Type:      models.PaymentTypePayIn,
-				},
-				ConnectorID: connectorID,
+		paymentID := models.PaymentID{
+			PaymentReference: models.PaymentReference{
+				Reference: balanceTransaction.Source.Dispute.Charge.BalanceTransaction.ID,
+				Type:      models.PaymentTypePayIn,
 			},
+			ConnectorID: connectorID,
+		}
+		createdAt := time.Unix(balanceTransaction.Source.Dispute.Charge.Created, 0)
+
+		payment = &models.Payment{
+			ID:            paymentID,
 			Reference:     balanceTransaction.Source.Dispute.Charge.BalanceTransaction.ID,
 			ConnectorID:   connectorID,
 			Type:          models.PaymentTypePayIn,
@@ -717,7 +764,8 @@ func createBatchElement(
 			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, transactionCurrency),
 			RawData:       rawData,
 			Scheme:        models.PaymentScheme(balanceTransaction.Source.Dispute.Charge.PaymentMethodDetails.Card.Brand),
-			CreatedAt:     time.Unix(balanceTransaction.Source.Dispute.Charge.Created, 0),
+			CreatedAt:     createdAt,
+			Metadata:      computeMetadata(paymentID, createdAt, balanceTransaction.Source.Dispute.Charge.Metadata, balanceTransaction.Source.Dispute.Charge.PaymentIntent.Metadata),
 		}
 
 		if account != "" {
@@ -779,4 +827,20 @@ func convertPayoutStatus(status stripe.PayoutStatus) models.PaymentStatus {
 	}
 
 	return models.PaymentStatusOther
+}
+
+func computeMetadata(paymentID models.PaymentID, createdAt time.Time, metadatas ...map[string]string) []*models.PaymentMetadata {
+	res := make([]*models.PaymentMetadata, 0)
+	for _, metadata := range metadatas {
+		for k, v := range metadata {
+			res = append(res, &models.PaymentMetadata{
+				PaymentID: paymentID,
+				CreatedAt: createdAt,
+				Key:       k,
+				Value:     v,
+			})
+		}
+	}
+
+	return res
 }
