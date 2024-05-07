@@ -27,6 +27,7 @@ message Order {
     Ping ping = 4;
     DisabledStack disabledStack = 6;
     EnabledStack enabledStack = 7;
+    Shutdown shutdown = 8;
   }
 }
 
@@ -47,6 +48,8 @@ message Message {
 }
 
 message Connected {}
+
+message Shutdown {}
 
 message Ping {}
 

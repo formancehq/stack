@@ -24,6 +24,8 @@ const (
 	capabilityModuleList = "MODULE_LIST"
 )
 
+var ErrServerStopped = errors.New("server is stopped")
+
 type membershipClient struct {
 	clientInfo ClientInfo
 	stopChan   chan chan error
@@ -121,7 +123,7 @@ func (c *membershipClient) Start(ctx context.Context) error {
 		for {
 			msg := &generated.Order{}
 			if err := c.connectClient.RecvMsg(msg); err != nil {
-				if err == io.EOF {
+				if errors.Is(err, io.EOF) {
 					if !closed {
 						errCh <- err
 					}
@@ -134,6 +136,11 @@ func (c *membershipClient) Start(ctx context.Context) error {
 			if msg.GetPing() != nil {
 				c.sendPong(ctx)
 				continue
+			}
+
+			if msg.GetShutdown() != nil {
+				errCh <- ErrServerStopped
+				return
 			}
 
 			select {
