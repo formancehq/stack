@@ -88,6 +88,7 @@ deploy:
     LET tag=$(tar cf - /src | sha1sum | awk '{print $1}')
     WAIT
         BUILD --pass-args +build-image --tag=$tag
+        BUILD --pass-args ./tools/utils+build-image --tag=$tag
     END
     FROM --pass-args core+vcluster-deployer-image
     COPY --pass-args (+helm-update/helm) helm
