@@ -211,3 +211,4 @@ helm-publish:
 
 release:
     BUILD --pass-args stack+goreleaser --path=components/operator
+    BUILD --pass-args stack+goreleaser --path=components/operator/tools/utils

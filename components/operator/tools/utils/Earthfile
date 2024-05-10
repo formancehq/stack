@@ -66,4 +66,4 @@ deploy-staging:
     BUILD --pass-args stack+deployer-module --MODULE="operator-utils"
 
 release:
-    BUILD --pass-args stack+goreleaser --path=tools/operator-utils
+    BUILD --pass-args stack+goreleaser --path=components/operator/tools/utils

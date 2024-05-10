@@ -92,9 +92,6 @@ goreleaser:
 
 all-ci-goreleaser:
     LOCALLY
-    FOR tool IN $(cd ./tools && ls -d */)
-        BUILD --pass-args ./tools/$tool+release --mode=ci
-    END
     FOR service IN $(cd ./components && ls -d */)
         BUILD --pass-args ./components/$service+release --mode=ci
     END
@@ -104,9 +101,6 @@ all-ci-goreleaser:
 
 build-all:
     LOCALLY
-    FOR component IN $(cd ./tools && ls -d */)
-        BUILD --pass-args ./tools/${component}+build-image
-    END
     FOR component IN $(cd ./components && ls -d */)
         BUILD --pass-args ./components/${component}+build-image
     END
@@ -118,9 +112,6 @@ deploy-all:
     LOCALLY
     WAIT
         BUILD --pass-args ./components/+deploy --components=operator
-    END
-    FOR component IN $(cd ./tools && ls -d */)
-        BUILD --pass-args ./tools/$component+deploy
     END
     FOR component IN $(cd ./components && ls -d */)
         IF [ "$component" != "operator" ]
@@ -144,14 +135,13 @@ staging-application-set:
     ARG TAG=latest
     LET PARAMETERS=""
 
-    WAIT 
-        FOR component IN $(cd ./tools && ls -d */ | sed 's/.$//')
-            SET PARAMETERS="$PARAMETERS --parameter versions.files.default.$component=$TAG"
-        END
-        
+    WAIT
         FOR component IN $(cd ./components && ls -d */ | sed 's/.$//')
             IF [ "$component" != "operator"  ]  && [ "$component" != "fctl" ]
                 SET PARAMETERS="$PARAMETERS --parameter versions.files.default.$component=$TAG"
+            END
+            IF [ "$component" = "operator" ]
+                SET PARAMETERS="$PARAMETERS --parameter versions.files.default.operator-utils=$TAG"
             END
         END
         
@@ -189,9 +179,6 @@ pre-commit: # Generate the final spec and run all the pre-commit hooks
     FOR component IN $(cd ./libs && ls -d */)
         BUILD --pass-args ./libs/${component}+pre-commit
     END
-    FOR component IN $(cd ./tools && ls -d */)
-        BUILD --pass-args ./tools/${component}+pre-commit
-    END
     FOR component IN $(cd ./components && ls -d */)
         BUILD --pass-args ./components/${component}+pre-commit
     END
@@ -203,9 +190,6 @@ pre-commit: # Generate the final spec and run all the pre-commit hooks
 
 tidy: # Run tidy on all the components
     LOCALLY
-    FOR component IN $(cd ./tools && ls -d */)
-            BUILD --pass-args ./tools/${component}+tidy
-        END
     FOR component IN $(cd ./components && ls -d */)
         BUILD --pass-args ./components/${component}+tidy
     END
