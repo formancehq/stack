@@ -1,6 +1,8 @@
 package regions
 
 import (
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/formancehq/fctl/membershipclient"
@@ -59,19 +61,53 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	return c, nil
 }
 
-func (c *ShowController) Render(cmd *cobra.Command, args []string) error {
+func (c *ShowController) Render(cmd *cobra.Command, args []string) (err error) {
 	fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Information")
 	tableData := pterm.TableData{}
 	tableData = append(tableData, []string{pterm.LightCyan("ID"), c.store.Region.Id})
 	tableData = append(tableData, []string{pterm.LightCyan("Name"), c.store.Region.Name})
 	tableData = append(tableData, []string{pterm.LightCyan("Base URL"), c.store.Region.BaseUrl})
-	tableData = append(tableData, []string{pterm.LightCyan("Active: "), fctl.BoolToString(c.store.Region.Active)})
-	tableData = append(tableData, []string{pterm.LightCyan("Public: "), fctl.BoolToString(c.store.Region.Public)})
+	tableData = append(tableData, []string{pterm.LightCyan("Active "), fctl.BoolToString(c.store.Region.Active)})
+	tableData = append(tableData, []string{pterm.LightCyan("Public "), fctl.BoolToString(c.store.Region.Public)})
 	if c.store.Region.Creator != nil {
 		tableData = append(tableData, []string{pterm.LightCyan("Creator"), c.store.Region.Creator.Email})
 	}
 	if c.store.Region.LastPing != nil {
 		tableData = append(tableData, []string{pterm.LightCyan("Base URL"), c.store.Region.LastPing.Format(time.RFC3339)})
+	}
+
+	err = pterm.DefaultTable.
+		WithWriter(cmd.OutOrStdout()).
+		WithData(tableData).
+		Render()
+	if err != nil {
+		return
+	}
+
+	tableData = pterm.TableData{}
+	capabilities, err := fctl.StructToMap(c.store.Region.Capabilities)
+	if err != nil {
+		return
+	}
+	if len(capabilities) > 0 {
+		fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Capabilities")
+	}
+	for key, value := range capabilities {
+		data := []string{
+			pterm.LightCyan(key),
+		}
+
+		var v []string
+		if value != nil {
+			c, ok := value.([]interface{})
+			if ok {
+				for _, val := range c {
+					v = append(v, fmt.Sprintf("%v", val))
+				}
+			}
+		}
+		data = append(data, strings.Join(v, ", "))
+		tableData = append(tableData, data)
 	}
 
 	return pterm.DefaultTable.

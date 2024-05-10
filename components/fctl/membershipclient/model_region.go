@@ -26,19 +26,21 @@ type Region struct {
 	Active bool `json:"active"`
 	LastPing *time.Time `json:"lastPing,omitempty"`
 	Name string `json:"name"`
+	Capabilities RegionCapability `json:"capabilities"`
 }
 
 // NewRegion instantiates a new Region object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewRegion(id string, baseUrl string, createdAt string, active bool, name string) *Region {
+func NewRegion(id string, baseUrl string, createdAt string, active bool, name string, capabilities RegionCapability) *Region {
 	this := Region{}
 	this.Id = id
 	this.BaseUrl = baseUrl
 	this.CreatedAt = createdAt
 	this.Active = active
 	this.Name = name
+	this.Capabilities = capabilities
 	return &this
 }
 
@@ -202,6 +204,30 @@ func (o *Region) SetName(v string) {
 	o.Name = v
 }
 
+// GetCapabilities returns the Capabilities field value
+func (o *Region) GetCapabilities() RegionCapability {
+	if o == nil {
+		var ret RegionCapability
+		return ret
+	}
+
+	return o.Capabilities
+}
+
+// GetCapabilitiesOk returns a tuple with the Capabilities field value
+// and a boolean to check if the value has been set.
+func (o *Region) GetCapabilitiesOk() (*RegionCapability, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Capabilities, true
+}
+
+// SetCapabilities sets field value
+func (o *Region) SetCapabilities(v RegionCapability) {
+	o.Capabilities = v
+}
+
 func (o Region) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -220,6 +246,7 @@ func (o Region) ToMap() (map[string]interface{}, error) {
 		toSerialize["lastPing"] = o.LastPing
 	}
 	toSerialize["name"] = o.Name
+	toSerialize["capabilities"] = o.Capabilities
 	return toSerialize, nil
 }
 

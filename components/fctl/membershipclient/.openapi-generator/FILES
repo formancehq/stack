@@ -9,6 +9,7 @@ configuration.go
 docs/Action.md
 docs/AnyRegion.md
 docs/AnyRegionAllOf.md
+docs/Capability.md
 docs/CreateInvitationResponse.md
 docs/CreateOrganizationResponse.md
 docs/CreatePrivateRegionRequest.md
@@ -24,6 +25,7 @@ docs/GetRegionVersionsResponse.md
 docs/Invitation.md
 docs/InvitationClaim.md
 docs/ListInvitationsResponse.md
+docs/ListModulesResponse.md
 docs/ListOrganizationExpandedResponse.md
 docs/ListOrganizationExpandedResponseDataInner.md
 docs/ListOrganizationResponse.md
@@ -34,6 +36,7 @@ docs/Log.md
 docs/LogCursor.md
 docs/LogCursorData.md
 docs/LogCursorDataAllOf.md
+docs/Module.md
 docs/Organization.md
 docs/OrganizationAllOf.md
 docs/OrganizationData.md
@@ -52,6 +55,8 @@ docs/ReadOrganizationUserResponse.md
 docs/ReadStackUserAccess.md
 docs/ReadUserResponse.md
 docs/Region.md
+docs/RegionCapability.md
+docs/RegionCapabilityKeys.md
 docs/Role.md
 docs/ServerInfo.md
 docs/Stack.md
@@ -78,6 +83,7 @@ go.sum
 model_action.go
 model_any_region.go
 model_any_region_all_of.go
+model_capability.go
 model_create_invitation_response.go
 model_create_organization_response.go
 model_create_private_region_request.go
@@ -92,6 +98,7 @@ model_get_region_versions_response.go
 model_invitation.go
 model_invitation_claim.go
 model_list_invitations_response.go
+model_list_modules_response.go
 model_list_organization_expanded_response.go
 model_list_organization_expanded_response_data_inner.go
 model_list_organization_response.go
@@ -102,6 +109,7 @@ model_log.go
 model_log_cursor.go
 model_log_cursor_data.go
 model_log_cursor_data_all_of.go
+model_module.go
 model_organization.go
 model_organization_all_of.go
 model_organization_data.go
@@ -120,6 +128,8 @@ model_read_organization_user_response.go
 model_read_stack_user_access.go
 model_read_user_response.go
 model_region.go
+model_region_capability.go
+model_region_capability_keys.go
 model_role.go
 model_server_info.go
 model_stack.go
