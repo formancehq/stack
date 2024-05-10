@@ -190,6 +190,9 @@ func createConnectorsDeployment(ctx core.Context, stack *v1beta1.Stack, payments
 	}
 
 	if broker != nil {
+		if !broker.Status.Ready {
+			return core.NewPendingError().WithMessage("broker not ready")
+		}
 		brokerEnvVar, err := brokers.GetBrokerEnvVars(ctx, broker.Status.URI, stack.Name, "payments")
 		if err != nil {
 			return err

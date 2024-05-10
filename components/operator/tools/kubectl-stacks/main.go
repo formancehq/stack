@@ -24,6 +24,8 @@ func NewRootCommand() *cobra.Command {
 		NewUnlockCommand(configFlags),
 		NewListCommand(configFlags),
 		NewSetDebugCommand(configFlags),
+		NewDisableCommand(configFlags),
+		NewEnableCommand(configFlags),
 	)
 
 	return cmd
