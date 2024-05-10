@@ -44,26 +44,11 @@ pre-commit:
     END
     BUILD --pass-args +lint
 
-openapi:
-    RUN echo "not implemented"
-
 tidy:
     FROM core+builder-image
     COPY --pass-args (+sources/src) /src
     WORKDIR /src/components/operator/tools/utils
     DO --pass-args stack+GO_TIDY
-
-deploy:
-    COPY (+sources/*) /src
-    LET tag=$(tar cf - /src | sha1sum | awk '{print $1}')
-    WAIT
-        BUILD --pass-args +build-image --tag=$tag
-    END
-    FROM --pass-args core+vcluster-deployer-image
-    RUN kubectl patch Versions.formance.com default -p "{\"spec\":{\"operator-utils\": \"${tag}\"}}" --type=merge
-
-deploy-staging:
-    BUILD --pass-args stack+deployer-module --MODULE="operator-utils"
 
 release:
     BUILD --pass-args stack+goreleaser --path=components/operator/tools/utils

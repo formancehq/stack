@@ -140,9 +140,6 @@ staging-application-set:
             IF [ "$component" != "operator"  ]  && [ "$component" != "fctl" ]
                 SET PARAMETERS="$PARAMETERS --parameter versions.files.default.$component=$TAG"
             END
-            IF [ "$component" = "operator" ]
-                SET PARAMETERS="$PARAMETERS --parameter versions.files.default.operator-utils=$TAG"
-            END
         END
         
         FOR component IN $(cd ./ee && ls -d */ | sed 's/.$//')
