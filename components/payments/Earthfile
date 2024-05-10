@@ -97,3 +97,6 @@ generate-generic-connector-client:
         -p packageName=genericclient
     RUN rm -rf ./generated/test
     SAVE ARTIFACT ./generated AS LOCAL ./cmd/connectors/internal/connectors/generic/client/generated
+
+release:
+    BUILD --pass-args stack+goreleaser --path=components/payments

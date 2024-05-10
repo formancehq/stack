@@ -65,10 +65,9 @@ openapi:
 
 goreleaser:
     FROM core+builder-image
-    ARG --required components
-    ARG --required type
+    ARG --required path
     COPY . /src
-    WORKDIR /src/$type/$components
+    WORKDIR /src/$path
     ARG mode=local
     LET buildArgs = --clean
     IF [ "$mode" = "local" ]
@@ -93,14 +92,14 @@ goreleaser:
 
 all-ci-goreleaser:
     LOCALLY
-    FOR component IN $(cd ./tools && ls -d */)
-        BUILD --pass-args +goreleaser --type=components --components=$component --mode=ci
+    FOR tool IN $(cd ./tools && ls -d */)
+        BUILD --pass-args ./tools/$tool+release --mode=ci
     END
-    FOR component IN $(cd ./components && ls -d */)
-        BUILD --pass-args +goreleaser --type=components --components=$component --mode=ci
+    FOR service IN $(cd ./components && ls -d */)
+        BUILD --pass-args ./components/$service+release --mode=ci
     END
-    FOR component IN $(cd ./ee && ls -d */)
-        BUILD --pass-args +goreleaser --type=ee --components=$component --mode=ci
+    FOR service IN $(cd ./ee && ls -d */)
+        BUILD --pass-args ./ee/$service+release --mode=ci
     END
 
 build-all:

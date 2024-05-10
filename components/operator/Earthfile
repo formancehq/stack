@@ -208,3 +208,6 @@ helm-publish:
         WORKDIR /src/$dir
         DO --pass-args stack+HELM_PUBLISH
     END
+
+release:
+    BUILD --pass-args stack+goreleaser --path=components/operator

@@ -80,3 +80,6 @@ tidy:
     COPY --pass-args (+sources/src) /src
     WORKDIR /src/ee/reconciliation
     DO --pass-args stack+GO_TIDY
+
+release:
+    BUILD --pass-args stack+goreleaser --path=ee/reconciliation

@@ -131,3 +131,6 @@ helm-validate:
     WORKDIR /src
     COPY helm .
     DO --pass-args core+HELM_VALIDATE
+
+release:
+    BUILD --pass-args stack+goreleaser --path=ee/agent
