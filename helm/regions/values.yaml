@@ -1,7 +1,9 @@
 operator:
   enabled: true
+
   fullnameOverride: "operator"
   nameOverride: "operator"
+
   image:
     repository: "ghcr.io/formancehq/operator"
     tag: "v2.0.0-rc.27"
@@ -12,8 +14,20 @@ operator:
     metricsAddr: ":8080"
     probeAddr: ":8081"
     enableLeaderElection: true
+
+  # Warning: This is a sensitive value
+  # Only Helm Release are impacted on first install.
+  # Use `components/operator/helm/crds` to install crds separately
+  # Deprecated: operator-crds, will be removed in a future release,
+  # please use operator-crds.create:true, to first update crds with `helm.sh/resource-policy: keep`
+  # Then you will be able to disable it and moved to the new chart `components/operator/helm/operator-crds`
+  # If using Helm Release, you will need to set `meta.helm.sh/release-name` and `meta.helm.sh/release-namespace` to the new relase name and namespace on all CRDs from Group: formance.com
+  operator-crds:
+    create: true
+
 agent:
   enabled: false
+
   image:
     tag: "v2.0.0-rc.27"
   server:
@@ -21,6 +35,7 @@ agent:
     tls:
       enabled: true
       insecureSkipVerify: true
+
   agent:
     id: "aws-eu-west-1-sandbox"
     baseUrl: https://sandbox.formance.cloud
@@ -29,6 +44,7 @@ agent:
       issuer: https://app.formance.cloud/api
       clientID: "REGION_ID"
       clientSecret: ""
+
 versions:
   create: true
   files:

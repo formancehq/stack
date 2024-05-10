@@ -131,6 +131,6 @@ jobs:
           earthly
           --allow-privileged
           --secret GITHUB_TOKEN=$GITHUB_TOKEN
-          ./helm+publish
+          +helm-publish
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
