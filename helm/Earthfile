@@ -28,7 +28,6 @@ helm-validate:
   END
   SAVE ARTIFACT /src/helm/* AS LOCAL .
 
-
 pre-commit:
   BUILD --pass-args ./regions+helm-validate
 
