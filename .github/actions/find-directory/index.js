@@ -22,6 +22,5 @@ function findDockerFile(dir) {
 
 const dataComponents = findDockerFile("./components");
 const dataEe = findDockerFile("./ee");
-const dataTools = findDockerFile("./tools");
-const data = dataComponents.concat(dataEe).concat(dataTools);
+const data = dataComponents.concat(dataEe);
 console.log(JSON.stringify(data, null, 0));
