@@ -12,8 +12,7 @@ function findDockerFile(dir) {
             results = results.concat(findDockerFile(file));
         } else {
             if (path.basename(file) === ".goreleaser.yml") {
-                const obj = { component: path.basename(path.dirname(file)), type: path.basename(path.dirname(path.dirname(file))) };
-                results.push(obj);
+                results.push(path.relative(".", path.dirname(file)));
             }
         }
     });
