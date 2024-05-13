@@ -138,12 +138,7 @@ func Delete(ctx core.Context, database *v1beta1.Database) error {
 
 func handleDatabaseJob(ctx core.Context, stack *v1beta1.Stack, database *v1beta1.Database, name string, args ...string) error {
 
-	operatorUtilsImageVersion, err := core.GetImageVersionForStack(ctx, stack, "operator-utils")
-	if err != nil {
-		return err
-	}
-
-	operatorUtilsImage, err := registries.GetImage(ctx, stack, "operator-utils", operatorUtilsImageVersion)
+	operatorUtilsImage, err := registries.GetImage(ctx, stack, "operator-utils", ctx.GetPlatform().UtilsVersion)
 	if err != nil {
 		return err
 	}

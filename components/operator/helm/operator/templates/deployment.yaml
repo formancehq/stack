@@ -54,6 +54,8 @@ spec:
             {{- if .Values.operator.disableWebhooks }}
             - --disable-webhooks
             {{- end }}
+            - --utils-version
+            - {{ .Values.image.tag | default .Chart.AppVersion }}
           ports:
           - containerPort: 9443
             name: webhook-server

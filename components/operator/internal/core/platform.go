@@ -8,4 +8,6 @@ type Platform struct {
 	Environment string
 	// The licence information
 	LicenceSecret string
+	// The operator utils image version
+	UtilsVersion  string
 }
