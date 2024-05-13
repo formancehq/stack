@@ -88,3 +88,6 @@ generate-membership-client:
         -p packageName=membershipclient
     RUN rm -rf ./membershipclient/test
     SAVE ARTIFACT ./membershipclient AS LOCAL membershipclient
+
+release:
+    BUILD --pass-args stack+goreleaser --path=components/fctl

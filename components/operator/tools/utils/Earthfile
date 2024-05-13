@@ -2,8 +2,8 @@ VERSION --pass-args --arg-scope-and-set 0.7
 
 ARG core=github.com/formancehq/earthly
 IMPORT $core AS core
-IMPORT ../.. AS stack
-IMPORT .. AS components
+IMPORT ../../../.. AS stack
+IMPORT ../../.. AS components
 
 FROM core+base-image
 
@@ -11,7 +11,7 @@ sources:
     FROM core+builder-image
     WORKDIR /src
     COPY (stack+sources/out --LOCATION=libs/go-libs) libs/go-libs
-    WORKDIR /src/components/operator-utils
+    WORKDIR /src/components/operator/tools/utils
     COPY --dir cmd .
     COPY go.* main.go .
     SAVE ARTIFACT /src
@@ -19,7 +19,7 @@ sources:
 compile:
     FROM core+builder-image
     COPY (+sources/*) /src
-    WORKDIR /src/components/operator-utils
+    WORKDIR /src/components/operator/tools/utils
 	DO --pass-args core+GO_COMPILE
 
 build-image:
@@ -34,7 +34,7 @@ lint:
     FROM core+builder-image
     COPY (+sources/*) /src
     COPY --pass-args +tidy/go.* .
-    WORKDIR /src/components/operator-utils
+    WORKDIR /src/components/operator/tools/utils
     DO --pass-args stack+GO_LINT
     SAVE ARTIFACT cmd AS LOCAL cmd
 
@@ -50,7 +50,7 @@ openapi:
 tidy:
     FROM core+builder-image
     COPY --pass-args (+sources/src) /src
-    WORKDIR /src/components/operator-utils
+    WORKDIR /src/components/operator/tools/utils
     DO --pass-args stack+GO_TIDY
 
 deploy:
@@ -64,3 +64,6 @@ deploy:
 
 deploy-staging:
     BUILD --pass-args stack+deployer-module --MODULE="operator-utils"
+
+release:
+    BUILD --pass-args stack+goreleaser --path=components/operator/tools/utils

@@ -81,3 +81,6 @@ tidy:
     COPY --pass-args (+sources/src) /src
     WORKDIR /src/ee/wallets
     DO --pass-args stack+GO_TIDY
+
+release:
+    BUILD --pass-args stack+goreleaser --path=ee/wallets

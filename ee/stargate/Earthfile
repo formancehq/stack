@@ -84,3 +84,6 @@ grpc-generate:
     COPY $protoName .
     DO core+GRPC_GEN --protoName=$protoName
     SAVE ARTIFACT generated AS LOCAL internal/generated
+
+release:
+    BUILD --pass-args stack+goreleaser --path=ee/stargate

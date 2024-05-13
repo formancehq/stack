@@ -88,6 +88,7 @@ deploy:
     LET tag=$(tar cf - /src | sha1sum | awk '{print $1}')
     WAIT
         BUILD --pass-args +build-image --tag=$tag
+        BUILD --pass-args ./tools/utils+build-image --tag=$tag
     END
     FROM --pass-args core+vcluster-deployer-image
     COPY --pass-args (+helm-update/helm) helm
@@ -208,3 +209,7 @@ helm-publish:
         WORKDIR /src/$dir
         DO --pass-args stack+HELM_PUBLISH
     END
+
+release:
+    BUILD --pass-args stack+goreleaser --path=components/operator
+    BUILD --pass-args stack+goreleaser --path=components/operator/tools/utils
