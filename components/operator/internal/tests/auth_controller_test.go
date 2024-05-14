@@ -10,6 +10,8 @@ import (
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	v1 "k8s.io/api/policy/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -19,6 +21,7 @@ var _ = Describe("AuthController", func() {
 			stack            *v1beta1.Stack
 			auth             *v1beta1.Auth
 			databaseSettings *v1beta1.Settings
+			pdbSettings      *v1beta1.Settings
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -26,6 +29,7 @@ var _ = Describe("AuthController", func() {
 				Spec:       v1beta1.StackSpec{},
 			}
 			databaseSettings = settings.New(uuid.NewString(), "postgres.*.uri", "postgresql://localhost", stack.Name)
+			pdbSettings = settings.New(uuid.NewString(), "deployments.*.pod-disruption-budget", "minAvailable=1", stack.Name)
 			auth = &v1beta1.Auth{
 				ObjectMeta: RandObjectMeta(),
 				Spec: v1beta1.AuthSpec{
@@ -38,10 +42,12 @@ var _ = Describe("AuthController", func() {
 		JustBeforeEach(func() {
 			Expect(Create(stack)).To(Succeed())
 			Expect(Create(databaseSettings)).To(Succeed())
+			Expect(Create(pdbSettings)).To(Succeed())
 			Expect(Create(auth)).To(Succeed())
 		})
 		AfterEach(func() {
 			Expect(Delete(databaseSettings)).To(Succeed())
+			Expect(Delete(pdbSettings)).To(Succeed())
 			Expect(Delete(stack)).To(Succeed())
 		})
 		It("Should create resources", func() {
@@ -54,6 +60,15 @@ var _ = Describe("AuthController", func() {
 				Expect(deployment.Spec.Template.Spec.Containers[0].Env).To(ContainElements(
 					core.Env("BASE_URL", "http://auth:8080"),
 				))
+			})
+			By("Should create a pdb", func() {
+				pdb := &v1.PodDisruptionBudget{}
+				Eventually(func() error {
+					return LoadResource(stack.Name, "auth", pdb)
+				}).Should(Succeed())
+				Expect(pdb).To(BeControlledBy(auth))
+				Expect(pdb.Spec.MinAvailable).NotTo(BeNil())
+				Expect(*pdb.Spec.MinAvailable).To(Equal(intstr.FromInt32(1)))
 			})
 			By("Should create a new GatewayHTTPAPI object", func() {
 				httpService := &v1beta1.GatewayHTTPAPI{}

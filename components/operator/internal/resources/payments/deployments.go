@@ -3,15 +3,18 @@ package payments
 import (
 	"github.com/formancehq/operator/internal/resources/brokers"
 	"github.com/formancehq/operator/internal/resources/brokertopics"
+	"github.com/formancehq/operator/internal/resources/caddy"
 	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/settings"
+	appsv1 "k8s.io/api/apps/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
+	"github.com/formancehq/operator/internal/resources/applications"
 	"github.com/formancehq/operator/internal/resources/auths"
 	"github.com/formancehq/operator/internal/resources/databases"
-	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
 	"github.com/formancehq/operator/internal/resources/services"
 	v1 "k8s.io/api/core/v1"
@@ -103,20 +106,30 @@ func createFullDeployment(ctx core.Context, stack *v1beta1.Stack,
 		return err
 	}
 
-	_, err = deployments.CreateOrUpdate(ctx, payments, "payments",
-		deployments.WithMatchingLabels("payments"),
-		deployments.WithServiceAccountName(serviceAccountName),
-		deployments.WithContainers(v1.Container{
-			Name:          "api",
-			Args:          []string{"serve"},
-			Env:           env,
-			Image:         image,
-			LivenessProbe: deployments.DefaultLiveness("http", deployments.WithProbePath("/_health")),
-			Ports:         []v1.ContainerPort{deployments.StandardHTTPPort()},
-		}),
-		// Ensure empty
-		deployments.WithInitContainers(),
-	)
+	err = applications.
+		New(payments, &appsv1.Deployment{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: "payments",
+			},
+			Spec: appsv1.DeploymentSpec{
+				Template: v1.PodTemplateSpec{
+					Spec: v1.PodSpec{
+						ServiceAccountName: serviceAccountName,
+						Containers: []v1.Container{{
+							Name:          "api",
+							Args:          []string{"serve"},
+							Env:           env,
+							Image:         image,
+							LivenessProbe: applications.DefaultLiveness("http", applications.WithProbePath("/_health")),
+							Ports:         []v1.ContainerPort{applications.StandardHTTPPort()},
+						}},
+						// Ensure empty
+						InitContainers: []v1.Container{},
+					},
+				},
+			},
+		}).
+		Install(ctx)
 	if err != nil {
 		return err
 	}
@@ -142,21 +155,30 @@ func createReadDeployment(ctx core.Context, stack *v1beta1.Stack, payments *v1be
 		return err
 	}
 
-	_, err = deployments.CreateOrUpdate(ctx, payments, "payments-read",
-		deployments.WithMatchingLabels("payments-read"),
-		deployments.WithReplicasFromSettings(ctx, stack),
-		deployments.WithServiceAccountName(serviceAccountName),
-		deployments.WithContainers(v1.Container{
-			Name:          "api",
-			Args:          []string{"api", "serve"},
-			Env:           env,
-			Image:         image,
-			LivenessProbe: deployments.DefaultLiveness("http", deployments.WithProbePath("/_health")),
-			Ports:         []v1.ContainerPort{deployments.StandardHTTPPort()},
-		}),
-		// Ensure empty
-		deployments.WithInitContainers(),
-	)
+	err = applications.
+		New(payments, &appsv1.Deployment{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: "payments-read",
+			},
+			Spec: appsv1.DeploymentSpec{
+				Template: v1.PodTemplateSpec{
+					Spec: v1.PodSpec{
+						ServiceAccountName: serviceAccountName,
+						Containers: []v1.Container{{
+							Name:          "api",
+							Args:          []string{"api", "serve"},
+							Env:           env,
+							Image:         image,
+							LivenessProbe: applications.DefaultLiveness("http", applications.WithProbePath("/_health")),
+							Ports:         []v1.ContainerPort{applications.StandardHTTPPort()},
+						}},
+						// Ensure empty
+						InitContainers: []v1.Container{},
+					},
+				},
+			},
+		}).
+		Install(ctx)
 	if err != nil {
 		return err
 	}
@@ -207,21 +229,31 @@ func createConnectorsDeployment(ctx core.Context, stack *v1beta1.Stack, payments
 		return err
 	}
 
-	_, err = deployments.CreateOrUpdate(ctx, payments, "payments-connectors",
-		deployments.WithMatchingLabels("payments-connectors"),
-		deployments.WithServiceAccountName(serviceAccountName),
-		deployments.WithContainers(v1.Container{
-			Name:  "connectors",
-			Args:  []string{"connectors", "serve"},
-			Env:   env,
-			Image: image,
-			Ports: []v1.ContainerPort{deployments.StandardHTTPPort()},
-			LivenessProbe: deployments.DefaultLiveness("http",
-				deployments.WithProbePath("/_health")),
-		}),
-		// Ensure empty
-		deployments.WithInitContainers(),
-	)
+	err = applications.
+		New(payments, &appsv1.Deployment{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: "payments-connectors",
+			},
+			Spec: appsv1.DeploymentSpec{
+				Template: v1.PodTemplateSpec{
+					Spec: v1.PodSpec{
+						ServiceAccountName: serviceAccountName,
+						Containers: []v1.Container{{
+							Name:  "connectors",
+							Args:  []string{"connectors", "serve"},
+							Env:   env,
+							Image: image,
+							Ports: []v1.ContainerPort{applications.StandardHTTPPort()},
+							LivenessProbe: applications.DefaultLiveness("http",
+								applications.WithProbePath("/_health")),
+						}},
+						// Ensure empty
+						InitContainers: []v1.Container{},
+					},
+				},
+			},
+		}).
+		Install(ctx)
 	if err != nil {
 		return err
 	}
@@ -236,7 +268,7 @@ func createConnectorsDeployment(ctx core.Context, stack *v1beta1.Stack, payments
 
 func createGateway(ctx core.Context, stack *v1beta1.Stack, p *v1beta1.Payments) error {
 
-	caddyfileConfigMap, err := settings.CreateCaddyfileConfigMap(ctx, stack, "payments", Caddyfile, map[string]any{
+	caddyfileConfigMap, err := caddy.CreateCaddyfileConfigMap(ctx, stack, "payments", Caddyfile, map[string]any{
 		"Debug": stack.Spec.Debug || p.Spec.Debug,
 	}, core.WithController[*v1.ConfigMap](ctx.GetScheme(), p))
 	if err != nil {
@@ -252,12 +284,16 @@ func createGateway(ctx core.Context, stack *v1beta1.Stack, p *v1beta1.Payments) 
 		return err
 	}
 
-	_, err = deployments.CreateOrUpdate(ctx, p, "payments",
-		deployments.WithReplicasFromSettings(ctx, stack),
-		settings.ConfigureCaddy(ctx, stack, p, caddyfileConfigMap, caddyImage, env),
-		deployments.WithMatchingLabels("payments"),
-		// notes(gfyrag): reset init containers in case of upgrading from v1 to v2
-		deployments.WithInitContainers(),
-	)
-	return err
+	deploymentTemplate, err := caddy.DeploymentTemplate(ctx, stack, p, caddyfileConfigMap, caddyImage, env)
+	if err != nil {
+		return err
+	}
+	// notes(gfyrag): reset init containers in case of upgrading from v1 to v2
+	deploymentTemplate.Spec.Template.Spec.InitContainers = make([]v1.Container, 0)
+
+	deploymentTemplate.Name = "payments"
+
+	return applications.
+		New(p, deploymentTemplate).
+		Install(ctx)
 }

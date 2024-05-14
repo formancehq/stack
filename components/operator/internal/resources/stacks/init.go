@@ -3,6 +3,7 @@ package stacks
 import (
 	"context"
 	"fmt"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"reflect"
 	"sort"
 	"strings"
@@ -29,6 +30,7 @@ import (
 
 // +kubebuilder:rbac:groups=networking.k8s.io,resources=ingresses,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete;deletecollection
+// +kubebuilder:rbac:groups=policy,resources=poddisruptionbudgets,verbs=get;list;watch;create;update;patch;delete;deletecollection
 // +kubebuilder:rbac:groups=core,resources=configmaps,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=core,resources=pods,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=core,resources=services,verbs=get;list;watch;create;update;patch;delete
@@ -189,8 +191,24 @@ func Clean(ctx Context, t *v1beta1.Stack) error {
 	return nil
 }
 
+type pendingDeletion struct {
+	GroupVersionKind schema.GroupVersionKind
+	Name             string
+	JustDeleted      bool
+}
+
+func (p pendingDeletion) String() string {
+	return fmt.Sprintf("%s %s [deleted=%v]", p.GroupVersionKind, p.Name, p.JustDeleted)
+}
+
+type pendingDeletions []pendingDeletion
+
+func (p pendingDeletions) String() string {
+	return strings.Join(collectionutils.Map(p, pendingDeletion.String), ", ")
+}
+
 func deleteModules(ctx Context, stack *v1beta1.Stack, logger logr.Logger) error {
-	stillExistingModules := false
+	pendingModuleDeletions := pendingDeletions{}
 	for _, rtype := range ctx.GetScheme().AllKnownTypes() {
 		v := reflect.New(rtype).Interface()
 		module, ok := v.(v1beta1.Module)
@@ -213,28 +231,31 @@ func deleteModules(ctx Context, stack *v1beta1.Stack, logger logr.Logger) error 
 			return u.Object["spec"].(map[string]any)["stack"].(string) == stack.Name
 		})
 
-		stillExistingModules = stillExistingModules || len(items) > 0
-
 		for _, item := range items {
+			pendingModuleDeletion := pendingDeletion{
+				GroupVersionKind: gvk,
+				Name:             item.GetName(),
+			}
 			if item.GetDeletionTimestamp().IsZero() {
 				logger.Info(fmt.Sprintf("Delete module %s [%s]", item.GetName(), gvk))
 				if err := ctx.GetClient().Delete(ctx, &item); client.IgnoreNotFound(err) != nil {
 					return err
 				}
+				pendingModuleDeletion.JustDeleted = true
 			}
+			pendingModuleDeletions = append(pendingModuleDeletions, pendingModuleDeletion)
 		}
 	}
 
-	if stillExistingModules {
-		logger.Info("Still pending modules")
-		return NewPendingError()
+	if len(pendingModuleDeletions) > 0 {
+		return NewPendingError().WithMessage("Waiting for module deletion: %s", pendingModuleDeletions)
 	}
 
 	return nil
 }
 
 func deleteResources(ctx Context, stack *v1beta1.Stack, logger logr.Logger) error {
-	stillExistingResources := false
+	pendingResourceDeletions := pendingDeletions{}
 	for _, rtype := range ctx.GetScheme().AllKnownTypes() {
 		v := reflect.New(rtype).Interface()
 		resource, ok := v.(v1beta1.Resource)
@@ -256,21 +277,24 @@ func deleteResources(ctx Context, stack *v1beta1.Stack, logger logr.Logger) erro
 			return u.Object["spec"].(map[string]any)["stack"].(string) == stack.Name
 		})
 
-		stillExistingResources = stillExistingResources || len(items) > 0
-
 		for _, item := range items {
+			pendingResourceDeletion := pendingDeletion{
+				GroupVersionKind: gvk,
+				Name:             item.GetName(),
+			}
 			if item.GetDeletionTimestamp().IsZero() {
+				pendingResourceDeletion.JustDeleted = true
 				logger.Info(fmt.Sprintf("Delete resource %s [%s]", item.GetName(), gvk))
 				if err := ctx.GetClient().Delete(ctx, &item); client.IgnoreNotFound(err) != nil {
 					return err
 				}
 			}
+			pendingResourceDeletions = append(pendingResourceDeletions, pendingResourceDeletion)
 		}
 	}
 
-	if stillExistingResources {
-		logger.Info("Still pending resources")
-		return NewPendingError()
+	if len(pendingResourceDeletions) > 0 {
+		return NewPendingError().WithMessage("Waiting for resources deletion: %s", pendingResourceDeletions)
 	}
 
 	return nil

@@ -8,7 +8,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 )
 
-func GetLicenceEnvVars(ctx core.Context, stack *v1beta1.Stack, ownerName string, owner v1beta1.Dependent) (*v1beta1.ResourceReference, []v1.EnvVar, error) {
+func GetLicenceEnvVars(ctx core.Context, ownerName string, owner v1beta1.Dependent) (*v1beta1.ResourceReference, []v1.EnvVar, error) {
 	ret := make([]v1.EnvVar, 0)
 
 	platform := ctx.GetPlatform()
