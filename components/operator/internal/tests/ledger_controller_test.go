@@ -165,7 +165,7 @@ var _ = Describe("LedgerController", func() {
 						return LoadResource(stack.Name, "ledger", &appsv1.Deployment{})
 					}).Should(BeNotFound())
 				})
-				By("Should create two deployments, two services and a gateway", func() {
+				By("Should create two applications, two services and a gateway", func() {
 					reader := &appsv1.Deployment{}
 					Eventually(func() error {
 						return LoadResource(stack.Name, "ledger-read", reader)

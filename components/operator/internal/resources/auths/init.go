@@ -83,8 +83,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, version st
 			}
 		}
 
-		_, err = createDeployment(ctx, stack, auth, database, configMap, image)
-		if err != nil {
+		if err := createDeployment(ctx, stack, auth, database, configMap, image); err != nil {
 			return errors.Wrap(err, "creating deployment")
 		}
 	}

@@ -246,6 +246,26 @@ func reconcileObject[T client.Object](mgr Manager, controller ObjectController[T
 			return ctrl.Result{}, err
 		}
 
+		objectFinalizers := object.GetFinalizers()
+	l:
+		for _, existingFinalizer := range objectFinalizers {
+			for expectedFinalizer := range reconcilerOptions.Finalizers {
+				if expectedFinalizer == expectedFinalizer {
+					continue l
+				}
+			}
+			controllerutil.RemoveFinalizer(object, existingFinalizer)
+		}
+		if len(objectFinalizers) != len(object.GetFinalizers()) {
+			if err := mgr.GetClient().Update(ctx, object); err != nil {
+				if apierrors.IsConflict(err) {
+					log.FromContext(ctx).Info(fmt.Sprintf("Catching conflict error: %s", err))
+					return reconcile.Result{RequeueAfter: time.Second}, nil
+				}
+				return reconcile.Result{}, errors.Wrapf(err, "patching resource to update finalizers")
+			}
+		}
+
 		reconcileContext := NewContext(mgr, ctx)
 		if !object.GetDeletionTimestamp().IsZero() {
 			log.FromContext(ctx).Info("Resource " + request.Name + " deleted, calling finalizers...")
@@ -258,6 +278,16 @@ func reconcileObject[T client.Object](mgr Manager, controller ObjectController[T
 				if err := f.fn(reconcileContext, object); err != nil {
 					if IsApplicationError(err) {
 						log.FromContext(ctx).Info(fmt.Sprintf("Finalizer respond with error: %s", err))
+						if setError, ok := any(object).(interface {
+							SetError(string)
+						}); ok {
+							setError.SetError(err.Error())
+							if err := mgr.GetClient().Status().Update(ctx, object); err != nil {
+								log.FromContext(ctx).Info(fmt.Sprintf("Catching error: %s", err))
+								return reconcile.Result{}, errors.Wrapf(err, "patching resource to remove finalizer '%s'", f.name)
+							}
+						}
+
 						return reconcile.Result{
 							RequeueAfter: time.Second,
 						}, nil
@@ -347,16 +377,18 @@ func withStackDependencyReconciler[T v1beta1.Dependent](fn ObjectController[T], 
 }
 
 func WithStackDependencyReconciler[T v1beta1.Dependent](fn func(ctx Context, stack *v1beta1.Stack, req T) error, opts ...ReconcilerOption[T]) Initializer {
-	return withStackDependencyReconciler(ForStackDependency(func(ctx Context, stack *v1beta1.Stack, reconcilerOptions *ReconcilerOptions[T], req T) error {
-		return fn(ctx, stack, req)
-	}), opts...)
+	return withStackDependencyReconciler(
+		ForStackDependency(func(ctx Context, stack *v1beta1.Stack, reconcilerOptions *ReconcilerOptions[T], req T) error {
+			return fn(ctx, stack, req)
+		}, false),
+		opts...)
 }
 
 func WithResourceReconciler[T v1beta1.Dependent](fn func(ctx Context, stack *v1beta1.Stack, req T) error, opts ...ReconcilerOption[T]) Initializer {
 	return withStackDependencyReconciler(
 		ForStackDependency(func(ctx Context, stack *v1beta1.Stack, reconcilerOptions *ReconcilerOptions[T], req T) error {
 			return fn(ctx, stack, req)
-		}),
+		}, true),
 		opts...)
 }
 
@@ -367,6 +399,7 @@ func WithModuleReconciler[T v1beta1.Module](fn func(ctx Context, stack *v1beta1.
 			ForModule(func(ctx Context, stack *v1beta1.Stack, reconcilerOptions *ReconcilerOptions[T], req T, version string) error {
 				return fn(ctx, stack, req, version)
 			}),
+			false,
 		),
 		opts...)
 }

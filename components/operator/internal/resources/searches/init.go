@@ -18,16 +18,16 @@ package searches
 
 import (
 	"fmt"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"strconv"
 
-	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
+	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
+	"github.com/formancehq/operator/internal/resources/applications"
 	"github.com/formancehq/operator/internal/resources/auths"
 	"github.com/formancehq/operator/internal/resources/brokerconsumers"
-	deployments "github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gatewayhttpapis"
 	"github.com/formancehq/operator/internal/resources/gateways"
-	"github.com/formancehq/operator/internal/resources/licence"
 	. "github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/resourcereferences"
 	"github.com/formancehq/operator/internal/resources/settings"
@@ -54,9 +54,9 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 
 	awsIAMEnabled := serviceAccountName != ""
 
-	var resourceReference *v1beta1.ResourceReference
+	var elasticSearchSecretResourceRef *v1beta1.ResourceReference
 	if secret := elasticSearchURI.Query().Get("secret"); !awsIAMEnabled && secret != "" {
-		resourceReference, err = resourcereferences.Create(ctx, search, "elasticsearch", secret, &corev1.Secret{})
+		elasticSearchSecretResourceRef, err = resourcereferences.Create(ctx, search, "elasticsearch", secret, &corev1.Secret{})
 	} else {
 		err = resourcereferences.Delete(ctx, search, "elasticsearch")
 	}
@@ -81,12 +81,6 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 		return err
 	}
 	env = append(env, gatewayEnvVars...)
-
-	resourceReference, licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack, "search", search)
-	if err != nil {
-		return err
-	}
-	env = append(env, licenceEnvVars...)
 
 	env = append(env,
 		Env("OPEN_SEARCH_SERVICE", elasticSearchURI.Host),
@@ -167,20 +161,39 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, search *v1beta1.Search, versio
 		return err
 	}
 
-	_, err = deployments.CreateOrUpdate(ctx, search, "search",
-		deployments.WithServiceAccountName(serviceAccountName),
-		deployments.WithReplicasFromSettings(ctx, stack),
-		resourcereferences.Annotate("elasticsearch-secret-hash", resourceReference),
-		resourcereferences.Annotate("licence-secret-hash", resourceReference),
-		deployments.WithMatchingLabels("search"),
-		deployments.WithContainers(corev1.Container{
-			Name:          "search",
-			Image:         image,
-			Ports:         []corev1.ContainerPort{deployments.StandardHTTPPort()},
-			Env:           env,
-			LivenessProbe: deployments.DefaultLiveness("http"),
-		}),
-	)
+	annotations := map[string]string{}
+	if elasticSearchSecretResourceRef != nil {
+		annotations["elasticsearch-secret-hash"] = elasticSearchSecretResourceRef.Status.Hash
+	}
+
+	err = applications.
+		New(search, &appsv1.Deployment{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: "search",
+			},
+			Spec: appsv1.DeploymentSpec{
+				Template: corev1.PodTemplateSpec{
+					ObjectMeta: metav1.ObjectMeta{
+						Annotations: annotations,
+					},
+					Spec: corev1.PodSpec{
+						ServiceAccountName: serviceAccountName,
+						Containers: []corev1.Container{{
+							Name:          "search",
+							Image:         image,
+							Ports:         []corev1.ContainerPort{applications.StandardHTTPPort()},
+							Env:           env,
+							LivenessProbe: applications.DefaultLiveness("http"),
+						}},
+					},
+				},
+			},
+		}).
+		IsEE().
+		Install(ctx)
+	if err != nil {
+		return err
+	}
 
 	if err := gatewayhttpapis.Create(ctx, search, gatewayhttpapis.WithHealthCheckEndpoint("_healthcheck")); err != nil {
 		return err

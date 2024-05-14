@@ -45,7 +45,7 @@ func ForObjectController[T v1beta1.Object](controller ObjectController[T]) Objec
 
 type StackDependentObjectController[T v1beta1.Dependent] func(ctx Context, stack *v1beta1.Stack, reconcilerOptions *ReconcilerOptions[T], req T) error
 
-func ForStackDependency[T v1beta1.Dependent](ctrl StackDependentObjectController[T]) ObjectController[T] {
+func ForStackDependency[T v1beta1.Dependent](ctrl StackDependentObjectController[T], allowDeleted bool) ObjectController[T] {
 	return func(ctx Context, reconcilerOptions *ReconcilerOptions[T], t T) error {
 		stack := &v1beta1.Stack{}
 		if err := ctx.GetClient().Get(ctx, types.NamespacedName{
@@ -62,8 +62,10 @@ func ForStackDependency[T v1beta1.Dependent](ctrl StackDependentObjectController
 			}
 		}
 
-		if !stack.GetDeletionTimestamp().IsZero() {
-			return NewStackNotFoundError()
+		if !allowDeleted {
+			if !stack.GetDeletionTimestamp().IsZero() {
+				return NewStackNotFoundError()
+			}
 		}
 
 		return ctrl(ctx, stack, reconcilerOptions, t)
