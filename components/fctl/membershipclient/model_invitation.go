@@ -27,7 +27,7 @@ type Invitation struct {
 	CreationDate time.Time `json:"creationDate"`
 	UpdatedAt *string `json:"updatedAt,omitempty"`
 	Role Role `json:"role"`
-	StackClaims []StackClaim `json:"stackClaims,omitempty"`
+	StackClaims []InvitationStackClaim `json:"stackClaims,omitempty"`
 	UserId *string `json:"userId,omitempty"`
 	OrganizationAccess *OrganizationUser `json:"organizationAccess,omitempty"`
 }
@@ -234,9 +234,9 @@ func (o *Invitation) SetRole(v Role) {
 }
 
 // GetStackClaims returns the StackClaims field value if set, zero value otherwise.
-func (o *Invitation) GetStackClaims() []StackClaim {
+func (o *Invitation) GetStackClaims() []InvitationStackClaim {
 	if o == nil || IsNil(o.StackClaims) {
-		var ret []StackClaim
+		var ret []InvitationStackClaim
 		return ret
 	}
 	return o.StackClaims
@@ -244,7 +244,7 @@ func (o *Invitation) GetStackClaims() []StackClaim {
 
 // GetStackClaimsOk returns a tuple with the StackClaims field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Invitation) GetStackClaimsOk() ([]StackClaim, bool) {
+func (o *Invitation) GetStackClaimsOk() ([]InvitationStackClaim, bool) {
 	if o == nil || IsNil(o.StackClaims) {
 		return nil, false
 	}
@@ -260,8 +260,8 @@ func (o *Invitation) HasStackClaims() bool {
 	return false
 }
 
-// SetStackClaims gets a reference to the given []StackClaim and assigns it to the StackClaims field.
-func (o *Invitation) SetStackClaims(v []StackClaim) {
+// SetStackClaims gets a reference to the given []InvitationStackClaim and assigns it to the StackClaims field.
+func (o *Invitation) SetStackClaims(v []InvitationStackClaim) {
 	o.StackClaims = v
 }
 

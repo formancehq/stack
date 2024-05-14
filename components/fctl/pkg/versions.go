@@ -5,8 +5,13 @@ import (
 
 	"github.com/formancehq/fctl/membershipclient"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"golang.org/x/mod/semver"
+)
+
+var (
+	ErrUnsuportedMembershipServerVersion = fmt.Errorf("unsupported membership server version")
 )
 
 func CheckMembershipVersion(version string) func(cmd *cobra.Command, args []string) error {
@@ -24,7 +29,7 @@ func CheckMembershipVersion(version string) func(cmd *cobra.Command, args []stri
 			return nil
 		}
 
-		return fmt.Errorf("unsupported membership server version: %s", version)
+		return errors.Wrap(ErrUnsuportedMembershipServerVersion, serverInfo.Version)
 	}
 
 }

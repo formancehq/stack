@@ -14,40 +14,38 @@ import (
 	"encoding/json"
 )
 
-// checks if the StackClaim type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &StackClaim{}
+// checks if the InvitationStackClaim type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &InvitationStackClaim{}
 
-// StackClaim struct for StackClaim
-type StackClaim struct {
+// InvitationStackClaim struct for InvitationStackClaim
+type InvitationStackClaim struct {
 	Id string `json:"id"`
-	Name string `json:"name"`
 	Role Role `json:"role"`
 }
 
-// NewStackClaim instantiates a new StackClaim object
+// NewInvitationStackClaim instantiates a new InvitationStackClaim object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewStackClaim(id string, name string, role Role) *StackClaim {
-	this := StackClaim{}
+func NewInvitationStackClaim(id string, role Role) *InvitationStackClaim {
+	this := InvitationStackClaim{}
 	this.Id = id
-	this.Name = name
 	this.Role = role
 	return &this
 }
 
-// NewStackClaimWithDefaults instantiates a new StackClaim object
+// NewInvitationStackClaimWithDefaults instantiates a new InvitationStackClaim object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewStackClaimWithDefaults() *StackClaim {
-	this := StackClaim{}
+func NewInvitationStackClaimWithDefaults() *InvitationStackClaim {
+	this := InvitationStackClaim{}
 	var role Role = EMPTY
 	this.Role = role
 	return &this
 }
 
 // GetId returns the Id field value
-func (o *StackClaim) GetId() string {
+func (o *InvitationStackClaim) GetId() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -58,7 +56,7 @@ func (o *StackClaim) GetId() string {
 
 // GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
-func (o *StackClaim) GetIdOk() (*string, bool) {
+func (o *InvitationStackClaim) GetIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -66,36 +64,12 @@ func (o *StackClaim) GetIdOk() (*string, bool) {
 }
 
 // SetId sets field value
-func (o *StackClaim) SetId(v string) {
+func (o *InvitationStackClaim) SetId(v string) {
 	o.Id = v
 }
 
-// GetName returns the Name field value
-func (o *StackClaim) GetName() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Name
-}
-
-// GetNameOk returns a tuple with the Name field value
-// and a boolean to check if the value has been set.
-func (o *StackClaim) GetNameOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Name, true
-}
-
-// SetName sets field value
-func (o *StackClaim) SetName(v string) {
-	o.Name = v
-}
-
 // GetRole returns the Role field value
-func (o *StackClaim) GetRole() Role {
+func (o *InvitationStackClaim) GetRole() Role {
 	if o == nil {
 		var ret Role
 		return ret
@@ -106,7 +80,7 @@ func (o *StackClaim) GetRole() Role {
 
 // GetRoleOk returns a tuple with the Role field value
 // and a boolean to check if the value has been set.
-func (o *StackClaim) GetRoleOk() (*Role, bool) {
+func (o *InvitationStackClaim) GetRoleOk() (*Role, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -114,11 +88,11 @@ func (o *StackClaim) GetRoleOk() (*Role, bool) {
 }
 
 // SetRole sets field value
-func (o *StackClaim) SetRole(v Role) {
+func (o *InvitationStackClaim) SetRole(v Role) {
 	o.Role = v
 }
 
-func (o StackClaim) MarshalJSON() ([]byte, error) {
+func (o InvitationStackClaim) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -126,46 +100,45 @@ func (o StackClaim) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o StackClaim) ToMap() (map[string]interface{}, error) {
+func (o InvitationStackClaim) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["id"] = o.Id
-	toSerialize["name"] = o.Name
 	toSerialize["role"] = o.Role
 	return toSerialize, nil
 }
 
-type NullableStackClaim struct {
-	value *StackClaim
+type NullableInvitationStackClaim struct {
+	value *InvitationStackClaim
 	isSet bool
 }
 
-func (v NullableStackClaim) Get() *StackClaim {
+func (v NullableInvitationStackClaim) Get() *InvitationStackClaim {
 	return v.value
 }
 
-func (v *NullableStackClaim) Set(val *StackClaim) {
+func (v *NullableInvitationStackClaim) Set(val *InvitationStackClaim) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableStackClaim) IsSet() bool {
+func (v NullableInvitationStackClaim) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableStackClaim) Unset() {
+func (v *NullableInvitationStackClaim) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableStackClaim(val *StackClaim) *NullableStackClaim {
-	return &NullableStackClaim{value: val, isSet: true}
+func NewNullableInvitationStackClaim(val *InvitationStackClaim) *NullableInvitationStackClaim {
+	return &NullableInvitationStackClaim{value: val, isSet: true}
 }
 
-func (v NullableStackClaim) MarshalJSON() ([]byte, error) {
+func (v NullableInvitationStackClaim) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableStackClaim) UnmarshalJSON(src []byte) error {
+func (v *NullableInvitationStackClaim) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

@@ -141,6 +141,7 @@ Class | Method | HTTP request | Description
  - [GetRegionVersionsResponse](docs/GetRegionVersionsResponse.md)
  - [Invitation](docs/Invitation.md)
  - [InvitationClaim](docs/InvitationClaim.md)
+ - [InvitationStackClaim](docs/InvitationStackClaim.md)
  - [ListInvitationsResponse](docs/ListInvitationsResponse.md)
  - [ListModulesResponse](docs/ListModulesResponse.md)
  - [ListOrganizationExpandedResponse](docs/ListOrganizationExpandedResponse.md)
@@ -156,6 +157,7 @@ Class | Method | HTTP request | Description
  - [Module](docs/Module.md)
  - [Organization](docs/Organization.md)
  - [OrganizationAllOf](docs/OrganizationAllOf.md)
+ - [OrganizationClaim](docs/OrganizationClaim.md)
  - [OrganizationData](docs/OrganizationData.md)
  - [OrganizationExpanded](docs/OrganizationExpanded.md)
  - [OrganizationExpandedAllOf](docs/OrganizationExpandedAllOf.md)
@@ -193,6 +195,7 @@ Class | Method | HTTP request | Description
  - [UserAllOf](docs/UserAllOf.md)
  - [UserData](docs/UserData.md)
  - [UserDataAllOf](docs/UserDataAllOf.md)
+ - [UserInfoResponse](docs/UserInfoResponse.md)
  - [Version](docs/Version.md)
 
 

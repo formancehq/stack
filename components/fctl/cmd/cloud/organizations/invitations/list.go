@@ -17,7 +17,7 @@ type Invitations struct {
 	Status       string                        `json:"status"`
 	CreationDate time.Time                     `json:"creationDate"`
 	OrgClaim     string                        `json:"orgClaim"`
-	StackClaims  []membershipclient.StackClaim `json:"stackClaims"`
+	StackClaims  []membershipclient.InvitationStackClaim `json:"stackClaims"`
 }
 
 type ListStore struct {

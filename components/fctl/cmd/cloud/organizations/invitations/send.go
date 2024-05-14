@@ -11,7 +11,7 @@ import (
 
 type InvitationSend struct {
 	Email       string                        `json:"email"`
-	StackClaims []membershipclient.StackClaim `json:"stackClaims"`
+	StackClaims []membershipclient.InvitationStackClaim `json:"stackClaims"`
 	OrgClaim    membershipclient.Role         `json:"orgClaim"`
 }
 
@@ -72,7 +72,7 @@ func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 
 	stackClaimsStrings := fctl.GetString(cmd, "stack-claims")
 	if stackClaimsStrings != "" {
-		stackClaims := make([]membershipclient.StackClaim, 0)
+		stackClaims := make([]membershipclient.InvitationStackClaim, 0)
 		err := json.Unmarshal([]byte(stackClaimsStrings), &stackClaims)
 		if err != nil {
 			return nil, err

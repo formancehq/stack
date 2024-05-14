@@ -20,14 +20,14 @@ var _ MappedNullable = &InvitationClaim{}
 // InvitationClaim struct for InvitationClaim
 type InvitationClaim struct {
 	Role *Role `json:"role,omitempty"`
-	StackClaims []StackClaim `json:"stackClaims"`
+	StackClaims []InvitationStackClaim `json:"stackClaims"`
 }
 
 // NewInvitationClaim instantiates a new InvitationClaim object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewInvitationClaim(stackClaims []StackClaim) *InvitationClaim {
+func NewInvitationClaim(stackClaims []InvitationStackClaim) *InvitationClaim {
 	this := InvitationClaim{}
 	var role Role = EMPTY
 	this.Role = &role
@@ -78,9 +78,9 @@ func (o *InvitationClaim) SetRole(v Role) {
 }
 
 // GetStackClaims returns the StackClaims field value
-func (o *InvitationClaim) GetStackClaims() []StackClaim {
+func (o *InvitationClaim) GetStackClaims() []InvitationStackClaim {
 	if o == nil {
-		var ret []StackClaim
+		var ret []InvitationStackClaim
 		return ret
 	}
 
@@ -89,7 +89,7 @@ func (o *InvitationClaim) GetStackClaims() []StackClaim {
 
 // GetStackClaimsOk returns a tuple with the StackClaims field value
 // and a boolean to check if the value has been set.
-func (o *InvitationClaim) GetStackClaimsOk() ([]StackClaim, bool) {
+func (o *InvitationClaim) GetStackClaimsOk() ([]InvitationStackClaim, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -97,7 +97,7 @@ func (o *InvitationClaim) GetStackClaimsOk() ([]StackClaim, bool) {
 }
 
 // SetStackClaims sets field value
-func (o *InvitationClaim) SetStackClaims(v []StackClaim) {
+func (o *InvitationClaim) SetStackClaims(v []InvitationStackClaim) {
 	o.StackClaims = v
 }
 

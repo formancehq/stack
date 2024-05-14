@@ -1493,6 +1493,56 @@ paths:
       summary: Read user
 components:
   schemas:
+    StackClaim:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        role:
+          $ref: '#/components/schemas/Role'
+      required:
+      - displayName
+      - id
+      - name
+      - role
+      type: object
+    OrganizationClaim:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        displayName:
+          type: string
+        stacks:
+          items:
+            $ref: '#/components/schemas/StackClaim'
+          type: array
+      required:
+      - displayName
+      - id
+      - name
+      - role
+      - stacks
+      type: object
+    UserInfoResponse:
+      properties:
+        email:
+          type: string
+        email_verified:
+          type: boolean
+        sub:
+          type: string
+        org:
+          items:
+            $ref: '#/components/schemas/OrganizationClaim'
+          type: array
+      required:
+      - email
+      - org
+      - sub
+      type: object
     Module:
       example:
         lastStateUpdate: 2000-01-23T04:56:07.000+00:00
@@ -2007,7 +2057,7 @@ components:
           $ref: '#/components/schemas/Role'
         stackClaims:
           items:
-            $ref: '#/components/schemas/StackClaim'
+            $ref: '#/components/schemas/InvitationStackClaim'
           type: array
         userId:
           type: string
@@ -2034,17 +2084,17 @@ components:
           $ref: '#/components/schemas/Role'
         stackClaims:
           items:
-            $ref: '#/components/schemas/StackClaim'
+            $ref: '#/components/schemas/InvitationStackClaim'
           type: array
       required:
       - orgClaim
       - stackClaims
       type: object
-    StackClaims:
+    InvitationStackClaims:
       items:
-        $ref: '#/components/schemas/StackClaim'
+        $ref: '#/components/schemas/InvitationStackClaim'
       type: array
-    StackClaim:
+    InvitationStackClaim:
       example:
         role: null
         id: id

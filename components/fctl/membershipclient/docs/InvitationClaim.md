@@ -5,13 +5,13 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Role** | Pointer to [**Role**](Role.md) |  | [optional] [default to EMPTY]
-**StackClaims** | [**[]StackClaim**](StackClaim.md) |  | 
+**StackClaims** | [**[]InvitationStackClaim**](InvitationStackClaim.md) |  | 
 
 ## Methods
 
 ### NewInvitationClaim
 
-`func NewInvitationClaim(stackClaims []StackClaim, ) *InvitationClaim`
+`func NewInvitationClaim(stackClaims []InvitationStackClaim, ) *InvitationClaim`
 
 NewInvitationClaim instantiates a new InvitationClaim object
 This constructor will assign default values to properties that have it defined,
@@ -53,20 +53,20 @@ HasRole returns a boolean if a field has been set.
 
 ### GetStackClaims
 
-`func (o *InvitationClaim) GetStackClaims() []StackClaim`
+`func (o *InvitationClaim) GetStackClaims() []InvitationStackClaim`
 
 GetStackClaims returns the StackClaims field if non-nil, zero value otherwise.
 
 ### GetStackClaimsOk
 
-`func (o *InvitationClaim) GetStackClaimsOk() (*[]StackClaim, bool)`
+`func (o *InvitationClaim) GetStackClaimsOk() (*[]InvitationStackClaim, bool)`
 
 GetStackClaimsOk returns a tuple with the StackClaims field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetStackClaims
 
-`func (o *InvitationClaim) SetStackClaims(v []StackClaim)`
+`func (o *InvitationClaim) SetStackClaims(v []InvitationStackClaim)`
 
 SetStackClaims sets StackClaims field to given value.
 

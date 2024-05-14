@@ -11,7 +11,7 @@ Name | Type | Description | Notes
 **CreationDate** | **time.Time** |  | 
 **UpdatedAt** | Pointer to **string** |  | [optional] 
 **Role** | [**Role**](Role.md) |  | [default to EMPTY]
-**StackClaims** | Pointer to [**[]StackClaim**](StackClaim.md) |  | [optional] 
+**StackClaims** | Pointer to [**[]InvitationStackClaim**](InvitationStackClaim.md) |  | [optional] 
 **UserId** | Pointer to **string** |  | [optional] 
 **OrganizationAccess** | Pointer to [**OrganizationUser**](OrganizationUser.md) |  | [optional] 
 
@@ -181,20 +181,20 @@ SetRole sets Role field to given value.
 
 ### GetStackClaims
 
-`func (o *Invitation) GetStackClaims() []StackClaim`
+`func (o *Invitation) GetStackClaims() []InvitationStackClaim`
 
 GetStackClaims returns the StackClaims field if non-nil, zero value otherwise.
 
 ### GetStackClaimsOk
 
-`func (o *Invitation) GetStackClaimsOk() (*[]StackClaim, bool)`
+`func (o *Invitation) GetStackClaimsOk() (*[]InvitationStackClaim, bool)`
 
 GetStackClaimsOk returns a tuple with the StackClaims field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetStackClaims
 
-`func (o *Invitation) SetStackClaims(v []StackClaim)`
+`func (o *Invitation) SetStackClaims(v []InvitationStackClaim)`
 
 SetStackClaims sets StackClaims field to given value.
 

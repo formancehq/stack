@@ -33,7 +33,7 @@ func NewInfoCommand() *cobra.Command {
 		fctl.WithAliases("i", "in"),
 		fctl.WithShortDescription("Display user information"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
-		fctl.WithController[*InfoStore](NewInfoController()),
+		fctl.WithController(NewInfoController()),
 	)
 }
 
@@ -53,7 +53,7 @@ func (c *InfoController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	c.store.Subject = userInfo.Subject
+	c.store.Subject = userInfo.Sub
 	c.store.Email = userInfo.Email
 
 	return c, nil

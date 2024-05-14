@@ -24,6 +24,7 @@ docs/GetRegionResponse.md
 docs/GetRegionVersionsResponse.md
 docs/Invitation.md
 docs/InvitationClaim.md
+docs/InvitationStackClaim.md
 docs/ListInvitationsResponse.md
 docs/ListModulesResponse.md
 docs/ListOrganizationExpandedResponse.md
@@ -39,6 +40,7 @@ docs/LogCursorDataAllOf.md
 docs/Module.md
 docs/Organization.md
 docs/OrganizationAllOf.md
+docs/OrganizationClaim.md
 docs/OrganizationData.md
 docs/OrganizationExpanded.md
 docs/OrganizationExpandedAllOf.md
@@ -76,6 +78,7 @@ docs/User.md
 docs/UserAllOf.md
 docs/UserData.md
 docs/UserDataAllOf.md
+docs/UserInfoResponse.md
 docs/Version.md
 git_push.sh
 go.mod
@@ -97,6 +100,7 @@ model_get_region_response.go
 model_get_region_versions_response.go
 model_invitation.go
 model_invitation_claim.go
+model_invitation_stack_claim.go
 model_list_invitations_response.go
 model_list_modules_response.go
 model_list_organization_expanded_response.go
@@ -112,6 +116,7 @@ model_log_cursor_data_all_of.go
 model_module.go
 model_organization.go
 model_organization_all_of.go
+model_organization_claim.go
 model_organization_data.go
 model_organization_expanded.go
 model_organization_expanded_all_of.go
@@ -149,6 +154,7 @@ model_user.go
 model_user_all_of.go
 model_user_data.go
 model_user_data_all_of.go
+model_user_info_response.go
 model_version.go
 response.go
 test/api_default_test.go

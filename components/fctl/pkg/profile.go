@@ -175,16 +175,15 @@ func (p *Profile) GetClaims() (jwt.MapClaims, error) {
 	return claims, nil
 }
 
-func (p *Profile) GetUserInfo(cmd *cobra.Command) (*userClaims, error) {
-	claims := &userClaims{}
+func (p *Profile) GetUserInfo(cmd *cobra.Command) (userinfo *membershipclient.UserInfoResponse, err error) {
+	userinfo = &membershipclient.UserInfoResponse{}
 	if p.token != nil && p.token.IDToken != "" {
-		_, err := oidc.ParseToken(p.token.IDToken, claims)
+		_, err = oidc.ParseToken(p.token.IDToken, userinfo)
 		if err != nil {
-			return nil, err
+			return
 		}
 	}
-
-	return claims, nil
+	return
 }
 
 func (p *Profile) GetStackToken(ctx context.Context, httpClient *http.Client, stack *membershipclient.Stack) (string, error) {

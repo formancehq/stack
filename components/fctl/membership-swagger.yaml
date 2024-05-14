@@ -1313,6 +1313,56 @@ components:
             openid: Enable OIDC
             email: Ask email access
   schemas:
+    StackClaim:
+      type: object
+      required:
+        - id
+        - name
+        - displayName
+        - role
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        role:
+          $ref: "#/components/schemas/Role"
+    OrganizationClaim:
+      type: object
+      required:
+        - id
+        - name
+        - displayName
+        - stacks
+        - role
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        displayName:
+          type: string
+        stacks:
+          type: array
+          items:
+            $ref: "#/components/schemas/StackClaim"
+    UserInfoResponse:
+      type: object
+      required:
+        - email
+        - sub
+        - org
+      properties:
+        email:
+          type: string
+        email_verified:
+          type: boolean
+        sub:
+          type: string
+        org:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrganizationClaim"
     Module:
       type: object
       required:
@@ -1837,7 +1887,7 @@ components:
         role:
           $ref: "#/components/schemas/Role"
         stackClaims:
-          $ref: "#/components/schemas/StackClaims"
+          $ref: "#/components/schemas/InvitationStackClaims"
         userId:
           type: string
         organizationAccess:
@@ -1855,15 +1905,15 @@ components:
         role:
           $ref: "#/components/schemas/Role"
         stackClaims:
-          $ref: "#/components/schemas/StackClaims"
+          $ref: "#/components/schemas/InvitationStackClaims"
       required:
         - orgClaim
         - stackClaims
-    StackClaims:
+    InvitationStackClaims:
       type: array
       items:
-        $ref: "#/components/schemas/StackClaim"
-    StackClaim:
+        $ref: "#/components/schemas/InvitationStackClaim"
+    InvitationStackClaim:
       type: object
       required:
         - id
