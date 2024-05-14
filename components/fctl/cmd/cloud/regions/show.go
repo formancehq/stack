@@ -67,13 +67,18 @@ func (c *ShowController) Render(cmd *cobra.Command, args []string) (err error) {
 	tableData = append(tableData, []string{pterm.LightCyan("ID"), c.store.Region.Id})
 	tableData = append(tableData, []string{pterm.LightCyan("Name"), c.store.Region.Name})
 	tableData = append(tableData, []string{pterm.LightCyan("Base URL"), c.store.Region.BaseUrl})
-	tableData = append(tableData, []string{pterm.LightCyan("Active "), fctl.BoolToString(c.store.Region.Active)})
-	tableData = append(tableData, []string{pterm.LightCyan("Public "), fctl.BoolToString(c.store.Region.Public)})
+	tableData = append(tableData, []string{pterm.LightCyan("Active"), fctl.BoolToString(c.store.Region.Active)})
+	tableData = append(tableData, []string{pterm.LightCyan("Public"), fctl.BoolToString(c.store.Region.Public)})
+
+	if c.store.Region.Version != nil {
+		tableData = append(tableData, []string{pterm.LightCyan("Version"), *c.store.Region.Version})
+	}
+
 	if c.store.Region.Creator != nil {
 		tableData = append(tableData, []string{pterm.LightCyan("Creator"), c.store.Region.Creator.Email})
 	}
 	if c.store.Region.LastPing != nil {
-		tableData = append(tableData, []string{pterm.LightCyan("Base URL"), c.store.Region.LastPing.Format(time.RFC3339)})
+		tableData = append(tableData, []string{pterm.LightCyan("Last ping"), c.store.Region.LastPing.Format(time.RFC3339)})
 	}
 
 	err = pterm.DefaultTable.
