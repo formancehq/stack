@@ -51,15 +51,15 @@ tests:
     WORKDIR /src/components/ledger
     COPY --dir --pass-args (+generate/*) .
     WITH DOCKER --pull=postgres:15-alpine
-        DO --pass-args core+GO_TESTS
+        RUN go test ./...
     END
 
-GO_TESTS:
-    FUNCTION
-    ARG GOPROXY
-    RUN --mount type=cache,id=gopkgcache,target=${GOPATH}/pkg/mod \
-        --mount type=cache,id=gobuildcache,target=/root/.cache/go-build \
-        go test ./... -coverprofile=./cover.out -covermode=atomic -coverpkg=./...
+#GO_TESTS:
+#    FUNCTION
+#    ARG GOPROXY
+#    RUN --mount type=cache,id=gopkgcache,target=${GOPATH}/pkg/mod \
+#        --mount type=cache,id=gobuildcache,target=/root/.cache/go-build \
+#        go test ./... -coverprofile=./cover.out -covermode=atomic -coverpkg=./...
 
 deploy:
     COPY (+sources/*) /src
