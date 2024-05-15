@@ -51,7 +51,7 @@ tests:
     WORKDIR /src/components/ledger
     COPY --dir (+generate/*) .
     WITH DOCKER --pull=postgres:15-alpine
-        DO core+GO_TESTS
+        RUN go test ./...
     END
 
 deploy:
