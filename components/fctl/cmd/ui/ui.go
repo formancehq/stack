@@ -56,6 +56,16 @@ func (c *UiController) GetStore() *UiStruct {
 }
 
 func (c *UiController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
+	store := fctl.GetMembershipStore(cmd.Context())
+	serverInfo, err := fctl.MembershipServerInfo(cmd.Context(), store.Client())
+	if err != nil {
+		return nil, err
+	}
+
+	if v := serverInfo.ConsoleURL; v != nil {
+		c.store.UIUrl = *v
+	}
+
 	if err := openUrl(c.store.UIUrl); err != nil {
 		c.store.FoundBrowser = true
 	}
@@ -75,5 +85,8 @@ func NewCommand() *cobra.Command {
 		fctl.WithShortDescription("Open UI"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
 		fctl.WithController[*UiStruct](NewUiController()),
+		fctl.WithPersistentPreRunE(func(cmd *cobra.Command, args []string) error {
+			return fctl.NewMembershipStore(cmd)
+		}),
 	)
 }

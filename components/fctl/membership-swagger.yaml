@@ -1959,6 +1959,8 @@ components:
           items:
             allOf:
               - $ref: "#/components/schemas/Capability"
+        consoleURL:
+          type: string
     Capability:
       type: string
       enum:
