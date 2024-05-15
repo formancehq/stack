@@ -50,7 +50,6 @@ tests:
     COPY (+sources/*) /src
     WORKDIR /src/components/ledger
     COPY --dir (+generate/*) .
-    RUN env
     WITH DOCKER --pull=postgres:15-alpine
         RUN go test ./...
     END
