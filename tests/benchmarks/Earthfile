@@ -9,7 +9,7 @@ FROM core+base-image
 
 k6:
     FROM core+builder-image
-    DO --pass-args core+GO_INSTALL --package=go.k6.io/xk6/cmd/xk6@latest
+    DO core+GO_INSTALL --package=go.k6.io/xk6/cmd/xk6@latest
     COPY extension extension
     ARG GOPROXY
     RUN --mount type=cache,id=gopkgcache,target=$GOPATH/pkg/mod \
@@ -19,7 +19,7 @@ k6:
 
 run:
     RUN apk update && apk add nodejs npm
-    COPY --pass-args +k6/k6 /bin/k6
+    COPY +k6/k6 /bin/k6
     COPY --dir scripts .
     WORKDIR ./scripts
     RUN npm install

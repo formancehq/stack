@@ -12,7 +12,7 @@ FROM core+base-image
 sources:
     WORKDIR src
     DO stack+INCLUDE_GO_LIBS --LOCATION libs/go-libs
-    COPY --pass-args (releases+sdk-generate/go) /src/releases/sdks/go
+    COPY (releases+sdk-generate/go) /src/releases/sdks/go
     WORKDIR /src/ee/orchestration
     COPY go.* .
     COPY --dir pkg cmd internal .
@@ -22,10 +22,10 @@ sources:
 generate:
     FROM core+builder-image
     RUN apk update && apk add openjdk11
-    DO --pass-args core+GO_INSTALL --package=go.uber.org/mock/mockgen@latest
+    DO core+GO_INSTALL --package=go.uber.org/mock/mockgen@latest
     COPY (+sources/*) /src
     WORKDIR /src/ee/orchestration
-    DO --pass-args core+GO_GENERATE
+    DO core+GO_GENERATE
     SAVE ARTIFACT internal AS LOCAL internal
     SAVE ARTIFACT pkg AS LOCAL pkg
     SAVE ARTIFACT cmd AS LOCAL cmd
@@ -35,7 +35,7 @@ compile:
     COPY (+sources/*) /src
     WORKDIR /src/ee/orchestration
     ARG VERSION=latest
-    DO --pass-args core+GO_COMPILE --VERSION=$VERSION
+    DO core+GO_COMPILE --VERSION=$VERSION
 
 build-image:
     FROM core+final-image
@@ -51,27 +51,27 @@ tests:
     COPY (+sources/*) /src
     WORKDIR /src/ee/orchestration
     WITH DOCKER --pull=postgres:15-alpine
-        DO --pass-args core+GO_TESTS
+        DO core+GO_TESTS
     END
 
 deploy:
     COPY (+sources/*) /src
     LET tag=$(tar cf - /src | sha1sum | awk '{print $1}')
     WAIT
-        BUILD --pass-args +build-image --tag=$tag
+        BUILD +build-image --tag=$tag
     END
-    FROM --pass-args core+vcluster-deployer-image
+    FROM core+vcluster-deployer-image
     RUN kubectl patch Versions.formance.com default -p "{\"spec\":{\"orchestration\": \"${tag}\"}}" --type=merge
 
 deploy-staging:
-    BUILD --pass-args stack+deployer-module --MODULE=orchestration
+    BUILD stack+deployer-module --MODULE=orchestration
 
 lint:
     FROM core+builder-image
     COPY (+sources/*) /src
-    COPY --pass-args +tidy/go.* .
+    COPY +tidy/go.* .
     WORKDIR /src/ee/orchestration
-    DO --pass-args stack+GO_LINT
+    DO stack+GO_LINT
     SAVE ARTIFACT cmd AS LOCAL cmd
     SAVE ARTIFACT internal AS LOCAL internal
     SAVE ARTIFACT pkg AS LOCAL pkg
@@ -79,9 +79,9 @@ lint:
 
 pre-commit:
     WAIT
-      BUILD --pass-args +tidy
+      BUILD +tidy
     END
-    BUILD --pass-args +lint
+    BUILD +lint
 
 openapi:
     FROM node:20-alpine
@@ -95,9 +95,9 @@ openapi:
 
 tidy:
     FROM core+builder-image
-    COPY --pass-args (+sources/src) /src
+    COPY (+sources/src) /src
     WORKDIR /src/ee/orchestration
-    DO --pass-args stack+GO_TIDY
+    DO stack+GO_TIDY
 
 release:
-    BUILD --pass-args stack+goreleaser --path=ee/orchestration
+    BUILD stack+goreleaser --path=ee/orchestration

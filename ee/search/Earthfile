@@ -22,7 +22,7 @@ compile:
     COPY (+sources/*) /src
     WORKDIR /src/ee/search
     ARG VERSION=latest
-    DO --pass-args core+GO_COMPILE --VERSION=$VERSION
+    DO core+GO_COMPILE --VERSION=$VERSION
 
 build-image:
     FROM core+final-image
@@ -38,36 +38,36 @@ tests:
     COPY (+sources/*) /src
     WORKDIR /src/ee/search
     WITH DOCKER --pull=postgres:15-alpine
-        DO --pass-args core+GO_TESTS
+        DO core+GO_TESTS
     END
 
 deploy:
     COPY (+sources/*) /src
     LET tag=$(tar cf - /src | sha1sum | awk '{print $1}')
     WAIT
-        BUILD --pass-args +build-image --tag=$tag
+        BUILD +build-image --tag=$tag
     END
-    FROM --pass-args core+vcluster-deployer-image
+    FROM core+vcluster-deployer-image
     RUN kubectl patch Versions.formance.com default -p "{\"spec\":{\"search\": \"${tag}\"}}" --type=merge
 
 deploy-staging:
-    BUILD --pass-args stack+deployer-module --MODULE=search
+    BUILD stack+deployer-module --MODULE=search
 
 lint:
     FROM core+builder-image
     COPY (+sources/*) /src
     WORKDIR /src/ee/search
-    COPY --pass-args +tidy/go.* .
-    DO --pass-args stack+GO_LINT
+    COPY +tidy/go.* .
+    DO stack+GO_LINT
     SAVE ARTIFACT cmd AS LOCAL cmd
     SAVE ARTIFACT pkg AS LOCAL pkg
     SAVE ARTIFACT main.go AS LOCAL main.go
 
 pre-commit:
     WAIT
-      BUILD --pass-args +tidy
+      BUILD +tidy
     END
-    BUILD --pass-args +lint
+    BUILD +lint
 
 openapi:
     COPY ./openapi.yaml .
@@ -75,9 +75,9 @@ openapi:
 
 tidy:
     FROM core+builder-image
-    COPY --pass-args (+sources/src) /src
+    COPY (+sources/src) /src
     WORKDIR /src/ee/search
-    DO --pass-args stack+GO_TIDY
+    DO stack+GO_TIDY
 
 release:
-    BUILD --pass-args stack+goreleaser --path=ee/search
+    BUILD stack+goreleaser --path=ee/search

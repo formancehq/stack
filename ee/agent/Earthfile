@@ -23,7 +23,7 @@ compile:
     COPY (+sources/*) /src
     WORKDIR /src/ee/agent
     ARG VERSION=latest
-    DO --pass-args core+GO_COMPILE --VERSION=$VERSION
+    DO core+GO_COMPILE --VERSION=$VERSION
 
 build-image:
     FROM core+final-image
@@ -36,9 +36,9 @@ build-image:
 lint:
     FROM core+builder-image
     COPY (+sources/*) /src
-    COPY --pass-args +tidy/go.* .
+    COPY +tidy/go.* .
     WORKDIR /src/ee/agent
-    DO --pass-args stack+GO_LINT
+    DO stack+GO_LINT
     SAVE ARTIFACT cmd AS LOCAL cmd
     SAVE ARTIFACT internal AS LOCAL internal
     SAVE ARTIFACT main.go AS LOCAL main.go
@@ -47,9 +47,9 @@ deploy:
     COPY (+sources/*) /src
     LET tag=$(tar cf - /src | sha1sum | awk '{print $1}')
     WAIT
-        BUILD --pass-args +build-image --tag=$tag
+        BUILD +build-image --tag=$tag
     END
-    FROM --pass-args core+vcluster-deployer-image
+    FROM core+vcluster-deployer-image
     COPY helm helm
     COPY .earthly .earthly
     ARG --required user
@@ -63,7 +63,7 @@ deploy:
         formance-membership-agent ./helm
 
 deploy-staging:
-    FROM --pass-args core+base-argocd 
+    FROM core+base-argocd
 
     ARG --required TAG
 
@@ -75,14 +75,14 @@ deploy-staging:
         --parameter agent.image.tag=$TAG \
         --auth-token=$AUTH_TOKEN --server=$SERVER --grpc-web
 
-    BUILD --pass-args core+deploy-staging
+    BUILD core+deploy-staging
 
 pre-commit:
-    BUILD --pass-args +helm-validate
+    BUILD +helm-validate
     WAIT
-        BUILD --pass-args +tidy
+        BUILD +tidy
     END
-    BUILD --pass-args +lint
+    BUILD +lint
 
 
 openapi:
@@ -90,9 +90,9 @@ openapi:
 
 tidy:
     FROM core+builder-image
-    COPY --pass-args (+sources/src) /src
+    COPY (+sources/src) /src
     WORKDIR /src/ee/agent
-    DO --pass-args stack+GO_TIDY
+    DO stack+GO_TIDY
 
 grpc-generate:
     FROM core+grpc-base
@@ -104,13 +104,13 @@ grpc-generate:
 tests:
     FROM core+builder-image
     RUN apk update && apk add bash
-    DO --pass-args core+GO_INSTALL --package=sigs.k8s.io/controller-runtime/tools/setup-envtest@v0.0.0-20240320141353-395cfc7486e6
+    DO core+GO_INSTALL --package=sigs.k8s.io/controller-runtime/tools/setup-envtest@v0.0.0-20240320141353-395cfc7486e6
     ENV ENVTEST_VERSION 1.28.0
     RUN setup-envtest use $ENVTEST_VERSION -p path
     ENV KUBEBUILDER_ASSETS /root/.local/share/kubebuilder-envtest/k8s/$ENVTEST_VERSION-linux-$(go env GOHOSTARCH)
-    DO --pass-args core+GO_INSTALL --package=github.com/onsi/ginkgo/v2/ginkgo@v2.14.0
-    COPY --pass-args +sources/* /src
-    COPY --pass-args ../../components/operator+manifests/config /src/components/operator/config
+    DO core+GO_INSTALL --package=github.com/onsi/ginkgo/v2/ginkgo@v2.14.0
+    COPY +sources/* /src
+    COPY ../../components/operator+manifests/config /src/components/operator/config
     WORKDIR /src/ee/agent
     COPY tests tests
     COPY internal internal
@@ -130,7 +130,7 @@ helm-validate:
     FROM core+helm-base
     WORKDIR /src
     COPY helm .
-    DO --pass-args core+HELM_VALIDATE
+    DO core+HELM_VALIDATE
 
 release:
-    BUILD --pass-args stack+goreleaser --path=ee/agent
+    BUILD stack+goreleaser --path=ee/agent

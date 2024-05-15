@@ -8,9 +8,9 @@ IMPORT .. AS stack
 deploy:
     FROM core+base-image
     ARG --required components
-    BUILD --pass-args ./$components+deploy
+    BUILD ./$components+deploy
 
 deploy-staging:
     FROM core+base-image
     ARG --required components
-    BUILD --pass-args ./$components+deploy-staging
+    BUILD ./$components+deploy-staging

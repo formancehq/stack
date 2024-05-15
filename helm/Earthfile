@@ -24,12 +24,12 @@ helm-validate:
     COPY ./$chart $chart
     WORKDIR /src/helm/$chart
     RUN helm dependency update
-    DO --pass-args core+HELM_VALIDATE
+    DO core+HELM_VALIDATE
   END
   SAVE ARTIFACT /src/helm/* AS LOCAL .
 
 pre-commit:
-  BUILD --pass-args ./regions+helm-validate
+  BUILD ./regions+helm-validate
 
 publish:
-  BUILD --pass-args ./regions+helm-publish
+  BUILD ./regions+helm-publish

@@ -20,35 +20,35 @@ compile:
     FROM core+builder-image
     COPY (+sources/*) /src
     WORKDIR /src/components/operator/tools/utils
-	DO --pass-args core+GO_COMPILE
+	DO core+GO_COMPILE
 
 build-image:
     FROM core+final-image
     ENTRYPOINT ["/usr/bin/operator-utils"]
-    COPY --pass-args (+compile/main) /usr/bin/operator-utils
+    COPY (+compile/main) /usr/bin/operator-utils
     ARG REPOSITORY=ghcr.io
     ARG tag=latest
-    DO --pass-args core+SAVE_IMAGE --COMPONENT=operator-utils --TAG=$tag
+    DO core+SAVE_IMAGE --COMPONENT=operator-utils --TAG=$tag
 
 lint:
     FROM core+builder-image
     COPY (+sources/*) /src
-    COPY --pass-args +tidy/go.* .
+    COPY +tidy/go.* .
     WORKDIR /src/components/operator/tools/utils
-    DO --pass-args stack+GO_LINT
+    DO stack+GO_LINT
     SAVE ARTIFACT cmd AS LOCAL cmd
 
 pre-commit:
     WAIT
-        BUILD --pass-args +tidy
+        BUILD +tidy
     END
-    BUILD --pass-args +lint
+    BUILD +lint
 
 tidy:
     FROM core+builder-image
-    COPY --pass-args (+sources/src) /src
+    COPY (+sources/src) /src
     WORKDIR /src/components/operator/tools/utils
-    DO --pass-args stack+GO_TIDY
+    DO stack+GO_TIDY
 
 release:
-    BUILD --pass-args stack+goreleaser --path=components/operator/tools/utils
+    BUILD stack+goreleaser --path=components/operator/tools/utils

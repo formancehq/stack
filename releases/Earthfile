@@ -50,12 +50,12 @@ sdk-generate-all:
   ARG --required version
   LOCALLY
   FOR lang IN $(ls templates/sdk)
-      BUILD --pass-args +sdk-generate --LANG=${lang}
+      BUILD +sdk-generate --LANG=${lang}
   END
 
 sdk-publish-all:
   ARG --required version
   LOCALLY
   FOR lang IN $(ls templates/sdk)
-      BUILD --pass-args +sdk-publish --LANG=${lang}
+      BUILD +sdk-publish --LANG=${lang}
   END

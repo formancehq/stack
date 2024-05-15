@@ -12,7 +12,7 @@ temporalite-build:
     GIT CLONE --branch=v0.2.0 https://github.com/temporalio/temporalite.git /src
     WORKDIR /src
     ENV GOBIN=/go/bin
-    DO --pass-args core+GO_INSTALL --package=./cmd/temporalite
+    DO core+GO_INSTALL --package=./cmd/temporalite
     SAVE ARTIFACT $GOPATH/bin/temporalite
 
 temporalite:
@@ -27,17 +27,17 @@ tests:
     FROM core+builder-image
     WORKDIR /src
     RUN apk update && apk add docker-cli-compose
-    COPY --pass-args (stack+sources/out --LOCATION=go.mod) /src/go.mod
-    COPY --pass-args (stack+sources/out --LOCATION=go.sum) /src/go.sum
-    COPY --pass-args (stack+sources/out --LOCATION=libs) /src/libs
-    COPY --pass-args (stack+sources/out --LOCATION=components/ledger) /src/components/ledger
-    COPY --pass-args (stack+sources/out --LOCATION=components/payments) /src/components/payments
-    COPY --pass-args (stack+sources/out --LOCATION=ee) /src/ee
-    COPY --pass-args (stack+build-final-spec/latest.json) /src/releases/build/latest.json
-    COPY --pass-args (releases+sdk-generate/go) /src/releases/sdks/go
+    COPY (stack+sources/out --LOCATION=go.mod) /src/go.mod
+    COPY (stack+sources/out --LOCATION=go.sum) /src/go.sum
+    COPY (stack+sources/out --LOCATION=libs) /src/libs
+    COPY (stack+sources/out --LOCATION=components/ledger) /src/components/ledger
+    COPY (stack+sources/out --LOCATION=components/payments) /src/components/payments
+    COPY (stack+sources/out --LOCATION=ee) /src/ee
+    COPY (stack+build-final-spec/latest.json) /src/releases/build/latest.json
+    COPY (releases+sdk-generate/go) /src/releases/sdks/go
     COPY . /src/tests/integration
     WORKDIR /src/tests/integration
-    DO --pass-args core+GO_INSTALL --package=github.com/onsi/ginkgo/v2/ginkgo
+    DO core+GO_INSTALL --package=github.com/onsi/ginkgo/v2/ginkgo
 
     ARG GOPROXY
     ARG focusFile
@@ -63,13 +63,13 @@ tests:
 
 sources:
     WORKDIR src
-    COPY --pass-args (stack+sources/out --LOCATION=libs) /src/libs
-    COPY --pass-args (releases+sdk-generate/go) /src/releases/sdks/go
-    COPY --pass-args (stack+sources/out --LOCATION=components/ledger) /src/components/ledger
-    COPY --pass-args (stack+sources/out --LOCATION=components/payments) /src/components/payments
-    COPY --pass-args (stack+sources/out --LOCATION=ee) /src/ee
-    COPY --pass-args (stack+sources/out --LOCATION=go.mod) /src/go.mod
-    COPY --pass-args (stack+sources/out --LOCATION=go.sum) /src/go.sum
+    COPY (stack+sources/out --LOCATION=libs) /src/libs
+    COPY (releases+sdk-generate/go) /src/releases/sdks/go
+    COPY (stack+sources/out --LOCATION=components/ledger) /src/components/ledger
+    COPY (stack+sources/out --LOCATION=components/payments) /src/components/payments
+    COPY (stack+sources/out --LOCATION=ee) /src/ee
+    COPY (stack+sources/out --LOCATION=go.mod) /src/go.mod
+    COPY (stack+sources/out --LOCATION=go.sum) /src/go.sum
     COPY . /src/tests/integration
     WORKDIR /src/tests/integration
     SAVE ARTIFACT /src
@@ -77,18 +77,18 @@ sources:
 lint:
     FROM core+builder-image
     COPY (+sources/*) /src
-    COPY --pass-args +tidy/go.* .
+    COPY +tidy/go.* .
     WORKDIR /src/tests/integration
-    DO --pass-args stack+GO_LINT
+    DO stack+GO_LINT
     SAVE ARTIFACT * AS LOCAL ./
 
 tidy:
     FROM core+builder-image
-    COPY --pass-args (+sources/*) /src
+    COPY (+sources/*) /src
     WORKDIR /src/tests/integration
-    DO --pass-args stack+GO_TIDY
+    DO stack+GO_TIDY
 
 pre-commit:
     WAIT
-      BUILD --pass-args +tidy
+      BUILD +tidy
     END

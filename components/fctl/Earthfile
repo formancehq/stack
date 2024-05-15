@@ -23,7 +23,7 @@ deploy-staging:
 
 sources:
     WORKDIR src
-    COPY --pass-args (releases+sdk-generate/go) /src/releases/sdks/go
+    COPY (releases+sdk-generate/go) /src/releases/sdks/go
     DO stack+INCLUDE_GO_LIBS --LOCATION libs/go-libs
     WORKDIR /src/components/fctl
     COPY go.* .
@@ -34,23 +34,23 @@ sources:
 lint:
     FROM core+builder-image
     COPY (+sources/*) /src
-    COPY --pass-args +tidy/go.* .
+    COPY +tidy/go.* .
     WORKDIR /src/components/fctl
-    DO --pass-args stack+GO_LINT
+    DO stack+GO_LINT
     SAVE ARTIFACT cmd AS LOCAL cmd
     SAVE ARTIFACT pkg AS LOCAL pkg
     SAVE ARTIFACT main.go AS LOCAL main.go
 
 pre-commit:
     WAIT
-        BUILD --pass-args +tidy
+        BUILD +tidy
     END
-    BUILD --pass-args +lint
-    BUILD --pass-args +completions
+    BUILD +lint
+    BUILD +completions
 
 completions:
     FROM core+builder-image
-    COPY --pass-args (+sources/src) /src
+    COPY (+sources/src) /src
     WORKDIR /src/components/fctl
     RUN mkdir -p ./completions
     RUN go run main.go completion bash > "./completions/fctl.bash"
@@ -63,9 +63,9 @@ openapi:
 
 tidy:
     FROM core+builder-image
-    COPY --pass-args (+sources/src) /src
+    COPY (+sources/src) /src
     WORKDIR /src/components/fctl
-    DO --pass-args stack+GO_TIDY
+    DO stack+GO_TIDY
 
 membership-openapi:
     FROM core+base-image
@@ -90,4 +90,4 @@ generate-membership-client:
     SAVE ARTIFACT ./membershipclient AS LOCAL membershipclient
 
 release:
-    BUILD --pass-args stack+goreleaser --path=components/fctl
+    BUILD stack+goreleaser --path=components/fctl

@@ -16,15 +16,15 @@ tidy:
     FROM core+builder-image
     COPY (+go-sources/*) /src
     WORKDIR /src
-    DO --pass-args stack+GO_TIDY
+    DO stack+GO_TIDY
     SAVE ARTIFACT go.* AS LOCAL ./
 
 lint:
     FROM core+builder-image
     COPY (+go-sources/*) /src
     WORKDIR /src
-    COPY --pass-args +tidy/go.* .
-    DO --pass-args stack+GO_LINT
+    COPY +tidy/go.* .
+    DO stack+GO_LINT
     SAVE ARTIFACT * AS LOCAL ./
 
 generate:
@@ -40,7 +40,7 @@ generate:
 
 pre-commit:
     WAIT
-      BUILD --pass-args +tidy
+      BUILD +tidy
     END
-    BUILD --pass-args +lint
-    BUILD --pass-args +generate
+    BUILD +lint
+    BUILD +generate

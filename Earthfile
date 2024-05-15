@@ -93,42 +93,42 @@ goreleaser:
 all-ci-goreleaser:
     LOCALLY
     FOR service IN $(cd ./components && ls -d */)
-        BUILD --pass-args ./components/$service+release --mode=ci
+        BUILD ./components/$service+release --mode=ci
     END
     FOR service IN $(cd ./ee && ls -d */)
-        BUILD --pass-args ./ee/$service+release --mode=ci
+        BUILD ./ee/$service+release --mode=ci
     END
 
 build-all:
     LOCALLY
     FOR component IN $(cd ./components && ls -d */)
-        BUILD --pass-args ./components/${component}+build-image
+        BUILD ./components/${component}+build-image
     END
     FOR component IN $(cd ./ee && ls -d */)
-        BUILD --pass-args ./ee/${component}+build-image
+        BUILD ./ee/${component}+build-image
     END
 
 deploy-all:
     LOCALLY
     WAIT
-        BUILD --pass-args ./components/+deploy --components=operator
+        BUILD ./components/+deploy --components=operator
     END
     FOR component IN $(cd ./components && ls -d */)
         IF [ "$component" != "operator" ]
-            BUILD --pass-args ./components/+deploy --components=$component
+            BUILD ./components/+deploy --components=$component
         END
     END
     FOR component IN $(cd ./ee && ls -d */)
-        BUILD --pass-args ./ee/+deploy --components=$component
+        BUILD ./ee/+deploy --components=$component
     END
 
 deployer-module:
-    FROM --pass-args core+base-image
+    FROM core+base-image
     ARG --required MODULE
     ARG --required TAG
     
     LET ARGS="--parameter=versions.files.default.$MODULE=$TAG"
-    FROM --pass-args core+deployer-module --ARGS=$ARGS --TAG=$TAG
+    FROM core+deployer-module --ARGS=$ARGS --TAG=$TAG
 
 staging-application-set:
     LOCALLY
@@ -151,7 +151,7 @@ staging-application-set:
         SET PARAMETERS="$PARAMETERS --parameter agent.image.tag=$TAG"
         SET PARAMETERS="$PARAMETERS --parameter operator.image.tag=$TAG"
     END
-    BUILD --pass-args core+application-set --ARGS=$PARAMETERS --WITH_SYNC=false
+    BUILD core+application-set --ARGS=$PARAMETERS --WITH_SYNC=false
     
 
 staging-application-sync:
@@ -160,50 +160,50 @@ staging-application-sync:
 tests-all:
     LOCALLY
     FOR component IN $(cd ./components && ls -d */)
-        BUILD --pass-args ./components/${component}+tests
+        BUILD ./components/${component}+tests
     END
     FOR component IN $(cd ./ee && ls -d */)
-        BUILD --pass-args ./ee/${component}+tests
+        BUILD ./ee/${component}+tests
     END
 
 tests-integration:
     FROM core+base-image
-    BUILD --pass-args ./tests/integration+tests
+    BUILD ./tests/integration+tests
 
 pre-commit: # Generate the final spec and run all the pre-commit hooks
     LOCALLY
-    BUILD --pass-args ./releases+sdk-generate
+    BUILD ./releases+sdk-generate
     FOR component IN $(cd ./libs && ls -d */)
-        BUILD --pass-args ./libs/${component}+pre-commit
+        BUILD ./libs/${component}+pre-commit
     END
     FOR component IN $(cd ./components && ls -d */)
-        BUILD --pass-args ./components/${component}+pre-commit
+        BUILD ./components/${component}+pre-commit
     END
     FOR component IN $(cd ./ee && ls -d */)
-        BUILD --pass-args ./ee/${component}+pre-commit
+        BUILD ./ee/${component}+pre-commit
     END
-    BUILD --pass-args ./helm/+pre-commit
-    BUILD --pass-args ./tests/integration+pre-commit
+    BUILD ./helm/+pre-commit
+    BUILD ./tests/integration+pre-commit
 
 tidy: # Run tidy on all the components
     LOCALLY
     FOR component IN $(cd ./components && ls -d */)
-        BUILD --pass-args ./components/${component}+tidy
+        BUILD ./components/${component}+tidy
     END
     FOR component IN $(cd ./ee && ls -d */)
-        BUILD --pass-args ./ee/${component}+tidy
+        BUILD ./ee/${component}+tidy
     END
-    BUILD --pass-args ./tests/integration+tidy
+    BUILD ./tests/integration+tidy
 
 tests:
     LOCALLY
-    BUILD --pass-args +tests-all
-    BUILD --pass-args +tests-integration
+    BUILD +tests-all
+    BUILD +tests-integration
 
 helm-publish:
     LOCALLY
-    BUILD --pass-args ./helm/+publish
-    BUILD --pass-args ./components/operator+helm-publish
+    BUILD ./helm/+publish
+    BUILD ./components/operator+helm-publish
 
 HELM_PUBLISH:
     FUNCTION
