@@ -3,6 +3,7 @@ package orchestrations
 import (
 	"fmt"
 	"github.com/formancehq/operator/internal/resources/brokers"
+	"k8s.io/apimachinery/pkg/types"
 	"strings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -138,11 +139,19 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 		)
 	}
 
-	brokerEnvVars, err := brokers.ResolveBrokerEnvVars(ctx, stack, "orchestration")
+	broker := &v1beta1.Broker{}
+	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
+		Name: stack.Name,
+	}, broker); err != nil {
+		return err
+	}
+
+	brokerEnvVars, err := brokers.GetBrokerEnvVars(ctx, broker.Status.URI, stack.Name, "orchestration")
 	if err != nil && !errors.Is(err, ErrNotFound) {
 		return err
 	}
 	env = append(env, brokerEnvVars...)
+	env = append(env, brokers.GetPublisherEnvVars(stack, broker, "orchestration", "")...)
 
 	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 	if err != nil {
