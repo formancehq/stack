@@ -9,5 +9,5 @@ type Platform struct {
 	// The licence information
 	LicenceSecret string
 	// The operator utils image version
-	UtilsVersion  string
+	UtilsVersion string
 }
