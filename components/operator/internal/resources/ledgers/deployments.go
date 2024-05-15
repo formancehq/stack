@@ -4,20 +4,21 @@ import (
 	"fmt"
 	"github.com/formancehq/operator/internal/resources/brokers"
 	"github.com/formancehq/operator/internal/resources/brokertopics"
+	"github.com/formancehq/operator/internal/resources/caddy"
 	"k8s.io/apimachinery/pkg/types"
 	"strconv"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
+	"github.com/formancehq/operator/internal/resources/applications"
 	"github.com/formancehq/operator/internal/resources/auths"
 	"github.com/formancehq/operator/internal/resources/databases"
-	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
 	"github.com/formancehq/operator/internal/resources/jobs"
 	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/services"
 	"github.com/formancehq/operator/internal/resources/settings"
-	v1 "k8s.io/api/apps/v1"
+	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -28,7 +29,7 @@ func installLedger(ctx core.Context, stack *v1beta1.Stack,
 
 	switch ledger.Spec.DeploymentStrategy {
 	case v1beta1.DeploymentStrategyMonoWriterMultipleReader:
-		if err := core.DeleteIfExists[*v1.Deployment](ctx, core.GetNamespacedResourceName(stack.Name, "ledger")); err != nil {
+		if err := core.DeleteIfExists[*appsv1.Deployment](ctx, core.GetNamespacedResourceName(stack.Name, "ledger")); err != nil {
 			return err
 		}
 		return installLedgerMonoWriterMultipleReader(ctx, stack, ledger, database, image, isV2)
@@ -69,7 +70,7 @@ func installLedgerSingleInstance(ctx core.Context, stack *v1beta1.Stack,
 		}
 	}
 
-	if err := createDeployment(ctx, stack, ledger, database, "ledger", *container, v2, deployments.WithReplicas(1)); err != nil {
+	if err := createDeployment(ctx, stack, ledger, "ledger", *container, v2, 1); err != nil {
 		return err
 	}
 
@@ -91,13 +92,13 @@ func getUpgradeContainer(ctx core.Context, stack *v1beta1.Stack, database *v1bet
 
 func installLedgerMonoWriterMultipleReader(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, database *v1beta1.Database, image string, v2 bool) error {
 
-	createDeployment := func(name string, container corev1.Container, mutators ...core.ObjectMutator[*v1.Deployment]) error {
+	createDeployment := func(name string, container corev1.Container, replicas uint64) error {
 		err := setCommonContainerConfiguration(ctx, stack, ledger, image, database, &container, v2)
 		if err != nil {
 			return err
 		}
 
-		if err := createDeployment(ctx, stack, ledger, database, name, container, v2, mutators...); err != nil {
+		if err := createDeployment(ctx, stack, ledger, name, container, v2, replicas); err != nil {
 			return err
 		}
 
@@ -112,14 +113,12 @@ func installLedgerMonoWriterMultipleReader(ctx core.Context, stack *v1beta1.Stac
 	if err != nil {
 		return err
 	}
-	if err := createDeployment("ledger-write", *container,
-		deployments.WithReplicas(1),
-	); err != nil {
+	if err := createDeployment("ledger-write", *container, 1); err != nil {
 		return err
 	}
 
 	container = createLedgerContainerReadOnly(v2)
-	if err := createDeployment("ledger-read", *container, deployments.WithReplicasFromSettings(ctx, stack)); err != nil {
+	if err := createDeployment("ledger-read", *container, 0); err != nil {
 		return err
 	}
 
@@ -133,7 +132,7 @@ func installLedgerMonoWriterMultipleReader(ctx core.Context, stack *v1beta1.Stac
 func uninstallLedgerMonoWriterMultipleReader(ctx core.Context, stack *v1beta1.Stack) error {
 
 	remove := func(name string) error {
-		if err := core.DeleteIfExists[*v1.Deployment](ctx, core.GetNamespacedResourceName(stack.Name, name)); err != nil {
+		if err := core.DeleteIfExists[*appsv1.Deployment](ctx, core.GetNamespacedResourceName(stack.Name, name)); err != nil {
 			return err
 		}
 		if err := core.DeleteIfExists[*corev1.Service](ctx, core.GetNamespacedResourceName(stack.Name, name)); err != nil {
@@ -151,39 +150,48 @@ func uninstallLedgerMonoWriterMultipleReader(ctx core.Context, stack *v1beta1.St
 		return err
 	}
 
-	if err := core.DeleteIfExists[*v1.Deployment](ctx, core.GetNamespacedResourceName(stack.Name, "ledger-gateway")); err != nil {
+	if err := core.DeleteIfExists[*appsv1.Deployment](ctx, core.GetNamespacedResourceName(stack.Name, "ledger-gateway")); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func createDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, database *v1beta1.Database,
-	name string, container corev1.Container, v2 bool, mutators ...core.ObjectMutator[*v1.Deployment]) error {
+func createDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, name string, container corev1.Container, v2 bool, replicas uint64) error {
 	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 	if err != nil {
 		return err
 	}
 
-	mutators = append([]core.ObjectMutator[*v1.Deployment]{
-		deployments.WithContainers(container),
-		deployments.WithMatchingLabels(name),
-		deployments.WithServiceAccountName(serviceAccountName),
-		func(t *v1.Deployment) error {
-			if !v2 {
-				t.Spec.Template.Spec.Volumes = []corev1.Volume{{
-					Name: "config",
-					VolumeSource: corev1.VolumeSource{
-						EmptyDir: &corev1.EmptyDirVolumeSource{},
-					},
-				}}
-			}
-			return nil
-		},
-	}, mutators...)
+	var volumes []corev1.Volume
+	if !v2 {
+		volumes = []corev1.Volume{{
+			Name: "config",
+			VolumeSource: corev1.VolumeSource{
+				EmptyDir: &corev1.EmptyDirVolumeSource{},
+			},
+		}}
+	}
 
-	_, err = deployments.CreateOrUpdate(ctx, ledger, name, mutators...)
-	return err
+	tpl := &appsv1.Deployment{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: name,
+		},
+		Spec: appsv1.DeploymentSpec{
+			Template: corev1.PodTemplateSpec{
+				Spec: corev1.PodSpec{
+					Containers:         []corev1.Container{container},
+					Volumes:            volumes,
+					ServiceAccountName: serviceAccountName,
+				},
+			},
+		},
+	}
+
+	return applications.
+		New(ledger, tpl).
+		WithStateful(replicas > 0).
+		Install(ctx)
 }
 
 func setCommonContainerConfiguration(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, image string, database *v1beta1.Database, container *corev1.Container, v2 bool) error {
@@ -222,8 +230,8 @@ func setCommonContainerConfiguration(ctx core.Context, stack *v1beta1.Stack, led
 	container.Env = append(container.Env, env...)
 	container.Env = append(container.Env, core.Env(fmt.Sprintf("%sSTORAGE_POSTGRES_CONN_STRING", prefix), fmt.Sprintf("$(%sPOSTGRES_URI)", prefix)))
 	container.Env = append(container.Env, core.Env(fmt.Sprintf("%sSTORAGE_DRIVER", prefix), "postgres"))
-	container.Ports = []corev1.ContainerPort{deployments.StandardHTTPPort()}
-	container.LivenessProbe = deployments.DefaultLiveness("http")
+	container.Ports = []corev1.ContainerPort{applications.StandardHTTPPort()}
+	container.LivenessProbe = applications.DefaultLiveness("http")
 
 	return nil
 }
@@ -296,7 +304,7 @@ func createLedgerContainerReadOnly(v2 bool) *corev1.Container {
 
 func createGatewayDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger) error {
 
-	caddyfileConfigMap, err := settings.CreateCaddyfileConfigMap(ctx, stack, "ledger", Caddyfile, map[string]any{
+	caddyfileConfigMap, err := caddy.CreateCaddyfileConfigMap(ctx, stack, "ledger", Caddyfile, map[string]any{
 		"Debug": stack.Spec.Debug || ledger.Spec.Debug,
 	}, core.WithController[*corev1.ConfigMap](ctx.GetScheme(), ledger))
 	if err != nil {
@@ -311,12 +319,15 @@ func createGatewayDeployment(ctx core.Context, stack *v1beta1.Stack, ledger *v1b
 		return err
 	}
 
-	_, err = deployments.CreateOrUpdate(ctx, ledger, "ledger-gateway",
-		settings.ConfigureCaddy(ctx, stack, ledger, caddyfileConfigMap, caddyImage, env),
-		deployments.WithReplicasFromSettings(ctx, stack),
-		deployments.WithMatchingLabels("ledger"),
-	)
-	return err
+	tpl, err := caddy.DeploymentTemplate(ctx, stack, ledger, caddyfileConfigMap, caddyImage, env)
+	if err != nil {
+		return err
+	}
+
+	tpl.Name = "ledger-gateway"
+	return applications.
+		New(ledger, tpl).
+		Install(ctx)
 }
 
 func migrate(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, database *v1beta1.Database, image, version string) error {
@@ -332,7 +343,7 @@ func migrate(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, dat
 
 	return jobs.Handle(ctx, ledger, "migrate-v2", upgradeContainer,
 		jobs.PreCreate(func() error {
-			list := &v1.DeploymentList{}
+			list := &appsv1.DeploymentList{}
 			if err := ctx.GetClient().List(ctx, list, client.InNamespace(stack.Name)); err != nil {
 				return err
 			}

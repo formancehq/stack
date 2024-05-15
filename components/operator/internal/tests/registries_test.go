@@ -66,7 +66,7 @@ var _ = Describe("Registries", func() {
 		AfterEach(func() {
 			Expect(Delete(settings)).To(Succeed())
 		})
-		It("Should have image rewrited", func() {
+		It("Should have image re-written", func() {
 			deployment := &appsv1.Deployment{}
 			Eventually(func(g Gomega) error {
 				g.Expect(LoadResource(stack.Name, "ledger", deployment)).To(Succeed())

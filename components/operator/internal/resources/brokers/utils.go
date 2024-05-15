@@ -12,15 +12,6 @@ import (
 	v1 "k8s.io/api/core/v1"
 )
 
-func ResolveBrokerEnvVars(ctx core.Context, stack *v1beta1.Stack, serviceName string) ([]v1.EnvVar, error) {
-	uri, err := settings.RequireURL(ctx, stack.Name, "broker", "dsn")
-	if err != nil {
-		return nil, err
-	}
-
-	return GetBrokerEnvVars(ctx, uri, stack.Name, serviceName)
-}
-
 func GetBrokerEnvVars(ctx core.Context, brokerURI *v1beta1.URI, stackName, serviceName string) ([]v1.EnvVar, error) {
 	return GetEnvVarsWithPrefix(ctx, brokerURI, stackName, serviceName, "")
 }

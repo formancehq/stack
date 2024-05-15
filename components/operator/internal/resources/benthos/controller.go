@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
-	"github.com/formancehq/operator/internal/resources/deployments"
+	"github.com/formancehq/operator/internal/resources/applications"
 	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/resourcereferences"
 	benthosOperator "github.com/formancehq/operator/internal/resources/searches/benthos"
@@ -16,6 +16,7 @@ import (
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -299,54 +300,65 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, b *v1beta1.Benthos) err
 	if err != nil {
 		return err
 	}
-	_, err = deployments.CreateOrUpdate(ctx, b, "benthos",
-		resourcereferences.Annotate("elasticsearch-secret-hash", resourceReference),
-		deployments.WithMatchingLabels("benthos"),
-		deployments.WithServiceAccountName(serviceAccountName),
-		deployments.WithInitContainers(b.Spec.InitContainers...),
-		deployments.WithContainers(corev1.Container{
-			Name:    "benthos",
-			Image:   benthosImage,
-			Env:     env,
-			Command: cmd,
-			Ports: []corev1.ContainerPort{{
-				Name:          "http",
-				ContainerPort: 4195,
-			}},
-			VolumeMounts: append(volumeMounts, corev1.VolumeMount{
-				Name:      "streams",
-				ReadOnly:  true,
-				MountPath: "/streams",
-			}),
-		}),
-		deployments.WithVolumes(append(volumes, corev1.Volume{
-			Name: "streams",
-			VolumeSource: corev1.VolumeSource{
-				Projected: &corev1.ProjectedVolumeSource{
-					Sources: Map(streams, func(stream v1beta1.BenthosStream) corev1.VolumeProjection {
-						return corev1.VolumeProjection{
-							ConfigMap: &corev1.ConfigMapProjection{
-								LocalObjectReference: corev1.LocalObjectReference{
-									Name: fmt.Sprintf("stream-%s", stream.Name),
+
+	podAnnotations := map[string]string{
+		"config-hash": HashFromConfigMaps(configMaps...),
+	}
+	if resourceReference != nil {
+		podAnnotations["elasticsearch-secret-hash"] = resourceReference.Status.Hash
+	}
+
+	return applications.
+		New(b, &appsv1.Deployment{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: "benthos",
+			},
+			Spec: appsv1.DeploymentSpec{
+				Template: corev1.PodTemplateSpec{
+					ObjectMeta: metav1.ObjectMeta{
+						Annotations: podAnnotations,
+					},
+					Spec: corev1.PodSpec{
+						InitContainers: b.Spec.InitContainers,
+						Containers: []corev1.Container{{
+							Name:    "benthos",
+							Image:   benthosImage,
+							Env:     env,
+							Command: cmd,
+							Ports: []corev1.ContainerPort{{
+								Name:          "http",
+								ContainerPort: 4195,
+							}},
+							VolumeMounts: append(volumeMounts, corev1.VolumeMount{
+								Name:      "streams",
+								ReadOnly:  true,
+								MountPath: "/streams",
+							}),
+						}},
+						Volumes: append(volumes, corev1.Volume{
+							Name: "streams",
+							VolumeSource: corev1.VolumeSource{
+								Projected: &corev1.ProjectedVolumeSource{
+									Sources: Map(streams, func(stream v1beta1.BenthosStream) corev1.VolumeProjection {
+										return corev1.VolumeProjection{
+											ConfigMap: &corev1.ConfigMapProjection{
+												LocalObjectReference: corev1.LocalObjectReference{
+													Name: fmt.Sprintf("stream-%s", stream.Name),
+												},
+												Items: []corev1.KeyToPath{{
+													Key:  "stream.yaml",
+													Path: stream.Spec.Name + ".yaml",
+												}},
+											},
+										}
+									}),
 								},
-								Items: []corev1.KeyToPath{{
-									Key:  "stream.yaml",
-									Path: stream.Spec.Name + ".yaml",
-								}},
 							},
-						}
-					}),
+						}),
+						ServiceAccountName: serviceAccountName,
+					},
 				},
 			},
-		})...),
-		func(t *appsv1.Deployment) error {
-			t.Spec.Template.Annotations = MergeMaps(t.Spec.Template.Annotations, map[string]string{
-				"config-hash": HashFromConfigMaps(configMaps...),
-			})
-
-			return nil
-		},
-	)
-
-	return err
+		}).
+		Install(ctx)
 }

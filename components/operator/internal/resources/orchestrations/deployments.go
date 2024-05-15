@@ -3,20 +3,22 @@ package orchestrations
 import (
 	"fmt"
 	"github.com/formancehq/operator/internal/resources/brokers"
+	appsv1 "k8s.io/api/apps/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 	"strings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
+	"github.com/formancehq/operator/internal/resources/applications"
 	"github.com/formancehq/operator/internal/resources/authclients"
 	"github.com/formancehq/operator/internal/resources/auths"
 	"github.com/formancehq/operator/internal/resources/databases"
-	"github.com/formancehq/operator/internal/resources/deployments"
 	"github.com/formancehq/operator/internal/resources/gateways"
-	"github.com/formancehq/operator/internal/resources/licence"
 	"github.com/formancehq/operator/internal/resources/resourcereferences"
 	"github.com/formancehq/operator/internal/resources/settings"
 	"github.com/pkg/errors"
-	v1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 )
 
 func createAuthClient(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.Orchestration) (*v1beta1.AuthClient, error) {
@@ -46,7 +48,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 	database *v1beta1.Database, client *v1beta1.AuthClient,
 	consumer *v1beta1.BrokerConsumer, image string) error {
 
-	env := make([]v1.EnvVar, 0)
+	env := make([]corev1.EnvVar, 0)
 	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, LowerCamelCaseKind(ctx, orchestration))
 	if err != nil {
 		return err
@@ -63,13 +65,7 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 		return err
 	}
 
-	licenceResourceReference, licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack, "orchestration", orchestration)
-	if err != nil {
-		return err
-	}
-
 	env = append(env, gatewayEnv...)
-	env = append(env, licenceEnvVars...)
 	env = append(env, GetDevEnvVars(stack, orchestration)...)
 	env = append(env, postgresEnvVar...)
 
@@ -82,11 +78,11 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 		return err
 	}
 
-	var databaseResourceReference *v1beta1.ResourceReference
+	var temporalSecretResourceReference *v1beta1.ResourceReference
 	if secret := temporalURI.Query().Get("secret"); secret != "" {
-		databaseResourceReference, err = resourcereferences.Create(ctx, database, "temporal", secret, &v1.Secret{})
+		temporalSecretResourceReference, err = resourcereferences.Create(ctx, orchestration, "temporal", secret, &corev1.Secret{})
 	} else {
-		err = resourcereferences.Delete(ctx, database, "temporal")
+		err = resourcereferences.Delete(ctx, orchestration, "temporal")
 	}
 	if err != nil {
 		return err
@@ -138,32 +134,54 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 		)
 	}
 
-	brokerEnvVars, err := brokers.ResolveBrokerEnvVars(ctx, stack, "orchestration")
+	broker := &v1beta1.Broker{}
+	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
+		Name: stack.Name,
+	}, broker); err != nil {
+		return err
+	}
+
+	brokerEnvVars, err := brokers.GetBrokerEnvVars(ctx, broker.Status.URI, stack.Name, "orchestration")
 	if err != nil && !errors.Is(err, ErrNotFound) {
 		return err
 	}
 	env = append(env, brokerEnvVars...)
+	env = append(env, brokers.GetPublisherEnvVars(stack, broker, "orchestration", "")...)
 
 	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 	if err != nil {
 		return err
 	}
 
-	_, err = deployments.CreateOrUpdate(ctx, orchestration, "orchestration",
-		resourcereferences.Annotate("temporal-secret-hash", databaseResourceReference),
-		resourcereferences.Annotate("licence-secret-hash", licenceResourceReference),
-		deployments.WithServiceAccountName(serviceAccountName),
-		deployments.WithReplicasFromSettings(ctx, stack),
-		deployments.WithMatchingLabels("orchestration"),
-		deployments.WithContainers(v1.Container{
-			Name:          "api",
-			Env:           env,
-			Image:         image,
-			Ports:         []v1.ContainerPort{deployments.StandardHTTPPort()},
-			LivenessProbe: deployments.DefaultLiveness("http"),
-		}),
-	)
-	return err
+	annotations := map[string]string{}
+	if temporalSecretResourceReference != nil {
+		annotations["database-secret-hash"] = temporalSecretResourceReference.Status.Hash
+	}
+
+	tpl := &appsv1.Deployment{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "orchestration",
+		},
+		Spec: appsv1.DeploymentSpec{
+			Template: corev1.PodTemplateSpec{
+				Spec: corev1.PodSpec{
+					ServiceAccountName: serviceAccountName,
+					Containers: []corev1.Container{{
+						Name:          "api",
+						Env:           env,
+						Image:         image,
+						Ports:         []corev1.ContainerPort{applications.StandardHTTPPort()},
+						LivenessProbe: applications.DefaultLiveness("http"),
+					}},
+				},
+			},
+		},
+	}
+
+	return applications.
+		New(orchestration, tpl).
+		IsEE().
+		Install(ctx)
 }
 
 func validateTemporalURI(temporalURI *v1beta1.URI) error {

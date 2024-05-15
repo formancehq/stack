@@ -102,7 +102,7 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 
 		if limits := computeResourceList(cfg.requirements.Limits); limits != "" {
 			settingName := fmt.Sprintf("%s-%s-resource-limits", configuration.Name, cfg.deployment)
-			settingKey := fmt.Sprintf("deployments.%s.containers.*.resource-requirements.limits", cfg.deployment)
+			settingKey := fmt.Sprintf("applications.%s.containers.*.resource-requirements.limits", cfg.deployment)
 
 			_, err := settings.CreateOrUpdate(ctx, settingName, settingKey, limits, stackNames...)
 			if err != nil {
@@ -112,7 +112,7 @@ func Reconcile(ctx Context, configuration *v1beta3.Configuration) error {
 
 		if requests := computeResourceList(cfg.requirements.Request); requests != "" {
 			settingName := fmt.Sprintf("%s-%s-resource-requests", configuration.Name, cfg.deployment)
-			settingKey := fmt.Sprintf("deployments.%s.containers.*.resource-requirements.requests", cfg.deployment)
+			settingKey := fmt.Sprintf("applications.%s.containers.*.resource-requirements.requests", cfg.deployment)
 
 			_, err := settings.CreateOrUpdate(ctx, settingName, settingKey, requests, stackNames...)
 			if err != nil {

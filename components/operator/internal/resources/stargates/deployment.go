@@ -3,18 +3,19 @@ package stargates
 import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
-	"github.com/formancehq/operator/internal/resources/deployments"
+	"github.com/formancehq/operator/internal/resources/applications"
 	"github.com/formancehq/operator/internal/resources/gateways"
-	"github.com/formancehq/operator/internal/resources/licence"
 	"github.com/formancehq/operator/internal/resources/registries"
-	"github.com/formancehq/operator/internal/resources/resourcereferences"
 	"github.com/formancehq/operator/internal/resources/settings"
+	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func createDeployment(ctx core.Context, stack *v1beta1.Stack, stargate *v1beta1.Stargate, version string) error {
 
 	env := make([]v1.EnvVar, 0)
+
 	otlpEnv, err := settings.GetOTELEnvVars(ctx, stack.Name, core.LowerCamelCaseKind(ctx, stargate))
 	if err != nil {
 		return err
@@ -26,12 +27,6 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, stargate *v1beta1.
 		return err
 	}
 	env = append(env, gatewayEnv...)
-
-	resourceReference, licenceEnvVars, err := licence.GetLicenceEnvVars(ctx, stack, "stargate", stargate)
-	if err != nil {
-		return err
-	}
-	env = append(env, licenceEnvVars...)
 
 	env = append(env, core.GetDevEnvVars(stack, stargate)...)
 	env = append(env,
@@ -49,17 +44,25 @@ func createDeployment(ctx core.Context, stack *v1beta1.Stack, stargate *v1beta1.
 		return err
 	}
 
-	_, err = deployments.CreateOrUpdate(ctx, stargate, "stargate",
-		resourcereferences.Annotate("licence-secret-hash", resourceReference),
-		deployments.WithReplicasFromSettings(ctx, stack),
-		deployments.WithContainers(v1.Container{
-			Name:          "stargate",
-			Env:           env,
-			Image:         image,
-			Ports:         []v1.ContainerPort{deployments.StandardHTTPPort()},
-			LivenessProbe: deployments.DefaultLiveness("http"),
-		}),
-		deployments.WithMatchingLabels("stargate"),
-	)
-	return err
+	return applications.
+		New(stargate, &appsv1.Deployment{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: "stargate",
+			},
+			Spec: appsv1.DeploymentSpec{
+				Template: v1.PodTemplateSpec{
+					Spec: v1.PodSpec{
+						Containers: []v1.Container{{
+							Name:          "stargate",
+							Env:           env,
+							Image:         image,
+							Ports:         []v1.ContainerPort{applications.StandardHTTPPort()},
+							LivenessProbe: applications.DefaultLiveness("http"),
+						}},
+					},
+				},
+			},
+		}).
+		IsEE().
+		Install(ctx)
 }
