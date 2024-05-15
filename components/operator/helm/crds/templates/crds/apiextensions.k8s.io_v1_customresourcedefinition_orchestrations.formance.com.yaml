@@ -5,6 +5,7 @@ metadata:
     controller-gen.kubebuilder.io/version: v0.14.0
     helm.sh/resource-policy: keep
   labels:
+    formance.com/is-ee: "true"
     formance.com/kind: module
   name: orchestrations.formance.com
 spec:

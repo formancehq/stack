@@ -20,6 +20,7 @@ var _ MappedNullable = &RegionCapability{}
 // RegionCapability struct for RegionCapability
 type RegionCapability struct {
 	MODULE_LIST []string `json:"MODULE_LIST,omitempty"`
+	EE []string `json:"EE,omitempty"`
 }
 
 // NewRegionCapability instantiates a new RegionCapability object
@@ -71,6 +72,38 @@ func (o *RegionCapability) SetMODULE_LIST(v []string) {
 	o.MODULE_LIST = v
 }
 
+// GetEE returns the EE field value if set, zero value otherwise.
+func (o *RegionCapability) GetEE() []string {
+	if o == nil || IsNil(o.EE) {
+		var ret []string
+		return ret
+	}
+	return o.EE
+}
+
+// GetEEOk returns a tuple with the EE field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *RegionCapability) GetEEOk() ([]string, bool) {
+	if o == nil || IsNil(o.EE) {
+		return nil, false
+	}
+	return o.EE, true
+}
+
+// HasEE returns a boolean if a field has been set.
+func (o *RegionCapability) HasEE() bool {
+	if o != nil && !IsNil(o.EE) {
+		return true
+	}
+
+	return false
+}
+
+// SetEE gets a reference to the given []string and assigns it to the EE field.
+func (o *RegionCapability) SetEE(v []string) {
+	o.EE = v
+}
+
 func (o RegionCapability) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -83,6 +116,9 @@ func (o RegionCapability) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.MODULE_LIST) {
 		toSerialize["MODULE_LIST"] = o.MODULE_LIST
+	}
+	if !IsNil(o.EE) {
+		toSerialize["EE"] = o.EE
 	}
 	return toSerialize, nil
 }

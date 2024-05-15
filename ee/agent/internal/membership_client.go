@@ -40,7 +40,7 @@ type membershipClient struct {
 	address string
 }
 
-func (c *membershipClient) connectMetadata(ctx context.Context, modules []string) (metadata.MD, error) {
+func (c *membershipClient) connectMetadata(ctx context.Context, modules []string, eeModules []string) (metadata.MD, error) {
 
 	md, err := c.authenticator.authenticate(ctx)
 	if err != nil {
@@ -58,11 +58,12 @@ func (c *membershipClient) connectMetadata(ctx context.Context, modules []string
 	md.Append(metadataVersion, c.clientInfo.Version)
 	md.Append(metadataCapabilities, capabilityEE, capabilityModuleList)
 	md.Append(capabilityModuleList, modules...)
+	md.Append(capabilityEE, eeModules...)
 
 	return md, nil
 }
 
-func (c *membershipClient) connect(ctx context.Context, modules []string) error {
+func (c *membershipClient) connect(ctx context.Context, modules []string, eeModules []string) error {
 	sharedlogging.FromContext(ctx).WithFields(map[string]any{
 		"id": c.clientInfo.ID,
 	}).Infof("Establish connection to server")
@@ -79,7 +80,7 @@ func (c *membershipClient) connect(ctx context.Context, modules []string) error 
 	sharedlogging.FromContext(ctx).Info("Connected to GRPC server!")
 	c.serverClient = generated.NewServerClient(conn)
 
-	md, err := c.connectMetadata(ctx, modules)
+	md, err := c.connectMetadata(ctx, modules, eeModules)
 	if err != nil {
 		return err
 	}

@@ -5,6 +5,7 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.14.0
   labels:
+    formance.com/is-ee: "true"
     formance.com/kind: module
   name: searches.formance.com
 spec:
