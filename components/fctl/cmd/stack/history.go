@@ -77,7 +77,7 @@ func (c *HistoryController) Run(cmd *cobra.Command, args []string) (fctl.Rendera
 	action := fctl.GetString(cmd, actionFlag)
 	data := fctl.GetString(cmd, dataFlag)
 	if cursor != "" {
-		if userID != "" || action != "" || data != "" || stackID != "" {
+		if userID != "" || action != "" || data != "" {
 			return nil, errors.New("cursor can't be used with other flags")
 		}
 
