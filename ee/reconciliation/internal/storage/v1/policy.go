@@ -1,9 +1,10 @@
-package storage
+package v1
 
 import (
 	"context"
 
 	"github.com/formancehq/reconciliation/internal/models"
+	storageerrors "github.com/formancehq/reconciliation/internal/storage/errors"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/formancehq/stack/libs/go-libs/query"
 	"github.com/google/uuid"
@@ -16,7 +17,7 @@ func (s *Storage) CreatePolicy(ctx context.Context, policy *models.Policy) error
 		Model(policy).
 		Exec(ctx)
 	if err != nil {
-		return e("failed to create policy", err)
+		return storageerrors.E("failed to create policy", err)
 	}
 
 	return nil
@@ -28,7 +29,7 @@ func (s *Storage) DeletePolicy(ctx context.Context, id uuid.UUID) error {
 		Where("id = ?", id).
 		Exec(ctx)
 	if err != nil {
-		return e("failed to delete policy", err)
+		return storageerrors.E("failed to delete policy", err)
 	}
 
 	return nil
@@ -41,7 +42,7 @@ func (s *Storage) GetPolicy(ctx context.Context, id uuid.UUID) (*models.Policy, 
 		Where("id = ?", id).
 		Scan(ctx)
 	if err != nil {
-		return nil, e("failed to get policy", err)
+		return nil, storageerrors.E("failed to get policy", err)
 	}
 
 	return &policy, nil
@@ -73,8 +74,8 @@ func (s *Storage) ListPolicies(ctx context.Context, q GetPoliciesQuery) (*bunpag
 		}
 	}
 
-	return paginateWithOffset[PaginatedQueryOptions[PoliciesFilters], models.Policy](s, ctx,
-		(*bunpaginate.OffsetPaginatedQuery[PaginatedQueryOptions[PoliciesFilters]])(&q),
+	return paginateWithOffset[bunpaginate.PaginatedQueryOptions[PoliciesFilters], models.Policy](s, ctx,
+		(*bunpaginate.OffsetPaginatedQuery[bunpaginate.PaginatedQueryOptions[PoliciesFilters]])(&q),
 		func(query *bun.SelectQuery) *bun.SelectQuery {
 			return s.buildPolicyListQuery(query, q, where, args)
 		},
@@ -86,45 +87,45 @@ func (s *Storage) policyQueryContext(qb query.Builder, q GetPoliciesQuery) (stri
 		switch {
 		case key == "ledgerQuery":
 			if operator != "$match" {
-				return "", nil, errors.Wrap(ErrInvalidQuery, "'ledgerQuery' column can only be used with $match")
+				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'ledgerQuery' column can only be used with $match")
 			}
 			switch ledgerQuery := value.(type) {
 			case string:
 				return "ledger_query = ?", []any{ledgerQuery}, nil
 			default:
-				return "", nil, errors.Wrap(ErrInvalidQuery, "'ledgerQuery' column can only be used with string")
+				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'ledgerQuery' column can only be used with string")
 			}
 		case key == "ledgerName":
 			if operator != "$match" {
-				return "", nil, errors.Wrap(ErrInvalidQuery, "'ledgerName' column can only be used with $match")
+				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'ledgerName' column can only be used with $match")
 			}
 			switch name := value.(type) {
 			case string:
 				return "ledger_name = ?", []any{name}, nil
 			default:
-				return "", nil, errors.Wrap(ErrInvalidQuery, "'ledgerName' column can only be used with string")
+				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'ledgerName' column can only be used with string")
 			}
 		case key == "paymentsPoolID":
 			if operator != "$match" {
-				return "", nil, errors.Wrap(ErrInvalidQuery, "'paymentsPoolID' column can only be used with $match")
+				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'paymentsPoolID' column can only be used with $match")
 			}
 			switch pID := value.(type) {
 			case string:
 				return "payments_pool_id = ?", []any{pID}, nil
 			default:
-				return "", nil, errors.Wrap(ErrInvalidQuery, "'paymentsPoolID' column can only be used with string")
+				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'paymentsPoolID' column can only be used with string")
 			}
 		default:
-			return "", nil, errors.Wrapf(ErrInvalidQuery, "unknown key '%s' when building query", key)
+			return "", nil, errors.Wrapf(storageerrors.ErrInvalidQuery, "unknown key '%s' when building query", key)
 		}
 	}))
 }
 
 type PoliciesFilters struct{}
 
-type GetPoliciesQuery bunpaginate.OffsetPaginatedQuery[PaginatedQueryOptions[PoliciesFilters]]
+type GetPoliciesQuery bunpaginate.OffsetPaginatedQuery[bunpaginate.PaginatedQueryOptions[PoliciesFilters]]
 
-func NewGetPoliciesQuery(opts PaginatedQueryOptions[PoliciesFilters]) GetPoliciesQuery {
+func NewGetPoliciesQuery(opts bunpaginate.PaginatedQueryOptions[PoliciesFilters]) GetPoliciesQuery {
 	return GetPoliciesQuery{
 		PageSize: opts.PageSize,
 		Order:    bunpaginate.OrderAsc,

@@ -75,7 +75,7 @@ func runServer(version string) func(cmd *cobra.Command, args []string) error {
 
 		options = append(options,
 			stackClientModule(),
-			api.HTTPModule(sharedapi.ServiceInfo{
+			api.Module(sharedapi.ServiceInfo{
 				Version: version,
 			}, viper.GetString(listenFlag)),
 			licence.CLIModule(ServiceName),

@@ -1,4 +1,4 @@
-package api
+package v1
 
 import (
 	"bytes"
@@ -11,11 +11,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/formancehq/reconciliation/internal/api/service"
+	"github.com/formancehq/reconciliation/internal/api/v1/service"
 	"github.com/formancehq/reconciliation/internal/models"
-	"github.com/formancehq/reconciliation/internal/storage"
+	storageerrors "github.com/formancehq/reconciliation/internal/storage/errors"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/auth"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -259,7 +258,7 @@ func TestReconciliation(t *testing.T) {
 				LedgerBalances:       map[string]*big.Int{},
 				Error:                "",
 			},
-			serviceError:       storage.ErrNotFound,
+			serviceError:       storageerrors.ErrNotFound,
 			expectedStatusCode: http.StatusNotFound,
 			expectedErrorCode:  sharedapi.ErrorCodeNotFound,
 		},
@@ -320,7 +319,7 @@ func TestReconciliation(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := newRouter(backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
+			router := newTestRouter(backend)
 
 			var body []byte
 			if testCase.invalidBody {
@@ -381,7 +380,7 @@ func TestGetReconciliation(t *testing.T) {
 		},
 		{
 			name:               "storage error not found",
-			serviceError:       storage.ErrNotFound,
+			serviceError:       storageerrors.ErrNotFound,
 			expectedStatusCode: http.StatusNotFound,
 			expectedErrorCode:  sharedapi.ErrorCodeNotFound,
 		},
@@ -445,7 +444,7 @@ func TestGetReconciliation(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := newRouter(backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
+			router := newTestRouter(backend)
 
 			req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/reconciliations/%s", testCase.id.String()), nil)
 			rec := httptest.NewRecorder()

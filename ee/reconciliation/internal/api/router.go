@@ -3,20 +3,24 @@ package api
 import (
 	"net/http"
 
-	"github.com/formancehq/reconciliation/internal/api/backend"
+	v1 "github.com/formancehq/reconciliation/internal/api/v1"
+	backendv1 "github.com/formancehq/reconciliation/internal/api/v1/backend"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/health"
+	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/riandyrn/otelchi"
 )
 
 func newRouter(
-	b backend.Backend,
+	backendV1 backendv1.Backend,
 	serviceInfo api.ServiceInfo,
+	healthController *health.HealthController,
 	a auth.Auth,
-	healthController *health.HealthController) *chi.Mux {
+) *chi.Mux {
 	r := chi.NewRouter()
+	r.Use(middleware.Recoverer)
 	r.Use(func(handler http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
@@ -30,14 +34,7 @@ func newRouter(
 		r.Use(auth.Middleware(a))
 		r.Use(otelchi.Middleware("reconciliation"))
 
-		r.Get("/reconciliations/{reconciliationID}", getReconciliationHandler(b))
-		r.Get("/reconciliations", listReconciliationsHandler(b))
-
-		r.Post("/policies", createPolicyHandler(b))
-		r.Get("/policies", listPoliciesHandler(b))
-		r.Delete("/policies/{policyID}", deletePolicyHandler(b))
-		r.Get("/policies/{policyID}", getPolicyHandler(b))
-		r.Post("/policies/{policyID}/reconciliation", reconciliationHandler(b))
+		v1.NewRouter(backendV1, r)
 	})
 
 	return r

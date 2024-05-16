@@ -12,7 +12,7 @@ var ErrNotFound = errors.New("not found")
 var ErrDuplicateKeyValue = errors.New("duplicate key value")
 var ErrInvalidQuery = errors.New("invalid query")
 
-func e(msg string, err error) error {
+func E(msg string, err error) error {
 	if err == nil {
 		return nil
 	}

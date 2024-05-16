@@ -7,6 +7,7 @@ toolchain go1.21.5
 require (
 	github.com/formancehq/formance-sdk-go/v2 v2.0.0-00010101000000-000000000000
 	github.com/formancehq/stack/libs/go-libs v0.0.0-00010101000000-000000000000
+	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.4.0

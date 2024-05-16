@@ -3,11 +3,10 @@ package backend
 import (
 	"context"
 
-	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
-
-	"github.com/formancehq/reconciliation/internal/api/service"
+	"github.com/formancehq/reconciliation/internal/api/v1/service"
 	"github.com/formancehq/reconciliation/internal/models"
-	"github.com/formancehq/reconciliation/internal/storage"
+	storage "github.com/formancehq/reconciliation/internal/storage/v1"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 )
 
 //go:generate mockgen -source backend.go -destination backend_generated.go -package backend . Service

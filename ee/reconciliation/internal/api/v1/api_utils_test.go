@@ -1,9 +1,10 @@
-package api
+package v1
 
 import (
 	"testing"
 
-	"github.com/formancehq/reconciliation/internal/api/backend"
+	"github.com/formancehq/reconciliation/internal/api/v1/backend"
+	"github.com/go-chi/chi/v5"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -20,4 +21,12 @@ func newTestingBackend(t *testing.T) (*backend.MockBackend, *backend.MockService
 		ctrl.Finish()
 	})
 	return backend, mockService
+}
+
+func newTestRouter(backend backend.Backend) *chi.Mux {
+	r := chi.NewRouter()
+
+	NewRouter(backend, r)
+
+	return r
 }

@@ -1,4 +1,4 @@
-package api
+package v1
 
 import (
 	"bytes"
@@ -9,11 +9,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/formancehq/reconciliation/internal/api/service"
+	"github.com/formancehq/reconciliation/internal/api/v1/service"
 	"github.com/formancehq/reconciliation/internal/models"
-	"github.com/formancehq/reconciliation/internal/storage"
+	storageerrors "github.com/formancehq/reconciliation/internal/storage/errors"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/auth"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -84,7 +83,7 @@ func TestCreatePolicy(t *testing.T) {
 				LedgerQuery:    map[string]interface{}{},
 				PaymentsPoolID: "00000000-0000-0000-0000-000000000000",
 			},
-			serviceError:       storage.ErrNotFound,
+			serviceError:       storageerrors.ErrNotFound,
 			expectedStatusCode: http.StatusNotFound,
 			expectedErrorCode:  sharedapi.ErrorCodeNotFound,
 		},
@@ -144,7 +143,7 @@ func TestCreatePolicy(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := newRouter(backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
+			router := newTestRouter(backend)
 
 			var body []byte
 			if testCase.invalidBody {
@@ -207,7 +206,7 @@ func TestDeletePolicy(t *testing.T) {
 		{
 			name:               "storage error not found",
 			policyID:           "invalid",
-			serviceError:       storage.ErrNotFound,
+			serviceError:       storageerrors.ErrNotFound,
 			expectedStatusCode: http.StatusNotFound,
 			expectedErrorCode:  sharedapi.ErrorCodeNotFound,
 		},
@@ -241,7 +240,7 @@ func TestDeletePolicy(t *testing.T) {
 					Return(testCase.serviceError)
 			}
 
-			router := newRouter(backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
+			router := newTestRouter(backend)
 
 			req := httptest.NewRequest(http.MethodDelete, "/policies/"+testCase.policyID, nil)
 			rec := httptest.NewRecorder()
@@ -291,7 +290,7 @@ func TestGetPolicy(t *testing.T) {
 		{
 			name:               "storage error not found",
 			policyID:           "00000000-0000-0000-0000-000000000000",
-			serviceError:       storage.ErrNotFound,
+			serviceError:       storageerrors.ErrNotFound,
 			expectedStatusCode: http.StatusNotFound,
 			expectedErrorCode:  sharedapi.ErrorCodeNotFound,
 		},
@@ -346,7 +345,7 @@ func TestGetPolicy(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := newRouter(backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
+			router := newTestRouter(backend)
 
 			req := httptest.NewRequest(http.MethodGet, "/policies/"+testCase.policyID, nil)
 			rec := httptest.NewRecorder()

@@ -9,12 +9,12 @@ import (
 
 func Migrate(ctx context.Context, db *bun.DB) error {
 	migrator := migrations.NewMigrator()
-	registerMigrations(migrator)
+	registerMigrationsV1(migrator)
 
 	return migrator.Up(ctx, db)
 }
 
-func registerMigrations(migrator *migrations.Migrator) {
+func registerMigrationsV1(migrator *migrations.Migrator) {
 	migrator.RegisterMigrations(
 		migrations.Migration{
 			Up: func(tx bun.Tx) error {

@@ -1,10 +1,11 @@
-package api
+package v1
 
 import (
 	"io"
 	"net/http"
 
-	"github.com/formancehq/reconciliation/internal/storage"
+	storage "github.com/formancehq/reconciliation/internal/storage/v1"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/formancehq/stack/libs/go-libs/query"
 )
@@ -21,7 +22,7 @@ func getQueryBuilder(r *http.Request) (query.Builder, error) {
 	return nil, nil
 }
 
-func getPaginatedQueryOptionsReconciliations(r *http.Request) (*storage.PaginatedQueryOptions[storage.ReconciliationsFilters], error) {
+func getPaginatedQueryOptionsReconciliations(r *http.Request) (*bunpaginate.PaginatedQueryOptions[storage.ReconciliationsFilters], error) {
 	qb, err := getQueryBuilder(r)
 	if err != nil {
 		return nil, err
@@ -33,12 +34,12 @@ func getPaginatedQueryOptionsReconciliations(r *http.Request) (*storage.Paginate
 	}
 
 	filters := storage.ReconciliationsFilters{}
-	return pointer.For(storage.NewPaginatedQueryOptions(filters).
+	return pointer.For(bunpaginate.NewPaginatedQueryOptions(filters).
 		WithQueryBuilder(qb).
 		WithPageSize(pageSize)), nil
 }
 
-func getPaginatedQueryOptionsPolicies(r *http.Request) (*storage.PaginatedQueryOptions[storage.PoliciesFilters], error) {
+func getPaginatedQueryOptionsPolicies(r *http.Request) (*bunpaginate.PaginatedQueryOptions[storage.PoliciesFilters], error) {
 	qb, err := getQueryBuilder(r)
 	if err != nil {
 		return nil, err
@@ -50,7 +51,7 @@ func getPaginatedQueryOptionsPolicies(r *http.Request) (*storage.PaginatedQueryO
 	}
 
 	filters := storage.PoliciesFilters{}
-	return pointer.For(storage.NewPaginatedQueryOptions(filters).
+	return pointer.For(bunpaginate.NewPaginatedQueryOptions(filters).
 		WithQueryBuilder(qb).
 		WithPageSize(pageSize)), nil
 }

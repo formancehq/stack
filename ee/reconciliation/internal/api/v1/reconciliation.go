@@ -1,4 +1,4 @@
-package api
+package v1
 
 import (
 	"encoding/json"
@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/formancehq/reconciliation/internal/api/backend"
-	"github.com/formancehq/reconciliation/internal/api/service"
-	"github.com/formancehq/reconciliation/internal/storage"
+	"github.com/formancehq/reconciliation/internal/api/v1/backend"
+	"github.com/formancehq/reconciliation/internal/api/v1/service"
+	storage "github.com/formancehq/reconciliation/internal/storage/v1"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/go-chi/chi/v5"
