@@ -1,6 +1,6 @@
 VERSION 0.8
 
-IMPORT github.com/formancehq/earthly:baaa0352c718937be6f9c40fe40879642bbd6132 AS core
+IMPORT github.com/formancehq/earthly:tags/v0.12.0 AS core
 IMPORT .. AS stack
 
 deploy:
@@ -14,9 +14,8 @@ deploy-staging:
     BUILD --pass-args ./$components+deploy-staging
 
 run:
-  LOCALLY
-  ARG --required TARGET
-  BUILD ./fctl+$TARGET
-  BUILD ./ledger+$TARGET
-  BUILD ./operator+$TARGET
-  BUILD ./payments+$TARGET
+    LOCALLY
+    ARG --required TARGET
+    BUILD ./ledger+$TARGET
+    BUILD ./operator+$TARGET
+    BUILD ./payments+$TARGET
