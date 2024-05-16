@@ -35,23 +35,23 @@ import(
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+
+    
     ctx := context.Background()
     res, err := s.GetOIDCWellKnowns(ctx)
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }
@@ -90,16 +90,17 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+
+    
     ctx := context.Background()
     res, err := s.GetVersions(ctx)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.GetVersionsResponse != nil {
         // handle response
     }

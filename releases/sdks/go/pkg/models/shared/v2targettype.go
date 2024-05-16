@@ -17,7 +17,6 @@ const (
 func (e V2TargetType) ToPointer() *V2TargetType {
 	return &e
 }
-
 func (e *V2TargetType) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {

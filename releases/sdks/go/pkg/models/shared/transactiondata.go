@@ -8,10 +8,10 @@ import (
 )
 
 type TransactionData struct {
-	Metadata  map[string]interface{} `json:"metadata,omitempty"`
-	Postings  []Posting              `json:"postings"`
-	Reference *string                `json:"reference,omitempty"`
-	Timestamp *time.Time             `json:"timestamp,omitempty"`
+	Metadata  map[string]any `json:"metadata,omitempty"`
+	Postings  []Posting      `json:"postings"`
+	Reference *string        `json:"reference,omitempty"`
+	Timestamp *time.Time     `json:"timestamp,omitempty"`
 }
 
 func (t TransactionData) MarshalJSON() ([]byte, error) {
@@ -25,7 +25,7 @@ func (t *TransactionData) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (o *TransactionData) GetMetadata() map[string]interface{} {
+func (o *TransactionData) GetMetadata() map[string]any {
 	if o == nil {
 		return nil
 	}

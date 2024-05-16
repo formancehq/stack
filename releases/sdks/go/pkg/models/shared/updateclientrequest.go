@@ -3,14 +3,14 @@
 package shared
 
 type UpdateClientRequest struct {
-	Description            *string                `json:"description,omitempty"`
-	Metadata               map[string]interface{} `json:"metadata,omitempty"`
-	Name                   string                 `json:"name"`
-	PostLogoutRedirectUris []string               `json:"postLogoutRedirectUris,omitempty"`
-	Public                 *bool                  `json:"public,omitempty"`
-	RedirectUris           []string               `json:"redirectUris,omitempty"`
-	Scopes                 []string               `json:"scopes,omitempty"`
-	Trusted                *bool                  `json:"trusted,omitempty"`
+	Description            *string        `json:"description,omitempty"`
+	Metadata               map[string]any `json:"metadata,omitempty"`
+	Name                   string         `json:"name"`
+	PostLogoutRedirectUris []string       `json:"postLogoutRedirectUris,omitempty"`
+	Public                 *bool          `json:"public,omitempty"`
+	RedirectUris           []string       `json:"redirectUris,omitempty"`
+	Scopes                 []string       `json:"scopes,omitempty"`
+	Trusted                *bool          `json:"trusted,omitempty"`
 }
 
 func (o *UpdateClientRequest) GetDescription() *string {
@@ -20,7 +20,7 @@ func (o *UpdateClientRequest) GetDescription() *string {
 	return o.Description
 }
 
-func (o *UpdateClientRequest) GetMetadata() map[string]interface{} {
+func (o *UpdateClientRequest) GetMetadata() map[string]any {
 	if o == nil {
 		return nil
 	}

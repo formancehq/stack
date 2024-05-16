@@ -78,7 +78,7 @@ func CreateV2BulkElementRevertTransaction(revertTransaction V2BulkElementRevertT
 func (u *V2BulkElement) UnmarshalJSON(data []byte) error {
 
 	type discriminator struct {
-		Action string
+		Action string `json:"action"`
 	}
 
 	dis := new(discriminator)

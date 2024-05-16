@@ -25,7 +25,20 @@ var (
 	urlEncodedEncodingRegex = regexp.MustCompile(`application\/x-www-form-urlencoded.*`)
 )
 
-func SerializeRequestBody(ctx context.Context, request interface{}, nullable, optional bool, requestFieldName, serializationMethod, tag string) (io.Reader, string, error) {
+func SerializeRequestBody(_ context.Context, request interface{}, nullable, optional bool, requestFieldName, serializationMethod, tag string) (io.Reader, string, error) {
+	bodyReader, contentType, err := serializeRequestBody(request, nullable, optional, requestFieldName, serializationMethod, tag)
+	if err != nil {
+		return nil, "", fmt.Errorf("error serializing request body: %w", err)
+	}
+
+	if bodyReader == nil && !optional {
+		return nil, "", fmt.Errorf("request body is required")
+	}
+
+	return bodyReader, contentType, nil
+}
+
+func serializeRequestBody(request interface{}, nullable, optional bool, requestFieldName, serializationMethod, tag string) (io.Reader, string, error) {
 	requestStructType := reflect.TypeOf(request)
 	requestValType := reflect.ValueOf(request)
 

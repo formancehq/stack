@@ -8,12 +8,12 @@ import (
 )
 
 type TestTriggerRequest struct {
-	RequestBody map[string]interface{} `request:"mediaType=application/json"`
+	RequestBody map[string]any `request:"mediaType=application/json"`
 	// The trigger id
 	TriggerID string `pathParam:"style=simple,explode=false,name=triggerID"`
 }
 
-func (o *TestTriggerRequest) GetRequestBody() map[string]interface{} {
+func (o *TestTriggerRequest) GetRequestBody() map[string]any {
 	if o == nil {
 		return nil
 	}

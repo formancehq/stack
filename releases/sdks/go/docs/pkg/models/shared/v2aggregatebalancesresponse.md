@@ -5,4 +5,4 @@
 
 | Field                                                  | Type                                                   | Required                                               | Description                                            | Example                                                |
 | ------------------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------ |
-| `Data`                                                 | map[string][*big.Int](https://pkg.go.dev/math/big#Int) | :heavy_check_mark:                                     | N/A                                                    | {"USD":100,"EUR":12}                                   |
+| `Data`                                                 | map[string][*big.Int](https://pkg.go.dev/math/big#Int) | :heavy_check_mark:                                     | N/A                                                    | {<br/>"USD": 100,<br/>"EUR": 12<br/>}                  |

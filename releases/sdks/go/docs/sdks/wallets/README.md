@@ -32,33 +32,33 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"math/big"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Wallets.ConfirmHold(ctx, operations.ConfirmHoldRequest{
+    request := operations.ConfirmHoldRequest{
         ConfirmHoldRequest: &shared.ConfirmHoldRequest{
             Amount: big.NewInt(100),
             Final: v2.Bool(true),
         },
-        HoldID: "string",
-    })
+        HoldID: "<value>",
+    }
+    
+    ctx := context.Background()
+    res, err := s.Wallets.ConfirmHold(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }
@@ -92,29 +92,27 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+    request := operations.CreateBalanceRequest{
+        ID: "<id>",
+    }
+    
     ctx := context.Background()
-    res, err := s.Wallets.CreateBalance(ctx, operations.CreateBalanceRequest{
-        CreateBalanceRequest: &shared.CreateBalanceRequest{
-            Name: "string",
-        },
-        ID: "<ID>",
-    })
+    res, err := s.Wallets.CreateBalance(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.CreateBalanceResponse != nil {
         // handle response
     }
@@ -156,21 +154,22 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Wallets.CreateWallet(ctx, &shared.CreateWalletRequest{
+    var request *shared.CreateWalletRequest = &shared.CreateWalletRequest{
         Metadata: map[string]string{
-            "key": "string",
+            "key": "<value>",
         },
-        Name: "string",
-    })
+        Name: "<value>",
+    }
+    
+    ctx := context.Background()
+    res, err := s.Wallets.CreateWallet(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.CreateWalletResponse != nil {
         // handle response
     }
@@ -205,46 +204,46 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"math/big"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Wallets.CreditWallet(ctx, operations.CreditWalletRequest{
+    request := operations.CreditWalletRequest{
         CreditWalletRequest: &shared.CreditWalletRequest{
             Amount: shared.Monetary{
-                Amount: big.NewInt(201874),
-                Asset: "string",
+                Amount: big.NewInt(100),
+                Asset: "USD/2",
             },
             Metadata: map[string]string{
-                "key": "string",
+                "key": "",
             },
             Sources: []shared.Subject{
                 shared.CreateSubjectLedgerAccountSubject(
                     shared.LedgerAccountSubject{
-                        Identifier: "string",
-                        Type: "string",
+                        Identifier: "<value>",
+                        Type: "<value>",
                     },
                 ),
             },
         },
-        ID: "<ID>",
-    })
+        ID: "<id>",
+    }
+    
+    ctx := context.Background()
+    res, err := s.Wallets.CreditWallet(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }
@@ -278,45 +277,38 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"math/big"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Wallets.DebitWallet(ctx, operations.DebitWalletRequest{
+    request := operations.DebitWalletRequest{
         DebitWalletRequest: &shared.DebitWalletRequest{
             Amount: shared.Monetary{
-                Amount: big.NewInt(245256),
-                Asset: "string",
+                Amount: big.NewInt(100),
+                Asset: "USD/2",
             },
-            Balances: []string{
-                "string",
-            },
-            Destination: shared.CreateSubjectLedgerAccountSubject(
-                    shared.LedgerAccountSubject{
-                        Identifier: "string",
-                        Type: "string",
-                    },
-            ),
             Metadata: map[string]string{
-                "key": "string",
+                "key": "",
             },
+            Pending: v2.Bool(true),
         },
-        ID: "<ID>",
-    })
+        ID: "<id>",
+    }
+    
+    ctx := context.Background()
+    res, err := s.Wallets.DebitWallet(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.DebitWalletResponse != nil {
         // handle response
     }
@@ -351,27 +343,28 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+    request := operations.GetBalanceRequest{
+        BalanceName: "<value>",
+        ID: "<id>",
+    }
+    
     ctx := context.Background()
-    res, err := s.Wallets.GetBalance(ctx, operations.GetBalanceRequest{
-        BalanceName: "string",
-        ID: "<ID>",
-    })
+    res, err := s.Wallets.GetBalance(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.GetBalanceResponse != nil {
         // handle response
     }
@@ -406,26 +399,27 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+    request := operations.GetHoldRequest{
+        HoldID: "<value>",
+    }
+    
     ctx := context.Background()
-    res, err := s.Wallets.GetHold(ctx, operations.GetHoldRequest{
-        HoldID: "string",
-    })
+    res, err := s.Wallets.GetHold(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.GetHoldResponse != nil {
         // handle response
     }
@@ -460,29 +454,32 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Wallets.GetHolds(ctx, operations.GetHoldsRequest{
+    request := operations.GetHoldsRequest{
         Cursor: v2.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
         Metadata: map[string]string{
-            "key": "string",
+            "admin": "true",
         },
-    })
+        PageSize: v2.Int64(100),
+        WalletID: v2.String("wallet1"),
+    }
+    
+    ctx := context.Background()
+    res, err := s.Wallets.GetHolds(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.GetHoldsResponse != nil {
         // handle response
     }
@@ -515,26 +512,29 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Wallets.GetTransactions(ctx, operations.GetTransactionsRequest{
+    request := operations.GetTransactionsRequest{
         Cursor: v2.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
-    })
+        PageSize: v2.Int64(100),
+        WalletID: v2.String("wallet1"),
+    }
+    
+    ctx := context.Background()
+    res, err := s.Wallets.GetTransactions(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.GetTransactionsResponse != nil {
         // handle response
     }
@@ -569,26 +569,27 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+    request := operations.GetWalletRequest{
+        ID: "<id>",
+    }
+    
     ctx := context.Background()
-    res, err := s.Wallets.GetWallet(ctx, operations.GetWalletRequest{
-        ID: "<ID>",
-    })
+    res, err := s.Wallets.GetWallet(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.GetWalletResponse != nil {
         // handle response
     }
@@ -623,26 +624,27 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+    request := operations.GetWalletSummaryRequest{
+        ID: "<id>",
+    }
+    
     ctx := context.Background()
-    res, err := s.Wallets.GetWalletSummary(ctx, operations.GetWalletSummaryRequest{
-        ID: "<ID>",
-    })
+    res, err := s.Wallets.GetWalletSummary(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.GetWalletSummaryResponse != nil {
         // handle response
     }
@@ -677,26 +679,27 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+    request := operations.ListBalancesRequest{
+        ID: "<id>",
+    }
+    
     ctx := context.Background()
-    res, err := s.Wallets.ListBalances(ctx, operations.ListBalancesRequest{
-        ID: "<ID>",
-    })
+    res, err := s.Wallets.ListBalances(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.ListBalancesResponse != nil {
         // handle response
     }
@@ -730,29 +733,32 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Wallets.ListWallets(ctx, operations.ListWalletsRequest{
+    request := operations.ListWalletsRequest{
         Cursor: v2.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
         Metadata: map[string]string{
-            "key": "string",
+            "admin": "true",
         },
-    })
+        Name: v2.String("wallet1"),
+        PageSize: v2.Int64(100),
+    }
+    
+    ctx := context.Background()
+    res, err := s.Wallets.ListWallets(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.ListWalletsResponse != nil {
         // handle response
     }
@@ -787,33 +793,28 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+    request := operations.UpdateWalletRequest{
+        ID: "<id>",
+    }
+    
     ctx := context.Background()
-    res, err := s.Wallets.UpdateWallet(ctx, operations.UpdateWalletRequest{
-        RequestBody: &operations.UpdateWalletRequestBody{
-            Metadata: map[string]string{
-                "key": "string",
-            },
-        },
-        ID: "<ID>",
-    })
+    res, err := s.Wallets.UpdateWallet(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }
@@ -847,28 +848,28 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+    request := operations.VoidHoldRequest{
+        HoldID: "<value>",
+    }
+    
     ctx := context.Background()
-    res, err := s.Wallets.VoidHold(ctx, operations.VoidHoldRequest{
-        HoldID: "string",
-    })
+    res, err := s.Wallets.VoidHold(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }
@@ -909,16 +910,17 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+
+    
     ctx := context.Background()
     res, err := s.Wallets.WalletsgetServerInfo(ctx)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.ServerInfo != nil {
         // handle response
     }

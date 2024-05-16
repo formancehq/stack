@@ -27,7 +27,6 @@ const (
 func (e TransferInitiationStatus) ToPointer() *TransferInitiationStatus {
 	return &e
 }
-
 func (e *TransferInitiationStatus) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {

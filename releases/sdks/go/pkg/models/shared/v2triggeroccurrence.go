@@ -8,12 +8,12 @@ import (
 )
 
 type V2TriggerOccurrence struct {
-	Date               time.Time              `json:"date"`
-	Error              *string                `json:"error,omitempty"`
-	Event              map[string]interface{} `json:"event"`
-	TriggerID          string                 `json:"triggerID"`
-	WorkflowInstance   *V2WorkflowInstance    `json:"workflowInstance,omitempty"`
-	WorkflowInstanceID *string                `json:"workflowInstanceID,omitempty"`
+	Date               time.Time           `json:"date"`
+	Error              *string             `json:"error,omitempty"`
+	Event              map[string]any      `json:"event"`
+	TriggerID          string              `json:"triggerID"`
+	WorkflowInstance   *V2WorkflowInstance `json:"workflowInstance,omitempty"`
+	WorkflowInstanceID *string             `json:"workflowInstanceID,omitempty"`
 }
 
 func (v V2TriggerOccurrence) MarshalJSON() ([]byte, error) {
@@ -41,9 +41,9 @@ func (o *V2TriggerOccurrence) GetError() *string {
 	return o.Error
 }
 
-func (o *V2TriggerOccurrence) GetEvent() map[string]interface{} {
+func (o *V2TriggerOccurrence) GetEvent() map[string]any {
 	if o == nil {
-		return map[string]interface{}{}
+		return map[string]any{}
 	}
 	return o.Event
 }

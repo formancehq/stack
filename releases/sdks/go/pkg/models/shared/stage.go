@@ -52,21 +52,21 @@ func CreateStageStageWaitEvent(stageWaitEvent StageWaitEvent) Stage {
 
 func (u *Stage) UnmarshalJSON(data []byte) error {
 
-	stageWaitEvent := StageWaitEvent{}
+	var stageWaitEvent StageWaitEvent = StageWaitEvent{}
 	if err := utils.UnmarshalJSON(data, &stageWaitEvent, "", true, true); err == nil {
 		u.StageWaitEvent = &stageWaitEvent
 		u.Type = StageTypeStageWaitEvent
 		return nil
 	}
 
-	stageDelay := StageDelay{}
+	var stageDelay StageDelay = StageDelay{}
 	if err := utils.UnmarshalJSON(data, &stageDelay, "", true, true); err == nil {
 		u.StageDelay = &stageDelay
 		u.Type = StageTypeStageDelay
 		return nil
 	}
 
-	stageSend := StageSend{}
+	var stageSend StageSend = StageSend{}
 	if err := utils.UnmarshalJSON(data, &stageSend, "", true, true); err == nil {
 		u.StageSend = &stageSend
 		u.Type = StageTypeStageSend

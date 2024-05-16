@@ -10,7 +10,7 @@ import (
 )
 
 type V2ListAccountsRequest struct {
-	RequestBody map[string]interface{} `request:"mediaType=application/json"`
+	RequestBody map[string]any `request:"mediaType=application/json"`
 	// Parameter used in pagination requests. Maximum page size is set to 15.
 	// Set to the value of next for the next page of results.
 	// Set to the value of previous for the previous page of results.
@@ -37,7 +37,7 @@ func (v *V2ListAccountsRequest) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (o *V2ListAccountsRequest) GetRequestBody() map[string]interface{} {
+func (o *V2ListAccountsRequest) GetRequestBody() map[string]any {
 	if o == nil {
 		return nil
 	}

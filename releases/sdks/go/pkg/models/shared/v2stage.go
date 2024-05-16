@@ -52,21 +52,21 @@ func CreateV2StageV2StageWaitEvent(v2StageWaitEvent V2StageWaitEvent) V2Stage {
 
 func (u *V2Stage) UnmarshalJSON(data []byte) error {
 
-	v2StageWaitEvent := V2StageWaitEvent{}
+	var v2StageWaitEvent V2StageWaitEvent = V2StageWaitEvent{}
 	if err := utils.UnmarshalJSON(data, &v2StageWaitEvent, "", true, true); err == nil {
 		u.V2StageWaitEvent = &v2StageWaitEvent
 		u.Type = V2StageTypeV2StageWaitEvent
 		return nil
 	}
 
-	v2StageDelay := V2StageDelay{}
+	var v2StageDelay V2StageDelay = V2StageDelay{}
 	if err := utils.UnmarshalJSON(data, &v2StageDelay, "", true, true); err == nil {
 		u.V2StageDelay = &v2StageDelay
 		u.Type = V2StageTypeV2StageDelay
 		return nil
 	}
 
-	v2StageSend := V2StageSend{}
+	var v2StageSend V2StageSend = V2StageSend{}
 	if err := utils.UnmarshalJSON(data, &v2StageSend, "", true, true); err == nil {
 		u.V2StageSend = &v2StageSend
 		u.Type = V2StageTypeV2StageSend

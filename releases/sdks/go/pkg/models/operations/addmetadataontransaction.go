@@ -10,7 +10,7 @@ import (
 
 type AddMetadataOnTransactionRequest struct {
 	// metadata
-	RequestBody map[string]interface{} `request:"mediaType=application/json"`
+	RequestBody map[string]any `request:"mediaType=application/json"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
 	// Transaction ID.
@@ -28,7 +28,7 @@ func (a *AddMetadataOnTransactionRequest) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (o *AddMetadataOnTransactionRequest) GetRequestBody() map[string]interface{} {
+func (o *AddMetadataOnTransactionRequest) GetRequestBody() map[string]any {
 	if o == nil {
 		return nil
 	}
