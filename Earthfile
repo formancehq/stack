@@ -206,8 +206,8 @@ helm-publish:
     BUILD --pass-args ./components/operator+helm-publish
 
 HELM_PUBLISH:
-    ARG --required path
     FUNCTION
+    ARG --required path
     WITH DOCKER
         RUN --secret GITHUB_TOKEN echo $GITHUB_TOKEN | docker login ghcr.io -u NumaryBot --password-stdin
     END
