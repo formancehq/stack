@@ -1,7 +1,6 @@
 VERSION 0.8
 
-ARG core=github.com/formancehq/earthly
-IMPORT $core AS core
+IMPORT github.com/formancehq/earthly:baaa0352c718937be6f9c40fe40879642bbd6132 AS core
 
 sources:
     FROM core+base-image
@@ -159,51 +158,37 @@ staging-application-sync:
 
 tests-all:
     LOCALLY
-    FOR component IN $(cd ./components && ls -d */)
-        BUILD --pass-args ./components/${component}+tests
-    END
-    FOR component IN $(cd ./ee && ls -d */)
-        BUILD --pass-args ./ee/${component}+tests
-    END
+    BUILD ./components+run --TARGET=tests
+    BUILD ./ee+run --TARGET=tests
 
 tests-integration:
     FROM core+base-image
-    BUILD --pass-args ./tests/integration+tests
+    BUILD ./tests/integration+tests
 
 pre-commit: # Generate the final spec and run all the pre-commit hooks
     LOCALLY
-    BUILD --pass-args ./releases+sdk-generate
-    FOR component IN $(cd ./libs && ls -d */)
-        BUILD --pass-args ./libs/${component}+pre-commit
-    END
-    FOR component IN $(cd ./components && ls -d */)
-        BUILD --pass-args ./components/${component}+pre-commit
-    END
-    FOR component IN $(cd ./ee && ls -d */)
-        BUILD --pass-args ./ee/${component}+pre-commit
-    END
-    BUILD --pass-args ./helm/+pre-commit
-    BUILD --pass-args ./tests/integration+pre-commit
+    BUILD ./releases+sdk-generate
+    BUILD ./libs+run --TARGET=pre-commit
+    BUILD ./components+run --TARGET=pre-commit
+    BUILD ./ee+run --TARGET=pre-commit
+    BUILD ./helm/+pre-commit
+    BUILD ./tests/integration+pre-commit
 
 tidy: # Run tidy on all the components
     LOCALLY
-    FOR component IN $(cd ./components && ls -d */)
-        BUILD --pass-args ./components/${component}+tidy
-    END
-    FOR component IN $(cd ./ee && ls -d */)
-        BUILD --pass-args ./ee/${component}+tidy
-    END
-    BUILD --pass-args ./tests/integration+tidy
+    BUILD ./components+run --TARGET=tidy
+    BUILD ./ee+run --TARGET=tidy
+    BUILD ./tests/integration+tidy
 
 tests:
     LOCALLY
-    BUILD --pass-args +tests-all
-    BUILD --pass-args +tests-integration
+    BUILD +tests-all
+    BUILD +tests-integration
 
 helm-publish:
     LOCALLY
-    BUILD --pass-args ./helm/+publish
-    BUILD --pass-args ./components/operator+helm-publish
+    BUILD ./helm/+publish
+    BUILD ./components/operator+helm-publish
 
 HELM_PUBLISH:
     FUNCTION

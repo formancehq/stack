@@ -23,7 +23,7 @@ jobs:
         uses: ./.github/actions/env
       - run: >
           earthly
-          --allow-privileged
+          --allow-privileged --auto-skip
           --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY
           ${{ contains(github.event.pull_request.labels.*.name, 'no-cache') && '--no-cache' || '' }}
           +pre-commit

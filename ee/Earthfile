@@ -1,16 +1,27 @@
 VERSION 0.8
 
-ARG core=github.com/formancehq/earthly
-
-IMPORT $core AS core
+IMPORT github.com/formancehq/earthly:baaa0352c718937be6f9c40fe40879642bbd6132 AS core
 IMPORT .. AS stack
 
 deploy:
-    FROM core+base-image
-    ARG --required components
-    BUILD --pass-args ./$components+deploy
+  FROM core+base-image
+  ARG --required components
+  BUILD --pass-args ./$components+deploy
 
 deploy-staging:
-    FROM core+base-image
-    ARG --required components
-    BUILD --pass-args ./$components+deploy-staging
+  FROM core+base-image
+  ARG --required components
+  BUILD --pass-args ./$components+deploy-staging
+    
+run:
+  LOCALLY
+  ARG --required TARGET
+  BUILD ./agent+$TARGET
+  BUILD ./auth+$TARGET
+  BUILD ./gateway+$TARGET
+  BUILD ./orchestration+$TARGET
+  BUILD ./reconciliation+$TARGET
+  BUILD ./search+$TARGET
+  BUILD ./stargate+$TARGET
+  BUILD ./wallets+$TARGET
+  BUILD ./webhooks+$TARGET

@@ -1,7 +1,6 @@
 VERSION 0.8
 
-ARG core=github.com/formancehq/earthly
-IMPORT $core AS core
+IMPORT github.com/formancehq/earthly:baaa0352c718937be6f9c40fe40879642bbd6132 AS core
 IMPORT .. AS stack
 IMPORT ../components/operator AS operator
 
