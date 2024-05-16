@@ -82,7 +82,7 @@ jobs:
           --secret FURY_TOKEN=$FURY_TOKEN
           --secret GORELEASER_KEY=$GORELEASER_KEY
           ${{ contains(github.event.pull_request.labels.*.name, 'no-cache') && '--no-cache' || '' }}
-          +goreleaser --type=${{ matrix.components.type }} --components=${{ matrix.components.component }} --mode=release
+          +goreleaser --path=${{ matrix.components }} --mode=release
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
