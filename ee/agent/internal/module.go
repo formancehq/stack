@@ -3,6 +3,7 @@ package internal
 import (
 	"context"
 	"reflect"
+	"sort"
 	"time"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -135,36 +136,48 @@ func CreateRestMapper(config *rest.Config) (meta.RESTMapper, error) {
 	return restmapper.NewDiscoveryRESTMapper(groupResources), nil
 }
 
-func retrieveModuleList(ctx context.Context, config *rest.Config) ([]string, error) {
+func retrieveModuleList(ctx context.Context, config *rest.Config) (modules []string, eeModules []string, err error) {
 	config = rest.CopyConfig(config)
 	config.GroupVersion = &apiextensions.SchemeGroupVersion
 
 	apiextensionsClient, err := apiextensionsv1client.NewForConfig(config)
 	if err != nil {
-		return nil, err
+		return
 	}
 
 	crds, err := apiextensionsClient.CustomResourceDefinitions().List(ctx, metav1.ListOptions{
 		LabelSelector: "formance.com/kind=module",
 	})
 	if err != nil {
-		return nil, err
+		return
 	}
 
-	return collectionutils.Map(crds.Items, func(item v1.CustomResourceDefinition) string {
+	modules = collectionutils.Map(crds.Items, func(item v1.CustomResourceDefinition) string {
 		return item.Status.AcceptedNames.Singular
-	}), nil
+	})
+
+	eeModules = collectionutils.Reduce(crds.Items, func(acc []string, item v1.CustomResourceDefinition) []string {
+		if item.Labels["formance.com/is-ee"] == "true" {
+			return append(acc, item.Status.AcceptedNames.Singular)
+		}
+		return acc
+	}, []string{})
+
+	sort.Strings(modules)
+	sort.Strings(eeModules)
+
+	return
 }
 
 func runMembershipClient(lc fx.Lifecycle, membershipClient *membershipClient, logger logging.Logger, config *rest.Config) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			modules, err := retrieveModuleList(ctx, config)
+			modules, eeModules, err := retrieveModuleList(ctx, config)
 			if err != nil {
 				return err
 			}
 
-			if err := membershipClient.connect(logging.ContextWithLogger(ctx, logger), modules); err != nil {
+			if err := membershipClient.connect(logging.ContextWithLogger(ctx, logger), modules, eeModules); err != nil {
 				return err
 			}
 			go func() {

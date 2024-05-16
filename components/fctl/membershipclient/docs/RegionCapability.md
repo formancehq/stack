@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **MODULE_LIST** | Pointer to **[]string** |  | [optional] 
+**EE** | Pointer to **[]string** |  | [optional] 
 
 ## Methods
 
@@ -49,6 +50,31 @@ SetMODULE_LIST sets MODULE_LIST field to given value.
 `func (o *RegionCapability) HasMODULE_LIST() bool`
 
 HasMODULE_LIST returns a boolean if a field has been set.
+
+### GetEE
+
+`func (o *RegionCapability) GetEE() []string`
+
+GetEE returns the EE field if non-nil, zero value otherwise.
+
+### GetEEOk
+
+`func (o *RegionCapability) GetEEOk() (*[]string, bool)`
+
+GetEEOk returns a tuple with the EE field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetEE
+
+`func (o *RegionCapability) SetEE(v []string)`
+
+SetEE sets EE field to given value.
+
+### HasEE
+
+`func (o *RegionCapability) HasEE() bool`
+
+HasEE returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

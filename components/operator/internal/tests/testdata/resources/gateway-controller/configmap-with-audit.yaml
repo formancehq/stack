@@ -6,17 +6,6 @@
 		Access-Control-Allow-Origin *
 	}
 }
-(audit) {
-	audit {
-		# Kafka publisher
-		# Nats publisher
-		publisher_nats_enabled {$PUBLISHER_NATS_ENABLED:true}
-		publisher_nats_url {$PUBLISHER_NATS_URL:nats://nats:4222}
-		publisher_nats_client_id {$PUBLISHER_NATS_CLIENT_ID:gateway}
-		publisher_nats_max_reconnects {$PUBLISHER_NATS_MAX_RECONNECTS:30}
-		publisher_nats_max_reconnects_wait {$PUBLISHER_NATS_MAX_RECONNECT_WAIT:2s}
-	}
-}
 
 {
 	
@@ -30,14 +19,12 @@
 	# ordered.
 	# c.f. https://caddyserver.com/docs/caddyfile/directives#directive-order
 	order versions after metrics
-	order audit after encode
 }
 
 :8080 {
 	log {
 		output stdout
 	}
-	import audit
 	handle /api/ledger* {
 		uri strip_prefix /api/ledger
         import cors
@@ -56,8 +43,8 @@
 		}
 	}
 
-	# Respond 502 if service does not exists
+	# Respond 404 if service does not exists
 	handle /api/* {
-		respond "Bad Gateway" 502
+		respond "Not Found" 404
 	}
 }

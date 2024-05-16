@@ -1906,6 +1906,10 @@ components:
           type: array
           items:
             type: string
+        EE:
+          type: array
+          items:
+            type: string
     RegionCapabilityKeys:
       type: string
       enum:

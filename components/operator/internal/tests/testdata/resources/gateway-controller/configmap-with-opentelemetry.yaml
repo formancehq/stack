@@ -46,8 +46,8 @@
 		}
 	}
 
-	# Respond 502 if service does not exists
+	# Respond 404 if service does not exists
 	handle /api/* {
-		respond "Bad Gateway" 502
+		respond "Not Found" 404
 	}
 }
