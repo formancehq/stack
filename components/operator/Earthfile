@@ -200,11 +200,20 @@ helm-validate:
         DO --pass-args core+HELM_VALIDATE
     END
 
+helm-package:
+    FROM core+helm-base
+    WORKDIR /src
+    COPY (+helm-update/helm/) .
+    FOR dir IN $(ls -d */)
+        WORKDIR /src/$dir
+        RUN helm package .
+    END
+    SAVE ARTIFACT /src
 
 helm-publish:
     FROM core+helm-base
     WORKDIR /src
-    COPY --pass-args (+helm-update/helm) .
+    COPY --pass-args (+helm-package/src) .
     FOR dir IN $(ls -d */)
         WORKDIR /src/$dir
         DO --pass-args stack+HELM_PUBLISH --path=/src/${dir}*.tgz
