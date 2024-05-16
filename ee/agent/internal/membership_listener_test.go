@@ -2,7 +2,6 @@ package internal
 
 import (
 	"context"
-	"fmt"
 	"path/filepath"
 	osRuntime "runtime"
 	"testing"
@@ -129,9 +128,12 @@ func TestDeleteModule(t *testing.T) {
 func TestRetrieveModuleList(t *testing.T) {
 	t.Parallel()
 	test(t, func(ctx context.Context, testConfig *testConfig) {
-		modules, err := retrieveModuleList(ctx, testConfig.restConfig)
+		modules, eeModules, err := retrieveModuleList(ctx, testConfig.restConfig)
 		require.NoError(t, err)
-		fmt.Println(modules)
 		require.NotEmpty(t, modules)
+		require.NotEmpty(t, eeModules)
+		for _, module := range eeModules {
+			require.Contains(t, modules, module)
+		}
 	})
 }
