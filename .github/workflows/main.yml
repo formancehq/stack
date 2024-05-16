@@ -40,7 +40,7 @@ jobs:
             exit 1
           fi
 
-  Main:
+  Tests:
     runs-on: "formance-runner"
     needs:
       - Dirty
@@ -121,7 +121,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     needs:
       - GoReleaser
-      - Main
+      - Tests
     steps:
       - uses: earthly/actions-setup@v1
         with:
