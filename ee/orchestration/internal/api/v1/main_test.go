@@ -7,9 +7,6 @@ import (
 	"os"
 	"testing"
 
-	"go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/operatorservice/v1"
-
 	"github.com/formancehq/orchestration/internal/temporalworker"
 	"github.com/formancehq/orchestration/internal/workflow/stages"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -47,14 +44,14 @@ func test(t *testing.T, fn func(router *chi.Mux, backend api.Backend, db *bun.DB
 
 	taskQueue := uuid.NewString()
 	worker := temporalworker.New(logging.Testing(), devServer.Client(), taskQueue,
-		[]any{workflow.NewWorkflows(), (&stages.NoOp{}).GetWorkflow()},
+		[]any{workflow.NewWorkflows(false), (&stages.NoOp{}).GetWorkflow()},
 		[]any{workflow.NewActivities(publish.NoOpPublisher, db)},
 	)
 	require.NoError(t, worker.Start())
 	t.Cleanup(worker.Stop)
 
 	require.NoError(t, storage.Migrate(context.Background(), db))
-	workflowManager := workflow.NewManager(db, devServer.Client(), taskQueue)
+	workflowManager := workflow.NewManager(db, devServer.Client(), taskQueue, false)
 	expressionEvaluator := triggers.NewExpressionEvaluator(http.DefaultClient)
 	triggersManager := triggers.NewManager(db, expressionEvaluator)
 	backend := api.NewDefaultBackend(triggersManager, workflowManager)
@@ -75,16 +72,6 @@ func TestMain(m *testing.M) {
 
 	var err error
 	devServer, err = testsuite.StartDevServer(logging.TestingContext(), testsuite.DevServerOptions{})
-	if err != nil {
-		log.Fatal(err)
-	}
-	_, err = devServer.Client().OperatorService().AddSearchAttributes(logging.TestingContext(), &operatorservice.AddSearchAttributesRequest{
-		SearchAttributes: map[string]enums.IndexedValueType{
-			workflow.SearchAttributeWorkflowID: enums.INDEXED_VALUE_TYPE_TEXT,
-			triggers.SearchAttributeTriggerID:  enums.INDEXED_VALUE_TYPE_TEXT,
-		},
-		Namespace: "default",
-	})
 	if err != nil {
 		log.Fatal(err)
 	}

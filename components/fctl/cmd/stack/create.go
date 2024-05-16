@@ -177,7 +177,16 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		c.store.Stack = stackResponse.Data
 	}
 
-	fctl.BasicTextCyan.WithWriter(cmd.OutOrStdout()).Println("Your dashboard will be reachable on: https://console.formance.cloud")
+	dashboard := "https://console.formance.cloud"
+	serverInfo, err := fctl.MembershipServerInfo(cmd.Context(), store.Client())
+	if err != nil {
+		return nil, err
+	}
+	if v := serverInfo.ConsoleURL; v != nil {
+		dashboard = *v
+	}
+
+	fctl.BasicTextCyan.WithWriter(cmd.OutOrStdout()).Println("Your dashboard will be reachable on: " + dashboard)
 
 	stackClient, err := fctl.NewStackClient(cmd, store.Config, stackResponse.Data)
 	if err != nil {

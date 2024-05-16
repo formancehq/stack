@@ -1,10 +1,21 @@
 package fctl
 
 import (
+	"encoding/json"
 	"errors"
 	"os/exec"
 	"runtime"
 )
+
+func StructToMap(obj interface{}) (newMap map[string]interface{}, err error) {
+	data, err := json.Marshal(obj)
+	if err != nil {
+		return
+	}
+
+	err = json.Unmarshal(data, &newMap)
+	return
+}
 
 func Map[SRC any, DST any](srcs []SRC, mapper func(SRC) DST) []DST {
 	ret := make([]DST, 0)

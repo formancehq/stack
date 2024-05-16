@@ -1,6 +1,7 @@
 syntax = "proto3";
 
-import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+
 option go_package = "github.com/formancehq/membership/internal/grpc/generated";
 
 package server;
@@ -33,9 +34,15 @@ message Message {
   oneof message {
     StatusChanged statusChanged = 1;
     Pong pong = 2;
+    
     AddedVersion addedVersion = 3;
     DeletedVersion deletedVersion = 4;
     UpdatedVersion updatedVersion = 5;
+    
+    ModuleStatusChanged moduleStatusChanged = 6;
+    ModuleDeleted moduleDeleted = 7;
+
+    DeletedStack stackDeleted = 8;
   }
 }
 
@@ -52,7 +59,7 @@ message Stack {
   repeated AuthClient staticClients = 4;
   StargateConfig stargateConfig = 5;
   bool disabled = 6;
-  google.protobuf.Timestamp deletedAt = 7;
+  reserved 7;
   string versions = 8;
   bool enableAudit = 9;
   map<string, string> additionalLabels = 10;
@@ -71,9 +78,27 @@ enum StackStatus {
   Disabled = 3;
 }
 
+message VersionKind {
+  string version = 1;
+  string kind = 2;
+}
+
+message ModuleStatusChanged {
+  string clusterName = 1;
+  google.protobuf.Struct status = 2;
+  VersionKind vk = 3;
+}
+
+message ModuleDeleted {
+  string clusterName = 1;
+  VersionKind vk = 2;
+}
+
 message StatusChanged {
   string clusterName = 1;
   StackStatus status = 2;
+  google.protobuf.Struct statuses = 3;
+  VersionKind vk = 4;
 }
 
 message StargateConfig {

@@ -2,6 +2,7 @@ package v2_test
 
 import (
 	"bytes"
+
 	"math/big"
 	"net/http"
 	"net/http/httptest"
@@ -93,6 +94,27 @@ func TestGetVolumes(t *testing.T) {
 				},
 				GroupLvl: 3,
 			}).WithPageSize(v2.DefaultPageSize),
+		},
+		{
+			name: "using Exists metadata filter",
+			body: `{"$exists": { "metadata": "foo" }}`,
+			expectQuery: ledgerstore.NewPaginatedQueryOptions(ledgerstore.FiltersForVolumes{
+				PITFilter: ledgerstore.PITFilter{
+					PIT: &before,
+					OOT: &zero,
+				},
+			}).WithPageSize(v2.DefaultPageSize).WithQueryBuilder(query.Exists("metadata", "foo")),
+		},
+		{
+			name: "using balance filter",
+			body: `{"$gte": { "balance[EUR]": 50 }}`,
+			expectQuery: ledgerstore.NewPaginatedQueryOptions(ledgerstore.FiltersForVolumes{
+				PITFilter: ledgerstore.PITFilter{
+					PIT: &before,
+					OOT: &zero,
+				},
+			}).WithQueryBuilder(query.Gte("balance[EUR]", float64(50))).
+				WithPageSize(v2.DefaultPageSize),
 		},
 	}
 

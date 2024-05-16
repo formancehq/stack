@@ -1,10 +1,12 @@
 operator:
   enabled: true
+
   fullnameOverride: "operator"
   nameOverride: "operator"
+
   image:
     repository: "ghcr.io/formancehq/operator"
-    tag: "v2.0.0-rc.24"
+    tag: "v2.0.0-rc.27"
   operator:
     disableWebhooks: false
     region: "private"
@@ -12,15 +14,28 @@ operator:
     metricsAddr: ":8080"
     probeAddr: ":8081"
     enableLeaderElection: true
+
+  # Warning: This is a sensitive value
+  # Only Helm Release are impacted on first install.
+  # Use `components/operator/helm/crds` to install crds separately
+  # Deprecated: operator-crds, will be removed in a future release,
+  # please use operator-crds.create:true, to first update crds with `helm.sh/resource-policy: keep`
+  # Then you will be able to disable it and moved to the new chart `components/operator/helm/operator-crds`
+  # If using Helm Release, you will need to set `meta.helm.sh/release-name` and `meta.helm.sh/release-namespace` to the new relase name and namespace on all CRDs from Group: formance.com
+  operator-crds:
+    create: true
+
 agent:
   enabled: false
+
   image:
-    tag: "v2.0.0-rc.24"
+    tag: "v2.0.0-rc.27"
   server:
     address: "app.formance.cloud:443"
     tls:
       enabled: true
       insecureSkipVerify: true
+
   agent:
     id: "aws-eu-west-1-sandbox"
     baseUrl: https://sandbox.formance.cloud
@@ -29,6 +44,7 @@ agent:
       issuer: https://app.formance.cloud/api
       clientID: "REGION_ID"
       clientSecret: ""
+
 versions:
   create: true
   files:
@@ -38,33 +54,33 @@ versions:
       search: v0.10.0
       auth: v0.4.4
       wallets: v0.4.6
-      webhooks: v2.0.0-rc.24
+      webhooks: v2.0.0-rc.27
       payments: v1.0.0-rc.5
       stargate: v0.1.10
-      gateway: v2.0.0-rc.24
+      gateway: v2.0.0-rc.27
       ledger: v1.10.14
-      operator-utils: v2.0.0-rc.24
+      operator-utils: v2.0.0-rc.27
     v1.0:
       orchestration: v0.2.1
       reconciliation: v0.1.0
       search: v0.10.0
       auth: v0.4.4
       wallets: v0.4.6
-      webhooks: v2.0.0-rc.24
+      webhooks: v2.0.0-rc.27
       payments: v1.0.0-rc.5
       stargate: v0.1.10
-      gateway: v2.0.0-rc.24
+      gateway: v2.0.0-rc.27
       ledger: v1.10.14
-      operator-utils: v2.0.0-rc.24
+      operator-utils: v2.0.0-rc.27
     v2.0:
-      ledger: v2.0.0-rc.24
-      search: v2.0.0-rc.24
-      stargate: v2.0.0-rc.24
-      auth: v2.0.0-rc.24
-      wallets: v2.0.0-rc.24
-      webhooks: v2.0.0-rc.24
-      gateway: v2.0.0-rc.24
-      payments: v2.0.0-rc.24
-      orchestration: v2.0.0-rc.24
-      reconciliation: v2.0.0-rc.24
-      operator-utils: v2.0.0-rc.24
+      ledger: v2.0.0-rc.27
+      search: v2.0.0-rc.27
+      stargate: v2.0.0-rc.27
+      auth: v2.0.0-rc.27
+      wallets: v2.0.0-rc.27
+      webhooks: v2.0.0-rc.27
+      gateway: v2.0.0-rc.27
+      payments: v2.0.0-rc.27
+      orchestration: v2.0.0-rc.27
+      reconciliation: v2.0.0-rc.27
+      operator-utils: v2.0.0-rc.27

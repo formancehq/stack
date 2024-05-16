@@ -33,13 +33,13 @@ func TestConfig(t *testing.T) {
 
 	taskQueue := uuid.NewString()
 	worker := temporalworker.New(logging.Testing(), devServer.Client(), taskQueue,
-		[]any{NewWorkflows(), (&stages.NoOp{}).GetWorkflow()},
+		[]any{NewWorkflows(false), (&stages.NoOp{}).GetWorkflow()},
 		[]any{NewActivities(publish.NoOpPublisher, db)},
 	)
 	require.NoError(t, worker.Start())
 	t.Cleanup(worker.Stop)
 
-	manager := NewManager(db, devServer.Client(), taskQueue)
+	manager := NewManager(db, devServer.Client(), taskQueue, false)
 
 	config := Config{
 		Stages: []RawStage{

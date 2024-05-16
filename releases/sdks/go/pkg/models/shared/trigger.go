@@ -12,6 +12,7 @@ type Trigger struct {
 	Event      string                 `json:"event"`
 	Filter     *string                `json:"filter,omitempty"`
 	ID         string                 `json:"id"`
+	Name       *string                `json:"name,omitempty"`
 	Vars       map[string]interface{} `json:"vars,omitempty"`
 	WorkflowID string                 `json:"workflowID"`
 }
@@ -53,6 +54,13 @@ func (o *Trigger) GetID() string {
 		return ""
 	}
 	return o.ID
+}
+
+func (o *Trigger) GetName() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Name
 }
 
 func (o *Trigger) GetVars() map[string]interface{} {

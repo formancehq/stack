@@ -16,7 +16,7 @@ type Account struct {
 	bun.BaseModel `bun:"accounts.account"`
 
 	ID           AccountID   `bun:",pk,type:character varying,nullzero"`
-	ConnectorID  ConnectorID `bun:",character varying"`
+	ConnectorID  ConnectorID `bun:",type:character varying"`
 	CreatedAt    time.Time   `bun:",nullzero"`
 	Reference    string
 	DefaultAsset Asset  `bun:"default_currency"` // Is optional and default to ''

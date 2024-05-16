@@ -29,7 +29,7 @@ import (
 
 func init() {
 	core.Init(
-		core.WithResourceReconciler(Reconcile,
+		core.WithStackDependencyReconciler(Reconcile,
 			core.WithOwn[*v1beta1.BrokerTopic](&batchv1.Job{}),
 			core.WithWatchSettings[*v1beta1.BrokerTopic](),
 			brokers.Watch[*v1beta1.BrokerTopic](),

@@ -17,10 +17,10 @@ func NewVolumeFromConfigMap(name string, configMap *corev1.ConfigMap) corev1.Vol
 	}
 }
 
-func NewVolumeMount(name, mountPath string) corev1.VolumeMount {
+func NewVolumeMount(name, mountPath string, readOnly bool) corev1.VolumeMount {
 	return corev1.VolumeMount{
 		Name:      name,
-		ReadOnly:  true,
+		ReadOnly:  readOnly,
 		MountPath: mountPath,
 	}
 }

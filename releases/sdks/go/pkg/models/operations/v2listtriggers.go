@@ -14,6 +14,8 @@ type V2ListTriggersRequest struct {
 	// No other parameters can be set when this parameter is set.
 	//
 	Cursor *string `queryParam:"style=form,explode=true,name=cursor"`
+	// search by name
+	Name *string `queryParam:"style=form,explode=true,name=name"`
 	// The maximum number of results to return per page.
 	//
 	PageSize *int64 `queryParam:"style=form,explode=true,name=pageSize"`
@@ -24,6 +26,13 @@ func (o *V2ListTriggersRequest) GetCursor() *string {
 		return nil
 	}
 	return o.Cursor
+}
+
+func (o *V2ListTriggersRequest) GetName() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Name
 }
 
 func (o *V2ListTriggersRequest) GetPageSize() *int64 {

@@ -1,4 +1,4 @@
-VERSION --pass-args --arg-scope-and-set 0.7
+VERSION 0.8
 
 ARG core=github.com/formancehq/earthly
 
@@ -81,3 +81,6 @@ tidy:
     COPY --pass-args (+sources/src) /src
     WORKDIR /src/ee/wallets
     DO --pass-args stack+GO_TIDY
+
+release:
+    BUILD --pass-args stack+goreleaser --path=ee/wallets

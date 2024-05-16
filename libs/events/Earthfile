@@ -1,4 +1,4 @@
-VERSION --arg-scope-and-set --pass-args --use-function-keyword 0.7
+VERSION 0.8
 
 ARG core=github.com/formancehq/earthly:v0.11.1
 IMPORT $core AS core

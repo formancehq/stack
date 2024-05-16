@@ -1,4 +1,4 @@
-VERSION --arg-scope-and-set --pass-args --use-function-keyword 0.7
+VERSION 0.8
 
 ARG core=github.com/formancehq/earthly
 IMPORT $core AS core
@@ -65,10 +65,9 @@ openapi:
 
 goreleaser:
     FROM core+builder-image
-    ARG --required components
-    ARG --required type
+    ARG --required path
     COPY . /src
-    WORKDIR /src/$type/$components
+    WORKDIR /src/$path
     ARG mode=local
     LET buildArgs = --clean
     IF [ "$mode" = "local" ]
@@ -93,21 +92,15 @@ goreleaser:
 
 all-ci-goreleaser:
     LOCALLY
-    FOR component IN $(cd ./tools && ls -d */)
-        BUILD --pass-args +goreleaser --type=components --components=$component --mode=ci
+    FOR service IN $(cd ./components && ls -d */)
+        BUILD --pass-args ./components/$service+release --mode=ci
     END
-    FOR component IN $(cd ./components && ls -d */)
-        BUILD --pass-args +goreleaser --type=components --components=$component --mode=ci
-    END
-    FOR component IN $(cd ./ee && ls -d */)
-        BUILD --pass-args +goreleaser --type=ee --components=$component --mode=ci
+    FOR service IN $(cd ./ee && ls -d */)
+        BUILD --pass-args ./ee/$service+release --mode=ci
     END
 
 build-all:
     LOCALLY
-    FOR component IN $(cd ./tools && ls -d */)
-        BUILD --pass-args ./tools/${component}+build-image
-    END
     FOR component IN $(cd ./components && ls -d */)
         BUILD --pass-args ./components/${component}+build-image
     END
@@ -119,9 +112,6 @@ deploy-all:
     LOCALLY
     WAIT
         BUILD --pass-args ./components/+deploy --components=operator
-    END
-    FOR component IN $(cd ./tools && ls -d */)
-        BUILD --pass-args ./tools/$component+deploy
     END
     FOR component IN $(cd ./components && ls -d */)
         IF [ "$component" != "operator" ]
@@ -136,35 +126,36 @@ deployer-module:
     FROM --pass-args core+base-image
     ARG --required MODULE
     ARG --required TAG
-
+    
     LET ARGS="--parameter=versions.files.default.$MODULE=$TAG"
     FROM --pass-args core+deployer-module --ARGS=$ARGS --TAG=$TAG
 
-deploy-all-staging:
+staging-application-set:
     LOCALLY
-    
-    WAIT
-        BUILD --pass-args ./components/+deploy-staging --components=operator
-    END
+    ARG TAG=latest
+    LET PARAMETERS=""
 
-    FOR component IN $(cd ./tools && ls -d */)
-        BUILD --pass-args ./tools/$component+deploy-staging --WITH_SYNC=false
-    END
-    
-    FOR component IN $(cd ./components && ls -d */)
-        IF [ "$component" != "operator" ]
-            BUILD --pass-args ./components/+deploy-staging --components=$component --WITH_SYNC=false
+    WAIT
+        FOR component IN $(cd ./components && ls -d */ | sed 's/.$//')
+            IF [ "$component" != "operator"  ]  && [ "$component" != "fctl" ]
+                SET PARAMETERS="$PARAMETERS --parameter versions.files.default.$component=$TAG"
+            END
         END
-    END
-    
-    FOR component IN $(cd ./ee && ls -d */)
-        BUILD --pass-args ./ee/+deploy-staging --components=$component --WITH_SYNC=false
-    END
+        
+        FOR component IN $(cd ./ee && ls -d */ | sed 's/.$//')
+            IF [ "$component" != "agent"  ]
+                SET PARAMETERS="$PARAMETERS --parameter versions.files.default.$component=$TAG"
+            END
+        END
 
-    # Sync regions
-    WAIT
-        BUILD core+deploy-staging --APPLICATION=staging-eu-west-1-hosting-regions
+        SET PARAMETERS="$PARAMETERS --parameter agent.image.tag=$TAG"
+        SET PARAMETERS="$PARAMETERS --parameter operator.image.tag=$TAG"
     END
+    BUILD --pass-args core+application-set --ARGS=$PARAMETERS --WITH_SYNC=false
+    
+
+staging-application-sync:
+    BUILD core+application-sync --APPLICATION=staging-eu-west-1-hosting-regions
 
 tests-all:
     LOCALLY
@@ -185,9 +176,6 @@ pre-commit: # Generate the final spec and run all the pre-commit hooks
     FOR component IN $(cd ./libs && ls -d */)
         BUILD --pass-args ./libs/${component}+pre-commit
     END
-    FOR component IN $(cd ./tools && ls -d */)
-        BUILD --pass-args ./tools/${component}+pre-commit
-    END
     FOR component IN $(cd ./components && ls -d */)
         BUILD --pass-args ./components/${component}+pre-commit
     END
@@ -199,9 +187,6 @@ pre-commit: # Generate the final spec and run all the pre-commit hooks
 
 tidy: # Run tidy on all the components
     LOCALLY
-    FOR component IN $(cd ./tools && ls -d */)
-            BUILD --pass-args ./tools/${component}+tidy
-        END
     FOR component IN $(cd ./components && ls -d */)
         BUILD --pass-args ./components/${component}+tidy
     END
@@ -214,6 +199,20 @@ tests:
     LOCALLY
     BUILD --pass-args +tests-all
     BUILD --pass-args +tests-integration
+
+helm-publish:
+    LOCALLY
+    BUILD --pass-args ./helm/+publish
+    BUILD --pass-args ./components/operator+helm-publish
+
+HELM_PUBLISH:
+    FUNCTION
+    WITH DOCKER
+        RUN --secret GITHUB_TOKEN echo $GITHUB_TOKEN | docker login ghcr.io -u NumaryBot --password-stdin
+    END
+    WITH DOCKER
+        RUN helm push *.tgz oci://ghcr.io/formancehq/helm
+    END
 
 INCLUDE_GO_LIBS:
     FUNCTION

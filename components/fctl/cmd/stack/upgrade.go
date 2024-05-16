@@ -2,7 +2,6 @@ package stack
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/formancehq/fctl/cmd/stack/store"
 	"github.com/formancehq/fctl/membershipclient"
@@ -42,18 +41,7 @@ func NewUpgradeCommand() *cobra.Command {
 		fctl.WithBoolFlag(nowaitFlag, false, "Wait stack availability"),
 		fctl.WithArgs(cobra.RangeArgs(1, 2)),
 		fctl.WithPreRunE(func(cmd *cobra.Command, args []string) error {
-			store := store.GetStore(cmd.Context())
-
-			version := fctl.MembershipServerInfo(cmd.Context(), store.Client())
-			if !semver.IsValid(version) {
-				return nil
-			}
-
-			if semver.Compare(version, "v0.27.1") >= 0 {
-				return nil
-			}
-
-			return fmt.Errorf("unsupported membership server version: %s", version)
+			return fctl.CheckMembershipVersion("v0.27.1")(cmd, args)
 		}),
 		fctl.WithController[*UpgradeStore](NewUpgradeController()),
 	)

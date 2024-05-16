@@ -14,6 +14,7 @@ import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/components/agent/internal/generated"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/api/equality"
@@ -102,7 +103,7 @@ func (c *membershipListener) Start(ctx context.Context) {
 						}
 					}
 					c.stacksModules[msg.ExistingStack.ClusterName] = collectionutils.Map(msg.ExistingStack.Modules, func(module *generated.Module) string {
-						return module.Name
+						return strings.ToLower(module.Name)
 					})
 					c.syncExistingStack(ctx, msg.ExistingStack)
 				case *generated.Order_DeletedStack:
@@ -171,8 +172,23 @@ func (c *membershipListener) syncModules(ctx context.Context, metadata map[strin
 			continue
 		}
 
-		if !slices.Contains(c.stacksModules[stack.GetName()], gvk.Kind) {
-			if err := c.deleteModule(ctx, gvk, stack.GetName()); err != nil {
+		if gvk.Kind == "Stargate" {
+			continue
+		}
+
+		resources, err := c.restMapper.RESTMapping(gvk.GroupKind(), gvk.Version)
+		if err != nil {
+			sharedlogging.FromContext(ctx).Errorf("Unable to get resources for %s: %s", gvk.Kind, err)
+			continue
+		}
+		singular, err := c.restMapper.ResourceSingularizer(resources.Resource.Resource)
+		if err != nil {
+			sharedlogging.FromContext(ctx).Errorf("Unable to get singular for %s: %s", gvk.Kind, err)
+			continue
+		}
+		logging.FromContext(ctx).Debugf("Resource: checking module %s", resources.Resource.Resource)
+		if !slices.Contains(c.stacksModules[stack.GetName()], singular) {
+			if err := c.deleteModule(ctx, resources.Resource, stack.GetName()); err != nil {
 				sharedlogging.FromContext(ctx).Errorf("Unable to get and delete module %s cluster side: %s", gvk.Kind, err)
 			}
 			continue
@@ -215,13 +231,18 @@ func (c *membershipListener) syncModules(ctx context.Context, metadata map[strin
 	}
 }
 
-func (c *membershipListener) deleteModule(ctx context.Context, gvk schema.GroupVersionKind, name string) error {
+func (c *membershipListener) deleteModule(ctx context.Context, resource schema.GroupVersionResource, stackName string) error {
+	logging.FromContext(ctx).Debugf("Deleting module %s", resource.Resource)
 	if err := c.restClient.Delete().
-		Resource(gvk.Kind).
-		Name(name).
+		Resource(resource.Resource).
+		VersionedParams(
+			&metav1.ListOptions{
+				LabelSelector: "formance.com/created-by-agent=true,formance.com/stack=" + stackName,
+			}, scheme.ParameterCodec).
 		Do(ctx).
 		Error(); err != nil {
 		if apierrors.IsNotFound(err) {
+			logging.FromContext(ctx).Infof("Cannot delete not existing module: %s", resource.Resource)
 			return nil
 		}
 		return errors.Wrap(err, "Unable to delete object")
@@ -273,6 +294,7 @@ func (c *membershipListener) syncAuthClients(ctx context.Context, metadata map[s
 			})
 		if err != nil {
 			sharedlogging.FromContext(ctx).Errorf("Unable to create AuthClient cluster side: %s", err)
+			continue
 		}
 		expectedAuthClients = append(expectedAuthClients, authClient)
 	}
@@ -381,7 +403,7 @@ func (c *membershipListener) createOrUpdate(ctx context.Context, gvk schema.Grou
 
 	restMapping, err := c.restMapper.RESTMapping(gvk.GroupKind())
 	if err != nil {
-		panic(err)
+		return nil, errors.Wrap(err, "getting rest mapping")
 	}
 
 	u := &unstructured.Unstructured{}

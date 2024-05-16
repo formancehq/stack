@@ -20,15 +20,17 @@ func TestGetVolumesWithBalances(t *testing.T) {
 	now := time.Now()
 	ctx := logging.TestingContext()
 
-	previous_pit := now.Add(-2 * time.Minute)
-	futur_pit := now.Add(2 * time.Minute)
+	previousPIT := now.Add(-2 * time.Minute)
+	futurPIT := now.Add(2 * time.Minute)
 
-	previous_oot := now.Add(-2 * time.Minute)
-	futur_oot := now.Add(2 * time.Minute)
+	previousOOT := now.Add(-2 * time.Minute)
+	futurOOT := now.Add(2 * time.Minute)
 
 	require.NoError(t, store.InsertLogs(ctx,
 		ledger.ChainLogs(
-
+			ledger.NewSetMetadataOnAccountLog(time.Now(), "account:1", metadata.Metadata{"category": "1"}).WithDate(now),
+			ledger.NewSetMetadataOnAccountLog(time.Now(), "account:2", metadata.Metadata{"category": "2"}).WithDate(now),
+			ledger.NewSetMetadataOnAccountLog(time.Now(), "world", metadata.Metadata{"foo": "bar"}).WithDate(now),
 			ledger.NewTransactionLog(
 				ledger.NewTransaction().
 					WithPostings(ledger.NewPosting("world", "account:1", "USD", big.NewInt(100))).
@@ -113,7 +115,7 @@ func TestGetVolumesWithBalances(t *testing.T) {
 		t.Parallel()
 		volumes, err := store.GetVolumesWithBalances(ctx, NewGetVolumesWithBalancesQuery(NewPaginatedQueryOptions(
 			FiltersForVolumes{
-				PITFilter:        PITFilter{PIT: &previous_pit, OOT: nil},
+				PITFilter:        PITFilter{PIT: &previousPIT, OOT: nil},
 				UseInsertionDate: true,
 			})))
 
@@ -134,7 +136,7 @@ func TestGetVolumesWithBalances(t *testing.T) {
 		t.Parallel()
 		volumes, err := store.GetVolumesWithBalances(ctx, NewGetVolumesWithBalancesQuery(NewPaginatedQueryOptions(
 			FiltersForVolumes{
-				PITFilter:        PITFilter{PIT: &futur_pit, OOT: nil},
+				PITFilter:        PITFilter{PIT: &futurPIT, OOT: nil},
 				UseInsertionDate: true,
 			})))
 		require.NoError(t, err)
@@ -146,7 +148,7 @@ func TestGetVolumesWithBalances(t *testing.T) {
 		t.Parallel()
 		volumes, err := store.GetVolumesWithBalances(ctx, NewGetVolumesWithBalancesQuery(NewPaginatedQueryOptions(
 			FiltersForVolumes{
-				PITFilter:        PITFilter{PIT: nil, OOT: &previous_oot},
+				PITFilter:        PITFilter{PIT: nil, OOT: &previousOOT},
 				UseInsertionDate: true,
 			})))
 		require.NoError(t, err)
@@ -158,7 +160,7 @@ func TestGetVolumesWithBalances(t *testing.T) {
 		t.Parallel()
 		volumes, err := store.GetVolumesWithBalances(ctx, NewGetVolumesWithBalancesQuery(NewPaginatedQueryOptions(
 			FiltersForVolumes{
-				PITFilter:        PITFilter{PIT: nil, OOT: &futur_oot},
+				PITFilter:        PITFilter{PIT: nil, OOT: &futurOOT},
 				UseInsertionDate: true,
 			})))
 
@@ -179,7 +181,7 @@ func TestGetVolumesWithBalances(t *testing.T) {
 		t.Parallel()
 		volumes, err := store.GetVolumesWithBalances(ctx, NewGetVolumesWithBalancesQuery(NewPaginatedQueryOptions(
 			FiltersForVolumes{
-				PITFilter:        PITFilter{PIT: &previous_pit, OOT: nil},
+				PITFilter:        PITFilter{PIT: &previousPIT, OOT: nil},
 				UseInsertionDate: false,
 			})))
 
@@ -200,7 +202,7 @@ func TestGetVolumesWithBalances(t *testing.T) {
 		t.Parallel()
 		volumes, err := store.GetVolumesWithBalances(ctx, NewGetVolumesWithBalancesQuery(NewPaginatedQueryOptions(
 			FiltersForVolumes{
-				PITFilter:        PITFilter{PIT: &futur_pit, OOT: nil},
+				PITFilter:        PITFilter{PIT: &futurPIT, OOT: nil},
 				UseInsertionDate: false,
 			})))
 		require.NoError(t, err)
@@ -212,7 +214,7 @@ func TestGetVolumesWithBalances(t *testing.T) {
 		t.Parallel()
 		volumes, err := store.GetVolumesWithBalances(ctx, NewGetVolumesWithBalancesQuery(NewPaginatedQueryOptions(
 			FiltersForVolumes{
-				PITFilter:        PITFilter{PIT: nil, OOT: &previous_oot},
+				PITFilter:        PITFilter{PIT: nil, OOT: &previousOOT},
 				UseInsertionDate: false,
 			})))
 		require.NoError(t, err)
@@ -224,7 +226,7 @@ func TestGetVolumesWithBalances(t *testing.T) {
 		t.Parallel()
 		volumes, err := store.GetVolumesWithBalances(ctx, NewGetVolumesWithBalancesQuery(NewPaginatedQueryOptions(
 			FiltersForVolumes{
-				PITFilter:        PITFilter{PIT: nil, OOT: &futur_oot},
+				PITFilter:        PITFilter{PIT: nil, OOT: &futurOOT},
 				UseInsertionDate: false,
 			})))
 
@@ -245,7 +247,7 @@ func TestGetVolumesWithBalances(t *testing.T) {
 		t.Parallel()
 		volumes, err := store.GetVolumesWithBalances(ctx, NewGetVolumesWithBalancesQuery(NewPaginatedQueryOptions(
 			FiltersForVolumes{
-				PITFilter:        PITFilter{PIT: &futur_pit, OOT: &now},
+				PITFilter:        PITFilter{PIT: &futurPIT, OOT: &now},
 				UseInsertionDate: true,
 			})))
 
@@ -267,7 +269,7 @@ func TestGetVolumesWithBalances(t *testing.T) {
 		t.Parallel()
 		volumes, err := store.GetVolumesWithBalances(ctx, NewGetVolumesWithBalancesQuery(NewPaginatedQueryOptions(
 			FiltersForVolumes{
-				PITFilter:        PITFilter{PIT: &now, OOT: &previous_oot},
+				PITFilter:        PITFilter{PIT: &now, OOT: &previousOOT},
 				UseInsertionDate: true,
 			})))
 
@@ -289,7 +291,7 @@ func TestGetVolumesWithBalances(t *testing.T) {
 		t.Parallel()
 		volumes, err := store.GetVolumesWithBalances(ctx, NewGetVolumesWithBalancesQuery(NewPaginatedQueryOptions(
 			FiltersForVolumes{
-				PITFilter:        PITFilter{PIT: &futur_pit, OOT: &now},
+				PITFilter:        PITFilter{PIT: &futurPIT, OOT: &now},
 				UseInsertionDate: false,
 			})))
 
@@ -310,7 +312,7 @@ func TestGetVolumesWithBalances(t *testing.T) {
 		t.Parallel()
 		volumes, err := store.GetVolumesWithBalances(ctx, NewGetVolumesWithBalancesQuery(NewPaginatedQueryOptions(
 			FiltersForVolumes{
-				PITFilter:        PITFilter{PIT: &now, OOT: &previous_oot},
+				PITFilter:        PITFilter{PIT: &now, OOT: &previousOOT},
 				UseInsertionDate: false,
 			})))
 
@@ -335,7 +337,7 @@ func TestGetVolumesWithBalances(t *testing.T) {
 			NewGetVolumesWithBalancesQuery(
 				NewPaginatedQueryOptions(
 					FiltersForVolumes{
-						PITFilter:        PITFilter{PIT: &now, OOT: &previous_oot},
+						PITFilter:        PITFilter{PIT: &now, OOT: &previousOOT},
 						UseInsertionDate: false,
 					}).WithQueryBuilder(query.Match("account", "account:1"))),
 		)
@@ -354,6 +356,48 @@ func TestGetVolumesWithBalances(t *testing.T) {
 
 	})
 
+	t.Run("Using Metadata regex", func(t *testing.T) {
+		t.Parallel()
+
+		volumes, err := store.GetVolumesWithBalances(ctx,
+			NewGetVolumesWithBalancesQuery(
+				NewPaginatedQueryOptions(
+					FiltersForVolumes{}).WithQueryBuilder(query.Match("metadata[foo]", "bar"))),
+		)
+
+		require.NoError(t, err)
+		require.Len(t, volumes.Data, 1)
+
+	})
+
+	t.Run("Using exists metadata filter 1", func(t *testing.T) {
+		t.Parallel()
+
+		volumes, err := store.GetVolumesWithBalances(ctx,
+			NewGetVolumesWithBalancesQuery(
+				NewPaginatedQueryOptions(
+					FiltersForVolumes{}).WithQueryBuilder(query.Exists("metadata", "category"))),
+		)
+
+		require.NoError(t, err)
+		require.Len(t, volumes.Data, 2)
+
+	})
+
+	t.Run("Using exists metadata filter 2", func(t *testing.T) {
+		t.Parallel()
+
+		volumes, err := store.GetVolumesWithBalances(ctx,
+			NewGetVolumesWithBalancesQuery(
+				NewPaginatedQueryOptions(
+					FiltersForVolumes{}).WithQueryBuilder(query.Exists("metadata", "foo"))),
+		)
+
+		require.NoError(t, err)
+		require.Len(t, volumes.Data, 1)
+
+	})
+
 }
 
 func TestAggGetVolumesWithBalances(t *testing.T) {
@@ -362,11 +406,11 @@ func TestAggGetVolumesWithBalances(t *testing.T) {
 	now := time.Now()
 	ctx := logging.TestingContext()
 
-	// previous_pit := now.Add(-2 * time.Minute)
-	futur_pit := now.Add(2 * time.Minute)
+	// previousPIT := now.Add(-2 * time.Minute)
+	futurPIT := now.Add(2 * time.Minute)
 
-	previous_oot := now.Add(-2 * time.Minute)
-	// futur_oot := now.Add(2 * time.Minute)
+	previousOOT := now.Add(-2 * time.Minute)
+	// futurOOT := now.Add(2 * time.Minute)
 
 	require.NoError(t, store.InsertLogs(ctx,
 		ledger.ChainLogs(
@@ -485,8 +529,8 @@ func TestAggGetVolumesWithBalances(t *testing.T) {
 			NewPaginatedQueryOptions(
 				FiltersForVolumes{
 					PITFilter: PITFilter{
-						PIT: &futur_pit,
-						OOT: &previous_oot,
+						PIT: &futurPIT,
+						OOT: &previousOOT,
 					},
 					UseInsertionDate: false,
 					GroupLvl:         1,
@@ -510,6 +554,77 @@ func TestAggGetVolumesWithBalances(t *testing.T) {
 				Input:   big.NewInt(100),
 				Output:  big.NewInt(0),
 				Balance: big.NewInt(100),
+			},
+		})
+	})
+
+	t.Run("Aggregation Volumes with Balance for GroupLvl 1 && PIT && OOT && effectiveDate && Balance Filter 1", func(t *testing.T) {
+		t.Parallel()
+		volumes, err := store.GetVolumesWithBalances(ctx, NewGetVolumesWithBalancesQuery(
+			NewPaginatedQueryOptions(
+				FiltersForVolumes{
+					PITFilter: PITFilter{
+						PIT: &futurPIT,
+						OOT: &previousOOT,
+					},
+					UseInsertionDate: false,
+					GroupLvl:         1,
+				}).WithQueryBuilder(
+				query.And(query.Match("account", "account::"), query.Gte("balance[EUR]", 50)))))
+
+		require.NoError(t, err)
+		require.Len(t, volumes.Data, 1)
+		require.Equal(t, volumes.Data[0], ledger.VolumesWithBalanceByAssetByAccount{
+			Account: "account",
+			Asset:   "EUR",
+			VolumesWithBalance: ledger.VolumesWithBalance{
+				Input:   big.NewInt(50),
+				Output:  big.NewInt(0),
+				Balance: big.NewInt(50),
+			},
+		})
+	})
+
+	t.Run("Aggregation Volumes with Balance for GroupLvl 1  && Balance Filter 2", func(t *testing.T) {
+		t.Parallel()
+		volumes, err := store.GetVolumesWithBalances(ctx, NewGetVolumesWithBalancesQuery(
+			NewPaginatedQueryOptions(
+				FiltersForVolumes{
+					PITFilter:        PITFilter{},
+					UseInsertionDate: true,
+					GroupLvl:         2,
+				}).WithQueryBuilder(
+				query.Or(
+					query.Match("account", "account:1:"),
+					query.Lte("balance[USD]", 0)))))
+
+		require.NoError(t, err)
+		require.Len(t, volumes.Data, 3)
+		require.Equal(t, volumes.Data[0], ledger.VolumesWithBalanceByAssetByAccount{
+			Account: "account:1",
+			Asset:   "EUR",
+			VolumesWithBalance: ledger.VolumesWithBalance{
+				Input:   big.NewInt(150),
+				Output:  big.NewInt(0),
+				Balance: big.NewInt(150),
+			},
+		})
+		require.Equal(t, volumes.Data[1], ledger.VolumesWithBalanceByAssetByAccount{
+			Account: "account:1",
+			Asset:   "USD",
+			VolumesWithBalance: ledger.VolumesWithBalance{
+				Input:   big.NewInt(100),
+				Output:  big.NewInt(0),
+				Balance: big.NewInt(100),
+			},
+		})
+		require.Equal(t, volumes.Data[2], ledger.VolumesWithBalanceByAssetByAccount{
+			Account: "world",
+			Asset:   "USD",
+			VolumesWithBalance: ledger.VolumesWithBalance{
+				Input:   big.NewInt(0),
+				Output:  big.NewInt(200),
+				Balance: big.NewInt(-200),
 			},
 		})
 	})

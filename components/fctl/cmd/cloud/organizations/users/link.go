@@ -7,7 +7,6 @@ import (
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
-	"golang.org/x/mod/semver"
 )
 
 type LinkStore struct {
@@ -37,18 +36,7 @@ func NewLinkCommand() *cobra.Command {
 		fctl.WithShortDescription("Link user to an organization with properties"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithPreRunE(func(cmd *cobra.Command, args []string) error {
-			store := fctl.GetMembershipStore(cmd.Context())
-
-			version := fctl.MembershipServerInfo(cmd.Context(), store.Client())
-			if !semver.IsValid(version) {
-				return nil
-			}
-
-			if semver.Compare(version, "v0.26.1") >= 0 {
-				return nil
-			}
-
-			return fmt.Errorf("unsupported membership server version: %s", version)
+			return fctl.CheckMembershipVersion("v0.26.1")(cmd, args)
 		}),
 		fctl.WithController[*LinkStore](NewLinkController()),
 	)

@@ -5,6 +5,7 @@ package shared
 type TriggerData struct {
 	Event      string                 `json:"event"`
 	Filter     *string                `json:"filter,omitempty"`
+	Name       *string                `json:"name,omitempty"`
 	Vars       map[string]interface{} `json:"vars,omitempty"`
 	WorkflowID string                 `json:"workflowID"`
 }
@@ -21,6 +22,13 @@ func (o *TriggerData) GetFilter() *string {
 		return nil
 	}
 	return o.Filter
+}
+
+func (o *TriggerData) GetName() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Name
 }
 
 func (o *TriggerData) GetVars() map[string]interface{} {

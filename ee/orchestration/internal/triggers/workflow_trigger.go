@@ -19,7 +19,8 @@ type ProcessEventRequest struct {
 }
 
 type triggerWorkflow struct {
-	taskQueue string
+	taskQueue               string
+	includeSearchAttributes bool
 }
 
 func (w triggerWorkflow) RunTrigger(ctx temporalworkflow.Context, req ProcessEventRequest) error {
@@ -37,13 +38,16 @@ func (w triggerWorkflow) RunTrigger(ctx temporalworkflow.Context, req ProcessEve
 	}
 
 	for _, trigger := range triggers {
+		searchAttributes := map[string]any{}
+		if w.includeSearchAttributes {
+			searchAttributes[SearchAttributeTriggerID] = trigger.ID
+		}
+
 		if err := temporalworkflow.ExecuteChildWorkflow(
 			temporalworkflow.WithChildOptions(ctx, temporalworkflow.ChildWorkflowOptions{
 				TaskQueue:         w.taskQueue,
 				ParentClosePolicy: enums.PARENT_CLOSE_POLICY_ABANDON,
-				SearchAttributes: map[string]interface{}{
-					SearchAttributeTriggerID: trigger.ID,
-				},
+				SearchAttributes:  searchAttributes,
 			}),
 			ExecuteTrigger,
 			req,
@@ -111,9 +115,10 @@ func (w triggerWorkflow) ExecuteTrigger(ctx temporalworkflow.Context, req Proces
 	return nil
 }
 
-func NewWorkflow(taskQueue string) *triggerWorkflow {
+func NewWorkflow(taskQueue string, includeSearchAttributes bool) *triggerWorkflow {
 	return &triggerWorkflow{
-		taskQueue: taskQueue,
+		taskQueue:               taskQueue,
+		includeSearchAttributes: includeSearchAttributes,
 	}
 }
 

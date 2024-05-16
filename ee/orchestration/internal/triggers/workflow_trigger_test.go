@@ -33,12 +33,12 @@ func TestWorkflow(t *testing.T) {
 	require.NoError(t, storage.Migrate(logging.TestingContext(), db))
 
 	taskQueue := uuid.NewString()
-	workflowManager := workflow.NewManager(db, devServer.Client(), taskQueue)
+	workflowManager := workflow.NewManager(db, devServer.Client(), taskQueue, false)
 
 	worker := temporalworker.New(logging.Testing(), devServer.Client(), taskQueue,
 		[]any{
-			NewWorkflow(taskQueue),
-			workflow.NewWorkflows(),
+			NewWorkflow(taskQueue, false),
+			workflow.NewWorkflows(false),
 			(&stages.NoOp{}).GetWorkflow()},
 		[]any{
 			workflow.NewActivities(publish.NoOpPublisher, db),

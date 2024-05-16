@@ -26,6 +26,7 @@ type PrivateRegion struct {
 	Active bool `json:"active"`
 	LastPing *time.Time `json:"lastPing,omitempty"`
 	Name string `json:"name"`
+	Capabilities RegionCapability `json:"capabilities"`
 	OrganizationID string `json:"organizationID"`
 	CreatorID string `json:"creatorID"`
 	Secret *PrivateRegionAllOfSecret `json:"secret,omitempty"`
@@ -35,13 +36,14 @@ type PrivateRegion struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPrivateRegion(id string, baseUrl string, createdAt string, active bool, name string, organizationID string, creatorID string) *PrivateRegion {
+func NewPrivateRegion(id string, baseUrl string, createdAt string, active bool, name string, capabilities RegionCapability, organizationID string, creatorID string) *PrivateRegion {
 	this := PrivateRegion{}
 	this.Id = id
 	this.BaseUrl = baseUrl
 	this.CreatedAt = createdAt
 	this.Active = active
 	this.Name = name
+	this.Capabilities = capabilities
 	this.OrganizationID = organizationID
 	this.CreatorID = creatorID
 	return &this
@@ -207,6 +209,30 @@ func (o *PrivateRegion) SetName(v string) {
 	o.Name = v
 }
 
+// GetCapabilities returns the Capabilities field value
+func (o *PrivateRegion) GetCapabilities() RegionCapability {
+	if o == nil {
+		var ret RegionCapability
+		return ret
+	}
+
+	return o.Capabilities
+}
+
+// GetCapabilitiesOk returns a tuple with the Capabilities field value
+// and a boolean to check if the value has been set.
+func (o *PrivateRegion) GetCapabilitiesOk() (*RegionCapability, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Capabilities, true
+}
+
+// SetCapabilities sets field value
+func (o *PrivateRegion) SetCapabilities(v RegionCapability) {
+	o.Capabilities = v
+}
+
 // GetOrganizationID returns the OrganizationID field value
 func (o *PrivateRegion) GetOrganizationID() string {
 	if o == nil {
@@ -305,6 +331,7 @@ func (o PrivateRegion) ToMap() (map[string]interface{}, error) {
 		toSerialize["lastPing"] = o.LastPing
 	}
 	toSerialize["name"] = o.Name
+	toSerialize["capabilities"] = o.Capabilities
 	toSerialize["organizationID"] = o.OrganizationID
 	toSerialize["creatorID"] = o.CreatorID
 	if !IsNil(o.Secret) {

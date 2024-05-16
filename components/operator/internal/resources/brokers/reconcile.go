@@ -53,12 +53,13 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, broker *v1beta1.Broker) e
 }
 
 func detectBrokerMode(ctx core.Context, stack *v1beta1.Stack, broker *v1beta1.Broker, uri *v1beta1.URI) error {
-	if hasLegacyStream, err := detectBrokerModeByCheckingExistentStreams(ctx, broker, uri); err != nil {
+	if hasLegacyStream, err := detectBrokerModeByCheckingExistentStreams(ctx, stack, broker, uri); err != nil {
 		return err
 	} else if hasLegacyStream {
 		broker.Status.Mode = v1beta1.ModeOneStreamByService
+		return nil
 	}
-	if ok, err := hasAllVersionsGreaterThan(ctx, stack, "v2.0.0-rc.24"); err != nil {
+	if ok, err := hasAllVersionsGreaterThan(ctx, stack, "v2.0.0-rc.27"); err != nil {
 		return err
 	} else if ok {
 		broker.Status.Mode = v1beta1.ModeOneStreamByStack
@@ -103,16 +104,22 @@ func hasAllVersionsGreaterThan(ctx core.Context, stack *v1beta1.Stack, ref strin
 	}
 }
 
-func detectBrokerModeByCheckingExistentStreams(ctx core.Context, broker *v1beta1.Broker, uri *v1beta1.URI) (bool, error) {
+func detectBrokerModeByCheckingExistentStreams(ctx core.Context, stack *v1beta1.Stack, broker *v1beta1.Broker, uri *v1beta1.URI) (bool, error) {
 	const script = `
 	# notes(gfyrag): Check if we have any stream named "$STACK-xxx"
 	v=$(nats stream ls -n --server $NATS_URI | grep "$STACK-")
 	# exit with code 12 if we detect any streams
 	[[ -z "$v" ]] || exit 12;
 `
+
+	natsBoxImage, err := registries.GetNatsBoxImage(ctx, stack, "0.14.1")
+	if err != nil {
+		return false, err
+	}
+
 	hasLegacyStream := false
 	if err := jobs.Handle(ctx, broker, "detect-mode", corev1.Container{
-		Image: "natsio/nats-box:0.14.1",
+		Image: natsBoxImage,
 		Name:  "detect-mode",
 		Args:  core.ShellScript(script),
 		Env: []corev1.EnvVar{
@@ -167,17 +174,29 @@ func deleteBroker(ctx core.Context, broker *v1beta1.Broker) error {
 	case v1beta1.ModeOneStreamByService:
 		script = `
 			for stream in $(nats --server $NATS_URI stream ls -n | grep $STACK); do
-				nats stream rm -f --server $NATS_URI $stream	
+				nats stream info --server $NATS_URI $stream && nats stream rm -f --server $NATS_URI $stream || true	
 			done
 		`
 	case v1beta1.ModeOneStreamByStack:
 		script = `
-			nats stream rm -f --server $NATS_URI $STACK
+			nats stream info --server $NATS_URI $STACK && nats stream rm -f --server $NATS_URI $STACK || true
 		`
 	}
 
+	stack := &v1beta1.Stack{}
+	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
+		Name: broker.Spec.Stack,
+	}, stack); err != nil {
+		return err
+	}
+
+	natsBoxImage, err := registries.GetNatsBoxImage(ctx, stack, "0.14.1")
+	if err != nil {
+		return err
+	}
+
 	return jobs.Handle(ctx, broker, "delete-streams", corev1.Container{
-		Image: "natsio/nats-box:0.14.1",
+		Image: natsBoxImage,
 		Name:  "delete-streams",
 		Args:  core.ShellScript(script),
 		Env: []corev1.EnvVar{
@@ -204,7 +223,7 @@ func createOneStreamByStack(ctx core.Context, stack *v1beta1.Stack, broker *v1be
 			--replicas $REPLICAS \
 			--no-allow-direct \
 			$STREAM
-	}`
+	} || true`
 
 	natsBoxImage, err := registries.GetNatsBoxImage(ctx, stack, "0.14.1")
 	if err != nil {

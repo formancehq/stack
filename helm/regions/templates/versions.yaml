@@ -1,4 +1,4 @@
-{{ if and .Values.versions.create (.Capabilities.APIVersions.Has "formance.com/v1beta1/Versions") }}
+{{ if and .Values.versions.create }}
 {{- range $key, $version := .Values.versions.files }}
 apiVersion: formance.com/v1beta1
 kind: Versions

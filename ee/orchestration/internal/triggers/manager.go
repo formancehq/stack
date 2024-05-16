@@ -34,11 +34,15 @@ type TriggerManager struct {
 	expressionEvaluator *expressionEvaluator
 }
 
-func (m *TriggerManager) ListTriggers(ctx context.Context, query ListTriggersQuery) (*bunpaginate.Cursor[Trigger], error) {
+func (m *TriggerManager) ListTriggers(ctx context.Context, paramsQuery ListTriggersQuery) (*bunpaginate.Cursor[Trigger], error) {
 	q := m.db.NewSelect()
 
-	return bunpaginate.UsingOffset[any, Trigger](ctx, q, bunpaginate.OffsetPaginatedQuery[any](query),
+	return bunpaginate.UsingOffset[ListTriggerParams, Trigger](ctx, q, bunpaginate.OffsetPaginatedQuery[ListTriggerParams](paramsQuery),
 		func(query *bun.SelectQuery) *bun.SelectQuery {
+
+			if paramsQuery.Options.Name != "" {
+				query = query.Where("Name ILIKE '%?%';", paramsQuery.Options.Name)
+			}
 			return query.Where("deleted_at is null")
 		})
 }
@@ -165,7 +169,10 @@ func NewManager(db *bun.DB, expressionEvaluator *expressionEvaluator) *TriggerMa
 	}
 }
 
-type ListTriggersQuery bunpaginate.OffsetPaginatedQuery[any]
+type ListTriggerParams struct {
+	Name string
+}
+type ListTriggersQuery bunpaginate.OffsetPaginatedQuery[ListTriggerParams]
 
 type ListTriggersOccurrencesOptions struct {
 	TriggerID string
