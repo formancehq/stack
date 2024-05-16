@@ -157,7 +157,7 @@ staging-application-set:
 staging-application-sync:
     BUILD core+application-sync --APPLICATION=staging-eu-west-1-hosting-regions
 
-tests-all:
+tests:
     LOCALLY
     BUILD ./components+run --TARGET=tests
     BUILD ./ee+run --TARGET=tests
@@ -181,9 +181,9 @@ tidy: # Run tidy on all the components
     BUILD ./ee+run --TARGET=tidy
     BUILD ./tests/integration+tidy
 
-tests:
+tests-all:
     LOCALLY
-    BUILD +tests-all
+    BUILD +tests
     BUILD +tests-integration
 
 helm-publish:
