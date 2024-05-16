@@ -39,4 +39,4 @@ helm-publish:
   FROM core+helm-base
   WORKDIR /src
   COPY (+helm-package/) /src
-  DO --pass-args stack+HELM_PUBLISH
+  DO --pass-args stack+HELM_PUBLISH --path=/src/*.tgz

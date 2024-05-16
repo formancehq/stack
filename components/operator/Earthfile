@@ -207,7 +207,7 @@ helm-publish:
     COPY --pass-args (+helm-update/helm) .
     FOR dir IN $(ls -d */)
         WORKDIR /src/$dir
-        DO --pass-args stack+HELM_PUBLISH
+        DO --pass-args stack+HELM_PUBLISH --path=/src/${dir}*.tgz
     END
 
 release:
