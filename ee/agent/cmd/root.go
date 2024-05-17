@@ -202,6 +202,6 @@ func init() {
 	rootCmd.Flags().String(authenticationIssuerFlag, "", "")
 	rootCmd.Flags().String(baseUrlFlag, "", "")
 	rootCmd.Flags().Bool(productionFlag, false, "Is a production agent")
-	rootCmd.Flags().Duration(resyncPeriod, 5*time.Minute, "Resync period ok K8S resources")
+	rootCmd.Flags().Duration(resyncPeriod, 5*time.Minute, "Resync period of K8S resources")
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

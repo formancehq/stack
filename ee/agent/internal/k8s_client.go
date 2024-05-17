@@ -2,10 +2,17 @@ package internal
 
 import (
 	"context"
+
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/formancehq/stack/libs/go-libs/logging"
+	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/dynamic/dynamicinformer"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -96,5 +103,54 @@ var _ K8SClient = (*defaultK8SClient)(nil)
 func NewDefaultK8SClient(restClient *rest.RESTClient) K8SClient {
 	return defaultK8SClient{
 		restClient: restClient,
+	}
+}
+
+type cachedK8SClient struct {
+	K8SClient
+	informerFactory dynamicinformer.DynamicSharedInformerFactory
+}
+
+func (c cachedK8SClient) Get(ctx context.Context, resource string, name string) (*unstructured.Unstructured, error) {
+	ret, err := c.informerFactory.ForResource(schema.GroupVersionResource{
+		Group:    "formance.com",
+		Version:  "v1beta1",
+		Resource: resource,
+	}).
+		Lister().
+		Get(name)
+	if err != nil {
+		if errors.IsNotFound(err) {
+			return c.K8SClient.Get(ctx, resource, name)
+		}
+		return nil, err
+	}
+	logging.FromContext(ctx).Debugf("Cache hit for resource %s/%s", resource, name)
+	return ret.(*unstructured.Unstructured), nil
+}
+
+func (c cachedK8SClient) List(_ context.Context, resource string, selector labels.Selector) ([]unstructured.Unstructured, error) {
+	ret, err := c.informerFactory.ForResource(schema.GroupVersionResource{
+		Group:    "formance.com",
+		Version:  "v1beta1",
+		Resource: resource,
+	}).
+		Lister().
+		List(selector)
+	if err != nil {
+		return nil, err
+	}
+
+	return collectionutils.Map(ret, func(from runtime.Object) unstructured.Unstructured {
+		return *from.(*unstructured.Unstructured)
+	}), nil
+}
+
+var _ K8SClient = (*defaultK8SClient)(nil)
+
+func NewCachedK8SClient(k8sClient K8SClient, informerFactory dynamicinformer.DynamicSharedInformerFactory) K8SClient {
+	return cachedK8SClient{
+		K8SClient:       k8sClient,
+		informerFactory: informerFactory,
 	}
 }

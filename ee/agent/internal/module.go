@@ -98,8 +98,7 @@ func CreateStacksInformer(factory dynamicinformer.DynamicSharedInformerFactory,
 }
 
 func CreateModulesInformers(factory dynamicinformer.DynamicSharedInformerFactory,
-	restMapper meta.RESTMapper,
-	logger logging.Logger, client MembershipClient) error {
+	restMapper meta.RESTMapper, logger logging.Logger, client MembershipClient) error {
 
 	for gvk, rtype := range scheme.Scheme.AllKnownTypes() {
 		object := reflect.New(rtype).Interface()
@@ -208,7 +207,9 @@ func NewModule(serverAddress string, authenticator Authenticator, clientInfo Cli
 		fx.Provide(func(client *dynamic.DynamicClient) dynamicinformer.DynamicSharedInformerFactory {
 			return NewDynamicSharedInformerFactory(client, resyncPeriod)
 		}),
-		fx.Provide(fx.Annotate(NewDefaultK8SClient, fx.As(new(K8SClient)))),
+		fx.Provide(func(restClient *rest.RESTClient, informerFactory dynamicinformer.DynamicSharedInformerFactory) K8SClient {
+			return NewCachedK8SClient(NewDefaultK8SClient(restClient), informerFactory)
+		}),
 		fx.Provide(CreateRestMapper),
 		fx.Provide(func() *membershipClient {
 			return NewMembershipClient(authenticator, clientInfo, serverAddress, opts...)

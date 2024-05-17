@@ -5,12 +5,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"k8s.io/apimachinery/pkg/labels"
-	"k8s.io/apimachinery/pkg/selection"
 	"net/url"
 	"reflect"
 	"slices"
 	"strings"
+
+	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/selection"
 
 	"github.com/alitto/pond"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -67,7 +68,7 @@ type ClientInfo struct {
 
 type membershipListener struct {
 	clientInfo ClientInfo
-	client K8SClient
+	client     K8SClient
 
 	stacksModules InMemoryStacksModules
 	restMapper    meta.RESTMapper
@@ -415,7 +416,7 @@ func (c *membershipListener) createOrUpdateStackDependency(ctx context.Context, 
 func NewMembershipListener(client K8SClient, clientInfo ClientInfo, mapper meta.RESTMapper,
 	orders MembershipClient, stacksModules InMemoryStacksModules) *membershipListener {
 	return &membershipListener{
-		client: client,
+		client:        client,
 		clientInfo:    clientInfo,
 		stacksModules: stacksModules,
 		restMapper:    mapper,

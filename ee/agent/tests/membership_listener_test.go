@@ -34,6 +34,7 @@ var _ = Describe("Membership listener", func() {
 		clientInfo = internal.ClientInfo{
 			BaseUrl: &url.URL{},
 		}
+
 		listener := internal.NewMembershipListener(internal.NewDefaultK8SClient(k8sClient), clientInfo, mapper, membershipClient, inMemoryStacksModules)
 		done := make(chan struct{})
 		DeferCleanup(func() {
