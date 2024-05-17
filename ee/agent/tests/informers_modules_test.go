@@ -77,7 +77,6 @@ var _ = Describe("Informer modules", func() {
 					DeferCleanup(func() {
 						Expect(client.IgnoreNotFound(k8sClient.Delete().Resource(resource).Name(name).Do(context.Background()).Error())).To(Succeed())
 					})
-
 				})
 
 				By(fmt.Sprintf("Loading then updating status %s", gvk.Kind), func() {

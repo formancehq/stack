@@ -9,6 +9,7 @@ import (
 	"reflect"
 	"slices"
 	"strings"
+	"sync"
 
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/selection"
@@ -36,6 +37,7 @@ type MembershipClient interface {
 }
 
 type MembershipClientMock struct {
+	mu       sync.Mutex
 	orders   chan *generated.Order
 	messages []*generated.Message
 }
@@ -45,6 +47,9 @@ func (m MembershipClientMock) Orders() chan *generated.Order {
 }
 
 func (m *MembershipClientMock) Send(message *generated.Message) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
 	m.messages = append(m.messages, message)
 	return nil
 }
