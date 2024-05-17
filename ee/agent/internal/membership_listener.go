@@ -9,6 +9,10 @@ import (
 	"reflect"
 	"slices"
 	"strings"
+	"sync"
+
+	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/selection"
 
 	"github.com/alitto/pond"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -23,9 +27,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes/scheme"
-	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -35,6 +37,7 @@ type MembershipClient interface {
 }
 
 type MembershipClientMock struct {
+	mu       sync.Mutex
 	orders   chan *generated.Order
 	messages []*generated.Message
 }
@@ -44,6 +47,9 @@ func (m MembershipClientMock) Orders() chan *generated.Order {
 }
 
 func (m *MembershipClientMock) Send(message *generated.Message) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
 	m.messages = append(m.messages, message)
 	return nil
 }
@@ -67,7 +73,7 @@ type ClientInfo struct {
 
 type membershipListener struct {
 	clientInfo ClientInfo
-	restClient *rest.RESTClient
+	client     K8SClient
 
 	stacksModules InMemoryStacksModules
 	restMapper    meta.RESTMapper
@@ -233,22 +239,8 @@ func (c *membershipListener) syncModules(ctx context.Context, metadata map[strin
 
 func (c *membershipListener) deleteModule(ctx context.Context, resource schema.GroupVersionResource, stackName string) error {
 	logging.FromContext(ctx).Debugf("Deleting module %s", resource.Resource)
-	if err := c.restClient.Delete().
-		Resource(resource.Resource).
-		VersionedParams(
-			&metav1.ListOptions{
-				LabelSelector: "formance.com/created-by-agent=true,formance.com/stack=" + stackName,
-			}, scheme.ParameterCodec).
-		Do(ctx).
-		Error(); err != nil {
-		if apierrors.IsNotFound(err) {
-			logging.FromContext(ctx).Infof("Cannot delete not existing module: %s", resource.Resource)
-			return nil
-		}
-		return errors.Wrap(err, "Unable to delete object")
-	}
 
-	return nil
+	return c.client.EnsureNotExistsBySelector(ctx, resource.Resource, stackLabels(stackName))
 }
 
 func (c *membershipListener) syncStargate(ctx context.Context, metadata map[string]any, stack *unstructured.Unstructured, membershipStack *generated.Stack) {
@@ -272,10 +264,7 @@ func (c *membershipListener) syncStargate(ctx context.Context, metadata map[stri
 			sharedlogging.FromContext(ctx).Errorf("Unable to create module Stargate cluster side: %s", err)
 		}
 	} else {
-		if err := c.restClient.Delete().
-			Name(stargateName).
-			Do(ctx).
-			Error(); client.IgnoreNotFound(err) != nil {
+		if err := c.client.EnsureNotExists(ctx, "Stargates", stargateName); err != nil {
 			sharedlogging.FromContext(ctx).Errorf("Unable to delete module Stargate cluster side: %s", err)
 		}
 	}
@@ -299,18 +288,13 @@ func (c *membershipListener) syncAuthClients(ctx context.Context, metadata map[s
 		expectedAuthClients = append(expectedAuthClients, authClient)
 	}
 
-	authClientList := &unstructured.UnstructuredList{}
-	if err := c.restClient.Get().
-		Resource("AuthClients").
-		VersionedParams(&metav1.ListOptions{
-			LabelSelector: "formance.com/created-by-agent=true,formance.com/stack=" + stack.GetName(),
-		}, scheme.ParameterCodec).
-		Do(ctx).
-		Into(authClientList); err != nil {
+	authClients, err := c.client.List(ctx, "AuthClients", stackLabels(stack.GetName()))
+	if err != nil {
 		sharedlogging.FromContext(ctx).Errorf("Unable to list AuthClient cluster side: %s", err)
+		return
 	}
 
-	authClientsToDelete := collectionutils.Reduce(authClientList.Items, func(acc []string, item unstructured.Unstructured) []string {
+	authClientsToDelete := collectionutils.Reduce(authClients, func(acc []string, item unstructured.Unstructured) []string {
 		for _, expectedClient := range expectedAuthClients {
 			if expectedClient.GetName() == item.GetName() {
 				return acc
@@ -321,26 +305,14 @@ func (c *membershipListener) syncAuthClients(ctx context.Context, metadata map[s
 
 	for _, name := range authClientsToDelete {
 		sharedlogging.FromContext(ctx).Infof("Deleting AuthClient %s", name)
-		if err := c.restClient.Delete().
-			Resource("AuthClients").
-			Name(name).
-			Do(ctx).
-			Error(); err != nil {
+		if err := c.client.EnsureNotExists(ctx, "AuthClients", name); err != nil {
 			sharedlogging.FromContext(ctx).Errorf("Unable to delete AuthClient %s cluster side: %s", name, err)
 		}
 	}
 }
 
 func (c *membershipListener) deleteStack(ctx context.Context, stack *generated.DeletedStack) {
-	if err := c.restClient.Delete().
-		Resource("stacks").
-		Name(stack.ClusterName).
-		Do(ctx).
-		Error(); err != nil {
-		if apierrors.IsNotFound(err) {
-			sharedlogging.FromContext(ctx).Infof("Cannot delete not existing stack: %s", stack.ClusterName)
-			return
-		}
+	if err := c.client.EnsureNotExists(ctx, "Stacks", stack.ClusterName); err != nil {
 		sharedlogging.FromContext(ctx).Errorf("Deleting cluster side: %s", err)
 		return
 	}
@@ -348,16 +320,8 @@ func (c *membershipListener) deleteStack(ctx context.Context, stack *generated.D
 }
 
 func (c *membershipListener) disableStack(ctx context.Context, stack *generated.DisabledStack) {
-	if err := c.restClient.Patch(types.MergePatchType).
-		Name(stack.ClusterName).
-		Body([]byte(`{"spec": {"disabled": true}}`)).
-		Resource("Stacks").
-		Do(ctx).
-		Error(); err != nil {
-		if apierrors.IsNotFound(err) {
-			sharedlogging.FromContext(ctx).Infof("Cannot disable not existing stack: %s", stack.ClusterName)
-			return
-		}
+
+	if err := c.client.Patch(ctx, "Stacks", stack.ClusterName, []byte(`{"spec": {"disabled": true}}`)); err != nil {
 		sharedlogging.FromContext(ctx).Errorf("Disabling cluster side: %s", err)
 		return
 	}
@@ -366,17 +330,8 @@ func (c *membershipListener) disableStack(ctx context.Context, stack *generated.
 }
 
 func (c *membershipListener) enableStack(ctx context.Context, stack *generated.EnabledStack) {
-	if err := c.restClient.Patch(types.MergePatchType).
-		Name(stack.ClusterName).
-		Body([]byte(`{"spec": {"disabled": false}}`)).
-		Resource("Stacks").
-		Do(ctx).
-		Error(); err != nil {
-		if apierrors.IsNotFound(err) {
-			sharedlogging.FromContext(ctx).Infof("Cannot enable not existing stack: %s", stack.ClusterName)
-			return
-		}
-		sharedlogging.FromContext(ctx).Errorf("Enabling cluster side: %s", err)
+	if err := c.client.Patch(ctx, "Stacks", stack.ClusterName, []byte(`{"spec": {"disabled": false}}`)); err != nil {
+		sharedlogging.FromContext(ctx).Errorf("Disabling cluster side: %s", err)
 		return
 	}
 
@@ -406,18 +361,15 @@ func (c *membershipListener) createOrUpdate(ctx context.Context, gvk schema.Grou
 		return nil, errors.Wrap(err, "getting rest mapping")
 	}
 
-	u := &unstructured.Unstructured{}
-	if err := c.restClient.Get().
-		Resource(restMapping.Resource.Resource).
-		Name(name).
-		Do(ctx).
-		Into(u); err != nil {
+	u, err := c.client.Get(ctx, restMapping.Resource.Resource, name)
+	if err != nil {
 		if !apierrors.IsNotFound(err) {
 			return nil, errors.Wrap(err, "reading object")
 		}
 
 		logger.Infof("Object not found, create a new one")
 
+		u := &unstructured.Unstructured{}
 		u.SetUnstructuredContent(content)
 		u.SetGroupVersionKind(gvk)
 		u.SetName(name)
@@ -425,16 +377,12 @@ func (c *membershipListener) createOrUpdate(ctx context.Context, gvk schema.Grou
 			u.SetOwnerReferences([]metav1.OwnerReference{*owner})
 		}
 
-		if err := c.restClient.
-			Post().
-			Resource(restMapping.Resource.Resource).
-			Body(u).
-			Do(ctx).
-			Into(u); err != nil {
+		if err := c.client.Create(ctx, restMapping.Resource.Resource, u); err != nil {
 			return nil, errors.Wrap(err, "creating object")
 		}
 
 		return u, nil
+
 	}
 
 	if equality.Semantic.DeepDerivative(content, u.Object) {
@@ -448,13 +396,7 @@ func (c *membershipListener) createOrUpdate(ctx context.Context, gvk schema.Grou
 		return nil, err
 	}
 
-	if err := c.restClient.
-		Patch(types.MergePatchType).
-		Resource(restMapping.Resource.Resource).
-		Name(name).
-		Body(contentData).
-		Do(ctx).
-		Into(u); err != nil {
+	if err := c.client.Patch(ctx, restMapping.Resource.Resource, name, contentData); err != nil {
 		return nil, errors.Wrap(err, "patching object")
 	}
 
@@ -476,14 +418,28 @@ func (c *membershipListener) createOrUpdateStackDependency(ctx context.Context, 
 		}, content)
 }
 
-func NewMembershipListener(restClient *rest.RESTClient, clientInfo ClientInfo, mapper meta.RESTMapper,
+func NewMembershipListener(client K8SClient, clientInfo ClientInfo, mapper meta.RESTMapper,
 	orders MembershipClient, stacksModules InMemoryStacksModules) *membershipListener {
 	return &membershipListener{
-		restClient:    restClient,
+		client:        client,
 		clientInfo:    clientInfo,
 		stacksModules: stacksModules,
 		restMapper:    mapper,
 		orders:        orders,
 		wp:            pond.New(5, 5),
 	}
+}
+
+func must[T any](t *T, err error) T {
+	if err != nil {
+		panic(err)
+	}
+	return *t
+}
+
+func stackLabels(stackName string) labels.Selector {
+	return labels.NewSelector().Add(
+		must(labels.NewRequirement("formance.com/created-by-agent", selection.Equals, []string{"true"})),
+		must(labels.NewRequirement("formance.com/stack", selection.Equals, []string{stackName})),
+	)
 }

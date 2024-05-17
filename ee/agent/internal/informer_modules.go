@@ -98,6 +98,7 @@ func NewModuleEventHandler(logger logging.Logger, membershipClient MembershipCli
 			message := fromUnstructuredToModuleStatusChanged(unstructuredModule, status)
 			if err := membershipClient.Send(message); err != nil {
 				logger.Errorf("Unable to send message module added: %s", err)
+				return
 			}
 
 			logger.Infof("Detect module '%s' added", unstructuredModule.GetName())
