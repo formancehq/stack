@@ -107,7 +107,12 @@ func TestDeleteModule(t *testing.T) {
 				orders := NewMembershipClientMock()
 
 				membershipListener := NewMembershipListener(
-					testConfig.client, ClientInfo{}, testConfig.mapper, orders, nil)
+					NewDefaultK8SClient(testConfig.client),
+					ClientInfo{},
+					testConfig.mapper,
+					orders,
+					nil,
+				)
 
 				if tc.withLabels {
 					gvk := v1beta1.GroupVersion.WithKind("Reconciliation")

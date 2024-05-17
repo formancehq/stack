@@ -208,6 +208,7 @@ func NewModule(serverAddress string, authenticator Authenticator, clientInfo Cli
 		fx.Provide(func(client *dynamic.DynamicClient) dynamicinformer.DynamicSharedInformerFactory {
 			return NewDynamicSharedInformerFactory(client, resyncPeriod)
 		}),
+		fx.Provide(fx.Annotate(NewDefaultK8SClient, fx.As(new(K8SClient)))),
 		fx.Provide(CreateRestMapper),
 		fx.Provide(func() *membershipClient {
 			return NewMembershipClient(authenticator, clientInfo, serverAddress, opts...)
