@@ -11,7 +11,7 @@ builds:
     id: wallets
     ldflags:
       - -X github.com/formancehq/wallets/cmd.BuildDate={{ .Date }}
-      - -X github.com/formancehq/wallets/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/wallets/cmd.Version=v{{ .Version }}
       - -X github.com/formancehq/wallets/cmd.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:

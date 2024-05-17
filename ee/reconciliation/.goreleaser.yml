@@ -11,7 +11,7 @@ builds:
     id: reconciliation
     ldflags:
       - -X github.com/formancehq/reconciliation/cmd.BuildDate={{ .Date }}
-      - -X github.com/formancehq/reconciliation/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/reconciliation/cmd.Version=v{{ .Version }}
       - -X github.com/formancehq/reconciliation/cmd.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:

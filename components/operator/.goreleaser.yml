@@ -13,7 +13,7 @@ builds:
     main: ./cmd
     ldflags:
       - -X github.com/formancehq/operator/cmd.BuildDate={{ .Date }}
-      - -X github.com/formancehq/operator/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/operator/cmd.Version=v{{ .Version }}
       - -X github.com/formancehq/operator/cmd.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:

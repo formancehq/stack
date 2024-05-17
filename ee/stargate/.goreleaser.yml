@@ -11,7 +11,7 @@ builds:
     id: stargate
     ldflags:
       - -X github.com/formancehq/stack/ee/stargate/cmd.BuildDate={{ .Date }}
-      - -X github.com/formancehq/stack/ee/stargate/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/stack/ee/stargate/cmd.Version=v{{ .Version }}
       - -X github.com/formancehq/stack/ee/stargate/cmd.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:

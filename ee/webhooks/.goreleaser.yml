@@ -11,7 +11,7 @@ builds:
     id: webhooks
     ldflags:
       - -X github.com/formancehq/webhooks/cmd.BuildDate={{ .Date }}
-      - -X github.com/formancehq/webhooks/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/webhooks/cmd.Version=v{{ .Version }}
       - -X github.com/formancehq/webhooks/cmd.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:
