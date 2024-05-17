@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/components/agent/internal"
@@ -46,6 +47,7 @@ const (
 	authenticationClientSecretFlag = "authentication-client-secret"
 	baseUrlFlag                    = "base-url"
 	productionFlag                 = "production"
+	resyncPeriod                   = "resync-period"
 )
 
 func init() {
@@ -114,7 +116,7 @@ func runAgent(cmd *cobra.Command, args []string) error {
 			BaseUrl:    baseUrl,
 			Production: viper.GetBool(productionFlag),
 			Version:    Version,
-		}, dialOptions...),
+		}, viper.GetDuration(resyncPeriod), dialOptions...),
 		sharedotlptraces.CLITracesModule(),
 		licence.CLIModule(ServiceName),
 	}
@@ -200,5 +202,6 @@ func init() {
 	rootCmd.Flags().String(authenticationIssuerFlag, "", "")
 	rootCmd.Flags().String(baseUrlFlag, "", "")
 	rootCmd.Flags().Bool(productionFlag, false, "Is a production agent")
+	rootCmd.Flags().Duration(resyncPeriod, 5*time.Minute, "Resync period ok K8S resources")
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

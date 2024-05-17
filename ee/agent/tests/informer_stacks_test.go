@@ -3,6 +3,7 @@ package tests
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/components/agent/internal"
@@ -28,7 +29,7 @@ var _ = Describe("Stacks informer", func() {
 		dynamicClient, err := dynamic.NewForConfig(restConfig)
 		Expect(err).To(Succeed())
 
-		factory := internal.NewDynamicSharedInformerFactory(dynamicClient)
+		factory := internal.NewDynamicSharedInformerFactory(dynamicClient, 5*time.Minute)
 		Expect(internal.CreateStacksInformer(factory, logging.Testing(), membershipClientMock, inMemoryStacksModules)).To(Succeed())
 		startListener = func() {
 			stopCh := make(chan struct{})

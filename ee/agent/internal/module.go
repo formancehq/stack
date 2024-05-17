@@ -28,8 +28,8 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
-func NewDynamicSharedInformerFactory(client *dynamic.DynamicClient) dynamicinformer.DynamicSharedInformerFactory {
-	return dynamicinformer.NewDynamicSharedInformerFactory(client, 2500*time.Millisecond)
+func NewDynamicSharedInformerFactory(client *dynamic.DynamicClient, resyncPeriod time.Duration) dynamicinformer.DynamicSharedInformerFactory {
+	return dynamicinformer.NewDynamicSharedInformerFactory(client, resyncPeriod)
 }
 
 func runInformers(lc fx.Lifecycle, factory dynamicinformer.DynamicSharedInformerFactory) {
@@ -200,12 +200,14 @@ func runMembershipListener(lc fx.Lifecycle, client *membershipListener, logger l
 	})
 }
 
-func NewModule(serverAddress string, authenticator Authenticator, clientInfo ClientInfo, opts ...grpc.DialOption) fx.Option {
+func NewModule(serverAddress string, authenticator Authenticator, clientInfo ClientInfo, resyncPeriod time.Duration, opts ...grpc.DialOption) fx.Option {
 	return fx.Options(
 		fx.Supply(clientInfo),
 		fx.Provide(rest.RESTClientFor),
 		fx.Provide(dynamic.NewForConfig),
-		fx.Provide(NewDynamicSharedInformerFactory),
+		fx.Provide(func(client *dynamic.DynamicClient) dynamicinformer.DynamicSharedInformerFactory {
+			return NewDynamicSharedInformerFactory(client, resyncPeriod)
+		}),
 		fx.Provide(CreateRestMapper),
 		fx.Provide(func() *membershipClient {
 			return NewMembershipClient(authenticator, clientInfo, serverAddress, opts...)
