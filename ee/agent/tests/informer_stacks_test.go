@@ -20,11 +20,11 @@ import (
 var _ = Describe("Stacks informer", func() {
 	var (
 		membershipClientMock  *internal.MembershipClientMock
-		inMemoryStacksModules map[string][]string
+		inMemoryStacksModules *internal.InMemoryStacksModules
 		startListener         func()
 	)
 	BeforeEach(func() {
-		inMemoryStacksModules = map[string][]string{}
+		inMemoryStacksModules = internal.NewInMemoryStacksModules()
 		membershipClientMock = internal.NewMembershipClientMock()
 		dynamicClient, err := dynamic.NewForConfig(restConfig)
 		Expect(err).To(Succeed())
@@ -76,7 +76,7 @@ var _ = Describe("Stacks informer", func() {
 					Error()).To(Succeed())
 			})
 
-			inMemoryStacksModules[stack.Name] = []string{}
+			inMemoryStacksModules.Push(stack.Name, []string{})
 
 			startListener()
 
@@ -146,7 +146,7 @@ var _ = Describe("Stacks informer", func() {
 				BeforeEach(func() {
 					By("Setting the status ready", func() {
 						stack.Status.Ready = true
-						stack.Status.Modules = internal.GetExpectedModules(stack.Name, inMemoryStacksModules)
+						stack.Status.Modules = inMemoryStacksModules.GetExpectedModules(stack.Name)
 						patch, err := json.Marshal(struct {
 							Status v1beta1.StackStatus `json:"status"`
 						}{
@@ -208,7 +208,7 @@ var _ = Describe("Stacks informer", func() {
 					Do(context.Background()).
 					Error()).To(Succeed())
 			})
-			inMemoryStacksModules[stack.Name] = []string{}
+			inMemoryStacksModules.Push(stack.Name, []string{})
 
 			startListener()
 
@@ -270,7 +270,7 @@ var _ = Describe("Stacks informer", func() {
 				Into(stack)).To(Succeed())
 
 			startListener()
-			inMemoryStacksModules[stack.Name] = []string{}
+			inMemoryStacksModules.Push(stack.Name, []string{})
 
 			Expect(k8sClient.Delete().
 				Resource("Stacks").

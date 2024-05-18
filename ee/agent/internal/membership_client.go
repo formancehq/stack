@@ -3,6 +3,7 @@ package internal
 import (
 	"context"
 	"io"
+	"sync"
 	"time"
 
 	"github.com/formancehq/stack/components/agent/internal/generated"
@@ -38,6 +39,7 @@ type membershipClient struct {
 	opts   []grpc.DialOption
 
 	address string
+	mu      sync.Mutex
 }
 
 func (c *membershipClient) connectMetadata(ctx context.Context, modules []string, eeModules []string) (metadata.MD, error) {
@@ -96,6 +98,9 @@ func (c *membershipClient) connect(ctx context.Context, modules []string, eeModu
 }
 
 func (c *membershipClient) Send(message *generated.Message) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	return c.connectClient.SendMsg(message)
 }
 

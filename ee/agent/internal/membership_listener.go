@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net/url"
 	"reflect"
-	"slices"
 	"strings"
 	"sync"
 
@@ -75,7 +74,7 @@ type membershipListener struct {
 	clientInfo ClientInfo
 	client     K8SClient
 
-	stacksModules InMemoryStacksModules
+	stacksModules *InMemoryStacksModules
 	restMapper    meta.RESTMapper
 	orders        MembershipClient
 	wp            *pond.WorkerPool
@@ -108,9 +107,9 @@ func (c *membershipListener) Start(ctx context.Context) {
 							})
 						}
 					}
-					c.stacksModules[msg.ExistingStack.ClusterName] = collectionutils.Map(msg.ExistingStack.Modules, func(module *generated.Module) string {
+					c.stacksModules.Push(msg.ExistingStack.ClusterName, collectionutils.Map(msg.ExistingStack.Modules, func(module *generated.Module) string {
 						return strings.ToLower(module.Name)
-					})
+					}))
 					c.syncExistingStack(ctx, msg.ExistingStack)
 				case *generated.Order_DeletedStack:
 					c.deleteStack(ctx, msg.DeletedStack)
@@ -193,7 +192,7 @@ func (c *membershipListener) syncModules(ctx context.Context, metadata map[strin
 			continue
 		}
 		logging.FromContext(ctx).Debugf("Resource: checking module %s", resources.Resource.Resource)
-		if !slices.Contains(c.stacksModules[stack.GetName()], singular) {
+		if !c.stacksModules.Contains(stack.GetName(), singular) {
 			if err := c.deleteModule(ctx, resources.Resource, stack.GetName()); err != nil {
 				sharedlogging.FromContext(ctx).Errorf("Unable to get and delete module %s cluster side: %s", gvk.Kind, err)
 			}
@@ -419,7 +418,7 @@ func (c *membershipListener) createOrUpdateStackDependency(ctx context.Context, 
 }
 
 func NewMembershipListener(client K8SClient, clientInfo ClientInfo, mapper meta.RESTMapper,
-	orders MembershipClient, stacksModules InMemoryStacksModules) *membershipListener {
+	orders MembershipClient, stacksModules *InMemoryStacksModules) *membershipListener {
 	return &membershipListener{
 		client:        client,
 		clientInfo:    clientInfo,
