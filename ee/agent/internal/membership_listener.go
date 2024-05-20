@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/url"
 	"reflect"
+	"slices"
 	"strings"
 	"sync"
 
@@ -30,6 +31,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+//go:generate mockgen -source=/src/ee/agent/internal/membership_listener.go -destination=/src/ee/agent/internal/membership_client_generated.go -package=internal . MembershipClient
 type MembershipClient interface {
 	Orders() chan *generated.Order
 	Send(message *generated.Message) error
@@ -74,16 +76,9 @@ type membershipListener struct {
 	clientInfo ClientInfo
 	client     K8SClient
 
-	stacksModules *InMemoryStacksModules
-	restMapper    meta.RESTMapper
-	orders        MembershipClient
-	wp            *pond.WorkerPool
-}
-
-func getExpectedModules() []string {
-	return []string{
-		"Stargate", "Wallets", "Ledger", "Payments", "Webhooks", "Auth", "Orchestration", "Search", "Gateway",
-	}
+	restMapper meta.RESTMapper
+	orders     MembershipClient
+	wp         *pond.WorkerPool
 }
 
 func (c *membershipListener) Start(ctx context.Context) {
@@ -99,17 +94,6 @@ func (c *membershipListener) Start(ctx context.Context) {
 				sharedlogging.FromContext(ctx).Infof("Got message from membership: %T", msg.GetMessage())
 				switch msg := msg.Message.(type) {
 				case *generated.Order_ExistingStack:
-					if msg.ExistingStack.Modules == nil || len(msg.ExistingStack.Modules) == 0 {
-						msg.ExistingStack.Modules = make([]*generated.Module, 0)
-						for _, module := range getExpectedModules() {
-							msg.ExistingStack.Modules = append(msg.ExistingStack.Modules, &generated.Module{
-								Name: module,
-							})
-						}
-					}
-					c.stacksModules.Push(msg.ExistingStack.ClusterName, collectionutils.Map(msg.ExistingStack.Modules, func(module *generated.Module) string {
-						return strings.ToLower(module.Name)
-					}))
 					c.syncExistingStack(ctx, msg.ExistingStack)
 				case *generated.Order_DeletedStack:
 					c.deleteStack(ctx, msg.DeletedStack)
@@ -170,7 +154,11 @@ func (c *membershipListener) generateMetadata(membershipStack *generated.Stack) 
 
 }
 func (c *membershipListener) syncModules(ctx context.Context, metadata map[string]any, stack *unstructured.Unstructured, membershipStack *generated.Stack) {
-
+	modules := collectionutils.Map(membershipStack.Modules, func(module *generated.Module) string {
+		return strings.ToLower(module.Name)
+	})
+	logger := logging.FromContext(ctx).WithField("stack", membershipStack.ClusterName)
+	logger.Infof("Syncing modules for stack %s", membershipStack.Modules)
 	for gvk, rtype := range scheme.Scheme.AllKnownTypes() {
 		object := reflect.New(rtype).Interface()
 		if _, ok := object.(v1beta1.Module); !ok {
@@ -181,19 +169,9 @@ func (c *membershipListener) syncModules(ctx context.Context, metadata map[strin
 			continue
 		}
 
-		resources, err := c.restMapper.RESTMapping(gvk.GroupKind(), gvk.Version)
-		if err != nil {
-			sharedlogging.FromContext(ctx).Errorf("Unable to get resources for %s: %s", gvk.Kind, err)
-			continue
-		}
-		singular, err := c.restMapper.ResourceSingularizer(resources.Resource.Resource)
-		if err != nil {
-			sharedlogging.FromContext(ctx).Errorf("Unable to get singular for %s: %s", gvk.Kind, err)
-			continue
-		}
-		logging.FromContext(ctx).Debugf("Resource: checking module %s", resources.Resource.Resource)
-		if !c.stacksModules.Contains(stack.GetName(), singular) {
-			if err := c.deleteModule(ctx, resources.Resource, stack.GetName()); err != nil {
+		logging.FromContext(ctx).Debugf("Resource: checking module %s", gvk.Kind)
+		if !slices.Contains(modules, strings.ToLower(gvk.Kind)) {
+			if err := c.deleteModule(ctx, gvk.Kind, stack.GetName()); err != nil {
 				sharedlogging.FromContext(ctx).Errorf("Unable to get and delete module %s cluster side: %s", gvk.Kind, err)
 			}
 			continue
@@ -211,7 +189,7 @@ func (c *membershipListener) syncModules(ctx context.Context, metadata map[strin
 					},
 				},
 			}); err != nil {
-				sharedlogging.FromContext(ctx).Errorf("Unable to create module Auth cluster side: %s", err)
+				logger.Errorf("Unable to create module Auth cluster side: %s", err)
 			}
 		case "Gateway":
 			if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, gvk, map[string]any{
@@ -223,23 +201,23 @@ func (c *membershipListener) syncModules(ctx context.Context, metadata map[strin
 					},
 				},
 			}); client.IgnoreNotFound(err) != nil {
-				sharedlogging.FromContext(ctx).Errorf("Unable to create module Stargate cluster side: %s", err)
+				logger.Errorf("Unable to create module Stargate cluster side: %s", err)
 			}
 		default:
 			if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, gvk, map[string]any{
 				"metadata": metadata,
 			}); err != nil {
-				sharedlogging.FromContext(ctx).Errorf("Unable to create module %s cluster side: %s", gvk.Kind, err)
+				logger.Errorf("Unable to create module %s cluster side: %s", gvk.Kind, err)
 			}
 		}
 
 	}
 }
 
-func (c *membershipListener) deleteModule(ctx context.Context, resource schema.GroupVersionResource, stackName string) error {
-	logging.FromContext(ctx).Debugf("Deleting module %s", resource.Resource)
+func (c *membershipListener) deleteModule(ctx context.Context, resource string, stackName string) error {
+	logging.FromContext(ctx).Debugf("Deleting module %s", resource)
 
-	return c.client.EnsureNotExistsBySelector(ctx, resource.Resource, stackLabels(stackName))
+	return c.client.EnsureNotExistsBySelector(ctx, resource, stackLabels(stackName))
 }
 
 func (c *membershipListener) syncStargate(ctx context.Context, metadata map[string]any, stack *unstructured.Unstructured, membershipStack *generated.Stack) {
@@ -402,7 +380,14 @@ func (c *membershipListener) createOrUpdate(ctx context.Context, gvk schema.Grou
 	return u, nil
 }
 
-func (c *membershipListener) createOrUpdateStackDependency(ctx context.Context, name string, stackName string, stack *unstructured.Unstructured, gvk schema.GroupVersionKind, content map[string]any) (*unstructured.Unstructured, error) {
+func (c *membershipListener) createOrUpdateStackDependency(
+	ctx context.Context,
+	name string,
+	stackName string,
+	stack *unstructured.Unstructured,
+	gvk schema.GroupVersionKind,
+	content map[string]any,
+) (*unstructured.Unstructured, error) {
 	if _, ok := content["spec"]; !ok {
 		content["spec"] = map[string]any{}
 	}
@@ -418,14 +403,13 @@ func (c *membershipListener) createOrUpdateStackDependency(ctx context.Context, 
 }
 
 func NewMembershipListener(client K8SClient, clientInfo ClientInfo, mapper meta.RESTMapper,
-	orders MembershipClient, stacksModules *InMemoryStacksModules) *membershipListener {
+	orders MembershipClient) *membershipListener {
 	return &membershipListener{
-		client:        client,
-		clientInfo:    clientInfo,
-		stacksModules: stacksModules,
-		restMapper:    mapper,
-		orders:        orders,
-		wp:            pond.New(5, 5),
+		client:     client,
+		clientInfo: clientInfo,
+		restMapper: mapper,
+		orders:     orders,
+		wp:         pond.New(5, 5),
 	}
 }
 
