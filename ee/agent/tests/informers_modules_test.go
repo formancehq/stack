@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/components/agent/internal"
@@ -76,7 +77,6 @@ var _ = Describe("Informer modules", func() {
 					DeferCleanup(func() {
 						Expect(client.IgnoreNotFound(k8sClient.Delete().Resource(resource).Name(name).Do(context.Background()).Error())).To(Succeed())
 					})
-
 				})
 
 				By(fmt.Sprintf("Loading then updating status %s", gvk.Kind), func() {
@@ -127,7 +127,7 @@ var _ = Describe("Informer modules", func() {
 			BeforeEach(func() {
 				dynamicClient, err := dynamic.NewForConfig(restConfig)
 				Expect(err).ToNot(HaveOccurred())
-				factory := internal.NewDynamicSharedInformerFactory(dynamicClient)
+				factory := internal.NewDynamicSharedInformerFactory(dynamicClient, 5*time.Minute)
 				Expect(internal.CreateModulesInformers(factory, restMapper, logging.Testing(), membershipClientMock)).ToNot(HaveOccurred())
 
 				stopCh := make(chan struct{})

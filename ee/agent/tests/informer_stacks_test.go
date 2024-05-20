@@ -3,6 +3,7 @@ package tests
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/components/agent/internal"
@@ -19,16 +20,16 @@ import (
 var _ = Describe("Stacks informer", func() {
 	var (
 		membershipClientMock  *internal.MembershipClientMock
-		inMemoryStacksModules map[string][]string
+		inMemoryStacksModules *internal.InMemoryStacksModules
 		startListener         func()
 	)
 	BeforeEach(func() {
-		inMemoryStacksModules = map[string][]string{}
+		inMemoryStacksModules = internal.NewInMemoryStacksModules()
 		membershipClientMock = internal.NewMembershipClientMock()
 		dynamicClient, err := dynamic.NewForConfig(restConfig)
 		Expect(err).To(Succeed())
 
-		factory := internal.NewDynamicSharedInformerFactory(dynamicClient)
+		factory := internal.NewDynamicSharedInformerFactory(dynamicClient, 5*time.Minute)
 		Expect(internal.CreateStacksInformer(factory, logging.Testing(), membershipClientMock, inMemoryStacksModules)).To(Succeed())
 		startListener = func() {
 			stopCh := make(chan struct{})
@@ -75,7 +76,7 @@ var _ = Describe("Stacks informer", func() {
 					Error()).To(Succeed())
 			})
 
-			inMemoryStacksModules[stack.Name] = []string{}
+			inMemoryStacksModules.Push(stack.Name, []string{})
 
 			startListener()
 
@@ -145,7 +146,7 @@ var _ = Describe("Stacks informer", func() {
 				BeforeEach(func() {
 					By("Setting the status ready", func() {
 						stack.Status.Ready = true
-						stack.Status.Modules = internal.GetExpectedModules(stack.Name, inMemoryStacksModules)
+						stack.Status.Modules = inMemoryStacksModules.GetExpectedModules(stack.Name)
 						patch, err := json.Marshal(struct {
 							Status v1beta1.StackStatus `json:"status"`
 						}{
@@ -207,7 +208,7 @@ var _ = Describe("Stacks informer", func() {
 					Do(context.Background()).
 					Error()).To(Succeed())
 			})
-			inMemoryStacksModules[stack.Name] = []string{}
+			inMemoryStacksModules.Push(stack.Name, []string{})
 
 			startListener()
 
@@ -269,7 +270,7 @@ var _ = Describe("Stacks informer", func() {
 				Into(stack)).To(Succeed())
 
 			startListener()
-			inMemoryStacksModules[stack.Name] = []string{}
+			inMemoryStacksModules.Push(stack.Name, []string{})
 
 			Expect(k8sClient.Delete().
 				Resource("Stacks").

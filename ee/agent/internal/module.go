@@ -28,8 +28,8 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
-func NewDynamicSharedInformerFactory(client *dynamic.DynamicClient) dynamicinformer.DynamicSharedInformerFactory {
-	return dynamicinformer.NewDynamicSharedInformerFactory(client, 2500*time.Millisecond)
+func NewDynamicSharedInformerFactory(client *dynamic.DynamicClient, resyncPeriod time.Duration) dynamicinformer.DynamicSharedInformerFactory {
+	return dynamicinformer.NewDynamicSharedInformerFactory(client, resyncPeriod)
 }
 
 func runInformers(lc fx.Lifecycle, factory dynamicinformer.DynamicSharedInformerFactory) {
@@ -89,7 +89,7 @@ func CreateVersionsInformer(factory dynamicinformer.DynamicSharedInformerFactory
 }
 
 func CreateStacksInformer(factory dynamicinformer.DynamicSharedInformerFactory,
-	logger logging.Logger, client MembershipClient, stacks InMemoryStacksModules) error {
+	logger logging.Logger, client MembershipClient, stacks *InMemoryStacksModules) error {
 	logger = logger.WithFields(map[string]any{
 		"component": "stacks",
 	})
@@ -98,8 +98,7 @@ func CreateStacksInformer(factory dynamicinformer.DynamicSharedInformerFactory,
 }
 
 func CreateModulesInformers(factory dynamicinformer.DynamicSharedInformerFactory,
-	restMapper meta.RESTMapper,
-	logger logging.Logger, client MembershipClient) error {
+	restMapper meta.RESTMapper, logger logging.Logger, client MembershipClient) error {
 
 	for gvk, rtype := range scheme.Scheme.AllKnownTypes() {
 		object := reflect.New(rtype).Interface()
@@ -200,12 +199,17 @@ func runMembershipListener(lc fx.Lifecycle, client *membershipListener, logger l
 	})
 }
 
-func NewModule(serverAddress string, authenticator Authenticator, clientInfo ClientInfo, opts ...grpc.DialOption) fx.Option {
+func NewModule(serverAddress string, authenticator Authenticator, clientInfo ClientInfo, resyncPeriod time.Duration, opts ...grpc.DialOption) fx.Option {
 	return fx.Options(
 		fx.Supply(clientInfo),
 		fx.Provide(rest.RESTClientFor),
 		fx.Provide(dynamic.NewForConfig),
-		fx.Provide(NewDynamicSharedInformerFactory),
+		fx.Provide(func(client *dynamic.DynamicClient) dynamicinformer.DynamicSharedInformerFactory {
+			return NewDynamicSharedInformerFactory(client, resyncPeriod)
+		}),
+		fx.Provide(func(restClient *rest.RESTClient, informerFactory dynamicinformer.DynamicSharedInformerFactory) K8SClient {
+			return NewCachedK8SClient(NewDefaultK8SClient(restClient), informerFactory)
+		}),
 		fx.Provide(CreateRestMapper),
 		fx.Provide(func() *membershipClient {
 			return NewMembershipClient(authenticator, clientInfo, serverAddress, opts...)
@@ -213,9 +217,7 @@ func NewModule(serverAddress string, authenticator Authenticator, clientInfo Cli
 		fx.Provide(func(membershipClient *membershipClient) MembershipClient {
 			return membershipClient
 		}),
-		fx.Provide(func() InMemoryStacksModules {
-			return map[string][]string{}
-		}),
+		fx.Provide(NewInMemoryStacksModules),
 		fx.Provide(NewMembershipListener),
 		fx.Invoke(CreateVersionsInformer),
 		fx.Invoke(CreateStacksInformer),

@@ -25,16 +25,17 @@ import (
 var _ = Describe("Membership listener", func() {
 	var (
 		membershipClient      *internal.MembershipClientMock
-		inMemoryStacksModules map[string][]string
+		inMemoryStacksModules *internal.InMemoryStacksModules
 		clientInfo            internal.ClientInfo
 	)
 	BeforeEach(func() {
-		inMemoryStacksModules = map[string][]string{}
+		inMemoryStacksModules = internal.NewInMemoryStacksModules()
 		membershipClient = internal.NewMembershipClientMock()
 		clientInfo = internal.ClientInfo{
 			BaseUrl: &url.URL{},
 		}
-		listener := internal.NewMembershipListener(k8sClient, clientInfo, mapper, membershipClient, inMemoryStacksModules)
+
+		listener := internal.NewMembershipListener(internal.NewDefaultK8SClient(k8sClient), clientInfo, mapper, membershipClient, inMemoryStacksModules)
 		done := make(chan struct{})
 		DeferCleanup(func() {
 			<-done
