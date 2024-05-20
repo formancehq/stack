@@ -43,7 +43,7 @@ type AuthSpec struct {
 
 // AuthStatus defines the observed state of Auth
 type AuthStatus struct {
-	ModuleStatus `json:",inline"`
+	Status `json:",inline"`
 	//+optional
 	Clients []string `json:"clients"`
 }
@@ -82,28 +82,24 @@ func (in *Auth) SetError(s string) {
 	in.Status.Info = s
 }
 
-func (in *Auth) GetConditions() []Condition {
-	return in.Status.Conditions
+func (in *Auth) GetConditions() *Conditions {
+	return &in.Status.Conditions
 }
 
 func (in *Auth) GetVersion() string {
 	return in.Spec.Version
 }
 
-func (a Auth) GetStack() string {
-	return a.Spec.Stack
+func (in Auth) GetStack() string {
+	return in.Spec.Stack
 }
 
-func (a *Auth) SetCondition(condition Condition) {
-	a.Status.SetCondition(condition)
+func (in Auth) IsDebug() bool {
+	return in.Spec.Debug
 }
 
-func (a Auth) IsDebug() bool {
-	return a.Spec.Debug
-}
-
-func (a Auth) IsDev() bool {
-	return a.Spec.Dev
+func (in Auth) IsDev() bool {
+	return in.Spec.Dev
 }
 
 //+kubebuilder:object:root=true

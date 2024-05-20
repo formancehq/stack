@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"slices"
 
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"golang.org/x/mod/semver"
@@ -43,7 +44,7 @@ func (p DevProperties) IsDev() bool {
 //	    // +patchStrategy=merge
 //	    // +listType=map
 //	    // +listMapKey=type
-//	    CommonStatus []metav1.Condition `json:"conditions,omitempty" patchStrategy:"merge" patchMergeKey:"type" protobuf:"bytes,1,rep,name=conditions"`
+//	    Status []metav1.Condition `json:"conditions,omitempty" patchStrategy:"merge" patchMergeKey:"type" protobuf:"bytes,1,rep,name=conditions"`
 //
 //	    // other fields
 //	}
@@ -92,62 +93,144 @@ type Condition struct {
 	Reason string `json:"reason,omitempty" protobuf:"bytes,5,opt,name=reason"`
 }
 
-type CommonStatus struct {
-	//+optional
-	Ready bool `json:"ready"`
-	//+optional
-	Info string `json:"info,omitempty"`
+func (in *Condition) SetStatus(v metav1.ConditionStatus) *Condition {
+	in.Status = v
+
+	return in
 }
 
-func (c *CommonStatus) SetReady(ready bool) {
-	c.Ready = ready
+func (in *Condition) SetMessage(v string) *Condition {
+	in.Message = v
+
+	return in
 }
 
-func (c *CommonStatus) SetError(err string) {
-	c.Info = err
+func (in *Condition) SetReason(reason string) *Condition {
+	in.Reason = reason
+
+	return in
 }
 
-type StatusWithConditions struct {
-	CommonStatus `json:",inline"`
-	//+optional
-	Conditions []Condition `json:"conditions,omitempty"`
+func (in *Condition) Fail(v string) *Condition {
+	in.SetStatus(metav1.ConditionFalse)
+	in.SetMessage(v)
+
+	return in
 }
 
-func (c *StatusWithConditions) DeleteCondition(t, reason string) {
-	for i, existingCondition := range c.Conditions {
-		if existingCondition.Type == t && existingCondition.Reason == reason {
-			if i < len(c.Conditions)-1 {
-				c.Conditions = append(c.Conditions[:i], c.Conditions[i+1:]...)
-			} else {
-				c.Conditions = c.Conditions[:i]
-			}
-			return
-		}
+func NewCondition(t string, generation int64) *Condition {
+	return &Condition{
+		Type:               t,
+		Status:             metav1.ConditionTrue,
+		ObservedGeneration: generation,
+		LastTransitionTime: metav1.Now(),
 	}
 }
 
-func (c *StatusWithConditions) SetCondition(condition Condition) {
-	c.DeleteCondition(condition.Type, condition.Reason)
-	c.Conditions = append(c.Conditions, condition)
+type Conditions []Condition
+
+func (c *Conditions) Delete(p ConditionPredicate) *Conditions {
+	for i, existingCondition := range *c {
+		if p(existingCondition) {
+			if i < len(*c)-1 {
+				*c = append((*c)[:i], (*c)[i+1:]...)
+			} else {
+				*c = (*c)[:i]
+			}
+			return c
+		}
+	}
+	return c
 }
 
-type CheckCondition struct {
-	Reason     string
-	Type       string
-	Generation int64
+func (c *Conditions) AppendOrReplace(newCondition Condition, p ConditionPredicate) *Condition {
+	c.Delete(p)
+	*c = append(*c, newCondition)
+	slices.SortStableFunc(*c, func(a, b Condition) int {
+		switch {
+		case a.Type < b.Type:
+			return -1
+		case a.Type > b.Type:
+			return 1
+		default:
+			switch {
+			case a.Reason < b.Reason:
+				return -1
+			case a.Reason > b.Reason:
+				return 1
+			default:
+				return 0
+			}
+		}
+	})
+	return &newCondition
 }
 
-func (c *StatusWithConditions) CheckCondition(cond CheckCondition) bool {
-	for _, condition := range c.Conditions {
-		if condition.Type == cond.Type && condition.Reason == cond.Reason && condition.ObservedGeneration == cond.Generation && condition.Status == "True" {
+func (c *Conditions) Get(conditionType string) *Condition {
+	for _, condition := range *c {
+		if condition.Type == conditionType {
+			return &condition
+		}
+	}
+	return nil
+}
+
+func (c *Conditions) Check(p ConditionPredicate) bool {
+	for _, condition := range *c {
+		if condition.Status == metav1.ConditionTrue && p(condition) {
 			return true
 		}
 	}
 	return false
 }
 
-type ModuleStatus struct {
-	StatusWithConditions `json:",inline"`
+// +kubebuilder:object:generate=false
+type ConditionPredicate func(condition Condition) bool
+
+func AndConditions(predicates ...ConditionPredicate) ConditionPredicate {
+	return func(condition Condition) bool {
+		for _, predicate := range predicates {
+			if !predicate(condition) {
+				return false
+			}
+		}
+		return true
+	}
+}
+
+func ConditionTypeMatch(t string) ConditionPredicate {
+	return func(condition Condition) bool {
+		return condition.Type == t
+	}
+}
+
+func ConditionReasonMatch(reason string) ConditionPredicate {
+	return func(condition Condition) bool {
+		return condition.Reason == reason
+	}
+}
+
+func ConditionGenerationMatch(generation int64) ConditionPredicate {
+	return func(condition Condition) bool {
+		return condition.ObservedGeneration == generation
+	}
+}
+
+type Status struct {
+	//+optional
+	Ready bool `json:"ready"`
+	//+optional
+	Info string `json:"info,omitempty"`
+	//+optional
+	Conditions Conditions `json:"conditions,omitempty"`
+}
+
+func (c *Status) SetReady(ready bool) {
+	c.Ready = ready
+}
+
+func (c *Status) SetError(err string) {
+	c.Info = err
 }
 
 type AuthConfig struct {
@@ -161,7 +244,6 @@ type AuthConfig struct {
 type Module interface {
 	Dependent
 	GetVersion() string
-	GetConditions() []Condition
 	IsDebug() bool
 	IsDev() bool
 	IsEE() bool
@@ -205,6 +287,7 @@ type Object interface {
 	SetReady(bool)
 	IsReady() bool
 	SetError(string)
+	GetConditions() *Conditions
 }
 
 // +kubebuilder:object:generate=false
@@ -298,6 +381,5 @@ func init() {
 const (
 	StackLabel          = "formance.com/stack"
 	SkipLabel           = "formance.com/skip"
-	SkippedLabel        = "formance.com/skipped"
 	CreatedByAgentLabel = "formance.com/created-by-agent"
 )

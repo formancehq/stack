@@ -27,7 +27,7 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=gatewayhttpapis/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=gatewayhttpapis/finalizers,verbs=update
 
-func Reconcile(ctx Context, stack *v1beta1.Stack, httpAPI *v1beta1.GatewayHTTPAPI) error {
+func Reconcile(ctx Context, _ *v1beta1.Stack, httpAPI *v1beta1.GatewayHTTPAPI) error {
 	_, err := services.Create(ctx, httpAPI, httpAPI.Spec.Name, services.WithDefault(httpAPI.Spec.Name))
 	if err != nil {
 		return err

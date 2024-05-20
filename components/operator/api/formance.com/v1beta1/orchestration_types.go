@@ -30,7 +30,7 @@ type OrchestrationSpec struct {
 
 // OrchestrationStatus defines the observed state of Orchestration
 type OrchestrationStatus struct {
-	ModuleStatus `json:",inline"`
+	Status `json:",inline"`
 	//+optional
 	TemporalURI *URI `json:"temporalURI,omitempty"`
 }
@@ -71,8 +71,8 @@ func (in *Orchestration) SetError(s string) {
 	in.Status.Info = s
 }
 
-func (in *Orchestration) GetConditions() []Condition {
-	return in.Status.Conditions
+func (in *Orchestration) GetConditions() *Conditions {
+	return &in.Status.Conditions
 }
 
 func (in *Orchestration) GetVersion() string {
@@ -81,10 +81,6 @@ func (in *Orchestration) GetVersion() string {
 
 func (a Orchestration) GetStack() string {
 	return a.Spec.Stack
-}
-
-func (a *Orchestration) SetCondition(condition Condition) {
-	a.Status.SetCondition(condition)
 }
 
 func (a Orchestration) IsDebug() bool {

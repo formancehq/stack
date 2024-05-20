@@ -13,8 +13,7 @@ import (
 )
 
 func Create(ctx core.Context, stack *v1beta1.Stack, owner interface {
-	client.Object
-	SetCondition(condition v1beta1.Condition)
+	v1beta1.Object
 	IsDebug() bool
 }) (*v1beta1.Database, error) {
 	condition := v1beta1.Condition{
@@ -23,7 +22,7 @@ func Create(ctx core.Context, stack *v1beta1.Stack, owner interface {
 		LastTransitionTime: metav1.Now(),
 	}
 	defer func() {
-		owner.SetCondition(condition)
+		owner.GetConditions().AppendOrReplace(condition, v1beta1.ConditionTypeMatch("DatabaseReady"))
 	}()
 
 	serviceName := strings.ToLower(owner.GetObjectKind().GroupVersionKind().Kind)

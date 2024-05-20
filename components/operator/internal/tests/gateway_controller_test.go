@@ -165,7 +165,10 @@ var _ = Describe("GatewayController", func() {
 			})
 		})
 		Context("Then creating a Auth object", func() {
-			var auth *v1beta1.Auth
+			var (
+				databaseSettings *v1beta1.Settings
+				auth             *v1beta1.Auth
+			)
 			BeforeEach(func() {
 				auth = &v1beta1.Auth{
 					ObjectMeta: RandObjectMeta(),
@@ -175,10 +178,14 @@ var _ = Describe("GatewayController", func() {
 						},
 					},
 				}
+				databaseSettings = settings.New(uuid.NewString(), "postgres.*.uri", "postgresql://localhost", stack.Name)
+
+				Expect(Create(databaseSettings)).To(Succeed())
 				Expect(Create(auth)).To(Succeed())
 			})
 			AfterEach(func() {
 				Expect(Delete(auth)).To(Succeed())
+				Expect(Delete(databaseSettings)).To(Succeed())
 			})
 			It("Should redeploy the gateway with auth configuration", func() {
 				Eventually(func(g Gomega) []string {

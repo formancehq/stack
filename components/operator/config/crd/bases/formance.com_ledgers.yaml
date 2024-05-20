@@ -114,10 +114,9 @@ spec:
                     observations of a foo's current state.\n\t    // Known .status.conditions.type
                     are: \"Available\", \"Progressing\", and \"Degraded\"\n\t    //
                     +patchMergeKey=type\n\t    // +patchStrategy=merge\n\t    // +listType=map\n\t
-                    \   // +listMapKey=type\n\t    CommonStatus []metav1.Condition
-                    `json:\"conditions,omitempty\" patchStrategy:\"merge\" patchMergeKey:\"type\"
-                    protobuf:\"bytes,1,rep,name=conditions\"`\n\n\n\t    // other
-                    fields\n\t}"
+                    \   // +listMapKey=type\n\t    Status []metav1.Condition `json:\"conditions,omitempty\"
+                    patchStrategy:\"merge\" patchMergeKey:\"type\" protobuf:\"bytes,1,rep,name=conditions\"`\n\n\n\t
+                    \   // other fields\n\t}"
                   properties:
                     lastTransitionTime:
                       description: |-

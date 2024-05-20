@@ -41,7 +41,7 @@ type GatewayHTTPAPISpec struct {
 
 // GatewayHTTPAPIStatus defines the observed state of GatewayHTTPAPI
 type GatewayHTTPAPIStatus struct {
-	CommonStatus `json:",inline"`
+	Status `json:",inline"`
 	//+optional
 	Ready bool `json:"ready,omitempty"`
 }
@@ -75,6 +75,10 @@ func (in *GatewayHTTPAPI) SetError(s string) {
 
 func (a GatewayHTTPAPI) GetStack() string {
 	return a.Spec.Stack
+}
+
+func (in *GatewayHTTPAPI) GetConditions() *Conditions {
+	return &in.Status.Conditions
 }
 
 //+kubebuilder:object:root=true

@@ -29,7 +29,7 @@ type DatabaseSpec struct {
 
 // DatabaseStatus defines the observed state of Database
 type DatabaseStatus struct {
-	CommonStatus `json:",inline"`
+	Status `json:",inline"`
 	//+optional
 	URI *URI `json:"uri,omitempty"`
 	//+optional
@@ -72,6 +72,10 @@ func (a *Database) GetStack() string {
 }
 
 func (a *Database) isResource() {}
+
+func (in *Database) GetConditions() *Conditions {
+	return &in.Status.Conditions
+}
 
 //+kubebuilder:object:root=true
 

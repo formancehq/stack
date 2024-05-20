@@ -38,7 +38,7 @@ type StargateSpec struct {
 
 // StargateStatus defines the observed state of Stargate
 type StargateStatus struct {
-	ModuleStatus `json:",inline"`
+	Status `json:",inline"`
 }
 
 // +kubebuilder:object:root=true
@@ -65,8 +65,8 @@ func (in *Stargate) GetVersion() string {
 	return in.Spec.Version
 }
 
-func (in *Stargate) GetConditions() []Condition {
-	return in.Status.Conditions
+func (in *Stargate) GetConditions() *Conditions {
+	return &in.Status.Conditions
 }
 
 func (in *Stargate) SetReady(b bool) {
@@ -91,10 +91,6 @@ func (a Stargate) IsDev() bool {
 
 func (s Stargate) GetStack() string {
 	return s.Spec.Stack
-}
-
-func (s *Stargate) SetCondition(condition Condition) {
-	s.Status.SetCondition(condition)
 }
 
 //+kubebuilder:object:root=true

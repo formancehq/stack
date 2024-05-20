@@ -17,6 +17,7 @@ limitations under the License.
 package v1beta3
 
 import (
+	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"reflect"
 
 	"github.com/iancoleman/strcase"
@@ -176,6 +177,11 @@ func (in *Stack) IsReady() bool {
 
 func (in *Stack) SetError(s string) {
 	in.Status.Error = s
+}
+
+func (in *Stack) GetConditions() *v1beta1.Conditions {
+	// not used
+	return &v1beta1.Conditions{}
 }
 
 func (*Stack) Hub() {}
