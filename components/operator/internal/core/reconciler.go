@@ -146,7 +146,10 @@ func WithWatchStack[T client.Object]() ReconcilerOption[T] {
 		options.Watchers[&v1beta1.Stack{}] = ReconcilerOptionsWatch{
 			Handler: func(mgr Manager, b *builder.Builder, target client.Object) (handler.EventHandler, []builder.WatchesOption) {
 				return handler.EnqueueRequestsFromMapFunc(Watch(mgr, target)), []builder.WatchesOption{
-					builder.WithPredicates(predicate.GenerationChangedPredicate{}),
+					builder.WithPredicates(predicate.Or(
+						predicate.GenerationChangedPredicate{},
+						predicate.AnnotationChangedPredicate{},
+					)),
 				}
 			},
 		}

@@ -298,5 +298,6 @@ func init() {
 const (
 	StackLabel          = "formance.com/stack"
 	SkipLabel           = "formance.com/skip"
+	SkippedLabel        = "formance.com/skipped"
 	CreatedByAgentLabel = "formance.com/created-by-agent"
 )
