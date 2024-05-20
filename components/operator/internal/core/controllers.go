@@ -58,7 +58,26 @@ func ForStackDependency[T v1beta1.Dependent](ctrl StackDependentObjectController
 			}
 		} else {
 			if stack.GetAnnotations()[v1beta1.SkipLabel] == "true" {
-				return nil
+				patch := client.MergeFrom(t.DeepCopyObject().(T))
+				annotations := t.GetAnnotations()
+				if annotations == nil {
+					annotations = map[string]string{}
+				}
+				annotations[v1beta1.SkippedLabel] = "true"
+				t.SetAnnotations(annotations)
+				return ctx.GetClient().Patch(ctx, t, patch)
+			}
+		}
+		annotations := t.GetAnnotations()
+		if annotations != nil {
+			patch := client.MergeFrom(t.DeepCopyObject().(T))
+			_, ok := annotations[v1beta1.SkippedLabel]
+			if ok {
+				delete(annotations, v1beta1.SkippedLabel)
+				t.SetAnnotations(annotations)
+				if err := ctx.GetClient().Patch(ctx, t, patch); err != nil {
+					return err
+				}
 			}
 		}
 
