@@ -3,7 +3,7 @@ package v1
 import (
 	"context"
 
-	"github.com/formancehq/reconciliation/internal/models"
+	models "github.com/formancehq/reconciliation/internal/models/v1"
 	storageerrors "github.com/formancehq/reconciliation/internal/storage/errors"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/formancehq/stack/libs/go-libs/query"

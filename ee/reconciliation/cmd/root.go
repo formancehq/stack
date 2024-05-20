@@ -8,6 +8,8 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunmigrate"
 	"github.com/formancehq/stack/libs/go-libs/licence"
+	"github.com/formancehq/stack/libs/go-libs/publish"
+	"go.uber.org/fx"
 
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
@@ -29,6 +31,8 @@ const (
 	stackClientIDFlag     = "stack-client-id"
 	stackClientSecretFlag = "stack-client-secret"
 	listenFlag            = "listen"
+	topicsFlag            = "topics"
+	workerFlag            = "worker"
 )
 
 func NewRootCommand() *cobra.Command {
@@ -43,6 +47,7 @@ func NewRootCommand() *cobra.Command {
 	cmd.PersistentFlags().String(stackURLFlag, "", "Stack url")
 	cmd.PersistentFlags().String(stackClientIDFlag, "", "Stack client ID")
 	cmd.PersistentFlags().String(stackClientSecretFlag, "", "Stack client secret")
+	cmd.PersistentFlags().StringSlice(topicsFlag, []string{}, "Topics to listen")
 
 	otlpmetrics.InitOTLPMetricsFlags(cmd.PersistentFlags())
 	otlptraces.InitOTLPTracesFlags(cmd.PersistentFlags())
@@ -51,6 +56,7 @@ func NewRootCommand() *cobra.Command {
 	iam.InitFlags(cmd.PersistentFlags())
 	service.BindFlags(cmd)
 	licence.InitCLIFlags(cmd)
+	publish.InitCLIFlags(cmd)
 
 	serveCmd := newServeCommand(Version)
 	addAutoMigrateCommand(serveCmd)
@@ -59,7 +65,28 @@ func NewRootCommand() *cobra.Command {
 	cmd.AddCommand(versionCmd)
 	migrate := newMigrate()
 	cmd.AddCommand(migrate)
+	workerCmd := newWorkerCommand()
+	cmd.AddCommand(workerCmd)
 	return cmd
+}
+
+func commonOptions(cmd *cobra.Command) (fx.Option, error) {
+	databaseOptions, err := prepareDatabaseOptions(cmd)
+	if err != nil {
+		return nil, err
+	}
+
+	options := make([]fx.Option, 0)
+	options = append(options, databaseOptions)
+
+	options = append(options,
+		otlptraces.CLITracesModule(),
+		otlpmetrics.CLIMetricsModule(),
+		auth.CLIAuthModule(),
+		licence.CLIModule(ServiceName),
+	)
+
+	return fx.Options(options...), nil
 }
 
 func exitWithCode(code int, v ...any) {

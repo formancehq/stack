@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/formancehq/reconciliation/internal/api/v1/service"
-	"github.com/formancehq/reconciliation/internal/models"
+	models "github.com/formancehq/reconciliation/internal/models/v1"
 	storageerrors "github.com/formancehq/reconciliation/internal/storage/errors"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	gomock "github.com/golang/mock/gomock"

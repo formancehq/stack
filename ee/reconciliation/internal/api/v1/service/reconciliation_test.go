@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/formancehq/reconciliation/internal/models"
+	models "github.com/formancehq/reconciliation/internal/models/v1"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )

@@ -9,8 +9,8 @@ import (
 	reflect "reflect"
 
 	service "github.com/formancehq/reconciliation/internal/api/v1/service"
-	models "github.com/formancehq/reconciliation/internal/models"
-	v1 "github.com/formancehq/reconciliation/internal/storage/v1"
+	v1 "github.com/formancehq/reconciliation/internal/models/v1"
+	v10 "github.com/formancehq/reconciliation/internal/storage/v1"
 	bunpaginate "github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	gomock "github.com/golang/mock/gomock"
 )
@@ -39,10 +39,10 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // CreatePolicy mocks base method.
-func (m *MockService) CreatePolicy(ctx context.Context, req *service.CreatePolicyRequest) (*models.Policy, error) {
+func (m *MockService) CreatePolicy(ctx context.Context, req *service.CreatePolicyRequest) (*v1.Policy, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreatePolicy", ctx, req)
-	ret0, _ := ret[0].(*models.Policy)
+	ret0, _ := ret[0].(*v1.Policy)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -68,10 +68,10 @@ func (mr *MockServiceMockRecorder) DeletePolicy(ctx, id interface{}) *gomock.Cal
 }
 
 // GetPolicy mocks base method.
-func (m *MockService) GetPolicy(ctx context.Context, id string) (*models.Policy, error) {
+func (m *MockService) GetPolicy(ctx context.Context, id string) (*v1.Policy, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetPolicy", ctx, id)
-	ret0, _ := ret[0].(*models.Policy)
+	ret0, _ := ret[0].(*v1.Policy)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -83,10 +83,10 @@ func (mr *MockServiceMockRecorder) GetPolicy(ctx, id interface{}) *gomock.Call {
 }
 
 // GetReconciliation mocks base method.
-func (m *MockService) GetReconciliation(ctx context.Context, id string) (*models.Reconciliation, error) {
+func (m *MockService) GetReconciliation(ctx context.Context, id string) (*v1.Reconciliation, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetReconciliation", ctx, id)
-	ret0, _ := ret[0].(*models.Reconciliation)
+	ret0, _ := ret[0].(*v1.Reconciliation)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -98,10 +98,10 @@ func (mr *MockServiceMockRecorder) GetReconciliation(ctx, id interface{}) *gomoc
 }
 
 // ListPolicies mocks base method.
-func (m *MockService) ListPolicies(ctx context.Context, q v1.GetPoliciesQuery) (*bunpaginate.Cursor[models.Policy], error) {
+func (m *MockService) ListPolicies(ctx context.Context, q v10.GetPoliciesQuery) (*bunpaginate.Cursor[v1.Policy], error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListPolicies", ctx, q)
-	ret0, _ := ret[0].(*bunpaginate.Cursor[models.Policy])
+	ret0, _ := ret[0].(*bunpaginate.Cursor[v1.Policy])
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -113,10 +113,10 @@ func (mr *MockServiceMockRecorder) ListPolicies(ctx, q interface{}) *gomock.Call
 }
 
 // ListReconciliations mocks base method.
-func (m *MockService) ListReconciliations(ctx context.Context, q v1.GetReconciliationsQuery) (*bunpaginate.Cursor[models.Reconciliation], error) {
+func (m *MockService) ListReconciliations(ctx context.Context, q v10.GetReconciliationsQuery) (*bunpaginate.Cursor[v1.Reconciliation], error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListReconciliations", ctx, q)
-	ret0, _ := ret[0].(*bunpaginate.Cursor[models.Reconciliation])
+	ret0, _ := ret[0].(*bunpaginate.Cursor[v1.Reconciliation])
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -128,10 +128,10 @@ func (mr *MockServiceMockRecorder) ListReconciliations(ctx, q interface{}) *gomo
 }
 
 // Reconciliation mocks base method.
-func (m *MockService) Reconciliation(ctx context.Context, policyID string, req *service.ReconciliationRequest) (*models.Reconciliation, error) {
+func (m *MockService) Reconciliation(ctx context.Context, policyID string, req *service.ReconciliationRequest) (*v1.Reconciliation, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Reconciliation", ctx, policyID, req)
-	ret0, _ := ret[0].(*models.Reconciliation)
+	ret0, _ := ret[0].(*v1.Reconciliation)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

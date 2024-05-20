@@ -8,7 +8,7 @@ import (
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"github.com/formancehq/reconciliation/internal/models"
+	models "github.com/formancehq/reconciliation/internal/models/v1"
 	storage "github.com/formancehq/reconciliation/internal/storage/v1"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/google/uuid"

@@ -6,16 +6,12 @@ import (
 	"net/http"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
-	"github.com/formancehq/stack/libs/go-libs/licence"
 
 	sdk "github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/reconciliation/internal/api"
 	"github.com/formancehq/reconciliation/internal/storage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
-	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
-	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -53,33 +49,32 @@ func newServeCommand(version string) *cobra.Command {
 		RunE: runServer(version),
 	}
 	cmd.Flags().String(listenFlag, ":8080", "Listening address")
+	cmd.Flags().Bool(workerFlag, false, "Enable worker mode")
 
 	return cmd
 }
 
 func runServer(version string) func(cmd *cobra.Command, args []string) error {
 	return func(cmd *cobra.Command, args []string) error {
-		databaseOptions, err := prepareDatabaseOptions(cmd)
+		commonOptions, err := commonOptions(cmd)
 		if err != nil {
 			return err
 		}
 
-		options := make([]fx.Option, 0)
-		options = append(options, databaseOptions)
-
-		options = append(options,
-			otlptraces.CLITracesModule(),
-			otlpmetrics.CLIMetricsModule(),
-			auth.CLIAuthModule(),
-		)
+		options := []fx.Option{
+			commonOptions,
+		}
 
 		options = append(options,
 			stackClientModule(),
 			api.Module(sharedapi.ServiceInfo{
 				Version: version,
 			}, viper.GetString(listenFlag)),
-			licence.CLIModule(ServiceName),
 		)
+
+		if viper.GetBool(workerFlag) {
+			options = append(options, workerOptions())
+		}
 
 		return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 	}

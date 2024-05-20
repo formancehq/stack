@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/formancehq/reconciliation/internal/api/client"
-	"github.com/formancehq/reconciliation/internal/models"
+	models "github.com/formancehq/reconciliation/internal/models/v1"
 	storage "github.com/formancehq/reconciliation/internal/storage/v1"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/google/uuid"

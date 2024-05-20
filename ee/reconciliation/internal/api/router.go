@@ -5,6 +5,8 @@ import (
 
 	v1 "github.com/formancehq/reconciliation/internal/api/v1"
 	backendv1 "github.com/formancehq/reconciliation/internal/api/v1/backend"
+	v2 "github.com/formancehq/reconciliation/internal/api/v2"
+	backendv2 "github.com/formancehq/reconciliation/internal/api/v2/backend"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/health"
@@ -15,6 +17,7 @@ import (
 
 func newRouter(
 	backendV1 backendv1.Backend,
+	backendV2 backendv2.Backend,
 	serviceInfo api.ServiceInfo,
 	healthController *health.HealthController,
 	a auth.Auth,
@@ -35,6 +38,7 @@ func newRouter(
 		r.Use(otelchi.Middleware("reconciliation"))
 
 		v1.NewRouter(backendV1, r)
+		v2.NewRouter(backendV2, r)
 	})
 
 	return r

@@ -1,9 +1,9 @@
-package v1
+package v2
 
 import (
 	"context"
 
-	models "github.com/formancehq/reconciliation/internal/models/v1"
+	models "github.com/formancehq/reconciliation/internal/models/v2"
 	storageerrors "github.com/formancehq/reconciliation/internal/storage/errors"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/formancehq/stack/libs/go-libs/query"
@@ -19,19 +19,40 @@ func (s *Storage) CreatePolicy(ctx context.Context, policy *models.Policy) error
 	if err != nil {
 		return storageerrors.E("failed to create policy", err)
 	}
+	return nil
+}
 
+func (s *Storage) UpdatePolicyRules(ctx context.Context, id uuid.UUID, rules []string) error {
+	_, err := s.db.NewUpdate().
+		Model((*models.Policy)(nil)).
+		Set("rules = ?", rules).
+		Where("id = ?", id).Exec(ctx)
+	if err != nil {
+		return storageerrors.E("failed to update policy rules", err)
+	}
+	return nil
+}
+
+func (s *Storage) UpdatePolicyStatus(ctx context.Context, id uuid.UUID, enabled bool) error {
+	_, err := s.db.NewUpdate().
+		Model((*models.Policy)(nil)).
+		Set("enabled = ?", enabled).
+		Where("id = ?", id).
+		Exec(ctx)
+	if err != nil {
+		return storageerrors.E("failed to change enabled status for policy", err)
+	}
 	return nil
 }
 
 func (s *Storage) DeletePolicy(ctx context.Context, id uuid.UUID) error {
 	_, err := s.db.NewDelete().
-		Model(&models.Policy{}).
+		Model((*models.Policy)(nil)).
 		Where("id = ?", id).
 		Exec(ctx)
 	if err != nil {
 		return storageerrors.E("failed to delete policy", err)
 	}
-
 	return nil
 }
 
@@ -44,11 +65,10 @@ func (s *Storage) GetPolicy(ctx context.Context, id uuid.UUID) (*models.Policy, 
 	if err != nil {
 		return nil, storageerrors.E("failed to get policy", err)
 	}
-
 	return &policy, nil
 }
 
-func (s *Storage) buildPolicyListQuery(selectQuery *bun.SelectQuery, q GetPoliciesQuery, where string, args []any) *bun.SelectQuery {
+func (s *Storage) buildPolicyListQuery(selectQuery *bun.SelectQuery, q ListPoliciesQuery, where string, args []any) *bun.SelectQuery {
 	selectQuery = selectQuery.
 		Order("created_at DESC")
 
@@ -59,7 +79,7 @@ func (s *Storage) buildPolicyListQuery(selectQuery *bun.SelectQuery, q GetPolici
 	return selectQuery
 }
 
-func (s *Storage) ListPolicies(ctx context.Context, q GetPoliciesQuery) (*bunpaginate.Cursor[models.Policy], error) {
+func (s *Storage) ListPolicies(ctx context.Context, q ListPoliciesQuery) (*bunpaginate.Cursor[models.Policy], error) {
 	var (
 		where string
 		args  []any
@@ -81,38 +101,28 @@ func (s *Storage) ListPolicies(ctx context.Context, q GetPoliciesQuery) (*bunpag
 	)
 }
 
-func (s *Storage) policyQueryContext(qb query.Builder, q GetPoliciesQuery) (string, []any, error) {
+func (s *Storage) policyQueryContext(qb query.Builder, q ListPoliciesQuery) (string, []any, error) {
 	return qb.Build(query.ContextFn(func(key, operator string, value any) (string, []any, error) {
 		switch {
-		case key == "ledgerQuery":
+		case key == "name":
 			if operator != "$match" {
-				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'ledgerQuery' column can only be used with $match")
-			}
-			switch ledgerQuery := value.(type) {
-			case string:
-				return "ledger_query = ?", []any{ledgerQuery}, nil
-			default:
-				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'ledgerQuery' column can only be used with string")
-			}
-		case key == "ledgerName":
-			if operator != "$match" {
-				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'ledgerName' column can only be used with $match")
+				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'name' column can only be used with $match")
 			}
 			switch name := value.(type) {
 			case string:
-				return "ledger_name = ?", []any{name}, nil
+				return "name = ?", []any{name}, nil
 			default:
-				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'ledgerName' column can only be used with string")
+				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'ledgernameQuery' column can only be used with string")
 			}
-		case key == "paymentsPoolID":
+		case key == "enabled":
 			if operator != "$match" {
-				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'paymentsPoolID' column can only be used with $match")
+				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'enabled' column can only be used with $match")
 			}
-			switch pID := value.(type) {
-			case string:
-				return "payments_pool_id = ?", []any{pID}, nil
+			switch name := value.(type) {
+			case bool:
+				return "enabled = ?", []any{name}, nil
 			default:
-				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'paymentsPoolID' column can only be used with string")
+				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'enabled' column can only be used with string")
 			}
 		default:
 			return "", nil, errors.Wrapf(storageerrors.ErrInvalidQuery, "unknown key '%s' when building query", key)
@@ -122,10 +132,10 @@ func (s *Storage) policyQueryContext(qb query.Builder, q GetPoliciesQuery) (stri
 
 type PoliciesFilters struct{}
 
-type GetPoliciesQuery bunpaginate.OffsetPaginatedQuery[bunpaginate.PaginatedQueryOptions[PoliciesFilters]]
+type ListPoliciesQuery bunpaginate.OffsetPaginatedQuery[bunpaginate.PaginatedQueryOptions[PoliciesFilters]]
 
-func NewGetPoliciesQuery(opts bunpaginate.PaginatedQueryOptions[PoliciesFilters]) GetPoliciesQuery {
-	return GetPoliciesQuery{
+func NewListPoliciesQuery(opts bunpaginate.PaginatedQueryOptions[PoliciesFilters]) ListPoliciesQuery {
+	return ListPoliciesQuery{
 		PageSize: opts.PageSize,
 		Order:    bunpaginate.OrderAsc,
 		Options:  opts,
