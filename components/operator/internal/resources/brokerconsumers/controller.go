@@ -87,31 +87,31 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, consumer *v1beta1.BrokerC
 		}
 
 		if !topic.Status.Ready {
-			consumer.Status.SetCondition(v1beta1.Condition{
+			consumer.GetConditions().AppendOrReplace(v1beta1.Condition{
 				Type:               ConditionTypeReady,
-				Status:             "False",
+				Status:             metav1.ConditionFalse,
 				ObservedGeneration: consumer.Generation,
 				LastTransitionTime: metav1.Now(),
 				Message:            fmt.Sprintf("BrokerTopic %s not yet ready", topic.Name),
-			})
-			consumer.Status.SetCondition(v1beta1.Condition{
+			}, v1beta1.ConditionTypeMatch(ConditionTypeReady))
+			consumer.GetConditions().AppendOrReplace(v1beta1.Condition{
 				Type:               ConditionTypeBrokerTopicCreated,
-				Status:             "False",
+				Status:             metav1.ConditionFalse,
 				ObservedGeneration: consumer.Generation,
 				LastTransitionTime: metav1.Now(),
 				Message:            fmt.Sprintf("BrokerTopic %s not yet ready", topic.Name),
-			})
+			}, v1beta1.ConditionTypeMatch(ConditionTypeBrokerTopicCreated))
 			return core.NewPendingError()
 		}
 	}
 
-	consumer.Status.SetCondition(v1beta1.Condition{
+	consumer.GetConditions().AppendOrReplace(v1beta1.Condition{
 		Type:               ConditionTypeBrokerTopicCreated,
-		Status:             "True",
+		Status:             metav1.ConditionTrue,
 		ObservedGeneration: consumer.Generation,
 		LastTransitionTime: metav1.Now(),
 		Message:            "All topics created",
-	})
+	}, v1beta1.ConditionTypeMatch(ConditionTypeBrokerTopicCreated))
 
 	broker := &v1beta1.Broker{}
 	if err := ctx.GetClient().Get(ctx, types.NamespacedName{
@@ -127,21 +127,25 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, consumer *v1beta1.BrokerC
 	if broker.Status.URI.Scheme == "nats" {
 		switch broker.Status.Mode {
 		case v1beta1.ModeOneStreamByStack:
-			if !consumer.Status.CheckCondition(v1beta1.CheckCondition{
-				Type:       ConditionTypeNatsStackConsumerCreated,
-				Generation: consumer.Generation,
-			}) {
+			if !consumer.Status.Conditions.Check(
+				v1beta1.AndConditions(
+					v1beta1.ConditionTypeMatch(ConditionTypeNatsStackConsumerCreated),
+					v1beta1.ConditionGenerationMatch(consumer.Generation),
+				),
+			) {
 				if err := createStackNatsConsumer(ctx, stack, consumer, broker); err != nil {
 					return err
 				}
 			}
 		case v1beta1.ModeOneStreamByService:
 			for _, service := range consumer.Spec.Services {
-				if !consumer.Status.CheckCondition(v1beta1.CheckCondition{
-					Type:       ConditionTypeNatsServiceConsumerCreated,
-					Generation: consumer.Generation,
-					Reason:     service,
-				}) {
+				if !consumer.Status.Conditions.Check(
+					v1beta1.AndConditions(
+						v1beta1.ConditionTypeMatch(ConditionTypeNatsServiceConsumerCreated),
+						v1beta1.ConditionGenerationMatch(consumer.Generation),
+						v1beta1.ConditionReasonMatch(service),
+					),
+				) {
 					if err := createServiceNatsConsumer(ctx, stack, consumer, broker, service); err != nil {
 						return err
 					}
@@ -150,13 +154,13 @@ func Reconcile(ctx core.Context, stack *v1beta1.Stack, consumer *v1beta1.BrokerC
 		}
 	}
 
-	consumer.Status.SetCondition(v1beta1.Condition{
+	consumer.GetConditions().AppendOrReplace(v1beta1.Condition{
 		Type:               ConditionTypeReady,
-		Status:             "True",
+		Status:             metav1.ConditionTrue,
 		ObservedGeneration: consumer.Generation,
 		LastTransitionTime: metav1.Now(),
 		Message:            "Consumer completely configured",
-	})
+	}, v1beta1.ConditionTypeMatch(ConditionTypeReady))
 
 	return nil
 }
@@ -193,31 +197,20 @@ func createServiceNatsConsumer(ctx core.Context, stack *v1beta1.Stack, consumer 
 		},
 	})
 
+	condition := v1beta1.NewCondition(ConditionTypeNatsServiceConsumerCreated, consumer.Generation).
+		SetReason(service)
+	defer func() {
+		consumer.Status.Conditions.AppendOrReplace(*condition, v1beta1.AndConditions(
+			v1beta1.ConditionTypeMatch(ConditionTypeNatsServiceConsumerCreated),
+			v1beta1.ConditionReasonMatch(service),
+		))
+	}()
+
 	if err != nil {
-		consumer.Status.SetCondition(v1beta1.Condition{
-			Type:               ConditionTypeReady,
-			Status:             "False",
-			ObservedGeneration: consumer.Generation,
-			LastTransitionTime: metav1.Now(),
-			Message:            fmt.Sprintf("Error creating consumer on nats: %s", err),
-		})
-		consumer.Status.SetCondition(v1beta1.Condition{
-			Type:               ConditionTypeNatsServiceConsumerCreated,
-			Status:             "False",
-			ObservedGeneration: consumer.Generation,
-			LastTransitionTime: metav1.Now(),
-			Message:            fmt.Sprintf("Error creating consumer on nats: %s", err),
-			Reason:             service,
-		})
+		condition.Fail(fmt.Sprintf("Error creating consumer on nats: %s", err))
+		return err
 	} else {
-		consumer.Status.SetCondition(v1beta1.Condition{
-			Type:               ConditionTypeNatsServiceConsumerCreated,
-			Status:             "True",
-			ObservedGeneration: consumer.Generation,
-			LastTransitionTime: metav1.Now(),
-			Message:            "Nats consumer created",
-			Reason:             service,
-		})
+		condition.SetMessage("Nats consumer created")
 	}
 	return err
 }
@@ -265,28 +258,23 @@ func createStackNatsConsumer(ctx core.Context, stack *v1beta1.Stack, consumer *v
 		},
 	})
 	if err != nil {
-		consumer.Status.SetCondition(v1beta1.Condition{
-			Type:               ConditionTypeReady,
-			Status:             "False",
-			ObservedGeneration: consumer.Generation,
-			LastTransitionTime: metav1.Now(),
-			Message:            fmt.Sprintf("Error creating consumer on nats: %s", err),
-		})
-		consumer.Status.SetCondition(v1beta1.Condition{
+		consumer.GetConditions().AppendOrReplace(v1beta1.Condition{
 			Type:               ConditionTypeNatsStackConsumerCreated,
-			Status:             "False",
+			Status:             metav1.ConditionFalse,
 			ObservedGeneration: consumer.Generation,
 			LastTransitionTime: metav1.Now(),
 			Message:            fmt.Sprintf("Error creating consumer on nats: %s", err),
-		})
+		}, v1beta1.ConditionTypeMatch(ConditionTypeNatsStackConsumerCreated))
+		return err
 	} else {
-		consumer.Status.SetCondition(v1beta1.Condition{
+		consumer.GetConditions().AppendOrReplace(v1beta1.Condition{
 			Type:               ConditionTypeNatsStackConsumerCreated,
-			Status:             "True",
+			Status:             metav1.ConditionTrue,
 			ObservedGeneration: consumer.Generation,
 			LastTransitionTime: metav1.Now(),
 			Message:            "Nats consumer created",
-		})
+		}, v1beta1.ConditionTypeMatch(ConditionTypeNatsStackConsumerCreated))
 	}
-	return err
+
+	return nil
 }

@@ -3,6 +3,8 @@ package stacks
 import (
 	"context"
 	"fmt"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"reflect"
 	"sort"
@@ -45,60 +47,7 @@ import (
 // +kubebuilder:rbac:groups=formance.com,resources=versions/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=formance.com,resources=versions/finalizers,verbs=update
 
-func areDependentReady(ctx Context, stack *v1beta1.Stack) error {
-	pendingResources := make([]string, 0)
-	for _, rtype := range ctx.GetScheme().AllKnownTypes() {
-		v := reflect.New(rtype).Interface()
-		var r v1beta1.Dependent
-		r, ok := v.(v1beta1.Dependent)
-		if !ok {
-			continue
-		}
-
-		gvk, err := apiutil.GVKForObject(r, ctx.GetScheme())
-		if err != nil {
-			return err
-		}
-		l := &unstructured.UnstructuredList{}
-		l.SetGroupVersionKind(gvk)
-		if err := ctx.GetClient().List(ctx, l, client.MatchingFields{
-			"stack": stack.Name,
-		}); err != nil {
-
-			return err
-		}
-
-		for _, item := range l.Items {
-			content := item.UnstructuredContent()
-			if content["status"] == nil {
-				pendingResources = append(pendingResources, fmt.Sprintf("%s: %s", item.GetObjectKind().GroupVersionKind().Kind, item.GetName()))
-				continue
-			}
-
-			status := content["status"].(map[string]interface{})
-			if status["ready"] == nil {
-				pendingResources = append(pendingResources, fmt.Sprintf("%s: %s", item.GetObjectKind().GroupVersionKind().Kind, item.GetName()))
-				continue
-			}
-
-			isReady := status["ready"].(bool)
-			if !isReady {
-				pendingResources = append(pendingResources, fmt.Sprintf("%s: %s", item.GetObjectKind().GroupVersionKind().Kind, item.GetName()))
-				continue
-			}
-		}
-	}
-
-	if len(pendingResources) > 0 {
-		return NewApplicationError().
-			WithMessage("Still pending dependent: %s ", strings.Join(pendingResources, ","))
-	}
-
-	return nil
-}
-
-func retrieveReferenceModules(ctx Context, stack *v1beta1.Stack) error {
-	setKind := map[string]interface{}{}
+func checkModules(ctx Context, stack *v1beta1.Stack) error {
 	for _, rtype := range ctx.GetScheme().AllKnownTypes() {
 		v := reflect.New(rtype).Interface()
 		r, ok := v.(v1beta1.Module)
@@ -118,21 +67,62 @@ func retrieveReferenceModules(ctx Context, stack *v1beta1.Stack) error {
 			return err
 		}
 
-		for _, item := range l.Items {
-			content := item.UnstructuredContent()
-			if content["kind"] != nil {
-				kind := content["kind"].(string)
-				if setKind[kind] == nil {
-					setKind[kind] = []string{}
-				}
-			}
+		if len(l.Items) == 0 {
+			continue
 		}
 
+		func() {
+			condition := v1beta1.NewCondition("ModuleReconciliation", stack.Generation).
+				SetReason(gvk.Kind)
+			defer func() {
+				stack.GetConditions().AppendOrReplace(*condition, v1beta1.AndConditions(
+					v1beta1.ConditionTypeMatch("ModuleReconciliation"),
+					v1beta1.ConditionReasonMatch(gvk.Kind),
+				))
+			}()
+
+			switch len(l.Items) {
+			case 1:
+				type AnyModule struct {
+					Meta   metav1.ObjectMeta `json:"metadata"`
+					Status v1beta1.Status    `json:"status"`
+				}
+
+				module := AnyModule{}
+				if err := runtime.DefaultUnstructuredConverter.FromUnstructured(l.Items[0].UnstructuredContent(), &module); err != nil {
+					panic(err)
+				}
+
+				stackReconcileCondition := module.Status.Conditions.Get("ReconciledWithStack")
+				if stackReconcileCondition == nil {
+					condition.SetStatus(metav1.ConditionFalse).SetMessage("Module not yet reconciled")
+					return
+				}
+				if stackReconcileCondition.Status != metav1.ConditionTrue {
+					condition.SetStatus(metav1.ConditionFalse).SetMessage("Module not declared as reconciled for stack")
+					return
+				}
+				if stackReconcileCondition.Reason == "Spec" && stack.MustSkip() {
+					condition.SetStatus(metav1.ConditionFalse).SetMessage("Module should be skipped but is not")
+					return
+				}
+				if stackReconcileCondition.Reason == "Skipped" && !stack.MustSkip() {
+					condition.SetStatus(metav1.ConditionFalse).SetMessage("Module is skipped but should not")
+					return
+				}
+				condition.SetMessage("All checks passed")
+			default:
+				condition.SetStatus(metav1.ConditionFalse).SetMessage("found multiple modules")
+			}
+		}()
 	}
 
-	modules := []string{}
-	for k := range setKind {
-		modules = append(modules, k)
+	modules := make([]string, 0)
+	for _, condition := range stack.Status.Conditions {
+		if condition.Type != "ModuleReconciliation" {
+			continue
+		}
+		modules = append(modules, condition.Reason)
 	}
 
 	sort.Strings(modules)
@@ -160,12 +150,17 @@ func Reconcile(ctx Context, stack *v1beta1.Stack) error {
 		}
 	}
 
-	if err := retrieveReferenceModules(ctx, stack); err != nil {
+	if err := checkModules(ctx, stack); err != nil {
 		return err
 	}
 
-	if err := areDependentReady(ctx, stack); err != nil {
-		return err
+	if stack.MustSkip() {
+		stack.GetConditions().AppendOrReplace(
+			*v1beta1.NewCondition("Skipped", stack.Generation).SetMessage("Stack marked as skipped"),
+			v1beta1.ConditionTypeMatch("Skipped"),
+		)
+	} else {
+		stack.GetConditions().Delete(v1beta1.ConditionTypeMatch("Skipped"))
 	}
 
 	return nil

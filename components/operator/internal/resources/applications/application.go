@@ -87,15 +87,10 @@ func configureSecurityContext(container *corev1.Container, runAs *runAs) {
 	}
 }
 
-type Owner interface {
-	v1beta1.Dependent
-	SetCondition(condition v1beta1.Condition)
-}
-
 type Application struct {
 	stateful      bool
 	isEE          bool
-	owner         Owner
+	owner         v1beta1.Dependent
 	deploymentTpl *appsv1.Deployment
 }
 
@@ -138,7 +133,10 @@ func (a Application) handleDeployment(ctx core.Context, deploymentLabels map[str
 		Reason:             strcase.UpperCamelCase(a.deploymentTpl.Name),
 	}
 	defer func() {
-		a.owner.SetCondition(condition)
+		a.owner.GetConditions().AppendOrReplace(condition, v1beta1.AndConditions(
+			v1beta1.ConditionTypeMatch("DeploymentReady"),
+			v1beta1.ConditionReasonMatch(strcase.UpperCamelCase(a.deploymentTpl.Name)),
+		))
 	}()
 
 	mutators := make([]core.ObjectMutator[*appsv1.Deployment], 0)
@@ -266,6 +264,14 @@ type podDisruptionBudgetConfiguration struct {
 }
 
 func (a Application) handlePDB(ctx core.Context, deploymentLabels map[string]string) error {
+	podDisruptionBudgetCondition := v1beta1.NewCondition("PodDisruptionBudget", a.owner.GetGeneration()).
+		SetReason(strcase.UpperCamelCase(a.deploymentTpl.Name))
+	defer func() {
+		a.owner.GetConditions().AppendOrReplace(*podDisruptionBudgetCondition, v1beta1.AndConditions(
+			v1beta1.ConditionTypeMatch("PodDisruptionBudget"),
+			v1beta1.ConditionReasonMatch(strcase.UpperCamelCase(a.deploymentTpl.Name)),
+		))
+	}()
 	if !a.stateful {
 
 		pdb, err := settings.GetAs[podDisruptionBudgetConfiguration](ctx, a.owner.GetStack(), "deployments", a.deploymentTpl.Name, "pod-disruption-budget")
@@ -274,13 +280,16 @@ func (a Application) handlePDB(ctx core.Context, deploymentLabels map[string]str
 		}
 
 		if pdb.MinAvailable != "" || pdb.MaxUnavailable != "" {
-			a.owner.SetCondition(v1beta1.Condition{
-				Type:               "PodDisruptionBudget",
-				ObservedGeneration: a.owner.GetGeneration(),
-				LastTransitionTime: metav1.Now(),
-				Reason:             strcase.UpperCamelCase(a.deploymentTpl.Name),
-				Status:             metav1.ConditionTrue,
-			})
+			podDisruptionBudgetConfiguredCondition := v1beta1.NewCondition("PodDisruptionBudgetConfigured", a.owner.GetGeneration()).
+				SetReason(strcase.UpperCamelCase(a.deploymentTpl.Name))
+
+			defer func() {
+				a.owner.GetConditions().AppendOrReplace(*podDisruptionBudgetConfiguredCondition, v1beta1.AndConditions(
+					v1beta1.ConditionTypeMatch("PodDisruptionBudgetConfigured"),
+					v1beta1.ConditionReasonMatch(strcase.UpperCamelCase(a.deploymentTpl.Name)),
+				))
+			}()
+
 			_, _, err = core.CreateOrUpdate(ctx, types.NamespacedName{
 				Namespace: a.owner.GetStack(),
 				Name:      a.deploymentTpl.Name,
@@ -299,48 +308,21 @@ func (a Application) handlePDB(ctx core.Context, deploymentLabels map[string]str
 				core.WithController[*v1.PodDisruptionBudget](ctx.GetScheme(), a.owner),
 			)
 			if err != nil {
-				a.owner.SetCondition(v1beta1.Condition{
-					Type:               "PodDisruptionBudgetConfigured",
-					ObservedGeneration: a.owner.GetGeneration(),
-					LastTransitionTime: metav1.Now(),
-					Reason:             strcase.UpperCamelCase(a.deploymentTpl.Name),
-					Status:             metav1.ConditionFalse,
-					Message:            err.Error(),
-				})
+				podDisruptionBudgetConfiguredCondition.SetStatus(metav1.ConditionFalse).SetMessage(err.Error())
 				return err
 			}
-			a.owner.SetCondition(v1beta1.Condition{
-				Type:               "PodDisruptionBudgetConfigured",
-				ObservedGeneration: a.owner.GetGeneration(),
-				LastTransitionTime: metav1.Now(),
-				Reason:             strcase.UpperCamelCase(a.deploymentTpl.Name),
-				Status:             metav1.ConditionTrue,
-			})
 		} else {
 			if err := a.deletePDBIfExists(ctx); err != nil {
 				return err
 			}
-			a.owner.SetCondition(v1beta1.Condition{
-				Type:               "PodDisruptionBudget",
-				ObservedGeneration: a.owner.GetGeneration(),
-				LastTransitionTime: metav1.Now(),
-				Reason:             strcase.UpperCamelCase(a.deploymentTpl.Name),
-				Status:             metav1.ConditionTrue,
-				Message:            "no PDB found",
-			})
+			podDisruptionBudgetCondition.SetMessage("no PDB found")
 		}
 	} else {
 		if err := a.deletePDBIfExists(ctx); err != nil {
 			return err
 		}
-		a.owner.SetCondition(v1beta1.Condition{
-			Type:               "PodDisruptionBudget",
-			ObservedGeneration: a.owner.GetGeneration(),
-			LastTransitionTime: metav1.Now(),
-			Reason:             strcase.UpperCamelCase(a.deploymentTpl.Name),
-			Status:             metav1.ConditionTrue,
-			Message:            "application defined as stateful",
-		})
+
+		podDisruptionBudgetCondition.SetMessage("application defined as stateful")
 	}
 
 	return nil
@@ -354,7 +336,7 @@ func (a Application) deletePDBIfExists(ctx core.Context) error {
 	return client.IgnoreNotFound(ctx.GetClient().Delete(ctx, pdb))
 }
 
-func New(owner Owner, deploymentTpl *appsv1.Deployment) *Application {
+func New(owner v1beta1.Dependent, deploymentTpl *appsv1.Deployment) *Application {
 	return &Application{
 		owner:         owner,
 		deploymentTpl: deploymentTpl,

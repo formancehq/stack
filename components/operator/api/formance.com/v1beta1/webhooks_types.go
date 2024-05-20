@@ -30,7 +30,7 @@ type WebhooksSpec struct {
 
 // WebhooksStatus defines the observed state of Webhooks
 type WebhooksStatus struct {
-	ModuleStatus `json:",inline"`
+	Status `json:",inline"`
 }
 
 // +kubebuilder:object:root=true
@@ -66,8 +66,8 @@ func (in *Webhooks) SetError(s string) {
 	in.Status.Info = s
 }
 
-func (in *Webhooks) GetConditions() []Condition {
-	return in.Status.Conditions
+func (in *Webhooks) GetConditions() *Conditions {
+	return &in.Status.Conditions
 }
 
 func (in *Webhooks) GetVersion() string {
@@ -84,10 +84,6 @@ func (a Webhooks) IsDebug() bool {
 
 func (a Webhooks) IsDev() bool {
 	return a.Spec.Dev
-}
-
-func (a *Webhooks) SetCondition(condition Condition) {
-	a.Status.SetCondition(condition)
 }
 
 //+kubebuilder:object:root=true

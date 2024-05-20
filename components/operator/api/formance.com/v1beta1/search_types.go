@@ -32,7 +32,7 @@ type SearchSpec struct {
 
 // SearchStatus defines the observed state of Search
 type SearchStatus struct {
-	ModuleStatus `json:",inline"`
+	Status `json:",inline"`
 	//+optional
 	ElasticSearchURI *URI `json:"elasticSearchURI,omitempty"`
 	// TopicCleaned is used to flag stacks where the topics have been cleaned (still search-ledgerv2 and co consumers)
@@ -73,8 +73,8 @@ func (in *Search) SetError(s string) {
 	in.Status.Info = s
 }
 
-func (in *Search) GetConditions() []Condition {
-	return in.Status.Conditions
+func (in *Search) GetConditions() *Conditions {
+	return &in.Status.Conditions
 }
 
 func (in *Search) GetVersion() string {
@@ -83,10 +83,6 @@ func (in *Search) GetVersion() string {
 
 func (a Search) GetStack() string {
 	return a.Spec.Stack
-}
-
-func (a *Search) SetCondition(condition Condition) {
-	a.Status.SetCondition(condition)
 }
 
 func (a Search) IsDebug() bool {

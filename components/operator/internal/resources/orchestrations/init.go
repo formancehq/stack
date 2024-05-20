@@ -56,42 +56,44 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, o *v1beta1.Orchestration, vers
 		return err
 	}
 
-	if database.Status.Ready {
-		image, err := registries.GetImage(ctx, stack, "orchestration", version)
+	if !database.Status.Ready {
+		return NewPendingError().WithMessage("database not ready")
+	}
+
+	image, err := registries.GetImage(ctx, stack, "orchestration", version)
+	if err != nil {
+		return errors.Wrap(err, "resolving image")
+	}
+
+	if IsGreaterOrEqual(version, "v2.0.0-rc.5") && databases.GetSavedModuleVersion(database) != version {
+		serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 		if err != nil {
-			return errors.Wrap(err, "resolving image")
+			return errors.Wrap(err, "getting service account name")
 		}
 
-		if IsGreaterOrEqual(version, "v2.0.0-rc.5") && databases.GetSavedModuleVersion(database) != version {
-			serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
-			if err != nil {
-				return errors.Wrap(err, "getting service account name")
-			}
-
-			migrateContainer, err := databases.MigrateDatabaseContainer(ctx, stack, image, database)
-			if err != nil {
-				return errors.Wrap(err, "creating migrate container")
-			}
-
-			if err := jobs.Handle(ctx, o, "migrate",
-				migrateContainer,
-				jobs.WithServiceAccount(serviceAccountName),
-			); err != nil {
-				return err
-			}
-
-			if err := databases.SaveModuleVersion(ctx, database, version); err != nil {
-				return errors.Wrap(err, "saving module version in database object")
-			}
+		migrateContainer, err := databases.MigrateDatabaseContainer(ctx, stack, image, database)
+		if err != nil {
+			return errors.Wrap(err, "creating migrate container")
 		}
 
-		if consumer.Status.Ready {
-			if err := createDeployment(ctx, stack, o, database, authClient, consumer, image); err != nil {
-				return err
-			}
-		} else {
-			return NewPendingError().WithMessage("waiting for consumers to be ready")
+		if err := jobs.Handle(ctx, o, "migrate",
+			migrateContainer,
+			jobs.WithServiceAccount(serviceAccountName),
+		); err != nil {
+			return err
 		}
+
+		if err := databases.SaveModuleVersion(ctx, database, version); err != nil {
+			return errors.Wrap(err, "saving module version in database object")
+		}
+	}
+
+	if consumer.Status.Ready {
+		if err := createDeployment(ctx, stack, o, database, authClient, consumer, image); err != nil {
+			return err
+		}
+	} else {
+		return NewPendingError().WithMessage("waiting for consumers to be ready")
 	}
 
 	return nil

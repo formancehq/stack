@@ -91,7 +91,7 @@ func TestRestrictStatus(t *testing.T) {
 		t.Run("test", func(t *testing.T) {
 			t.Parallel()
 
-			status, err := internal.Restrict[v1beta1.StatusWithConditions](tc.incomingStatus)
+			status, err := internal.Restrict[v1beta1.Status](tc.incomingStatus)
 			if tc.expectError {
 				require.Error(t, err)
 				return

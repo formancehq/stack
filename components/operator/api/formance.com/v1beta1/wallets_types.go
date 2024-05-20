@@ -30,7 +30,7 @@ type WalletsSpec struct {
 
 // WalletsStatus defines the observed state of Wallets
 type WalletsStatus struct {
-	ModuleStatus `json:",inline"`
+	Status `json:",inline"`
 }
 
 // +kubebuilder:object:root=true
@@ -66,8 +66,8 @@ func (in *Wallets) SetError(s string) {
 	in.Status.Info = s
 }
 
-func (in *Wallets) GetConditions() []Condition {
-	return in.Status.Conditions
+func (in *Wallets) GetConditions() *Conditions {
+	return &in.Status.Conditions
 }
 
 func (in *Wallets) GetVersion() string {
@@ -76,10 +76,6 @@ func (in *Wallets) GetVersion() string {
 
 func (a Wallets) GetStack() string {
 	return a.Spec.Stack
-}
-
-func (a *Wallets) SetCondition(condition Condition) {
-	a.Status.SetCondition(condition)
 }
 
 func (a Wallets) IsDebug() bool {

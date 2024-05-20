@@ -44,7 +44,7 @@ type GatewaySpec struct {
 
 // GatewayStatus defines the observed state of Gateway
 type GatewayStatus struct {
-	ModuleStatus `json:",inline"`
+	Status `json:",inline"`
 	//+optional
 	SyncHTTPAPIs []string `json:"syncHTTPAPIs"`
 	// +kubebuilder:default:=false
@@ -78,8 +78,8 @@ func (in *Gateway) GetVersion() string {
 	return in.Spec.Version
 }
 
-func (in *Gateway) GetConditions() []Condition {
-	return in.Status.Conditions
+func (in *Gateway) GetConditions() *Conditions {
+	return &in.Status.Conditions
 }
 
 func (in *Gateway) SetReady(b bool) {
@@ -96,10 +96,6 @@ func (in *Gateway) SetError(s string) {
 
 func (a Gateway) GetStack() string {
 	return a.Spec.Stack
-}
-
-func (a *Gateway) SetCondition(condition Condition) {
-	a.Status.SetCondition(condition)
 }
 
 func (a Gateway) IsDebug() bool {

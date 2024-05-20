@@ -49,43 +49,45 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, webhooks *v1beta1.Webhooks, ve
 		return err
 	}
 
-	if database.Status.Ready {
-		image, err := registries.GetImage(ctx, stack, "webhooks", version)
+	if !database.Status.Ready {
+		return NewPendingError().WithMessage("database not ready")
+	}
+
+	image, err := registries.GetImage(ctx, stack, "webhooks", version)
+	if err != nil {
+		return errors.Wrap(err, "resolving image")
+	}
+
+	if IsGreaterOrEqual(version, "v2.0.0-rc.5") && databases.GetSavedModuleVersion(database) != version {
+		serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 		if err != nil {
-			return errors.Wrap(err, "resolving image")
+			return errors.Wrap(err, "resolving service account")
 		}
 
-		if IsGreaterOrEqual(version, "v2.0.0-rc.5") && databases.GetSavedModuleVersion(database) != version {
-			serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
-			if err != nil {
-				return errors.Wrap(err, "resolving service account")
-			}
+		migrateContainer, err := databases.MigrateDatabaseContainer(ctx, stack, image, database)
+		if err != nil {
+			return errors.Wrap(err, "creating migration container")
+		}
 
-			migrateContainer, err := databases.MigrateDatabaseContainer(ctx, stack, image, database)
-			if err != nil {
-				return errors.Wrap(err, "creating migration container")
-			}
+		if err := jobs.Handle(ctx, webhooks, "migrate",
+			migrateContainer,
+			jobs.WithServiceAccount(serviceAccountName),
+		); err != nil {
+			return err
+		}
+		if err := databases.SaveModuleVersion(ctx, database, version); err != nil {
+			return errors.Wrap(err, "saving module version in database object")
+		}
+	}
 
-			if err := jobs.Handle(ctx, webhooks, "migrate",
-				migrateContainer,
-				jobs.WithServiceAccount(serviceAccountName),
-			); err != nil {
+	if consumer.Status.Ready {
+		if IsGreaterOrEqual(version, "v0.7.1") {
+			if err := createSingleDeployment(ctx, stack, webhooks, database, consumer, version); err != nil {
 				return err
 			}
-			if err := databases.SaveModuleVersion(ctx, database, version); err != nil {
-				return errors.Wrap(err, "saving module version in database object")
-			}
-		}
-
-		if consumer.Status.Ready {
-			if IsGreaterOrEqual(version, "v0.7.1") {
-				if err := createSingleDeployment(ctx, stack, webhooks, database, consumer, version); err != nil {
-					return err
-				}
-			} else {
-				if err := createDualDeployment(ctx, stack, webhooks, database, consumer, version); err != nil {
-					return err
-				}
+		} else {
+			if err := createDualDeployment(ctx, stack, webhooks, database, consumer, version); err != nil {
+				return err
 			}
 		}
 	}

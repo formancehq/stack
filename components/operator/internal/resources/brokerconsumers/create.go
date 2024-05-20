@@ -17,7 +17,6 @@ import (
 func Create(ctx core.Context, owner interface {
 	client.Object
 	GetStack() string
-	SetCondition(condition v1beta1.Condition)
 }, name string, services ...string) (*v1beta1.BrokerConsumer, error) {
 	queriedBy := strings.ToLower(owner.GetObjectKind().GroupVersionKind().Kind)
 
@@ -53,7 +52,6 @@ func Create(ctx core.Context, owner interface {
 func CreateOrUpdateOnAllServices(ctx core.Context, consumer interface {
 	client.Object
 	GetStack() string
-	SetCondition(condition v1beta1.Condition)
 }) (*v1beta1.BrokerConsumer, error) {
 	services, err := core.ListEventPublishers(ctx, consumer.GetStack())
 	if err != nil {

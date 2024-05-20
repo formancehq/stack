@@ -53,39 +53,40 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, auth *v1beta1.Auth, version st
 		return errors.Wrap(err, "creating database")
 	}
 
-	if database.Status.Ready {
+	if !database.Status.Ready {
+		return NewPendingError().WithMessage("database is not ready")
+	}
 
-		image, err := registries.GetImage(ctx, stack, "auth", version)
+	image, err := registries.GetImage(ctx, stack, "auth", version)
+	if err != nil {
+		return errors.Wrap(err, "resolving image")
+	}
+
+	if IsGreaterOrEqual(version, "v2.0.0-rc.5") && databases.GetSavedModuleVersion(database) != version {
+		serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 		if err != nil {
-			return errors.Wrap(err, "resolving image")
+			return errors.Wrap(err, "getting service account name")
 		}
 
-		if IsGreaterOrEqual(version, "v2.0.0-rc.5") && databases.GetSavedModuleVersion(database) != version {
-			serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
-			if err != nil {
-				return errors.Wrap(err, "getting service account name")
-			}
-
-			migrateContainer, err := databases.MigrateDatabaseContainer(ctx, stack, image, database)
-			if err != nil {
-				return errors.Wrap(err, "creating migrate container")
-			}
-
-			if err := jobs.Handle(ctx, auth, "migrate",
-				migrateContainer,
-				jobs.WithServiceAccount(serviceAccountName),
-			); err != nil {
-				return err
-			}
-
-			if err := databases.SaveModuleVersion(ctx, database, version); err != nil {
-				return errors.Wrap(err, "saving module version in database object")
-			}
+		migrateContainer, err := databases.MigrateDatabaseContainer(ctx, stack, image, database)
+		if err != nil {
+			return errors.Wrap(err, "creating migrate container")
 		}
 
-		if err := createDeployment(ctx, stack, auth, database, configMap, image); err != nil {
-			return errors.Wrap(err, "creating deployment")
+		if err := jobs.Handle(ctx, auth, "migrate",
+			migrateContainer,
+			jobs.WithServiceAccount(serviceAccountName),
+		); err != nil {
+			return err
 		}
+
+		if err := databases.SaveModuleVersion(ctx, database, version); err != nil {
+			return errors.Wrap(err, "saving module version in database object")
+		}
+	}
+
+	if err := createDeployment(ctx, stack, auth, database, configMap, image); err != nil {
+		return errors.Wrap(err, "creating deployment")
 	}
 
 	if err := gatewayhttpapis.Create(ctx, auth, gatewayhttpapis.WithHealthCheckEndpoint("_healthcheck"), gatewayhttpapis.WithRules(gatewayhttpapis.RuleUnsecured())); err != nil {

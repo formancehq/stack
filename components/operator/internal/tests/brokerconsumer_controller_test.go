@@ -63,7 +63,6 @@ var _ = Describe("BrokerConsumer", func() {
 			It("Should set the BrokerConsumer to ready status", func() {
 				Eventually(func(g Gomega) bool {
 					g.Expect(LoadResource("", brokerConsumer.Name, brokerConsumer)).To(Succeed())
-
 					return brokerConsumer.Status.Ready
 				}).Should(BeTrue())
 			})

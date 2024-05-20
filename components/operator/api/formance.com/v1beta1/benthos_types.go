@@ -40,7 +40,7 @@ type BenthosSpec struct {
 
 // BenthosStatus defines the observed state of Benthos
 type BenthosStatus struct {
-	StatusWithConditions `json:",inline"`
+	Status `json:",inline"`
 	//+optional
 	ElasticSearchURI *URI `json:"elasticSearchURI"`
 }
@@ -77,12 +77,8 @@ func (a Benthos) GetStack() string {
 	return a.Spec.Stack
 }
 
-func (in *Benthos) GetConditions() []Condition {
-	return in.Status.Conditions
-}
-
-func (a *Benthos) SetCondition(condition Condition) {
-	a.Status.SetCondition(condition)
+func (in *Benthos) GetConditions() *Conditions {
+	return &in.Status.Conditions
 }
 
 //+kubebuilder:object:root=true

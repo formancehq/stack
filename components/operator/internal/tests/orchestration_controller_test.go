@@ -84,6 +84,12 @@ var _ = Describe("OrchestrationController", func() {
 			Expect(Delete(temporalDSNSettings)).To(Succeed())
 		})
 		It("Should create appropriate components", func() {
+			By("Should set the status to ready", func() {
+				Eventually(func(g Gomega) bool {
+					g.Expect(LoadResource("", orchestration.Name, orchestration)).To(Succeed())
+					return orchestration.Status.Ready
+				}).Should(BeTrue())
+			})
 			By("Should add an owner reference on the stack", func() {
 				Eventually(func(g Gomega) bool {
 					g.Expect(LoadResource("", orchestration.Name, orchestration)).To(Succeed())

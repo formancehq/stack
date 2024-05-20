@@ -30,7 +30,7 @@ type ReconciliationSpec struct {
 
 // ReconciliationStatus defines the observed state of Reconciliation
 type ReconciliationStatus struct {
-	ModuleStatus `json:",inline"`
+	Status `json:",inline"`
 }
 
 // +kubebuilder:object:root=true
@@ -67,8 +67,8 @@ func (in *Reconciliation) SetError(s string) {
 	in.Status.Info = s
 }
 
-func (in *Reconciliation) GetConditions() []Condition {
-	return in.Status.Conditions
+func (in *Reconciliation) GetConditions() *Conditions {
+	return &in.Status.Conditions
 }
 
 func (in *Reconciliation) GetVersion() string {
@@ -85,10 +85,6 @@ func (a Reconciliation) IsDev() bool {
 
 func (a Reconciliation) GetStack() string {
 	return a.Spec.Stack
-}
-
-func (a *Reconciliation) SetCondition(condition Condition) {
-	a.Status.SetCondition(condition)
 }
 
 //+kubebuilder:object:root=true

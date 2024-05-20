@@ -35,7 +35,7 @@ const (
 
 // BrokerStatus defines the observed state of Broker
 type BrokerStatus struct {
-	CommonStatus `json:",inline"`
+	Status `json:",inline"`
 	//+optional
 	URI *URI `json:"uri,omitempty"`
 	//+optional
@@ -75,6 +75,10 @@ func (in *Broker) SetError(s string) {
 
 func (in *Broker) GetStack() string {
 	return in.Spec.GetStack()
+}
+
+func (in *Broker) GetConditions() *Conditions {
+	return &in.Status.Conditions
 }
 
 //+kubebuilder:object:root=true

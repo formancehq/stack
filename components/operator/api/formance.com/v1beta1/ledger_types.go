@@ -65,7 +65,7 @@ type LedgerSpec struct {
 
 // LedgerStatus defines the observed state of Ledger
 type LedgerStatus struct {
-	ModuleStatus `json:",inline"`
+	Status `json:",inline"`
 }
 
 //+kubebuilder:object:root=true
@@ -101,8 +101,8 @@ func (in *Ledger) SetError(s string) {
 	in.Status.Info = s
 }
 
-func (in *Ledger) GetConditions() []Condition {
-	return in.Status.Conditions
+func (in *Ledger) GetConditions() *Conditions {
+	return &in.Status.Conditions
 }
 
 func (in *Ledger) GetVersion() string {
@@ -121,10 +121,6 @@ func (a Ledger) IsDebug() bool {
 
 func (a Ledger) IsDev() bool {
 	return a.Spec.Dev
-}
-
-func (a *Ledger) SetCondition(condition Condition) {
-	a.Status.SetCondition(condition)
 }
 
 //+kubebuilder:object:root=true
