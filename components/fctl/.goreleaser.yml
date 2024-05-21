@@ -13,7 +13,7 @@ builds:
     id: fctl
     ldflags:
       - -X github.com/formancehq/fctl/cmd/version.BuildDate={{ .Date }}
-      - -X github.com/formancehq/fctl/cmd/version.Version={{ .Version }}
+      - -X github.com/formancehq/fctl/cmd/version.Version=v{{ .Version }}
       - -X github.com/formancehq/fctl/cmd/version.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:

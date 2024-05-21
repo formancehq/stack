@@ -59,31 +59,31 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.AddAccountToPool(ctx, operations.AddAccountToPoolRequest{
+    request := operations.AddAccountToPoolRequest{
         AddAccountToPoolRequest: shared.AddAccountToPoolRequest{
-            AccountID: "string",
+            AccountID: "<value>",
         },
-        PoolID: "string",
-    })
+        PoolID: "XXX",
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.AddAccountToPool(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }
@@ -117,21 +117,20 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"math/big"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.ConnectorsTransfer(ctx, operations.ConnectorsTransferRequest{
+    request := operations.ConnectorsTransferRequest{
         TransferRequest: shared.TransferRequest{
             Amount: big.NewInt(100),
             Asset: "USD",
@@ -139,11 +138,13 @@ func main() {
             Source: v2.String("acct_1Gqj58KZcSIg2N2q"),
         },
         Connector: shared.ConnectorBankingCircle,
-    })
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.ConnectorsTransfer(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.TransferResponse != nil {
         // handle response
     }
@@ -178,32 +179,30 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.CreateAccount(ctx, shared.AccountRequest{
-        ConnectorID: "string",
+    request := shared.AccountRequest{
+        ConnectorID: "<value>",
         CreatedAt: types.MustTimeFromString("2024-08-19T02:15:08.668Z"),
-        Metadata: map[string]string{
-            "key": "string",
-        },
-        Reference: "string",
+        Reference: "<value>",
         Type: shared.AccountTypeUnknown,
-    })
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.CreateAccount(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.PaymentsAccountResponse != nil {
         // handle response
     }
@@ -245,23 +244,21 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.CreateBankAccount(ctx, shared.BankAccountRequest{
-        ConnectorID: "string",
+    request := shared.BankAccountRequest{
+        ConnectorID: "<value>",
         Country: "GB",
-        Metadata: map[string]string{
-            "key": "string",
-        },
         Name: "My account",
-    })
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.CreateBankAccount(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.BankAccountResponse != nil {
         // handle response
     }
@@ -296,34 +293,35 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"math/big"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.CreatePayment(ctx, shared.PaymentRequest{
+    request := shared.PaymentRequest{
         Amount: big.NewInt(100),
         Asset: "USD",
-        ConnectorID: "string",
+        ConnectorID: "<value>",
         CreatedAt: types.MustTimeFromString("2024-11-09T01:03:21.153Z"),
-        Reference: "string",
+        Reference: "<value>",
         Scheme: shared.PaymentSchemeGooglePay,
         Status: shared.PaymentStatusDisputeWon,
         Type: shared.PaymentTypeTransfer,
-    })
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.CreatePayment(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.PaymentResponse != nil {
         // handle response
     }
@@ -365,21 +363,22 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.CreatePool(ctx, shared.PoolRequest{
+    request := shared.PoolRequest{
         AccountIDs: []string{
-            "string",
+            "<value>",
         },
-        Name: "string",
-    })
+        Name: "<value>",
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.CreatePool(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.PoolResponse != nil {
         // handle response
     }
@@ -414,38 +413,36 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"math/big"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.CreateTransferInitiation(ctx, shared.TransferInitiationRequest{
+    request := shared.TransferInitiationRequest{
         Amount: big.NewInt(256698),
         Asset: "USD",
         Description: "Multi-tiered incremental methodology",
-        DestinationAccountID: "string",
-        Metadata: map[string]string{
-            "key": "string",
-        },
+        DestinationAccountID: "<value>",
         Reference: "XXX",
         ScheduledAt: types.MustTimeFromString("2023-05-04T22:47:54.364Z"),
-        SourceAccountID: "string",
+        SourceAccountID: "<value>",
         Type: shared.TransferInitiationRequestTypeTransfer,
         Validated: false,
-    })
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.CreateTransferInitiation(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.TransferInitiationResponse != nil {
         // handle response
     }
@@ -480,28 +477,28 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+    request := operations.DeletePoolRequest{
+        PoolID: "XXX",
+    }
+    
     ctx := context.Background()
-    res, err := s.Payments.DeletePool(ctx, operations.DeletePoolRequest{
-        PoolID: "string",
-    })
+    res, err := s.Payments.DeletePool(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }
@@ -535,28 +532,28 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+    request := operations.DeleteTransferInitiationRequest{
+        TransferID: "XXX",
+    }
+    
     ctx := context.Background()
-    res, err := s.Payments.DeleteTransferInitiation(ctx, operations.DeleteTransferInitiationRequest{
-        TransferID: "string",
-    })
+    res, err := s.Payments.DeleteTransferInitiation(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }
@@ -590,29 +587,30 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.ForwardBankAccount(ctx, operations.ForwardBankAccountRequest{
+    request := operations.ForwardBankAccountRequest{
         ForwardBankAccountRequest: shared.ForwardBankAccountRequest{
-            ConnectorID: "string",
+            ConnectorID: "<value>",
         },
-        BankAccountID: "string",
-    })
+        BankAccountID: "XXX",
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.ForwardBankAccount(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.BankAccountResponse != nil {
         // handle response
     }
@@ -647,30 +645,33 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.GetAccountBalances(ctx, operations.GetAccountBalancesRequest{
-        AccountID: "string",
+    request := operations.GetAccountBalancesRequest{
+        AccountID: "XXX",
         Cursor: v2.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
+        PageSize: v2.Int64(100),
         Sort: []string{
-            "string",
+            "date:asc",
+            "status:desc",
         },
-    })
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.GetAccountBalances(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.BalancesCursor != nil {
         // handle response
     }
@@ -705,26 +706,27 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+    request := operations.GetBankAccountRequest{
+        BankAccountID: "XXX",
+    }
+    
     ctx := context.Background()
-    res, err := s.Payments.GetBankAccount(ctx, operations.GetBankAccountRequest{
-        BankAccountID: "string",
-    })
+    res, err := s.Payments.GetBankAccount(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.BankAccountResponse != nil {
         // handle response
     }
@@ -761,27 +763,28 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.GetConnectorTask(ctx, operations.GetConnectorTaskRequest{
+    request := operations.GetConnectorTaskRequest{
         Connector: shared.ConnectorAdyen,
-        TaskID: "string",
-    })
+        TaskID: "task1",
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.GetConnectorTask(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.TaskResponse != nil {
         // handle response
     }
@@ -816,28 +819,29 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.GetConnectorTaskV1(ctx, operations.GetConnectorTaskV1Request{
+    request := operations.GetConnectorTaskV1Request{
         Connector: shared.ConnectorBankingCircle,
-        ConnectorID: "string",
-        TaskID: "string",
-    })
+        ConnectorID: "XXX",
+        TaskID: "task1",
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.GetConnectorTaskV1(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.TaskResponse != nil {
         // handle response
     }
@@ -872,26 +876,27 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+    request := operations.GetPaymentRequest{
+        PaymentID: "XXX",
+    }
+    
     ctx := context.Background()
-    res, err := s.Payments.GetPayment(ctx, operations.GetPaymentRequest{
-        PaymentID: "string",
-    })
+    res, err := s.Payments.GetPayment(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.PaymentResponse != nil {
         // handle response
     }
@@ -926,26 +931,27 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+    request := operations.GetPoolRequest{
+        PoolID: "XXX",
+    }
+    
     ctx := context.Background()
-    res, err := s.Payments.GetPool(ctx, operations.GetPoolRequest{
-        PoolID: "string",
-    })
+    res, err := s.Payments.GetPool(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.PoolResponse != nil {
         // handle response
     }
@@ -980,28 +986,29 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.GetPoolBalances(ctx, operations.GetPoolBalancesRequest{
+    request := operations.GetPoolBalancesRequest{
         At: types.MustTimeFromString("2023-05-05T06:40:23.018Z"),
-        PoolID: "string",
-    })
+        PoolID: "XXX",
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.GetPoolBalances(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.PoolBalancesResponse != nil {
         // handle response
     }
@@ -1036,26 +1043,27 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+    request := operations.GetTransferInitiationRequest{
+        TransferID: "XXX",
+    }
+    
     ctx := context.Background()
-    res, err := s.Payments.GetTransferInitiation(ctx, operations.GetTransferInitiationRequest{
-        TransferID: "string",
-    })
+    res, err := s.Payments.GetTransferInitiation(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.TransferInitiationResponse != nil {
         // handle response
     }
@@ -1090,20 +1098,19 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.InstallConnector(ctx, operations.InstallConnectorRequest{
+    request := operations.InstallConnectorRequest{
         ConnectorConfig: shared.CreateConnectorConfigWiseConfig(
                 shared.WiseConfig{
                     APIKey: "XXX",
@@ -1112,11 +1119,13 @@ func main() {
                 },
         ),
         Connector: shared.ConnectorAdyen,
-    })
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.InstallConnector(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.ConnectorResponse != nil {
         // handle response
     }
@@ -1158,16 +1167,17 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+
+    
     ctx := context.Background()
     res, err := s.Payments.ListAllConnectors(ctx)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.ConnectorsResponse != nil {
         // handle response
     }
@@ -1201,29 +1211,32 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.ListBankAccounts(ctx, operations.ListBankAccountsRequest{
+    request := operations.ListBankAccountsRequest{
         Cursor: v2.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
+        PageSize: v2.Int64(100),
         Sort: []string{
-            "string",
+            "date:asc",
+            "status:desc",
         },
-    })
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.ListBankAccounts(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.BankAccountsCursor != nil {
         // handle response
     }
@@ -1265,16 +1278,17 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+
+    
     ctx := context.Background()
     res, err := s.Payments.ListConfigsAvailableConnectors(ctx)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.ConnectorsConfigsResponse != nil {
         // handle response
     }
@@ -1310,27 +1324,29 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.ListConnectorTasks(ctx, operations.ListConnectorTasksRequest{
+    request := operations.ListConnectorTasksRequest{
         Connector: shared.ConnectorModulr,
         Cursor: v2.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
-    })
+        PageSize: v2.Int64(100),
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.ListConnectorTasks(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.TasksCursor != nil {
         // handle response
     }
@@ -1365,28 +1381,30 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.ListConnectorTasksV1(ctx, operations.ListConnectorTasksV1Request{
+    request := operations.ListConnectorTasksV1Request{
         Connector: shared.ConnectorBankingCircle,
-        ConnectorID: "string",
+        ConnectorID: "XXX",
         Cursor: v2.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
-    })
+        PageSize: v2.Int64(100),
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.ListConnectorTasksV1(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.TasksCursor != nil {
         // handle response
     }
@@ -1421,29 +1439,32 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.ListPayments(ctx, operations.ListPaymentsRequest{
+    request := operations.ListPaymentsRequest{
         Cursor: v2.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
+        PageSize: v2.Int64(100),
         Sort: []string{
-            "string",
+            "date:asc",
+            "status:desc",
         },
-    })
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.ListPayments(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.PaymentsCursor != nil {
         // handle response
     }
@@ -1478,29 +1499,32 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.ListPools(ctx, operations.ListPoolsRequest{
+    request := operations.ListPoolsRequest{
         Cursor: v2.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
+        PageSize: v2.Int64(100),
         Sort: []string{
-            "string",
+            "date:asc",
+            "status:desc",
         },
-    })
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.ListPools(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.PoolsCursor != nil {
         // handle response
     }
@@ -1535,29 +1559,32 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.ListTransferInitiations(ctx, operations.ListTransferInitiationsRequest{
+    request := operations.ListTransferInitiationsRequest{
         Cursor: v2.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
+        PageSize: v2.Int64(100),
         Sort: []string{
-            "string",
+            "date:asc",
+            "status:desc",
         },
-    })
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.ListTransferInitiations(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.TransferInitiationsCursor != nil {
         // handle response
     }
@@ -1592,26 +1619,27 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+    request := operations.PaymentsgetAccountRequest{
+        AccountID: "XXX",
+    }
+    
     ctx := context.Background()
-    res, err := s.Payments.PaymentsgetAccount(ctx, operations.PaymentsgetAccountRequest{
-        AccountID: "string",
-    })
+    res, err := s.Payments.PaymentsgetAccount(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.PaymentsAccountResponse != nil {
         // handle response
     }
@@ -1653,16 +1681,17 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+
+    
     ctx := context.Background()
     res, err := s.Payments.PaymentsgetServerInfo(ctx)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.ServerInfo != nil {
         // handle response
     }
@@ -1696,32 +1725,32 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.PaymentslistAccounts(ctx, operations.PaymentslistAccountsRequest{
-        RequestBody: map[string]interface{}{
-            "key": "string",
-        },
+    request := operations.PaymentslistAccountsRequest{
         Cursor: v2.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
+        PageSize: v2.Int64(100),
         Sort: []string{
-            "string",
+            "date:asc",
+            "status:desc",
         },
-    })
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.PaymentslistAccounts(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.AccountsCursor != nil {
         // handle response
     }
@@ -1758,26 +1787,27 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.ReadConnectorConfig(ctx, operations.ReadConnectorConfigRequest{
+    request := operations.ReadConnectorConfigRequest{
         Connector: shared.ConnectorGeneric,
-    })
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.ReadConnectorConfig(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.ConnectorConfigResponse != nil {
         // handle response
     }
@@ -1812,27 +1842,28 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.ReadConnectorConfigV1(ctx, operations.ReadConnectorConfigV1Request{
+    request := operations.ReadConnectorConfigV1Request{
         Connector: shared.ConnectorCurrencyCloud,
-        ConnectorID: "string",
-    })
+        ConnectorID: "XXX",
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.ReadConnectorConfigV1(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.ConnectorConfigResponse != nil {
         // handle response
     }
@@ -1867,29 +1898,29 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+    request := operations.RemoveAccountFromPoolRequest{
+        AccountID: "XXX",
+        PoolID: "XXX",
+    }
+    
     ctx := context.Background()
-    res, err := s.Payments.RemoveAccountFromPool(ctx, operations.RemoveAccountFromPoolRequest{
-        AccountID: "string",
-        PoolID: "string",
-    })
+    res, err := s.Payments.RemoveAccountFromPool(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }
@@ -1927,28 +1958,28 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.ResetConnector(ctx, operations.ResetConnectorRequest{
+    request := operations.ResetConnectorRequest{
         Connector: shared.ConnectorAtlar,
-    })
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.ResetConnector(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }
@@ -1984,29 +2015,29 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.ResetConnectorV1(ctx, operations.ResetConnectorV1Request{
+    request := operations.ResetConnectorV1Request{
         Connector: shared.ConnectorGeneric,
-        ConnectorID: "string",
-    })
+        ConnectorID: "XXX",
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.ResetConnectorV1(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }
@@ -2040,28 +2071,28 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+    request := operations.RetryTransferInitiationRequest{
+        TransferID: "XXX",
+    }
+    
     ctx := context.Background()
-    res, err := s.Payments.RetryTransferInitiation(ctx, operations.RetryTransferInitiationRequest{
-        TransferID: "string",
-    })
+    res, err := s.Payments.RetryTransferInitiation(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }
@@ -2095,38 +2126,38 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"math/big"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.ReverseTransferInitiation(ctx, operations.ReverseTransferInitiationRequest{
+    request := operations.ReverseTransferInitiationRequest{
         ReverseTransferInitiationRequest: shared.ReverseTransferInitiationRequest{
             Amount: big.NewInt(327549),
             Asset: "USD",
             Description: "Streamlined high-level local area network",
             Metadata: map[string]string{
-                "key": "string",
+                "key": "<value>",
             },
             Reference: "XXX",
         },
-        TransferID: "string",
-    })
+        TransferID: "XXX",
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.ReverseTransferInitiation(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }
@@ -2160,31 +2191,31 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.UdpateTransferInitiationStatus(ctx, operations.UdpateTransferInitiationStatusRequest{
+    request := operations.UdpateTransferInitiationStatusRequest{
         UpdateTransferInitiationStatusRequest: shared.UpdateTransferInitiationStatusRequest{
             Status: shared.StatusValidated,
         },
-        TransferID: "string",
-    })
+        TransferID: "XXX",
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.UdpateTransferInitiationStatus(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }
@@ -2220,28 +2251,28 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.UninstallConnector(ctx, operations.UninstallConnectorRequest{
+    request := operations.UninstallConnectorRequest{
         Connector: shared.ConnectorModulr,
-    })
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.UninstallConnector(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }
@@ -2275,29 +2306,29 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.UninstallConnectorV1(ctx, operations.UninstallConnectorV1Request{
+    request := operations.UninstallConnectorV1Request{
         Connector: shared.ConnectorGeneric,
-        ConnectorID: "string",
-    })
+        ConnectorID: "XXX",
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.UninstallConnectorV1(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }
@@ -2331,33 +2362,33 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.UpdateBankAccountMetadata(ctx, operations.UpdateBankAccountMetadataRequest{
+    request := operations.UpdateBankAccountMetadataRequest{
         UpdateBankAccountMetadataRequest: shared.UpdateBankAccountMetadataRequest{
             Metadata: map[string]string{
-                "key": "string",
+                "key": "<value>",
             },
         },
-        BankAccountID: "string",
-    })
+        BankAccountID: "XXX",
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.UpdateBankAccountMetadata(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }
@@ -2391,21 +2422,19 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.UpdateConnectorConfigV1(ctx, operations.UpdateConnectorConfigV1Request{
+    request := operations.UpdateConnectorConfigV1Request{
         ConnectorConfig: shared.CreateConnectorConfigStripeConfig(
                 shared.StripeConfig{
                     APIKey: "XXX",
@@ -2415,13 +2444,15 @@ func main() {
                 },
         ),
         Connector: shared.ConnectorStripe,
-        ConnectorID: "string",
-    })
+        ConnectorID: "XXX",
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.UpdateConnectorConfigV1(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }
@@ -2455,31 +2486,31 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Payments.UpdateMetadata(ctx, operations.UpdateMetadataRequest{
+    request := operations.UpdateMetadataRequest{
         RequestBody: map[string]string{
-            "key": "string",
+            "key": "<value>",
         },
-        PaymentID: "string",
-    })
+        PaymentID: "XXX",
+    }
+    
+    ctx := context.Background()
+    res, err := s.Payments.UpdateMetadata(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }

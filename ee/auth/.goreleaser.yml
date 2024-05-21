@@ -11,7 +11,7 @@ builds:
     id: auth
     ldflags:
       - -X github.com/formancehq/auth/cmd.BuildDate={{ .Date }}
-      - -X github.com/formancehq/auth/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/auth/cmd.Version=v{{ .Version }}
       - -X github.com/formancehq/auth/cmd.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:

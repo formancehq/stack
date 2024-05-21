@@ -1,0 +1,11 @@
+VERSION 0.8
+
+IMPORT github.com/formancehq/earthly:tags/v0.12.0 AS core
+IMPORT .. AS stack
+
+run:
+  LOCALLY
+  ARG --required TARGET
+  BUILD ./core+$TARGET
+  BUILD ./events+$TARGET
+  BUILD ./go-libs+$TARGET

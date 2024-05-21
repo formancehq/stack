@@ -50,7 +50,7 @@ func CreateV2SubjectWallet(wallet V2WalletSubject) V2Subject {
 func (u *V2Subject) UnmarshalJSON(data []byte) error {
 
 	type discriminator struct {
-		Type string
+		Type string `json:"type"`
 	}
 
 	dis := new(discriminator)

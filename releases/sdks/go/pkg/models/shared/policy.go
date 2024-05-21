@@ -8,12 +8,12 @@ import (
 )
 
 type Policy struct {
-	CreatedAt      time.Time              `json:"createdAt"`
-	ID             string                 `json:"id"`
-	LedgerName     string                 `json:"ledgerName"`
-	LedgerQuery    map[string]interface{} `json:"ledgerQuery"`
-	Name           string                 `json:"name"`
-	PaymentsPoolID string                 `json:"paymentsPoolID"`
+	CreatedAt      time.Time      `json:"createdAt"`
+	ID             string         `json:"id"`
+	LedgerName     string         `json:"ledgerName"`
+	LedgerQuery    map[string]any `json:"ledgerQuery"`
+	Name           string         `json:"name"`
+	PaymentsPoolID string         `json:"paymentsPoolID"`
 }
 
 func (p Policy) MarshalJSON() ([]byte, error) {
@@ -48,9 +48,9 @@ func (o *Policy) GetLedgerName() string {
 	return o.LedgerName
 }
 
-func (o *Policy) GetLedgerQuery() map[string]interface{} {
+func (o *Policy) GetLedgerQuery() map[string]any {
 	if o == nil {
-		return map[string]interface{}{}
+		return map[string]any{}
 	}
 	return o.LedgerQuery
 }

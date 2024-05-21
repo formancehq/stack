@@ -11,10 +11,6 @@ import (
 	"strings"
 )
 
-type HTTPClient interface {
-	Do(req *http.Request) (*http.Response, error)
-}
-
 const (
 	securityTagKey = "security"
 )
@@ -27,73 +23,24 @@ type securityTag struct {
 	SubType string
 }
 
-type securityConfig struct {
-	headers     map[string]string
-	queryParams map[string]string
-}
-
-type SecurityClient struct {
-	HTTPClient
-	security func(ctx context.Context) (interface{}, error)
-}
-
-func newSecurityClient(client HTTPClient, security func(ctx context.Context) (interface{}, error)) *SecurityClient {
-	return &SecurityClient{
-		HTTPClient: client,
-		security:   security,
+func PopulateSecurity(ctx context.Context, req *http.Request, securitySource func(context.Context) (interface{}, error)) error {
+	if securitySource == nil {
+		return nil
 	}
-}
 
-func (c *SecurityClient) Do(req *http.Request) (*http.Response, error) {
-	securityCtx, err := c.security(req.Context())
+	security, err := securitySource(ctx)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	ctx := securityConfig{
-		headers:     make(map[string]string),
-		queryParams: make(map[string]string),
-	}
-	parseSecurityStruct(&ctx, securityCtx)
+	headers := make(map[string]string)
+	queryParams := make(map[string]string)
 
-	for k, v := range ctx.headers {
-		req.Header.Set(k, v)
-	}
-
-	queryParams := req.URL.Query()
-
-	for k, v := range ctx.queryParams {
-		queryParams.Add(k, v)
-	}
-
-	req.URL.RawQuery = queryParams.Encode()
-
-	return c.HTTPClient.Do(req)
-}
-
-func ConfigureSecurityClient(c HTTPClient, security func(ctx context.Context) (interface{}, error)) *SecurityClient {
-	return newSecurityClient(c, security)
-}
-
-func trueReflectValue(val reflect.Value) reflect.Value {
-	kind := val.Type().Kind()
-	for kind == reflect.Interface || kind == reflect.Ptr {
-		innerVal := val.Elem()
-		if !innerVal.IsValid() {
-			break
-		}
-		val = innerVal
-		kind = val.Type().Kind()
-	}
-	return val
-}
-
-func parseSecurityStruct(c *securityConfig, security interface{}) {
 	securityValType := trueReflectValue(reflect.ValueOf(security))
 	securityStructType := securityValType.Type()
 
 	if isNil(securityStructType, securityValType) {
-		return
+		return nil
 	}
 
 	if securityStructType.Kind() == reflect.Ptr {
@@ -118,25 +65,37 @@ func parseSecurityStruct(c *securityConfig, security interface{}) {
 		secTag := parseSecurityTag(fieldType)
 		if secTag != nil {
 			if secTag.Option {
-				handleSecurityOption(c, valType.Interface())
+				handleSecurityOption(headers, queryParams, valType.Interface())
 			} else if secTag.Scheme {
 				// Special case for basic auth which could be a flattened struct
 				if secTag.SubType == "basic" && kind != reflect.Struct {
-					parseSecurityScheme(c, secTag, security)
+					parseSecurityScheme(headers, queryParams, secTag, security)
 				} else {
-					parseSecurityScheme(c, secTag, valType.Interface())
+					parseSecurityScheme(headers, queryParams, secTag, valType.Interface())
 				}
 			}
 		}
 	}
+
+	for key, value := range headers {
+		req.Header.Add(key, value)
+	}
+
+	query := req.URL.Query()
+	for key, value := range queryParams {
+		query.Add(key, value)
+	}
+	req.URL.RawQuery = query.Encode()
+
+	return nil
 }
 
-func handleSecurityOption(c *securityConfig, option interface{}) error {
+func handleSecurityOption(headers, queryParams map[string]string, option interface{}) {
 	optionValType := trueReflectValue(reflect.ValueOf(option))
 	optionStructType := optionValType.Type()
 
 	if isNil(optionStructType, optionValType) {
-		return nil
+		return
 	}
 
 	for i := 0; i < optionStructType.NumField(); i++ {
@@ -145,14 +104,12 @@ func handleSecurityOption(c *securityConfig, option interface{}) error {
 
 		secTag := parseSecurityTag(fieldType)
 		if secTag != nil && secTag.Scheme {
-			parseSecurityScheme(c, secTag, valType.Interface())
+			parseSecurityScheme(headers, queryParams, secTag, valType.Interface())
 		}
 	}
-
-	return nil
 }
 
-func parseSecurityScheme(client *securityConfig, schemeTag *securityTag, scheme interface{}) {
+func parseSecurityScheme(headers, queryParams map[string]string, schemeTag *securityTag, scheme interface{}) {
 	schemeVal := trueReflectValue(reflect.ValueOf(scheme))
 	schemeType := schemeVal.Type()
 
@@ -162,7 +119,7 @@ func parseSecurityScheme(client *securityConfig, schemeTag *securityTag, scheme 
 
 	if schemeType.Kind() == reflect.Struct {
 		if schemeTag.Type == "http" && schemeTag.SubType == "basic" {
-			handleBasicAuthScheme(client, schemeVal.Interface())
+			handleBasicAuthScheme(headers, schemeVal.Interface())
 			return
 		}
 
@@ -183,34 +140,36 @@ func parseSecurityScheme(client *securityConfig, schemeTag *securityTag, scheme 
 				return
 			}
 
-			parseSecuritySchemeValue(client, schemeTag, secTag, valType.Interface())
+			parseSecuritySchemeValue(headers, queryParams, schemeTag, secTag, valType.Interface())
 		}
 	} else {
-		parseSecuritySchemeValue(client, schemeTag, schemeTag, schemeVal.Interface())
+		parseSecuritySchemeValue(headers, queryParams, schemeTag, schemeTag, schemeVal.Interface())
 	}
 }
 
-func parseSecuritySchemeValue(client *securityConfig, schemeTag *securityTag, secTag *securityTag, val interface{}) {
+func parseSecuritySchemeValue(headers, queryParams map[string]string, schemeTag *securityTag, secTag *securityTag, val interface{}) {
 	switch schemeTag.Type {
 	case "apiKey":
 		switch schemeTag.SubType {
 		case "header":
-			client.headers[secTag.Name] = valToString(val)
+			headers[secTag.Name] = valToString(val)
 		case "query":
-			client.queryParams[secTag.Name] = valToString(val)
+			queryParams[secTag.Name] = valToString(val)
 		case "cookie":
-			client.headers["Cookie"] = fmt.Sprintf("%s=%s", secTag.Name, valToString(val))
+			headers["Cookie"] = fmt.Sprintf("%s=%s", secTag.Name, valToString(val))
 		default:
 			panic("not supported")
 		}
 	case "openIdConnect":
-		client.headers[secTag.Name] = prefixBearer(valToString(val))
+		headers[secTag.Name] = prefixBearer(valToString(val))
 	case "oauth2":
-		client.headers[secTag.Name] = prefixBearer(valToString(val))
+		if schemeTag.SubType != "client_credentials" {
+			headers[secTag.Name] = prefixBearer(valToString(val))
+		}
 	case "http":
 		switch schemeTag.SubType {
 		case "bearer":
-			client.headers[secTag.Name] = prefixBearer(valToString(val))
+			headers[secTag.Name] = prefixBearer(valToString(val))
 		default:
 			panic("not supported")
 		}
@@ -227,7 +186,7 @@ func prefixBearer(authHeaderValue string) string {
 	return fmt.Sprintf("Bearer %s", authHeaderValue)
 }
 
-func handleBasicAuthScheme(client *securityConfig, scheme interface{}) {
+func handleBasicAuthScheme(headers map[string]string, scheme interface{}) {
 	schemeStructType := reflect.TypeOf(scheme)
 	schemeValType := reflect.ValueOf(scheme)
 
@@ -250,7 +209,7 @@ func handleBasicAuthScheme(client *securityConfig, scheme interface{}) {
 		}
 	}
 
-	client.headers["Authorization"] = fmt.Sprintf("Basic %s", base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", username, password))))
+	headers["Authorization"] = fmt.Sprintf("Basic %s", base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", username, password))))
 }
 
 func parseSecurityTag(field reflect.StructField) *securityTag {
@@ -295,4 +254,17 @@ func parseSecurityTag(field reflect.StructField) *securityTag {
 		Type:    securityType,
 		SubType: securitySubType,
 	}
+}
+
+func trueReflectValue(val reflect.Value) reflect.Value {
+	kind := val.Type().Kind()
+	for kind == reflect.Interface || kind == reflect.Ptr {
+		innerVal := val.Elem()
+		if !innerVal.IsValid() {
+			break
+		}
+		val = innerVal
+		kind = val.Type().Kind()
+	}
+	return val
 }

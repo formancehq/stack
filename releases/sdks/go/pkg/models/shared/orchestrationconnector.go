@@ -23,7 +23,6 @@ const (
 func (e OrchestrationConnector) ToPointer() *OrchestrationConnector {
 	return &e
 }
-
 func (e *OrchestrationConnector) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {

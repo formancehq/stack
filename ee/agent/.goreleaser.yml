@@ -11,7 +11,7 @@ builds:
     id: agent
     ldflags:
       - -X github.com/formancehq/stack/components/agent/cmd.BuildDate={{ .Date }}
-      - -X github.com/formancehq/stack/components/agent/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/stack/components/agent/cmd.Version=v{{ .Version }}
       - -X github.com/formancehq/stack/components/agent/cmd.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:

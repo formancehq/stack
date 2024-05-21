@@ -3,22 +3,28 @@ id: 7eac0a45-60a2-40bb-9e85-26bd77ec2a6d
 management:
   docChecksum: 9a3d8d19ad4eaf628f1f28cca38322ce
   docVersion: v0.0.0
-  speakeasyVersion: internal
-  generationVersion: 2.237.2
+  speakeasyVersion: 1.292.0
+  generationVersion: 2.332.4
   releaseVersion: v0.0.0
-  configChecksum: 50130ac1de5d0825ab31d45fbe3aac35
+  configChecksum: 28c1da66ee9378d9623ec2601b659dd5
 features:
   go:
-    constsAndDefaults: 0.1.2
-    core: 3.3.1
+    additionalDependencies: 0.1.0
+    constsAndDefaults: 0.1.4
+    core: 3.4.8
     deprecations: 2.81.1
-    errors: 2.81.8
+    errors: 2.81.9
     getRequestBodies: 2.81.1
-    globalSecurity: 2.82.4
-    globalServerURLs: 2.82.1
+    globalSecurity: 2.82.9
+    globalSecurityCallbacks: 0.1.0
+    globalServerURLs: 2.82.2
     groups: 2.81.2
     ignores: 2.81.1
-    unions: 2.85.2
+    intellisenseMarkdownSupport: 0.1.0
+    nullables: 0.1.0
+    responseFormat: 0.1.1
+    sdkHooks: 0.1.0
+    unions: 2.85.6
 generatedFiles:
   - auth.go
   - ledger.go
@@ -30,7 +36,6 @@ generatedFiles:
   - webhooks.go
   - formance.go
   - go.mod
-  - go.sum
   - pkg/models/sdkerrors/sdkerror.go
   - pkg/types/bigint.go
   - pkg/types/date.go
@@ -1315,3 +1320,4 @@ generatedFiles:
   - docs/sdks/webhooks/README.md
   - USAGE.md
   - .gitattributes
+  - internal/hooks/hooks.go

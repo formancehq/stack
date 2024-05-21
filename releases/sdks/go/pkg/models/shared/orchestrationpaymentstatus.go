@@ -21,7 +21,6 @@ const (
 func (e OrchestrationPaymentStatus) ToPointer() *OrchestrationPaymentStatus {
 	return &e
 }
-
 func (e *OrchestrationPaymentStatus) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {

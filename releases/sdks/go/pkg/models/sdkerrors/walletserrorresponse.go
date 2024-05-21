@@ -19,7 +19,6 @@ const (
 func (e SchemasWalletsErrorResponseErrorCode) ToPointer() *SchemasWalletsErrorResponseErrorCode {
 	return &e
 }
-
 func (e *SchemasWalletsErrorResponseErrorCode) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {

@@ -3,16 +3,16 @@
 package shared
 
 type Client struct {
-	Description            *string                `json:"description,omitempty"`
-	ID                     string                 `json:"id"`
-	Metadata               map[string]interface{} `json:"metadata,omitempty"`
-	Name                   string                 `json:"name"`
-	PostLogoutRedirectUris []string               `json:"postLogoutRedirectUris,omitempty"`
-	Public                 *bool                  `json:"public,omitempty"`
-	RedirectUris           []string               `json:"redirectUris,omitempty"`
-	Scopes                 []string               `json:"scopes,omitempty"`
-	Secrets                []ClientSecret         `json:"secrets,omitempty"`
-	Trusted                *bool                  `json:"trusted,omitempty"`
+	Description            *string        `json:"description,omitempty"`
+	ID                     string         `json:"id"`
+	Metadata               map[string]any `json:"metadata,omitempty"`
+	Name                   string         `json:"name"`
+	PostLogoutRedirectUris []string       `json:"postLogoutRedirectUris,omitempty"`
+	Public                 *bool          `json:"public,omitempty"`
+	RedirectUris           []string       `json:"redirectUris,omitempty"`
+	Scopes                 []string       `json:"scopes,omitempty"`
+	Secrets                []ClientSecret `json:"secrets,omitempty"`
+	Trusted                *bool          `json:"trusted,omitempty"`
 }
 
 func (o *Client) GetDescription() *string {
@@ -29,7 +29,7 @@ func (o *Client) GetID() string {
 	return o.ID
 }
 
-func (o *Client) GetMetadata() map[string]interface{} {
+func (o *Client) GetMetadata() map[string]any {
 	if o == nil {
 		return nil
 	}

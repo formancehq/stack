@@ -11,15 +11,39 @@ import (
 	"reflect"
 )
 
-func PopulateQueryParams(ctx context.Context, req *http.Request, queryParams interface{}, globals map[string]map[string]map[string]interface{}) error {
+func PopulateQueryParams(_ context.Context, req *http.Request, queryParams interface{}, globals interface{}) error {
+	values := url.Values{}
+
+	globalsAlreadyPopulated, err := populateQueryParams(queryParams, globals, values, []string{})
+	if err != nil {
+		return err
+	}
+
+	if globals != nil {
+		_, err = populateQueryParams(globals, nil, values, globalsAlreadyPopulated)
+		if err != nil {
+			return err
+		}
+	}
+
+	req.URL.RawQuery = values.Encode()
+
+	return nil
+}
+
+func populateQueryParams(queryParams interface{}, globals interface{}, values url.Values, skipFields []string) ([]string, error) {
 	queryParamsStructType := reflect.TypeOf(queryParams)
 	queryParamsValType := reflect.ValueOf(queryParams)
 
-	values := url.Values{}
+	globalsAlreadyPopulated := []string{}
 
 	for i := 0; i < queryParamsStructType.NumField(); i++ {
 		fieldType := queryParamsStructType.Field(i)
 		valType := queryParamsValType.Field(i)
+
+		if contains(skipFields, fieldType.Name) {
+			continue
+		}
 
 		requestTag := getRequestTag(fieldType)
 		if requestTag != nil {
@@ -31,12 +55,18 @@ func PopulateQueryParams(ctx context.Context, req *http.Request, queryParams int
 			continue
 		}
 
-		valType = populateFromGlobals(fieldType, valType, "queryParam", globals)
+		if globals != nil {
+			var globalFound bool
+			fieldType, valType, globalFound = populateFromGlobals(fieldType, valType, queryParamTagKey, globals)
+			if globalFound {
+				globalsAlreadyPopulated = append(globalsAlreadyPopulated, fieldType.Name)
+			}
+		}
 
 		if qpTag.Serialization != "" {
 			vals, err := populateSerializedParams(qpTag, fieldType.Type, valType)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			for k, v := range vals {
 				values.Add(k, v)
@@ -44,35 +74,33 @@ func PopulateQueryParams(ctx context.Context, req *http.Request, queryParams int
 		} else {
 			switch qpTag.Style {
 			case "deepObject":
-				vals := populateDeepObjectParams(req, qpTag, fieldType.Type, valType)
+				vals := populateDeepObjectParams(qpTag, fieldType.Type, valType)
 				for k, v := range vals {
 					for _, vv := range v {
 						values.Add(k, vv)
 					}
 				}
 			case "form":
-				vals := populateFormParams(req, qpTag, fieldType.Type, valType, ",")
+				vals := populateFormParams(qpTag, fieldType.Type, valType, ",")
 				for k, v := range vals {
 					for _, vv := range v {
 						values.Add(k, vv)
 					}
 				}
 			case "pipeDelimited":
-				vals := populateFormParams(req, qpTag, fieldType.Type, valType, "|")
+				vals := populateFormParams(qpTag, fieldType.Type, valType, "|")
 				for k, v := range vals {
 					for _, vv := range v {
 						values.Add(k, vv)
 					}
 				}
 			default:
-				return fmt.Errorf("unsupported style: %s", qpTag.Style)
+				return nil, fmt.Errorf("unsupported style: %s", qpTag.Style)
 			}
 		}
 	}
 
-	req.URL.RawQuery = values.Encode()
-
-	return nil
+	return globalsAlreadyPopulated, nil
 }
 
 func populateSerializedParams(tag *paramTag, objType reflect.Type, objValue reflect.Value) (map[string]string, error) {
@@ -98,7 +126,7 @@ func populateSerializedParams(tag *paramTag, objType reflect.Type, objValue refl
 	return values, nil
 }
 
-func populateDeepObjectParams(req *http.Request, tag *paramTag, objType reflect.Type, objValue reflect.Value) url.Values {
+func populateDeepObjectParams(tag *paramTag, objType reflect.Type, objValue reflect.Value) url.Values {
 	values := url.Values{}
 
 	if isNil(objType, objValue) {
@@ -155,7 +183,7 @@ func populateDeepObjectParams(req *http.Request, tag *paramTag, objType reflect.
 	return values
 }
 
-func populateFormParams(req *http.Request, tag *paramTag, objType reflect.Type, objValue reflect.Value, delimiter string) url.Values {
+func populateFormParams(tag *paramTag, objType reflect.Type, objValue reflect.Value, delimiter string) url.Values {
 	return populateForm(tag.ParamName, tag.Explode, objType, objValue, delimiter, func(fieldType reflect.StructField) string {
 		qpTag := parseQueryParamTag(fieldType)
 		if qpTag == nil {

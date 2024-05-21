@@ -140,77 +140,77 @@ func CreateConnectorConfigGenericConfig(genericConfig GenericConfig) ConnectorCo
 
 func (u *ConnectorConfig) UnmarshalJSON(data []byte) error {
 
-	wiseConfig := WiseConfig{}
+	var wiseConfig WiseConfig = WiseConfig{}
 	if err := utils.UnmarshalJSON(data, &wiseConfig, "", true, true); err == nil {
 		u.WiseConfig = &wiseConfig
 		u.Type = ConnectorConfigTypeWiseConfig
 		return nil
 	}
 
-	stripeConfig := StripeConfig{}
+	var stripeConfig StripeConfig = StripeConfig{}
 	if err := utils.UnmarshalJSON(data, &stripeConfig, "", true, true); err == nil {
 		u.StripeConfig = &stripeConfig
 		u.Type = ConnectorConfigTypeStripeConfig
 		return nil
 	}
 
-	genericConfig := GenericConfig{}
+	var genericConfig GenericConfig = GenericConfig{}
 	if err := utils.UnmarshalJSON(data, &genericConfig, "", true, true); err == nil {
 		u.GenericConfig = &genericConfig
 		u.Type = ConnectorConfigTypeGenericConfig
 		return nil
 	}
 
-	modulrConfig := ModulrConfig{}
+	var modulrConfig ModulrConfig = ModulrConfig{}
 	if err := utils.UnmarshalJSON(data, &modulrConfig, "", true, true); err == nil {
 		u.ModulrConfig = &modulrConfig
 		u.Type = ConnectorConfigTypeModulrConfig
 		return nil
 	}
 
-	currencyCloudConfig := CurrencyCloudConfig{}
+	var currencyCloudConfig CurrencyCloudConfig = CurrencyCloudConfig{}
 	if err := utils.UnmarshalJSON(data, &currencyCloudConfig, "", true, true); err == nil {
 		u.CurrencyCloudConfig = &currencyCloudConfig
 		u.Type = ConnectorConfigTypeCurrencyCloudConfig
 		return nil
 	}
 
-	mangoPayConfig := MangoPayConfig{}
+	var mangoPayConfig MangoPayConfig = MangoPayConfig{}
 	if err := utils.UnmarshalJSON(data, &mangoPayConfig, "", true, true); err == nil {
 		u.MangoPayConfig = &mangoPayConfig
 		u.Type = ConnectorConfigTypeMangoPayConfig
 		return nil
 	}
 
-	moneycorpConfig := MoneycorpConfig{}
+	var moneycorpConfig MoneycorpConfig = MoneycorpConfig{}
 	if err := utils.UnmarshalJSON(data, &moneycorpConfig, "", true, true); err == nil {
 		u.MoneycorpConfig = &moneycorpConfig
 		u.Type = ConnectorConfigTypeMoneycorpConfig
 		return nil
 	}
 
-	adyenConfig := AdyenConfig{}
+	var adyenConfig AdyenConfig = AdyenConfig{}
 	if err := utils.UnmarshalJSON(data, &adyenConfig, "", true, true); err == nil {
 		u.AdyenConfig = &adyenConfig
 		u.Type = ConnectorConfigTypeAdyenConfig
 		return nil
 	}
 
-	dummyPayConfig := DummyPayConfig{}
+	var dummyPayConfig DummyPayConfig = DummyPayConfig{}
 	if err := utils.UnmarshalJSON(data, &dummyPayConfig, "", true, true); err == nil {
 		u.DummyPayConfig = &dummyPayConfig
 		u.Type = ConnectorConfigTypeDummyPayConfig
 		return nil
 	}
 
-	atlarConfig := AtlarConfig{}
+	var atlarConfig AtlarConfig = AtlarConfig{}
 	if err := utils.UnmarshalJSON(data, &atlarConfig, "", true, true); err == nil {
 		u.AtlarConfig = &atlarConfig
 		u.Type = ConnectorConfigTypeAtlarConfig
 		return nil
 	}
 
-	bankingCircleConfig := BankingCircleConfig{}
+	var bankingCircleConfig BankingCircleConfig = BankingCircleConfig{}
 	if err := utils.UnmarshalJSON(data, &bankingCircleConfig, "", true, true); err == nil {
 		u.BankingCircleConfig = &bankingCircleConfig
 		u.Type = ConnectorConfigTypeBankingCircleConfig

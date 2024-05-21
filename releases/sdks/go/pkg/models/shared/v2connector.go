@@ -23,7 +23,6 @@ const (
 func (e V2Connector) ToPointer() *V2Connector {
 	return &e
 }
-
 func (e *V2Connector) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {

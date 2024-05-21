@@ -3,8 +3,8 @@
 package shared
 
 type V2CreateWorkflowRequest struct {
-	Name   *string                  `json:"name,omitempty"`
-	Stages []map[string]interface{} `json:"stages"`
+	Name   *string          `json:"name,omitempty"`
+	Stages []map[string]any `json:"stages"`
 }
 
 func (o *V2CreateWorkflowRequest) GetName() *string {
@@ -14,9 +14,9 @@ func (o *V2CreateWorkflowRequest) GetName() *string {
 	return o.Name
 }
 
-func (o *V2CreateWorkflowRequest) GetStages() []map[string]interface{} {
+func (o *V2CreateWorkflowRequest) GetStages() []map[string]any {
 	if o == nil {
-		return []map[string]interface{}{}
+		return []map[string]any{}
 	}
 	return o.Stages
 }

@@ -10,13 +10,34 @@ import (
 	"strings"
 )
 
-func PopulateHeaders(ctx context.Context, req *http.Request, headers interface{}) {
+func PopulateHeaders(_ context.Context, req *http.Request, headers interface{}, globals interface{}) {
+	globalsAlreadyPopulated := populateHeaders(headers, globals, req.Header, []string{})
+	if globals != nil {
+		_ = populateHeaders(globals, nil, req.Header, globalsAlreadyPopulated)
+	}
+}
+
+func populateHeaders(headers interface{}, globals interface{}, reqHeaders http.Header, skipFields []string) []string {
 	headerParamsStructType := reflect.TypeOf(headers)
 	headerParamsValType := reflect.ValueOf(headers)
+
+	globalsAlreadyPopulated := []string{}
 
 	for i := 0; i < headerParamsStructType.NumField(); i++ {
 		fieldType := headerParamsStructType.Field(i)
 		valType := headerParamsValType.Field(i)
+
+		if contains(skipFields, fieldType.Name) {
+			continue
+		}
+
+		if globals != nil {
+			var globalFound bool
+			fieldType, valType, globalFound = populateFromGlobals(fieldType, valType, headerParamTagKey, globals)
+			if globalFound {
+				globalsAlreadyPopulated = append(globalsAlreadyPopulated, fieldType.Name)
+			}
+		}
 
 		tag := parseParamTag(headerParamTagKey, fieldType, "simple", false)
 		if tag == nil {
@@ -25,9 +46,11 @@ func PopulateHeaders(ctx context.Context, req *http.Request, headers interface{}
 
 		value := serializeHeader(fieldType.Type, valType, tag.Explode)
 		if value != "" {
-			req.Header.Add(tag.ParamName, value)
+			reqHeaders.Add(tag.ParamName, value)
 		}
 	}
+
+	return globalsAlreadyPopulated
 }
 
 func serializeHeader(objType reflect.Type, objValue reflect.Value, explode bool) string {

@@ -23,26 +23,27 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Webhooks.ActivateConfig(ctx, operations.ActivateConfigRequest{
+    request := operations.ActivateConfigRequest{
         ID: "4997257d-dfb6-445b-929c-cbe2ab182818",
-    })
+    }
+    
+    ctx := context.Background()
+    res, err := s.Webhooks.ActivateConfig(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.ConfigResponse != nil {
         // handle response
     }
@@ -81,29 +82,30 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Webhooks.ChangeConfigSecret(ctx, operations.ChangeConfigSecretRequest{
+    request := operations.ChangeConfigSecretRequest{
         ConfigChangeSecret: &shared.ConfigChangeSecret{
             Secret: "V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3",
         },
         ID: "4997257d-dfb6-445b-929c-cbe2ab182818",
-    })
+    }
+    
+    ctx := context.Background()
+    res, err := s.Webhooks.ChangeConfigSecret(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.ConfigResponse != nil {
         // handle response
     }
@@ -138,26 +140,27 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Webhooks.DeactivateConfig(ctx, operations.DeactivateConfigRequest{
+    request := operations.DeactivateConfigRequest{
         ID: "4997257d-dfb6-445b-929c-cbe2ab182818",
-    })
+    }
+    
+    ctx := context.Background()
+    res, err := s.Webhooks.DeactivateConfig(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.ConfigResponse != nil {
         // handle response
     }
@@ -192,28 +195,28 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Webhooks.DeleteConfig(ctx, operations.DeleteConfigRequest{
+    request := operations.DeleteConfigRequest{
         ID: "4997257d-dfb6-445b-929c-cbe2ab182818",
-    })
+    }
+    
+    ctx := context.Background()
+    res, err := s.Webhooks.DeleteConfig(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }
@@ -247,27 +250,28 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Webhooks.GetManyConfigs(ctx, operations.GetManyConfigsRequest{
+    request := operations.GetManyConfigsRequest{
         Endpoint: v2.String("https://example.com"),
         ID: v2.String("4997257d-dfb6-445b-929c-cbe2ab182818"),
-    })
+    }
+    
+    ctx := context.Background()
+    res, err := s.Webhooks.GetManyConfigs(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.ConfigsResponse != nil {
         // handle response
     }
@@ -318,12 +322,11 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Webhooks.InsertConfig(ctx, shared.ConfigUser{
+    request := shared.ConfigUser{
         Endpoint: "https://example.com",
         EventTypes: []string{
             "TYPE1",
@@ -331,11 +334,13 @@ func main() {
         },
         Name: v2.String("customer_payment"),
         Secret: v2.String("V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"),
-    })
+    }
+    
+    ctx := context.Background()
+    res, err := s.Webhooks.InsertConfig(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.ConfigResponse != nil {
         // handle response
     }
@@ -370,26 +375,27 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Webhooks.TestConfig(ctx, operations.TestConfigRequest{
+    request := operations.TestConfigRequest{
         ID: "4997257d-dfb6-445b-929c-cbe2ab182818",
-    })
+    }
+    
+    ctx := context.Background()
+    res, err := s.Webhooks.TestConfig(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.AttemptResponse != nil {
         // handle response
     }

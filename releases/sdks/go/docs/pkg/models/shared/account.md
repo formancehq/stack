@@ -3,8 +3,8 @@
 
 ## Fields
 
-| Field                                         | Type                                          | Required                                      | Description                                   | Example                                       |
-| --------------------------------------------- | --------------------------------------------- | --------------------------------------------- | --------------------------------------------- | --------------------------------------------- |
-| `Address`                                     | *string*                                      | :heavy_check_mark:                            | N/A                                           | users:001                                     |
-| `Metadata`                                    | map[string]*interface{}*                      | :heavy_minus_sign:                            | N/A                                           | {"admin":true,"a":{"nested":{"key":"value"}}} |
-| `Type`                                        | **string*                                     | :heavy_minus_sign:                            | N/A                                           | virtual                                       |
+| Field                                                    | Type                                                     | Required                                                 | Description                                              | Example                                                  |
+| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
+| `Address`                                                | *string*                                                 | :heavy_check_mark:                                       | N/A                                                      | users:001                                                |
+| `Metadata`                                               | map[string]*any*                                         | :heavy_minus_sign:                                       | N/A                                                      | {<br/>"admin": true,<br/>"a": {<br/>"nested": {<br/>"key": "value"<br/>}<br/>}<br/>} |
+| `Type`                                                   | **string*                                                | :heavy_minus_sign:                                       | N/A                                                      | virtual                                                  |

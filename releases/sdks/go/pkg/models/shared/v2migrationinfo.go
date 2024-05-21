@@ -19,7 +19,6 @@ const (
 func (e V2MigrationInfoState) ToPointer() *V2MigrationInfoState {
 	return &e
 }
-
 func (e *V2MigrationInfoState) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {

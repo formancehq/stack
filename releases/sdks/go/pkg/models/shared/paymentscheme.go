@@ -39,7 +39,6 @@ const (
 func (e PaymentScheme) ToPointer() *PaymentScheme {
 	return &e
 }
-
 func (e *PaymentScheme) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {

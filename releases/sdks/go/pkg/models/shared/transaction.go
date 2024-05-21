@@ -9,7 +9,7 @@ import (
 )
 
 type Transaction struct {
-	Metadata          map[string]interface{}       `json:"metadata,omitempty"`
+	Metadata          map[string]any               `json:"metadata,omitempty"`
 	PostCommitVolumes map[string]map[string]Volume `json:"postCommitVolumes,omitempty"`
 	Postings          []Posting                    `json:"postings"`
 	PreCommitVolumes  map[string]map[string]Volume `json:"preCommitVolumes,omitempty"`
@@ -29,7 +29,7 @@ func (t *Transaction) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (o *Transaction) GetMetadata() map[string]interface{} {
+func (o *Transaction) GetMetadata() map[string]any {
 	if o == nil {
 		return nil
 	}

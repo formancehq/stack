@@ -32,30 +32,19 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+    var request *shared.CreateClientRequest = &shared.CreateClientRequest{
+        Name: "<value>",
+    }
+    
     ctx := context.Background()
-    res, err := s.Auth.CreateClient(ctx, &shared.CreateClientRequest{
-        Metadata: map[string]interface{}{
-            "key": "string",
-        },
-        Name: "string",
-        PostLogoutRedirectUris: []string{
-            "string",
-        },
-        RedirectUris: []string{
-            "string",
-        },
-        Scopes: []string{
-            "string",
-        },
-    })
+    res, err := s.Auth.CreateClient(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.CreateClientResponse != nil {
         // handle response
     }
@@ -89,32 +78,27 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+    request := operations.CreateSecretRequest{
+        ClientID: "<value>",
+    }
+    
     ctx := context.Background()
-    res, err := s.Auth.CreateSecret(ctx, operations.CreateSecretRequest{
-        CreateSecretRequest: &shared.CreateSecretRequest{
-            Metadata: map[string]interface{}{
-                "key": "string",
-            },
-            Name: "string",
-        },
-        ClientID: "string",
-    })
+    res, err := s.Auth.CreateSecret(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.CreateSecretResponse != nil {
         // handle response
     }
@@ -148,28 +132,28 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+    request := operations.DeleteClientRequest{
+        ClientID: "<value>",
+    }
+    
     ctx := context.Background()
-    res, err := s.Auth.DeleteClient(ctx, operations.DeleteClientRequest{
-        ClientID: "string",
-    })
+    res, err := s.Auth.DeleteClient(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }
@@ -202,29 +186,29 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+    request := operations.DeleteSecretRequest{
+        ClientID: "<value>",
+        SecretID: "<value>",
+    }
+    
     ctx := context.Background()
-    res, err := s.Auth.DeleteSecret(ctx, operations.DeleteSecretRequest{
-        ClientID: "string",
-        SecretID: "string",
-    })
+    res, err := s.Auth.DeleteSecret(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }
@@ -264,16 +248,17 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+
+    
     ctx := context.Background()
     res, err := s.Auth.ListClients(ctx)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.ListClientsResponse != nil {
         // handle response
     }
@@ -313,16 +298,17 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+
+    
     ctx := context.Background()
     res, err := s.Auth.ListUsers(ctx)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.ListUsersResponse != nil {
         // handle response
     }
@@ -355,26 +341,27 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+    request := operations.ReadClientRequest{
+        ClientID: "<value>",
+    }
+    
     ctx := context.Background()
-    res, err := s.Auth.ReadClient(ctx, operations.ReadClientRequest{
-        ClientID: "string",
-    })
+    res, err := s.Auth.ReadClient(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.ReadClientResponse != nil {
         // handle response
     }
@@ -408,26 +395,27 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+    request := operations.ReadUserRequest{
+        UserID: "<value>",
+    }
+    
     ctx := context.Background()
-    res, err := s.Auth.ReadUser(ctx, operations.ReadUserRequest{
-        UserID: "string",
-    })
+    res, err := s.Auth.ReadUser(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.ReadUserResponse != nil {
         // handle response
     }
@@ -461,41 +449,27 @@ package main
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"context"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
 	"log"
 )
 
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+    request := operations.UpdateClientRequest{
+        ClientID: "<value>",
+    }
+    
     ctx := context.Background()
-    res, err := s.Auth.UpdateClient(ctx, operations.UpdateClientRequest{
-        UpdateClientRequest: &shared.UpdateClientRequest{
-            Metadata: map[string]interface{}{
-                "key": "string",
-            },
-            Name: "string",
-            PostLogoutRedirectUris: []string{
-                "string",
-            },
-            RedirectUris: []string{
-                "string",
-            },
-            Scopes: []string{
-                "string",
-            },
-        },
-        ClientID: "string",
-    })
+    res, err := s.Auth.UpdateClient(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.UpdateClientResponse != nil {
         // handle response
     }

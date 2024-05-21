@@ -8,13 +8,13 @@ import (
 )
 
 type Trigger struct {
-	CreatedAt  time.Time              `json:"createdAt"`
-	Event      string                 `json:"event"`
-	Filter     *string                `json:"filter,omitempty"`
-	ID         string                 `json:"id"`
-	Name       *string                `json:"name,omitempty"`
-	Vars       map[string]interface{} `json:"vars,omitempty"`
-	WorkflowID string                 `json:"workflowID"`
+	CreatedAt  time.Time      `json:"createdAt"`
+	Event      string         `json:"event"`
+	Filter     *string        `json:"filter,omitempty"`
+	ID         string         `json:"id"`
+	Name       *string        `json:"name,omitempty"`
+	Vars       map[string]any `json:"vars,omitempty"`
+	WorkflowID string         `json:"workflowID"`
 }
 
 func (t Trigger) MarshalJSON() ([]byte, error) {
@@ -63,7 +63,7 @@ func (o *Trigger) GetName() *string {
 	return o.Name
 }
 
-func (o *Trigger) GetVars() map[string]interface{} {
+func (o *Trigger) GetVars() map[string]any {
 	if o == nil {
 		return nil
 	}

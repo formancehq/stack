@@ -22,15 +22,15 @@ func (o *Total) GetValue() *int64 {
 }
 
 type ResponseCursor struct {
-	Data     []map[string]interface{} `json:"data,omitempty"`
-	HasMore  *bool                    `json:"hasMore,omitempty"`
-	Next     *string                  `json:"next,omitempty"`
-	PageSize *int64                   `json:"pageSize,omitempty"`
-	Previous *string                  `json:"previous,omitempty"`
-	Total    *Total                   `json:"total,omitempty"`
+	Data     []map[string]any `json:"data,omitempty"`
+	HasMore  *bool            `json:"hasMore,omitempty"`
+	Next     *string          `json:"next,omitempty"`
+	PageSize *int64           `json:"pageSize,omitempty"`
+	Previous *string          `json:"previous,omitempty"`
+	Total    *Total           `json:"total,omitempty"`
 }
 
-func (o *ResponseCursor) GetData() []map[string]interface{} {
+func (o *ResponseCursor) GetData() []map[string]any {
 	if o == nil {
 		return nil
 	}
@@ -75,7 +75,7 @@ func (o *ResponseCursor) GetTotal() *Total {
 type Response struct {
 	Cursor *ResponseCursor `json:"cursor,omitempty"`
 	// The payload
-	Data map[string]interface{} `json:"data,omitempty"`
+	Data map[string]any `json:"data,omitempty"`
 }
 
 func (o *Response) GetCursor() *ResponseCursor {
@@ -85,7 +85,7 @@ func (o *Response) GetCursor() *ResponseCursor {
 	return o.Cursor
 }
 
-func (o *Response) GetData() map[string]interface{} {
+func (o *Response) GetData() map[string]any {
 	if o == nil {
 		return nil
 	}

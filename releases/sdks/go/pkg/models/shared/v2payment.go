@@ -39,7 +39,6 @@ const (
 func (e Scheme) ToPointer() *Scheme {
 	return &e
 }
-
 func (e *Scheme) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {
@@ -100,7 +99,6 @@ const (
 func (e V2PaymentType) ToPointer() *V2PaymentType {
 	return &e
 }
-
 func (e *V2PaymentType) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {

@@ -11,7 +11,7 @@ builds:
     id: orchestration
     ldflags:
       - -X github.com/formancehq/orchestration/cmd.BuildDate={{ .Date }}
-      - -X github.com/formancehq/orchestration/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/orchestration/cmd.Version=v{{ .Version }}
       - -X github.com/formancehq/orchestration/cmd.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:

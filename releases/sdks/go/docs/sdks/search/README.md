@@ -25,12 +25,11 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
-    ctx := context.Background()
-    res, err := s.Search.Search(ctx, shared.Query{
+    request := shared.Query{
         After: []string{
             "users:002",
         },
@@ -44,11 +43,13 @@ func main() {
         Terms: []string{
             "destination=central_bank1",
         },
-    })
+    }
+    
+    ctx := context.Background()
+    res, err := s.Search.Search(ctx, request)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.Response != nil {
         // handle response
     }
@@ -89,16 +90,17 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
         }),
     )
 
+
+    
     ctx := context.Background()
     res, err := s.Search.SearchgetServerInfo(ctx)
     if err != nil {
         log.Fatal(err)
     }
-
     if res.ServerInfo != nil {
         // handle response
     }

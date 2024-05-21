@@ -11,7 +11,7 @@ builds:
     id: gateway
     ldflags:
       - -X github.com/formancehq/stack/components/gateway/cmd.BuildDate={{ .Date }}
-      - -X github.com/formancehq/stack/components/gateway/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/stack/components/gateway/cmd.Version=v{{ .Version }}
       - -X github.com/formancehq/stack/components/gateway/cmd.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:
