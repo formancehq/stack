@@ -107,56 +107,56 @@ func CreateTasksCursorDataTaskMoneycorp(taskMoneycorp TaskMoneycorp) TasksCursor
 
 func (u *TasksCursorData) UnmarshalJSON(data []byte) error {
 
-	taskStripe := TaskStripe{}
+	var taskStripe TaskStripe = TaskStripe{}
 	if err := utils.UnmarshalJSON(data, &taskStripe, "", true, true); err == nil {
 		u.TaskStripe = &taskStripe
 		u.Type = TasksCursorDataTypeTaskStripe
 		return nil
 	}
 
-	taskWise := TaskWise{}
+	var taskWise TaskWise = TaskWise{}
 	if err := utils.UnmarshalJSON(data, &taskWise, "", true, true); err == nil {
 		u.TaskWise = &taskWise
 		u.Type = TasksCursorDataTypeTaskWise
 		return nil
 	}
 
-	taskCurrencyCloud := TaskCurrencyCloud{}
+	var taskCurrencyCloud TaskCurrencyCloud = TaskCurrencyCloud{}
 	if err := utils.UnmarshalJSON(data, &taskCurrencyCloud, "", true, true); err == nil {
 		u.TaskCurrencyCloud = &taskCurrencyCloud
 		u.Type = TasksCursorDataTypeTaskCurrencyCloud
 		return nil
 	}
 
-	taskDummyPay := TaskDummyPay{}
+	var taskDummyPay TaskDummyPay = TaskDummyPay{}
 	if err := utils.UnmarshalJSON(data, &taskDummyPay, "", true, true); err == nil {
 		u.TaskDummyPay = &taskDummyPay
 		u.Type = TasksCursorDataTypeTaskDummyPay
 		return nil
 	}
 
-	taskModulr := TaskModulr{}
+	var taskModulr TaskModulr = TaskModulr{}
 	if err := utils.UnmarshalJSON(data, &taskModulr, "", true, true); err == nil {
 		u.TaskModulr = &taskModulr
 		u.Type = TasksCursorDataTypeTaskModulr
 		return nil
 	}
 
-	taskBankingCircle := TaskBankingCircle{}
+	var taskBankingCircle TaskBankingCircle = TaskBankingCircle{}
 	if err := utils.UnmarshalJSON(data, &taskBankingCircle, "", true, true); err == nil {
 		u.TaskBankingCircle = &taskBankingCircle
 		u.Type = TasksCursorDataTypeTaskBankingCircle
 		return nil
 	}
 
-	taskMangoPay := TaskMangoPay{}
+	var taskMangoPay TaskMangoPay = TaskMangoPay{}
 	if err := utils.UnmarshalJSON(data, &taskMangoPay, "", true, true); err == nil {
 		u.TaskMangoPay = &taskMangoPay
 		u.Type = TasksCursorDataTypeTaskMangoPay
 		return nil
 	}
 
-	taskMoneycorp := TaskMoneycorp{}
+	var taskMoneycorp TaskMoneycorp = TaskMoneycorp{}
 	if err := utils.UnmarshalJSON(data, &taskMoneycorp, "", true, true); err == nil {
 		u.TaskMoneycorp = &taskMoneycorp
 		u.Type = TasksCursorDataTypeTaskMoneycorp

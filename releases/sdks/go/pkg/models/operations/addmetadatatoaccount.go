@@ -8,7 +8,7 @@ import (
 
 type AddMetadataToAccountRequest struct {
 	// metadata
-	RequestBody map[string]interface{} `request:"mediaType=application/json"`
+	RequestBody map[string]any `request:"mediaType=application/json"`
 	// Exact address of the account. It must match the following regular expressions pattern:
 	// ```
 	// ^\w+(:\w+)*$
@@ -19,7 +19,7 @@ type AddMetadataToAccountRequest struct {
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
 }
 
-func (o *AddMetadataToAccountRequest) GetRequestBody() map[string]interface{} {
+func (o *AddMetadataToAccountRequest) GetRequestBody() map[string]any {
 	if o == nil {
 		return nil
 	}

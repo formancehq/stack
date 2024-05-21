@@ -37,13 +37,12 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"log"
-	"net/http"
 )
 
 func main() {
 	s := v2.New(
 		v2.WithSecurity(shared.Security{
-			Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+			Authorization: "<YOUR_AUTHORIZATION_HERE>",
 		}),
 	)
 
@@ -52,8 +51,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	if res.StatusCode == http.StatusOK {
+	if res != nil {
 		// handle response
 	}
 }
@@ -287,18 +285,14 @@ import (
 func main() {
 	s := v2.New(
 		v2.WithSecurity(shared.Security{
-			Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+			Authorization: "<YOUR_AUTHORIZATION_HERE>",
 		}),
 	)
 
-	ctx := context.Background()
-	res, err := s.Ledger.CreateTransactions(ctx, operations.CreateTransactionsRequest{
+	request := operations.CreateTransactionsRequest{
 		Transactions: shared.Transactions{
 			Transactions: []shared.TransactionData{
 				shared.TransactionData{
-					Metadata: map[string]interface{}{
-						"key": "string",
-					},
 					Postings: []shared.Posting{
 						shared.Posting{
 							Amount:      big.NewInt(100),
@@ -312,7 +306,10 @@ func main() {
 			},
 		},
 		Ledger: "ledger001",
-	})
+	}
+
+	ctx := context.Background()
+	res, err := s.Ledger.CreateTransactions(ctx, request)
 	if err != nil {
 
 		var e *sdkerrors.ErrorResponse
@@ -353,14 +350,13 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"log"
-	"net/http"
 )
 
 func main() {
 	s := v2.New(
 		v2.WithServerIndex(0),
 		v2.WithSecurity(shared.Security{
-			Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+			Authorization: "<YOUR_AUTHORIZATION_HERE>",
 		}),
 	)
 
@@ -369,8 +365,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	if res.StatusCode == http.StatusOK {
+	if res != nil {
 		// handle response
 	}
 }
@@ -389,14 +384,13 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"log"
-	"net/http"
 )
 
 func main() {
 	s := v2.New(
 		v2.WithServerURL("http://localhost"),
 		v2.WithSecurity(shared.Security{
-			Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+			Authorization: "<YOUR_AUTHORIZATION_HERE>",
 		}),
 	)
 
@@ -405,8 +399,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	if res.StatusCode == http.StatusOK {
+	if res != nil {
 		// handle response
 	}
 }
@@ -463,13 +456,12 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"log"
-	"net/http"
 )
 
 func main() {
 	s := v2.New(
 		v2.WithSecurity(shared.Security{
-			Authorization: "Bearer <YOUR_ACCESS_TOKEN_HERE>",
+			Authorization: "<YOUR_AUTHORIZATION_HERE>",
 		}),
 	)
 
@@ -478,8 +470,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	if res.StatusCode == http.StatusOK {
+	if res != nil {
 		// handle response
 	}
 }

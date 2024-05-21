@@ -9,7 +9,7 @@ import (
 )
 
 type V2CountTransactionsRequest struct {
-	RequestBody map[string]interface{} `request:"mediaType=application/json"`
+	RequestBody map[string]any `request:"mediaType=application/json"`
 	// Name of the ledger.
 	Ledger string     `pathParam:"style=simple,explode=false,name=ledger"`
 	Pit    *time.Time `queryParam:"style=form,explode=true,name=pit"`
@@ -26,7 +26,7 @@ func (v *V2CountTransactionsRequest) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (o *V2CountTransactionsRequest) GetRequestBody() map[string]interface{} {
+func (o *V2CountTransactionsRequest) GetRequestBody() map[string]any {
 	if o == nil {
 		return nil
 	}

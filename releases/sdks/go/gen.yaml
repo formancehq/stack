@@ -5,9 +5,14 @@ generation:
     optionalPropertyRendering: withExample
   fixes:
     nameResolutionDec2023: false
+    parameterOrderingFeb2024: false
+    requestResponseComponentNamesFeb2024: false
+  auth:
+    oAuth2ClientCredentialsEnabled: false
   telemetryEnabled: false
 go:
   version: v0.0.0
+  additionalDependencies: {}
   author: Formance
   clientServerStatusCodesAsErrors: true
   flattenGlobalSecurity: false
@@ -21,5 +26,7 @@ go:
       webhooks: pkg/models/webhooks
   inputModelSuffix: input
   maxMethodParams: 0
+  methodArguments: require-security-and-request
   outputModelSuffix: output
   packageName: github.com/formancehq/formance-sdk-go/v2
+  responseFormat: envelope

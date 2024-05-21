@@ -3,6 +3,6 @@
 
 ## Fields
 
-| Field              | Type               | Required           | Description        |
-| ------------------ | ------------------ | ------------------ | ------------------ |
-| `PaymentID`        | *string*           | :heavy_check_mark: | The payment ID.    |
+| Field              | Type               | Required           | Description        | Example            |
+| ------------------ | ------------------ | ------------------ | ------------------ | ------------------ |
+| `PaymentID`        | *string*           | :heavy_check_mark: | The payment ID.    | XXX                |

@@ -8,8 +8,8 @@ import (
 )
 
 type OrchestrationPostTransactionScript struct {
-	Plain string                 `json:"plain"`
-	Vars  map[string]interface{} `json:"vars,omitempty"`
+	Plain string         `json:"plain"`
+	Vars  map[string]any `json:"vars,omitempty"`
 }
 
 func (o *OrchestrationPostTransactionScript) GetPlain() string {
@@ -19,7 +19,7 @@ func (o *OrchestrationPostTransactionScript) GetPlain() string {
 	return o.Plain
 }
 
-func (o *OrchestrationPostTransactionScript) GetVars() map[string]interface{} {
+func (o *OrchestrationPostTransactionScript) GetVars() map[string]any {
 	if o == nil {
 		return nil
 	}

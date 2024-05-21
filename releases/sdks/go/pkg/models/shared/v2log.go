@@ -21,7 +21,6 @@ const (
 func (e V2LogType) ToPointer() *V2LogType {
 	return &e
 }
-
 func (e *V2LogType) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {
@@ -41,11 +40,11 @@ func (e *V2LogType) UnmarshalJSON(data []byte) error {
 }
 
 type V2Log struct {
-	Data map[string]interface{} `json:"data"`
-	Date time.Time              `json:"date"`
-	Hash string                 `json:"hash"`
-	ID   *big.Int               `json:"id"`
-	Type V2LogType              `json:"type"`
+	Data map[string]any `json:"data"`
+	Date time.Time      `json:"date"`
+	Hash string         `json:"hash"`
+	ID   *big.Int       `json:"id"`
+	Type V2LogType      `json:"type"`
 }
 
 func (v V2Log) MarshalJSON() ([]byte, error) {
@@ -59,9 +58,9 @@ func (v *V2Log) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (o *V2Log) GetData() map[string]interface{} {
+func (o *V2Log) GetData() map[string]any {
 	if o == nil {
-		return map[string]interface{}{}
+		return map[string]any{}
 	}
 	return o.Data
 }

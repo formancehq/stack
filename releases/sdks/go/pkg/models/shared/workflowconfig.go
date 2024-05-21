@@ -3,8 +3,8 @@
 package shared
 
 type WorkflowConfig struct {
-	Name   *string                  `json:"name,omitempty"`
-	Stages []map[string]interface{} `json:"stages"`
+	Name   *string          `json:"name,omitempty"`
+	Stages []map[string]any `json:"stages"`
 }
 
 func (o *WorkflowConfig) GetName() *string {
@@ -14,9 +14,9 @@ func (o *WorkflowConfig) GetName() *string {
 	return o.Name
 }
 
-func (o *WorkflowConfig) GetStages() []map[string]interface{} {
+func (o *WorkflowConfig) GetStages() []map[string]any {
 	if o == nil {
-		return []map[string]interface{}{}
+		return []map[string]any{}
 	}
 	return o.Stages
 }

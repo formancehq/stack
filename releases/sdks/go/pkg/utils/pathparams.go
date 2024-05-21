@@ -16,17 +16,40 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
 )
 
-func GenerateURL(ctx context.Context, serverURL, path string, pathParams interface{}, globals map[string]map[string]map[string]interface{}) (string, error) {
+func GenerateURL(_ context.Context, serverURL, path string, pathParams interface{}, globals interface{}) (string, error) {
 	uri := strings.TrimSuffix(serverURL, "/") + path
 
+	parsedParameters := map[string]string{}
+
+	globalsAlreadyPopulated, err := populateParsedParameters(pathParams, globals, parsedParameters, []string{})
+	if err != nil {
+		return "", err
+	}
+
+	if globals != nil {
+		_, err = populateParsedParameters(globals, nil, parsedParameters, globalsAlreadyPopulated)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	// TODO should we handle the case where there are no matching path params?
+	return ReplaceParameters(uri, parsedParameters), nil
+}
+
+func populateParsedParameters(pathParams interface{}, globals interface{}, parsedParameters map[string]string, skipFields []string) ([]string, error) {
 	pathParamsStructType := reflect.TypeOf(pathParams)
 	pathParamsValType := reflect.ValueOf(pathParams)
 
-	parsedParameters := map[string]string{}
+	globalsAlreadyPopulated := []string{}
 
 	for i := 0; i < pathParamsStructType.NumField(); i++ {
 		fieldType := pathParamsStructType.Field(i)
 		valType := pathParamsValType.Field(i)
+
+		if contains(skipFields, fieldType.Name) {
+			continue
+		}
 
 		requestTag := getRequestTag(fieldType)
 		if requestTag != nil {
@@ -38,12 +61,18 @@ func GenerateURL(ctx context.Context, serverURL, path string, pathParams interfa
 			continue
 		}
 
-		valType = populateFromGlobals(fieldType, valType, "pathParam", globals)
+		if globals != nil {
+			var globalFound bool
+			fieldType, valType, globalFound = populateFromGlobals(fieldType, valType, pathParamTagKey, globals)
+			if globalFound {
+				globalsAlreadyPopulated = append(globalsAlreadyPopulated, fieldType.Name)
+			}
+		}
 
 		if ppTag.Serialization != "" {
 			vals, err := populateSerializedParams(ppTag, fieldType.Type, valType)
 			if err != nil {
-				return "", err
+				return nil, err
 			}
 			for k, v := range vals {
 				parsedParameters[k] = url.PathEscape(v)
@@ -52,7 +81,7 @@ func GenerateURL(ctx context.Context, serverURL, path string, pathParams interfa
 			// TODO: support other styles
 			switch ppTag.Style {
 			case "simple":
-				simpleParams := getSimplePathParams(ctx, ppTag.ParamName, fieldType.Type, valType, ppTag.Explode)
+				simpleParams := getSimplePathParams(ppTag.ParamName, fieldType.Type, valType, ppTag.Explode)
 				for k, v := range simpleParams {
 					parsedParameters[k] = v
 				}
@@ -60,11 +89,10 @@ func GenerateURL(ctx context.Context, serverURL, path string, pathParams interfa
 		}
 	}
 
-	// TODO should we handle the case where there are no matching path params?
-	return ReplaceParameters(uri, parsedParameters), nil
+	return globalsAlreadyPopulated, nil
 }
 
-func getSimplePathParams(ctx context.Context, parentName string, objType reflect.Type, objValue reflect.Value, explode bool) map[string]string {
+func getSimplePathParams(parentName string, objType reflect.Type, objValue reflect.Value, explode bool) map[string]string {
 	pathParams := make(map[string]string)
 
 	if isNil(objType, objValue) {

@@ -25,37 +25,3 @@ sdk-generate:
   RUN yq e -i 'eval(env(key)) = env(version)' ./sdks/${LANG}/gen.yaml
   RUN --secret SPEAKEASY_API_KEY speakeasy generate sdk -s ./build/latest.json -o ./sdks/${LANG} -l ${LANG}
   SAVE ARTIFACT /src/releases/sdks/${LANG} AS LOCAL ./sdks/${LANG}
-
-sdk-publish:
-  ARG --required version
-  ARG LANG=go
-  FROM node:20-alpine
-  RUN apk update && apk add yq git
-  WORKDIR /src
-  GIT CLONE https://github.com/formancehq/formance-sdk-${LANG}.git ./sdks/${LANG}
-  RUN rm -rf ./sdks/${LANG}/*
-  RUN rm -rf ./sdks/${LANG}/.github/*
-  COPY --dir ./sdks/${LANG} ./sdks/
-  WORKDIR /src/sdks/${LANG}
-  RUN git config --global user.email "support@formance.com"
-  RUN git config --global user.name "NumaryBot"
-  RUN git checkout -b release/${version}
-  RUN git add .
-  RUN git commit -m "release(sdk): ${version}"
-  RUN git remote remove origin
-  RUN --secret GITHUB_TOKEN git remote add origin https://${GITHUB_TOKEN}@github.com/formancehq/formance-sdk-${LANG}.git
-  RUN --secret GITHUB_TOKEN git push origin release/${version} --force
-
-sdk-generate-all:
-  ARG --required version
-  LOCALLY
-  FOR lang IN $(ls templates/sdk)
-      BUILD --pass-args +sdk-generate --LANG=${lang}
-  END
-
-sdk-publish-all:
-  ARG --required version
-  LOCALLY
-  FOR lang IN $(ls templates/sdk)
-      BUILD --pass-args +sdk-publish --LANG=${lang}
-  END

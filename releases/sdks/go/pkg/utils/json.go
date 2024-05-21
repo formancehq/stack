@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math/big"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 	"unsafe"
@@ -260,6 +261,18 @@ func marshalValue(v interface{}, tag reflect.StructTag) (json.RawMessage, error)
 
 	typ, val := dereferencePointers(reflect.TypeOf(v), reflect.ValueOf(v))
 	switch typ.Kind() {
+	case reflect.Int64:
+		format := tag.Get("integer")
+		if format == "string" {
+			b := val.Interface().(int64)
+			return []byte(fmt.Sprintf(`"%d"`, b)), nil
+		}
+	case reflect.Float64:
+		format := tag.Get("number")
+		if format == "string" {
+			b := val.Interface().(float64)
+			return []byte(fmt.Sprintf(`"%g"`, b)), nil
+		}
 	case reflect.Map:
 		if isNil(typ, val) {
 			return []byte("null"), nil
@@ -349,6 +362,16 @@ func handleDefaultConstValue(tagValue string, val interface{}, tag reflect.Struc
 		if bigIntTag == "string" {
 			return []byte(fmt.Sprintf(`"%s"`, tagValue))
 		}
+	case reflect.TypeOf(int64(0)):
+		format := tag.Get("integer")
+		if format == "string" {
+			return []byte(fmt.Sprintf(`"%s"`, tagValue))
+		}
+	case reflect.TypeOf(float64(0)):
+		format := tag.Get("number")
+		if format == "string" {
+			return []byte(fmt.Sprintf(`"%s"`, tagValue))
+		}
 	case reflect.TypeOf(decimal.Big{}):
 		decimalTag := tag.Get("decimal")
 		if decimalTag != "number" {
@@ -358,7 +381,7 @@ func handleDefaultConstValue(tagValue string, val interface{}, tag reflect.Struc
 		return []byte(fmt.Sprintf(`"%s"`, tagValue))
 	default:
 		if typ.Kind() == reflect.String {
-			return []byte(fmt.Sprintf(`"%s"`, tagValue))
+			return []byte(fmt.Sprintf("%q", tagValue))
 		}
 	}
 
@@ -377,6 +400,57 @@ func unmarshalValue(value json.RawMessage, v reflect.Value, tag reflect.StructTa
 	typ := dereferenceTypePointer(v.Type())
 
 	switch typ.Kind() {
+	case reflect.Int64:
+		var b int64
+
+		format := tag.Get("integer")
+		if format == "string" {
+			var s string
+			if err := json.Unmarshal(value, &s); err != nil {
+				return err
+			}
+
+			var err error
+			b, err = strconv.ParseInt(s, 10, 64)
+			if err != nil {
+				return fmt.Errorf("failed to parse string as int64: %w", err)
+			}
+			if v.Kind() == reflect.Ptr {
+				if v.IsNil() {
+					v.Set(reflect.New(typ))
+				}
+				v = v.Elem()
+			}
+
+			v.Set(reflect.ValueOf(b))
+			return nil
+		}
+	case reflect.Float64:
+		var b float64
+
+		format := tag.Get("number")
+		if format == "string" {
+			var s string
+			if err := json.Unmarshal(value, &s); err != nil {
+				return err
+			}
+
+			var err error
+			b, err = strconv.ParseFloat(s, 64)
+			if err != nil {
+				return fmt.Errorf("failed to parse string as float64: %w", err)
+			}
+
+			if v.Kind() == reflect.Ptr {
+				if v.IsNil() {
+					v.Set(reflect.New(typ))
+				}
+				v = v.Elem()
+			}
+
+			v.Set(reflect.ValueOf(b))
+			return nil
+		}
 	case reflect.Map:
 		if bytes.Equal(value, []byte("null")) || !isComplexValueType(dereferenceTypePointer(typ.Elem())) {
 			if v.CanAddr() {

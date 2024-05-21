@@ -19,7 +19,6 @@ const (
 func (e Type) ToPointer() *Type {
 	return &e
 }
-
 func (e *Type) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {
@@ -37,11 +36,11 @@ func (e *Type) UnmarshalJSON(data []byte) error {
 }
 
 type Log struct {
-	Data map[string]interface{} `json:"data"`
-	Date time.Time              `json:"date"`
-	Hash string                 `json:"hash"`
-	ID   int64                  `json:"id"`
-	Type Type                   `json:"type"`
+	Data map[string]any `json:"data"`
+	Date time.Time      `json:"date"`
+	Hash string         `json:"hash"`
+	ID   int64          `json:"id"`
+	Type Type           `json:"type"`
 }
 
 func (l Log) MarshalJSON() ([]byte, error) {
@@ -55,9 +54,9 @@ func (l *Log) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (o *Log) GetData() map[string]interface{} {
+func (o *Log) GetData() map[string]any {
 	if o == nil {
-		return map[string]interface{}{}
+		return map[string]any{}
 	}
 	return o.Data
 }

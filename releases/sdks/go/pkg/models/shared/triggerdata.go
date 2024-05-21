@@ -3,11 +3,11 @@
 package shared
 
 type TriggerData struct {
-	Event      string                 `json:"event"`
-	Filter     *string                `json:"filter,omitempty"`
-	Name       *string                `json:"name,omitempty"`
-	Vars       map[string]interface{} `json:"vars,omitempty"`
-	WorkflowID string                 `json:"workflowID"`
+	Event      string         `json:"event"`
+	Filter     *string        `json:"filter,omitempty"`
+	Name       *string        `json:"name,omitempty"`
+	Vars       map[string]any `json:"vars,omitempty"`
+	WorkflowID string         `json:"workflowID"`
 }
 
 func (o *TriggerData) GetEvent() string {
@@ -31,7 +31,7 @@ func (o *TriggerData) GetName() *string {
 	return o.Name
 }
 
-func (o *TriggerData) GetVars() map[string]interface{} {
+func (o *TriggerData) GetVars() map[string]any {
 	if o == nil {
 		return nil
 	}
