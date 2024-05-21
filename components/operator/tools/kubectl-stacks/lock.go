@@ -21,7 +21,8 @@ func NewLockCommand(configFlags *genericclioptions.ConfigFlags) *cobra.Command {
 			}
 
 			if len(args) == 0 {
-				return lockAllStacks(cmd, client)
+				_, err := lockAllStacks(cmd, client)
+				return err
 			} else {
 				return lockStack(cmd, client, args[0])
 			}
@@ -29,21 +30,21 @@ func NewLockCommand(configFlags *genericclioptions.ConfigFlags) *cobra.Command {
 	}
 }
 
-func lockAllStacks(cmd *cobra.Command, client *rest.RESTClient) error {
+func lockAllStacks(cmd *cobra.Command, client *rest.RESTClient) (*v1beta1.StackList, error) {
 	list := &v1beta1.StackList{}
 	if err := client.Get().
 		Resource("Stacks").
 		Do(cmd.Context()).
 		Into(list); err != nil {
-		return err
+		return nil, err
 	}
 
 	for _, stack := range list.Items {
 		if err := lockStack(cmd, client, stack.Name); err != nil {
-			return err
+			return nil, err
 		}
 	}
-	return nil
+	return list, nil
 }
 
 func lockStack(cmd *cobra.Command, client *rest.RESTClient, name string) error {
