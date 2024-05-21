@@ -1,0 +1,44 @@
+package api
+
+import (
+	"errors"
+	"net/http"
+
+	storageerrors "github.com/formancehq/reconciliation/internal/utils/storage/errors"
+	"github.com/formancehq/reconciliation/internal/v2/api/backend"
+	"github.com/formancehq/reconciliation/internal/v2/api/service"
+	"github.com/formancehq/reconciliation/internal/v2/storage"
+	"github.com/formancehq/stack/libs/go-libs/api"
+	"go.uber.org/fx"
+)
+
+const (
+	ErrInvalidID            = "INVALID_ID"
+	ErrMissingOrInvalidBody = "MISSING_OR_INVALID_BODY"
+	ErrValidation           = "VALIDATION"
+)
+
+func HTTPModule() fx.Option {
+	return fx.Options(
+		fx.Provide(fx.Annotate(service.NewService, fx.As(new(backend.Service)))),
+		fx.Provide(backend.NewDefaultBackend),
+		fx.Provide(func(store *storage.Storage) service.Store {
+			return store
+		}),
+	)
+}
+
+func handleServiceErrors(w http.ResponseWriter, r *http.Request, err error) {
+	switch {
+	case errors.Is(err, service.ErrValidation):
+		api.BadRequest(w, ErrValidation, err)
+	case errors.Is(err, service.ErrInvalidID):
+		api.BadRequest(w, ErrInvalidID, err)
+	case errors.Is(storageerrors.ErrInvalidQuery, err):
+		api.BadRequest(w, ErrValidation, err)
+	case errors.Is(storageerrors.ErrNotFound, err):
+		api.NotFound(w, err)
+	default:
+		api.InternalServerError(w, r, err)
+	}
+}

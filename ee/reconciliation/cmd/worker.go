@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/formancehq/reconciliation/internal/worker"
+	"github.com/formancehq/reconciliation/internal/v2/worker"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
