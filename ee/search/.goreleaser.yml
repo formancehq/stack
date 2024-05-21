@@ -11,7 +11,7 @@ builds:
     id: search
     ldflags:
       - -X github.com/formancehq/search/cmd.BuildDate={{ .Date }}
-      - -X github.com/formancehq/search/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/search/cmd.Version=v{{ .Version }}
       - -X github.com/formancehq/search/cmd.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:

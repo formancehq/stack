@@ -12,7 +12,7 @@ builds:
     id: operator-utils
     ldflags:
       - -X github.com/formancehq/operator-utils/cmd.BuildDate={{ .Date }}
-      - -X github.com/formancehq/operator-utils/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/operator-utils/cmd.Version=v{{ .Version }}
       - -X github.com/formancehq/operator-utils/cmd.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:
