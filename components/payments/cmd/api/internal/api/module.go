@@ -79,6 +79,8 @@ func handleServiceErrors(w http.ResponseWriter, r *http.Request, err error) {
 		api.BadRequest(w, ErrUniqueReference, err)
 	case errors.Is(err, storage.ErrNotFound):
 		api.NotFound(w, err)
+	case errors.Is(err, storage.ErrValidation):
+		api.BadRequest(w, ErrValidation, err)
 	case errors.Is(err, service.ErrValidation):
 		api.BadRequest(w, ErrValidation, err)
 	default:
