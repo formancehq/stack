@@ -1,8 +1,6 @@
 VERSION 0.8
 
-ARG core=github.com/formancehq/earthly
-
-IMPORT $core AS core
+IMPORT github.com/formancehq/earthly:tags/v0.12.0 AS core
 IMPORT .. AS stack
 
 deploy:
@@ -14,3 +12,10 @@ deploy-staging:
     FROM core+base-image
     ARG --required components
     BUILD --pass-args ./$components+deploy-staging
+
+run:
+    LOCALLY
+    ARG --required TARGET
+    BUILD ./ledger+$TARGET
+    BUILD ./operator+$TARGET
+    BUILD ./payments+$TARGET
