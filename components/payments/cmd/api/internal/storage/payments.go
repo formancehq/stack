@@ -31,6 +31,27 @@ func (s *Storage) paymentsQueryContext(qb query.Builder) (map[string]string, str
 		switch {
 		case key == "reference":
 			return fmt.Sprintf("%s %s ?", key, query.DefaultComparisonOperatorsMapping[operator]), []any{value}, nil
+
+		case key == "type",
+			key == "status",
+			key == "asset":
+			if operator != "$match" {
+				return "", nil, errors.Wrap(ErrValidation, "'type' column can only be used with $match")
+			}
+			return fmt.Sprintf("%s = ?", key), []any{value}, nil
+
+		case key == "connectorID":
+			if operator != "$match" {
+				return "", nil, errors.Wrap(ErrValidation, "'type' column can only be used with $match")
+			}
+			return "connector_id = ?", []any{value}, nil
+
+		case key == "amount":
+			return fmt.Sprintf("%s %s ?", key, query.DefaultComparisonOperatorsMapping[operator]), []any{value}, nil
+
+		case key == "initialAmount":
+			return fmt.Sprintf("initial_amount %s ?", query.DefaultComparisonOperatorsMapping[operator]), []any{value}, nil
+
 		case metadataRegex.Match([]byte(key)):
 			if operator != "$match" {
 				return "", nil, errors.Wrap(ErrValidation, "'metadata' column can only be used with $match")
@@ -46,6 +67,7 @@ func (s *Storage) paymentsQueryContext(qb query.Builder) (map[string]string, str
 
 			// Do nothing here, as we don't want to add this to the query
 			return "", nil, nil
+
 		default:
 			return "", nil, errors.Wrap(ErrValidation, fmt.Sprintf("unknown key '%s' when building query", key))
 		}

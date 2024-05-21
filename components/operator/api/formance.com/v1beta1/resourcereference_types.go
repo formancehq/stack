@@ -29,7 +29,7 @@ type ResourceReferenceSpec struct {
 
 // ResourceReferenceStatus defines the observed state of ResourceReference
 type ResourceReferenceStatus struct {
-	CommonStatus `json:",inline"`
+	Status `json:",inline"`
 	//+optional
 	SyncedResource string `json:"syncedResource,omitempty"`
 	//+optional
@@ -63,6 +63,10 @@ func (in *ResourceReference) SetError(s string) {
 
 func (in *ResourceReference) GetStack() string {
 	return in.Spec.Stack
+}
+
+func (in *ResourceReference) GetConditions() *Conditions {
+	return &in.Status.Conditions
 }
 
 //+kubebuilder:object:root=true

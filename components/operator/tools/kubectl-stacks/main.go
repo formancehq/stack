@@ -26,6 +26,7 @@ func NewRootCommand() *cobra.Command {
 		NewSetDebugCommand(configFlags),
 		NewDisableCommand(configFlags),
 		NewEnableCommand(configFlags),
+		NewUpgradeCommand(configFlags),
 	)
 
 	return cmd

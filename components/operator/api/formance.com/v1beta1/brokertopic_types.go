@@ -29,7 +29,7 @@ type BrokerTopicSpec struct {
 
 // BrokerTopicStatus defines the observed state of BrokerTopic
 type BrokerTopicStatus struct {
-	CommonStatus `json:",inline"`
+	Status `json:",inline"`
 }
 
 //+kubebuilder:object:root=true
@@ -65,6 +65,10 @@ func (a *BrokerTopic) GetStack() string {
 }
 
 func (a *BrokerTopic) isResource() {}
+
+func (in *BrokerTopic) GetConditions() *Conditions {
+	return &in.Status.Conditions
+}
 
 //+kubebuilder:object:root=true
 

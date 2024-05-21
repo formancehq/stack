@@ -352,11 +352,47 @@ _Appears in:_
 
 
 
+#### Condition
 
 
-#### CommonStatus
+
+Condition contains details for one aspect of the current state of this API Resource.
+---
+This struct is intended for direct use as an array at the field path .status.conditions.  For example,
 
 
+	type FooStatus struct{
+	    // Represents the observations of a foo's current state.
+	    // Known .status.conditions.type are: "Available", "Progressing", and "Degraded"
+	    // +patchMergeKey=type
+	    // +patchStrategy=merge
+	    // +listType=map
+	    // +listMapKey=type
+	    Status []metav1.Condition `json:"conditions,omitempty" patchStrategy:"merge" patchMergeKey:"type" protobuf:"bytes,1,rep,name=conditions"`
+
+
+	    // other fields
+	}
+
+
+
+_Appears in:_
+- [Conditions](#conditions)
+
+| Field | Description | Default | Validation |
+| --- | --- | --- | --- |
+| `type` _string_ | type of condition in CamelCase or in foo.example.com/CamelCase.<br />---<br />Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be<br />useful (see .node.status.conditions), the ability to deconflict is important.<br />The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt) |  | MaxLength: 316 <br />Pattern: `^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$` <br />Required: {} <br /> |
+| `observedGeneration` _integer_ | observedGeneration represents the .metadata.generation that the condition was set based upon.<br />For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date<br />with respect to the current state of the instance. |  | Minimum: 0 <br /> |
+| `lastTransitionTime` _[Time](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#time-v1-meta)_ | lastTransitionTime is the last time the condition transitioned from one status to another.<br />This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable. |  | Format: date-time <br />Required: {} <br />Type: string <br /> |
+| `message` _string_ | message is a human readable message indicating details about the transition.<br />This may be an empty string. |  | MaxLength: 32768 <br />Required: {} <br /> |
+| `reason` _string_ | reason contains a programmatic identifier indicating the reason for the condition's last transition.<br />Producers of specific condition types may define expected values and meanings for this field,<br />and whether the values are considered a guaranteed API.<br />The value should be a CamelCase string.<br />This field may not be empty. |  | MaxLength: 1024 <br />Pattern: `^([A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?)?$` <br /> |
+
+
+
+
+#### Conditions
+
+_Underlying type:_ _[Condition](#condition)_
 
 
 
@@ -374,7 +410,6 @@ _Appears in:_
 - [GatewayHTTPAPIStatus](#gatewayhttpapistatus)
 - [GatewayStatus](#gatewaystatus)
 - [LedgerStatus](#ledgerstatus)
-- [ModuleStatus](#modulestatus)
 - [OrchestrationStatus](#orchestrationstatus)
 - [PaymentsStatus](#paymentsstatus)
 - [ReconciliationStatus](#reconciliationstatus)
@@ -382,53 +417,7 @@ _Appears in:_
 - [SearchStatus](#searchstatus)
 - [StackStatus](#stackstatus)
 - [StargateStatus](#stargatestatus)
-- [StatusWithConditions](#statuswithconditions)
-- [WalletsStatus](#walletsstatus)
-- [WebhooksStatus](#webhooksstatus)
-
-| Field | Description | Default | Validation |
-| --- | --- | --- | --- |
-| `ready` _boolean_ |  |  |  |
-| `info` _string_ |  |  |  |
-
-
-#### Condition
-
-
-
-Condition contains details for one aspect of the current state of this API Resource.
----
-This struct is intended for direct use as an array at the field path .status.conditions.  For example,
-
-
-	type FooStatus struct{
-	    // Represents the observations of a foo's current state.
-	    // Known .status.conditions.type are: "Available", "Progressing", and "Degraded"
-	    // +patchMergeKey=type
-	    // +patchStrategy=merge
-	    // +listType=map
-	    // +listMapKey=type
-	    CommonStatus []metav1.Condition `json:"conditions,omitempty" patchStrategy:"merge" patchMergeKey:"type" protobuf:"bytes,1,rep,name=conditions"`
-
-
-	    // other fields
-	}
-
-
-
-_Appears in:_
-- [AuthStatus](#authstatus)
-- [BenthosStatus](#benthosstatus)
-- [BrokerConsumerStatus](#brokerconsumerstatus)
-- [GatewayStatus](#gatewaystatus)
-- [LedgerStatus](#ledgerstatus)
-- [ModuleStatus](#modulestatus)
-- [OrchestrationStatus](#orchestrationstatus)
-- [PaymentsStatus](#paymentsstatus)
-- [ReconciliationStatus](#reconciliationstatus)
-- [SearchStatus](#searchstatus)
-- [StargateStatus](#stargatestatus)
-- [StatusWithConditions](#statuswithconditions)
+- [Status](#status)
 - [WalletsStatus](#walletsstatus)
 - [WebhooksStatus](#webhooksstatus)
 
@@ -794,33 +783,6 @@ _Appears in:_
 | `debug` _boolean_ |  |  |  |
 | `dev` _boolean_ |  |  |  |
 | `version` _string_ |  |  |  |
-
-
-#### ModuleStatus
-
-
-
-
-
-
-
-_Appears in:_
-- [AuthStatus](#authstatus)
-- [GatewayStatus](#gatewaystatus)
-- [LedgerStatus](#ledgerstatus)
-- [OrchestrationStatus](#orchestrationstatus)
-- [PaymentsStatus](#paymentsstatus)
-- [ReconciliationStatus](#reconciliationstatus)
-- [SearchStatus](#searchstatus)
-- [StargateStatus](#stargatestatus)
-- [WalletsStatus](#walletsstatus)
-- [WebhooksStatus](#webhooksstatus)
-
-| Field | Description | Default | Validation |
-| --- | --- | --- | --- |
-| `ready` _boolean_ |  |  |  |
-| `info` _string_ |  |  |  |
-| `conditions` _[Condition](#condition) array_ |  |  |  |
 
 
 
@@ -1204,7 +1166,7 @@ _Appears in:_
 
 
 
-#### StatusWithConditions
+#### Status
 
 
 
@@ -1213,16 +1175,23 @@ _Appears in:_
 
 
 _Appears in:_
+- [AuthClientStatus](#authclientstatus)
 - [AuthStatus](#authstatus)
 - [BenthosStatus](#benthosstatus)
+- [BenthosStreamStatus](#benthosstreamstatus)
 - [BrokerConsumerStatus](#brokerconsumerstatus)
+- [BrokerStatus](#brokerstatus)
+- [BrokerTopicStatus](#brokertopicstatus)
+- [DatabaseStatus](#databasestatus)
+- [GatewayHTTPAPIStatus](#gatewayhttpapistatus)
 - [GatewayStatus](#gatewaystatus)
 - [LedgerStatus](#ledgerstatus)
-- [ModuleStatus](#modulestatus)
 - [OrchestrationStatus](#orchestrationstatus)
 - [PaymentsStatus](#paymentsstatus)
 - [ReconciliationStatus](#reconciliationstatus)
+- [ResourceReferenceStatus](#resourcereferencestatus)
 - [SearchStatus](#searchstatus)
+- [StackStatus](#stackstatus)
 - [StargateStatus](#stargatestatus)
 - [WalletsStatus](#walletsstatus)
 - [WebhooksStatus](#webhooksstatus)
@@ -1231,7 +1200,7 @@ _Appears in:_
 | --- | --- | --- | --- |
 | `ready` _boolean_ |  |  |  |
 | `info` _string_ |  |  |  |
-| `conditions` _[Condition](#condition) array_ |  |  |  |
+| `conditions` _[Conditions](#conditions)_ |  |  |  |
 
 
 #### URI

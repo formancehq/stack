@@ -29,7 +29,7 @@ import (
 //+kubebuilder:rbac:groups=formance.com,resources=benthosstreams/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=formance.com,resources=benthosstreams/finalizers,verbs=update
 
-func Reconcile(ctx Context, stack *v1beta1.Stack, stream *v1beta1.BenthosStream) error {
+func Reconcile(ctx Context, _ *v1beta1.Stack, stream *v1beta1.BenthosStream) error {
 	_, _, err := CreateOrUpdate[*corev1.ConfigMap](ctx, types.NamespacedName{
 		Namespace: stream.Spec.Stack,
 		Name:      fmt.Sprintf("stream-%s", stream.Name),

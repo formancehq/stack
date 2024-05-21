@@ -43,8 +43,8 @@ type StackSpec struct {
 
 // StackStatus defines the observed state of Stack
 type StackStatus struct {
-	CommonStatus `json:",inline"`
-	Modules      []string `json:"modules,omitempty"`
+	Status  `json:",inline"`
+	Modules []string `json:"modules,omitempty"`
 }
 
 //+kubebuilder:object:root=true
@@ -83,6 +83,14 @@ func (in *Stack) GetVersion() string {
 		return "latest"
 	}
 	return in.Spec.Version
+}
+
+func (in *Stack) MustSkip() bool {
+	return in.GetAnnotations()[SkipLabel] == "true"
+}
+
+func (in *Stack) GetConditions() *Conditions {
+	return &in.Status.Conditions
 }
 
 //+kubebuilder:object:root=true

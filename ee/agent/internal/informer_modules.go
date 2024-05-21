@@ -52,7 +52,7 @@ func getStatus(unstructuredModule *unstructured.Unstructured) (*structpb.Struct,
 		return nil, nil
 	}
 
-	status, err = Restrict[v1beta1.StatusWithConditions](status)
+	status, err = Restrict[v1beta1.Status](status)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to restrict status according to v1beta1.StatusWithConditions")
 	}

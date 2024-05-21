@@ -119,10 +119,11 @@ var _ = Describe("StackController", func() {
 				By("the stack should not be ready anymore", func() {
 					Eventually(func() bool {
 						Expect(LoadResource("", stack.Name, stack)).To(Succeed())
+
 						return stack.Status.Ready
 					}).Should(BeFalse())
 				})
-				By("should not be ready", func() {
+				By("ledger should not be ready", func() {
 					Eventually(func() bool {
 						Expect(LoadResource("", ledger.Name, ledger)).To(Succeed())
 						return ledger.Status.Ready
@@ -178,6 +179,67 @@ var _ = Describe("StackController", func() {
 					Eventually(func(g Gomega) error {
 						return LoadResource("", stack.Name, stack)
 					}).Should(BeNotFound())
+				})
+			})
+		})
+		When("locked", func() {
+			BeforeEach(func() {
+				stack.Annotations = map[string]string{
+					v1beta1.SkipLabel: "true",
+				}
+			})
+			When("creating a module", func() {
+				var (
+					ledger           *v1beta1.Ledger
+					databaseSettings *v1beta1.Settings
+				)
+				JustBeforeEach(func() {
+					ledger = &v1beta1.Ledger{
+						ObjectMeta: RandObjectMeta(),
+						Spec: v1beta1.LedgerSpec{
+							StackDependency: v1beta1.StackDependency{
+								Stack: stack.Name,
+							},
+						},
+					}
+					databaseSettings = settings.New(uuid.NewString(), "postgres.*.uri", "postgresql://localhost", stack.Name)
+
+					Expect(Create(databaseSettings)).To(Succeed())
+					Expect(Create(ledger)).To(Succeed())
+				})
+				JustAfterEach(func() {
+					Expect(client.IgnoreNotFound(Delete(ledger))).To(Succeed())
+					Expect(Delete(databaseSettings)).To(Succeed())
+				})
+				It("Should not install the new module", func() {
+					Eventually(func(g Gomega) string {
+						g.Expect(LoadResource("", ledger.Name, ledger)).To(Succeed())
+						g.Expect(ledger.Status.Conditions.Get("ReconciledWithStack")).ToNot(BeNil())
+						return ledger.Status.Conditions.Get("ReconciledWithStack").Reason
+					}).Should(Equal("Skipped"))
+				})
+				When("then unlocking the stack", func() {
+					JustBeforeEach(func() {
+						Eventually(func(g Gomega) string {
+							g.Expect(LoadResource("", ledger.Name, ledger)).To(Succeed())
+							g.Expect(ledger.Status.Conditions.Get("ReconciledWithStack")).ToNot(BeNil())
+							return ledger.Status.Conditions.Get("ReconciledWithStack").Reason
+						}).Should(Equal("Skipped"))
+						patch := client.MergeFrom(stack.DeepCopy())
+						stack.Annotations = map[string]string{}
+						Expect(Patch(stack, patch)).To(Succeed())
+						Eventually(func(g Gomega) map[string]string {
+							g.Expect(LoadResource("", stack.Name, stack)).To(Succeed())
+							return ledger.Annotations
+						}).ShouldNot(HaveKey(v1beta1.SkipLabel))
+					})
+					It("Should install the module", func() {
+						Eventually(func(g Gomega) string {
+							g.Expect(LoadResource("", ledger.Name, ledger)).To(Succeed())
+							g.Expect(ledger.Status.Conditions.Get("ReconciledWithStack")).ToNot(BeNil())
+							return ledger.Status.Conditions.Get("ReconciledWithStack").Reason
+						}).Should(Equal("Spec"))
+					})
 				})
 			})
 		})

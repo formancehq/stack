@@ -33,7 +33,7 @@ type BrokerConsumerSpec struct {
 
 // BrokerConsumerStatus defines the observed state of BrokerConsumer
 type BrokerConsumerStatus struct {
-	StatusWithConditions `json:",inline"`
+	Status `json:",inline"`
 }
 
 //+kubebuilder:object:root=true
@@ -66,6 +66,10 @@ func (in *BrokerConsumer) SetError(s string) {
 
 func (in *BrokerConsumer) GetStack() string {
 	return in.Spec.Stack
+}
+
+func (in *BrokerConsumer) GetConditions() *Conditions {
+	return &in.Status.Conditions
 }
 
 //+kubebuilder:object:root=true

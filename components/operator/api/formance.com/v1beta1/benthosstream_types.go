@@ -29,7 +29,7 @@ type BenthosStreamSpec struct {
 
 // BenthosStreamStatus defines the observed state of BenthosStream
 type BenthosStreamStatus struct {
-	CommonStatus `json:",inline"`
+	Status `json:",inline"`
 }
 
 //+kubebuilder:object:root=true
@@ -60,6 +60,10 @@ func (in *BenthosStream) SetError(s string) {
 
 func (a BenthosStream) GetStack() string {
 	return a.Spec.Stack
+}
+
+func (in *BenthosStream) GetConditions() *Conditions {
+	return &in.Status.Conditions
 }
 
 //+kubebuilder:object:root=true

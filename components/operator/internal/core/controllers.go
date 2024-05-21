@@ -36,6 +36,21 @@ func ForObjectController[T v1beta1.Object](controller ObjectController[T]) Objec
 				reconcilerError = err
 			}
 		} else {
+			for _, condition := range *object.GetConditions() {
+				if condition.ObservedGeneration != object.GetGeneration() {
+					continue
+				}
+
+				if condition.Status != metav1.ConditionTrue {
+					str := condition.Type
+					if condition.Reason != "" {
+						str += "/" + condition.Reason
+					}
+
+					setStatus(NewPendingError().WithMessage("pending condition: " + str))
+					return nil
+				}
+			}
 			setStatus(nil)
 		}
 
@@ -58,6 +73,15 @@ func ForStackDependency[T v1beta1.Dependent](ctrl StackDependentObjectController
 			}
 		} else {
 			if stack.GetAnnotations()[v1beta1.SkipLabel] == "true" {
+				t.GetConditions().
+					AppendOrReplace(v1beta1.Condition{
+						Type:               "ReconciledWithStack",
+						Status:             metav1.ConditionTrue,
+						ObservedGeneration: stack.GetGeneration(),
+						LastTransitionTime: metav1.Now(),
+						Message:            "Reconciled with stack specification",
+						Reason:             "Skipped",
+					}, v1beta1.ConditionTypeMatch("ReconciledWithStack"))
 				return nil
 			}
 		}
@@ -111,17 +135,16 @@ func ForModule[T v1beta1.Module](underlyingController ModuleController[T]) Stack
 			if err != nil {
 				return err
 			}
-
-			for _, condition := range t.GetConditions() {
-				if condition.ObservedGeneration != t.GetGeneration() {
-					continue
-				}
-
-				if condition.Status != metav1.ConditionTrue {
-					return NewPendingError()
-				}
-			}
 		}
+
+		t.GetConditions().AppendOrReplace(v1beta1.Condition{
+			Type:               "ReconciledWithStack",
+			Status:             metav1.ConditionTrue,
+			ObservedGeneration: stack.GetGeneration(),
+			LastTransitionTime: metav1.Now(),
+			Message:            "Reconciled with stack specification",
+			Reason:             "Spec",
+		}, v1beta1.ConditionTypeMatch("ReconciledWithStack"))
 
 		return nil
 	}

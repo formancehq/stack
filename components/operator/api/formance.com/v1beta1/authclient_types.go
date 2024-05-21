@@ -59,7 +59,7 @@ func (spec AuthClientSpec) MarshalYAML() (interface{}, error) {
 
 // AuthClientStatus defines the observed state of AuthClient
 type AuthClientStatus struct {
-	CommonStatus `json:",inline"`
+	Status `json:",inline"`
 }
 
 //+kubebuilder:object:root=true
@@ -90,6 +90,10 @@ func (a *AuthClient) SetError(s string) {
 
 func (a AuthClient) GetStack() string {
 	return a.Spec.Stack
+}
+
+func (in *AuthClient) GetConditions() *Conditions {
+	return &in.Status.Conditions
 }
 
 //+kubebuilder:object:root=true
