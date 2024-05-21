@@ -1574,6 +1574,9 @@ components:
       - stacks.user.updated
       - stacks.user.deleted
       - stacks.reachness.updated
+      - stacks.module.enabled
+      - stacks.module.disabled
+      - stacks.module.status.updated
       type: string
     LogCursor:
       example:
@@ -1692,7 +1695,6 @@ components:
             type: string
           type: object
       required:
-      - metadata
       - name
       type: object
     StackVersion:

@@ -5,13 +5,13 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Name** | **string** | Stack name | 
-**Metadata** | **map[string]string** |  | 
+**Metadata** | Pointer to **map[string]string** |  | [optional] 
 
 ## Methods
 
 ### NewUpdateStackRequest
 
-`func NewUpdateStackRequest(name string, metadata map[string]string, ) *UpdateStackRequest`
+`func NewUpdateStackRequest(name string, ) *UpdateStackRequest`
 
 NewUpdateStackRequest instantiates a new UpdateStackRequest object
 This constructor will assign default values to properties that have it defined,
@@ -65,6 +65,11 @@ and a boolean to check if the value has been set.
 
 SetMetadata sets Metadata field to given value.
 
+### HasMetadata
+
+`func (o *UpdateStackRequest) HasMetadata() bool`
+
+HasMetadata returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

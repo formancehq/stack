@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Name** | **string** | Stack name | 
-**Metadata** | **map[string]string** |  | 
+**Metadata** | Pointer to **map[string]string** |  | [optional] 
 **Version** | Pointer to **string** | Supported only with agent version &gt;&#x3D; v0.7.0 | [optional] 
 **Status** | **string** |  | 
 **State** | **string** |  | 
@@ -29,7 +29,7 @@ Name | Type | Description | Notes
 
 ### NewStack
 
-`func NewStack(name string, metadata map[string]string, status string, state string, expectedStatus string, lastStateUpdate time.Time, lastExpectedStatusUpdate time.Time, lastStatusUpdate time.Time, reachable bool, id string, organizationId string, uri string, regionID string, stargateEnabled bool, ) *Stack`
+`func NewStack(name string, status string, state string, expectedStatus string, lastStateUpdate time.Time, lastExpectedStatusUpdate time.Time, lastStatusUpdate time.Time, reachable bool, id string, organizationId string, uri string, regionID string, stargateEnabled bool, ) *Stack`
 
 NewStack instantiates a new Stack object
 This constructor will assign default values to properties that have it defined,
@@ -83,6 +83,11 @@ and a boolean to check if the value has been set.
 
 SetMetadata sets Metadata field to given value.
 
+### HasMetadata
+
+`func (o *Stack) HasMetadata() bool`
+
+HasMetadata returns a boolean if a field has been set.
 
 ### GetVersion
 

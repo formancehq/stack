@@ -21,7 +21,7 @@ var _ MappedNullable = &CreateStackRequest{}
 type CreateStackRequest struct {
 	// Stack name
 	Name string `json:"name"`
-	Metadata map[string]string `json:"metadata"`
+	Metadata *map[string]string `json:"metadata,omitempty"`
 	// Supported only with agent version >= v0.7.0
 	Version *string `json:"version,omitempty"`
 	RegionID string `json:"regionID"`
@@ -31,10 +31,9 @@ type CreateStackRequest struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreateStackRequest(name string, metadata map[string]string, regionID string) *CreateStackRequest {
+func NewCreateStackRequest(name string, regionID string) *CreateStackRequest {
 	this := CreateStackRequest{}
 	this.Name = name
-	this.Metadata = metadata
 	this.RegionID = regionID
 	return &this
 }
@@ -71,28 +70,36 @@ func (o *CreateStackRequest) SetName(v string) {
 	o.Name = v
 }
 
-// GetMetadata returns the Metadata field value
+// GetMetadata returns the Metadata field value if set, zero value otherwise.
 func (o *CreateStackRequest) GetMetadata() map[string]string {
-	if o == nil {
+	if o == nil || IsNil(o.Metadata) {
 		var ret map[string]string
 		return ret
 	}
-
-	return o.Metadata
+	return *o.Metadata
 }
 
-// GetMetadataOk returns a tuple with the Metadata field value
+// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *CreateStackRequest) GetMetadataOk() (*map[string]string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Metadata) {
 		return nil, false
 	}
-	return &o.Metadata, true
+	return o.Metadata, true
 }
 
-// SetMetadata sets field value
+// HasMetadata returns a boolean if a field has been set.
+func (o *CreateStackRequest) HasMetadata() bool {
+	if o != nil && !IsNil(o.Metadata) {
+		return true
+	}
+
+	return false
+}
+
+// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
 func (o *CreateStackRequest) SetMetadata(v map[string]string) {
-	o.Metadata = v
+	o.Metadata = &v
 }
 
 // GetVersion returns the Version field value if set, zero value otherwise.
@@ -162,7 +169,9 @@ func (o CreateStackRequest) MarshalJSON() ([]byte, error) {
 func (o CreateStackRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["name"] = o.Name
-	toSerialize["metadata"] = o.Metadata
+	if !IsNil(o.Metadata) {
+		toSerialize["metadata"] = o.Metadata
+	}
 	if !IsNil(o.Version) {
 		toSerialize["version"] = o.Version
 	}

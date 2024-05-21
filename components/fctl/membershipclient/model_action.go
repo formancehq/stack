@@ -51,6 +51,9 @@ const (
 	STACKS_USER_UPDATED Action = "stacks.user.updated"
 	STACKS_USER_DELETED Action = "stacks.user.deleted"
 	STACKS_REACHNESS_UPDATED Action = "stacks.reachness.updated"
+	STACKS_MODULE_ENABLED Action = "stacks.module.enabled"
+	STACKS_MODULE_DISABLED Action = "stacks.module.disabled"
+	STACKS_MODULE_STATUS_UPDATED Action = "stacks.module.status.updated"
 )
 
 // All allowed values of Action enum
@@ -86,6 +89,9 @@ var AllowedActionEnumValues = []Action{
 	"stacks.user.updated",
 	"stacks.user.deleted",
 	"stacks.reachness.updated",
+	"stacks.module.enabled",
+	"stacks.module.disabled",
+	"stacks.module.status.updated",
 }
 
 func (v *Action) UnmarshalJSON(src []byte) error {

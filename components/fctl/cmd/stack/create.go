@@ -117,7 +117,7 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 
 	req := membershipclient.CreateStackRequest{
 		Name:     name,
-		Metadata: metadata,
+		Metadata: pointer.For(metadata),
 		RegionID: region,
 	}
 
