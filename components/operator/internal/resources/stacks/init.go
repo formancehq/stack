@@ -119,16 +119,23 @@ func setModulesCondition(ctx Context, stack *v1beta1.Stack) error {
 	}
 
 	modules := make([]string, 0)
+	pendingModules := make([]string, 0)
 	for _, condition := range stack.Status.Conditions {
-		if condition.Type != "ModuleReconciliation" {
+		if condition.Type != "ModuleReconciliation" || condition.ObservedGeneration != stack.Generation {
 			continue
 		}
 		modules = append(modules, condition.Reason)
+		if condition.Status == metav1.ConditionFalse {
+			pendingModules = append(pendingModules, condition.Reason)
+		}
 	}
 
 	sort.Strings(modules)
 
 	stack.Status.Modules = modules
+	if len(pendingModules) > 0 {
+		return NewPendingError().WithMessage("Pending modules: %s", modules)
+	}
 
 	return nil
 }
