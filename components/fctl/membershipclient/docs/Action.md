@@ -65,6 +65,12 @@
 
 * `STACKS_REACHNESS_UPDATED` (value: `"stacks.reachness.updated"`)
 
+* `STACKS_MODULE_ENABLED` (value: `"stacks.module.enabled"`)
+
+* `STACKS_MODULE_DISABLED` (value: `"stacks.module.disabled"`)
+
+* `STACKS_MODULE_STATUS_UPDATED` (value: `"stacks.module.status.updated"`)
+
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

@@ -1377,6 +1377,9 @@ components:
         - stacks.user.updated
         - stacks.user.deleted
         - stacks.reachness.updated
+        - stacks.module.enabled
+        - stacks.module.disabled
+        - stacks.module.status.updated
     LogCursor:
       properties:
         data:
@@ -1544,7 +1547,6 @@ components:
       type: object
       required:
         - name
-        - metadata
       properties:
         name:
           type: string

@@ -80,8 +80,10 @@ func printMetadata(out io.Writer, stack *membershipclient.Stack) error {
 
 	tableData := pterm.TableData{}
 
-	for k, v := range stack.Metadata {
-		tableData = append(tableData, []string{pterm.LightCyan(k), v})
+	if stack.Metadata != nil {
+		for k, v := range *stack.Metadata {
+			tableData = append(tableData, []string{pterm.LightCyan(k), v})
+		}
 	}
 
 	return pterm.DefaultTable.

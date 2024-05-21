@@ -21,17 +21,16 @@ var _ MappedNullable = &StackData{}
 type StackData struct {
 	// Stack name
 	Name string `json:"name"`
-	Metadata map[string]string `json:"metadata"`
+	Metadata *map[string]string `json:"metadata,omitempty"`
 }
 
 // NewStackData instantiates a new StackData object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewStackData(name string, metadata map[string]string) *StackData {
+func NewStackData(name string) *StackData {
 	this := StackData{}
 	this.Name = name
-	this.Metadata = metadata
 	return &this
 }
 
@@ -67,28 +66,36 @@ func (o *StackData) SetName(v string) {
 	o.Name = v
 }
 
-// GetMetadata returns the Metadata field value
+// GetMetadata returns the Metadata field value if set, zero value otherwise.
 func (o *StackData) GetMetadata() map[string]string {
-	if o == nil {
+	if o == nil || IsNil(o.Metadata) {
 		var ret map[string]string
 		return ret
 	}
-
-	return o.Metadata
+	return *o.Metadata
 }
 
-// GetMetadataOk returns a tuple with the Metadata field value
+// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *StackData) GetMetadataOk() (*map[string]string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Metadata) {
 		return nil, false
 	}
-	return &o.Metadata, true
+	return o.Metadata, true
 }
 
-// SetMetadata sets field value
+// HasMetadata returns a boolean if a field has been set.
+func (o *StackData) HasMetadata() bool {
+	if o != nil && !IsNil(o.Metadata) {
+		return true
+	}
+
+	return false
+}
+
+// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
 func (o *StackData) SetMetadata(v map[string]string) {
-	o.Metadata = v
+	o.Metadata = &v
 }
 
 func (o StackData) MarshalJSON() ([]byte, error) {
@@ -102,7 +109,9 @@ func (o StackData) MarshalJSON() ([]byte, error) {
 func (o StackData) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["name"] = o.Name
-	toSerialize["metadata"] = o.Metadata
+	if !IsNil(o.Metadata) {
+		toSerialize["metadata"] = o.Metadata
+	}
 	return toSerialize, nil
 }
 
