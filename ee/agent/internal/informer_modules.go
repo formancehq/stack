@@ -78,6 +78,7 @@ func (h *ModuleEventHandler) UpdateFunc(oldObj, newObj any) {
 	message := fromUnstructuredToModuleStatusChanged(newVersions, newStatus)
 	if err := h.client.Send(message); err != nil {
 		logger.Errorf("Unable to send message module update: %s", err)
+		return
 	}
 	logger.Infof("Detect module '%s' updated", newVersions.GetName())
 }

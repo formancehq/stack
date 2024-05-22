@@ -15,7 +15,7 @@ type StackEventHandler struct {
 	client MembershipClient
 }
 
-func (h *StackEventHandler) sendStatus(stackName string, status *structpb.Struct) {
+func (h *StackEventHandler) sendStatus(stackName string, status *structpb.Struct) error {
 	if err := h.client.Send(&generated.Message{
 		Message: &generated.Message_StatusChanged{
 			StatusChanged: &generated.StatusChanged{
@@ -25,7 +25,9 @@ func (h *StackEventHandler) sendStatus(stackName string, status *structpb.Struct
 		},
 	}); err != nil {
 		h.logger.Errorf("Unable to send stack status to server: %s", err)
+		return err
 	}
+	return nil
 }
 
 func (h *StackEventHandler) AddFunc(obj interface{}) {
@@ -42,7 +44,9 @@ func (h *StackEventHandler) AddFunc(obj interface{}) {
 		return
 	}
 
-	h.sendStatus(stack.GetName(), status)
+	if err := h.sendStatus(stack.GetName(), status); err != nil {
+		return
+	}
 	logger.Infof("Stack '%s' added", stack.GetName())
 
 }
@@ -81,7 +85,9 @@ func (h *StackEventHandler) UpdateFunc(oldObj, newObj interface{}) {
 		return
 	}
 
-	h.sendStatus(newStack.GetName(), newStatus)
+	if err := h.sendStatus(newStack.GetName(), newStatus); err != nil {
+		return
+	}
 	logger.Infof("Stack '%s' updated", newStack.GetName())
 
 }
