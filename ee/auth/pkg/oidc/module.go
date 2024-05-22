@@ -5,11 +5,12 @@ import (
 	"crypto/rsa"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
+
 	"gopkg.in/square/go-jose.v2"
 
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/delegatedauth"
-	"github.com/gorilla/mux"
 	"github.com/zitadel/oidc/v2/pkg/client/rp"
 	"github.com/zitadel/oidc/v2/pkg/op"
 	"go.uber.org/fx"
@@ -17,7 +18,7 @@ import (
 
 func Module(privateKey *rsa.PrivateKey, issuer string, staticClients ...auth.StaticClient) fx.Option {
 	return fx.Options(
-		fx.Invoke(fx.Annotate(func(router *mux.Router, provider op.OpenIDProvider,
+		fx.Invoke(fx.Annotate(func(router chi.Router, provider op.OpenIDProvider,
 			storage Storage, relyingParty rp.RelyingParty) {
 			AddRoutes(router, provider, storage, relyingParty)
 		}, fx.ParamTags(``, ``, ``, `optional:"true"`))),

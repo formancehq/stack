@@ -16,7 +16,6 @@ import (
 
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/api"
-	"github.com/formancehq/auth/pkg/api/authorization"
 	"github.com/formancehq/auth/pkg/delegatedauth"
 	"github.com/formancehq/auth/pkg/oidc"
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
@@ -136,11 +135,10 @@ func newServeCommand() *cobra.Command {
 				otlpHttpClientModule(viper.GetBool(service.DebugFlag)),
 				fx.Supply(fx.Annotate(cmd.Context(), fx.As(new(context.Context)))),
 				sqlstorage.Module(*connectionOptions, key, o.Clients...),
+				oidc.Module(key, viper.GetString(baseUrlFlag), o.Clients...),
 				api.Module(viper.GetString(listenFlag), viper.GetString(baseUrlFlag), sharedapi.ServiceInfo{
 					Version: Version,
 				}),
-				oidc.Module(key, viper.GetString(baseUrlFlag), o.Clients...),
-				authorization.Module(),
 			}
 
 			if delegatedIssuer := viper.GetString(delegatedIssuerFlag); delegatedIssuer != "" {
