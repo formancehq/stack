@@ -15,6 +15,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/formancehq/stack/libs/go-libs/logging"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
@@ -25,7 +27,6 @@ import (
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/golang-jwt/jwt"
-	"github.com/gorilla/mux"
 	"github.com/oauth2-proxy/mockoidc"
 	"github.com/stretchr/testify/require"
 	"github.com/zitadel/oidc/v2/pkg/client/rp"
@@ -105,7 +106,7 @@ func withServer(t *testing.T, fn func(m *mockoidc.MockOIDC, storage *sqlstorage.
 	require.NoError(t, err)
 
 	// Create the router
-	router := mux.NewRouter()
+	router := chi.NewRouter()
 	oidc.AddRoutes(router, provider, storage, serverRelyingParty)
 
 	// Create our http server for our oidc provider

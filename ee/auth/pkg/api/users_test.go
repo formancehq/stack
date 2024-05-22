@@ -6,6 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/formancehq/stack/libs/go-libs/logging"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
@@ -15,7 +17,6 @@ import (
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/google/uuid"
-	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/require"
 )
 
@@ -34,7 +35,7 @@ var (
 )
 
 func TestListUsers(t *testing.T) {
-	withDbAndUserRouter(t, func(router *mux.Router, db *bun.DB) {
+	withDbAndUserRouter(t, func(router chi.Router, db *bun.DB) {
 		_, err := db.NewInsert().Model(user1).Exec(context.Background())
 		require.NoError(t, err)
 
@@ -52,7 +53,7 @@ func TestListUsers(t *testing.T) {
 }
 
 func TestReadUser(t *testing.T) {
-	withDbAndUserRouter(t, func(router *mux.Router, db *bun.DB) {
+	withDbAndUserRouter(t, func(router chi.Router, db *bun.DB) {
 		_, err := db.NewInsert().Model(user1).Exec(context.Background())
 		require.NoError(t, err)
 
@@ -66,7 +67,7 @@ func TestReadUser(t *testing.T) {
 	})
 }
 
-func withDbAndUserRouter(t *testing.T, callback func(router *mux.Router, db *bun.DB)) {
+func withDbAndUserRouter(t *testing.T, callback func(router chi.Router, db *bun.DB)) {
 	t.Parallel()
 
 	pgDatabase := pgtesting.NewPostgresDatabase(t)
@@ -79,7 +80,7 @@ func withDbAndUserRouter(t *testing.T, callback func(router *mux.Router, db *bun
 
 	require.NoError(t, sqlstorage.Migrate(context.Background(), db))
 
-	router := mux.NewRouter()
+	router := chi.NewRouter()
 	addUserRoutes(db, router)
 
 	callback(router, db)
