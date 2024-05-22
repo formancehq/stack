@@ -21,6 +21,11 @@ func createRuleHandler(b backend.Backend) http.HandlerFunc {
 			return
 		}
 
+		if err := req.Validate(); err != nil {
+			api.BadRequest(w, ErrValidation, err)
+			return
+		}
+
 		rule, err := b.GetService().CreateRule(r.Context(), &req)
 		if err != nil {
 			handleServiceErrors(w, r, err)

@@ -81,15 +81,10 @@ func (s *Service) Reconciliation(ctx context.Context, policyID string, req *Reco
 		DriftBalances:        make(map[string]*big.Int),
 	}
 
-	var reconciliationError bool
 	if len(paymentBalance) != len(ledgerBalance) {
 		res.Status = models.ReconciliationNotOK
 		res.Error = "different number of assets"
-		reconciliationError = true
-		return res, nil
-	}
-
-	if !reconciliationError {
+	} else {
 		for asset, ledgerBalance := range ledgerBalance {
 			err := s.computeDrift(res, asset, ledgerBalance, paymentBalance[asset])
 			if err != nil {

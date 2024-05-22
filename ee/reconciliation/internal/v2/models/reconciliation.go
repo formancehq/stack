@@ -11,6 +11,7 @@ import (
 type ReconciliationStatus string
 
 const (
+	ReconciliationStatusPending   = "PENDING"
 	ReconciliationStatusFailed    = "FAILED"
 	ReconciliationStatusSucceeded = "SUCCEEDED"
 )
@@ -18,12 +19,12 @@ const (
 type Reconciliation struct {
 	bun.BaseModel `bun:"reconciliationsv2.reconciliations" json:"-"`
 
-	ID                   uuid.UUID            `bun:",pk,notnull" json:"id"`
-	Name                 string               `bun:",notnull" json:"name"`
-	PolicyID             uuid.UUID            `bun:",notnull" json:"policyID"`
-	PolicyType           PolicyType           `bun:",notnull" json:"policyType"`
-	CreatedAt            time.Time            `bun:",notnull" json:"createdAt"`
-	ReconciliationStatus ReconciliationStatus `bun:",notnull" json:"status"`
+	ID         uuid.UUID            `bun:",pk,notnull" json:"id"`
+	Name       string               `bun:",notnull" json:"name"`
+	PolicyID   uuid.UUID            `bun:",notnull" json:"policyID"`
+	PolicyType PolicyType           `bun:",notnull" json:"policyType"`
+	CreatedAt  time.Time            `bun:",notnull" json:"createdAt"`
+	Status     ReconciliationStatus `bun:",notnull" json:"status"`
 }
 
 // Reconciliations accounts based are a one time reconciliation between
@@ -32,8 +33,7 @@ type Reconciliation struct {
 type ReconciliationAccountBased struct {
 	bun.BaseModel `bun:"reconciliationsv2.reconciliations_account_based" json:"-"`
 
-	ID                   uuid.UUID            `bun:",pk,notnull" json:"id"`
-	PolicyID             uuid.UUID            `bun:",notnull" json:"policyID"`
+	ReconciliationID     uuid.UUID            `bun:",pk,notnull" json:"id"`
 	ReconciledAtLedger   time.Time            `bun:",notnull" json:"reconciledAtLedger"`
 	ReconciledAtPayments time.Time            `bun:",notnull" json:"reconciledAtPayments"`
 	ReconciliationStatus ReconciliationStatus `bun:",notnull" json:"status"`
@@ -54,32 +54,28 @@ type ReconciliationAccountBased struct {
 // - If one ledger transaction corresponds to two or more payments IDs, we will
 // have one row for each payment ID with the same transaction ID for both and
 // the rule ID that match both of them.
+// - If a ledger transaction or a payments does not correspond to anything, and
+// the delay is not expired, we will have one row with the transaction ID or
+// payment ID with the pending status.
+// - If a ledger transaction or a payments does not correspond to anything, and
+// the delay is expired, we will have one row with the transaction ID or
+// payment ID with the failed status.
+
+type ReconciliationTransactionBasedStatus string
+
+const (
+	ReconciliationTransactionBasedStatusSucceeded = "SUCCEEDED"
+	ReconciliationTransactionBasedStatusPending   = "PENDING"
+	ReconciliationTransactionBasedStatusFailed    = "FAILED"
+)
+
 type ReconciliationTransactionSucceeded struct {
 	bun.BaseModel `bun:"reconciliationsv2.reconciliations_transactions_succeeded" json:"-"`
 
-	PaymentID     string   `bun:",pk,notnull" json:"paymentID"`
-	TransactionID *big.Int `bun:",pk,notnull" json:"transactionID"`
-	RuleID        string   `bun:",pk,notnull" json:"ruleID"`
-}
-
-// We have a configurable delay when the transaction or payment is pending, so
-// they will be stored in a table until the delay is reached.
-type ReconciliationTransactionPending struct {
-	bun.BaseModel `bun:"reconciliationsv2.reconciliations_transactions_pending" json:"-"`
-
-	PaymentID     string    `json:"paymentID"`
-	TransactionID *big.Int  `json:"transactionID"`
-	PolicyID      uuid.UUID `json:"policyID"`
-	CreatedAt     time.Time `json:"createdAt"`
-}
-
-// Failed transactions/paymenbts are stored inside a separated table, they
-// corresponds to failed to reconcile transactions or payments after the
-// configurable delay.
-type ReconciliationTransactionFailed struct {
-	bun.BaseModel `bun:"reconciliationsv2.reconciliations_transactions_failed" json:"-"`
-
-	PaymentID     string    `json:"paymentID"`
-	TransactionID *big.Int  `json:"transactionID"`
-	PolicyID      uuid.UUID `json:"policyID"`
+	PaymentID     string                               `bun:",nullzero" json:"paymentID"`
+	TransactionID *big.Int                             `bun:",nullzero" json:"transactionID"`
+	RuleID        string                               `bun:",nullzero" json:"ruleID"`
+	PolicyID      uuid.UUID                            `bun:",notnull" json:"policyID"`
+	CreatedAt     time.Time                            `bun:",notnull" json:"createdAt"`
+	Status        ReconciliationTransactionBasedStatus `bun:",notnull" json:"status"`
 }

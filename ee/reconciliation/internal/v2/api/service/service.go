@@ -25,7 +25,10 @@ type Store interface {
 	GetPolicy(ctx context.Context, id uuid.UUID) (*models.Policy, error)
 	ListPolicies(ctx context.Context, q storage.ListPoliciesQuery) (*bunpaginate.Cursor[models.Policy], error)
 
+	CreateReconciliation(ctx context.Context, reconciliation *models.Reconciliation) error
+	CreateAccountBasedReconciliation(ctx context.Context, accountBasedReconciliation *models.ReconciliationAccountBased) error
 	GetReconciliation(ctx context.Context, id uuid.UUID) (*models.Reconciliation, error)
+	GetAccountBasedReconciliation(ctx context.Context, id uuid.UUID) (*models.ReconciliationAccountBased, error)
 	ListReconciliations(ctx context.Context, q storage.ListReconciliationsQuery) (*bunpaginate.Cursor[models.Reconciliation], error)
 }
 

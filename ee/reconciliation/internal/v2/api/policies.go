@@ -21,6 +21,11 @@ func createPolicyHandler(b backend.Backend) http.HandlerFunc {
 			return
 		}
 
+		if err := req.Validate(); err != nil {
+			api.BadRequest(w, ErrValidation, err)
+			return
+		}
+
 		policy, err := b.GetService().CreatePolicy(r.Context(), &req)
 		if err != nil {
 			handleServiceErrors(w, r, err)
@@ -31,7 +36,7 @@ func createPolicyHandler(b backend.Backend) http.HandlerFunc {
 	}
 }
 
-func udpatePolicyRulesHandler(b backend.Backend) http.HandlerFunc {
+func updatePolicyRulesHandler(b backend.Backend) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req service.UpdatePolicyRulesRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {

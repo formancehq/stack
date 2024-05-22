@@ -25,7 +25,9 @@ type Service interface {
 	ListPolicies(ctx context.Context, q storage.ListPoliciesQuery) (*bunpaginate.Cursor[models.Policy], error)
 
 	GetReconciliation(ctx context.Context, id string) (*models.Reconciliation, error)
+	GetAccountBasedReconciliationDetails(ctx context.Context, id string) (*models.ReconciliationAccountBased, error)
 	ListReconciliations(ctx context.Context, q storage.ListReconciliationsQuery) (*bunpaginate.Cursor[models.Reconciliation], error)
+	CreateReconciliation(ctx context.Context, req *service.CreateReconciliationRequest) (*models.Reconciliation, error)
 }
 
 type Backend interface {

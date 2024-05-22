@@ -25,7 +25,7 @@ type Rule struct {
 	ID        string    `bun:",pk,notnull" json:"id"`
 	Name      string    `bun:",notnull" json:"name"`
 	CreatedAt time.Time `bun:",notnull" json:"createdAt"`
-	RuleType  RuleType  `bun:",notnull" json:"ruleType"`
+	Type      RuleType  `bun:",notnull" json:"ruleType"`
 
 	RuleDefinition json.RawMessage `bun:",type:jsonb,notnull" json:"ruleDefinition"`
 }

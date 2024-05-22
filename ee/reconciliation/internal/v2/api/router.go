@@ -27,14 +27,16 @@ func NewRouter(
 				r.Delete("/", deletePolicyHandler(b))
 				r.Post("/enable", enablePolicyHandler(b))
 				r.Post("/disable", disablePolicyHandler(b))
-				r.Patch("/rules", udpatePolicyRulesHandler(b))
+				r.Patch("/rules", updatePolicyRulesHandler(b))
 			})
 		})
 
 		r.Route("/reconciliations", func(r chi.Router) {
 			r.Get("/", listReconciliationsHandler(b))
+			r.Post("/", createReconciliationHandler(b))
 			r.Route("/{reconciliationID}", func(r chi.Router) {
 				r.Get("/", getReconciliationHandler(b))
+				r.Get("/details", getReconciliationDetails(b))
 			})
 		})
 	})

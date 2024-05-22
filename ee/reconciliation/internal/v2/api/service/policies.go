@@ -39,13 +39,31 @@ func (r *CreatePolicyRequest) Validate() error {
 }
 
 func (s *Service) CreatePolicy(ctx context.Context, req *CreatePolicyRequest) (*models.Policy, error) {
+	policyType := models.PolicyType(req.Type)
+
+	switch policyType {
+	case models.PolicyTypeAccountBased:
+		if len(req.Rules) != 1 {
+			return nil, errors.New("account-based policy must have exactly one rule")
+		}
+
+		rule, err := s.store.GetRule(ctx, req.Rules[0])
+		if err != nil {
+			return nil, newStorageError(err, "getting rule")
+		}
+
+		if rule.Type != models.RuleTypeAccountBased {
+			return nil, errors.New("rule must be account-based")
+		}
+	}
+
 	now := time.Now()
 	policy := &models.Policy{
 		ID:        uuid.New(),
 		Name:      req.Name,
 		CreatedAt: now,
 		UpdatedAt: now,
-		Type:      models.PolicyType(req.Type),
+		Type:      policyType,
 		Enabled:   true,
 		Rules:     req.Rules,
 	}

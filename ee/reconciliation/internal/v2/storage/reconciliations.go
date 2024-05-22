@@ -2,6 +2,8 @@ package storage
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	storageerrors "github.com/formancehq/reconciliation/internal/utils/storage/errors"
 	"github.com/formancehq/reconciliation/internal/v2/models"
@@ -22,6 +24,16 @@ func (s *Storage) CreateReconciliation(ctx context.Context, reconciliation *mode
 	return nil
 }
 
+func (s *Storage) CreateAccountBasedReconciliation(ctx context.Context, accountBasedReconciliation *models.ReconciliationAccountBased) error {
+	_, err := s.db.NewInsert().
+		Model(accountBasedReconciliation).
+		Exec(ctx)
+	if err != nil {
+		return storageerrors.E("failed to create account based reconciliation", err)
+	}
+	return nil
+}
+
 func (s *Storage) GetReconciliation(ctx context.Context, id uuid.UUID) (*models.Reconciliation, error) {
 	var reconciliation models.Reconciliation
 	err := s.db.NewSelect().
@@ -32,6 +44,18 @@ func (s *Storage) GetReconciliation(ctx context.Context, id uuid.UUID) (*models.
 		return nil, storageerrors.E("failed to get reconciliation", err)
 	}
 	return &reconciliation, nil
+}
+
+func (s *Storage) GetAccountBasedReconciliation(ctx context.Context, id uuid.UUID) (*models.ReconciliationAccountBased, error) {
+	var accountBasedReconciliation models.ReconciliationAccountBased
+	err := s.db.NewSelect().
+		Model(&accountBasedReconciliation).
+		Where("id = ?", id).
+		Scan(ctx)
+	if err != nil {
+		return nil, storageerrors.E("failed to get account based reconciliation", err)
+	}
+	return &accountBasedReconciliation, nil
 }
 
 func (s *Storage) buildReconciliationListQuery(selectQuery *bun.SelectQuery, q ListReconciliationsQuery, where string, args []any) *bun.SelectQuery {
@@ -70,6 +94,23 @@ func (s *Storage) ListReconciliations(ctx context.Context, q ListReconciliations
 func (s *Storage) reconciliationsQueryContext(qb query.Builder, q ListReconciliationsQuery) (string, []any, error) {
 	return qb.Build(query.ContextFn(func(key, operator string, value any) (string, []any, error) {
 		switch {
+		case key == "createdAt":
+			var timestamp time.Time
+			switch t := value.(type) {
+			case string:
+				var err error
+				timestamp, err = time.Parse(time.RFC3339, t)
+				if err != nil {
+					return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "invalid 'createdAt' value")
+				}
+			case time.Time:
+				timestamp = t
+			default:
+				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'createdAt' column can only be used with string or time.Time")
+			}
+
+			return fmt.Sprintf("created_at %s ?", query.DefaultComparisonOperatorsMapping[operator]), []any{timestamp}, nil
+
 		case key == "name":
 			if operator != "$match" {
 				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'name' column can only be used with $match")

@@ -55,7 +55,7 @@ func (s *Service) CreateRule(ctx context.Context, req *CreateRuleRequest) (*mode
 		ID:             id,
 		Name:           req.Name,
 		CreatedAt:      time.Now(),
-		RuleType:       req.RuleType,
+		Type:           req.RuleType,
 		RuleDefinition: req.Rule,
 	}
 
