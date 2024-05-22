@@ -73,7 +73,6 @@ func withDbAndUserRouter(t *testing.T, callback func(router chi.Router, db *bun.
 	pgDatabase := pgtesting.NewPostgresDatabase(t)
 	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: pgDatabase.ConnString(),
-		Debug:              testing.Verbose(),
 	})
 	require.NoError(t, err)
 	defer db.Close()

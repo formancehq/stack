@@ -10,8 +10,8 @@ import (
 	"github.com/uptrace/opentelemetry-go-extra/otellogrus"
 )
 
-func GetDefaultLogger(w io.Writer) logging.Logger {
-	l := logging.DefaultLogger(w, IsDebug())
+func GetDefaultLogger(w io.Writer, debug bool) logging.Logger {
+	l := logging.DefaultLogger(w, debug)
 
 	if viper.GetBool(otlptraces.OtelTracesFlag) {
 		l.AddHook(otellogrus.NewHook(otellogrus.WithLevels(

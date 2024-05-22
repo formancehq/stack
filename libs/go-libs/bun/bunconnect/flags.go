@@ -59,7 +59,6 @@ func ConnectionOptionsFromFlags(ctx context.Context) (*ConnectionOptions, error)
 	}
 	return &ConnectionOptions{
 		DatabaseSourceName: viper.GetString(PostgresURIFlag),
-		Debug:              service.IsDebug(),
 		MaxIdleConns:       viper.GetInt(PostgresMaxIdleConnsFlag),
 		ConnMaxIdleTime:    viper.GetDuration(PostgresConnMaxIdleTimeFlag),
 		MaxOpenConns:       viper.GetInt(PostgresMaxOpenConnsFlag),

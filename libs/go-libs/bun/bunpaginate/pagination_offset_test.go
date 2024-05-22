@@ -18,7 +18,6 @@ func TestOffsetPagination(t *testing.T) {
 	pgServer := pgtesting.NewPostgresDatabase(t)
 	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: pgServer.ConnString(),
-		Debug:              testing.Verbose(),
 	})
 	require.NoError(t, err)
 	t.Cleanup(func() {

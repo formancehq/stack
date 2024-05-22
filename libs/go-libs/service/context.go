@@ -2,12 +2,14 @@ package service
 
 import (
 	"context"
+    "github.com/spf13/viper"
 )
 
 type contextKey string
 
 const (
 	lifecycleContextKey contextKey = "ready"
+	debugKey            contextKey = "debug"
 )
 
 var closedChan = make(chan struct{})
@@ -42,6 +44,14 @@ func lifecycleFromContext(ctx context.Context) *lifecycle {
 
 func ContextWithLifecycle(ctx context.Context) context.Context {
 	return context.WithValue(ctx, lifecycleContextKey, newLifecycle())
+}
+
+func ContextWithDebug(ctx context.Context) context.Context {
+    return context.WithValue(ctx, debugKey, true)
+}
+
+func IsDebug(ctx context.Context) bool {
+    return viper.GetBool(DebugFlag)
 }
 
 func markAsAppReady(ctx context.Context) {

@@ -1,15 +1,15 @@
 package service
 
 import (
-	"context"
-	"io"
-	"os"
+    "context"
+    "github.com/spf13/viper"
+    "io"
+    "os"
 
-	"github.com/formancehq/stack/libs/go-libs/errorsutils"
-	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"go.uber.org/fx"
+    "github.com/formancehq/stack/libs/go-libs/errorsutils"
+    "github.com/formancehq/stack/libs/go-libs/logging"
+    "github.com/spf13/cobra"
+    "go.uber.org/fx"
 )
 
 const DebugFlag = "debug"
@@ -19,17 +19,13 @@ func BindFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().Bool(logging.JsonFormattingLoggerFlag, false, "Format logs as json")
 }
 
-func IsDebug() bool {
-	return viper.GetBool(DebugFlag)
-}
-
 type App struct {
 	options []fx.Option
 	output  io.Writer
 }
 
 func (a *App) Run(ctx context.Context) error {
-	logger := GetDefaultLogger(a.output)
+	logger := GetDefaultLogger(a.output, viper.GetBool(DebugFlag))
 	logger.Infof("Starting application")
 	logger.Debugf("Environment variables")
 	for _, v := range os.Environ() {

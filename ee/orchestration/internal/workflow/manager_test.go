@@ -23,7 +23,6 @@ func TestConfig(t *testing.T) {
 	database := pgtesting.NewPostgresDatabase(t)
 	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: database.ConnString(),
-		Debug:              testing.Verbose(),
 	})
 	require.NoError(t, err)
 	t.Cleanup(func() {

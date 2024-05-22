@@ -19,7 +19,6 @@ func TestStore(t *testing.T) {
 	pgDB := pgtesting.NewPostgresDatabase(t)
 	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: pgDB.ConnString(),
-		Debug:              testing.Verbose(),
 	})
 	require.NoError(t, err)
 	defer func() {

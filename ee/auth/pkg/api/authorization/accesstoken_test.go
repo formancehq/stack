@@ -45,7 +45,6 @@ func TestVerifyAccessToken(t *testing.T) {
 	postgresDB := pgtesting.NewPostgresDatabase(t)
 	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: postgresDB.ConnString(),
-		Debug:              testing.Verbose(),
 	})
 	require.NoError(t, err)
 	defer db.Close()
