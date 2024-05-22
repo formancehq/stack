@@ -13,13 +13,13 @@ Name | Type | Description | Notes
 **DeletedAt** | Pointer to **time.Time** |  | [optional] 
 **DisabledAt** | Pointer to **time.Time** |  | [optional] 
 **AuditEnabled** | Pointer to **bool** |  | [optional] 
-**Synchronised** | Pointer to **bool** |  | [optional] 
+**Synchronised** | **bool** |  | 
 
 ## Methods
 
 ### NewStackAllOf
 
-`func NewStackAllOf(id string, organizationId string, uri string, regionID string, stargateEnabled bool, ) *StackAllOf`
+`func NewStackAllOf(id string, organizationId string, uri string, regionID string, stargateEnabled bool, synchronised bool, ) *StackAllOf`
 
 NewStackAllOf instantiates a new StackAllOf object
 This constructor will assign default values to properties that have it defined,
@@ -253,11 +253,6 @@ and a boolean to check if the value has been set.
 
 SetSynchronised sets Synchronised field to given value.
 
-### HasSynchronised
-
-`func (o *StackAllOf) HasSynchronised() bool`
-
-HasSynchronised returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

@@ -24,13 +24,13 @@ Name | Type | Description | Notes
 **DeletedAt** | Pointer to **time.Time** |  | [optional] 
 **DisabledAt** | Pointer to **time.Time** |  | [optional] 
 **AuditEnabled** | Pointer to **bool** |  | [optional] 
-**Synchronised** | Pointer to **bool** |  | [optional] 
+**Synchronised** | **bool** |  | 
 
 ## Methods
 
 ### NewStack
 
-`func NewStack(name string, status string, state string, expectedStatus string, lastStateUpdate time.Time, lastExpectedStatusUpdate time.Time, lastStatusUpdate time.Time, reachable bool, id string, organizationId string, uri string, regionID string, stargateEnabled bool, ) *Stack`
+`func NewStack(name string, status string, state string, expectedStatus string, lastStateUpdate time.Time, lastExpectedStatusUpdate time.Time, lastStatusUpdate time.Time, reachable bool, id string, organizationId string, uri string, regionID string, stargateEnabled bool, synchronised bool, ) *Stack`
 
 NewStack instantiates a new Stack object
 This constructor will assign default values to properties that have it defined,
@@ -499,11 +499,6 @@ and a boolean to check if the value has been set.
 
 SetSynchronised sets Synchronised field to given value.
 
-### HasSynchronised
-
-`func (o *Stack) HasSynchronised() bool`
-
-HasSynchronised returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

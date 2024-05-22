@@ -2332,6 +2332,7 @@ components:
       - organizationId
       - regionID
       - stargateEnabled
+      - synchronised
       - uri
       type: object
       example: null

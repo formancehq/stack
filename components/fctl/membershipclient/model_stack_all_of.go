@@ -33,20 +33,21 @@ type StackAllOf struct {
 	DeletedAt *time.Time `json:"deletedAt,omitempty"`
 	DisabledAt *time.Time `json:"disabledAt,omitempty"`
 	AuditEnabled *bool `json:"auditEnabled,omitempty"`
-	Synchronised *bool `json:"synchronised,omitempty"`
+	Synchronised bool `json:"synchronised"`
 }
 
 // NewStackAllOf instantiates a new StackAllOf object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewStackAllOf(id string, organizationId string, uri string, regionID string, stargateEnabled bool) *StackAllOf {
+func NewStackAllOf(id string, organizationId string, uri string, regionID string, stargateEnabled bool, synchronised bool) *StackAllOf {
 	this := StackAllOf{}
 	this.Id = id
 	this.OrganizationId = organizationId
 	this.Uri = uri
 	this.RegionID = regionID
 	this.StargateEnabled = stargateEnabled
+	this.Synchronised = synchronised
 	return &this
 }
 
@@ -306,36 +307,28 @@ func (o *StackAllOf) SetAuditEnabled(v bool) {
 	o.AuditEnabled = &v
 }
 
-// GetSynchronised returns the Synchronised field value if set, zero value otherwise.
+// GetSynchronised returns the Synchronised field value
 func (o *StackAllOf) GetSynchronised() bool {
-	if o == nil || IsNil(o.Synchronised) {
+	if o == nil {
 		var ret bool
 		return ret
 	}
-	return *o.Synchronised
+
+	return o.Synchronised
 }
 
-// GetSynchronisedOk returns a tuple with the Synchronised field value if set, nil otherwise
+// GetSynchronisedOk returns a tuple with the Synchronised field value
 // and a boolean to check if the value has been set.
 func (o *StackAllOf) GetSynchronisedOk() (*bool, bool) {
-	if o == nil || IsNil(o.Synchronised) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Synchronised, true
+	return &o.Synchronised, true
 }
 
-// HasSynchronised returns a boolean if a field has been set.
-func (o *StackAllOf) HasSynchronised() bool {
-	if o != nil && !IsNil(o.Synchronised) {
-		return true
-	}
-
-	return false
-}
-
-// SetSynchronised gets a reference to the given bool and assigns it to the Synchronised field.
+// SetSynchronised sets field value
 func (o *StackAllOf) SetSynchronised(v bool) {
-	o.Synchronised = &v
+	o.Synchronised = v
 }
 
 func (o StackAllOf) MarshalJSON() ([]byte, error) {
@@ -365,9 +358,7 @@ func (o StackAllOf) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.AuditEnabled) {
 		toSerialize["auditEnabled"] = o.AuditEnabled
 	}
-	if !IsNil(o.Synchronised) {
-		toSerialize["synchronised"] = o.Synchronised
-	}
+	toSerialize["synchronised"] = o.Synchronised
 	return toSerialize, nil
 }
 
