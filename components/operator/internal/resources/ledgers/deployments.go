@@ -27,34 +27,21 @@ import (
 func installLedger(ctx core.Context, stack *v1beta1.Stack,
 	ledger *v1beta1.Ledger, database *v1beta1.Database, image string, isV2 bool) error {
 
-	replicasSettings, err := settings.GetStringOrDefault(ctx, stack.Name, "1", "deployments", "ledger", "replicas")
+	replicasSettings, err := settings.GetIntOrDefault(ctx, stack.Name, 1, "deployments", "ledger", "replicas")
 	if err != nil {
 		return err
 	}
 
-	switch ledger.Spec.DeploymentStrategy {
-	case v1beta1.DeploymentStrategyMonoWriterMultipleReader:
-		if err := core.DeleteIfExists[*appsv1.Deployment](ctx, core.GetNamespacedResourceName(stack.Name, "ledger")); err != nil {
-			return err
-		}
-		return installLedgerMonoWriterMultipleReader(ctx, stack, ledger, database, image, isV2)
-	case v1beta1.DeploymentStrategySingle:
+	if ledger.Spec.DeploymentStrategy == v1beta1.DeploymentStrategySingle || replicasSettings <= 1 {
 		if err := uninstallLedgerMonoWriterMultipleReader(ctx, stack); err != nil {
 			return err
 		}
 		return installLedgerSingleInstance(ctx, stack, ledger, database, image, isV2)
-	default:
-		if replicasSettings <= "1" {
-			if err := uninstallLedgerMonoWriterMultipleReader(ctx, stack); err != nil {
-				return err
-			}
-			return installLedgerSingleInstance(ctx, stack, ledger, database, image, isV2)
-		} else {
-			if err := core.DeleteIfExists[*appsv1.Deployment](ctx, core.GetNamespacedResourceName(stack.Name, "ledger")); err != nil {
-				return err
-			}
-			return installLedgerMonoWriterMultipleReader(ctx, stack, ledger, database, image, isV2)
+	} else {
+		if err := core.DeleteIfExists[*appsv1.Deployment](ctx, core.GetNamespacedResourceName(stack.Name, "ledger")); err != nil {
+			return err
 		}
+		return installLedgerMonoWriterMultipleReader(ctx, stack, ledger, database, image, isV2)
 	}
 }
 
