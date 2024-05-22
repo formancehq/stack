@@ -2,7 +2,6 @@ package modules
 
 import (
 	"fmt"
-
 	"github.com/formancehq/stack/tests/integration/internal"
 	"github.com/formancehq/webhooks/cmd"
 )
