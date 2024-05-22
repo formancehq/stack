@@ -48,13 +48,14 @@ type Stack struct {
 	DeletedAt *time.Time `json:"deletedAt,omitempty"`
 	DisabledAt *time.Time `json:"disabledAt,omitempty"`
 	AuditEnabled *bool `json:"auditEnabled,omitempty"`
+	Synchronised bool `json:"synchronised"`
 }
 
 // NewStack instantiates a new Stack object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewStack(name string, status string, state string, expectedStatus string, lastStateUpdate time.Time, lastExpectedStatusUpdate time.Time, lastStatusUpdate time.Time, reachable bool, id string, organizationId string, uri string, regionID string, stargateEnabled bool) *Stack {
+func NewStack(name string, status string, state string, expectedStatus string, lastStateUpdate time.Time, lastExpectedStatusUpdate time.Time, lastStatusUpdate time.Time, reachable bool, id string, organizationId string, uri string, regionID string, stargateEnabled bool, synchronised bool) *Stack {
 	this := Stack{}
 	this.Name = name
 	this.Status = status
@@ -69,6 +70,7 @@ func NewStack(name string, status string, state string, expectedStatus string, l
 	this.Uri = uri
 	this.RegionID = regionID
 	this.StargateEnabled = stargateEnabled
+	this.Synchronised = synchronised
 	return &this
 }
 
@@ -616,6 +618,30 @@ func (o *Stack) SetAuditEnabled(v bool) {
 	o.AuditEnabled = &v
 }
 
+// GetSynchronised returns the Synchronised field value
+func (o *Stack) GetSynchronised() bool {
+	if o == nil {
+		var ret bool
+		return ret
+	}
+
+	return o.Synchronised
+}
+
+// GetSynchronisedOk returns a tuple with the Synchronised field value
+// and a boolean to check if the value has been set.
+func (o *Stack) GetSynchronisedOk() (*bool, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Synchronised, true
+}
+
+// SetSynchronised sets field value
+func (o *Stack) SetSynchronised(v bool) {
+	o.Synchronised = v
+}
+
 func (o Stack) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -660,6 +686,7 @@ func (o Stack) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.AuditEnabled) {
 		toSerialize["auditEnabled"] = o.AuditEnabled
 	}
+	toSerialize["synchronised"] = o.Synchronised
 	return toSerialize, nil
 }
 

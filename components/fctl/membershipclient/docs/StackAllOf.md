@@ -13,12 +13,13 @@ Name | Type | Description | Notes
 **DeletedAt** | Pointer to **time.Time** |  | [optional] 
 **DisabledAt** | Pointer to **time.Time** |  | [optional] 
 **AuditEnabled** | Pointer to **bool** |  | [optional] 
+**Synchronised** | **bool** |  | 
 
 ## Methods
 
 ### NewStackAllOf
 
-`func NewStackAllOf(id string, organizationId string, uri string, regionID string, stargateEnabled bool, ) *StackAllOf`
+`func NewStackAllOf(id string, organizationId string, uri string, regionID string, stargateEnabled bool, synchronised bool, ) *StackAllOf`
 
 NewStackAllOf instantiates a new StackAllOf object
 This constructor will assign default values to properties that have it defined,
@@ -232,6 +233,26 @@ SetAuditEnabled sets AuditEnabled field to given value.
 `func (o *StackAllOf) HasAuditEnabled() bool`
 
 HasAuditEnabled returns a boolean if a field has been set.
+
+### GetSynchronised
+
+`func (o *StackAllOf) GetSynchronised() bool`
+
+GetSynchronised returns the Synchronised field if non-nil, zero value otherwise.
+
+### GetSynchronisedOk
+
+`func (o *StackAllOf) GetSynchronisedOk() (*bool, bool)`
+
+GetSynchronisedOk returns a tuple with the Synchronised field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetSynchronised
+
+`func (o *StackAllOf) SetSynchronised(v bool)`
+
+SetSynchronised sets Synchronised field to given value.
+
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

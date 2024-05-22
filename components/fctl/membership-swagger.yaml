@@ -1627,6 +1627,7 @@ components:
             - uri
             - regionID
             - stargateEnabled
+            - synchronised
           properties:
             id:
               type: string
@@ -1652,6 +1653,8 @@ components:
               type: string
               format: date-time
             auditEnabled:
+              type: boolean
+            synchronised:
               type: boolean
     UserData:
       allOf:

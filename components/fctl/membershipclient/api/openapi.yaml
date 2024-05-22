@@ -2325,11 +2325,14 @@ components:
           type: string
         auditEnabled:
           type: boolean
+        synchronised:
+          type: boolean
       required:
       - id
       - organizationId
       - regionID
       - stargateEnabled
+      - synchronised
       - uri
       type: object
       example: null

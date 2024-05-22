@@ -24,12 +24,13 @@ Name | Type | Description | Notes
 **DeletedAt** | Pointer to **time.Time** |  | [optional] 
 **DisabledAt** | Pointer to **time.Time** |  | [optional] 
 **AuditEnabled** | Pointer to **bool** |  | [optional] 
+**Synchronised** | **bool** |  | 
 
 ## Methods
 
 ### NewStack
 
-`func NewStack(name string, status string, state string, expectedStatus string, lastStateUpdate time.Time, lastExpectedStatusUpdate time.Time, lastStatusUpdate time.Time, reachable bool, id string, organizationId string, uri string, regionID string, stargateEnabled bool, ) *Stack`
+`func NewStack(name string, status string, state string, expectedStatus string, lastStateUpdate time.Time, lastExpectedStatusUpdate time.Time, lastStatusUpdate time.Time, reachable bool, id string, organizationId string, uri string, regionID string, stargateEnabled bool, synchronised bool, ) *Stack`
 
 NewStack instantiates a new Stack object
 This constructor will assign default values to properties that have it defined,
@@ -478,6 +479,26 @@ SetAuditEnabled sets AuditEnabled field to given value.
 `func (o *Stack) HasAuditEnabled() bool`
 
 HasAuditEnabled returns a boolean if a field has been set.
+
+### GetSynchronised
+
+`func (o *Stack) GetSynchronised() bool`
+
+GetSynchronised returns the Synchronised field if non-nil, zero value otherwise.
+
+### GetSynchronisedOk
+
+`func (o *Stack) GetSynchronisedOk() (*bool, bool)`
+
+GetSynchronisedOk returns a tuple with the Synchronised field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetSynchronised
+
+`func (o *Stack) SetSynchronised(v bool)`
+
+SetSynchronised sets Synchronised field to given value.
+
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
