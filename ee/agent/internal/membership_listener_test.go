@@ -5,7 +5,6 @@ import (
 	"math/rand"
 	"path/filepath"
 	osRuntime "runtime"
-	"strings"
 	"testing"
 	"time"
 
@@ -109,19 +108,22 @@ func TestDeleteModule(t *testing.T) {
 					}
 				}
 
-				require.NoError(t, testConfig.client.Post().Resource("Reconciliations").Body(&recon).Do(ctx).Error())
+				gvk := v1beta1.GroupVersion.WithKind("Reconciliation")
+				resources, err := testConfig.mapper.RESTMapping(gvk.GroupKind(), gvk.Version)
+				require.NoError(t, err)
+
+				require.NoError(t, testConfig.client.Post().Resource(resources.Resource.Resource).Body(&recon).Do(ctx).Error())
 				orders := NewMembershipClientMock()
 
 				membershipListener := NewMembershipListener(NewDefaultK8SClient(testConfig.client), ClientInfo{}, testConfig.mapper, orders)
 
 				if tc.withLabels {
-					gvk := v1beta1.GroupVersion.WithKind("Reconciliation")
-					require.NoError(t, membershipListener.deleteModule(ctx, logging.Testing(), strings.ToLower(gvk.Kind), stackName))
-					require.Error(t, testConfig.client.Get().Resource("Reconciliations").Name(recon.Name).Do(ctx).Error())
+					require.NoError(t, membershipListener.deleteModule(ctx, logging.Testing(), resources.Resource.Resource, stackName))
+					require.Error(t, testConfig.client.Get().Resource(resources.Resource.Resource).Name(recon.Name).Do(ctx).Error())
 				}
 
 				if !tc.withLabels {
-					require.NoError(t, testConfig.client.Get().Resource("Reconciliations").Name(recon.Name).Do(ctx).Error())
+					require.NoError(t, testConfig.client.Get().Resource(resources.Resource.Resource).Name(recon.Name).Do(ctx).Error())
 				}
 			})
 		}
