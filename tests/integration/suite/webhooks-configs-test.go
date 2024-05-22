@@ -12,8 +12,8 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	. "github.com/formancehq/stack/tests/integration/internal"
-	webhooks "github.com/formancehq/webhooks/pkg"
-	"github.com/formancehq/webhooks/pkg/security"
+	webhookSecurity "github.com/formancehq/webhooks/pkg/security"
+	webhooksUtils "github.com/formancehq/webhooks/pkg/utils"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -24,7 +24,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 			var (
 				httpServer *httptest.Server
 				insertResp *shared.ConfigResponse
-				secret     = webhooks.NewSecret()
+				secret     = webhooksUtils.NewSecret()
 			)
 
 			BeforeEach(func() {
@@ -33,24 +33,29 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 						id := r.Header.Get("formance-webhook-id")
 						ts := r.Header.Get("formance-webhook-timestamp")
 						signatures := r.Header.Get("formance-webhook-signature")
+
 						timeInt, err := strconv.ParseInt(ts, 10, 64)
+						
 						if err != nil {
 							http.Error(w, err.Error(), http.StatusInternalServerError)
 							return
 						}
 
 						payload, err := io.ReadAll(r.Body)
+						
 						if err != nil {
 							http.Error(w, err.Error(), http.StatusInternalServerError)
 							return
 						}
-
-						ok, err := security.Verify(signatures, id, timeInt, secret, payload)
+						
+						ok, err := webhookSecurity.Verify(signatures, id, timeInt, secret, payload)
 						if err != nil {
+							
 							http.Error(w, err.Error(), http.StatusInternalServerError)
 							return
 						}
 						if !ok {
+							
 							http.Error(w, "WEBHOOKS SIGNATURE VERIFICATION NOK", http.StatusBadRequest)
 							return
 						}

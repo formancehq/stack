@@ -10,9 +10,9 @@ import (
 type WebhooksErrorsEnum string
 
 const (
-	WebhooksErrorsEnumInternal   WebhooksErrorsEnum = "INTERNAL"
-	WebhooksErrorsEnumValidation WebhooksErrorsEnum = "VALIDATION"
-	WebhooksErrorsEnumNotFound   WebhooksErrorsEnum = "NOT_FOUND"
+	WebhooksErrorsEnumInternalType   WebhooksErrorsEnum = "INTERNAL_TYPE"
+	WebhooksErrorsEnumValidationType WebhooksErrorsEnum = "VALIDATION_TYPE"
+	WebhooksErrorsEnumNotFound       WebhooksErrorsEnum = "NOT_FOUND"
 )
 
 func (e WebhooksErrorsEnum) ToPointer() *WebhooksErrorsEnum {
@@ -24,9 +24,9 @@ func (e *WebhooksErrorsEnum) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	switch v {
-	case "INTERNAL":
+	case "INTERNAL_TYPE":
 		fallthrough
-	case "VALIDATION":
+	case "VALIDATION_TYPE":
 		fallthrough
 	case "NOT_FOUND":
 		*e = WebhooksErrorsEnum(v)

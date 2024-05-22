@@ -7,7 +7,7 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	. "github.com/formancehq/stack/tests/integration/internal"
-	webhooks "github.com/formancehq/webhooks/pkg"
+	webhooks "github.com/formancehq/webhooks/pkg/utils"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )

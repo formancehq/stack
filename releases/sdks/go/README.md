@@ -249,13 +249,28 @@ func main() {
 
 ### [Webhooks](docs/sdks/webhooks/README.md)
 
+* [AbortWaitingAttempt](docs/sdks/webhooks/README.md#abortwaitingattempt) - Abort one waiting attempt
 * [ActivateConfig](docs/sdks/webhooks/README.md#activateconfig) - Activate one config
+* [ActivateHook](docs/sdks/webhooks/README.md#activatehook) - Activate one Hook
 * [ChangeConfigSecret](docs/sdks/webhooks/README.md#changeconfigsecret) - Change the signing secret of a config
 * [DeactivateConfig](docs/sdks/webhooks/README.md#deactivateconfig) - Deactivate one config
+* [DeactivateHook](docs/sdks/webhooks/README.md#deactivatehook) - Deactivate one Hook
 * [DeleteConfig](docs/sdks/webhooks/README.md#deleteconfig) - Delete one config
+* [DeleteHook](docs/sdks/webhooks/README.md#deletehook) - Delete one Hook
+* [GetAbortedAttempts](docs/sdks/webhooks/README.md#getabortedattempts) - Get aborted Attempts
+* [GetHook](docs/sdks/webhooks/README.md#gethook) - Get one Hook by its ID
 * [GetManyConfigs](docs/sdks/webhooks/README.md#getmanyconfigs) - Get many configs
+* [GetManyHooks](docs/sdks/webhooks/README.md#getmanyhooks) - Get Many hooks
+* [GetWaitingAttempts](docs/sdks/webhooks/README.md#getwaitingattempts) - Get Waiting Attempts
 * [InsertConfig](docs/sdks/webhooks/README.md#insertconfig) - Insert a new config
+* [InsertHook](docs/sdks/webhooks/README.md#inserthook) - Insert new Hook
+* [RetryWaitingAttempt](docs/sdks/webhooks/README.md#retrywaitingattempt) - Retry one waiting Attempt
+* [RetryWaitingAttempts](docs/sdks/webhooks/README.md#retrywaitingattempts) - Retry all the waiting attempts
 * [TestConfig](docs/sdks/webhooks/README.md#testconfig) - Test one config
+* [TestHook](docs/sdks/webhooks/README.md#testhook) - Test one Hook
+* [UpdateEndpointHook](docs/sdks/webhooks/README.md#updateendpointhook) - Change the endpoint of one Hook
+* [UpdateRetryHook](docs/sdks/webhooks/README.md#updateretryhook) - Change the retry attribute of one Hook
+* [UpdateSecretHook](docs/sdks/webhooks/README.md#updatesecrethook) - Change the secret of one Hook
 <!-- End Available Resources and Operations [operations] -->
 
 <!-- Start Error Handling [errors] -->

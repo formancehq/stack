@@ -34,10 +34,12 @@ func NewRootCommand() *cobra.Command {
 	service.BindFlags(root)
 	licence.InitCLIFlags(root)
 
-	root.AddCommand(newServeCommand())
-	root.AddCommand(newWorkerCommand())
 	root.AddCommand(newVersionCommand())
 	root.AddCommand(newMigrateCommand())
+	root.AddCommand(newWebhookControllerCommand())
+	root.AddCommand(newWebhookWorkerCommand())
+	root.AddCommand(newWebhookWCollectorCommand())
+	root.AddCommand(newAllInOneCommand())
 
 	return root
 }

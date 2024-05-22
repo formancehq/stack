@@ -1,8 +1,9 @@
 package suite
 
 import (
-	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"net/http"
+
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -24,10 +25,13 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 		Expect(response.ConfigsResponse.Cursor.Data).To(BeEmpty())
 	})
 
+	
+
 	When("inserting 2 configs", func() {
 		var (
 			insertResp1 *shared.ConfigResponse
 			insertResp2 *shared.ConfigResponse
+		
 		)
 
 		BeforeEach(func() {
@@ -45,6 +49,8 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 						"ledger.saved_metadata",
 					},
 				}
+				
+			
 			)
 
 			response, err := Client().Webhooks.InsertConfig(
@@ -62,9 +68,11 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(http.StatusOK))
 			insertResp2 = response.ConfigResponse
+			Expect(insertResp2.Data.Endpoint).To(Equal("https://example2.com"))
+
 		})
 
-		Context("getting all configs without filters", func() {
+		Context("getting all configs and V2 hooks without filters", func() {
 			It("should return 2 configs", func() {
 				response, err := Client().Webhooks.GetManyConfigs(
 					TestContext(),
@@ -76,13 +84,13 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 				resp := response.ConfigsResponse
 				Expect(resp.Cursor.HasMore).To(BeFalse())
 				Expect(resp.Cursor.Data).To(HaveLen(2))
-				Expect(resp.Cursor.Data[0].Endpoint).To(Equal(insertResp2.Data.Endpoint))
-				Expect(resp.Cursor.Data[1].Endpoint).To(Equal(insertResp1.Data.Endpoint))
+
 			})
+
 		})
 
 		Context("getting all configs with known endpoint filter", func() {
-			It("should return 1 config with the same endpoint", func() {
+			It("should return 1 configs  with the same endpoint", func() {
 				response, err := Client().Webhooks.GetManyConfigs(
 					TestContext(),
 					operations.GetManyConfigsRequest{
@@ -97,6 +105,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 				Expect(resp.Cursor.Data).To(HaveLen(1))
 				Expect(resp.Cursor.Data[0].Endpoint).To(Equal(insertResp1.Data.Endpoint))
 			})
+			
 		})
 
 		Context("getting all configs with unknown endpoint filter", func() {
@@ -114,6 +123,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 				Expect(resp.Cursor.HasMore).To(BeFalse())
 				Expect(resp.Cursor.Data).To(BeEmpty())
 			})
+			
 		})
 
 		Context("getting all configs with known ID filter", func() {

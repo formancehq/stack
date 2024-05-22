@@ -13,7 +13,7 @@ require (
 	github.com/formancehq/reconciliation v0.0.0-00010101000000-000000000000
 	github.com/formancehq/search v0.0.0-00010101000000-000000000000
 	github.com/formancehq/stack/libs/events v0.0.0-00010101000000-000000000000
-	github.com/formancehq/stack/libs/go-libs v0.0.0-20230221161632-e6dc6a89a85e
+	github.com/formancehq/stack/libs/go-libs v0.0.0-20240521162222-67a18b20df9e
 	github.com/formancehq/wallets v0.0.0-00010101000000-000000000000
 	github.com/formancehq/webhooks v0.0.0-00010101000000-000000000000
 	github.com/getkin/kin-openapi v0.114.0
@@ -29,10 +29,6 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.8.0
-	github.com/spf13/viper v1.17.0
-	github.com/uptrace/bun v1.1.17
-	github.com/uptrace/bun/dialect/pgdialect v1.1.17
-	github.com/uptrace/bun/driver/pgdriver v1.1.14
 	github.com/xo/dburl v0.20.2
 	github.com/zitadel/oidc/v2 v2.11.0
 	golang.org/x/oauth2 v0.16.0
@@ -208,6 +204,7 @@ require (
 	github.com/spf13/afero v1.10.0 // indirect
 	github.com/spf13/cast v1.5.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/spf13/viper v1.17.0 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/stripe/stripe-go/v72 v72.122.0 // indirect
@@ -219,6 +216,8 @@ require (
 	github.com/tklauser/numcpus v0.6.1 // indirect
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
+	github.com/uptrace/bun v1.1.17 // indirect
+	github.com/uptrace/bun/dialect/pgdialect v1.1.17 // indirect
 	github.com/uptrace/bun/extra/bundebug v1.1.16 // indirect
 	github.com/uptrace/bun/extra/bunotel v1.1.16 // indirect
 	github.com/uptrace/opentelemetry-go-extra/otellogrus v0.1.21 // indirect
@@ -279,7 +278,6 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	mellium.im/sasl v0.3.1 // indirect
 )
 
 replace (

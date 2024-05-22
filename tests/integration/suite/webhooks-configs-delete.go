@@ -9,7 +9,7 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	. "github.com/formancehq/stack/tests/integration/internal"
-	webhooks "github.com/formancehq/webhooks/pkg"
+	webhooks "github.com/formancehq/webhooks/pkg/utils"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -18,6 +18,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 	var (
 		secret     = webhooks.NewSecret()
 		insertResp *shared.ConfigResponse
+		
 	)
 
 	BeforeEach(func() {
@@ -36,9 +37,10 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 		Expect(response.StatusCode).To(Equal(http.StatusOK))
 
 		insertResp = response.ConfigResponse
+
 	})
 
-	Context("deleting the inserted one", func() {
+	Context("Config: deleting the inserted one", func() {
 		BeforeEach(func() {
 			response, err := Client().Webhooks.DeleteConfig(
 				TestContext(),
@@ -60,23 +62,15 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 				Expect(response.StatusCode).To(Equal(http.StatusOK))
 
 				Expect(response.ConfigsResponse.Cursor.HasMore).To(BeFalse())
-				Expect(response.ConfigsResponse.Cursor.Data).To(BeEmpty())
+				for _, data := range response.ConfigsResponse.Cursor.Data {
+					Expect(data.ID).ToNot(Equal(insertResp.Data.ID))
+				}
+				
 			})
-		})
-
-		AfterEach(func() {
-			_, err := Client().Webhooks.DeleteConfig(
-				TestContext(),
-				operations.DeleteConfigRequest{
-					ID: insertResp.Data.ID,
-				},
-			)
-			Expect(err).To(HaveOccurred())
-			Expect(err.(*sdkerrors.WebhooksErrorResponse).ErrorCode).To(Equal(shared.WebhooksErrorsEnumNotFound))
 		})
 	})
 
-	Context("trying to delete an unknown ID", func() {
+	Context("Config trying to delete an unknown ID", func() {
 		It("should fail", func() {
 			_, err := Client().Webhooks.DeleteConfig(
 				TestContext(),

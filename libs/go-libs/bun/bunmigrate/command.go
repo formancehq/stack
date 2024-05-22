@@ -4,9 +4,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 	"github.com/spf13/cobra"
 	"github.com/uptrace/bun"
-
 	// Import the postgres driver.
-	_ "github.com/lib/pq"
 )
 
 type Executor func(cmd *cobra.Command, args []string, db *bun.DB) error

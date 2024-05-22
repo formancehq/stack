@@ -214,13 +214,28 @@ generatedFiles:
   - /pkg/models/operations/updatewallet.go
   - /pkg/models/operations/voidhold.go
   - /pkg/models/operations/walletsgetserverinfo.go
+  - /pkg/models/operations/abortwaitingattempt.go
   - /pkg/models/operations/activateconfig.go
+  - /pkg/models/operations/activatehook.go
   - /pkg/models/operations/changeconfigsecret.go
   - /pkg/models/operations/deactivateconfig.go
+  - /pkg/models/operations/deactivatehook.go
   - /pkg/models/operations/deleteconfig.go
+  - /pkg/models/operations/deletehook.go
+  - /pkg/models/operations/getabortedattempts.go
+  - /pkg/models/operations/gethook.go
   - /pkg/models/operations/getmanyconfigs.go
+  - /pkg/models/operations/getmanyhooks.go
+  - /pkg/models/operations/getwaitingattempts.go
   - /pkg/models/operations/insertconfig.go
+  - /pkg/models/operations/inserthook.go
+  - /pkg/models/operations/retrywaitingattempt.go
+  - /pkg/models/operations/retrywaitingattempts.go
   - /pkg/models/operations/testconfig.go
+  - /pkg/models/operations/testhook.go
+  - /pkg/models/operations/updateendpointhook.go
+  - /pkg/models/operations/updateretryhook.go
+  - /pkg/models/operations/updatesecrethook.go
   - /pkg/models/shared/getversionsresponse.go
   - /pkg/models/shared/version.go
   - /pkg/models/shared/createclientresponse.go
@@ -556,12 +571,19 @@ generatedFiles:
   - /pkg/models/shared/getwalletsummaryresponse.go
   - /pkg/models/shared/listbalancesresponse.go
   - /pkg/models/shared/listwalletsresponse.go
+  - /pkg/models/shared/v2attemptresponse.go
+  - /pkg/models/shared/v2attempt.go
+  - /pkg/models/shared/webhookserrorsenum.go
   - /pkg/models/shared/configresponse.go
   - /pkg/models/shared/webhooksconfig.go
-  - /pkg/models/shared/webhookserrorsenum.go
+  - /pkg/models/shared/v2hookresponse.go
+  - /pkg/models/shared/v2hook.go
   - /pkg/models/shared/configchangesecret.go
+  - /pkg/models/shared/v2attemptcursorresponse.go
   - /pkg/models/shared/configsresponse.go
+  - /pkg/models/shared/v2hookcursorresponse.go
   - /pkg/models/shared/configuser.go
+  - /pkg/models/shared/v2hookbodyparams.go
   - /pkg/models/shared/attemptresponse.go
   - /pkg/models/shared/attempt.go
   - /pkg/models/shared/security.go
@@ -872,19 +894,51 @@ generatedFiles:
   - docs/pkg/models/operations/voidholdrequest.md
   - docs/pkg/models/operations/voidholdresponse.md
   - docs/pkg/models/operations/walletsgetserverinforesponse.md
+  - docs/pkg/models/operations/abortwaitingattemptrequest.md
+  - docs/pkg/models/operations/abortwaitingattemptresponse.md
   - docs/pkg/models/operations/activateconfigrequest.md
   - docs/pkg/models/operations/activateconfigresponse.md
+  - docs/pkg/models/operations/activatehookrequest.md
+  - docs/pkg/models/operations/activatehookresponse.md
   - docs/pkg/models/operations/changeconfigsecretrequest.md
   - docs/pkg/models/operations/changeconfigsecretresponse.md
   - docs/pkg/models/operations/deactivateconfigrequest.md
   - docs/pkg/models/operations/deactivateconfigresponse.md
+  - docs/pkg/models/operations/deactivatehookrequest.md
+  - docs/pkg/models/operations/deactivatehookresponse.md
   - docs/pkg/models/operations/deleteconfigrequest.md
   - docs/pkg/models/operations/deleteconfigresponse.md
+  - docs/pkg/models/operations/deletehookrequest.md
+  - docs/pkg/models/operations/deletehookresponse.md
+  - docs/pkg/models/operations/getabortedattemptsrequest.md
+  - docs/pkg/models/operations/getabortedattemptsresponse.md
+  - docs/pkg/models/operations/gethookrequest.md
+  - docs/pkg/models/operations/gethookresponse.md
   - docs/pkg/models/operations/getmanyconfigsrequest.md
   - docs/pkg/models/operations/getmanyconfigsresponse.md
+  - docs/pkg/models/operations/getmanyhooksrequest.md
+  - docs/pkg/models/operations/getmanyhooksresponse.md
+  - docs/pkg/models/operations/getwaitingattemptsrequest.md
+  - docs/pkg/models/operations/getwaitingattemptsresponse.md
   - docs/pkg/models/operations/insertconfigresponse.md
+  - docs/pkg/models/operations/inserthookresponse.md
+  - docs/pkg/models/operations/retrywaitingattemptrequest.md
+  - docs/pkg/models/operations/retrywaitingattemptresponse.md
+  - docs/pkg/models/operations/retrywaitingattemptsresponse.md
   - docs/pkg/models/operations/testconfigrequest.md
   - docs/pkg/models/operations/testconfigresponse.md
+  - docs/pkg/models/operations/testhookrequestbody.md
+  - docs/pkg/models/operations/testhookrequest.md
+  - docs/pkg/models/operations/testhookresponse.md
+  - docs/pkg/models/operations/updateendpointhookrequestbody.md
+  - docs/pkg/models/operations/updateendpointhookrequest.md
+  - docs/pkg/models/operations/updateendpointhookresponse.md
+  - docs/pkg/models/operations/updateretryhookrequestbody.md
+  - docs/pkg/models/operations/updateretryhookrequest.md
+  - docs/pkg/models/operations/updateretryhookresponse.md
+  - docs/pkg/models/operations/updatesecrethookrequestbody.md
+  - docs/pkg/models/operations/updatesecrethookrequest.md
+  - docs/pkg/models/operations/updatesecrethookresponse.md
   - docs/pkg/models/shared/getversionsresponse.md
   - docs/pkg/models/shared/version.md
   - docs/pkg/models/shared/createclientresponse.md
@@ -1313,13 +1367,24 @@ generatedFiles:
   - docs/pkg/models/shared/listbalancesresponse.md
   - docs/pkg/models/shared/listwalletsresponsecursor.md
   - docs/pkg/models/shared/listwalletsresponse.md
+  - docs/pkg/models/shared/v2attemptresponse.md
+  - docs/pkg/models/shared/v2attemptstatus.md
+  - docs/pkg/models/shared/v2attempt.md
+  - docs/pkg/models/shared/webhookserrorsenum.md
   - docs/pkg/models/shared/configresponse.md
   - docs/pkg/models/shared/webhooksconfig.md
-  - docs/pkg/models/shared/webhookserrorsenum.md
+  - docs/pkg/models/shared/v2hookresponse.md
+  - docs/pkg/models/shared/v2hookstatus.md
+  - docs/pkg/models/shared/v2hook.md
   - docs/pkg/models/shared/configchangesecret.md
+  - docs/pkg/models/shared/v2attemptcursorresponsecursor.md
+  - docs/pkg/models/shared/v2attemptcursorresponse.md
   - docs/pkg/models/shared/configsresponsecursor.md
   - docs/pkg/models/shared/configsresponse.md
+  - docs/pkg/models/shared/v2hookcursorresponsecursor.md
+  - docs/pkg/models/shared/v2hookcursorresponse.md
   - docs/pkg/models/shared/configuser.md
+  - docs/pkg/models/shared/v2hookbodyparams.md
   - docs/pkg/models/shared/attemptresponse.md
   - docs/pkg/models/shared/attempt.md
   - docs/pkg/models/shared/security.md

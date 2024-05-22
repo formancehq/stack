@@ -11,7 +11,7 @@ sources:
     DO stack+INCLUDE_GO_LIBS --LOCATION libs/go-libs
     WORKDIR /src/ee/webhooks
     COPY go.* .
-    COPY --dir pkg cmd .
+    COPY --dir internal cmd .
     COPY main.go .
     SAVE ARTIFACT /src
 
@@ -58,16 +58,23 @@ lint:
     WORKDIR /src/ee/webhooks
     DO --pass-args stack+GO_LINT
     SAVE ARTIFACT cmd AS LOCAL cmd
-    SAVE ARTIFACT pkg AS LOCAL pkg
+    SAVE ARTIFACT internal AS LOCAL internal
     SAVE ARTIFACT main.go AS LOCAL main.go
 
 pre-commit:
     BUILD --pass-args +tidy
     BUILD --pass-args +lint
 
+
 openapi:
-    COPY ./openapi.yaml .
-    SAVE ARTIFACT ./openapi.yaml
+    FROM node:20-alpine
+    RUN apk update && apk add yq
+    RUN npm install -g openapi-merge-cli
+    WORKDIR /src/ee/webhooks
+    COPY --dir openapi openapi
+    RUN openapi-merge-cli --config ./openapi/openapi-merge.json
+    RUN yq -oy ./openapi.json > openapi.yaml
+    SAVE ARTIFACT ./openapi.yaml AS LOCAL ./openapi.yaml
 
 tidy:
     FROM core+builder-image
