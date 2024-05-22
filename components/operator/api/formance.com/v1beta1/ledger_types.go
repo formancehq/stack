@@ -46,6 +46,7 @@ type LockingStrategy struct {
 type DeploymentStrategy string
 
 const (
+	DeploymentStrategyNone                     = "none"
 	DeploymentStrategySingle                   = "single"
 	DeploymentStrategyMonoWriterMultipleReader = "single-writer"
 )
@@ -56,6 +57,8 @@ type LedgerSpec struct {
 	StackDependency  `json:",inline"`
 	// +optional
 	Auth *AuthConfig `json:"auth,omitempty"`
+	//+kubebuilder:Enum:={none, single, single-writer}
+	//+kubebuilder:default:=none
 	//+optional
 	DeploymentStrategy DeploymentStrategy `json:"deploymentStrategy,omitempty"`
 	// Locking is intended for ledger v1 only

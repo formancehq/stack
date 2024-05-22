@@ -64,6 +64,7 @@ spec:
               debug:
                 type: boolean
               deploymentStrategy:
+                default: none
                 type: string
               dev:
                 type: boolean

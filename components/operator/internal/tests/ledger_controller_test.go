@@ -150,6 +150,62 @@ var _ = Describe("LedgerController", func() {
 				})
 			})
 		})
+		Context("with multi ready deployment strategy", func() {
+			JustBeforeEach(func() {
+				Eventually(func() error {
+					return LoadResource(stack.Name, "ledger", &appsv1.Deployment{})
+				}).Should(Succeed())
+				patch := client.MergeFrom(ledger.DeepCopy())
+				ledger.Spec.DeploymentStrategy = v1beta1.DeploymentStrategyMonoWriterMultipleReader
+				Expect(Patch(ledger, patch)).To(Succeed())
+			})
+			It("Should update resources", func() {
+				By("Should remove the original deployment", func() {
+					Eventually(func() error {
+						return LoadResource(stack.Name, "ledger", &appsv1.Deployment{})
+					}).Should(BeNotFound())
+				})
+				By("Should create two applications, two services and a gateway", func() {
+					reader := &appsv1.Deployment{}
+					Eventually(func() error {
+						return LoadResource(stack.Name, "ledger-read", reader)
+					}).Should(Succeed())
+					Expect(reader).To(BeControlledBy(ledger))
+
+					readerService := &corev1.Service{}
+					Eventually(func() error {
+						return LoadResource(stack.Name, "ledger-read", readerService)
+					}).Should(Succeed())
+					Expect(readerService).To(BeControlledBy(ledger))
+					Expect(readerService).To(TargetDeployment(reader))
+
+					writer := &appsv1.Deployment{}
+					Eventually(func() error {
+						return LoadResource(stack.Name, "ledger-write", writer)
+					}).Should(Succeed())
+					Expect(writer).To(BeControlledBy(ledger))
+
+					writerService := &corev1.Service{}
+					Eventually(func() error {
+						return LoadResource(stack.Name, "ledger-write", writerService)
+					}).Should(Succeed())
+					Expect(writerService).To(BeControlledBy(ledger))
+					Expect(writerService).To(TargetDeployment(writer))
+
+					gateway := &appsv1.Deployment{}
+					Eventually(func() error {
+						return LoadResource(stack.Name, "ledger-gateway", gateway)
+					}).Should(Succeed())
+					Expect(gateway).To(BeControlledBy(ledger))
+					Expect(gateway.Spec.Template.Spec.SecurityContext).NotTo(BeNil())
+					Expect(gateway.Spec.Template.Spec.Containers).To(HaveLen(1))
+					Expect(gateway.Spec.Template.Spec.Containers[0].SecurityContext).NotTo(BeNil())
+					Expect(gateway.Spec.Template.Spec.Containers[0].SecurityContext.Capabilities).NotTo(BeNil())
+					Expect(gateway.Spec.Template.Spec.Containers[0].SecurityContext.Capabilities.Add).To(HaveLen(1))
+					Expect(gateway.Spec.Template.Spec.Containers[0].SecurityContext.Capabilities.Add).To(ContainElements(corev1.Capability("NET_BIND_SERVICE")))
+				})
+			})
+		})
 		Context("With Search enabled", func() {
 			var search *v1beta1.Search
 			BeforeEach(func() {
