@@ -5,9 +5,10 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"fmt"
-    "github.com/formancehq/stack/libs/go-libs/service"
-    "net/url"
+	"net/url"
 	"time"
+
+	"github.com/formancehq/stack/libs/go-libs/service"
 
 	"github.com/formancehq/stack/libs/go-libs/logging"
 
@@ -26,7 +27,7 @@ type ConnectionOptions struct {
 }
 
 func (opts ConnectionOptions) String() string {
-	return fmt.Sprintf("dsn=%s, debug=%v, max-idle-conns=%d, max-open-conns=%d, conn-max-idle-time=%s",
+	return fmt.Sprintf("dsn=%s, max-idle-conns=%d, max-open-conns=%d, conn-max-idle-time=%s",
 		opts.DatabaseSourceName, opts.MaxIdleConns, opts.MaxOpenConns, opts.ConnMaxIdleTime)
 }
 

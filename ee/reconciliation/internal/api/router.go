@@ -3,12 +3,13 @@ package api
 import (
 	"net/http"
 
+	"github.com/formancehq/stack/libs/go-libs/service"
+
 	"github.com/formancehq/reconciliation/internal/api/backend"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/go-chi/chi/v5"
-	"github.com/riandyrn/otelchi"
 )
 
 func newRouter(
@@ -28,7 +29,7 @@ func newRouter(
 
 	r.Group(func(r chi.Router) {
 		r.Use(auth.Middleware(a))
-		r.Use(otelchi.Middleware("reconciliation"))
+		r.Use(service.OTLPMiddleware("reconciliation"))
 
 		r.Get("/reconciliations/{reconciliationID}", getReconciliationHandler(b))
 		r.Get("/reconciliations", listReconciliationsHandler(b))

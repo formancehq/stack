@@ -2,7 +2,6 @@ package storagetesting
 
 import (
 	"context"
-	"testing"
 	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"

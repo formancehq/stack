@@ -2,7 +2,8 @@ package service
 
 import (
 	"context"
-    "github.com/spf13/viper"
+
+	"github.com/spf13/viper"
 )
 
 type contextKey string
@@ -47,11 +48,11 @@ func ContextWithLifecycle(ctx context.Context) context.Context {
 }
 
 func ContextWithDebug(ctx context.Context) context.Context {
-    return context.WithValue(ctx, debugKey, true)
+	return context.WithValue(ctx, debugKey, true)
 }
 
 func IsDebug(ctx context.Context) bool {
-    return viper.GetBool(DebugFlag)
+	return viper.GetBool(DebugFlag)
 }
 
 func markAsAppReady(ctx context.Context) {

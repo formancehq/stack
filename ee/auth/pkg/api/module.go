@@ -3,21 +3,21 @@ package api
 import (
 	"net/http"
 
-	"github.com/formancehq/auth/pkg/api/authorization"
+	"github.com/formancehq/stack/libs/go-libs/service"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/riandyrn/otelchi"
+	"github.com/formancehq/auth/pkg/api/authorization"
 
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
+	"github.com/go-chi/chi/v5"
 	"github.com/zitadel/oidc/v2/pkg/op"
 	"go.uber.org/fx"
 )
 
 func CreateRootRouter(o op.OpenIDProvider, issuer string) chi.Router {
 	rootRouter := chi.NewRouter()
-	rootRouter.Use(otelchi.Middleware("auth"))
+	rootRouter.Use(service.OTLPMiddleware("auth"))
 	rootRouter.Use(func(handler http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")

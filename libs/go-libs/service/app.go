@@ -1,15 +1,16 @@
 package service
 
 import (
-    "context"
-    "github.com/spf13/viper"
-    "io"
-    "os"
+	"context"
+	"io"
+	"os"
 
-    "github.com/formancehq/stack/libs/go-libs/errorsutils"
-    "github.com/formancehq/stack/libs/go-libs/logging"
-    "github.com/spf13/cobra"
-    "go.uber.org/fx"
+	"github.com/spf13/viper"
+
+	"github.com/formancehq/stack/libs/go-libs/errorsutils"
+	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/spf13/cobra"
+	"go.uber.org/fx"
 )
 
 const DebugFlag = "debug"

@@ -1,24 +1,24 @@
 package pgtesting
 
 import (
-    "context"
-    "database/sql"
-    "fmt"
-    "os"
-    "strconv"
-    "sync"
-    "time"
+	"context"
+	"database/sql"
+	"fmt"
+	"os"
+	"strconv"
+	"sync"
+	"time"
 
-    sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
-    "github.com/ory/dockertest/v3"
+	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/ory/dockertest/v3"
 
-    "github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 
-    "github.com/google/uuid"
-    _ "github.com/lib/pq"
-    "github.com/ory/dockertest/v3/docker"
-    "github.com/pkg/errors"
-    "github.com/stretchr/testify/require"
+	"github.com/google/uuid"
+	_ "github.com/lib/pq"
+	"github.com/ory/dockertest/v3/docker"
+	"github.com/pkg/errors"
+	"github.com/stretchr/testify/require"
 )
 
 type TestingT interface {

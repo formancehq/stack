@@ -3,11 +3,12 @@ package server
 import (
 	"net/http"
 
+	"github.com/formancehq/stack/libs/go-libs/service"
+
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/webhooks/pkg/storage"
 	"github.com/go-chi/chi/v5"
-	"github.com/riandyrn/otelchi"
 )
 
 const (
@@ -58,7 +59,7 @@ func newServerHandler(
 
 	h.Mux.Group(func(r chi.Router) {
 		r.Use(auth.Middleware(a))
-		r.Use(otelchi.Middleware("webhooks"))
+		r.Use(service.OTLPMiddleware("webhooks"))
 
 		r.Get(PathConfigs, h.getManyConfigsHandle)
 		r.Post(PathConfigs, h.insertOneConfigHandle)

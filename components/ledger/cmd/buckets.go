@@ -6,7 +6,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
-    "github.com/spf13/viper"
+	"github.com/spf13/viper"
 )
 
 func NewBucket() *cobra.Command {
