@@ -30,9 +30,11 @@ func (h *StackEventHandler) sendStatus(stackName string, status *structpb.Struct
 
 func (h *StackEventHandler) AddFunc(obj interface{}) {
 	stack := obj.(*unstructured.Unstructured)
+	logger := h.logger.WithField("func", "Add").WithField("stack", stack.GetName())
+
 	status, err := getStatus(stack)
 	if err != nil {
-		h.logger.Errorf("Unable to generate message stack add: %s", err)
+		logger.Errorf("Unable to generate message stack add: %s", err)
 		return
 	}
 
@@ -41,7 +43,7 @@ func (h *StackEventHandler) AddFunc(obj interface{}) {
 	}
 
 	h.sendStatus(stack.GetName(), status)
-	h.logger.Infof("Stack '%s' added", stack.GetName())
+	logger.Infof("Stack '%s' added", stack.GetName())
 
 }
 
@@ -49,25 +51,27 @@ func (h *StackEventHandler) UpdateFunc(oldObj, newObj interface{}) {
 	oldStack := oldObj.(*unstructured.Unstructured)
 	newStack := newObj.(*unstructured.Unstructured)
 
+	logger := h.logger.WithField("func", "Update").WithField("stack", newStack.GetName())
+
 	oldStatus, err := getStatus(oldStack)
 	if err != nil {
-		h.logger.Errorf("Unable to get old stack status update: %s", err)
+		logger.Errorf("Unable to get old stack status update: %s", err)
 	}
 
 	newStatus, err := getStatus(newStack)
 	if err != nil {
-		h.logger.Errorf("Unable to get new stack status update: %s", err)
+		logger.Errorf("Unable to get new stack status update: %s", err)
 		return
 	}
 
 	oldDisabled, _, err := unstructured.NestedBool(oldStack.Object, "spec", "disabled")
 	if err != nil {
-		h.logger.Errorf("Unable to get new stack `spec.disabled` update: %s", err)
+		logger.Errorf("Unable to get new stack `spec.disabled` update: %s", err)
 		return
 	}
 	newDisabled, _, err := unstructured.NestedBool(newStack.Object, "spec", "disabled")
 	if err != nil {
-		h.logger.Errorf("Unable to get new stack `spec.disabled` update: %s", err)
+		logger.Errorf("Unable to get new stack `spec.disabled` update: %s", err)
 		return
 	}
 
@@ -78,12 +82,14 @@ func (h *StackEventHandler) UpdateFunc(oldObj, newObj interface{}) {
 	}
 
 	h.sendStatus(newStack.GetName(), newStatus)
-	h.logger.Infof("Stack '%s' updated", newStack.GetName())
+	logger.Infof("Stack '%s' updated", newStack.GetName())
 
 }
 
 func (h *StackEventHandler) DeleteFunc(obj interface{}) {
 	stack := obj.(*unstructured.Unstructured)
+	logger := h.logger.WithField("func", "Delete").WithField("stack", stack.GetName())
+
 	if err := h.client.Send(&generated.Message{
 		Message: &generated.Message_StackDeleted{
 			StackDeleted: &generated.DeletedStack{
@@ -91,10 +97,10 @@ func (h *StackEventHandler) DeleteFunc(obj interface{}) {
 			},
 		},
 	}); err != nil {
-		h.logger.Errorf("Unable to send stack delete to server: %s", err)
+		logger.Errorf("Unable to send stack delete to server: %s", err)
 		return
 	}
-	h.logger.Infof("Stack '%s' deleted", stack.GetName())
+	logger.Infof("Stack '%s' deleted", stack.GetName())
 }
 
 func NewStackEventHandler(logger sharedlogging.Logger, membershipClient MembershipClient) cache.ResourceEventHandlerFuncs {

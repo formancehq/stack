@@ -116,7 +116,8 @@ func TestDeleteModule(t *testing.T) {
 
 				if tc.withLabels {
 					gvk := v1beta1.GroupVersion.WithKind("Reconciliation")
-					require.NoError(t, membershipListener.deleteModule(ctx, strings.ToLower(gvk.Kind), stackName))
+					require.NoError(t, membershipListener.deleteModule(ctx, logging.Testing(), strings.ToLower(gvk.Kind), stackName))
+					require.Error(t, testConfig.client.Get().Resource("Reconciliations").Name(recon.Name).Do(ctx).Error())
 				}
 
 				if !tc.withLabels {

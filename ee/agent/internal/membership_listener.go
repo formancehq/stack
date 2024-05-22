@@ -168,11 +168,20 @@ func (c *membershipListener) syncModules(ctx context.Context, metadata map[strin
 		if gvk.Kind == "Stargate" {
 			continue
 		}
-
-		logging.FromContext(ctx).Debugf("Resource: checking module %s", gvk.Kind)
-		if !slices.Contains(modules, strings.ToLower(gvk.Kind)) {
-			if err := c.deleteModule(ctx, gvk.Kind, stack.GetName()); err != nil {
-				sharedlogging.FromContext(ctx).Errorf("Unable to get and delete module %s cluster side: %s", gvk.Kind, err)
+		resources, err := c.restMapper.RESTMapping(gvk.GroupKind(), gvk.Version)
+		if err != nil {
+			logger.Errorf("Unable to get resources for %s: %s", gvk.Kind, err)
+			continue
+		}
+		singular, err := c.restMapper.ResourceSingularizer(resources.Resource.Resource)
+		if err != nil {
+			logger.Errorf("Unable to get singular for %s: %s", gvk.Kind, err)
+			continue
+		}
+		logger.Debugf("Resource: checking module resource %s, singular: %s", resources.Resource.Resource, singular)
+		if !slices.Contains(modules, singular) {
+			if err := c.deleteModule(ctx, logger, resources.Resource.Resource, stack.GetName()); err != nil {
+				logger.Errorf("Unable to get and delete module %s cluster side: %s", gvk.Kind, err)
 			}
 			continue
 		}
@@ -214,8 +223,8 @@ func (c *membershipListener) syncModules(ctx context.Context, metadata map[strin
 	}
 }
 
-func (c *membershipListener) deleteModule(ctx context.Context, resource string, stackName string) error {
-	logging.FromContext(ctx).Debugf("Deleting module %s", resource)
+func (c *membershipListener) deleteModule(ctx context.Context, logger logging.Logger, resource string, stackName string) error {
+	logger.Debugf("Deleting module %s", resource)
 
 	return c.client.EnsureNotExistsBySelector(ctx, resource, stackLabels(stackName))
 }

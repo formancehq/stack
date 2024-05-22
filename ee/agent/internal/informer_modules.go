@@ -32,10 +32,12 @@ type ModuleEventHandler struct {
 
 func (h *ModuleEventHandler) AddFunc(obj interface{}) {
 	unstructuredModule := obj.(*unstructured.Unstructured)
+
+	logger := h.logger.WithField("func", "Add").WithField("module", unstructuredModule.GetName())
+
 	status, err := getStatus(unstructuredModule)
 	if err != nil {
-		h.logger.Debug("unstructuredModule", unstructuredModule)
-		h.logger.Errorf("Unable to generate message module added: %s", err)
+		logger.Errorf("Unable to generate message module added: %s", err)
 		return
 	}
 
@@ -45,24 +47,27 @@ func (h *ModuleEventHandler) AddFunc(obj interface{}) {
 
 	message := fromUnstructuredToModuleStatusChanged(unstructuredModule, status)
 	if err := h.client.Send(message); err != nil {
-		h.logger.Errorf("Unable to send message module added: %s", err)
+		logger.Errorf("Unable to send message module added: %s", err)
 		return
 	}
 
-	h.logger.Infof("Detect module '%s' added", unstructuredModule.GetName())
+	logger.Infof("Detect module '%s' added", unstructuredModule.GetName())
 }
 
 func (h *ModuleEventHandler) UpdateFunc(oldObj, newObj any) {
+
 	oldVersions := oldObj.(*unstructured.Unstructured)
 	newVersions := newObj.(*unstructured.Unstructured)
 
+	logger := h.logger.WithField("func", "Update").WithField("module", newVersions.GetName())
+
 	oldStatus, err := getStatus(oldVersions)
 	if err != nil {
-		h.logger.Errorf("Unable to get status from old versions: %s", err)
+		logger.Errorf("Unable to get status from old versions: %s", err)
 	}
 	newStatus, err := getStatus(newVersions)
 	if err != nil {
-		h.logger.Errorf("Unable to get status from new versions: %s", err)
+		logger.Errorf("Unable to get status from new versions: %s", err)
 		return
 	}
 
@@ -72,13 +77,16 @@ func (h *ModuleEventHandler) UpdateFunc(oldObj, newObj any) {
 
 	message := fromUnstructuredToModuleStatusChanged(newVersions, newStatus)
 	if err := h.client.Send(message); err != nil {
-		h.logger.Errorf("Unable to send message module update: %s", err)
+		logger.Errorf("Unable to send message module update: %s", err)
 	}
-	h.logger.Infof("Detect module '%s' updated", newVersions.GetName())
+	logger.Infof("Detect module '%s' updated", newVersions.GetName())
 }
 
 func (h *ModuleEventHandler) DeleteFunc(obj interface{}) {
+
 	unstructuredModule := obj.(*unstructured.Unstructured)
+	logger := h.logger.WithField("func", "Delete").WithField("module", unstructuredModule.GetName())
+
 	if err := h.client.Send(&generated.Message{
 		Message: &generated.Message_ModuleDeleted{
 			ModuleDeleted: &generated.ModuleDeleted{
@@ -90,10 +98,10 @@ func (h *ModuleEventHandler) DeleteFunc(obj interface{}) {
 			},
 		},
 	}); err != nil {
-		h.logger.Errorf("Unable to send message module deleted: %s", err)
+		logger.Errorf("Unable to send message module deleted: %s", err)
 		return
 	}
-	h.logger.Infof("Detect module '%s' deleted", unstructuredModule.GetName())
+	logger.Infof("Detect module '%s' deleted", unstructuredModule.GetName())
 }
 
 func NewModuleEventHandler(logger logging.Logger, membershipClient MembershipClient) cache.ResourceEventHandlerFuncs {
