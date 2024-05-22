@@ -82,7 +82,6 @@ func withServer(t *testing.T, fn func(m *mockoidc.MockOIDC, storage *sqlstorage.
 	postgresDB := pgtesting.NewPostgresDatabase(t)
 	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: postgresDB.ConnString(),
-		Debug:              testing.Verbose(),
 	})
 	require.NoError(t, err)
 	defer db.Close()

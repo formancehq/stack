@@ -35,7 +35,6 @@ func test(t *testing.T, fn func(router *chi.Mux, backend api.Backend, db *bun.DB
 	database := pgtesting.NewPostgresDatabase(t)
 	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: database.ConnString(),
-		Debug:              testing.Verbose(),
 	})
 	require.NoError(t, err)
 	t.Cleanup(func() {

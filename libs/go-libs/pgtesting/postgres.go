@@ -7,7 +7,6 @@ import (
 	"os"
 	"strconv"
 	"sync"
-	"testing"
 	"time"
 
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
@@ -38,7 +37,6 @@ func (s *pgDatabase) ConnString() string {
 func (s *pgDatabase) ConnectionOptions() bunconnect.ConnectionOptions {
 	return bunconnect.ConnectionOptions{
 		DatabaseSourceName: s.ConnString(),
-		Debug:              testing.Verbose(),
 	}
 }
 

@@ -19,7 +19,6 @@ func TestRunMigrate(t *testing.T) {
 
 	connectionOptions := &bunconnect.ConnectionOptions{
 		DatabaseSourceName: pgtesting.Server().GetDatabaseDSN("testing"),
-		Debug:              testing.Verbose(),
 	}
 	executor := func(args []string, db *bun.DB) error {
 		return nil
