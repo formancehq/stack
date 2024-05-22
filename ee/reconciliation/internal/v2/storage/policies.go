@@ -112,7 +112,7 @@ func (s *Storage) policyQueryContext(qb query.Builder, q ListPoliciesQuery) (str
 			case string:
 				return "name = ?", []any{name}, nil
 			default:
-				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'ledgernameQuery' column can only be used with string")
+				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'name' column can only be used with string")
 			}
 		case key == "enabled":
 			if operator != "$match" {

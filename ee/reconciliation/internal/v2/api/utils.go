@@ -55,3 +55,20 @@ func getPaginatedQueryOptionsPolicies(r *http.Request) (*bunpaginate.PaginatedQu
 		WithQueryBuilder(qb).
 		WithPageSize(pageSize)), nil
 }
+
+func getPaginatedQueryOptionsReconciliations(r *http.Request) (*bunpaginate.PaginatedQueryOptions[storage.ReconciliationFilters], error) {
+	qb, err := getQueryBuilder(r)
+	if err != nil {
+		return nil, err
+	}
+
+	pageSize, err := getPageSize(r)
+	if err != nil {
+		return nil, err
+	}
+
+	filters := storage.ReconciliationFilters{}
+	return pointer.For(bunpaginate.NewPaginatedQueryOptions(filters).
+		WithQueryBuilder(qb).
+		WithPageSize(pageSize)), nil
+}

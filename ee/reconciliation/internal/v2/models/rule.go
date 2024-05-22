@@ -20,7 +20,7 @@ const (
 )
 
 type Rule struct {
-	bun.BaseModel `bun:"reconciliationsv2.rule" json:"-"`
+	bun.BaseModel `bun:"reconciliationsv2.rules" json:"-"`
 
 	ID        string    `bun:",pk,notnull" json:"id"`
 	Name      string    `bun:",notnull" json:"name"`

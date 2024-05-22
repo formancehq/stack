@@ -23,6 +23,9 @@ type Service interface {
 	DeletePolicy(ctx context.Context, id string) error
 	GetPolicy(ctx context.Context, id string) (*models.Policy, error)
 	ListPolicies(ctx context.Context, q storage.ListPoliciesQuery) (*bunpaginate.Cursor[models.Policy], error)
+
+	GetReconciliation(ctx context.Context, id string) (*models.Reconciliation, error)
+	ListReconciliations(ctx context.Context, q storage.ListReconciliationsQuery) (*bunpaginate.Cursor[models.Reconciliation], error)
 }
 
 type Backend interface {

@@ -30,5 +30,12 @@ func NewRouter(
 				r.Patch("/rules", udpatePolicyRulesHandler(b))
 			})
 		})
+
+		r.Route("/reconciliations", func(r chi.Router) {
+			r.Get("/", listReconciliationsHandler(b))
+			r.Route("/{reconciliationID}", func(r chi.Router) {
+				r.Get("/", getReconciliationHandler(b))
+			})
+		})
 	})
 }

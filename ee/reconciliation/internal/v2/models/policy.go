@@ -27,7 +27,7 @@ func PolicyTypeFromString(s string) (PolicyType, error) {
 }
 
 type Policy struct {
-	bun.BaseModel `bun:"reconciliationsv2.policy" json:"-"`
+	bun.BaseModel `bun:"reconciliationsv2.policies" json:"-"`
 
 	ID        uuid.UUID  `bun:",pk,notnull" json:"id"`
 	Name      string     `bun:",notnull" json:"name"`

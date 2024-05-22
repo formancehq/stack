@@ -10,7 +10,7 @@ import (
 
 type ReconciliationStatus string
 
-var (
+const (
 	ReconciliationNotOK ReconciliationStatus = "NOT_OK"
 	ReconciliationOK    ReconciliationStatus = "OK"
 )

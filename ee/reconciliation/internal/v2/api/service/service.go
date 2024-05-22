@@ -24,6 +24,9 @@ type Store interface {
 	DeletePolicy(ctx context.Context, id uuid.UUID) error
 	GetPolicy(ctx context.Context, id uuid.UUID) (*models.Policy, error)
 	ListPolicies(ctx context.Context, q storage.ListPoliciesQuery) (*bunpaginate.Cursor[models.Policy], error)
+
+	GetReconciliation(ctx context.Context, id uuid.UUID) (*models.Reconciliation, error)
+	ListReconciliations(ctx context.Context, q storage.ListReconciliationsQuery) (*bunpaginate.Cursor[models.Reconciliation], error)
 }
 
 type Service struct {

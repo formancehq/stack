@@ -139,6 +139,21 @@ func (mr *MockServiceMockRecorder) GetPolicy(ctx, id interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPolicy", reflect.TypeOf((*MockService)(nil).GetPolicy), ctx, id)
 }
 
+// GetReconciliation mocks base method.
+func (m *MockService) GetReconciliation(ctx context.Context, id string) (*models.Reconciliation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetReconciliation", ctx, id)
+	ret0, _ := ret[0].(*models.Reconciliation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetReconciliation indicates an expected call of GetReconciliation.
+func (mr *MockServiceMockRecorder) GetReconciliation(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetReconciliation", reflect.TypeOf((*MockService)(nil).GetReconciliation), ctx, id)
+}
+
 // GetRule mocks base method.
 func (m *MockService) GetRule(ctx context.Context, id string) (*models.Rule, error) {
 	m.ctrl.T.Helper()
@@ -167,6 +182,21 @@ func (m *MockService) ListPolicies(ctx context.Context, q storage.ListPoliciesQu
 func (mr *MockServiceMockRecorder) ListPolicies(ctx, q interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPolicies", reflect.TypeOf((*MockService)(nil).ListPolicies), ctx, q)
+}
+
+// ListReconciliations mocks base method.
+func (m *MockService) ListReconciliations(ctx context.Context, q storage.ListReconciliationsQuery) (*bunpaginate.Cursor[models.Reconciliation], error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListReconciliations", ctx, q)
+	ret0, _ := ret[0].(*bunpaginate.Cursor[models.Reconciliation])
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListReconciliations indicates an expected call of ListReconciliations.
+func (mr *MockServiceMockRecorder) ListReconciliations(ctx, q interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListReconciliations", reflect.TypeOf((*MockService)(nil).ListReconciliations), ctx, q)
 }
 
 // ListRules mocks base method.
