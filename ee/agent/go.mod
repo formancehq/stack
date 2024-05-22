@@ -19,6 +19,7 @@ require (
 	github.com/zitadel/oidc/v2 v2.12.0
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.46.1
 	go.uber.org/fx v1.20.1
+	go.uber.org/mock v0.4.0
 	golang.org/x/oauth2 v0.16.0
 	google.golang.org/grpc v1.61.1
 	google.golang.org/protobuf v1.33.0

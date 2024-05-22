@@ -93,6 +93,15 @@ tidy:
     WORKDIR /src/ee/agent
     DO --pass-args stack+GO_TIDY
 
+generate:
+    FROM core+builder-image
+    DO --pass-args core+GO_INSTALL --package=go.uber.org/mock/mockgen@latest
+    COPY (+sources/*) /src
+    WORKDIR /src/ee/agent    
+    RUN go generate -run mockgen ./...
+    SAVE ARTIFACT internal AS LOCAL internal
+
+
 grpc-generate:
     FROM core+grpc-base
     LET protoName=agent.proto

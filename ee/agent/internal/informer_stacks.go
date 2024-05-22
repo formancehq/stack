@@ -1,11 +1,7 @@
 package internal
 
 import (
-	"slices"
-	"strings"
-	"sync"
-
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"reflect"
 
 	"github.com/formancehq/stack/components/agent/internal/generated"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
@@ -14,209 +10,114 @@ import (
 	"k8s.io/client-go/tools/cache"
 )
 
-type InMemoryStacksModules struct {
-	mu     sync.Mutex
-	stacks map[string][]string
-	onPush map[string]func(modules []string)
+type StackEventHandler struct {
+	logger sharedlogging.Logger
+	client MembershipClient
 }
 
-func (m *InMemoryStacksModules) Get(stackName string) ([]string, bool) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
-	ret, ok := m.stacks[stackName]
-	return ret, ok
-}
-
-func (m *InMemoryStacksModules) Push(stackName string, modules []string) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
-	m.stacks[stackName] = modules
-	fn, ok := m.onPush[stackName]
-	if ok {
-		fn(modules)
+func (h *StackEventHandler) sendStatus(stackName string, status *structpb.Struct) error {
+	if err := h.client.Send(&generated.Message{
+		Message: &generated.Message_StatusChanged{
+			StatusChanged: &generated.StatusChanged{
+				ClusterName: stackName,
+				Statuses:    status,
+			},
+		},
+	}); err != nil {
+		h.logger.Errorf("Unable to send stack status to server: %s", err)
+		return err
 	}
-	delete(m.onPush, stackName)
+	return nil
 }
 
-func (m *InMemoryStacksModules) GetExpectedModules(stackName string) []string {
-	m.mu.Lock()
-	defer m.mu.Unlock()
+func (h *StackEventHandler) AddFunc(obj interface{}) {
+	stack := obj.(*unstructured.Unstructured)
+	logger := h.logger.WithField("func", "Add").WithField("stack", stack.GetName())
 
-	if _, ok := m.stacks[stackName]; !ok {
-		return []string{}
-	}
-	return m.stacks[stackName]
-}
-
-func (m *InMemoryStacksModules) OnPush(stackName string, fn func(modules []string)) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
-	modules, ok := m.stacks[stackName] // Added while locking
-	if ok {
-		fn(modules)
+	status, err := getStatus(stack)
+	if err != nil {
+		logger.Errorf("Unable to generate message stack add: %s", err)
 		return
 	}
-	m.onPush[stackName] = fn
-}
 
-func (m *InMemoryStacksModules) Contains(stack, module string) bool {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
-	modules, ok := m.stacks[stack] // Added while locking
-	if !ok {
-		return false
+	if status == nil {
+		return
 	}
 
-	return collectionutils.Contains(modules, module)
-}
-
-func NewInMemoryStacksModules() *InMemoryStacksModules {
-	return &InMemoryStacksModules{
-		stacks: make(map[string][]string),
-		onPush: make(map[string]func([]string)),
+	if err := h.sendStatus(stack.GetName(), status); err != nil {
+		return
 	}
+	logger.Infof("Stack '%s' added", stack.GetName())
+
 }
 
-func NewStackEventHandler(logger sharedlogging.Logger, membershipClient MembershipClient, stacks *InMemoryStacksModules) cache.ResourceEventHandlerFuncs {
-	sendStatus := func(interpretedStatus generated.StackStatus, stackName string, status *structpb.Struct) {
-		logger.Infof("Send status %s for stack %s", interpretedStatus, stackName)
-		if err := membershipClient.Send(&generated.Message{
-			Message: &generated.Message_StatusChanged{
-				StatusChanged: &generated.StatusChanged{
-					ClusterName: stackName,
-					Status:      interpretedStatus,
-					Statuses:    status,
-				},
+func (h *StackEventHandler) UpdateFunc(oldObj, newObj interface{}) {
+	oldStack := oldObj.(*unstructured.Unstructured)
+	newStack := newObj.(*unstructured.Unstructured)
+
+	logger := h.logger.WithField("func", "Update").WithField("stack", newStack.GetName())
+
+	oldStatus, err := getStatus(oldStack)
+	if err != nil {
+		logger.Errorf("Unable to get old stack status update: %s", err)
+	}
+
+	newStatus, err := getStatus(newStack)
+	if err != nil {
+		logger.Errorf("Unable to get new stack status update: %s", err)
+		return
+	}
+
+	oldDisabled, _, err := unstructured.NestedBool(oldStack.Object, "spec", "disabled")
+	if err != nil {
+		logger.Errorf("Unable to get new stack `spec.disabled` update: %s", err)
+		return
+	}
+	newDisabled, _, err := unstructured.NestedBool(newStack.Object, "spec", "disabled")
+	if err != nil {
+		logger.Errorf("Unable to get new stack `spec.disabled` update: %s", err)
+		return
+	}
+
+	// There is no status
+	// The status has not changed and stack is not been disabled or enabled
+	if newStatus == nil || (reflect.DeepEqual(oldStatus, newStatus) && oldDisabled == newDisabled) {
+		return
+	}
+
+	if err := h.sendStatus(newStack.GetName(), newStatus); err != nil {
+		return
+	}
+	logger.Infof("Stack '%s' updated", newStack.GetName())
+
+}
+
+func (h *StackEventHandler) DeleteFunc(obj interface{}) {
+	stack := obj.(*unstructured.Unstructured)
+	logger := h.logger.WithField("func", "Delete").WithField("stack", stack.GetName())
+
+	if err := h.client.Send(&generated.Message{
+		Message: &generated.Message_StackDeleted{
+			StackDeleted: &generated.DeletedStack{
+				ClusterName: stack.GetName(),
 			},
-		}); err != nil {
-			logger.Errorf("Unable to send stack status to server: %s", err)
-		}
+		},
+	}); err != nil {
+		logger.Errorf("Unable to send stack delete to server: %s", err)
+		return
 	}
+	logger.Infof("Stack '%s' deleted", stack.GetName())
+}
 
-	InterpretedStatus := func(stack *unstructured.Unstructured, expectedModules []string) generated.StackStatus {
-		logger := logger.WithField("stack", stack.GetName())
-
-		disabled, found, err := unstructured.NestedBool(stack.Object, "spec", "disabled")
-		if !found || err != nil {
-			panic(err)
-		}
-		if disabled {
-			logger.Infof("Set status as disabled as the stack is disabled")
-			return generated.StackStatus_Disabled
-		}
-
-		ready, found, err := unstructured.NestedBool(stack.Object, "status", "ready")
-		if !found || err != nil || !ready {
-			logger.Infof("Set status as progressing as the stack is not ready")
-			return generated.StackStatus_Progressing
-		}
-
-		stackModules, _, err := unstructured.NestedStringSlice(stack.Object, "status", "modules")
-		if err != nil {
-			panic(err)
-		}
-		stackModules = collectionutils.Map(stackModules, func(v string) string {
-			return strings.ToLower(v)
-		})
-		for _, module := range expectedModules {
-			if !slices.Contains(stackModules, module) {
-				logger.Infof("Set status as progressing as expected module '%s' is not in stack modules, have %s", module, stackModules)
-				return generated.StackStatus_Progressing
-			}
-		}
-		return generated.StackStatus_Ready
+func NewStackEventHandler(logger sharedlogging.Logger, membershipClient MembershipClient) cache.ResourceEventHandlerFuncs {
+	stackEventHandler := &StackEventHandler{
+		logger: logger,
+		client: membershipClient,
 	}
 
 	return cache.ResourceEventHandlerFuncs{
-		AddFunc: func(obj interface{}) {
-			stack := obj.(*unstructured.Unstructured)
-
-			status, err := getStatus(stack)
-			if err != nil {
-				logger.Errorf("Unable to generate message stack update: %s", err)
-				return
-			}
-
-			if status == nil {
-				return
-			}
-
-			modules, ok := stacks.Get(stack.GetName())
-			if !ok {
-				logger.Debugf("Stack '%s' not initialized in memory", stack.GetName())
-				stacks.OnPush(stack.GetName(), func(modules []string) {
-					logger.Debugf("Stack '%s' finally sent by membership, update status", stack.GetName())
-					sendStatus(InterpretedStatus(stack, modules), stack.GetName(), status)
-				})
-				return
-			}
-
-			logger.Infof("Stack '%s' added", stack.GetName())
-			sendStatus(InterpretedStatus(stack, modules), stack.GetName(), status)
-		},
-		UpdateFunc: func(oldObj, newObj interface{}) {
-
-			newStack := newObj.(*unstructured.Unstructured)
-
-			status, err := getStatus(newStack)
-			if err != nil {
-				logger.Errorf("Unable to generate message stack update: %s", err)
-				return
-			}
-
-			if status == nil {
-				return
-			}
-
-			modules, ok := stacks.Get(newStack.GetName())
-			if !ok {
-				logger.Debugf("Stack '%s' not initialized in memory", newStack.GetName())
-				stacks.OnPush(newStack.GetName(), func(modules []string) {
-					logger.Debugf("Stack '%s' finally sent by membership, update status", newStack.GetName())
-					sendStatus(InterpretedStatus(newStack, modules), newStack.GetName(), status)
-				})
-				return
-			}
-
-			logger.Infof("Stack '%s' updated", newStack.GetName())
-			sendStatus(InterpretedStatus(newStack, modules), newStack.GetName(), status)
-		},
-		DeleteFunc: func(obj interface{}) {
-			stack := obj.(*unstructured.Unstructured)
-			if err := membershipClient.Send(&generated.Message{
-				Message: &generated.Message_StackDeleted{
-					StackDeleted: &generated.DeletedStack{
-						ClusterName: stack.GetName(),
-					},
-				},
-			}); err != nil {
-				logger.Errorf("Unable to send stack delete to server: %s", err)
-			}
-
-			modules, ok := stacks.Get(stack.GetName())
-			if !ok {
-				logger.Debugf("Stack '%s' not initialized in memory", stack.GetName())
-				return
-			}
-
-			logger.Infof("Stack '%s' deleted", stack.GetName())
-			status, err := getStatus(stack)
-			if err != nil {
-				logger.Errorf("Unable to generate message stack update: %s", err)
-				stacks.OnPush(stack.GetName(), func(modules []string) {
-					logger.Debugf("Stack '%s' finally sent by membership, update status", stack.GetName())
-					sendStatus(InterpretedStatus(stack, modules), stack.GetName(), status)
-				})
-				return
-			}
-			if status == nil {
-				return
-			}
-			sendStatus(InterpretedStatus(stack, modules), stack.GetName(), status)
-		},
+		AddFunc:    stackEventHandler.AddFunc,
+		UpdateFunc: stackEventHandler.UpdateFunc,
+		DeleteFunc: stackEventHandler.DeleteFunc,
 	}
 }

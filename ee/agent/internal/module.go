@@ -89,12 +89,12 @@ func CreateVersionsInformer(factory dynamicinformer.DynamicSharedInformerFactory
 }
 
 func CreateStacksInformer(factory dynamicinformer.DynamicSharedInformerFactory,
-	logger logging.Logger, client MembershipClient, stacks *InMemoryStacksModules) error {
+	logger logging.Logger, client MembershipClient) error {
 	logger = logger.WithFields(map[string]any{
 		"component": "stacks",
 	})
 	logger.Info("Creating informer")
-	return createInformer(factory, "stacks", NewStackEventHandler(logger, client, stacks))
+	return createInformer(factory, "stacks", NewStackEventHandler(logger, client))
 }
 
 func CreateModulesInformers(factory dynamicinformer.DynamicSharedInformerFactory,
@@ -217,7 +217,6 @@ func NewModule(serverAddress string, authenticator Authenticator, clientInfo Cli
 		fx.Provide(func(membershipClient *membershipClient) MembershipClient {
 			return membershipClient
 		}),
-		fx.Provide(NewInMemoryStacksModules),
 		fx.Provide(NewMembershipListener),
 		fx.Invoke(CreateVersionsInformer),
 		fx.Invoke(CreateStacksInformer),

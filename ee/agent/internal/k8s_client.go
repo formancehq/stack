@@ -72,6 +72,7 @@ func (c defaultK8SClient) EnsureNotExists(ctx context.Context, resource, name st
 }
 
 func (c defaultK8SClient) EnsureNotExistsBySelector(ctx context.Context, resource string, selector labels.Selector) error {
+	logging.FromContext(ctx).Debugf("Deleting resources of type %s with selector %s", resource, selector.String())
 	return client.IgnoreNotFound(
 		c.restClient.Delete().
 			Resource(resource).
