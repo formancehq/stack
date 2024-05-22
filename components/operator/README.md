@@ -184,6 +184,7 @@ Available settings:
 | deployments.`<deployment-name>`.containers.`<container-name>`.resource-requirements      | Map    | cpu=X, mem=X        |                                                                      |
 | deployments.`<deployment-name>`.init-containers.`<container-name>`.run-as                | Map    | user=X, group=X     |                                                                      |
 | deployments.`<deployment-name>`.containers.`<container-name>`.run-as                     | Map    | user=X, group=X     |                                                                      |
+| deployments.`<deployment-name>`.replicas                       | string | 2                   |                                                                      |
 | caddy.image                                                                              | string |                     | Caddy image                                                          |
 | registries.`<name>`.endpoint                                                             | string |                     | Specify a custom endpoint for a specific docker repository           |
 | registries.`<name>`.images.`<path>`.rewrite                                              | string | formancehq/example  | Allow to rewrite the image path                                      |

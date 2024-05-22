@@ -253,6 +253,7 @@ func createConnectorsDeployment(ctx core.Context, stack *v1beta1.Stack, payments
 				},
 			},
 		}).
+		WithStateful(true).
 		Install(ctx)
 	if err != nil {
 		return err
