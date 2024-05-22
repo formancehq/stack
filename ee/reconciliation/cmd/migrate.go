@@ -1,9 +1,9 @@
 package cmd
 
 import (
+	migrationsv1 "github.com/formancehq/reconciliation/internal/v1/storage/migrations"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunmigrate"
-
-	storage "github.com/formancehq/reconciliation/internal/storage/migrations"
+	"github.com/formancehq/stack/libs/go-libs/migrations"
 	"github.com/spf13/cobra"
 	"github.com/uptrace/bun"
 )
@@ -17,5 +17,8 @@ func newMigrate() *cobra.Command {
 }
 
 func Migrate(cmd *cobra.Command, args []string, db *bun.DB) error {
-	return storage.Migrate(cmd.Context(), db)
+	migrator := migrations.NewMigrator()
+	migrationsv1.RegisterMigrations(migrator)
+	return migrator.Up(cmd.Context(), db)
+
 }
