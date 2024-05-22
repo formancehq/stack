@@ -48,6 +48,7 @@ type Stack struct {
 	DeletedAt *time.Time `json:"deletedAt,omitempty"`
 	DisabledAt *time.Time `json:"disabledAt,omitempty"`
 	AuditEnabled *bool `json:"auditEnabled,omitempty"`
+	Synchronised *bool `json:"synchronised,omitempty"`
 }
 
 // NewStack instantiates a new Stack object
@@ -616,6 +617,38 @@ func (o *Stack) SetAuditEnabled(v bool) {
 	o.AuditEnabled = &v
 }
 
+// GetSynchronised returns the Synchronised field value if set, zero value otherwise.
+func (o *Stack) GetSynchronised() bool {
+	if o == nil || IsNil(o.Synchronised) {
+		var ret bool
+		return ret
+	}
+	return *o.Synchronised
+}
+
+// GetSynchronisedOk returns a tuple with the Synchronised field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Stack) GetSynchronisedOk() (*bool, bool) {
+	if o == nil || IsNil(o.Synchronised) {
+		return nil, false
+	}
+	return o.Synchronised, true
+}
+
+// HasSynchronised returns a boolean if a field has been set.
+func (o *Stack) HasSynchronised() bool {
+	if o != nil && !IsNil(o.Synchronised) {
+		return true
+	}
+
+	return false
+}
+
+// SetSynchronised gets a reference to the given bool and assigns it to the Synchronised field.
+func (o *Stack) SetSynchronised(v bool) {
+	o.Synchronised = &v
+}
+
 func (o Stack) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -659,6 +692,9 @@ func (o Stack) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.AuditEnabled) {
 		toSerialize["auditEnabled"] = o.AuditEnabled
+	}
+	if !IsNil(o.Synchronised) {
+		toSerialize["synchronised"] = o.Synchronised
 	}
 	return toSerialize, nil
 }

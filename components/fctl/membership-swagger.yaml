@@ -1653,6 +1653,8 @@ components:
               format: date-time
             auditEnabled:
               type: boolean
+            synchronised:
+              type: boolean
     UserData:
       allOf:
         - type: object

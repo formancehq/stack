@@ -2325,6 +2325,8 @@ components:
           type: string
         auditEnabled:
           type: boolean
+        synchronised:
+          type: boolean
       required:
       - id
       - organizationId
