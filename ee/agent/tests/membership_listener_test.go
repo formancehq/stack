@@ -82,10 +82,6 @@ var _ = Describe("Membership listener", func() {
 						continue
 					}
 
-					if gvk.Kind == "Stargate" {
-						continue
-					}
-
 					modules = append(modules, &generated.Module{
 						Name: gvk.Kind,
 					})
@@ -93,6 +89,9 @@ var _ = Describe("Membership listener", func() {
 
 				membershipStack = &generated.Stack{
 					ClusterName: stackName,
+					StargateConfig: &generated.StargateConfig{
+						Url: "http://example.net",
+					},
 					AuthConfig: &generated.AuthConfig{
 						ClientId:     "clientid",
 						ClientSecret: "clientsecret",
@@ -202,10 +201,6 @@ var _ = Describe("Membership listener", func() {
 			for gvk, rtype := range scheme.Scheme.AllKnownTypes() {
 				object := reflect.New(rtype).Interface()
 				if _, ok := object.(v1beta1.Module); !ok {
-					continue
-				}
-
-				if gvk.Kind == "Stargate" {
 					continue
 				}
 

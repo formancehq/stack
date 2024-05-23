@@ -130,7 +130,6 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 	}
 
 	c.syncModules(ctx, metadata, stack, membershipStack)
-	c.syncStargate(ctx, metadata, stack, membershipStack)
 	c.syncAuthClients(ctx, metadata, stack, membershipStack.StaticClients)
 
 	sharedlogging.FromContext(ctx).Infof("Stack %s updated cluster side", stack.GetName())
@@ -165,9 +164,6 @@ func (c *membershipListener) syncModules(ctx context.Context, metadata map[strin
 			continue
 		}
 
-		if gvk.Kind == "Stargate" {
-			continue
-		}
 		resources, err := c.restMapper.RESTMapping(gvk.GroupKind(), gvk.Version)
 		if err != nil {
 			logger.Errorf("Unable to get resources for %s: %s", gvk.Kind, err)
@@ -187,6 +183,28 @@ func (c *membershipListener) syncModules(ctx context.Context, metadata map[strin
 		}
 
 		switch gvk.Kind {
+		case "Stargate":
+			if membershipStack.StargateConfig == nil {
+				logger.Errorf("Stargate config is missing")
+				continue
+			}
+
+			parts := strings.Split(stack.GetName(), "-")
+			if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, gvk, map[string]any{
+				"metadata": metadata,
+				"spec": map[string]any{
+					"organizationID": parts[0],
+					"stackID":        parts[1],
+					"serverURL":      membershipStack.StargateConfig.Url,
+					"auth": map[string]any{
+						"issuer":       membershipStack.AuthConfig.Issuer,
+						"clientID":     membershipStack.AuthConfig.ClientId,
+						"clientSecret": membershipStack.AuthConfig.ClientSecret,
+					},
+				},
+			}); err != nil {
+				sharedlogging.FromContext(ctx).Errorf("Unable to create module Stargate cluster side: %s", err)
+			}
 		case "Auth":
 			if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, gvk, map[string]any{
 				"metadata": metadata,
@@ -227,33 +245,6 @@ func (c *membershipListener) deleteModule(ctx context.Context, logger logging.Lo
 	logger.Debugf("Deleting module %s", resource)
 
 	return c.client.EnsureNotExistsBySelector(ctx, resource, stackLabels(stackName))
-}
-
-func (c *membershipListener) syncStargate(ctx context.Context, metadata map[string]any, stack *unstructured.Unstructured, membershipStack *generated.Stack) {
-	stargateName := fmt.Sprintf("%s-stargate", membershipStack.ClusterName)
-	if membershipStack.StargateConfig != nil && membershipStack.StargateConfig.Enabled {
-		parts := strings.Split(stack.GetName(), "-")
-
-		if _, err := c.createOrUpdateStackDependency(ctx, stack.GetName(), stack.GetName(), stack, v1beta1.GroupVersion.WithKind("Stargate"), map[string]any{
-			"metadata": metadata,
-			"spec": map[string]any{
-				"organizationID": parts[0],
-				"stackID":        parts[1],
-				"serverURL":      membershipStack.StargateConfig.Url,
-				"auth": map[string]any{
-					"issuer":       membershipStack.AuthConfig.Issuer,
-					"clientID":     membershipStack.AuthConfig.ClientId,
-					"clientSecret": membershipStack.AuthConfig.ClientSecret,
-				},
-			},
-		}); err != nil {
-			sharedlogging.FromContext(ctx).Errorf("Unable to create module Stargate cluster side: %s", err)
-		}
-	} else {
-		if err := c.client.EnsureNotExists(ctx, "Stargates", stargateName); err != nil {
-			sharedlogging.FromContext(ctx).Errorf("Unable to delete module Stargate cluster side: %s", err)
-		}
-	}
 }
 
 func (c *membershipListener) syncAuthClients(ctx context.Context, metadata map[string]any, stack *unstructured.Unstructured, staticClients []*generated.AuthClient) {
