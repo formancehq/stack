@@ -6,6 +6,7 @@ import (
 	"github.com/formancehq/operator/internal/resources/brokertopics"
 	"github.com/formancehq/operator/internal/resources/caddy"
 	"k8s.io/apimachinery/pkg/types"
+	"sigs.k8s.io/controller-runtime/pkg/log"
 	"strconv"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -27,18 +28,28 @@ import (
 func installLedger(ctx core.Context, stack *v1beta1.Stack,
 	ledger *v1beta1.Ledger, database *v1beta1.Database, image string, isV2 bool) error {
 
-	replicasSettings, err := settings.GetIntOrDefault(ctx, stack.Name, 1, "deployments", "ledger", "replicas")
+	deploymentStrategySettings, err := settings.GetStringOrDefault(ctx, stack.Name, v1beta1.DeploymentStrategySingle, "ledger", "deployment-strategy")
 	if err != nil {
 		return err
 	}
 
-	if ledger.Spec.DeploymentStrategy == v1beta1.DeploymentStrategySingle || (replicasSettings <= 1 && ledger.Spec.DeploymentStrategy != v1beta1.DeploymentStrategyMonoWriterMultipleReader) {
+	isSingle := true
+	if deploymentStrategySettings == v1beta1.DeploymentStrategyMonoWriterMultipleReader {
+		isSingle = false
+	}
+	if ledger.Spec.DeploymentStrategy == v1beta1.DeploymentStrategyMonoWriterMultipleReader {
+		isSingle = false
+	}
+
+	if isSingle {
+		log.FromContext(ctx).Info("installing ledger with single deployment strategy")
 		if err := uninstallLedgerMonoWriterMultipleReader(ctx, stack); err != nil {
 			return err
 		}
 		return installLedgerSingleInstance(ctx, stack, ledger, database, image, isV2)
 	}
 
+	log.FromContext(ctx).Info("installing ledger with multi deployment strategy")
 	if err := core.DeleteIfExists[*appsv1.Deployment](ctx, core.GetNamespacedResourceName(stack.Name, "ledger")); err != nil {
 		return err
 	}

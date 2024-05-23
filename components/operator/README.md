@@ -170,7 +170,7 @@ Available settings:
 
 | Key                                                                                      | Type   | Example             | Description                                                          |
 |------------------------------------------------------------------------------------------|--------|---------------------|----------------------------------------------------------------------|
-| aws.service-account                                                                      | string |                     |  AWS Role                                                            |
+| aws.service-account                                                                      | string |                     | AWS Role                                                             |
 | postgres.`<module-name>`.uri                                                             | URI    |                     | Postgres database configuration                                      |
 | elasticsearch.dsn                                                                        | URI    |                     | Elasticsearch connection URI                                         |
 | temporal.dsn                                                                             | URI    |                     | Temporal URI                                                         |
@@ -179,6 +179,7 @@ Available settings:
 | broker.dsn                                                                               | URI    |                     | Broker URI                                                           |
 | opentelemetry.traces.dsn                                                                 | URI    |                     | OpenTelemetry collector URI                                          |
 | clear-database                                                                           | bool   | true                | Whether or not remove databases on stack deletion                    |
+| ledger.deployment-strategy                                                                          | string | single              | Ledger deployment type                                               |
 | payments.encryption-key                                                                  | string |                     | Payments data encryption key                                         |
 | deployments.`<deployment-name>`.init-containers.`<container-name>`.resource-requirements | Map    | cpu=X, mem=X        |                                                                      |
 | deployments.`<deployment-name>`.containers.`<container-name>`.resource-requirements      | Map    | cpu=X, mem=X        |                                                                      |
