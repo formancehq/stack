@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/formancehq/orchestration/internal/temporalworker"
+
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -18,17 +20,19 @@ func NewModule(taskQueue string) fx.Option {
 		fx.Provide(func(httpClient *http.Client) *expressionEvaluator {
 			return NewExpressionEvaluator(httpClient)
 		}),
-		fx.Provide(
-			fx.Annotate(func() *triggerWorkflow {
-				return NewWorkflow(taskQueue, true)
-			}, fx.As(new(any)), fx.ResultTags(`group:"workflows"`)),
-		),
-		fx.Provide(
-			fx.Annotate(func(db *bun.DB, manager *workflow.WorkflowManager,
-				expressionEvaluator *expressionEvaluator, publisher message.Publisher) Activities {
-				return NewActivities(db, manager, expressionEvaluator, publisher)
-			}, fx.As(new(any)), fx.ResultTags(`group:"activities"`)),
-		),
+		fx.Provide(func() *triggerWorkflow {
+			return NewWorkflow(taskQueue, true)
+		}),
+		fx.Provide(fx.Annotate(func(workflow *triggerWorkflow) temporalworker.DefinitionSet {
+			return workflow.DefinitionSet()
+		}, fx.ResultTags(`group:"workflows"`))),
+		fx.Provide(func(db *bun.DB, manager *workflow.WorkflowManager,
+			expressionEvaluator *expressionEvaluator, publisher message.Publisher) Activities {
+			return NewActivities(db, manager, expressionEvaluator, publisher)
+		}),
+		fx.Provide(fx.Annotate(func(activities Activities) temporalworker.DefinitionSet {
+			return activities.DefinitionSet()
+		}, fx.ResultTags(`group:"activities"`))),
 	)
 }
 

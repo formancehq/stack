@@ -32,8 +32,16 @@ func TestConfig(t *testing.T) {
 
 	taskQueue := uuid.NewString()
 	worker := temporalworker.New(logging.Testing(), devServer.Client(), taskQueue,
-		[]any{NewWorkflows(false), (&stages.NoOp{}).GetWorkflow()},
-		[]any{NewActivities(publish.NoOpPublisher, db)},
+		[]temporalworker.DefinitionSet{
+			NewWorkflows(false).DefinitionSet(),
+			temporalworker.NewDefinitionSet().Append(temporalworker.Definition{
+				Name: "NoOp",
+				Func: (&stages.NoOp{}).GetWorkflow(),
+			}),
+		},
+		[]temporalworker.DefinitionSet{
+			NewActivities(publish.NoOpPublisher, db).DefinitionSet(),
+		},
 	)
 	require.NoError(t, worker.Start())
 	t.Cleanup(worker.Stop)

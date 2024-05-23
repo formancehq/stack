@@ -2,7 +2,6 @@ package temporalworker
 
 import (
 	"context"
-	"reflect"
 
 	"github.com/formancehq/stack/libs/go-libs/logging"
 
@@ -14,51 +13,42 @@ import (
 	"go.uber.org/fx"
 )
 
-func registerWorkflow(worker worker.Worker, workflow any) {
-	valueOfWorkflow := reflect.ValueOf(workflow)
-	switch valueOfWorkflow.Kind() {
-	case reflect.Func:
-		worker.RegisterWorkflow(workflow)
-	case reflect.Struct:
-		for i := 0; i < valueOfWorkflow.NumMethod(); i++ {
-			name := reflect.TypeOf(workflow).Method(i).Name
-			worker.RegisterWorkflowWithOptions(valueOfWorkflow.Method(i).Interface(), temporalworkflow.RegisterOptions{
-				Name: name,
-			})
-		}
-	case reflect.Ptr:
-		registerWorkflow(worker, valueOfWorkflow.Elem().Interface())
-	}
+type Definition struct {
+	Func any
+	Name string
 }
 
-func registerActivity(worker worker.Worker, act any) {
-	valueOfActivities := reflect.ValueOf(act)
-	switch valueOfActivities.Kind() {
-	case reflect.Struct:
-		for i := 0; i < valueOfActivities.NumMethod(); i++ {
-			name := reflect.TypeOf(act).Method(i).Name
-			worker.RegisterActivityWithOptions(valueOfActivities.Method(i).Interface(), activity.RegisterOptions{
-				Name: name,
-			})
-		}
-	case reflect.Func:
-		worker.RegisterActivity(act)
-	case reflect.Ptr:
-		registerActivity(worker, valueOfActivities.Elem().Interface())
-	}
+type DefinitionSet []Definition
+
+func NewDefinitionSet() DefinitionSet {
+	return DefinitionSet{}
 }
 
-func New(logger logging.Logger, c client.Client, taskQueue string, workflows, activities []any) worker.Worker {
+func (d DefinitionSet) Append(definition Definition) DefinitionSet {
+	d = append(d, definition)
+
+	return d
+}
+
+func New(logger logging.Logger, c client.Client, taskQueue string, workflows, activities []DefinitionSet) worker.Worker {
 	worker := worker.New(c, taskQueue, worker.Options{
 		BackgroundActivityContext: logging.ContextWithLogger(context.Background(), logger),
 	})
 
-	for _, workflow := range workflows {
-		registerWorkflow(worker, workflow)
+	for _, set := range workflows {
+		for _, workflow := range set {
+			worker.RegisterWorkflowWithOptions(workflow.Func, temporalworkflow.RegisterOptions{
+				Name: workflow.Name,
+			})
+		}
 	}
 
-	for _, act := range activities {
-		registerActivity(worker, act)
+	for _, set := range activities {
+		for _, act := range set {
+			worker.RegisterActivityWithOptions(act.Func, activity.RegisterOptions{
+				Name: act.Name,
+			})
+		}
 	}
 
 	return worker
@@ -67,7 +57,7 @@ func New(logger logging.Logger, c client.Client, taskQueue string, workflows, ac
 func NewWorkerModule(taskQueue string) fx.Option {
 	return fx.Options(
 		fx.Provide(
-			fx.Annotate(func(logger logging.Logger, c client.Client, workflows, activities []any) worker.Worker {
+			fx.Annotate(func(logger logging.Logger, c client.Client, workflows, activities []DefinitionSet) worker.Worker {
 				return New(logger, c, taskQueue, workflows, activities)
 			}, fx.ParamTags(``, ``, `group:"workflows"`, `group:"activities"`)),
 		),
