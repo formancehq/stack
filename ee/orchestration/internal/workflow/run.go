@@ -3,6 +3,8 @@ package workflow
 import (
 	"time"
 
+	"github.com/formancehq/orchestration/internal/temporalworker"
+
 	"go.temporal.io/api/enums/v1"
 	"go.temporal.io/sdk/workflow"
 )
@@ -13,7 +15,7 @@ type Workflows struct {
 	includeSearchAttributes bool
 }
 
-func (r Workflows) Initiate(ctx workflow.Context, input Input) (*Instance, error) {
+func (w Workflows) Initiate(ctx workflow.Context, input Input) (*Instance, error) {
 	instance := &Instance{}
 	err := workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
@@ -30,7 +32,7 @@ func (r Workflows) Initiate(ctx workflow.Context, input Input) (*Instance, error
 	}
 
 	searchAttributes := map[string]any{}
-	if r.includeSearchAttributes {
+	if w.includeSearchAttributes {
 		searchAttributes = map[string]interface{}{
 			SearchAttributeWorkflowID: input.Workflow.ID,
 		}
@@ -52,7 +54,7 @@ func (r Workflows) Initiate(ctx workflow.Context, input Input) (*Instance, error
 	return instance, nil
 }
 
-func (r Workflows) Run(ctx workflow.Context, i Input, instance Instance) error {
+func (w Workflows) Run(ctx workflow.Context, i Input, instance Instance) error {
 	err := i.Workflow.Config.run(ctx, instance, i.Variables)
 	if err != nil {
 		instance.SetTerminatedWithError(workflow.Now(ctx), err)
@@ -75,6 +77,17 @@ func (r Workflows) Run(ctx workflow.Context, i Input, instance Instance) error {
 	}
 
 	return nil
+}
+
+func (w Workflows) DefinitionSet() temporalworker.DefinitionSet {
+	return temporalworker.NewDefinitionSet().
+		Append(temporalworker.Definition{
+			Func: w.Run,
+			Name: "Run",
+		}).Append(temporalworker.Definition{
+		Func: w.Initiate,
+		Name: "Initiate",
+	})
 }
 
 var Initiate = Workflows{}.Initiate

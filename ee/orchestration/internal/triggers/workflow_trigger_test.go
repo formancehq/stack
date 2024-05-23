@@ -35,13 +35,17 @@ func TestWorkflow(t *testing.T) {
 	workflowManager := workflow.NewManager(db, devServer.Client(), taskQueue, false)
 
 	worker := temporalworker.New(logging.Testing(), devServer.Client(), taskQueue,
-		[]any{
-			NewWorkflow(taskQueue, false),
-			workflow.NewWorkflows(false),
-			(&stages.NoOp{}).GetWorkflow()},
-		[]any{
-			workflow.NewActivities(publish.NoOpPublisher, db),
-			NewActivities(db, workflowManager, NewDefaultExpressionEvaluator(), publish.NoOpPublisher),
+		[]temporalworker.DefinitionSet{
+			NewWorkflow(taskQueue, false).DefinitionSet(),
+			workflow.NewWorkflows(false).DefinitionSet(),
+			temporalworker.NewDefinitionSet().Append(temporalworker.Definition{
+				Name: "NoOp",
+				Func: (&stages.NoOp{}).GetWorkflow(),
+			}),
+		},
+		[]temporalworker.DefinitionSet{
+			workflow.NewActivities(publish.NoOpPublisher, db).DefinitionSet(),
+			NewActivities(db, workflowManager, NewDefaultExpressionEvaluator(), publish.NoOpPublisher).DefinitionSet(),
 		},
 	)
 	require.NoError(t, worker.Start())
