@@ -6,7 +6,6 @@ import (
 	"github.com/formancehq/operator/internal/resources/brokertopics"
 	"github.com/formancehq/operator/internal/resources/caddy"
 	"k8s.io/apimachinery/pkg/types"
-	"sigs.k8s.io/controller-runtime/pkg/log"
 	"strconv"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -42,14 +41,12 @@ func installLedger(ctx core.Context, stack *v1beta1.Stack,
 	}
 
 	if isSingle {
-		log.FromContext(ctx).Info("installing ledger with single deployment strategy")
 		if err := uninstallLedgerMonoWriterMultipleReader(ctx, stack); err != nil {
 			return err
 		}
 		return installLedgerSingleInstance(ctx, stack, ledger, database, image, isV2)
 	}
 
-	log.FromContext(ctx).Info("installing ledger with multi deployment strategy")
 	if err := core.DeleteIfExists[*appsv1.Deployment](ctx, core.GetNamespacedResourceName(stack.Name, "ledger")); err != nil {
 		return err
 	}
