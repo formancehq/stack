@@ -106,24 +106,31 @@ func Execute() {
 		case fctl.IsInvalidAuthentication(err):
 			pterm.Error.WithWriter(os.Stderr).Printfln("Your authentication is invalid, please login :)")
 		default:
-			// notes(gfyrag): not a clean assertion but following errors does not implements standard Is() helper for errors
-			switch err := err.(type) {
-			case *sdkerrors.ErrorResponse:
-				printErrorResponse(err)
-			case *sdkerrors.V2ErrorResponse:
-				printV2ErrorResponse(err)
-			case *membershipclient.GenericOpenAPIError:
-				body := err.Body()
-				errResponse := api.ErrorResponse{}
-				if err := json.Unmarshal(body, &errResponse); err != nil {
-					panic(err)
+			unwrapped := err
+			for unwrapped != nil {
+				//notes(gfyrag): not a clean assertion but following errors does not implements standard Is() helper for errors
+				switch err := unwrapped.(type) {
+				case *sdkerrors.ErrorResponse:
+					printErrorResponse(err)
+					return
+				case *sdkerrors.V2ErrorResponse:
+					printV2ErrorResponse(err)
+					return
+				case *membershipclient.GenericOpenAPIError:
+					body := err.Body()
+					errResponse := api.ErrorResponse{}
+					if err := json.Unmarshal(body, &errResponse); err != nil {
+						panic(err)
+					}
+					printError(errResponse.ErrorCode, errResponse.ErrorMessage, &errResponse.Details)
+					return
+				default:
+					unwrapped = errors.Unwrap(unwrapped)
 				}
-				printError(errResponse.ErrorCode, errResponse.ErrorMessage, &errResponse.Details)
-			default:
-				pterm.Error.WithWriter(os.Stderr).Printfln(err.Error())
-				os.Exit(255)
 			}
 		}
+		pterm.Error.WithWriter(os.Stderr).Printfln(err.Error())
+		os.Exit(255)
 	}
 }
 
