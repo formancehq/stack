@@ -3,17 +3,25 @@
 package shared
 
 type WorkflowInstanceHistoryStageInput struct {
-	ConfirmHold       *ActivityConfirmHold       `json:"ConfirmHold,omitempty"`
-	CreateTransaction *ActivityCreateTransaction `json:"CreateTransaction,omitempty"`
-	CreditWallet      *ActivityCreditWallet      `json:"CreditWallet,omitempty"`
-	DebitWallet       *ActivityDebitWallet       `json:"DebitWallet,omitempty"`
-	GetAccount        *ActivityGetAccount        `json:"GetAccount,omitempty"`
-	GetPayment        *ActivityGetPayment        `json:"GetPayment,omitempty"`
-	GetWallet         *ActivityGetWallet         `json:"GetWallet,omitempty"`
-	ListWallets       *ActivityListWallets       `json:"ListWallets,omitempty"`
-	RevertTransaction *ActivityRevertTransaction `json:"RevertTransaction,omitempty"`
-	StripeTransfer    *ActivityStripeTransfer    `json:"StripeTransfer,omitempty"`
-	VoidHold          *ActivityVoidHold          `json:"VoidHold,omitempty"`
+	AddAccountMetadata *ActivityAddAccountMetadata `json:"AddAccountMetadata,omitempty"`
+	ConfirmHold        *ActivityConfirmHold        `json:"ConfirmHold,omitempty"`
+	CreateTransaction  *ActivityCreateTransaction  `json:"CreateTransaction,omitempty"`
+	CreditWallet       *ActivityCreditWallet       `json:"CreditWallet,omitempty"`
+	DebitWallet        *ActivityDebitWallet        `json:"DebitWallet,omitempty"`
+	GetAccount         *ActivityGetAccount         `json:"GetAccount,omitempty"`
+	GetPayment         *ActivityGetPayment         `json:"GetPayment,omitempty"`
+	GetWallet          *ActivityGetWallet          `json:"GetWallet,omitempty"`
+	ListWallets        *ActivityListWallets        `json:"ListWallets,omitempty"`
+	RevertTransaction  *ActivityRevertTransaction  `json:"RevertTransaction,omitempty"`
+	StripeTransfer     *ActivityStripeTransfer     `json:"StripeTransfer,omitempty"`
+	VoidHold           *ActivityVoidHold           `json:"VoidHold,omitempty"`
+}
+
+func (o *WorkflowInstanceHistoryStageInput) GetAddAccountMetadata() *ActivityAddAccountMetadata {
+	if o == nil {
+		return nil
+	}
+	return o.AddAccountMetadata
 }
 
 func (o *WorkflowInstanceHistoryStageInput) GetConfirmHold() *ActivityConfirmHold {

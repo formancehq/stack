@@ -211,6 +211,7 @@ func (s *Formance) GetOIDCWellKnowns(ctx context.Context) (*operations.GetOIDCWe
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getOIDCWellKnowns",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -287,6 +288,7 @@ func (s *Formance) GetVersions(ctx context.Context) (*operations.GetVersionsResp
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getVersions",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 

@@ -949,11 +949,32 @@ components:
       properties:
         event:
           type: string
+    V2UpdateAccount:
+      type: object
+      properties:
+        id:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+        ledger:
+          type: string
+      required:
+        - id
+        - ledger
+        - metadata
+    V2Update:
+      type: object
+      properties:
+        account:
+          $ref: '#/components/schemas/V2UpdateAccount'
     V2Stage:
       anyOf:
       - $ref: '#/components/schemas/V2StageSend'
       - $ref: '#/components/schemas/V2StageDelay'
       - $ref: '#/components/schemas/V2StageWaitEvent'
+      - $ref: '#/components/schemas/V2Update'
     V2StripeTransferRequest:
       type: object
       properties:
@@ -1061,6 +1082,21 @@ components:
           type: string
         ledger:
           type: string
+    V2ActivityAddAccountMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+        ledger:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - id
+        - ledger
+        - metadata
     V2ActivityCreateTransaction:
       type: object
       properties:
@@ -1496,6 +1532,8 @@ components:
       properties:
         GetAccount:
           $ref: '#/components/schemas/V2ActivityGetAccount'
+        AddAccountMetadata:
+          $ref: '#/components/schemas/V2ActivityAddAccountMetadata'
         CreateTransaction:
           $ref: '#/components/schemas/V2ActivityCreateTransaction'
         StripeTransfer:

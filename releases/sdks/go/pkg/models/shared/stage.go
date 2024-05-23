@@ -13,12 +13,14 @@ const (
 	StageTypeStageSend      StageType = "StageSend"
 	StageTypeStageDelay     StageType = "StageDelay"
 	StageTypeStageWaitEvent StageType = "StageWaitEvent"
+	StageTypeUpdate         StageType = "Update"
 )
 
 type Stage struct {
 	StageSend      *StageSend
 	StageDelay     *StageDelay
 	StageWaitEvent *StageWaitEvent
+	Update         *Update
 
 	Type StageType
 }
@@ -50,12 +52,28 @@ func CreateStageStageWaitEvent(stageWaitEvent StageWaitEvent) Stage {
 	}
 }
 
+func CreateStageUpdate(update Update) Stage {
+	typ := StageTypeUpdate
+
+	return Stage{
+		Update: &update,
+		Type:   typ,
+	}
+}
+
 func (u *Stage) UnmarshalJSON(data []byte) error {
 
 	var stageWaitEvent StageWaitEvent = StageWaitEvent{}
 	if err := utils.UnmarshalJSON(data, &stageWaitEvent, "", true, true); err == nil {
 		u.StageWaitEvent = &stageWaitEvent
 		u.Type = StageTypeStageWaitEvent
+		return nil
+	}
+
+	var update Update = Update{}
+	if err := utils.UnmarshalJSON(data, &update, "", true, true); err == nil {
+		u.Update = &update
+		u.Type = StageTypeUpdate
 		return nil
 	}
 
@@ -87,6 +105,10 @@ func (u Stage) MarshalJSON() ([]byte, error) {
 
 	if u.StageWaitEvent != nil {
 		return utils.MarshalJSON(u.StageWaitEvent, "", true)
+	}
+
+	if u.Update != nil {
+		return utils.MarshalJSON(u.Update, "", true)
 	}
 
 	return nil, errors.New("could not marshal union type: all fields are null")
