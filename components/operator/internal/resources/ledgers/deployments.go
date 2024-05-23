@@ -32,17 +32,17 @@ func installLedger(ctx core.Context, stack *v1beta1.Stack,
 		return err
 	}
 
-	if ledger.Spec.DeploymentStrategy == v1beta1.DeploymentStrategySingle || replicasSettings <= 1 {
+	if ledger.Spec.DeploymentStrategy == v1beta1.DeploymentStrategySingle || (replicasSettings <= 1 && ledger.Spec.DeploymentStrategy != v1beta1.DeploymentStrategyMonoWriterMultipleReader) {
 		if err := uninstallLedgerMonoWriterMultipleReader(ctx, stack); err != nil {
 			return err
 		}
 		return installLedgerSingleInstance(ctx, stack, ledger, database, image, isV2)
-	} else {
-		if err := core.DeleteIfExists[*appsv1.Deployment](ctx, core.GetNamespacedResourceName(stack.Name, "ledger")); err != nil {
-			return err
-		}
-		return installLedgerMonoWriterMultipleReader(ctx, stack, ledger, database, image, isV2)
 	}
+
+	if err := core.DeleteIfExists[*appsv1.Deployment](ctx, core.GetNamespacedResourceName(stack.Name, "ledger")); err != nil {
+		return err
+	}
+	return installLedgerMonoWriterMultipleReader(ctx, stack, ledger, database, image, isV2)
 }
 
 func installLedgerSingleInstance(ctx core.Context, stack *v1beta1.Stack,
