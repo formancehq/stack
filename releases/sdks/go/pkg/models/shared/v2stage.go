@@ -13,12 +13,14 @@ const (
 	V2StageTypeV2StageSend      V2StageType = "V2StageSend"
 	V2StageTypeV2StageDelay     V2StageType = "V2StageDelay"
 	V2StageTypeV2StageWaitEvent V2StageType = "V2StageWaitEvent"
+	V2StageTypeV2Update         V2StageType = "V2Update"
 )
 
 type V2Stage struct {
 	V2StageSend      *V2StageSend
 	V2StageDelay     *V2StageDelay
 	V2StageWaitEvent *V2StageWaitEvent
+	V2Update         *V2Update
 
 	Type V2StageType
 }
@@ -50,12 +52,28 @@ func CreateV2StageV2StageWaitEvent(v2StageWaitEvent V2StageWaitEvent) V2Stage {
 	}
 }
 
+func CreateV2StageV2Update(v2Update V2Update) V2Stage {
+	typ := V2StageTypeV2Update
+
+	return V2Stage{
+		V2Update: &v2Update,
+		Type:     typ,
+	}
+}
+
 func (u *V2Stage) UnmarshalJSON(data []byte) error {
 
 	var v2StageWaitEvent V2StageWaitEvent = V2StageWaitEvent{}
 	if err := utils.UnmarshalJSON(data, &v2StageWaitEvent, "", true, true); err == nil {
 		u.V2StageWaitEvent = &v2StageWaitEvent
 		u.Type = V2StageTypeV2StageWaitEvent
+		return nil
+	}
+
+	var v2Update V2Update = V2Update{}
+	if err := utils.UnmarshalJSON(data, &v2Update, "", true, true); err == nil {
+		u.V2Update = &v2Update
+		u.Type = V2StageTypeV2Update
 		return nil
 	}
 
@@ -87,6 +105,10 @@ func (u V2Stage) MarshalJSON() ([]byte, error) {
 
 	if u.V2StageWaitEvent != nil {
 		return utils.MarshalJSON(u.V2StageWaitEvent, "", true)
+	}
+
+	if u.V2Update != nil {
+		return utils.MarshalJSON(u.V2Update, "", true)
 	}
 
 	return nil, errors.New("could not marshal union type: all fields are null")

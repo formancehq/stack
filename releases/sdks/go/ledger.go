@@ -31,6 +31,7 @@ func (s *Ledger) CreateTransactions(ctx context.Context, request operations.Crea
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "CreateTransactions",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -134,6 +135,7 @@ func (s *Ledger) AddMetadataOnTransaction(ctx context.Context, request operation
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "addMetadataOnTransaction",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -226,6 +228,7 @@ func (s *Ledger) AddMetadataToAccount(ctx context.Context, request operations.Ad
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "addMetadataToAccount",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -318,6 +321,7 @@ func (s *Ledger) CountAccounts(ctx context.Context, request operations.CountAcco
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "countAccounts",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -410,6 +414,7 @@ func (s *Ledger) CountTransactions(ctx context.Context, request operations.Count
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "countTransactions",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -502,6 +507,7 @@ func (s *Ledger) CreateTransaction(ctx context.Context, request operations.Creat
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createTransaction",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -609,6 +615,7 @@ func (s *Ledger) GetAccount(ctx context.Context, request operations.GetAccountRe
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getAccount",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -706,6 +713,7 @@ func (s *Ledger) GetBalances(ctx context.Context, request operations.GetBalances
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getBalances",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -807,6 +815,7 @@ func (s *Ledger) GetBalancesAggregated(ctx context.Context, request operations.G
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getBalancesAggregated",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -908,6 +917,7 @@ func (s *Ledger) GetInfo(ctx context.Context) (*operations.GetInfoResponse, erro
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getInfo",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1005,6 +1015,7 @@ func (s *Ledger) GetLedgerInfo(ctx context.Context, request operations.GetLedger
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getLedgerInfo",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1102,6 +1113,7 @@ func (s *Ledger) GetMapping(ctx context.Context, request operations.GetMappingRe
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getMapping",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1199,6 +1211,7 @@ func (s *Ledger) GetTransaction(ctx context.Context, request operations.GetTrans
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getTransaction",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1297,6 +1310,7 @@ func (s *Ledger) ListAccounts(ctx context.Context, request operations.ListAccoun
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listAccounts",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1399,6 +1413,7 @@ func (s *Ledger) ListLogs(ctx context.Context, request operations.ListLogsReques
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listLogs",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1501,6 +1516,7 @@ func (s *Ledger) ListTransactions(ctx context.Context, request operations.ListTr
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listTransactions",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1603,6 +1619,7 @@ func (s *Ledger) ReadStats(ctx context.Context, request operations.ReadStatsRequ
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "readStats",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1700,6 +1717,7 @@ func (s *Ledger) RevertTransaction(ctx context.Context, request operations.Rever
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "revertTransaction",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1804,6 +1822,7 @@ func (s *Ledger) RunScript(ctx context.Context, request operations.RunScriptRequ
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "runScript",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1901,6 +1920,7 @@ func (s *Ledger) UpdateMapping(ctx context.Context, request operations.UpdateMap
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "updateMapping",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2004,6 +2024,7 @@ func (s *Ledger) V2AddMetadataOnTransaction(ctx context.Context, request operati
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2AddMetadataOnTransaction",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2102,6 +2123,7 @@ func (s *Ledger) V2AddMetadataToAccount(ctx context.Context, request operations.
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2AddMetadataToAccount",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2200,6 +2222,7 @@ func (s *Ledger) V2CountAccounts(ctx context.Context, request operations.V2Count
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2CountAccounts",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2298,6 +2321,7 @@ func (s *Ledger) V2CountTransactions(ctx context.Context, request operations.V2C
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2CountTransactions",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2396,6 +2420,7 @@ func (s *Ledger) V2CreateBulk(ctx context.Context, request operations.V2CreateBu
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2CreateBulk",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2501,6 +2526,7 @@ func (s *Ledger) V2CreateLedger(ctx context.Context, request operations.V2Create
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2CreateLedger",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2593,6 +2619,7 @@ func (s *Ledger) V2CreateTransaction(ctx context.Context, request operations.V2C
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2CreateTransaction",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2703,6 +2730,7 @@ func (s *Ledger) V2DeleteAccountMetadata(ctx context.Context, request operations
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2DeleteAccountMetadata",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2779,6 +2807,7 @@ func (s *Ledger) V2DeleteLedgerMetadata(ctx context.Context, request operations.
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2DeleteLedgerMetadata",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2866,6 +2895,7 @@ func (s *Ledger) V2DeleteTransactionMetadata(ctx context.Context, request operat
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2DeleteTransactionMetadata",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2952,6 +2982,7 @@ func (s *Ledger) V2GetAccount(ctx context.Context, request operations.V2GetAccou
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2GetAccount",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3053,6 +3084,7 @@ func (s *Ledger) V2GetBalancesAggregated(ctx context.Context, request operations
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2GetBalancesAggregated",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3160,6 +3192,7 @@ func (s *Ledger) V2GetInfo(ctx context.Context) (*operations.V2GetInfoResponse, 
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2GetInfo",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3257,6 +3290,7 @@ func (s *Ledger) V2GetLedger(ctx context.Context, request operations.V2GetLedger
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2GetLedger",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3354,6 +3388,7 @@ func (s *Ledger) V2GetLedgerInfo(ctx context.Context, request operations.V2GetLe
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2GetLedgerInfo",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3451,6 +3486,7 @@ func (s *Ledger) V2GetTransaction(ctx context.Context, request operations.V2GetT
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2GetTransaction",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3552,6 +3588,7 @@ func (s *Ledger) V2GetVolumesWithBalances(ctx context.Context, request operation
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2GetVolumesWithBalances",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3660,6 +3697,7 @@ func (s *Ledger) V2ListAccounts(ctx context.Context, request operations.V2ListAc
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2ListAccounts",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3767,6 +3805,7 @@ func (s *Ledger) V2ListLedgers(ctx context.Context, request operations.V2ListLed
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2ListLedgers",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3869,6 +3908,7 @@ func (s *Ledger) V2ListLogs(ctx context.Context, request operations.V2ListLogsRe
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2ListLogs",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3977,6 +4017,7 @@ func (s *Ledger) V2ListTransactions(ctx context.Context, request operations.V2Li
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2ListTransactions",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -4085,6 +4126,7 @@ func (s *Ledger) V2ReadStats(ctx context.Context, request operations.V2ReadStats
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2ReadStats",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -4182,6 +4224,7 @@ func (s *Ledger) V2RevertTransaction(ctx context.Context, request operations.V2R
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2RevertTransaction",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -4283,6 +4326,7 @@ func (s *Ledger) V2UpdateLedgerMetadata(ctx context.Context, request operations.
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2UpdateLedgerMetadata",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 

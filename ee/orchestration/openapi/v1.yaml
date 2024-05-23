@@ -793,11 +793,32 @@ components:
       properties:
         event:
           type: string
+    UpdateAccount:
+      type: object
+      properties:
+        id:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+        ledger:
+          type: string
+      required:
+        - id
+        - ledger
+        - metadata
+    Update:
+      type: object
+      properties:
+        account:
+          $ref: '#/components/schemas/UpdateAccount'
     Stage:
       anyOf:
       - $ref: '#/components/schemas/StageSend'
       - $ref: '#/components/schemas/StageDelay'
       - $ref: '#/components/schemas/StageWaitEvent'
+      - $ref: '#/components/schemas/Update'
     StripeTransferRequest:
       type: object
       properties:
@@ -905,6 +926,21 @@ components:
           type: string
         ledger:
           type: string
+    ActivityAddAccountMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+        ledger:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - id
+        - ledger
+        - metadata
     ActivityCreateTransaction:
       type: object
       properties:
@@ -1357,6 +1393,8 @@ components:
       properties:
         GetAccount:
           $ref: '#/components/schemas/ActivityGetAccount'
+        AddAccountMetadata:
+          $ref: '#/components/schemas/ActivityAddAccountMetadata'
         CreateTransaction:
           $ref: '#/components/schemas/ActivityCreateTransaction'
         RevertTransaction:

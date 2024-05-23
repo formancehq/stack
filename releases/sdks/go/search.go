@@ -32,6 +32,7 @@ func (s *Search) Search(ctx context.Context, request shared.Query) (*operations.
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "search",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -125,6 +126,7 @@ func (s *Search) SearchgetServerInfo(ctx context.Context) (*operations.Searchget
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "searchgetServerInfo",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 

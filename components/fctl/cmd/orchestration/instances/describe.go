@@ -257,6 +257,14 @@ func printStage(cmd *cobra.Command, i int, client *formance.Formance, id string,
 				listItems = append(listItems, historyItemDetails("Still waiting event..."))
 			}
 		}
+	case shared.StageTypeUpdate:
+		printHistoryBaseInfo(cmd.OutOrStdout(), "update", i, history)
+		switch {
+		case history.Input.Update.Account != nil:
+			account := history.Input.Update.Account
+			listItems = append(listItems, historyItemTitle("Update account '%s' of ledger '%s'", account.ID, account.Ledger))
+			listItems = append(listItems, printMetadata(account.Metadata)...)
+		}
 	default:
 		// Display error?
 	}

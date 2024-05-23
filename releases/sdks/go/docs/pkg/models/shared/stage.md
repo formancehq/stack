@@ -21,3 +21,9 @@ stage := shared.CreateStageStageDelay(shared.StageDelay{/* values here */})
 stage := shared.CreateStageStageWaitEvent(shared.StageWaitEvent{/* values here */})
 ```
 
+### Update
+
+```go
+stage := shared.CreateStageUpdate(shared.Update{/* values here */})
+```
+

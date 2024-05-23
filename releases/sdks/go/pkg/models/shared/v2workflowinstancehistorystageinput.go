@@ -3,16 +3,24 @@
 package shared
 
 type V2WorkflowInstanceHistoryStageInput struct {
-	ConfirmHold       *V2ActivityConfirmHold       `json:"ConfirmHold,omitempty"`
-	CreateTransaction *V2ActivityCreateTransaction `json:"CreateTransaction,omitempty"`
-	CreditWallet      *V2ActivityCreditWallet      `json:"CreditWallet,omitempty"`
-	DebitWallet       *V2ActivityDebitWallet       `json:"DebitWallet,omitempty"`
-	GetAccount        *V2ActivityGetAccount        `json:"GetAccount,omitempty"`
-	GetPayment        *V2ActivityGetPayment        `json:"GetPayment,omitempty"`
-	GetWallet         *V2ActivityGetWallet         `json:"GetWallet,omitempty"`
-	ListWallets       *V2ActivityListWallets       `json:"ListWallets,omitempty"`
-	StripeTransfer    *V2ActivityStripeTransfer    `json:"StripeTransfer,omitempty"`
-	VoidHold          *V2ActivityVoidHold          `json:"VoidHold,omitempty"`
+	AddAccountMetadata *V2ActivityAddAccountMetadata `json:"AddAccountMetadata,omitempty"`
+	ConfirmHold        *V2ActivityConfirmHold        `json:"ConfirmHold,omitempty"`
+	CreateTransaction  *V2ActivityCreateTransaction  `json:"CreateTransaction,omitempty"`
+	CreditWallet       *V2ActivityCreditWallet       `json:"CreditWallet,omitempty"`
+	DebitWallet        *V2ActivityDebitWallet        `json:"DebitWallet,omitempty"`
+	GetAccount         *V2ActivityGetAccount         `json:"GetAccount,omitempty"`
+	GetPayment         *V2ActivityGetPayment         `json:"GetPayment,omitempty"`
+	GetWallet          *V2ActivityGetWallet          `json:"GetWallet,omitempty"`
+	ListWallets        *V2ActivityListWallets        `json:"ListWallets,omitempty"`
+	StripeTransfer     *V2ActivityStripeTransfer     `json:"StripeTransfer,omitempty"`
+	VoidHold           *V2ActivityVoidHold           `json:"VoidHold,omitempty"`
+}
+
+func (o *V2WorkflowInstanceHistoryStageInput) GetAddAccountMetadata() *V2ActivityAddAccountMetadata {
+	if o == nil {
+		return nil
+	}
+	return o.AddAccountMetadata
 }
 
 func (o *V2WorkflowInstanceHistoryStageInput) GetConfirmHold() *V2ActivityConfirmHold {

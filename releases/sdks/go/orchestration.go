@@ -32,6 +32,7 @@ func (s *Orchestration) CancelEvent(ctx context.Context, request operations.Canc
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "cancelEvent",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -119,6 +120,7 @@ func (s *Orchestration) CreateTrigger(ctx context.Context, request *shared.Trigg
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createTrigger",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -223,6 +225,7 @@ func (s *Orchestration) CreateWorkflow(ctx context.Context, request *shared.Crea
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createWorkflow",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -327,6 +330,7 @@ func (s *Orchestration) DeleteTrigger(ctx context.Context, request operations.De
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "deleteTrigger",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -414,6 +418,7 @@ func (s *Orchestration) DeleteWorkflow(ctx context.Context, request operations.D
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "deleteWorkflow",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -501,6 +506,7 @@ func (s *Orchestration) GetInstance(ctx context.Context, request operations.GetI
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getInstance",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -599,6 +605,7 @@ func (s *Orchestration) GetInstanceHistory(ctx context.Context, request operatio
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getInstanceHistory",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -697,6 +704,7 @@ func (s *Orchestration) GetInstanceStageHistory(ctx context.Context, request ope
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getInstanceStageHistory",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -795,6 +803,7 @@ func (s *Orchestration) GetWorkflow(ctx context.Context, request operations.GetW
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getWorkflow",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -893,6 +902,7 @@ func (s *Orchestration) ListInstances(ctx context.Context, request operations.Li
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listInstances",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -995,6 +1005,7 @@ func (s *Orchestration) ListTriggers(ctx context.Context, request operations.Lis
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listTriggers",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1097,6 +1108,7 @@ func (s *Orchestration) ListTriggersOccurrences(ctx context.Context, request ope
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listTriggersOccurrences",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1195,6 +1207,7 @@ func (s *Orchestration) ListWorkflows(ctx context.Context) (*operations.ListWork
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listWorkflows",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1292,6 +1305,7 @@ func (s *Orchestration) OrchestrationgetServerInfo(ctx context.Context) (*operat
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "orchestrationgetServerInfo",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1390,6 +1404,7 @@ func (s *Orchestration) ReadTrigger(ctx context.Context, request operations.Read
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "readTrigger",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1488,6 +1503,7 @@ func (s *Orchestration) RunWorkflow(ctx context.Context, request operations.RunW
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "runWorkflow",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1596,6 +1612,7 @@ func (s *Orchestration) SendEvent(ctx context.Context, request operations.SendEv
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "sendEvent",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1689,6 +1706,7 @@ func (s *Orchestration) TestTrigger(ctx context.Context, request operations.Test
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "testTrigger",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1793,6 +1811,7 @@ func (s *Orchestration) V2CancelEvent(ctx context.Context, request operations.V2
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2CancelEvent",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1880,6 +1899,7 @@ func (s *Orchestration) V2CreateTrigger(ctx context.Context, request *shared.V2T
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2CreateTrigger",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1984,6 +2004,7 @@ func (s *Orchestration) V2CreateWorkflow(ctx context.Context, request *shared.V2
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2CreateWorkflow",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2088,6 +2109,7 @@ func (s *Orchestration) V2DeleteTrigger(ctx context.Context, request operations.
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2DeleteTrigger",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2175,6 +2197,7 @@ func (s *Orchestration) V2DeleteWorkflow(ctx context.Context, request operations
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2DeleteWorkflow",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2262,6 +2285,7 @@ func (s *Orchestration) V2GetInstance(ctx context.Context, request operations.V2
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2GetInstance",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2360,6 +2384,7 @@ func (s *Orchestration) V2GetInstanceHistory(ctx context.Context, request operat
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2GetInstanceHistory",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2458,6 +2483,7 @@ func (s *Orchestration) V2GetInstanceStageHistory(ctx context.Context, request o
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2GetInstanceStageHistory",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2555,6 +2581,7 @@ func (s *Orchestration) V2GetServerInfo(ctx context.Context) (*operations.V2GetS
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2GetServerInfo",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2653,6 +2680,7 @@ func (s *Orchestration) V2GetWorkflow(ctx context.Context, request operations.V2
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2GetWorkflow",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2751,6 +2779,7 @@ func (s *Orchestration) V2ListInstances(ctx context.Context, request operations.
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2ListInstances",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2853,6 +2882,7 @@ func (s *Orchestration) V2ListTriggers(ctx context.Context, request operations.V
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2ListTriggers",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2955,6 +2985,7 @@ func (s *Orchestration) V2ListTriggersOccurrences(ctx context.Context, request o
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2ListTriggersOccurrences",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3057,6 +3088,7 @@ func (s *Orchestration) V2ListWorkflows(ctx context.Context, request operations.
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2ListWorkflows",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3159,6 +3191,7 @@ func (s *Orchestration) V2ReadTrigger(ctx context.Context, request operations.V2
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2ReadTrigger",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3257,6 +3290,7 @@ func (s *Orchestration) V2RunWorkflow(ctx context.Context, request operations.V2
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2RunWorkflow",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3365,6 +3399,7 @@ func (s *Orchestration) V2SendEvent(ctx context.Context, request operations.V2Se
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2SendEvent",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
