@@ -170,7 +170,7 @@ Available settings:
 
 | Key                                                                                      | Type   | Example             | Description                                                          |
 |------------------------------------------------------------------------------------------|--------|---------------------|----------------------------------------------------------------------|
-| aws.service-account                                                                      | string |                     |  AWS Role                                                            |
+| aws.service-account                                                                      | string |                     | AWS Role                                                             |
 | postgres.`<module-name>`.uri                                                             | URI    |                     | Postgres database configuration                                      |
 | elasticsearch.dsn                                                                        | URI    |                     | Elasticsearch connection URI                                         |
 | temporal.dsn                                                                             | URI    |                     | Temporal URI                                                         |
@@ -189,6 +189,8 @@ Available settings:
 | registries.`<name>`.images.`<path>`.rewrite                                              | string | formancehq/example  | Allow to rewrite the image path                                      |
 | search.batching                                                                          | Map    | period=1s, count=10 | Override default batching parameters                                 |
 | services.`<service-name>`.annotations                                                    | Map    |                     | Allow to specify custom annotations to apply on created k8s services |
+| gateway.ingress.annotations                                                              | Map    |                     | Allow to specify custom annotations to apply on the gateway ingress  |
+
 
 ### Postgres URI format
 
