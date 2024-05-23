@@ -106,7 +106,7 @@ func Execute() {
 		case fctl.IsInvalidAuthentication(err):
 			pterm.Error.WithWriter(os.Stderr).Printfln("Your authentication is invalid, please login :)")
 		default:
-			unwrapped := errors.Unwrap(err)
+			unwrapped := err
 			for unwrapped != nil {
 				//notes(gfyrag): not a clean assertion but following errors does not implements standard Is() helper for errors
 				switch err := unwrapped.(type) {
