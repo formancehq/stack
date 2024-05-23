@@ -178,7 +178,7 @@ Available settings:
 | temporal.tls.key                                                                         | string |                     | Temporal certificate key                                             |
 | broker.dsn                                                                               | URI    |                     | Broker URI                                                           |
 | opentelemetry.traces.dsn                                                                 | URI    |                     | OpenTelemetry collector URI                                          |
-| clear-database                                                                           | bool   | true                | Whether or not remove databases on stack deletion                    |
+| clear-database                                                                           | bool   | true                | Whether to remove databases on stack deletion                    |
 | ledger.deployment-strategy                                                                          | string | single              | Ledger deployment type                                               |
 | payments.encryption-key                                                                  | string |                     | Payments data encryption key                                         |
 | deployments.`<deployment-name>`.init-containers.`<container-name>`.resource-requirements | Map    | cpu=X, mem=X        |                                                                      |
