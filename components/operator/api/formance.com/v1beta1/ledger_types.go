@@ -56,6 +56,8 @@ type LedgerSpec struct {
 	StackDependency  `json:",inline"`
 	// +optional
 	Auth *AuthConfig `json:"auth,omitempty"`
+	//+kubebuilder:Enum:={single, single-writer}
+	//+kubebuilder:default:=single
 	//+optional
 	DeploymentStrategy DeploymentStrategy `json:"deploymentStrategy,omitempty"`
 	// Locking is intended for ledger v1 only

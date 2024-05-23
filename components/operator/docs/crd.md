@@ -700,7 +700,7 @@ _Appears in:_
 | `version` _string_ |  |  |  |
 | `stack` _string_ |  |  |  |
 | `auth` _[AuthConfig](#authconfig)_ |  |  |  |
-| `deploymentStrategy` _[DeploymentStrategy](#deploymentstrategy)_ |  |  |  |
+| `deploymentStrategy` _[DeploymentStrategy](#deploymentstrategy)_ |  | single |  |
 | `locking` _[LockingStrategy](#lockingstrategy)_ | Locking is intended for ledger v1 only |  |  |
 
 
