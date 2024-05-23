@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"strconv"
 	"time"
 
 	"github.com/formancehq/reconciliation/internal/v2/models"
@@ -15,6 +16,7 @@ type CreateRuleRequest struct {
 	Name string `json:"name"`
 
 	RuleType models.RuleType `json:"ruleType"`
+	Discard  bool            `json:"discard"`
 	Rule     json.RawMessage `json:"rule"`
 }
 
@@ -48,14 +50,12 @@ func (r *CreateRuleRequest) Validate() error {
 }
 
 func (s *Service) CreateRule(ctx context.Context, req *CreateRuleRequest) (*models.Rule, error) {
-	// TODO(polo): hash rule json to get id
-	id := ""
-
 	rule := &models.Rule{
-		ID:             id,
+		ID:             getRuleID(req.Rule),
 		Name:           req.Name,
 		CreatedAt:      time.Now(),
 		Type:           req.RuleType,
+		Discard:        req.Discard,
 		RuleDefinition: req.Rule,
 	}
 
@@ -68,11 +68,21 @@ func (s *Service) CreateRule(ctx context.Context, req *CreateRuleRequest) (*mode
 }
 
 func (s *Service) DeleteRule(ctx context.Context, id string) error {
-	return newStorageError(s.store.DeleteRule(ctx, id), "deleting rule")
+	ruleID, err := strconv.ParseUint(id, 10, 32)
+	if err != nil {
+		return errors.Wrap(ErrValidation, "parsing rule ID")
+	}
+
+	return newStorageError(s.store.DeleteRule(ctx, uint32(ruleID)), "deleting rule")
 }
 
 func (s *Service) GetRule(ctx context.Context, id string) (*models.Rule, error) {
-	rule, err := s.store.GetRule(ctx, id)
+	ruleID, err := strconv.ParseUint(id, 10, 32)
+	if err != nil {
+		return nil, errors.Wrap(ErrValidation, "parsing rule ID")
+	}
+
+	rule, err := s.store.GetRule(ctx, uint32(ruleID))
 	if err != nil {
 		return nil, newStorageError(err, "getting rule")
 	}

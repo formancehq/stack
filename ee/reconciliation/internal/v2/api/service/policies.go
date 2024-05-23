@@ -14,7 +14,7 @@ import (
 type CreatePolicyRequest struct {
 	Name  string   `json:"name"`
 	Type  string   `json:"type"`
-	Rules []string `json:"rules"`
+	Rules []uint32 `json:"rules"`
 }
 
 func (r *CreatePolicyRequest) Validate() error {

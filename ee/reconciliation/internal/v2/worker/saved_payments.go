@@ -1,7 +1,9 @@
 package worker
 
-import "github.com/formancehq/stack/libs/go-libs/publish"
+import (
+	"context"
+)
 
-func handleSavedPayments(event *publish.EventMessage) error {
+func handleSavedPayments(ctx context.Context, ev paymentMessagePayload) error {
 	return nil
 }

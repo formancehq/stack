@@ -14,8 +14,8 @@ type Store interface {
 	Ping() error
 
 	CreateRule(ctx context.Context, rule *models.Rule) error
-	DeleteRule(ctx context.Context, id string) error
-	GetRule(ctx context.Context, id string) (*models.Rule, error)
+	DeleteRule(ctx context.Context, id uint32) error
+	GetRule(ctx context.Context, id uint32) (*models.Rule, error)
 	ListRules(ctx context.Context, q storage.ListRulesQuery) (*bunpaginate.Cursor[models.Rule], error)
 
 	CreatePolicy(ctx context.Context, policy *models.Policy) error
@@ -30,6 +30,7 @@ type Store interface {
 	GetReconciliation(ctx context.Context, id uuid.UUID) (*models.Reconciliation, error)
 	GetAccountBasedReconciliation(ctx context.Context, id uuid.UUID) (*models.ReconciliationAccountBased, error)
 	ListReconciliations(ctx context.Context, q storage.ListReconciliationsQuery) (*bunpaginate.Cursor[models.Reconciliation], error)
+	ListTransactionBasedReconciliations(ctx context.Context, q storage.ListTransactionBasedReconciliationsQuery) (*bunpaginate.Cursor[models.ReconciliationTransactionBased], error)
 }
 
 type Service struct {

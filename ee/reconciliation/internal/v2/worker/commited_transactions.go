@@ -1,7 +1,16 @@
 package worker
 
-import "github.com/formancehq/stack/libs/go-libs/publish"
+import (
+	"context"
 
-func handleCommittedTransactions(event *publish.EventMessage) error {
+	"github.com/formancehq/reconciliation/internal/v2/models"
+)
+
+func (l *Listener) handleCommittedTransactions(
+	ctx context.Context,
+	policy models.Policy,
+	rules []*models.Rule,
+	ev transaction,
+) error {
 	return nil
 }

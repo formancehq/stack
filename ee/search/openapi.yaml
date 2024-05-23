@@ -86,6 +86,7 @@ components:
           example: "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
         raw:
           type: object
+          additionalProperties: true
           example: {"query": {"match_all": {}}}
 
     Response:

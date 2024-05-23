@@ -39,7 +39,9 @@ func main() {
             "quickstart",
         },
         Policy: v2.String("OR"),
-        Raw: &shared.QueryRaw{},
+        Raw: map[string]interface{}{
+            "query": "string",
+        },
         Sort: v2.String("id:asc"),
         Terms: []string{
             "destination=central_bank1",

@@ -2,19 +2,16 @@
 
 package shared
 
-type QueryRaw struct {
-}
-
 type Query struct {
-	After    []string  `json:"after,omitempty"`
-	Cursor   *string   `json:"cursor,omitempty"`
-	Ledgers  []string  `json:"ledgers,omitempty"`
-	PageSize *int64    `json:"pageSize,omitempty"`
-	Policy   *string   `json:"policy,omitempty"`
-	Raw      *QueryRaw `json:"raw,omitempty"`
-	Sort     *string   `json:"sort,omitempty"`
-	Target   *string   `json:"target,omitempty"`
-	Terms    []string  `json:"terms,omitempty"`
+	After    []string               `json:"after,omitempty"`
+	Cursor   *string                `json:"cursor,omitempty"`
+	Ledgers  []string               `json:"ledgers,omitempty"`
+	PageSize *int64                 `json:"pageSize,omitempty"`
+	Policy   *string                `json:"policy,omitempty"`
+	Raw      map[string]interface{} `json:"raw,omitempty"`
+	Sort     *string                `json:"sort,omitempty"`
+	Target   *string                `json:"target,omitempty"`
+	Terms    []string               `json:"terms,omitempty"`
 }
 
 func (o *Query) GetAfter() []string {
@@ -52,7 +49,7 @@ func (o *Query) GetPolicy() *string {
 	return o.Policy
 }
 
-func (o *Query) GetRaw() *QueryRaw {
+func (o *Query) GetRaw() map[string]interface{} {
 	if o == nil {
 		return nil
 	}

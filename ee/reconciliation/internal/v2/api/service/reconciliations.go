@@ -116,7 +116,3 @@ func (s *Service) CreateReconciliation(ctx context.Context, req *CreateReconcili
 		return nil, fmt.Errorf("unsupported policy type: %s", policy.Type)
 	}
 }
-
-func (s *Service) handleTransactionBasedReconciliation(ctx context.Context, reconciliation *models.Reconciliation) error {
-	return nil
-}

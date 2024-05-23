@@ -22,7 +22,7 @@ func (s *Storage) CreateRule(ctx context.Context, rule *models.Rule) error {
 	return nil
 }
 
-func (s *Storage) DeleteRule(ctx context.Context, id string) error {
+func (s *Storage) DeleteRule(ctx context.Context, id uint32) error {
 	_, err := s.db.NewDelete().
 		Model((*models.Rule)(nil)).
 		Where("id = ?", id).
@@ -33,7 +33,7 @@ func (s *Storage) DeleteRule(ctx context.Context, id string) error {
 	return nil
 }
 
-func (s *Storage) GetRule(ctx context.Context, id string) (*models.Rule, error) {
+func (s *Storage) GetRule(ctx context.Context, id uint32) (*models.Rule, error) {
 	var rule models.Rule
 
 	err := s.db.NewSelect().

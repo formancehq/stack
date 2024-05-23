@@ -1,7 +1,9 @@
 package worker
 
-import "github.com/formancehq/stack/libs/go-libs/publish"
+import (
+	"context"
+)
 
-func handleRevertedTransactions(event *publish.EventMessage) error {
+func handleRevertedTransactions(ctx context.Context, tx transaction, revertedTx transaction) error {
 	return nil
 }

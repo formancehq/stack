@@ -37,5 +37,5 @@ type Policy struct {
 
 	Enabled bool `bun:",notnull" json:"enabled"`
 
-	Rules []string `json:"rules"`
+	Rules []uint32 `json:"rules"`
 }

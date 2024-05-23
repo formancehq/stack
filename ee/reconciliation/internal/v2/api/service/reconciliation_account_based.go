@@ -144,7 +144,7 @@ func (s *Service) computeDrift(
 	return nil
 }
 
-func (s *Service) getAccountBasedRule(ctx context.Context, ruleID string) (*models.RuleAccountBased, error) {
+func (s *Service) getAccountBasedRule(ctx context.Context, ruleID uint32) (*models.RuleAccountBased, error) {
 	rule, err := s.store.GetRule(ctx, ruleID)
 	if err != nil {
 		return nil, newStorageError(err, "getting rule")

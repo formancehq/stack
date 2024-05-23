@@ -69,12 +69,12 @@ const (
 	ReconciliationTransactionBasedStatusFailed    = "FAILED"
 )
 
-type ReconciliationTransactionSucceeded struct {
-	bun.BaseModel `bun:"reconciliationsv2.reconciliations_transactions_succeeded" json:"-"`
+type ReconciliationTransactionBased struct {
+	bun.BaseModel `bun:"reconciliationsv2.reconciliations_transactions_based" json:"-"`
 
 	PaymentID     string                               `bun:",nullzero" json:"paymentID"`
 	TransactionID *big.Int                             `bun:",nullzero" json:"transactionID"`
-	RuleID        string                               `bun:",nullzero" json:"ruleID"`
+	RuleID        uint32                               `bun:",nullzero" json:"ruleID"`
 	PolicyID      uuid.UUID                            `bun:",notnull" json:"policyID"`
 	CreatedAt     time.Time                            `bun:",notnull" json:"createdAt"`
 	Status        ReconciliationTransactionBasedStatus `bun:",notnull" json:"status"`

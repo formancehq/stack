@@ -38,36 +38,36 @@ type paymentMessagePayload struct {
 	Metadata             map[string]string `json:"metadata"`
 }
 
-type Posting struct {
+type posting struct {
 	Source      string   `json:"source"`
 	Destination string   `json:"destination"`
 	Amount      *big.Int `json:"amount"`
 	Asset       string   `json:"asset"`
 }
 
-type Postings []Posting
+type postings []posting
 
 type TransactionData struct {
-	Postings  Postings          `json:"postings"`
+	Postings  postings          `json:"postings"`
 	Metadata  metadata.Metadata `json:"metadata"`
 	Timestamp time.Time         `json:"timestamp"`
 	Reference string            `json:"reference,omitempty"`
 }
 
-type Transaction struct {
+type transaction struct {
 	TransactionData
 	ID       *big.Int `json:"id"`
 	Reverted bool     `json:"reverted"`
 }
 
-type CommittedTransactions struct {
+type committedTransactions struct {
 	Ledger          string                       `json:"ledger"`
-	Transactions    []Transaction                `json:"transactions"`
+	Transactions    []transaction                `json:"transactions"`
 	AccountMetadata map[string]metadata.Metadata `json:"accountMetadata"`
 }
 
-type RevertedTransaction struct {
+type revertedTransaction struct {
 	Ledger              string      `json:"ledger"`
-	RevertedTransaction Transaction `json:"revertedTransaction"`
-	RevertTransaction   Transaction `json:"revertTransaction"`
+	RevertedTransaction transaction `json:"revertedTransaction"`
+	RevertTransaction   transaction `json:"revertTransaction"`
 }

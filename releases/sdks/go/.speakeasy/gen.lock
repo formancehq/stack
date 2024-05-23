@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 7eac0a45-60a2-40bb-9e85-26bd77ec2a6d
 management:
-  docChecksum: 9a3d8d19ad4eaf628f1f28cca38322ce
+  docChecksum: 9024babed897130c4cc1732a796b76e0
   docVersion: v0.0.0
   speakeasyVersion: internal
   generationVersion: 2.237.2
-  releaseVersion: v0.0.0
-  configChecksum: 50130ac1de5d0825ab31d45fbe3aac35
+  releaseVersion: 0.0.1
+  configChecksum: c299152255ec1caf1aad2b6fbca6bdc9
 features:
   go:
     constsAndDefaults: 0.1.2
@@ -1258,7 +1258,6 @@ generatedFiles:
   - docs/pkg/models/shared/total.md
   - docs/pkg/models/shared/responsecursor.md
   - docs/pkg/models/shared/response.md
-  - docs/pkg/models/shared/queryraw.md
   - docs/pkg/models/shared/query.md
   - docs/pkg/models/shared/confirmholdrequest.md
   - docs/pkg/models/shared/createbalanceresponse.md

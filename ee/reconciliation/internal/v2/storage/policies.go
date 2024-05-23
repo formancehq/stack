@@ -114,6 +114,7 @@ func (s *Storage) policyQueryContext(qb query.Builder, q ListPoliciesQuery) (str
 			default:
 				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'name' column can only be used with string")
 			}
+
 		case key == "enabled":
 			if operator != "$match" {
 				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'enabled' column can only be used with $match")
@@ -124,6 +125,18 @@ func (s *Storage) policyQueryContext(qb query.Builder, q ListPoliciesQuery) (str
 			default:
 				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'enabled' column can only be used with string")
 			}
+
+		case key == "type":
+			if operator != "$match" {
+				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'type' column can only be used with $match")
+			}
+			switch name := value.(type) {
+			case string:
+				return "type = ?", []any{name}, nil
+			default:
+				return "", nil, errors.Wrap(storageerrors.ErrInvalidQuery, "'type' column can only be used with string")
+			}
+
 		default:
 			return "", nil, errors.Wrapf(storageerrors.ErrInvalidQuery, "unknown key '%s' when building query", key)
 		}
