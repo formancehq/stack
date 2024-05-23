@@ -125,6 +125,23 @@ var _ = Describe("GatewayController", func() {
 					}).Should(BeNotFound())
 				})
 			})
+			Context("With a setting to configure ingress annotations", func() {
+				var ingressSetting *v1beta1.Settings
+				JustBeforeEach(func() {
+					ingressSetting = settings.New(uuid.NewString(), "gateway.ingress.annotations", "foo=bar", stack.Name)
+					Expect(Create(ingressSetting)).To(Succeed())
+				})
+				AfterEach(func() {
+					Expect(Delete(ingressSetting)).To(Succeed())
+				})
+				It("Should create the ingress with correct annotations", func() {
+					Eventually(func(g Gomega) map[string]string {
+						i := &networkingv1.Ingress{}
+						g.Expect(LoadResource(stack.Name, "gateway", i)).To(Succeed())
+						return i.Annotations
+					}).Should(HaveKeyWithValue("foo", "bar"))
+				})
+			})
 		})
 		Context("Then adding a new HTTPService", func() {
 			var anotherHttpService *v1beta1.GatewayHTTPAPI
