@@ -1,5 +1,10 @@
 global:
+  # This is not a global value shared over all charts, but a global value shared over all templates in this chart.
   serviceName: agent
+  monitoring:
+    logs:
+      # format:Enum:{json, ""}
+      format: json
 
 image:
   repository: ghcr.io/formancehq/agent
@@ -20,7 +25,8 @@ podAnnotations: {}
 podSecurityContext: {}
 # fsGroup: 2000
 
-securityContext: {}
+securityContext:
+  {}
   # capabilities:
   #   drop:
   #   - ALL
@@ -29,12 +35,12 @@ securityContext: {}
 # runAsUser: 1000
 
 resources:
-   limits:
-     cpu: 100m
-     memory: 128Mi
-   requests:
-     cpu: 100m
-     memory: 128Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
 
 nodeSelector: {}
 
