@@ -65,6 +65,7 @@ spec:
               value: "{{ .Values.agent.baseUrl }}"
             - name: PRODUCTION
               value: "{{ .Values.agent.production }}"
+            {{- include "agent.monitoring.logs" . | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
