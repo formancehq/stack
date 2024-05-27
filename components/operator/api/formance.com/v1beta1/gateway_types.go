@@ -60,7 +60,7 @@ type GatewayStatus struct {
 //+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
 //+kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
 //+kubebuilder:metadata:labels=formance.com/kind=module
-
+//+kubebuilder:metadata:labels=formance.com/is-ee=true
 // Gateway is the Schema for the gateways API
 type Gateway struct {
 	metav1.TypeMeta   `json:",inline"`
