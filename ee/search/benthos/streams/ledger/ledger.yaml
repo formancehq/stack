@@ -72,7 +72,8 @@ pipeline:
             root = root.append(
               this.payload.transactions.map_each(transaction -> {
                 "transaction": transaction,
-                "ledger": this.payload.ledger
+                "ledger": this.payload.ledger,
+                "date": this.date
               }.apply("tx"))
             )
             root = root.append(
@@ -84,7 +85,8 @@ pipeline:
                 flatten().
                 map_each(account -> {
                   "account": account,
-                  "ledger": this.payload.ledger
+                  "ledger": this.payload.ledger,
+                  "date": this.date
                 }.apply("account"))
               ).
               flatten()
