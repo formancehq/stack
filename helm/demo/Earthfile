@@ -1,0 +1,5 @@
+VERSION 0.8
+
+helm-validate:
+    FROM alpine:3.7
+    RUN echo "not implemented"

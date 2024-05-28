@@ -2,6 +2,8 @@ VERSION 0.8
 
 IMPORT github.com/formancehq/earthly:tags/v0.12.0 AS core
 IMPORT ../.. AS stack
+IMPORT ../../components/operator AS operator
+IMPORT ../../ee/agent AS agent
 
 sources:
   FROM core+base-image
@@ -16,26 +18,24 @@ sources:
 helm-validate:
   FROM core+helm-base
   WORKDIR /src
-  COPY (stack+sources/out --LOCATION=ee/agent/helm) /src/ee/agent/helm
-  COPY (stack+sources/out --LOCATION=components/operator/helm) /src/components/operator/helm
+
+  COPY (agent+helm-validate/*) /src/ee/agent/helm
+  COPY (operator+helm-validate/* ) /src/components/operator/helm
   COPY (+sources/src) /src/helm/regions
+
   WORKDIR /src/helm/regions
   RUN helm dependencies update
   RUN helm dependencies build
   DO --pass-args core+HELM_VALIDATE
-  SAVE ARTIFACT /src/helm
+
   SAVE ARTIFACT /src/helm/regions/Chart.lock AS LOCAL Chart.lock
 
 helm-package:
-  FROM core+helm-base
-  WORKDIR /src
-  COPY (+helm-validate/) /src
-  WORKDIR /src/helm/regions
+  FROM --pass-args +helm-validate
   RUN helm package .
-  SAVE ARTIFACT /src/helm/regions/regions-*.tgz
+  SAVE ARTIFACT *.tgz AS LOCAL out/
 
 helm-publish:
-  FROM core+helm-base
-  WORKDIR /src
-  COPY (+helm-package/) /src
-  DO --pass-args stack+HELM_PUBLISH --path=/src/*.tgz
+  FROM --pass-args +helm-package
+  WORKDIR /src/helm/regions
+  DO --pass-args stack+HELM_PUBLISH --path=/src/helm/regions/*.tgz
