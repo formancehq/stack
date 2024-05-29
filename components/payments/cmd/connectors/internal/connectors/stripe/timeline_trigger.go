@@ -144,7 +144,7 @@ func (t *TimelineTrigger) triggerPage(ctx context.Context, tail bool) (bool, err
 		}
 		hasMore = more
 
-		logger.Debug("Ingest transactions batch")
+		logger.Debug("Ingest accounts batch")
 
 		if len(ret) > 0 {
 			err = t.ingester.IngestAccounts(ctx, ret, futureState, tail)
