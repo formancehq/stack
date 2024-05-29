@@ -42,7 +42,8 @@ pipeline:
                     "asset": this.transaction.postings.map_each(p -> p.asset),
                     "source": this.transaction.postings.map_each(p -> p.source),
                     "destination": this.transaction.postings.map_each(p -> p.destination),
-                    "amount": this.transaction.postings.map_each(p -> p.apply("amount"))
+                    "amount": this.transaction.postings.map_each(p -> p.apply("amount")),
+                    "reconciliationID": if this.transaction.metadata { this.transaction.metadata.reconciliationID } else {{}}
                   },
                   "kind": "TRANSACTION",
                   "when": this.date
@@ -72,7 +73,8 @@ pipeline:
             root = root.append(
               this.payload.transactions.map_each(transaction -> {
                 "transaction": transaction,
-                "ledger": this.payload.ledger
+                "ledger": this.payload.ledger,
+                "date": this.date
               }.apply("tx"))
             )
             root = root.append(
@@ -84,7 +86,8 @@ pipeline:
                 flatten().
                 map_each(account -> {
                   "account": account,
-                  "ledger": this.payload.ledger
+                  "ledger": this.payload.ledger,
+                  "date": this.date
                 }.apply("account"))
               ).
               flatten()

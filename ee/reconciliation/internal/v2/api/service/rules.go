@@ -3,21 +3,21 @@ package service
 import (
 	"context"
 	"encoding/json"
-	"strconv"
 	"time"
 
 	"github.com/formancehq/reconciliation/internal/v2/models"
 	"github.com/formancehq/reconciliation/internal/v2/storage"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 )
 
 type CreateRuleRequest struct {
 	Name string `json:"name"`
 
-	RuleType models.RuleType `json:"ruleType"`
-	Discard  bool            `json:"discard"`
-	Rule     json.RawMessage `json:"rule"`
+	RuleType       models.RuleType `json:"ruleType"`
+	Discard        bool            `json:"discard"`
+	RuleDefinition json.RawMessage `json:"rule"`
 }
 
 func (r *CreateRuleRequest) Validate() error {
@@ -29,17 +29,25 @@ func (r *CreateRuleRequest) Validate() error {
 		return errors.New("missing ruleType")
 	}
 
-	if r.Rule == nil {
-		return errors.New("missing rule")
+	if r.RuleDefinition == nil {
+		return errors.New("missing rules")
 	}
 
 	switch r.RuleType {
+	case models.RuleTypeFilters:
+		if _, err := models.ValidateRuleFilters(r.RuleDefinition); err != nil {
+			return errors.Wrap(err, "invalid rule definition")
+		}
+	case models.RuleTypeOr:
+		if _, err := models.ValidateRuleOr(r.RuleDefinition); err != nil {
+			return errors.Wrap(err, "invalid rule definition")
+		}
 	case models.RuleTypeMatchField:
-		if _, err := models.ValidateRuleMatch(r.Rule); err != nil {
+		if _, err := models.ValidateRuleMatch(r.RuleDefinition); err != nil {
 			return errors.Wrap(err, "invalid rule definition")
 		}
 	case models.RuleTypeAPICall:
-		if _, err := models.ValidateRuleAPICall(r.Rule); err != nil {
+		if _, err := models.ValidateRuleAPICall(r.RuleDefinition); err != nil {
 			return errors.Wrap(err, "invalid rule definition")
 		}
 	default:
@@ -51,12 +59,12 @@ func (r *CreateRuleRequest) Validate() error {
 
 func (s *Service) CreateRule(ctx context.Context, req *CreateRuleRequest) (*models.Rule, error) {
 	rule := &models.Rule{
-		ID:             getRuleID(req.Rule),
+		ID:             uuid.New(),
 		Name:           req.Name,
 		CreatedAt:      time.Now(),
 		Type:           req.RuleType,
 		Discard:        req.Discard,
-		RuleDefinition: req.Rule,
+		RuleDefinition: req.RuleDefinition,
 	}
 
 	err := s.store.CreateRule(ctx, rule)
@@ -68,21 +76,21 @@ func (s *Service) CreateRule(ctx context.Context, req *CreateRuleRequest) (*mode
 }
 
 func (s *Service) DeleteRule(ctx context.Context, id string) error {
-	ruleID, err := strconv.ParseUint(id, 10, 32)
+	ruleID, err := uuid.Parse(id)
 	if err != nil {
 		return errors.Wrap(ErrValidation, "parsing rule ID")
 	}
 
-	return newStorageError(s.store.DeleteRule(ctx, uint32(ruleID)), "deleting rule")
+	return newStorageError(s.store.DeleteRule(ctx, ruleID), "deleting rule")
 }
 
 func (s *Service) GetRule(ctx context.Context, id string) (*models.Rule, error) {
-	ruleID, err := strconv.ParseUint(id, 10, 32)
+	ruleID, err := uuid.Parse(id)
 	if err != nil {
 		return nil, errors.Wrap(ErrValidation, "parsing rule ID")
 	}
 
-	rule, err := s.store.GetRule(ctx, uint32(ruleID))
+	rule, err := s.store.GetRule(ctx, ruleID)
 	if err != nil {
 		return nil, newStorageError(err, "getting rule")
 	}

@@ -74,6 +74,7 @@ type ReconciliationTransactionBased struct {
 
 	PaymentID     string                               `bun:",nullzero" json:"paymentID"`
 	TransactionID *big.Int                             `bun:",nullzero" json:"transactionID"`
+	PostingIndex  *int32                               `bun:",nullzero" json:"postingIndex"`
 	RuleID        uint32                               `bun:",nullzero" json:"ruleID"`
 	PolicyID      uuid.UUID                            `bun:",notnull" json:"policyID"`
 	CreatedAt     time.Time                            `bun:",notnull" json:"createdAt"`

@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"hash/fnv"
 	"math/big"
 	"time"
 
@@ -10,14 +9,6 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/mod/semver"
 )
-
-// Since we will not have hundreds of millions of rules, but only a few, we can
-// use the following algorithm to generate a unique ID for each rule
-func getRuleID(ruleJSON []byte) uint32 {
-	h := fnv.New32a()
-	h.Write(ruleJSON)
-	return h.Sum32()
-}
 
 type Version interface {
 	GetVersion() string

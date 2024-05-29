@@ -35,7 +35,22 @@ type Policy struct {
 	UpdatedAt time.Time  `bun:",notnull" json:"updatedAt"`
 	Type      PolicyType `bun:",notnull" json:"type"`
 
+	// TODO(polo): put it somewhere else, as it has nothing to do with the
+	// policy itself.
+	// Fine for a first poc
+	AdditionalConfig map[string]interface{} `bun:",type:jsonb,notnull" json:"additionalConfig"`
+
 	Enabled bool `bun:",notnull" json:"enabled"`
 
-	Rules []uint32 `json:"rules"`
+	Rule uuid.UUID `json:"rule"`
+}
+
+func AdditionalConfig(ledgerOverdraftAccountReference string) map[string]interface{} {
+	if ledgerOverdraftAccountReference == "" {
+		ledgerOverdraftAccountReference = "world"
+	}
+
+	return map[string]interface{}{
+		"ledgerOverdraftAccountReference": ledgerOverdraftAccountReference,
+	}
 }

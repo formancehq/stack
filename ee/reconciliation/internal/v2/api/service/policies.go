@@ -11,10 +11,15 @@ import (
 	"github.com/pkg/errors"
 )
 
+type AdditionalConfig struct {
+	LedgerOverdraftAccountReference string `json:"ledgerOverdraftAccountReference"`
+}
+
 type CreatePolicyRequest struct {
-	Name  string   `json:"name"`
-	Type  string   `json:"type"`
-	Rules []uint32 `json:"rules"`
+	Name             string           `json:"name"`
+	Type             string           `json:"type"`
+	AdditionalConfig AdditionalConfig `json:"additionalConfig"`
+	Rule             uuid.UUID        `json:"rule"`
 }
 
 func (r *CreatePolicyRequest) Validate() error {
@@ -31,10 +36,6 @@ func (r *CreatePolicyRequest) Validate() error {
 		return errors.Wrap(err, "invalid type")
 	}
 
-	if len(r.Rules) == 0 {
-		return errors.New("missing rules list")
-	}
-
 	return nil
 }
 
@@ -43,11 +44,7 @@ func (s *Service) CreatePolicy(ctx context.Context, req *CreatePolicyRequest) (*
 
 	switch policyType {
 	case models.PolicyTypeAccountBased:
-		if len(req.Rules) != 1 {
-			return nil, errors.New("account-based policy must have exactly one rule")
-		}
-
-		rule, err := s.store.GetRule(ctx, req.Rules[0])
+		rule, err := s.store.GetRule(ctx, req.Rule)
 		if err != nil {
 			return nil, newStorageError(err, "getting rule")
 		}
@@ -64,8 +61,11 @@ func (s *Service) CreatePolicy(ctx context.Context, req *CreatePolicyRequest) (*
 		CreatedAt: now,
 		UpdatedAt: now,
 		Type:      policyType,
-		Enabled:   true,
-		Rules:     req.Rules,
+		AdditionalConfig: models.AdditionalConfig(
+			req.AdditionalConfig.LedgerOverdraftAccountReference,
+		),
+		Enabled: true,
+		Rule:    req.Rule,
 	}
 
 	err := s.store.CreatePolicy(ctx, policy)

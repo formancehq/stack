@@ -9,8 +9,9 @@ import (
 func (l *Listener) handleCommittedTransactions(
 	ctx context.Context,
 	policy models.Policy,
-	rules []*models.Rule,
+	rule *RuleTree,
 	ev transaction,
 ) error {
+
 	return nil
 }

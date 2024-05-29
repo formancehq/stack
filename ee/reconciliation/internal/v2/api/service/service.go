@@ -14,8 +14,8 @@ type Store interface {
 	Ping() error
 
 	CreateRule(ctx context.Context, rule *models.Rule) error
-	DeleteRule(ctx context.Context, id uint32) error
-	GetRule(ctx context.Context, id uint32) (*models.Rule, error)
+	DeleteRule(ctx context.Context, id uuid.UUID) error
+	GetRule(ctx context.Context, id uuid.UUID) (*models.Rule, error)
 	ListRules(ctx context.Context, q storage.ListRulesQuery) (*bunpaginate.Cursor[models.Rule], error)
 
 	CreatePolicy(ctx context.Context, policy *models.Policy) error

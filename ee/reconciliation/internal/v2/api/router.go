@@ -16,6 +16,7 @@ func NewRouter(
 			r.Route("/{ruleID}", func(r chi.Router) {
 				r.Get("/", getRuleHandler(b))
 				r.Delete("/", deleteRuleHandler(b))
+				// TODO(polo): soft delete rule
 			})
 		})
 
@@ -24,6 +25,7 @@ func NewRouter(
 			r.Get("/", listPoliciesHandler(b))
 			r.Route("/{policyID}", func(r chi.Router) {
 				r.Get("/", getPolicyHandler(b))
+				// TODO(polo): SOFT DELETE POLICY
 				r.Delete("/", deletePolicyHandler(b))
 				r.Post("/enable", enablePolicyHandler(b))
 				r.Post("/disable", disablePolicyHandler(b))

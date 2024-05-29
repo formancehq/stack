@@ -14,6 +14,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/formancehq/stack/libs/go-libs/query"
+	"github.com/google/uuid"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -25,6 +26,21 @@ type Listener struct {
 
 	store  Store
 	client client.SDKSearchFormance
+
+	ruleTreeCache map[uuid.UUID]*RuleTree
+}
+
+func NewListener(
+	logger logging.Logger,
+	store Store,
+	client client.SDKSearchFormance,
+) *Listener {
+	return &Listener{
+		logger:        logger,
+		store:         store,
+		client:        client,
+		ruleTreeCache: make(map[uuid.UUID]*RuleTree),
+	}
 }
 
 func (l *Listener) handleMessage(msg *message.Message) error {
@@ -78,7 +94,7 @@ func (l *Listener) handlerEventByPolicy(
 	policy models.Policy,
 	event *publish.EventMessage,
 ) error {
-	rules, err := l.getRules(ctx, policy.Rules)
+	rules, err := l.getRulesTree(ctx, policy.Rule)
 	if err != nil {
 		return err
 	}
@@ -225,17 +241,4 @@ func (l *Listener) getPolicies(ctx context.Context) ([]models.Policy, error) {
 	}
 
 	return policies, nil
-}
-
-func (l *Listener) getRules(ctx context.Context, ids []uint32) ([]*models.Rule, error) {
-	rules := make([]*models.Rule, 0, len(ids))
-	for _, id := range ids {
-		rule, err := l.store.GetRule(ctx, id)
-		if err != nil {
-			return nil, err
-		}
-
-		rules = append(rules, rule)
-	}
-	return rules, nil
 }

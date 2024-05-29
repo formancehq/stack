@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -13,7 +14,8 @@ type RuleType string
 
 const (
 	RuleTypeUnknown      RuleType = "UNKNOWN"
-	RuleTypeCustom       RuleType = "CUSTOM"
+	RuleTypeFilters      RuleType = "FILTERS"
+	RuleTypeOr           RuleType = "OR"
 	RuleTypeAccountBased RuleType = "ACCOUNT_BASED"
 	RuleTypeMatchField   RuleType = "MATCH"
 	RuleTypeAPICall      RuleType = "API_CALL"
@@ -22,13 +24,46 @@ const (
 type Rule struct {
 	bun.BaseModel `bun:"reconciliationsv2.rules" json:"-"`
 
-	ID        uint32    `bun:",pk,notnull" json:"id"`
-	Name      string    `bun:",notnull" json:"name"`
-	CreatedAt time.Time `bun:",notnull" json:"createdAt"`
-	Type      RuleType  `bun:",notnull" json:"ruleType"`
-	Discard   bool      `bun:",notnull" json:"discard"`
-
+	ID             uuid.UUID       `bun:",pk,notnull" json:"id"`
+	Name           string          `bun:",notnull" json:"name"`
+	CreatedAt      time.Time       `bun:",notnull" json:"createdAt"`
+	Type           RuleType        `bun:",notnull" json:"ruleType"`
+	Discard        bool            `bun:",notnull" json:"discard"`
 	RuleDefinition json.RawMessage `bun:",type:jsonb,notnull" json:"ruleDefinition"`
+}
+
+type RuleFilters struct {
+	ChildrenRules []uuid.UUID `json:"childrenRules"`
+}
+
+func ValidateRuleFilters(rule json.RawMessage) (RuleFilters, error) {
+	var ruleAnd RuleFilters
+	if err := json.Unmarshal(rule, &ruleAnd); err != nil {
+		return RuleFilters{}, errors.New("cannot unmarshal rule into ruleAnd")
+	}
+
+	if len(ruleAnd.ChildrenRules) == 0 {
+		return RuleFilters{}, errors.New("missing childrenRules in ruleAnd")
+	}
+
+	return ruleAnd, nil
+}
+
+type RuleOr struct {
+	ChildrenRules []uuid.UUID `json:"childrenRules"`
+}
+
+func ValidateRuleOr(rule json.RawMessage) (RuleOr, error) {
+	var ruleOr RuleOr
+	if err := json.Unmarshal(rule, &ruleOr); err != nil {
+		return RuleOr{}, errors.New("cannot unmarshal rule into ruleOr")
+	}
+
+	if len(ruleOr.ChildrenRules) == 0 {
+		return RuleOr{}, errors.New("missing childrenRules in ruleOr")
+	}
+
+	return ruleOr, nil
 }
 
 type RuleAccountBased struct {
@@ -42,17 +77,13 @@ type RuleAccountBased struct {
 }
 
 type KeyValue struct {
-	Key   string      `json:"key"`
-	Value interface{} `json:"value"`
+	Key        string `json:"key"`
+	IsMetadata bool   `json:"isMetadata"`
 }
 
 func (kv *KeyValue) Validate() error {
 	if kv.Key == "" {
 		return errors.New("missing key")
-	}
-
-	if kv.Value == nil {
-		return errors.New("missing value")
 	}
 
 	return nil
@@ -94,8 +125,58 @@ func ValidateRuleMatch(rule json.RawMessage) (RuleMatch, error) {
 	return ruleMatch, nil
 }
 
+func (r *RuleMatch) BuildLedgerFilters(value interface{}) []Filter {
+	filters := []Filter{
+		{
+			MatchPhrase: map[string]interface{}{
+				"indexed.ledger": r.Ledger.Name,
+			},
+		},
+	}
+
+	if r.Ledger.Match.IsMetadata {
+		// TODO(polo): Metadata are not indexed yet, we need to index a special
+		// type of metadata
+	} else {
+		filters = append(filters, Filter{
+			MatchPhrase: map[string]interface{}{
+				fmt.Sprintf("indexed.%s", r.Ledger.Match.Key): value,
+			},
+		})
+	}
+
+	return filters
+}
+
+func (r *RuleMatch) BuildPaymentFilters(value interface{}) []Filter {
+	filters := []Filter{
+		{
+			MatchPhrase: map[string]interface{}{
+				"indexed.connectorID": r.Payment.ConnectorID,
+			},
+		},
+	}
+
+	if r.Payment.Match.IsMetadata {
+		// TODO(polo): Metadata are not indexed yet, we need to index a special
+		// type of metadata
+	} else {
+		filters = append(filters, Filter{
+			MatchPhrase: map[string]interface{}{
+				fmt.Sprintf("indexed.%s", r.Payment.Match.Key): value,
+			},
+		})
+	}
+
+	return filters
+}
+
 type RuleAPICall struct {
 	Endpoint string
+
+	// Transaction
+	// Payment
+	// Reponse -> Transaction ou payment
 }
 
 func ValidateRuleAPICall(rule json.RawMessage) (RuleAPICall, error) {

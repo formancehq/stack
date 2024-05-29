@@ -35,7 +35,7 @@ func (s *Service) handleAccountBasedReconciliation(
 ) error {
 	eg, ctxGroup := errgroup.WithContext(ctx)
 
-	accountBasedRule, err := s.getAccountBasedRule(ctx, policy.Rules[0])
+	accountBasedRule, err := s.getAccountBasedRule(ctx, policy.Rule)
 	if err != nil {
 		return errors.Wrap(err, "getting account-based rule")
 	}
@@ -144,7 +144,7 @@ func (s *Service) computeDrift(
 	return nil
 }
 
-func (s *Service) getAccountBasedRule(ctx context.Context, ruleID uint32) (*models.RuleAccountBased, error) {
+func (s *Service) getAccountBasedRule(ctx context.Context, ruleID uuid.UUID) (*models.RuleAccountBased, error) {
 	rule, err := s.store.GetRule(ctx, ruleID)
 	if err != nil {
 		return nil, newStorageError(err, "getting rule")

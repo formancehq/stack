@@ -2,7 +2,9 @@ package worker
 
 import (
 	"encoding/json"
+	"errors"
 	"math/big"
+	"reflect"
 	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/api"
@@ -70,4 +72,20 @@ type revertedTransaction struct {
 	Ledger              string      `json:"ledger"`
 	RevertedTransaction transaction `json:"revertedTransaction"`
 	RevertTransaction   transaction `json:"revertTransaction"`
+}
+
+func extractValue(event interface{}, fieldName string) (interface{}, error) {
+	ps := reflect.ValueOf(event)
+
+	elem := ps.Elem()
+	if elem.Kind() != reflect.Struct {
+		return nil, errors.New("event is not a struct")
+	}
+
+	field := elem.FieldByName(fieldName)
+	if !field.IsValid() {
+		return nil, errors.New("field not found")
+	}
+
+	return field.Interface(), nil
 }

@@ -148,7 +148,8 @@ pipeline:
                         "scheme": this.payload.scheme,
                         "asset": this.payload.asset,
                         "initialAmount": this.payload.initialAmount,
-                        "amount": this.payload.amount
+                        "amount": this.payload.amount,
+                        "reconciliationID": if this.transaction.metadata { this.transaction.metadata.reconciliationID } else {{}}
                     },
                     "kind": "PAYMENT",
                     "when": this.date

@@ -7,6 +7,7 @@ import (
 	"github.com/formancehq/reconciliation/internal/v2/models"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/formancehq/stack/libs/go-libs/query"
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
 )
@@ -22,7 +23,7 @@ func (s *Storage) CreateRule(ctx context.Context, rule *models.Rule) error {
 	return nil
 }
 
-func (s *Storage) DeleteRule(ctx context.Context, id uint32) error {
+func (s *Storage) DeleteRule(ctx context.Context, id uuid.UUID) error {
 	_, err := s.db.NewDelete().
 		Model((*models.Rule)(nil)).
 		Where("id = ?", id).
@@ -33,7 +34,7 @@ func (s *Storage) DeleteRule(ctx context.Context, id uint32) error {
 	return nil
 }
 
-func (s *Storage) GetRule(ctx context.Context, id uint32) (*models.Rule, error) {
+func (s *Storage) GetRule(ctx context.Context, id uuid.UUID) (*models.Rule, error) {
 	var rule models.Rule
 
 	err := s.db.NewSelect().
