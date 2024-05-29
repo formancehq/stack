@@ -7,12 +7,15 @@ import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/components/agent/internal"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/mock/gomock"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
-func TestRestrictStatus(t *testing.T) {
+func TestRestrictModuleStatus(t *testing.T) {
 
 	type testCase struct {
 		incomingStatus map[string]interface{}
@@ -100,4 +103,128 @@ func TestRestrictStatus(t *testing.T) {
 			require.Equal(t, tc.expectedStatus, status)
 		})
 	}
+}
+
+func TestModuleAddFunc(t *testing.T) {
+	t.Parallel()
+	ctrl := gomock.NewController(t)
+	membershipClientMock := internal.NewMockMembershipClient(ctrl)
+	resourceInformer := internal.NewModuleEventHandler(logging.Testing(), membershipClientMock)
+
+	module := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"metadata": map[string]interface{}{
+				"name": uuid.NewString(),
+			},
+			"status": map[string]interface{}{
+				"ready": false,
+			},
+		},
+	}
+
+	membershipClientMock.EXPECT().Send(gomock.Any())
+	resourceInformer.AddFunc(module)
+	require.True(t, ctrl.Satisfied())
+
+}
+
+func TestModuleDelete(t *testing.T) {
+	t.Parallel()
+	ctrl := gomock.NewController(t)
+	membershipClientMock := internal.NewMockMembershipClient(ctrl)
+	resourceInformer := internal.NewModuleEventHandler(logging.Testing(), membershipClientMock)
+
+	module := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"metadata": map[string]interface{}{
+				"name": uuid.NewString(),
+			},
+			"status": map[string]interface{}{
+				"ready": false,
+			},
+		},
+	}
+
+	membershipClientMock.EXPECT().Send(gomock.Any())
+	resourceInformer.DeleteFunc(module)
+	require.True(t, ctrl.Satisfied())
+}
+
+func TestModuleUpdateStatusNil(t *testing.T) {
+	t.Parallel()
+	ctrl := gomock.NewController(t)
+	membershipClientMock := internal.NewMockMembershipClient(ctrl)
+	resourceInformer := internal.NewModuleEventHandler(logging.Testing(), membershipClientMock)
+
+	oldModule := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"metadata": map[string]interface{}{
+				"name": uuid.NewString(),
+			},
+		},
+	}
+
+	newModule := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"metadata": map[string]interface{}{
+				"name": uuid.NewString(),
+			},
+		},
+	}
+
+	resourceInformer.UpdateFunc(oldModule, newModule)
+	require.True(t, ctrl.Satisfied())
+
+}
+func TestModuleUpdateStatusChanged(t *testing.T) {
+
+	type testCase struct {
+		isReady  bool
+		wasReady bool
+	}
+
+	testCases := []testCase{}
+	for _, a := range []bool{true, false} {
+		for _, b := range []bool{true, false} {
+			testCases = append(testCases, testCase{a, b})
+		}
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run("test", func(t *testing.T) {
+			t.Parallel()
+			ctrl := gomock.NewController(t)
+			membershipClientMock := internal.NewMockMembershipClient(ctrl)
+			resourceInformer := internal.NewModuleEventHandler(logging.Testing(), membershipClientMock)
+
+			oldModule := &unstructured.Unstructured{
+				Object: map[string]interface{}{
+					"metadata": map[string]interface{}{
+						"name": uuid.NewString(),
+					},
+					"status": map[string]interface{}{
+						"ready": tc.wasReady,
+					},
+				},
+			}
+
+			newModule := &unstructured.Unstructured{
+				Object: map[string]interface{}{
+					"metadata": map[string]interface{}{
+						"name": uuid.NewString(),
+					},
+					"status": map[string]interface{}{
+						"ready": tc.isReady,
+					},
+				},
+			}
+			if tc.isReady != tc.wasReady {
+				membershipClientMock.EXPECT().Send(gomock.Any())
+			}
+			resourceInformer.UpdateFunc(oldModule, newModule)
+			require.True(t, ctrl.Satisfied())
+		})
+	}
+
 }

@@ -45,7 +45,7 @@ require (
 	github.com/eapache/go-xerial-snappy v0.0.0-20230731223053-c322873962e3 // indirect
 	github.com/eapache/queue v1.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
-	github.com/go-chi/chi/v5 v5.0.10 // indirect
+	github.com/go-chi/chi/v5 v5.0.12 // indirect
 	github.com/go-chi/render v1.0.2 // indirect
 	github.com/google/certificate-transparency-go v1.1.6 // indirect
 	github.com/google/go-tpm v0.9.0 // indirect
@@ -77,6 +77,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
 	github.com/pierrec/lz4/v4 v4.1.18 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
+	github.com/riandyrn/otelchi v0.8.0 // indirect
 	github.com/rs/cors v1.10.0 // indirect
 	github.com/smallstep/go-attestation v0.4.4-0.20230627102604-cf579e53cbd2 // indirect
 	github.com/spf13/afero v1.9.3 // indirect
@@ -209,12 +210,12 @@ require (
 	go.etcd.io/bbolt v1.3.7 // indirect
 	go.mozilla.org/pkcs7 v0.0.0-20210826202110-33d05740a352 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.47.0 // indirect
-	go.opentelemetry.io/otel v1.22.0 // indirect
+	go.opentelemetry.io/otel v1.24.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.22.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.22.0 // indirect
-	go.opentelemetry.io/otel/metric v1.22.0 // indirect
-	go.opentelemetry.io/otel/sdk v1.22.0 // indirect
-	go.opentelemetry.io/otel/trace v1.22.0 // indirect
+	go.opentelemetry.io/otel/metric v1.24.0 // indirect
+	go.opentelemetry.io/otel/sdk v1.24.0 // indirect
+	go.opentelemetry.io/otel/trace v1.24.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.0.0 // indirect
 	go.step.sm/cli-utils v0.8.0 // indirect
 	go.step.sm/crypto v0.35.1 // indirect

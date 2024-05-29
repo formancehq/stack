@@ -10,6 +10,7 @@ import (
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/pkg/errors"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -78,8 +79,17 @@ func (c *StackRestoreController) Run(cmd *cobra.Command, args []string) (fctl.Re
 	}
 
 	if !fctl.GetBool(cmd, nowaitFlag) {
+		spinner, err := pterm.DefaultSpinner.Start("Waiting services availability")
+		if err != nil {
+			return nil, err
+		}
+
 		stack, err = waitStackReady(cmd, store.MembershipClient, response.Data.OrganizationId, response.Data.Id)
 		if err != nil {
+			return nil, err
+		}
+
+		if err := spinner.Stop(); err != nil {
 			return nil, err
 		}
 

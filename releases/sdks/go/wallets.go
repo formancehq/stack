@@ -31,6 +31,7 @@ func (s *Wallets) ConfirmHold(ctx context.Context, request operations.ConfirmHol
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "confirmHold",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -123,6 +124,7 @@ func (s *Wallets) CreateBalance(ctx context.Context, request operations.CreateBa
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createBalance",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -226,6 +228,7 @@ func (s *Wallets) CreateWallet(ctx context.Context, request *shared.CreateWallet
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createWallet",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -329,6 +332,7 @@ func (s *Wallets) CreditWallet(ctx context.Context, request operations.CreditWal
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "creditWallet",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -421,6 +425,7 @@ func (s *Wallets) DebitWallet(ctx context.Context, request operations.DebitWalle
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "debitWallet",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -525,6 +530,7 @@ func (s *Wallets) GetBalance(ctx context.Context, request operations.GetBalanceR
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getBalance",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -622,6 +628,7 @@ func (s *Wallets) GetHold(ctx context.Context, request operations.GetHoldRequest
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getHold",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -719,6 +726,7 @@ func (s *Wallets) GetHolds(ctx context.Context, request operations.GetHoldsReque
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getHolds",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -819,6 +827,7 @@ func (s *Wallets) GetTransactions(ctx context.Context, request operations.GetTra
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getTransactions",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -920,6 +929,7 @@ func (s *Wallets) GetWallet(ctx context.Context, request operations.GetWalletReq
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getWallet",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1018,6 +1028,7 @@ func (s *Wallets) GetWalletSummary(ctx context.Context, request operations.GetWa
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getWalletSummary",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1116,6 +1127,7 @@ func (s *Wallets) ListBalances(ctx context.Context, request operations.ListBalan
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listBalances",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1203,6 +1215,7 @@ func (s *Wallets) ListWallets(ctx context.Context, request operations.ListWallet
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listWallets",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1304,6 +1317,7 @@ func (s *Wallets) UpdateWallet(ctx context.Context, request operations.UpdateWal
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "updateWallet",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1396,6 +1410,7 @@ func (s *Wallets) VoidHold(ctx context.Context, request operations.VoidHoldReque
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "voidHold",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1482,6 +1497,7 @@ func (s *Wallets) WalletsgetServerInfo(ctx context.Context) (*operations.Wallets
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "walletsgetServerInfo",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 

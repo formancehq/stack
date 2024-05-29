@@ -35,7 +35,6 @@ func test(t *testing.T, fn func(router *chi.Mux, backend api.Backend, db *bun.DB
 	database := pgtesting.NewPostgresDatabase(t)
 	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: database.ConnString(),
-		Debug:              testing.Verbose(),
 	})
 	require.NoError(t, err)
 	t.Cleanup(func() {
@@ -44,9 +43,18 @@ func test(t *testing.T, fn func(router *chi.Mux, backend api.Backend, db *bun.DB
 
 	taskQueue := uuid.NewString()
 	worker := temporalworker.New(logging.Testing(), devServer.Client(), taskQueue,
-		[]any{workflow.NewWorkflows(false), (&stages.NoOp{}).GetWorkflow()},
-		[]any{workflow.NewActivities(publish.NoOpPublisher, db)},
+		[]temporalworker.DefinitionSet{
+			workflow.NewWorkflows(false).DefinitionSet(),
+			temporalworker.NewDefinitionSet().Append(temporalworker.Definition{
+				Name: "NoOp",
+				Func: (&stages.NoOp{}).GetWorkflow(),
+			}),
+		},
+		[]temporalworker.DefinitionSet{
+			workflow.NewActivities(publish.NoOpPublisher, db).DefinitionSet(),
+		},
 	)
+
 	require.NoError(t, worker.Start())
 	t.Cleanup(worker.Stop)
 

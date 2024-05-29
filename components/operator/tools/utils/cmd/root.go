@@ -18,7 +18,7 @@ var rootCmd = &cobra.Command{
 	Use:   "utils",
 	Short: "A cli for operator operations",
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		logger := service.GetDefaultLogger(cmd.OutOrStdout())
+		logger := service.GetDefaultLogger(cmd.OutOrStdout(), viper.GetBool(service.DebugFlag))
 		logger.Infof("Starting application")
 		logger.Debugf("Environment variables:")
 		for _, v := range os.Environ() {

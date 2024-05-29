@@ -4,6 +4,8 @@ import (
 	"context"
 	"strings"
 
+	"github.com/formancehq/orchestration/internal/temporalworker"
+
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/formancehq/orchestration/pkg/events"
@@ -100,6 +102,26 @@ func (a Activities) SendEventForTriggerTermination(ctx context.Context, occurren
 				Error:     *occurrence.Error,
 			}))
 	}
+}
+
+func (a Activities) DefinitionSet() temporalworker.DefinitionSet {
+	return temporalworker.NewDefinitionSet().
+		Append(temporalworker.Definition{
+			Func: a.EvalTriggerVariables,
+			Name: "EvalTriggerVariables",
+		}).
+		Append(temporalworker.Definition{
+			Func: a.InsertTriggerOccurrence,
+			Name: "InsertTriggerOccurrence",
+		}).
+		Append(temporalworker.Definition{
+			Func: a.ListTriggers,
+			Name: "ListTriggers",
+		}).
+		Append(temporalworker.Definition{
+			Func: a.SendEventForTriggerTermination,
+			Name: "SendEventForTriggerTermination",
+		})
 }
 
 func NewActivities(db *bun.DB, manager *workflow.WorkflowManager,

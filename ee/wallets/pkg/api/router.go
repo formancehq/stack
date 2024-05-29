@@ -3,13 +3,14 @@ package api
 import (
 	"net/http"
 
+	"github.com/formancehq/stack/libs/go-libs/service"
+
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	sharedhealth "github.com/formancehq/stack/libs/go-libs/health"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/riandyrn/otelchi"
 )
 
 func NewRouter(
@@ -31,7 +32,7 @@ func NewRouter(
 	r.Get("/_info", sharedapi.InfoHandler(serviceInfo))
 	r.Group(func(r chi.Router) {
 		r.Use(auth.Middleware(a))
-		r.Use(otelchi.Middleware("wallets"))
+		r.Use(service.OTLPMiddleware("wallets"))
 		r.Use(middleware.AllowContentType("application/json"))
 
 		main := NewMainHandler(manager)

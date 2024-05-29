@@ -3,9 +3,10 @@ package worker
 import (
 	"net/http"
 
+	"github.com/formancehq/stack/libs/go-libs/service"
+
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/go-chi/chi/v5"
-	"github.com/riandyrn/otelchi"
 )
 
 const (
@@ -14,7 +15,7 @@ const (
 
 func NewWorkerHandler() http.Handler {
 	h := chi.NewRouter()
-	h.Use(otelchi.Middleware("webhooks"))
+	h.Use(service.OTLPMiddleware("webhooks"))
 	h.Get(PathHealthCheck, healthCheckHandle)
 
 	return h

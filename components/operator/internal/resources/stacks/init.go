@@ -3,12 +3,13 @@ package stacks
 import (
 	"context"
 	"fmt"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/runtime/schema"
 	"reflect"
 	"sort"
 	"strings"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
@@ -47,7 +48,7 @@ import (
 // +kubebuilder:rbac:groups=formance.com,resources=versions/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=formance.com,resources=versions/finalizers,verbs=update
 
-func checkModules(ctx Context, stack *v1beta1.Stack) error {
+func setModulesCondition(ctx Context, stack *v1beta1.Stack) error {
 	for _, rtype := range ctx.GetScheme().AllKnownTypes() {
 		v := reflect.New(rtype).Interface()
 		r, ok := v.(v1beta1.Module)
@@ -118,16 +119,23 @@ func checkModules(ctx Context, stack *v1beta1.Stack) error {
 	}
 
 	modules := make([]string, 0)
+	pendingModules := make([]string, 0)
 	for _, condition := range stack.Status.Conditions {
-		if condition.Type != "ModuleReconciliation" {
+		if condition.Type != "ModuleReconciliation" || condition.ObservedGeneration != stack.Generation {
 			continue
 		}
 		modules = append(modules, condition.Reason)
+		if condition.Status == metav1.ConditionFalse {
+			pendingModules = append(pendingModules, condition.Reason)
+		}
 	}
 
 	sort.Strings(modules)
 
 	stack.Status.Modules = modules
+	if len(pendingModules) > 0 {
+		return NewPendingError().WithMessage("Pending modules: %s", modules)
+	}
 
 	return nil
 }
@@ -150,7 +158,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack) error {
 		}
 	}
 
-	if err := checkModules(ctx, stack); err != nil {
+	if err := setModulesCondition(ctx, stack); err != nil {
 		return err
 	}
 

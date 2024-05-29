@@ -3,12 +3,21 @@ package gateways
 import (
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
+	"github.com/formancehq/operator/internal/resources/settings"
 	v1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/types"
 )
 
 func createIngress(ctx core.Context, stack *v1beta1.Stack,
 	gateway *v1beta1.Gateway) error {
+
+	annotations, err := settings.GetMap(ctx, stack.Name, "gateway", "ingress", "annotations")
+	if err != nil {
+		return err
+	}
+	if annotations == nil {
+		annotations = map[string]string{}
+	}
 
 	name := types.NamespacedName{
 		Namespace: stack.Name,
@@ -18,10 +27,16 @@ func createIngress(ctx core.Context, stack *v1beta1.Stack,
 		return core.DeleteIfExists[*v1.Ingress](ctx, name)
 	}
 
-	_, _, err := core.CreateOrUpdate[*v1.Ingress](ctx, name,
+	if gateway.Spec.Ingress.Annotations != nil {
+		for k, v := range gateway.Spec.Ingress.Annotations {
+			annotations[k] = v
+		}
+	}
+
+	_, _, err = core.CreateOrUpdate[*v1.Ingress](ctx, name,
 		func(ingress *v1.Ingress) error {
 			pathType := v1.PathTypePrefix
-			ingress.ObjectMeta.Annotations = gateway.Spec.Ingress.Annotations
+			ingress.ObjectMeta.Annotations = annotations
 			ingress.Spec.TLS = func() []v1.IngressTLS {
 				if gateway.Spec.Ingress.TLS == nil {
 					return nil

@@ -3,21 +3,28 @@ package api
 import (
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/uptrace/bun"
 
 	auth "github.com/formancehq/auth/pkg"
 	_ "github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/gorilla/mux"
 )
 
-func addClientRoutes(db *bun.DB, router *mux.Router) {
-	router.Path("/clients").Methods(http.MethodPost).HandlerFunc(createClient(db))
-	router.Path("/clients").Methods(http.MethodGet).HandlerFunc(listClients(db))
-	router.Path("/clients/{clientId}").Methods(http.MethodPut).HandlerFunc(updateClient(db))
-	router.Path("/clients/{clientId}").Methods(http.MethodGet).HandlerFunc(readClient(db))
-	router.Path("/clients/{clientId}").Methods(http.MethodDelete).HandlerFunc(deleteClient(db))
-	router.Path("/clients/{clientId}/secrets").Methods(http.MethodPost).HandlerFunc(createSecret(db))
-	router.Path("/clients/{clientId}/secrets/{secretId}").Methods(http.MethodDelete).HandlerFunc(deleteSecret(db))
+func addClientRoutes(db *bun.DB, r chi.Router) {
+	r.Route("/clients", func(r chi.Router) {
+		r.Post("/", createClient(db))
+		r.Get("/", listClients(db))
+		r.Route("/{clientId}", func(r chi.Router) {
+			r.Put("/", updateClient(db))
+			r.Delete("/", deleteClient(db))
+			r.Get("/", readClient(db))
+			r.Route("/secrets", func(r chi.Router) {
+				r.Post("/", createSecret(db))
+				r.Delete("/{secretId}", deleteSecret(db))
+			})
+		})
+	})
 }
 
 type clientSecretView struct {
@@ -65,7 +72,7 @@ func deleteSecret(db *bun.DB) http.HandlerFunc {
 			return
 		}
 
-		if !client.DeleteSecret(mux.Vars(r)["secretId"]) {
+		if !client.DeleteSecret(chi.URLParam(r, "secretId")) {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}
@@ -129,7 +136,7 @@ func deleteClient(db *bun.DB) http.HandlerFunc {
 		_, err := db.
 			NewDelete().
 			Model(&auth.Client{}).
-			Where("id = ?", mux.Vars(r)["clientId"]).
+			Where("id = ?", chi.URLParam(r, "clientId")).
 			Exec(r.Context())
 		if err != nil {
 			internalServerError(w, r, err)

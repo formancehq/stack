@@ -32,6 +32,7 @@ func (s *Reconciliation) CreatePolicy(ctx context.Context, request shared.Policy
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createPolicy",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -136,6 +137,7 @@ func (s *Reconciliation) DeletePolicy(ctx context.Context, request operations.De
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "deletePolicy",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -222,6 +224,7 @@ func (s *Reconciliation) GetPolicy(ctx context.Context, request operations.GetPo
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getPolicy",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -319,6 +322,7 @@ func (s *Reconciliation) GetReconciliation(ctx context.Context, request operatio
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getReconciliation",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -416,6 +420,7 @@ func (s *Reconciliation) ListPolicies(ctx context.Context, request operations.Li
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listPolicies",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -517,6 +522,7 @@ func (s *Reconciliation) ListReconciliations(ctx context.Context, request operat
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listReconciliations",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -619,6 +625,7 @@ func (s *Reconciliation) Reconcile(ctx context.Context, request operations.Recon
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "reconcile",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -722,6 +729,7 @@ func (s *Reconciliation) ReconciliationgetServerInfo(ctx context.Context) (*oper
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "reconciliationgetServerInfo",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 

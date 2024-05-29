@@ -1,7 +1,7 @@
 lockVersion: 2.0.0
 id: 7eac0a45-60a2-40bb-9e85-26bd77ec2a6d
 management:
-  docChecksum: 9a3d8d19ad4eaf628f1f28cca38322ce
+  docChecksum: 144dfb43d24aefb3cd86d3f2db022b13
   docVersion: v0.0.0
   speakeasyVersion: 1.292.0
   generationVersion: 2.332.4
@@ -328,6 +328,8 @@ generatedFiles:
   - /pkg/models/shared/monetary.go
   - /pkg/models/shared/stagedelay.go
   - /pkg/models/shared/stagewaitevent.go
+  - /pkg/models/shared/update.go
+  - /pkg/models/shared/updateaccount.go
   - /pkg/models/shared/getworkflowinstancehistorystageresponse.go
   - /pkg/models/shared/workflowinstancehistorystage.go
   - /pkg/models/shared/workflowinstancehistorystageoutput.go
@@ -367,6 +369,7 @@ generatedFiles:
   - /pkg/models/shared/activitycreatetransaction.go
   - /pkg/models/shared/orchestrationposttransaction.go
   - /pkg/models/shared/activityconfirmhold.go
+  - /pkg/models/shared/activityaddaccountmetadata.go
   - /pkg/models/shared/getworkflowresponse.go
   - /pkg/models/shared/listrunsresponse.go
   - /pkg/models/shared/listtriggersresponse.go
@@ -403,6 +406,8 @@ generatedFiles:
   - /pkg/models/shared/v2monetary.go
   - /pkg/models/shared/v2stagedelay.go
   - /pkg/models/shared/v2stagewaitevent.go
+  - /pkg/models/shared/v2update.go
+  - /pkg/models/shared/v2updateaccount.go
   - /pkg/models/shared/v2getworkflowinstancehistorystageresponse.go
   - /pkg/models/shared/v2workflowinstancehistorystage.go
   - /pkg/models/shared/v2workflowinstancehistorystageoutput.go
@@ -438,6 +443,7 @@ generatedFiles:
   - /pkg/models/shared/v2creditwalletrequest.go
   - /pkg/models/shared/v2activitycreatetransaction.go
   - /pkg/models/shared/v2activityconfirmhold.go
+  - /pkg/models/shared/v2activityaddaccountmetadata.go
   - /pkg/models/shared/v2serverinfo.go
   - /pkg/models/shared/v2getworkflowresponse.go
   - /pkg/models/shared/v2listrunsresponse.go
@@ -1005,6 +1011,8 @@ generatedFiles:
   - docs/pkg/models/shared/monetary.md
   - docs/pkg/models/shared/stagedelay.md
   - docs/pkg/models/shared/stagewaitevent.md
+  - docs/pkg/models/shared/update.md
+  - docs/pkg/models/shared/updateaccount.md
   - docs/pkg/models/shared/getworkflowinstancehistorystageresponse.md
   - docs/pkg/models/shared/workflowinstancehistorystage.md
   - docs/pkg/models/shared/workflowinstancehistorystageoutput.md
@@ -1052,6 +1060,7 @@ generatedFiles:
   - docs/pkg/models/shared/orchestrationposttransactionscript.md
   - docs/pkg/models/shared/orchestrationposttransaction.md
   - docs/pkg/models/shared/activityconfirmhold.md
+  - docs/pkg/models/shared/activityaddaccountmetadata.md
   - docs/pkg/models/shared/getworkflowresponse.md
   - docs/pkg/models/shared/listrunsresponse.md
   - docs/pkg/models/shared/listtriggersresponse.md
@@ -1090,6 +1099,8 @@ generatedFiles:
   - docs/pkg/models/shared/v2monetary.md
   - docs/pkg/models/shared/v2stagedelay.md
   - docs/pkg/models/shared/v2stagewaitevent.md
+  - docs/pkg/models/shared/v2update.md
+  - docs/pkg/models/shared/v2updateaccount.md
   - docs/pkg/models/shared/v2getworkflowinstancehistorystageresponse.md
   - docs/pkg/models/shared/v2workflowinstancehistorystage.md
   - docs/pkg/models/shared/v2workflowinstancehistorystageoutput.md
@@ -1132,6 +1143,7 @@ generatedFiles:
   - docs/pkg/models/shared/v2creditwalletrequest.md
   - docs/pkg/models/shared/v2activitycreatetransaction.md
   - docs/pkg/models/shared/v2activityconfirmhold.md
+  - docs/pkg/models/shared/v2activityaddaccountmetadata.md
   - docs/pkg/models/shared/v2serverinfo.md
   - docs/pkg/models/shared/v2getworkflowresponse.md
   - docs/pkg/models/shared/v2listrunsresponsecursor.md

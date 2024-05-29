@@ -1,0 +1,21 @@
+VERSION 0.8
+
+IMPORT github.com/formancehq/earthly:tags/v0.12.0 AS core
+
+sources:
+  FROM core+base-image
+  WORKDIR /src
+  COPY Chart.lock /src/Chart.lock
+  COPY Chart.yaml /src/Chart.yaml
+  COPY README.md /src/README.md
+  COPY values.yaml /src/values.yaml
+  COPY --dir templates /src/templates
+  SAVE ARTIFACT /src
+
+helm-validate:
+  FROM core+helm-base
+  WORKDIR /src
+  COPY (+sources/*) /src/
+
+  RUN helm dependencies update
+  DO --pass-args core+HELM_VALIDATE

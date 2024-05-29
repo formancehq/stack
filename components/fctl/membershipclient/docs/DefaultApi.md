@@ -341,7 +341,7 @@ import (
 
 func main() {
     organizationId := "organizationId_example" // string | 
-    createStackRequest := *openapiclient.NewCreateStackRequest("Name_example", map[string]string{"key": "Inner_example"}, "RegionID_example") // CreateStackRequest |  (optional)
+    createStackRequest := *openapiclient.NewCreateStackRequest("Name_example", "RegionID_example") // CreateStackRequest |  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -2692,7 +2692,7 @@ import (
 func main() {
     organizationId := "organizationId_example" // string | 
     stackId := "stackId_example" // string | 
-    updateStackRequest := *openapiclient.NewUpdateStackRequest("Name_example", map[string]string{"key": "Inner_example"}) // UpdateStackRequest |  (optional)
+    updateStackRequest := *openapiclient.NewUpdateStackRequest("Name_example") // UpdateStackRequest |  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)

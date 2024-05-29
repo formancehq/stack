@@ -32,6 +32,7 @@ func (s *Payments) AddAccountToPool(ctx context.Context, request operations.AddA
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "addAccountToPool",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -125,6 +126,7 @@ func (s *Payments) ConnectorsTransfer(ctx context.Context, request operations.Co
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "connectorsTransfer",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -229,6 +231,7 @@ func (s *Payments) CreateAccount(ctx context.Context, request shared.AccountRequ
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createAccount",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -333,6 +336,7 @@ func (s *Payments) CreateBankAccount(ctx context.Context, request shared.BankAcc
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createBankAccount",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -437,6 +441,7 @@ func (s *Payments) CreatePayment(ctx context.Context, request shared.PaymentRequ
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createPayment",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -541,6 +546,7 @@ func (s *Payments) CreatePool(ctx context.Context, request shared.PoolRequest) (
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createPool",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -645,6 +651,7 @@ func (s *Payments) CreateTransferInitiation(ctx context.Context, request shared.
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createTransferInitiation",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -749,6 +756,7 @@ func (s *Payments) DeletePool(ctx context.Context, request operations.DeletePool
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "deletePool",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -836,6 +844,7 @@ func (s *Payments) DeleteTransferInitiation(ctx context.Context, request operati
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "deleteTransferInitiation",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -922,6 +931,7 @@ func (s *Payments) ForwardBankAccount(ctx context.Context, request operations.Fo
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "forwardBankAccount",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1025,6 +1035,7 @@ func (s *Payments) GetAccountBalances(ctx context.Context, request operations.Ge
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getAccountBalances",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1126,6 +1137,7 @@ func (s *Payments) GetBankAccount(ctx context.Context, request operations.GetBan
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getBankAccount",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1226,6 +1238,7 @@ func (s *Payments) GetConnectorTask(ctx context.Context, request operations.GetC
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getConnectorTask",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1324,6 +1337,7 @@ func (s *Payments) GetConnectorTaskV1(ctx context.Context, request operations.Ge
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getConnectorTaskV1",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1421,6 +1435,7 @@ func (s *Payments) GetPayment(ctx context.Context, request operations.GetPayment
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getPayment",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1518,6 +1533,7 @@ func (s *Payments) GetPool(ctx context.Context, request operations.GetPoolReques
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getPool",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1615,6 +1631,7 @@ func (s *Payments) GetPoolBalances(ctx context.Context, request operations.GetPo
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getPoolBalances",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1716,6 +1733,7 @@ func (s *Payments) GetTransferInitiation(ctx context.Context, request operations
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getTransferInitiation",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1814,6 +1832,7 @@ func (s *Payments) InstallConnector(ctx context.Context, request operations.Inst
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "installConnector",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1918,6 +1937,7 @@ func (s *Payments) ListAllConnectors(ctx context.Context) (*operations.ListAllCo
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listAllConnectors",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2016,6 +2036,7 @@ func (s *Payments) ListBankAccounts(ctx context.Context, request operations.List
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listBankAccounts",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2118,6 +2139,7 @@ func (s *Payments) ListConfigsAvailableConnectors(ctx context.Context) (*operati
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listConfigsAvailableConnectors",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2218,6 +2240,7 @@ func (s *Payments) ListConnectorTasks(ctx context.Context, request operations.Li
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listConnectorTasks",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2320,6 +2343,7 @@ func (s *Payments) ListConnectorTasksV1(ctx context.Context, request operations.
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listConnectorTasksV1",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2421,6 +2445,7 @@ func (s *Payments) ListPayments(ctx context.Context, request operations.ListPaym
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listPayments",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2522,6 +2547,7 @@ func (s *Payments) ListPools(ctx context.Context, request operations.ListPoolsRe
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listPools",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2623,6 +2649,7 @@ func (s *Payments) ListTransferInitiations(ctx context.Context, request operatio
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listTransferInitiations",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2724,6 +2751,7 @@ func (s *Payments) PaymentsgetAccount(ctx context.Context, request operations.Pa
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "paymentsgetAccount",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2821,6 +2849,7 @@ func (s *Payments) PaymentsgetServerInfo(ctx context.Context) (*operations.Payme
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "paymentsgetServerInfo",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2918,6 +2947,7 @@ func (s *Payments) PaymentslistAccounts(ctx context.Context, request operations.
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "paymentslistAccounts",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3028,6 +3058,7 @@ func (s *Payments) ReadConnectorConfig(ctx context.Context, request operations.R
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "readConnectorConfig",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3126,6 +3157,7 @@ func (s *Payments) ReadConnectorConfigV1(ctx context.Context, request operations
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "readConnectorConfigV1",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3224,6 +3256,7 @@ func (s *Payments) RemoveAccountFromPool(ctx context.Context, request operations
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "removeAccountFromPool",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3314,6 +3347,7 @@ func (s *Payments) ResetConnector(ctx context.Context, request operations.ResetC
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "resetConnector",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3402,6 +3436,7 @@ func (s *Payments) ResetConnectorV1(ctx context.Context, request operations.Rese
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "resetConnectorV1",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3489,6 +3524,7 @@ func (s *Payments) RetryTransferInitiation(ctx context.Context, request operatio
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "retryTransferInitiation",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3576,6 +3612,7 @@ func (s *Payments) ReverseTransferInitiation(ctx context.Context, request operat
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "reverseTransferInitiation",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3669,6 +3706,7 @@ func (s *Payments) UdpateTransferInitiationStatus(ctx context.Context, request o
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "udpateTransferInitiationStatus",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3764,6 +3802,7 @@ func (s *Payments) UninstallConnector(ctx context.Context, request operations.Un
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "uninstallConnector",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3851,6 +3890,7 @@ func (s *Payments) UninstallConnectorV1(ctx context.Context, request operations.
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "uninstallConnectorV1",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3937,6 +3977,7 @@ func (s *Payments) UpdateBankAccountMetadata(ctx context.Context, request operat
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "updateBankAccountMetadata",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -4030,6 +4071,7 @@ func (s *Payments) UpdateConnectorConfigV1(ctx context.Context, request operatio
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "updateConnectorConfigV1",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -4122,6 +4164,7 @@ func (s *Payments) UpdateMetadata(ctx context.Context, request operations.Update
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "updateMetadata",
+		OAuth2Scopes:   []string{},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 

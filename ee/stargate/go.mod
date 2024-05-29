@@ -7,14 +7,14 @@ toolchain go1.21.5
 require (
 	github.com/alitto/pond v1.8.3
 	github.com/formancehq/stack/libs/go-libs v0.0.0-00010101000000-000000000000
-	github.com/go-chi/chi/v5 v5.0.8
+	github.com/go-chi/chi/v5 v5.0.12
 	github.com/go-chi/cors v1.2.1
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.15.0
 	github.com/zitadel/oidc v1.13.4
-	go.opentelemetry.io/otel v1.22.0
-	go.opentelemetry.io/otel/metric v1.22.0
+	go.opentelemetry.io/otel v1.24.0
+	go.opentelemetry.io/otel/metric v1.24.0
 	go.uber.org/fx v1.19.1
 	golang.org/x/oauth2 v0.16.0
 	golang.org/x/sync v0.5.0
@@ -53,6 +53,7 @@ require (
 	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
+	github.com/riandyrn/otelchi v0.8.0 // indirect
 	github.com/shirou/gopsutil/v3 v3.23.12 // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
@@ -77,9 +78,9 @@ require (
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.22.0 // indirect
 	go.opentelemetry.io/otel/exporters/stdout/stdoutmetric v0.45.0 // indirect
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.22.0 // indirect
-	go.opentelemetry.io/otel/sdk v1.22.0 // indirect
+	go.opentelemetry.io/otel/sdk v1.24.0 // indirect
 	go.opentelemetry.io/otel/sdk/metric v1.22.0 // indirect
-	go.opentelemetry.io/otel/trace v1.22.0 // indirect
+	go.opentelemetry.io/otel/trace v1.24.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.0.0 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/dig v1.16.1 // indirect

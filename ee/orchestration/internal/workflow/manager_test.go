@@ -23,7 +23,6 @@ func TestConfig(t *testing.T) {
 	database := pgtesting.NewPostgresDatabase(t)
 	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: database.ConnString(),
-		Debug:              testing.Verbose(),
 	})
 	require.NoError(t, err)
 	t.Cleanup(func() {
@@ -33,8 +32,16 @@ func TestConfig(t *testing.T) {
 
 	taskQueue := uuid.NewString()
 	worker := temporalworker.New(logging.Testing(), devServer.Client(), taskQueue,
-		[]any{NewWorkflows(false), (&stages.NoOp{}).GetWorkflow()},
-		[]any{NewActivities(publish.NoOpPublisher, db)},
+		[]temporalworker.DefinitionSet{
+			NewWorkflows(false).DefinitionSet(),
+			temporalworker.NewDefinitionSet().Append(temporalworker.Definition{
+				Name: "NoOp",
+				Func: (&stages.NoOp{}).GetWorkflow(),
+			}),
+		},
+		[]temporalworker.DefinitionSet{
+			NewActivities(publish.NoOpPublisher, db).DefinitionSet(),
+		},
 	)
 	require.NoError(t, worker.Start())
 	t.Cleanup(worker.Stop)

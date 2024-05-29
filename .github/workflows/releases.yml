@@ -17,7 +17,7 @@ jobs:
         uses: ./.github/actions/env
       - run: >
           earthly
-          --allow-privileged --auto-skip
+          --allow-privileged
           --secret SPEAKEASY_API_KEY=$SPEAKEASY_API_KEY
           ${{ contains(github.event.pull_request.labels.*.name, 'no-cache') && '--no-cache' || '' }}
           +pre-commit
@@ -129,7 +129,7 @@ jobs:
       - name: Publish Helm
         run: >
           earthly
-          --allow-privileged --auto-skip
+          --allow-privileged
           --secret GITHUB_TOKEN=$GITHUB_TOKEN
           +helm-publish
         env:

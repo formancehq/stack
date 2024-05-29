@@ -3,6 +3,8 @@ package triggers
 import (
 	"time"
 
+	"github.com/formancehq/orchestration/internal/temporalworker"
+
 	"go.temporal.io/api/enums/v1"
 
 	"github.com/formancehq/orchestration/internal/workflow"
@@ -113,6 +115,18 @@ func (w triggerWorkflow) ExecuteTrigger(ctx temporalworkflow.Context, req Proces
 	}
 
 	return nil
+}
+
+func (w triggerWorkflow) DefinitionSet() temporalworker.DefinitionSet {
+	return temporalworker.NewDefinitionSet().
+		Append(temporalworker.Definition{
+			Func: w.RunTrigger,
+			Name: "RunTrigger",
+		}).
+		Append(temporalworker.Definition{
+			Func: w.ExecuteTrigger,
+			Name: "ExecuteTrigger",
+		})
 }
 
 func NewWorkflow(taskQueue string, includeSearchAttributes bool) *triggerWorkflow {

@@ -22,7 +22,7 @@ var _ MappedNullable = &Stack{}
 type Stack struct {
 	// Stack name
 	Name string `json:"name"`
-	Metadata map[string]string `json:"metadata"`
+	Metadata *map[string]string `json:"metadata,omitempty"`
 	// Supported only with agent version >= v0.7.0
 	Version *string `json:"version,omitempty"`
 	Status string `json:"status"`
@@ -48,16 +48,16 @@ type Stack struct {
 	DeletedAt *time.Time `json:"deletedAt,omitempty"`
 	DisabledAt *time.Time `json:"disabledAt,omitempty"`
 	AuditEnabled *bool `json:"auditEnabled,omitempty"`
+	Synchronised bool `json:"synchronised"`
 }
 
 // NewStack instantiates a new Stack object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewStack(name string, metadata map[string]string, status string, state string, expectedStatus string, lastStateUpdate time.Time, lastExpectedStatusUpdate time.Time, lastStatusUpdate time.Time, reachable bool, id string, organizationId string, uri string, regionID string, stargateEnabled bool) *Stack {
+func NewStack(name string, status string, state string, expectedStatus string, lastStateUpdate time.Time, lastExpectedStatusUpdate time.Time, lastStatusUpdate time.Time, reachable bool, id string, organizationId string, uri string, regionID string, stargateEnabled bool, synchronised bool) *Stack {
 	this := Stack{}
 	this.Name = name
-	this.Metadata = metadata
 	this.Status = status
 	this.State = state
 	this.ExpectedStatus = expectedStatus
@@ -70,6 +70,7 @@ func NewStack(name string, metadata map[string]string, status string, state stri
 	this.Uri = uri
 	this.RegionID = regionID
 	this.StargateEnabled = stargateEnabled
+	this.Synchronised = synchronised
 	return &this
 }
 
@@ -105,28 +106,36 @@ func (o *Stack) SetName(v string) {
 	o.Name = v
 }
 
-// GetMetadata returns the Metadata field value
+// GetMetadata returns the Metadata field value if set, zero value otherwise.
 func (o *Stack) GetMetadata() map[string]string {
-	if o == nil {
+	if o == nil || IsNil(o.Metadata) {
 		var ret map[string]string
 		return ret
 	}
-
-	return o.Metadata
+	return *o.Metadata
 }
 
-// GetMetadataOk returns a tuple with the Metadata field value
+// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Stack) GetMetadataOk() (*map[string]string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Metadata) {
 		return nil, false
 	}
-	return &o.Metadata, true
+	return o.Metadata, true
 }
 
-// SetMetadata sets field value
+// HasMetadata returns a boolean if a field has been set.
+func (o *Stack) HasMetadata() bool {
+	if o != nil && !IsNil(o.Metadata) {
+		return true
+	}
+
+	return false
+}
+
+// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
 func (o *Stack) SetMetadata(v map[string]string) {
-	o.Metadata = v
+	o.Metadata = &v
 }
 
 // GetVersion returns the Version field value if set, zero value otherwise.
@@ -609,6 +618,30 @@ func (o *Stack) SetAuditEnabled(v bool) {
 	o.AuditEnabled = &v
 }
 
+// GetSynchronised returns the Synchronised field value
+func (o *Stack) GetSynchronised() bool {
+	if o == nil {
+		var ret bool
+		return ret
+	}
+
+	return o.Synchronised
+}
+
+// GetSynchronisedOk returns a tuple with the Synchronised field value
+// and a boolean to check if the value has been set.
+func (o *Stack) GetSynchronisedOk() (*bool, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Synchronised, true
+}
+
+// SetSynchronised sets field value
+func (o *Stack) SetSynchronised(v bool) {
+	o.Synchronised = v
+}
+
 func (o Stack) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -620,7 +653,9 @@ func (o Stack) MarshalJSON() ([]byte, error) {
 func (o Stack) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["name"] = o.Name
-	toSerialize["metadata"] = o.Metadata
+	if !IsNil(o.Metadata) {
+		toSerialize["metadata"] = o.Metadata
+	}
 	if !IsNil(o.Version) {
 		toSerialize["version"] = o.Version
 	}
@@ -651,6 +686,7 @@ func (o Stack) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.AuditEnabled) {
 		toSerialize["auditEnabled"] = o.AuditEnabled
 	}
+	toSerialize["synchronised"] = o.Synchronised
 	return toSerialize, nil
 }
 

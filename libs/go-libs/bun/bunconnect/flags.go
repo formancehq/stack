@@ -8,7 +8,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/formancehq/stack/libs/go-libs/aws/iam"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/lib/pq"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -59,7 +58,6 @@ func ConnectionOptionsFromFlags(ctx context.Context) (*ConnectionOptions, error)
 	}
 	return &ConnectionOptions{
 		DatabaseSourceName: viper.GetString(PostgresURIFlag),
-		Debug:              service.IsDebug(),
 		MaxIdleConns:       viper.GetInt(PostgresMaxIdleConnsFlag),
 		ConnMaxIdleTime:    viper.GetDuration(PostgresConnMaxIdleTimeFlag),
 		MaxOpenConns:       viper.GetInt(PostgresMaxOpenConnsFlag),

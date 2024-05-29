@@ -6,11 +6,12 @@ import (
 	"net/http"
 	"reflect"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/uptrace/bun"
 
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/gorilla/mux"
 	"go.opentelemetry.io/otel/trace"
 )
 
@@ -64,7 +65,7 @@ func findById[T any](w http.ResponseWriter, r *http.Request, db *bun.DB, params 
 	err := db.NewSelect().
 		Model(t).
 		Limit(1).
-		Where("id = ?", mux.Vars(r)[params]).
+		Where("id = ?", chi.URLParam(r, params)).
 		Scan(r.Context())
 	if err != nil {
 		switch err {

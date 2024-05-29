@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Name** | **string** | Stack name | 
-**Metadata** | **map[string]string** |  | 
+**Metadata** | Pointer to **map[string]string** |  | [optional] 
 **Version** | Pointer to **string** | Supported only with agent version &gt;&#x3D; v0.7.0 | [optional] 
 **RegionID** | **string** |  | 
 
@@ -13,7 +13,7 @@ Name | Type | Description | Notes
 
 ### NewCreateStackRequest
 
-`func NewCreateStackRequest(name string, metadata map[string]string, regionID string, ) *CreateStackRequest`
+`func NewCreateStackRequest(name string, regionID string, ) *CreateStackRequest`
 
 NewCreateStackRequest instantiates a new CreateStackRequest object
 This constructor will assign default values to properties that have it defined,
@@ -67,6 +67,11 @@ and a boolean to check if the value has been set.
 
 SetMetadata sets Metadata field to given value.
 
+### HasMetadata
+
+`func (o *CreateStackRequest) HasMetadata() bool`
+
+HasMetadata returns a boolean if a field has been set.
 
 ### GetVersion
 

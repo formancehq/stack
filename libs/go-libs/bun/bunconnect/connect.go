@@ -8,6 +8,8 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/service"
+
 	"github.com/formancehq/stack/libs/go-libs/logging"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bundebug"
@@ -18,7 +20,6 @@ import (
 
 type ConnectionOptions struct {
 	DatabaseSourceName string
-	Debug              bool
 	MaxIdleConns       int
 	MaxOpenConns       int
 	ConnMaxIdleTime    time.Duration
@@ -26,8 +27,8 @@ type ConnectionOptions struct {
 }
 
 func (opts ConnectionOptions) String() string {
-	return fmt.Sprintf("dsn=%s, debug=%v, max-idle-conns=%d, max-open-conns=%d, conn-max-idle-time=%s",
-		opts.DatabaseSourceName, opts.Debug, opts.MaxIdleConns, opts.MaxOpenConns, opts.ConnMaxIdleTime)
+	return fmt.Sprintf("dsn=%s, max-idle-conns=%d, max-open-conns=%d, conn-max-idle-time=%s",
+		opts.DatabaseSourceName, opts.MaxIdleConns, opts.MaxOpenConns, opts.ConnMaxIdleTime)
 }
 
 func OpenSQLDB(ctx context.Context, options ConnectionOptions, hooks ...bun.QueryHook) (*bun.DB, error) {
@@ -58,7 +59,7 @@ func OpenSQLDB(ctx context.Context, options ConnectionOptions, hooks ...bun.Quer
 	}
 
 	db := bun.NewDB(sqldb, pgdialect.New(), bun.WithDiscardUnknownColumns())
-	if options.Debug {
+	if service.IsDebug(ctx) {
 		db.AddQueryHook(bundebug.NewQueryHook())
 	}
 	db.AddQueryHook(bunotel.NewQueryHook())

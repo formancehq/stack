@@ -3,7 +3,6 @@ package internal
 import (
 	"context"
 	"io"
-	"sync"
 	"time"
 
 	"github.com/formancehq/stack/components/agent/internal/generated"
@@ -28,6 +27,7 @@ const (
 type membershipClient struct {
 	clientInfo ClientInfo
 	stopChan   chan chan error
+	stopped    chan struct{}
 
 	serverClient   generated.ServerClient
 	connectClient  generated.Server_ConnectClient
@@ -39,7 +39,8 @@ type membershipClient struct {
 	opts   []grpc.DialOption
 
 	address string
-	mu      sync.Mutex
+
+	messages chan *generated.Message
 }
 
 func (c *membershipClient) connectMetadata(ctx context.Context, modules []string, eeModules []string) (metadata.MD, error) {
@@ -98,10 +99,12 @@ func (c *membershipClient) connect(ctx context.Context, modules []string, eeModu
 }
 
 func (c *membershipClient) Send(message *generated.Message) error {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-
-	return c.connectClient.SendMsg(message)
+	select {
+	case <-c.stopped:
+		return errors.New("stopped")
+	case c.messages <- message:
+		return nil
+	}
 }
 
 func (c *membershipClient) sendPong(ctx context.Context) {
@@ -120,15 +123,16 @@ func (c *membershipClient) sendPong(ctx context.Context) {
 func (c *membershipClient) Start(ctx context.Context) error {
 
 	var (
-		closed = false
-		errCh  = make(chan error, 1)
+		errCh = make(chan error, 1)
 	)
 	go func() {
 		for {
 			msg := &generated.Order{}
 			if err := c.connectClient.RecvMsg(msg); err != nil {
 				if err == io.EOF {
-					if !closed {
+					select {
+					case <-c.stopped:
+					default:
 						errCh <- err
 					}
 					return
@@ -165,7 +169,7 @@ func (c *membershipClient) Start(ctx context.Context) error {
 		case <-ctx.Done():
 			return ctx.Err()
 		case ch := <-c.stopChan:
-			closed = true
+			close(c.stopped)
 			if err := c.connectClient.CloseSend(); err != nil {
 				ch <- err
 				//nolint:nilerr
@@ -181,6 +185,11 @@ func (c *membershipClient) Start(ctx context.Context) error {
 
 			ch <- nil
 			return nil
+		case msg := <-c.messages:
+			if err := c.connectClient.SendMsg(msg); err != nil {
+				panic(err)
+			}
+			<-time.After(50 * time.Millisecond)
 		case err := <-errCh:
 			sharedlogging.FromContext(ctx).Errorf("Stream closed with error: %s", err)
 			return err
@@ -215,5 +224,7 @@ func NewMembershipClient(authenticator Authenticator, clientInfo ClientInfo, add
 		opts:          opts,
 		address:       address,
 		orders:        make(chan *generated.Order),
+		messages:      make(chan *generated.Message),
+		stopped:       make(chan struct{}),
 	}
 }

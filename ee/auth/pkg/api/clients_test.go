@@ -6,6 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/formancehq/stack/libs/go-libs/logging"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
@@ -15,24 +17,22 @@ import (
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
-	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/require"
 )
 
-func withDbAndClientRouter(t *testing.T, callback func(router *mux.Router, db *bun.DB)) {
+func withDbAndClientRouter(t *testing.T, callback func(router chi.Router, db *bun.DB)) {
 	t.Parallel()
 
 	pgDatabase := pgtesting.NewPostgresDatabase(t)
 	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: pgDatabase.ConnString(),
-		Debug:              testing.Verbose(),
 	})
 	require.NoError(t, err)
 	defer db.Close()
 
 	require.NoError(t, sqlstorage.Migrate(context.Background(), db))
 
-	router := mux.NewRouter()
+	router := chi.NewRouter()
 	addClientRoutes(db, router)
 
 	callback(router, db)
@@ -87,7 +87,7 @@ func TestCreateClient(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 
-			withDbAndClientRouter(t, func(router *mux.Router, db *bun.DB) {
+			withDbAndClientRouter(t, func(router chi.Router, db *bun.DB) {
 				req := httptest.NewRequest(http.MethodPost, "/clients", createJSONBuffer(t, tc.options))
 				res := httptest.NewRecorder()
 
@@ -174,7 +174,7 @@ func TestUpdateClient(t *testing.T) {
 	} {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			withDbAndClientRouter(t, func(router *mux.Router, db *bun.DB) {
+			withDbAndClientRouter(t, func(router chi.Router, db *bun.DB) {
 
 				initialClient := auth.NewClient(auth.ClientOptions{})
 				_, err := db.NewInsert().Model(initialClient).Exec(context.Background())
@@ -207,7 +207,7 @@ func TestUpdateClient(t *testing.T) {
 }
 
 func TestListClients(t *testing.T) {
-	withDbAndClientRouter(t, func(router *mux.Router, db *bun.DB) {
+	withDbAndClientRouter(t, func(router chi.Router, db *bun.DB) {
 		client1 := auth.NewClient(auth.ClientOptions{})
 		_, err := db.NewInsert().Model(client1).Exec(context.Background())
 		require.NoError(t, err)
@@ -235,7 +235,7 @@ func TestListClients(t *testing.T) {
 }
 
 func TestReadClient(t *testing.T) {
-	withDbAndClientRouter(t, func(router *mux.Router, db *bun.DB) {
+	withDbAndClientRouter(t, func(router chi.Router, db *bun.DB) {
 
 		opts := auth.ClientOptions{
 			Metadata: map[string]string{
@@ -271,7 +271,7 @@ func TestReadClient(t *testing.T) {
 }
 
 func TestDeleteClient(t *testing.T) {
-	withDbAndClientRouter(t, func(router *mux.Router, db *bun.DB) {
+	withDbAndClientRouter(t, func(router chi.Router, db *bun.DB) {
 
 		opts := auth.ClientOptions{
 			Metadata: map[string]string{
@@ -293,7 +293,7 @@ func TestDeleteClient(t *testing.T) {
 }
 
 func TestGenerateNewSecret(t *testing.T) {
-	withDbAndClientRouter(t, func(router *mux.Router, db *bun.DB) {
+	withDbAndClientRouter(t, func(router chi.Router, db *bun.DB) {
 		client := auth.NewClient(auth.ClientOptions{})
 		_, err := db.NewInsert().Model(client).Exec(context.Background())
 		require.NoError(t, err)
@@ -324,7 +324,7 @@ func TestGenerateNewSecret(t *testing.T) {
 }
 
 func TestDeleteSecret(t *testing.T) {
-	withDbAndClientRouter(t, func(router *mux.Router, db *bun.DB) {
+	withDbAndClientRouter(t, func(router chi.Router, db *bun.DB) {
 		client := auth.NewClient(auth.ClientOptions{})
 		secret, _ := client.GenerateNewSecret(auth.SecretCreate{
 			Name: "testing",
