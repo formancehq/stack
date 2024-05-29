@@ -12,20 +12,12 @@ sources:
 
 helm-validate:
   FROM core+helm-base
-  WORKDIR /src
-  COPY (stack+sources/out --LOCATION=ee/agent/helm) /src/ee/agent/helm
-  COPY (operator+helm-update/*) /src/components/operator/helm/
 
   WORKDIR /src/helm
   COPY . .
   FOR chart IN $(ls -d */)
-    WORKDIR /src/helm
-    COPY ./$chart $chart
-    WORKDIR /src/helm/$chart
-    RUN helm dependency update
-    DO --pass-args core+HELM_VALIDATE
+    BUILD ./$chart+helm-validate
   END
-  SAVE ARTIFACT /src/helm/* AS LOCAL .
 
 pre-commit:
   BUILD --pass-args ./regions+helm-validate

@@ -133,12 +133,17 @@ tests:
         --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
         ginkgo --focus=$focus -p ./tests/...
     
-
 helm-validate:
     FROM core+helm-base
     WORKDIR /src
     COPY helm .
     DO --pass-args core+HELM_VALIDATE
+    SAVE ARTIFACT /src AS LOCAL helm
+
+helm-package:
+    FROM +helm-validate
+    RUN helm package .
+    SAVE ARTIFACT /src
 
 release:
     BUILD --pass-args stack+goreleaser --path=ee/agent
