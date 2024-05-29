@@ -20,10 +20,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// StackSpec defines the desired state of Stack
-// The version of the stack can be specified using either the field `version` or the `versionsFromFile` field.
-// The `version` field will have priority over `versionFromFile`
-// If `versions` and `versionsFromFile` are not specified, "latest" will be used.
 type StackSpec struct {
 	DevProperties `json:",inline"`
 	// +optional
@@ -35,15 +31,22 @@ type StackSpec struct {
 	// for each component.
 	// Must reference a valid formance.com/Versions object
 	VersionsFromFile string `json:"versionsFromFile"`
-	//+optional
+	// +optional
+	// +kubebuilder:default:=false
+	// EnableAudit enable audit at the stack level.
+	// Actually, it enables audit on [Gateway](#gateway)
 	EnableAudit bool `json:"enableAudit,omitempty"`
-	//+optional
+	// +optional
+	// +kubebuilder:default:=false
+	// Disabled indicate the stack is disabled.
+	// A disabled stack disable everything
+	// It just keeps the namespace and the [Database](#database) resources.
 	Disabled bool `json:"disabled"`
 }
 
-// StackStatus defines the observed state of Stack
 type StackStatus struct {
 	Status  `json:",inline"`
+	// Modules register detected modules
 	Modules []string `json:"modules,omitempty"`
 }
 
@@ -57,7 +60,19 @@ type StackStatus struct {
 //+kubebuilder:printcolumn:name="Modules",type=string,JSONPath=".status.modules",description="Modules List Registered"
 //+kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
 
-// Stack is the Schema for the stacks API
+// Stack represents a formance stack.
+// A Stack is basically a container. It holds some global properties and
+// creates a namespace if not already existing.
+//
+// To do more, you need to create some [modules](#modules).
+//
+// The Stack resource allow to specify the version of the stack.
+//
+// It can be specified using either the field `.spec.version` or the `.spec.versionsFromFile` field (Refer to the documentation of [Versions](#versions) resource.
+//
+// The `version` field will have priority over `versionFromFile`.
+//
+// If `versions` and `versionsFromFile` are not specified, "latest" will be used.
 type Stack struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`

@@ -22,32 +22,49 @@ import (
 )
 
 type DelegatedOIDCServerConfiguration struct {
+	// Issuer is the url of the delegated oidc server
 	Issuer       string `json:"issuer,omitempty"`
+	// ClientID is the client id to use for authentication
 	ClientID     string `json:"clientID,omitempty"`
+	// ClientSecret is the client secret to use for authentication
 	ClientSecret string `json:"clientSecret,omitempty"`
 }
 
-// AuthSpec defines the desired state of Auth
 type AuthSpec struct {
 	ModuleProperties `json:",inline"`
 	StackDependency  `json:",inline"`
 	//+optional
+	// Contains information about a delegated authentication server to use to delegate authentication
 	DelegatedOIDCServer *DelegatedOIDCServerConfiguration `json:"delegatedOIDCServer,omitempty"`
 	//+optional
+	// Allow to override the default signing key used to sign JWT tokens.
 	SigningKey string `json:"signingKey,omitempty"`
 	//+optional
+	// Allow to override the default signing key used to sign JWT tokens using a k8s secret
 	SigningKeyFromSecret *v1.SecretKeySelector `json:"signingKeyFromSecret,omitempty"`
 	//+optional
+	// Allow to enable scopes usage on authentication.
+	//
+	// If not enabled, each service will check the authentication but will not restrict access following scopes.
+	// in this case, if authenticated, it is ok.
+	// +kubebuilder:default:=false
 	EnableScopes bool `json:"enableScopes"`
 }
 
-// AuthStatus defines the observed state of Auth
 type AuthStatus struct {
 	Status `json:",inline"`
 	//+optional
+	// Clients contains the list of clients created using [AuthClient](#AuthClient)
 	Clients []string `json:"clients"`
 }
 
+// Auth represent the authentication module of a stack.
+//
+// It is an OIDC compliant server.
+//
+// Creating it for a stack automatically add authentication on all supported modules.
+//
+// The auth service is basically a proxy to another OIDC compliant server.
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
@@ -56,8 +73,6 @@ type AuthStatus struct {
 //+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
 //+kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
 //+kubebuilder:metadata:labels=formance.com/kind=module
-
-// Auth is the Schema for the auths API
 type Auth struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`

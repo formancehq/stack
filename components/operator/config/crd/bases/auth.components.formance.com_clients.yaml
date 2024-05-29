@@ -42,7 +42,6 @@ spec:
           metadata:
             type: object
           spec:
-            description: ClientSpec defines the desired state of Client
             properties:
               authServerReference:
                 type: string
@@ -154,7 +153,6 @@ spec:
           metadata:
             type: object
           spec:
-            description: ClientSpec defines the desired state of Client
             properties:
               authServerReference:
                 type: string

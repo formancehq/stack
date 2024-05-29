@@ -20,7 +20,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// ScopeSpec defines the desired state of Scope
 type ScopeSpec struct {
 	Label string `json:"label"`
 	// +optional

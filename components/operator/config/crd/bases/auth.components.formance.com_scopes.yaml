@@ -42,7 +42,6 @@ spec:
           metadata:
             type: object
           spec:
-            description: ScopeSpec defines the desired state of Scope
             properties:
               authServerReference:
                 type: string

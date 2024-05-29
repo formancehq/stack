@@ -51,7 +51,6 @@ type PostgresConfigCreateDatabase struct {
 	CreateDatabase             bool `json:"createDatabase"`
 }
 
-// LedgerSpec defines the desired state of Ledger
 type LedgerSpec struct {
 	Scalable    `json:",inline"`
 	ImageHolder `json:",inline"`

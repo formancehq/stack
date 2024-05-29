@@ -36,7 +36,17 @@ spec:
     name: v1beta1
     schema:
       openAPIV3Schema:
-        description: Auth is the Schema for the auths API
+        description: |-
+          Auth represent the authentication module of a stack.
+
+
+          It is an OIDC compliant server.
+
+
+          Creating it for a stack automatically add authentication on all supported modules.
+
+
+          The auth service is basically a proxy to another OIDC compliant server.
         properties:
           apiVersion:
             description: |-
@@ -56,27 +66,47 @@ spec:
           metadata:
             type: object
           spec:
-            description: AuthSpec defines the desired state of Auth
             properties:
               debug:
+                default: false
+                description: Allow to enable debug mode on the module
                 type: boolean
               delegatedOIDCServer:
+                description: Contains information about a delegated authentication
+                  server to use to delegate authentication
                 properties:
                   clientID:
+                    description: ClientID is the client id to use for authentication
                     type: string
                   clientSecret:
+                    description: ClientSecret is the client secret to use for authentication
                     type: string
                   issuer:
+                    description: Issuer is the url of the delegated oidc server
                     type: string
                 type: object
               dev:
+                default: false
+                description: |-
+                  Allow to enable dev mode on the module
+                  Dev mode is used to allow some application to do custom setup in development mode (allow insecure certificates for example)
                 type: boolean
               enableScopes:
+                default: false
+                description: |-
+                  Allow to enable scopes usage on authentication.
+
+
+                  If not enabled, each service will check the authentication but will not restrict access following scopes.
+                  in this case, if authenticated, it is ok.
                 type: boolean
               signingKey:
+                description: Allow to override the default signing key used to sign
+                  JWT tokens.
                 type: string
               signingKeyFromSecret:
-                description: SecretKeySelector selects a key of a Secret.
+                description: Allow to override the default signing key used to sign
+                  JWT tokens using a k8s secret
                 properties:
                   key:
                     description: The key of the secret to select from.  Must be a
@@ -96,14 +126,17 @@ spec:
                 type: object
                 x-kubernetes-map-type: atomic
               stack:
+                description: Stack indicates the stack on which the module is installed
                 type: string
               version:
+                description: Version allow to override global version defined at stack
+                  level for a specific module
                 type: string
             type: object
           status:
-            description: AuthStatus defines the observed state of Auth
             properties:
               clients:
+                description: Clients contains the list of clients created using [AuthClient](#AuthClient)
                 items:
                   type: string
                 type: array
@@ -175,8 +208,11 @@ spec:
                   type: object
                 type: array
               info:
+                description: Info can contain any additional like reconciliation errors
                 type: string
               ready:
+                description: Ready indicates if the resource is seen as completely
+                  reconciled
                 type: boolean
             type: object
         type: object

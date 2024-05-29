@@ -163,11 +163,17 @@ tests:
 generate-docs:
     FROM core+builder-image
     COPY (+sources/*) /src
-    RUN go install github.com/elastic/crd-ref-docs@latest
+    RUN go install github.com/elastic/crd-ref-docs@v0.0.12
     WORKDIR /src/components/operator
     COPY docs.config.yaml .
-    COPY --dir docs api .
-    RUN crd-ref-docs --source-path=api/formance.com/v1beta1 --renderer=markdown --output-path=./docs/crd.md --config=./docs.config.yaml
+    COPY --dir api crd-doc-templates .
+    RUN mkdir docs
+    RUN crd-ref-docs \
+        --source-path=api/formance.com/v1beta1 \
+        --renderer=markdown \
+        --output-path=./docs/crd.md \
+        --templates-dir=./crd-doc-templates \
+        --config=./docs.config.yaml
     SAVE ARTIFACT docs/crd.md AS LOCAL docs/crd.md
 
 pre-commit:

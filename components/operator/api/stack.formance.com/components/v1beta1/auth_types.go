@@ -67,7 +67,6 @@ type DelegatedOIDCServerConfiguration struct {
 	ClientSecretFrom *ConfigSource `json:"clientSecretFrom,omitempty"`
 }
 
-// AuthSpec defines the desired state of Auth
 type AuthSpec struct {
 	Scalable    `json:",inline"`
 	ImageHolder `json:",inline"`

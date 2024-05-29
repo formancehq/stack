@@ -50,13 +50,12 @@ spec:
           metadata:
             type: object
           spec:
-            description: BrokerSpec defines the desired state of Broker
             properties:
               stack:
+                description: Stack indicates the stack on which the module is installed
                 type: string
             type: object
           status:
-            description: BrokerStatus defines the observed state of Broker
             properties:
               conditions:
                 items:
@@ -126,15 +125,24 @@ spec:
                   type: object
                 type: array
               info:
+                description: Info can contain any additional like reconciliation errors
                 type: string
               mode:
-                description: Mode defined how streams are created on the broker (mainly
-                  nats)
+                description: |-
+                  Mode indicating the configuration of the nats streams
+                  Two modes are defined :
+                  * OneStreamByService: In this case, each service will have a dedicated stream created
+                  * OneStreamByStack: In this case, a stream will be created for the stack and each service will use a specific subject inside this stream
+                enum:
+                - OneStreamByService
+                - OneStreamByStack
                 type: string
               ready:
+                description: Ready indicates if the resource is seen as completely
+                  reconciled
                 type: boolean
               streams:
-                description: Streams created when Mode == ModeOneStreamByService
+                description: Streams list streams created when Mode == ModeOneStreamByService
                 items:
                   type: string
                 type: array

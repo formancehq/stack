@@ -20,7 +20,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// OrchestrationSpec defines the desired state of Orchestration
 type OrchestrationSpec struct {
 	StackDependency  `json:",inline"`
 	ModuleProperties `json:",inline"`
@@ -28,7 +27,6 @@ type OrchestrationSpec struct {
 	Auth *AuthConfig `json:"auth,omitempty"`
 }
 
-// OrchestrationStatus defines the observed state of Orchestration
 type OrchestrationStatus struct {
 	Status `json:",inline"`
 	//+optional

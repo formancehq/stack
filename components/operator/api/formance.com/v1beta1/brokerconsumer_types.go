@@ -20,7 +20,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// BrokerConsumerSpec defines the desired state of BrokerConsumer
 type BrokerConsumerSpec struct {
 	StackDependency `json:",inline"`
 	Services        []string `json:"services"`
@@ -31,7 +30,6 @@ type BrokerConsumerSpec struct {
 	Name string `json:"name,omitempty"`
 }
 
-// BrokerConsumerStatus defines the observed state of BrokerConsumer
 type BrokerConsumerStatus struct {
 	Status `json:",inline"`
 }

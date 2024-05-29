@@ -60,26 +60,44 @@ spec:
           metadata:
             type: object
           spec:
-            description: GatewaySpec defines the desired state of Gateway
             properties:
               debug:
+                default: false
+                description: Allow to enable debug mode on the module
                 type: boolean
               dev:
+                default: false
+                description: |-
+                  Allow to enable dev mode on the module
+                  Dev mode is used to allow some application to do custom setup in development mode (allow insecure certificates for example)
                 type: boolean
               ingress:
+                description: Allow to customize the generated ingress
                 properties:
                   annotations:
                     additionalProperties:
                       type: string
+                    description: Custom annotations to add on the ingress
                     type: object
                   host:
+                    description: |-
+                      Indicates the hostname on which the stack will be served.
+                      Example : `formance.example.com`
                     type: string
                   scheme:
                     default: https
+                    description: |-
+                      Indicate the scheme.
+
+
+                      Actually, It should be `https` unless you know what you are doing.
                     type: string
                   tls:
+                    description: Allow to customize the tls part of the ingress
                     properties:
                       secretName:
+                        description: Specify the secret name used for the tls configuration
+                          on the ingress
                         type: string
                     required:
                     - secretName
@@ -89,15 +107,18 @@ spec:
                 - scheme
                 type: object
               stack:
+                description: Stack indicates the stack on which the module is installed
                 type: string
               version:
+                description: Version allow to override global version defined at stack
+                  level for a specific module
                 type: string
             type: object
           status:
-            description: GatewayStatus defines the observed state of Gateway
             properties:
               authEnabled:
                 default: false
+                description: Indicates if a [Auth](#auth) module has been detected.
                 type: boolean
               conditions:
                 items:
@@ -167,10 +188,14 @@ spec:
                   type: object
                 type: array
               info:
+                description: Info can contain any additional like reconciliation errors
                 type: string
               ready:
+                description: Ready indicates if the resource is seen as completely
+                  reconciled
                 type: boolean
               syncHTTPAPIs:
+                description: Detected http apis. See [GatewayHTTPAPI](#gatewayhttpapi)
                 items:
                   type: string
                 type: array

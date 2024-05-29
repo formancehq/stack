@@ -20,7 +20,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// WalletsSpec defines the desired state of Wallets
 type WalletsSpec struct {
 	ModuleProperties `json:",inline"`
 	StackDependency  `json:",inline"`

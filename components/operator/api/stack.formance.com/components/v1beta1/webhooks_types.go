@@ -17,7 +17,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// WebhooksSpec defines the desired state of Webhooks
 type WebhooksSpec struct {
 	ImageHolder `json:",inline"`
 	// +optional
