@@ -59,6 +59,14 @@ func createBatchElement(
 			ConnectorID: connectorID,
 		}
 		createdAt := time.Unix(balanceTransaction.Created, 0)
+
+		var metadata []*models.PaymentMetadata
+		if balanceTransaction.Source.Charge.PaymentIntent != nil {
+			metadata = computeMetadata(paymentID, createdAt, balanceTransaction.Source.Charge.Metadata, balanceTransaction.Source.Charge.PaymentIntent.Metadata)
+		} else {
+			metadata = computeMetadata(paymentID, createdAt, balanceTransaction.Source.Charge.Metadata)
+		}
+
 		payment = &models.Payment{
 			ID:            paymentID,
 			Reference:     balanceTransaction.ID,
@@ -71,7 +79,7 @@ func createBatchElement(
 			RawData:       rawData,
 			Scheme:        models.PaymentScheme(balanceTransaction.Source.Charge.PaymentMethodDetails.Card.Brand),
 			CreatedAt:     createdAt,
-			Metadata:      computeMetadata(paymentID, createdAt, balanceTransaction.Source.Charge.Metadata, balanceTransaction.Source.Charge.PaymentIntent.Metadata),
+			Metadata:      metadata,
 		}
 
 		if account != "" {
@@ -103,6 +111,14 @@ func createBatchElement(
 		// of type charge for the full authorization amount and another balance
 		// transaction of type refund for the uncaptured portion.
 		// cf https://stripe.com/docs/reports/balance-transaction-types
+
+		var metadata []*models.PaymentMetadata
+		if balanceTransaction.Source.Refund.PaymentIntent != nil {
+			metadata = computeMetadata(paymentID, createdAt, balanceTransaction.Source.Refund.Metadata, balanceTransaction.Source.Refund.PaymentIntent.Metadata)
+		} else {
+			metadata = computeMetadata(paymentID, createdAt, balanceTransaction.Source.Refund.Metadata)
+		}
+
 		payment = &models.Payment{
 			ID:            paymentID,
 			Reference:     balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
@@ -115,7 +131,7 @@ func createBatchElement(
 			RawData:       rawData,
 			Scheme:        models.PaymentScheme(balanceTransaction.Source.Refund.Charge.PaymentMethodDetails.Card.Brand),
 			CreatedAt:     createdAt,
-			Metadata:      computeMetadata(paymentID, createdAt, balanceTransaction.Source.Refund.Metadata, balanceTransaction.Source.Refund.PaymentIntent.Metadata),
+			Metadata:      metadata,
 		}
 
 		if account != "" {
@@ -162,6 +178,14 @@ func createBatchElement(
 		// of type charge for the full authorization amount and another balance
 		// transaction of type refund for the uncaptured portion.
 		// cf https://stripe.com/docs/reports/balance-transaction-types
+
+		var metadata []*models.PaymentMetadata
+		if balanceTransaction.Source.Refund.PaymentIntent != nil {
+			metadata = computeMetadata(paymentID, createdAt, balanceTransaction.Source.Refund.Metadata, balanceTransaction.Source.Refund.PaymentIntent.Metadata)
+		} else {
+			metadata = computeMetadata(paymentID, createdAt, balanceTransaction.Source.Refund.Metadata)
+		}
+
 		payment = &models.Payment{
 			ID:            paymentID,
 			Reference:     balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
@@ -174,7 +198,7 @@ func createBatchElement(
 			RawData:       rawData,
 			Scheme:        models.PaymentScheme(balanceTransaction.Source.Refund.Charge.PaymentMethodDetails.Card.Brand),
 			CreatedAt:     createdAt,
-			Metadata:      computeMetadata(paymentID, createdAt, balanceTransaction.Source.Refund.Metadata, balanceTransaction.Source.Refund.PaymentIntent.Metadata),
+			Metadata:      metadata,
 		}
 
 		if account != "" {
@@ -214,6 +238,14 @@ func createBatchElement(
 			ConnectorID: connectorID,
 		}
 		createdAt := time.Unix(balanceTransaction.Created, 0)
+
+		var metadata []*models.PaymentMetadata
+		if balanceTransaction.Source.Charge.PaymentIntent != nil {
+			metadata = computeMetadata(paymentID, createdAt, balanceTransaction.Source.Charge.Metadata, balanceTransaction.Source.Charge.PaymentIntent.Metadata)
+		} else {
+			metadata = computeMetadata(paymentID, createdAt, balanceTransaction.Source.Charge.Metadata)
+		}
+
 		payment = &models.Payment{
 			ID:            paymentID,
 			Reference:     balanceTransaction.ID,
@@ -226,7 +258,7 @@ func createBatchElement(
 			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, transactionCurrency),
 			Scheme:        models.PaymentSchemeOther,
 			CreatedAt:     createdAt,
-			Metadata:      computeMetadata(paymentID, createdAt, balanceTransaction.Source.Charge.Metadata, balanceTransaction.Source.Charge.PaymentIntent.Metadata),
+			Metadata:      metadata,
 		}
 
 		if account != "" {
@@ -258,6 +290,14 @@ func createBatchElement(
 		// of type charge for the full authorization amount and another balance
 		// transaction of type refund for the uncaptured portion.
 		// cf https://stripe.com/docs/reports/balance-transaction-types
+
+		var metadata []*models.PaymentMetadata
+		if balanceTransaction.Source.Refund.Charge.PaymentIntent != nil {
+			metadata = computeMetadata(paymentID, createdAt, balanceTransaction.Source.Refund.Charge.Metadata, balanceTransaction.Source.Refund.Charge.PaymentIntent.Metadata)
+		} else {
+			metadata = computeMetadata(paymentID, createdAt, balanceTransaction.Source.Refund.Charge.Metadata)
+		}
+
 		payment = &models.Payment{
 			ID:            paymentID,
 			Reference:     balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
@@ -270,7 +310,7 @@ func createBatchElement(
 			Scheme:        models.PaymentSchemeOther,
 			RawData:       rawData,
 			CreatedAt:     createdAt,
-			Metadata:      computeMetadata(paymentID, createdAt, balanceTransaction.Source.Refund.Charge.Metadata, balanceTransaction.Source.Refund.Charge.PaymentIntent.Metadata),
+			Metadata:      metadata,
 		}
 
 		if account != "" {
@@ -317,6 +357,14 @@ func createBatchElement(
 		// of type charge for the full authorization amount and another balance
 		// transaction of type refund for the uncaptured portion.
 		// cf https://stripe.com/docs/reports/balance-transaction-types
+
+		var metadata []*models.PaymentMetadata
+		if balanceTransaction.Source.Refund.Charge.PaymentIntent != nil {
+			metadata = computeMetadata(paymentID, createdAt, balanceTransaction.Source.Refund.Charge.Metadata, balanceTransaction.Source.Refund.Charge.PaymentIntent.Metadata)
+		} else {
+			metadata = computeMetadata(paymentID, createdAt, balanceTransaction.Source.Refund.Charge.Metadata)
+		}
+
 		payment = &models.Payment{
 			ID:            paymentID,
 			Reference:     balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
@@ -329,7 +377,7 @@ func createBatchElement(
 			Scheme:        models.PaymentSchemeOther,
 			RawData:       rawData,
 			CreatedAt:     createdAt,
-			Metadata:      computeMetadata(paymentID, createdAt, balanceTransaction.Source.Refund.Charge.Metadata, balanceTransaction.Source.Refund.Charge.PaymentIntent.Metadata),
+			Metadata:      metadata,
 		}
 
 		if account != "" {
@@ -753,6 +801,13 @@ func createBatchElement(
 		}
 		createdAt := time.Unix(balanceTransaction.Source.Dispute.Charge.Created, 0)
 
+		var metadata []*models.PaymentMetadata
+		if balanceTransaction.Source.Dispute.Charge.PaymentIntent != nil {
+			metadata = computeMetadata(paymentID, createdAt, balanceTransaction.Source.Dispute.Charge.Metadata, balanceTransaction.Source.Dispute.Charge.PaymentIntent.Metadata)
+		} else {
+			metadata = computeMetadata(paymentID, createdAt, balanceTransaction.Source.Dispute.Charge.Metadata)
+		}
+
 		payment = &models.Payment{
 			ID:            paymentID,
 			Reference:     balanceTransaction.Source.Dispute.Charge.BalanceTransaction.ID,
@@ -765,7 +820,7 @@ func createBatchElement(
 			RawData:       rawData,
 			Scheme:        models.PaymentScheme(balanceTransaction.Source.Dispute.Charge.PaymentMethodDetails.Card.Brand),
 			CreatedAt:     createdAt,
-			Metadata:      computeMetadata(paymentID, createdAt, balanceTransaction.Source.Dispute.Charge.Metadata, balanceTransaction.Source.Dispute.Charge.PaymentIntent.Metadata),
+			Metadata:      metadata,
 		}
 
 		if account != "" {
