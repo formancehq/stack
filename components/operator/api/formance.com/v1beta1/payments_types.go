@@ -20,7 +20,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// PaymentsSpec defines the desired state of Payments
 type PaymentsSpec struct {
 	StackDependency  `json:",inline"`
 	ModuleProperties `json:",inline"`
@@ -30,7 +29,6 @@ type PaymentsSpec struct {
 	Auth *AuthConfig `json:"auth,omitempty"`
 }
 
-// PaymentsStatus defines the observed state of Payments
 type PaymentsStatus struct {
 	Status `json:",inline"`
 }

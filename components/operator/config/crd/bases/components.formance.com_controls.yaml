@@ -37,7 +37,6 @@ spec:
           metadata:
             type: object
           spec:
-            description: ControlSpec defines the desired state of Control
             properties:
               apiURLBack:
                 type: string

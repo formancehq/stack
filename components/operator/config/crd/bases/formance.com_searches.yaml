@@ -53,7 +53,6 @@ spec:
           metadata:
             type: object
           spec:
-            description: SearchSpec defines the desired state of Search
             properties:
               auth:
                 properties:
@@ -63,26 +62,39 @@ spec:
                     type: integer
                 type: object
               batching:
+                description: Batching allow to define custom batching configuration
                 properties:
                   count:
+                    description: Count indicates the number of messages that can be
+                      kept in memory before being flushed to ElasticSearch
                     type: integer
                   period:
+                    description: Period indicates the maximum duration messages can
+                      be kept in memory before being flushed to ElasticSearch
                     type: string
                 required:
                 - count
                 - period
                 type: object
               debug:
+                default: false
+                description: Allow to enable debug mode on the module
                 type: boolean
               dev:
+                default: false
+                description: |-
+                  Allow to enable dev mode on the module
+                  Dev mode is used to allow some application to do custom setup in development mode (allow insecure certificates for example)
                 type: boolean
               stack:
+                description: Stack indicates the stack on which the module is installed
                 type: string
               version:
+                description: Version allow to override global version defined at stack
+                  level for a specific module
                 type: string
             type: object
           status:
-            description: SearchStatus defines the observed state of Search
             properties:
               conditions:
                 items:
@@ -154,10 +166,14 @@ spec:
               elasticSearchURI:
                 type: string
               info:
+                description: Info can contain any additional like reconciliation errors
                 type: string
               ready:
+                description: Ready indicates if the resource is seen as completely
+                  reconciled
                 type: boolean
               topicCleaned:
+                default: false
                 description: TopicCleaned is used to flag stacks where the topics
                   have been cleaned (still search-ledgerv2 and co consumers)
                 type: boolean

@@ -26,7 +26,6 @@ type StargateAuthSpec struct {
 	Issuer       string `json:"issuer"`
 }
 
-// StargateSpec defines the desired state of Stargate
 type StargateSpec struct {
 	ModuleProperties `json:",inline"`
 	StackDependency  `json:",inline"`

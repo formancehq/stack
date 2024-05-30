@@ -40,7 +40,6 @@ type StaticClient struct {
 	Secrets []string `json:"secrets" yaml:"secrets"`
 }
 
-// ClientSpec defines the desired state of Client
 type ClientSpec struct {
 	ClientConfiguration `json:",inline"`
 	AuthServerReference string `json:"authServerReference"`

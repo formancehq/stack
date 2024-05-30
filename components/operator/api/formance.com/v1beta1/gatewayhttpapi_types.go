@@ -25,10 +25,10 @@ type GatewayHTTPAPIRule struct {
 	//+optional
 	Methods []string `json:"methods"`
 	//+optional
+	//+kubebuilder:default:=false
 	Secured bool `json:"secured"`
 }
 
-// GatewayHTTPAPISpec defines the desired state of GatewayHTTPAPI
 type GatewayHTTPAPISpec struct {
 	StackDependency `json:",inline"`
 	// Name indicates prefix api
@@ -39,7 +39,6 @@ type GatewayHTTPAPISpec struct {
 	HealthCheckEndpoint string `json:"healthCheckEndpoint,omitempty"`
 }
 
-// GatewayHTTPAPIStatus defines the observed state of GatewayHTTPAPI
 type GatewayHTTPAPIStatus struct {
 	Status `json:",inline"`
 	//+optional

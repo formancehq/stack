@@ -50,7 +50,6 @@ spec:
           metadata:
             type: object
           spec:
-            description: BrokerConsumerSpec defines the desired state of BrokerConsumer
             properties:
               name:
                 description: |-
@@ -64,13 +63,13 @@ spec:
                   type: string
                 type: array
               stack:
+                description: Stack indicates the stack on which the module is installed
                 type: string
             required:
             - queriedBy
             - services
             type: object
           status:
-            description: BrokerConsumerStatus defines the observed state of BrokerConsumer
             properties:
               conditions:
                 items:
@@ -140,8 +139,11 @@ spec:
                   type: object
                 type: array
               info:
+                description: Info can contain any additional like reconciliation errors
                 type: string
               ready:
+                description: Ready indicates if the resource is seen as completely
+                  reconciled
                 type: boolean
             type: object
         type: object

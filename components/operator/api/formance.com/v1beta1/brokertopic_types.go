@@ -20,14 +20,12 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// BrokerTopicSpec defines the desired state of BrokerTopic
 type BrokerTopicSpec struct {
 	StackDependency `json:",inline"`
 	//+required
 	Service string `json:"service"`
 }
 
-// BrokerTopicStatus defines the observed state of BrokerTopic
 type BrokerTopicStatus struct {
 	Status `json:",inline"`
 }

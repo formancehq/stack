@@ -20,7 +20,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// BrokerSpec defines the desired state of Broker
 type BrokerSpec struct {
 	StackDependency `json:",inline"`
 }
@@ -33,14 +32,18 @@ const (
 	ModeOneStreamByStack   = "OneStreamByStack"
 )
 
-// BrokerStatus defines the observed state of Broker
 type BrokerStatus struct {
 	Status `json:",inline"`
 	//+optional
 	URI *URI `json:"uri,omitempty"`
 	//+optional
+	//+kubebuilder:validation:Enum:={OneStreamByService, OneStreamByStack}
+	// Mode indicating the configuration of the nats streams
+	// Two modes are defined :
+	// * OneStreamByService: In this case, each service will have a dedicated stream created
+	// * OneStreamByStack: In this case, a stream will be created for the stack and each service will use a specific subject inside this stream
 	Mode Mode `json:"mode"`
-	// Streams created when Mode == ModeOneStreamByService
+	// Streams list streams created when Mode == ModeOneStreamByService
 	//+optional
 	Streams []string `json:"streams,omitempty"`
 }

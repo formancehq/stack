@@ -37,7 +37,6 @@ spec:
           metadata:
             type: object
           spec:
-            description: AuthSpec defines the desired state of Auth
             properties:
               baseURL:
                 type: string

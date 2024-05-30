@@ -20,7 +20,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// SearchSpec defines the desired state of Search
 type SearchSpec struct {
 	StackDependency  `json:",inline"`
 	ModuleProperties `json:",inline"`
@@ -30,13 +29,13 @@ type SearchSpec struct {
 	Auth *AuthConfig `json:"auth,omitempty"`
 }
 
-// SearchStatus defines the observed state of Search
 type SearchStatus struct {
 	Status `json:",inline"`
 	//+optional
 	ElasticSearchURI *URI `json:"elasticSearchURI,omitempty"`
 	// TopicCleaned is used to flag stacks where the topics have been cleaned (still search-ledgerv2 and co consumers)
 	//+optional
+	// +kubebuilder:default:=false
 	TopicCleaned bool `json:"topicCleaned,omitempty"`
 }
 

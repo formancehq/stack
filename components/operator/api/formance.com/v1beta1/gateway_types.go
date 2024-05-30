@@ -21,33 +21,42 @@ import (
 )
 
 type GatewayIngressTLS struct {
+	// Specify the secret name used for the tls configuration on the ingress
 	SecretName string `json:"secretName"`
 }
 
 type GatewayIngress struct {
+	// Indicates the hostname on which the stack will be served.
+	// Example : `formance.example.com`
 	//+required
 	Host string `json:"host"`
+	// Indicate the scheme.
+	//
+	// Actually, It should be `https` unless you know what you are doing.
 	// +kubebuilder:default:="https"
 	Scheme      string            `json:"scheme"`
+	// Custom annotations to add on the ingress
 	Annotations map[string]string `json:"annotations,omitempty"`
+	// Allow to customize the tls part of the ingress
 	//+optional
 	TLS *GatewayIngressTLS `json:"tls,omitempty"`
 }
 
-// GatewaySpec defines the desired state of Gateway
 type GatewaySpec struct {
 	StackDependency  `json:",inline"`
 	ModuleProperties `json:",inline"`
 	//+optional
+	// Allow to customize the generated ingress
 	Ingress *GatewayIngress `json:"ingress,omitempty"`
 }
 
-// GatewayStatus defines the observed state of Gateway
 type GatewayStatus struct {
 	Status `json:",inline"`
+	// Detected http apis. See [GatewayHTTPAPI](#gatewayhttpapi)
 	//+optional
 	SyncHTTPAPIs []string `json:"syncHTTPAPIs"`
 	// +kubebuilder:default:=false
+	// Indicates if a [Auth](#auth) module has been detected.
 	AuthEnabled bool `json:"authEnabled"`
 }
 

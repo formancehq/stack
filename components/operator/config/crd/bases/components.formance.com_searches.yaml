@@ -37,7 +37,6 @@ spec:
           metadata:
             type: object
           spec:
-            description: SearchSpec defines the desired state of Search
             properties:
               auth:
                 properties:
