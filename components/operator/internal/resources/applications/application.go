@@ -237,6 +237,29 @@ func (a Application) handleDeployment(ctx core.Context, deploymentLabels map[str
 
 	mutators = append(mutators, core.WithController[*appsv1.Deployment](ctx.GetScheme(), a.owner))
 
+	isJsonLogging, err := settings.GetBoolOrFalse(ctx, a.owner.GetStack(), "logging", "json")
+	if err != nil {
+		return err
+	}
+	if isJsonLogging {
+		mutators = append(mutators, func(t *appsv1.Deployment) error {
+			v := corev1.EnvVar{
+				Name: "JSON_FORMATTING_LOGGER",
+				Value: "true",
+			}
+			for i, container := range t.Spec.Template.Spec.InitContainers {
+				container.Env = append(container.Env, v)
+				t.Spec.Template.Spec.InitContainers[i] = container
+			}
+			for i, container := range t.Spec.Template.Spec.Containers {
+				container.Env = append(container.Env, v)
+				t.Spec.Template.Spec.Containers[i] = container
+			}
+
+			return nil
+		})
+	}
+
 	deployment, _, err := core.CreateOrUpdate[*appsv1.Deployment](ctx, types.NamespacedName{
 		Namespace: a.owner.GetStack(),
 		Name:      a.deploymentTpl.Name,
