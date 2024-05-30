@@ -262,6 +262,24 @@ You can note two things :
    Refer to the documentation of [ResourceReference](#resourcereference) for further information.
 
 
+###### JSON logging
+
+
+You can use the setting `logging.json` with the value `true` to configure elligible service to log as json.
+Example:
+```yaml
+apiVersion: formance.com/v1beta1
+kind: Settings
+metadata:
+  name: json-logging
+spec:
+  key: logging.json
+  stacks:
+  - '*'
+  value: "true"
+```
+
+
 
 
 
