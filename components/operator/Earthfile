@@ -168,14 +168,15 @@ generate-docs:
     WORKDIR /src/components/operator
     COPY docs.config.yaml .
     COPY --dir api crd-doc-templates .
-    RUN mkdir docs
+    COPY docs docs
+    RUN mkdir -p "docs/09-Configuration reference"
     RUN crd-ref-docs \
         --source-path=api/formance.com/v1beta1 \
         --renderer=markdown \
-        --output-path=./docs/crd.md \
+        --output-path="./docs/09-Configuration reference/02-Custom Resource Definitions.md" \
         --templates-dir=./crd-doc-templates \
         --config=./docs.config.yaml
-    SAVE ARTIFACT docs/crd.md AS LOCAL docs/crd.md
+    SAVE ARTIFACT docs/* AS LOCAL docs/
 
 pre-commit:
     WAIT
