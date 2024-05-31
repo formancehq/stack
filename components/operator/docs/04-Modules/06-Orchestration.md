@@ -12,9 +12,9 @@ On top of that, Formance Flows comes with flexible workflow capabilities, so you
 ## Requirements
 
 Formance Flows requires:
-- **PostgreSQL**: See configuration guide [here](../05-Infrastructure%20services/02-Message%20broker.md).
+- **PostgreSQL**: See configuration guide [here](../05-Infrastructure%20services/01-PostgreSQL.md).
 - **Temporal**: See configuration guide [here](../05-Infrastructure%20services/04-Temporal.md).
-- **Broker**: See configuration guide [here](/next/operator/infra/broker).
+- **Broker**: See configuration guide [here](../05-Infrastructure%20services/02-Message%20broker.md).
 
 ## Orchestration Object
 

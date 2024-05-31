@@ -5,9 +5,9 @@ This Module is subject to a user license.
 ## Requirements
 
 Formance Reconciliation requires:
-- **PostgreSQL**: See configuration guide [here](../05-Infrastructure%20services/02-Message%20broker.md).
-- **Ledger**: See configuration guide [here](/next/operator/crd/modules/ledger).
-- **Payments**: See configuration guide [here](/next/operator/crd/modules/payments).
+- **PostgreSQL**: See configuration guide [here](../05-Infrastructure%20services/01-PostgreSQL.md).
+- **Ledger**: See configuration guide [here](../04-Modules/03-Ledger.md).
+- **Payments**: See configuration guide [here](../04-Modules/04-Payments.md).
 
 ## Reconciliation Object
 
