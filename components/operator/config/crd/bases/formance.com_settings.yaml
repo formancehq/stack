@@ -173,7 +173,7 @@ spec:
             properties:
               key:
                 description: The setting Key. See the documentation of each module
-                  or [global settings](#globalsettings) to discover them.
+                  or [global settings](#global-settings) to discover them.
                 type: string
               stacks:
                 description: Stacks on which the setting is applied. Can contain `*`

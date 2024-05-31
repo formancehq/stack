@@ -24,7 +24,7 @@ type SettingsSpec struct {
 	//+optional
 	// Stacks on which the setting is applied. Can contain `*` to indicate a wildcard.
 	Stacks []string `json:"stacks,omitempty"`
-	// The setting Key. See the documentation of each module or [global settings](#globalsettings) to discover them.
+	// The setting Key. See the documentation of each module or [global settings](#global-settings) to discover them.
 	Key    string   `json:"key"`
 	// The value. It must have a specific format following the Key.
 	Value  string   `json:"value"`

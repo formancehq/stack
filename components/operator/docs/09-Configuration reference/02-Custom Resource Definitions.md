@@ -325,7 +325,7 @@ spec:
 | Field | Description | Default | Validation |
 | --- | --- | --- | --- |
 | `stacks` _string array_ | Stacks on which the setting is applied. Can contain `*` to indicate a wildcard. |  |  |
-| `key` _string_ | The setting Key. See the documentation of each module or [global settings](#globalsettings) to discover them. |  |  |
+| `key` _string_ | The setting Key. See the documentation of each module or [global settings](#global-settings) to discover them. |  |  |
 | `value` _string_ | The value. It must have a specific format following the Key. |  |  |
 
 
@@ -457,7 +457,7 @@ The auth service is basically a proxy to another OIDC compliant server.
 | --- | --- | --- | --- |
 | `ready` _boolean_ | Ready indicates if the resource is seen as completely reconciled |  |  |
 | `info` _string_ | Info can contain any additional like reconciliation errors |  |  |
-| `clients` _string array_ | Clients contains the list of clients created using [AuthClient](#AuthClient) |  |  |
+| `clients` _string array_ | Clients contains the list of clients created using [AuthClient](#authclient) |  |  |
 
 
 #### Gateway
@@ -747,8 +747,8 @@ _Underlying type:_ _string_
 | `uri` _string_ |  |  |  |
 | `tls` _boolean_ |  | false |  |
 | `insecure` _boolean_ |  | false |  |
-| `duration` _[Duration](#duration)_ |  |  |  |
-| `retry` _[Duration](#duration)_ |  |  |  |
+| `duration` _string_ |  |  |  |
+| `retry` _string_ |  |  |  |
 
 
 

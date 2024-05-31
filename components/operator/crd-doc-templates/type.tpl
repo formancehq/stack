@@ -32,7 +32,7 @@
 {{ end -}}
 
 {{ range $type.Members -}}
-{{- if has "Type: string" .Type.Validation -}}
+{{- if or (has "Type: string" .Type.Validation) (eq (markdownRenderType .Type) "[Duration](#duration)") -}}
 | `{{ .Name  }}` _string_ | {{ template "type_members" . }} | {{ markdownRenderDefault .Default }} | {{ range .Validation -}} {{ . }} <br />{{ end }} |
 {{- else -}}
 | `{{ .Name  }}` _{{ markdownRenderType .Type }}_ | {{ template "type_members" . }} | {{ markdownRenderDefault .Default }} | {{ range .Validation -}} {{ . }} <br />{{ end }} |
