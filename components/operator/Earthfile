@@ -102,7 +102,8 @@ deploy:
         --create-namespace \
         --set image.tag=$tag \
         --set operator.licence.token=$LICENCE_TOKEN \
-        --set operator.licence.issuer=$LICENCE_ISSUER ./operator
+        --set operator.licence.issuer=$LICENCE_ISSUER ./operator \
+        --set operator.dev=true
     WORKDIR /
     COPY .earthly .earthly
     WORKDIR .earthly
