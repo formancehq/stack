@@ -136,7 +136,7 @@ spec:
           status:
             properties:
               clients:
-                description: Clients contains the list of clients created using [AuthClient](#AuthClient)
+                description: Clients contains the list of clients created using [AuthClient](#authclient)
                 items:
                   type: string
                 type: array

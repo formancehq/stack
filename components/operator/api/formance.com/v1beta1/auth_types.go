@@ -54,7 +54,7 @@ type AuthSpec struct {
 type AuthStatus struct {
 	Status `json:",inline"`
 	//+optional
-	// Clients contains the list of clients created using [AuthClient](#AuthClient)
+	// Clients contains the list of clients created using [AuthClient](#authclient)
 	Clients []string `json:"clients"`
 }
 
