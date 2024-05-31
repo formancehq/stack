@@ -5,8 +5,8 @@ This Module is subject to a user license.
 ## Requirements
 
 Formance Webhooks requires:
-- **PostgreSQL**: See configuration guide [here](../05-Infrastructure%20services/02-Message%20broker.md).
-- **Broker**: See configuration guide [here](/next/operator/infra/broker).
+- **PostgreSQL**: See configuration guide [here](../05-Infrastructure%20services/01-PostgreSQL.md).
+- **Broker**: See configuration guide [here](../05-Infrastructure%20services/02-Message%20broker.md).
 
 ## Webhooks Object
 

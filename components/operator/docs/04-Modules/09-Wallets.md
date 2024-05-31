@@ -7,7 +7,7 @@ Wallets is a fully managed, white-label wallet service to materialize and spend 
 ## Requirements
 
 Formance Wallets requires:
-- **Ledger**: See configuration guide [here](/next/operator/crd/modules/ledger).
+- **Ledger**: See configuration guide [here](../04-Modules/03-Ledger.md).
 
 ## Wallets Object
 
