@@ -2,8 +2,6 @@
 This Module is subject to a user license.
 :::
 
-# Search
-
 ## Overview
 
 Formance Search is a service that provides a search engine for your Formance stack. It is based on Elasticsearch and provides a powerful search engine for your data.
