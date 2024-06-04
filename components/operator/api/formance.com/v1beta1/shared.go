@@ -20,8 +20,13 @@ type EventPublisher interface {
 
 type DevProperties struct {
 	// +optional
+	// Allow to enable debug mode on the module
+	// +kubebuilder:default:=false
 	Debug bool `json:"debug"`
 	// +optional
+	// Allow to enable dev mode on the module
+	// Dev mode is used to allow some application to do custom setup in development mode (allow insecure certificates for example)
+	// +kubebuilder:default:=false
 	Dev bool `json:"dev"`
 }
 
@@ -218,8 +223,10 @@ func ConditionGenerationMatch(generation int64) ConditionPredicate {
 
 type Status struct {
 	//+optional
+	// Ready indicates if the resource is seen as completely reconciled
 	Ready bool `json:"ready"`
 	//+optional
+	// Info can contain any additional like reconciliation errors
 	Info string `json:"info,omitempty"`
 	//+optional
 	Conditions Conditions `json:"conditions,omitempty"`
@@ -252,6 +259,7 @@ type Module interface {
 type ModuleProperties struct {
 	DevProperties `json:",inline"`
 	//+optional
+	// Version allow to override global version defined at stack level for a specific module
 	Version string `json:"version,omitempty"`
 }
 
@@ -274,6 +282,7 @@ type Dependent interface {
 }
 
 type StackDependency struct {
+	// Stack indicates the stack on which the module is installed
 	Stack string `json:"stack,omitempty" yaml:"-"`
 }
 

@@ -22,7 +22,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// SearchIngesterSpec defines the desired state of SearchIngester
 type SearchIngesterSpec struct {
 	Reference string `json:"reference"`
 	//+kubebuilder:pruning:PreserveUnknownFields

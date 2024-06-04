@@ -25,8 +25,10 @@ import (
 type LockingStrategyRedisConfig struct {
 	Uri string `json:"uri,omitempty"`
 	// +optional
+	// +kubebuilder:default:=false
 	TLS bool `json:"tls"`
 	// +optional
+	// +kubebuilder:default:=false
 	InsecureTLS bool `json:"insecure,omitempty"`
 	// +optional
 	Duration time.Duration `json:"duration,omitempty"`
@@ -50,7 +52,6 @@ const (
 	DeploymentStrategyMonoWriterMultipleReader = "single-writer"
 )
 
-// LedgerSpec defines the desired state of Ledger
 type LedgerSpec struct {
 	ModuleProperties `json:",inline"`
 	StackDependency  `json:",inline"`
@@ -59,17 +60,31 @@ type LedgerSpec struct {
 	//+kubebuilder:Enum:={single, single-writer}
 	//+kubebuilder:default:=single
 	//+optional
+	// Deprecated.
 	DeploymentStrategy DeploymentStrategy `json:"deploymentStrategy,omitempty"`
 	// Locking is intended for ledger v1 only
 	//+optional
 	Locking *LockingStrategy `json:"locking,omitempty"`
 }
 
-// LedgerStatus defines the observed state of Ledger
 type LedgerStatus struct {
 	Status `json:",inline"`
 }
 
+// Ledger is the module allowing to install a ledger instance.
+//
+// The ledger is actually a stateful application on the writer part.
+// So we cannot scale the ledger as we want without prior configuration.
+//
+// So, the ledger can run in two modes :
+// * single instance: Only one instance will be deployed. We cannot scale in that mode.
+// * single writer / multiple reader: In this mode, we will have a single writer and multiple readers if needed.
+//
+// Use setting `ledger.deployment-strategy` with either the value :
+// * single : For the single instance mode.
+// * single-writer: For the single writer / multiple reader mode.
+//   Under the hood, the operator create two deployments and force the scaling of the writer to stay at 1.
+//   Then you can scale the deployment of the reader to the value you want.
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:scope=Cluster
@@ -77,8 +92,6 @@ type LedgerStatus struct {
 //+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
 //+kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
 //+kubebuilder:metadata:labels=formance.com/kind=module
-
-// Ledger is the Schema for the ledgers API
 type Ledger struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`

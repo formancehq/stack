@@ -21,12 +21,14 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+// Batching allow to define custom batching configuration
 type Batching struct {
-	Count  int    `json:"count"`
+	// Count indicates the number of messages that can be kept in memory before being flushed to ElasticSearch
+	Count int `json:"count"`
+	// Period indicates the maximum duration messages can be kept in memory before being flushed to ElasticSearch
 	Period string `json:"period"`
 }
 
-// BenthosSpec defines the desired state of Benthos
 type BenthosSpec struct {
 	StackDependency `json:",inline"`
 	DevProperties   `json:",inline"`
@@ -38,7 +40,6 @@ type BenthosSpec struct {
 	InitContainers []corev1.Container `json:"initContainers"`
 }
 
-// BenthosStatus defines the observed state of Benthos
 type BenthosStatus struct {
 	Status `json:",inline"`
 	//+optional

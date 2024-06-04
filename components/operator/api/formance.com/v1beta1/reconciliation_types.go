@@ -20,7 +20,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// ReconciliationSpec defines the desired state of Reconciliation
 type ReconciliationSpec struct {
 	StackDependency  `json:",inline"`
 	ModuleProperties `json:",inline"`
@@ -28,7 +27,6 @@ type ReconciliationSpec struct {
 	Auth *AuthConfig `json:"auth,omitempty"`
 }
 
-// ReconciliationStatus defines the observed state of Reconciliation
 type ReconciliationStatus struct {
 	Status `json:",inline"`
 }

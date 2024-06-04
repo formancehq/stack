@@ -37,7 +37,6 @@ spec:
           metadata:
             type: object
           spec:
-            description: LedgerSpec defines the desired state of Ledger
             properties:
               auth:
                 properties:

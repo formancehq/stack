@@ -52,7 +52,6 @@ spec:
           metadata:
             type: object
           spec:
-            description: StargateSpec defines the desired state of Stargate
             properties:
               auth:
                 properties:
@@ -68,18 +67,27 @@ spec:
                 - issuer
                 type: object
               debug:
+                default: false
+                description: Allow to enable debug mode on the module
                 type: boolean
               dev:
+                default: false
+                description: |-
+                  Allow to enable dev mode on the module
+                  Dev mode is used to allow some application to do custom setup in development mode (allow insecure certificates for example)
                 type: boolean
               organizationID:
                 type: string
               serverURL:
                 type: string
               stack:
+                description: Stack indicates the stack on which the module is installed
                 type: string
               stackID:
                 type: string
               version:
+                description: Version allow to override global version defined at stack
+                  level for a specific module
                 type: string
             required:
             - auth
@@ -158,8 +166,11 @@ spec:
                   type: object
                 type: array
               info:
+                description: Info can contain any additional like reconciliation errors
                 type: string
               ready:
+                description: Ready indicates if the resource is seen as completely
+                  reconciled
                 type: boolean
             type: object
         type: object

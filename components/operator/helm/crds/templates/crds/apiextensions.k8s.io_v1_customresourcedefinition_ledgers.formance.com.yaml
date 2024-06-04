@@ -32,7 +32,24 @@ spec:
     name: v1beta1
     schema:
       openAPIV3Schema:
-        description: Ledger is the Schema for the ledgers API
+        description: |-
+          Ledger is the module allowing to install a ledger instance.
+
+
+          The ledger is actually a stateful application on the writer part.
+          So we cannot scale the ledger as we want without prior configuration.
+
+
+          So, the ledger can run in two modes :
+          * single instance: Only one instance will be deployed. We cannot scale in that mode.
+          * single writer / multiple reader: In this mode, we will have a single writer and multiple readers if needed.
+
+
+          Use setting `ledger.deployment-strategy` with either the value :
+          * single : For the single instance mode.
+          * single-writer: For the single writer / multiple reader mode.
+            Under the hood, the operator create two deployments and force the scaling of the writer to stay at 1.
+            Then you can scale the deployment of the reader to the value you want.
         properties:
           apiVersion:
             description: |-
@@ -52,7 +69,6 @@ spec:
           metadata:
             type: object
           spec:
-            description: LedgerSpec defines the desired state of Ledger
             properties:
               auth:
                 properties:
@@ -62,11 +78,18 @@ spec:
                     type: integer
                 type: object
               debug:
+                default: false
+                description: Allow to enable debug mode on the module
                 type: boolean
               deploymentStrategy:
                 default: single
+                description: Deprecated.
                 type: string
               dev:
+                default: false
+                description: |-
+                  Allow to enable dev mode on the module
+                  Dev mode is used to allow some application to do custom setup in development mode (allow insecure certificates for example)
                 type: boolean
               locking:
                 description: Locking is intended for ledger v1 only
@@ -81,6 +104,7 @@ spec:
                         format: int64
                         type: integer
                       insecure:
+                        default: false
                         type: boolean
                       retry:
                         description: |-
@@ -90,6 +114,7 @@ spec:
                         format: int64
                         type: integer
                       tls:
+                        default: false
                         type: boolean
                       uri:
                         type: string
@@ -99,12 +124,14 @@ spec:
                     type: string
                 type: object
               stack:
+                description: Stack indicates the stack on which the module is installed
                 type: string
               version:
+                description: Version allow to override global version defined at stack
+                  level for a specific module
                 type: string
             type: object
           status:
-            description: LedgerStatus defines the observed state of Ledger
             properties:
               conditions:
                 items:
@@ -174,8 +201,11 @@ spec:
                   type: object
                 type: array
               info:
+                description: Info can contain any additional like reconciliation errors
                 type: string
               ready:
+                description: Ready indicates if the resource is seen as completely
+                  reconciled
                 type: boolean
             type: object
         type: object

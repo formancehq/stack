@@ -42,7 +42,25 @@ spec:
     name: v1beta1
     schema:
       openAPIV3Schema:
-        description: Stack is the Schema for the stacks API
+        description: |-
+          Stack represents a formance stack.
+          A Stack is basically a container. It holds some global properties and
+          creates a namespace if not already existing.
+
+
+          To do more, you need to create some [modules](#modules).
+
+
+          The Stack resource allow to specify the version of the stack.
+
+
+          It can be specified using either the field `.spec.version` or the `.spec.versionsFromFile` field (Refer to the documentation of [Versions](#versions) resource.
+
+
+          The `version` field will have priority over `versionFromFile`.
+
+
+          If `versions` and `versionsFromFile` are not specified, "latest" will be used.
         properties:
           apiVersion:
             description: |-
@@ -62,19 +80,29 @@ spec:
           metadata:
             type: object
           spec:
-            description: |-
-              StackSpec defines the desired state of Stack
-              The version of the stack can be specified using either the field `version` or the `versionsFromFile` field.
-              The `version` field will have priority over `versionFromFile`
-              If `versions` and `versionsFromFile` are not specified, "latest" will be used.
             properties:
               debug:
+                default: false
+                description: Allow to enable debug mode on the module
                 type: boolean
               dev:
+                default: false
+                description: |-
+                  Allow to enable dev mode on the module
+                  Dev mode is used to allow some application to do custom setup in development mode (allow insecure certificates for example)
                 type: boolean
               disabled:
+                default: false
+                description: |-
+                  Disabled indicate the stack is disabled.
+                  A disabled stack disable everything
+                  It just keeps the namespace and the [Database](#database) resources.
                 type: boolean
               enableAudit:
+                default: false
+                description: |-
+                  EnableAudit enable audit at the stack level.
+                  Actually, it enables audit on [Gateway](#gateway)
                 type: boolean
               version:
                 description: |-
@@ -89,7 +117,6 @@ spec:
                 type: string
             type: object
           status:
-            description: StackStatus defines the observed state of Stack
             properties:
               conditions:
                 items:
@@ -159,12 +186,16 @@ spec:
                   type: object
                 type: array
               info:
+                description: Info can contain any additional like reconciliation errors
                 type: string
               modules:
+                description: Modules register detected modules
                 items:
                   type: string
                 type: array
               ready:
+                description: Ready indicates if the resource is seen as completely
+                  reconciled
                 type: boolean
             type: object
         type: object

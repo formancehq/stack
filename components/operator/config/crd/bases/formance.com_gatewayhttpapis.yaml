@@ -46,7 +46,6 @@ spec:
           metadata:
             type: object
           spec:
-            description: GatewayHTTPAPISpec defines the desired state of GatewayHTTPAPI
             properties:
               healthCheckEndpoint:
                 description: Health check endpoint
@@ -65,19 +64,20 @@ spec:
                     path:
                       type: string
                     secured:
+                      default: false
                       type: boolean
                   required:
                   - path
                   type: object
                 type: array
               stack:
+                description: Stack indicates the stack on which the module is installed
                 type: string
             required:
             - name
             - rules
             type: object
           status:
-            description: GatewayHTTPAPIStatus defines the observed state of GatewayHTTPAPI
             properties:
               conditions:
                 items:
@@ -147,8 +147,11 @@ spec:
                   type: object
                 type: array
               info:
+                description: Info can contain any additional like reconciliation errors
                 type: string
               ready:
+                description: Ready indicates if the resource is seen as completely
+                  reconciled
                 type: boolean
             type: object
         type: object

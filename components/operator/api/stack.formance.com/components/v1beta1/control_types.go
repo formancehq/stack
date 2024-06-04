@@ -25,7 +25,6 @@ type AuthClientConfiguration struct {
 	ClientSecret string `json:"clientSecret"`
 }
 
-// ControlSpec defines the desired state of Control
 type ControlSpec struct {
 	Scalable    `json:",inline"`
 	ImageHolder `json:",inline"`

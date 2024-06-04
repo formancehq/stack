@@ -42,20 +42,19 @@ spec:
           metadata:
             type: object
           spec:
-            description: BenthosStreamSpec defines the desired state of BenthosStream
             properties:
               data:
                 type: string
               name:
                 type: string
               stack:
+                description: Stack indicates the stack on which the module is installed
                 type: string
             required:
             - data
             - name
             type: object
           status:
-            description: BenthosStreamStatus defines the observed state of BenthosStream
             properties:
               conditions:
                 items:
@@ -125,8 +124,11 @@ spec:
                   type: object
                 type: array
               info:
+                description: Info can contain any additional like reconciliation errors
                 type: string
               ready:
+                description: Ready indicates if the resource is seen as completely
+                  reconciled
                 type: boolean
             type: object
         type: object

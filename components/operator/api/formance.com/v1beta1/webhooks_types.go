@@ -20,7 +20,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// WebhooksSpec defines the desired state of Webhooks
 type WebhooksSpec struct {
 	StackDependency  `json:",inline"`
 	ModuleProperties `json:",inline"`
@@ -28,7 +27,6 @@ type WebhooksSpec struct {
 	Auth *AuthConfig `json:"auth,omitempty"`
 }
 
-// WebhooksStatus defines the observed state of Webhooks
 type WebhooksStatus struct {
 	Status `json:",inline"`
 }

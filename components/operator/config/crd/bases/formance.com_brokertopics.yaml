@@ -50,17 +50,16 @@ spec:
           metadata:
             type: object
           spec:
-            description: BrokerTopicSpec defines the desired state of BrokerTopic
             properties:
               service:
                 type: string
               stack:
+                description: Stack indicates the stack on which the module is installed
                 type: string
             required:
             - service
             type: object
           status:
-            description: BrokerTopicStatus defines the observed state of BrokerTopic
             properties:
               conditions:
                 items:
@@ -130,8 +129,11 @@ spec:
                   type: object
                 type: array
               info:
+                description: Info can contain any additional like reconciliation errors
                 type: string
               ready:
+                description: Ready indicates if the resource is seen as completely
+                  reconciled
                 type: boolean
             type: object
         type: object

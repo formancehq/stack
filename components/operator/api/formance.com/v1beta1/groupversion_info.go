@@ -14,7 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// Package v1beta1 contains API Schema definitions for the formance v1beta1 API group
+// Package v1beta1 contains API Schema definitions for the formance v1beta1 API group.
+//
+// It allow to configure a Formance stack.
+//
+// A stack is composed of a [Stack](#stack) resource and some [modules](#modules).
+//
+// Each module can create multiple resources following its needs. See [Other resources](#other-resources).
+//
+// Various parts of the stack can be configured either using the CRD properties or using some [Settings](#settings).
+//
 // +kubebuilder:object:generate=true
 // +groupName=formance.com
 package v1beta1

@@ -22,7 +22,8 @@ spec:
     name: v1beta1
     schema:
       openAPIV3Schema:
-        description: AuthClient is the Schema for the authclients API
+        description: AuthClient allow to create OAuth2/OIDC clients on the auth server
+          (see [Auth](#auth))
         properties:
           apiVersion:
             description: |-
@@ -42,35 +43,52 @@ spec:
           metadata:
             type: object
           spec:
-            description: AuthClientSpec defines the desired state of AuthClient
             properties:
               description:
+                description: Description represents an optional description of the
+                  client
                 type: string
               id:
+                description: |-
+                  ID indicates the client id
+                  It must be used with oauth2 `client_id` parameter
                 type: string
               postLogoutRedirectUris:
+                description: RedirectUris allow to list allowed post logout redirect
+                  uris for the client
                 items:
                   type: string
                 type: array
               public:
+                default: false
+                description: |-
+                  Public indicate whether a client is confidential or not.
+                  Confidential clients are clients which the secret can be kept secret...
+                  As opposed to public clients which cannot have a secret (application single page for example)
                 type: boolean
               redirectUris:
+                description: RedirectUris allow to list allowed redirect uris for
+                  the client
                 items:
                   type: string
                 type: array
               scopes:
+                description: Scopes allow to five some scope to the client
                 items:
                   type: string
                 type: array
               secret:
+                description: |-
+                  Secret allow to configure a secret for the client.
+                  It is not required as some client could use some oauth2 flows which does not requires a client secret
                 type: string
               stack:
+                description: Stack indicates the stack on which the module is installed
                 type: string
             required:
             - id
             type: object
           status:
-            description: AuthClientStatus defines the observed state of AuthClient
             properties:
               conditions:
                 items:
@@ -140,8 +158,11 @@ spec:
                   type: object
                 type: array
               info:
+                description: Info can contain any additional like reconciliation errors
                 type: string
               ready:
+                description: Ready indicates if the resource is seen as completely
+                  reconciled
                 type: boolean
             type: object
         type: object

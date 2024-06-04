@@ -102,7 +102,8 @@ deploy:
         --create-namespace \
         --set image.tag=$tag \
         --set operator.licence.token=$LICENCE_TOKEN \
-        --set operator.licence.issuer=$LICENCE_ISSUER ./operator
+        --set operator.licence.issuer=$LICENCE_ISSUER ./operator \
+        --set operator.dev=true
     WORKDIR /
     COPY .earthly .earthly
     WORKDIR .earthly
@@ -163,12 +164,19 @@ tests:
 generate-docs:
     FROM core+builder-image
     COPY (+sources/*) /src
-    RUN go install github.com/elastic/crd-ref-docs@latest
+    RUN go install github.com/elastic/crd-ref-docs@v0.0.12
     WORKDIR /src/components/operator
     COPY docs.config.yaml .
-    COPY --dir docs api .
-    RUN crd-ref-docs --source-path=api/formance.com/v1beta1 --renderer=markdown --output-path=./docs/crd.md --config=./docs.config.yaml
-    SAVE ARTIFACT docs/crd.md AS LOCAL docs/crd.md
+    COPY --dir api crd-doc-templates .
+    COPY docs docs
+    RUN mkdir -p "docs/09-Configuration reference"
+    RUN crd-ref-docs \
+        --source-path=api/formance.com/v1beta1 \
+        --renderer=markdown \
+        --output-path="./docs/09-Configuration reference/02-Custom Resource Definitions.md" \
+        --templates-dir=./crd-doc-templates \
+        --config=./docs.config.yaml
+    SAVE ARTIFACT docs/* AS LOCAL docs/
 
 pre-commit:
     WAIT

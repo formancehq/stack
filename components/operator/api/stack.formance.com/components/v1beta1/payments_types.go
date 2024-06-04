@@ -23,7 +23,6 @@ import (
 type MongoDBConfig struct {
 }
 
-// PaymentsSpec defines the desired state of Payments
 type PaymentsSpec struct {
 	ImageHolder `json:",inline"`
 	// +optional

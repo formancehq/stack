@@ -58,7 +58,6 @@ type Batching struct {
 	Period string `json:"period"`
 }
 
-// SearchSpec defines the desired state of Search
 type SearchSpec struct {
 	Scalable    `json:",inline"`
 	ImageHolder `json:",inline"`

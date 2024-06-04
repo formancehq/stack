@@ -178,20 +178,21 @@ Available settings:
 | temporal.tls.key                                                                         | string |                     | Temporal certificate key                                             |
 | broker.dsn                                                                               | URI    |                     | Broker URI                                                           |
 | opentelemetry.traces.dsn                                                                 | URI    |                     | OpenTelemetry collector URI                                          |
-| clear-database                                                                           | bool   | true                | Whether to remove databases on stack deletion                    |
-| ledger.deployment-strategy                                                                          | string | single              | Ledger deployment type                                               |
+| clear-database                                                                           | bool   | true                | Whether to remove databases on stack deletion                        |
+| ledger.deployment-strategy                                                               | string | single              | Ledger deployment type                                               |
 | payments.encryption-key                                                                  | string |                     | Payments data encryption key                                         |
 | deployments.`<deployment-name>`.init-containers.`<container-name>`.resource-requirements | Map    | cpu=X, mem=X        |                                                                      |
 | deployments.`<deployment-name>`.containers.`<container-name>`.resource-requirements      | Map    | cpu=X, mem=X        |                                                                      |
 | deployments.`<deployment-name>`.init-containers.`<container-name>`.run-as                | Map    | user=X, group=X     |                                                                      |
 | deployments.`<deployment-name>`.containers.`<container-name>`.run-as                     | Map    | user=X, group=X     |                                                                      |
-| deployments.`<deployment-name>`.replicas                       | string | 2                   |                                                                      |
+| deployments.`<deployment-name>`.replicas                                                 | string | 2                   |                                                                      |
 | caddy.image                                                                              | string |                     | Caddy image                                                          |
 | registries.`<name>`.endpoint                                                             | string |                     | Specify a custom endpoint for a specific docker repository           |
 | registries.`<name>`.images.`<path>`.rewrite                                              | string | formancehq/example  | Allow to rewrite the image path                                      |
 | search.batching                                                                          | Map    | period=1s, count=10 | Override default batching parameters                                 |
 | services.`<service-name>`.annotations                                                    | Map    |                     | Allow to specify custom annotations to apply on created k8s services |
 | gateway.ingress.annotations                                                              | Map    |                     | Allow to specify custom annotations to apply on the gateway ingress  |
+| logging.json                                                                             | bool   |                     | Configure services to log as json                                    |
 
 
 ### Postgres URI format

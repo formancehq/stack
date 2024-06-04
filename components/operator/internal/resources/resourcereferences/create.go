@@ -5,7 +5,6 @@ import (
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
-	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -53,26 +52,4 @@ func Delete(ctx core.Context, owner v1beta1.Dependent, name string) error {
 		return err
 	}
 	return nil
-}
-
-func Annotate(key string, ref *v1beta1.ResourceReference) core.ObjectMutator[*appsv1.Deployment] {
-	return func(t *appsv1.Deployment) error {
-		annotations := t.Spec.Template.GetAnnotations()
-		if ref == nil {
-			if annotations == nil || len(annotations) == 0 {
-				return nil
-			}
-			delete(annotations, key)
-			t.Spec.Template.SetAnnotations(annotations)
-			return nil
-		} else {
-			if annotations == nil {
-				annotations = map[string]string{}
-			}
-			annotations[key] = ref.Status.Hash
-			t.Spec.Template.SetAnnotations(annotations)
-		}
-
-		return nil
-	}
 }

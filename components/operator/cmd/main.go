@@ -79,7 +79,7 @@ func main() {
 	flag.StringVar(&licenceSecret, "licence-secret", "", "The licence secret that contains the token and the issuer")
 	flag.StringVar(&utilsVersion, "utils-version", "latest", "The version of the operator utils image")
 	opts := zap.Options{
-		Development: true,
+		Development: false,
 	}
 	opts.BindFlags(flag.CommandLine)
 	flag.Parse()

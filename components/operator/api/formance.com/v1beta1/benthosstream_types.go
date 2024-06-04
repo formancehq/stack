@@ -20,14 +20,12 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// BenthosStreamSpec defines the desired state of BenthosStream
 type BenthosStreamSpec struct {
 	StackDependency `json:",inline"`
 	Data            string `json:"data"`
 	Name            string `json:"name"`
 }
 
-// BenthosStreamStatus defines the observed state of BenthosStream
 type BenthosStreamStatus struct {
 	Status `json:",inline"`
 }

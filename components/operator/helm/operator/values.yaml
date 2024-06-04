@@ -15,6 +15,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 operator:
+  dev: false
   # The region to use for the operator
   region: "eu-west-1"
   # The environment to use for the operator
