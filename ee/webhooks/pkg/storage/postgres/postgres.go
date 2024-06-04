@@ -142,6 +142,7 @@ func (s Store) FindWebhookIDsToRetry(ctx context.Context) ([]string, error) {
 	if err := s.db.NewSelect().Model(&atts).
 		Column("webhook_id").Distinct().
 		Where("status = ?", webhooks.StatusAttemptToRetry).
+		Join("join configs c on c.id = attempt.config->>'id'").
 		Where("next_retry_after < ?", time.Now().UTC()).
 		Scan(ctx); err != nil {
 		return nil, errors.Wrap(err, "finding distinct webhook IDs to retry")
