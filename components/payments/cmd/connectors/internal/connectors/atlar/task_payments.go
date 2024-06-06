@@ -115,7 +115,7 @@ func InitiatePaymentTask(config Config, client *client.Client, transferID string
 
 		paymentID = &models.PaymentID{
 			PaymentReference: models.PaymentReference{
-				Reference: postCreditTransferResponse.Payload.ID,
+				Reference: postCreditTransferResponse.Payload.Reconciliation.ExpectedTransactionID,
 				Type:      models.PaymentTypePayOut,
 			},
 			ConnectorID: connectorID,
