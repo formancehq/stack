@@ -14,7 +14,7 @@ import (
 	"github.com/formancehq/stack/components/agent/internal"
 	"github.com/formancehq/stack/libs/go-libs/licence"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
-	sharedotlptraces "github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
+	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -50,12 +50,6 @@ const (
 	resyncPeriod                   = "resync-period"
 )
 
-func init() {
-	if err := v1beta1.AddToScheme(scheme.Scheme); err != nil {
-		panic(err)
-	}
-}
-
 var rootCmd = &cobra.Command{
 	SilenceUsage: true,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
@@ -64,9 +58,41 @@ var rootCmd = &cobra.Command{
 	RunE: runAgent,
 }
 
-func exitWithCode(code int, v ...any) {
-	fmt.Fprintln(os.Stdout, v...)
-	os.Exit(code)
+func init() {
+	if err := v1beta1.AddToScheme(scheme.Scheme); err != nil {
+		panic(err)
+	}
+
+	var kubeConfigFilePath string
+	if home := homedir.HomeDir(); home != "" {
+		kubeConfigFilePath = filepath.Join(home, ".kube", "config")
+	}
+
+	service.BindFlags(rootCmd)
+	otlptraces.InitOTLPTracesFlags(rootCmd.PersistentFlags())
+	licence.InitCLIFlags(rootCmd)
+
+	rootCmd.Flags().String(kubeConfigFlag, kubeConfigFilePath, "")
+	rootCmd.Flags().String(serverAddressFlag, "localhost:8081", "")
+	rootCmd.Flags().Bool(tlsEnabledFlag, false, "")
+	rootCmd.Flags().Bool(tlsInsecureSkipVerifyFlag, false, "")
+	rootCmd.Flags().String(tlsCACertificateFlag, "", "")
+	rootCmd.Flags().String(idFlag, "", "")
+	rootCmd.Flags().String(authenticationModeFlag, "", "")
+	rootCmd.Flags().String(authenticationTokenFlag, "", "")
+	rootCmd.Flags().String(authenticationClientSecretFlag, "", "")
+	rootCmd.Flags().String(authenticationIssuerFlag, "", "")
+	rootCmd.Flags().String(baseUrlFlag, "", "")
+	rootCmd.Flags().Bool(productionFlag, false, "Is a production agent")
+	rootCmd.Flags().Duration(resyncPeriod, 5*time.Minute, "Resync period of K8S resources")
+	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+
+func Execute() {
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Fprintln(os.Stdout, err)
+		os.Exit(1)
+	}
 }
 
 func runAgent(cmd *cobra.Command, args []string) error {
@@ -117,7 +143,7 @@ func runAgent(cmd *cobra.Command, args []string) error {
 			Production: viper.GetBool(productionFlag),
 			Version:    Version,
 		}, viper.GetDuration(resyncPeriod), dialOptions...),
-		sharedotlptraces.CLITracesModule(),
+		otlptraces.CLITracesModule(),
 		licence.CLIModule(ServiceName),
 	}
 
@@ -174,34 +200,4 @@ func createGRPCTransportCredentials(ctx context.Context) (credentials.TransportC
 		})
 	}
 	return credential, nil
-}
-
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		exitWithCode(1, err)
-	}
-}
-
-func init() {
-	var kubeConfigFilePath string
-	if home := homedir.HomeDir(); home != "" {
-		kubeConfigFilePath = filepath.Join(home, ".kube", "config")
-	}
-
-	service.BindFlags(rootCmd)
-	licence.InitCLIFlags(rootCmd)
-	rootCmd.Flags().String(kubeConfigFlag, kubeConfigFilePath, "")
-	rootCmd.Flags().String(serverAddressFlag, "localhost:8081", "")
-	rootCmd.Flags().Bool(tlsEnabledFlag, false, "")
-	rootCmd.Flags().Bool(tlsInsecureSkipVerifyFlag, false, "")
-	rootCmd.Flags().String(tlsCACertificateFlag, "", "")
-	rootCmd.Flags().String(idFlag, "", "")
-	rootCmd.Flags().String(authenticationModeFlag, "", "")
-	rootCmd.Flags().String(authenticationTokenFlag, "", "")
-	rootCmd.Flags().String(authenticationClientSecretFlag, "", "")
-	rootCmd.Flags().String(authenticationIssuerFlag, "", "")
-	rootCmd.Flags().String(baseUrlFlag, "", "")
-	rootCmd.Flags().Bool(productionFlag, false, "Is a production agent")
-	rootCmd.Flags().Duration(resyncPeriod, 5*time.Minute, "Resync period of K8S resources")
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

@@ -11,6 +11,8 @@ import (
 	"strings"
 	"sync"
 
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/trace"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/selection"
 
@@ -19,7 +21,6 @@ import (
 	"github.com/formancehq/stack/components/agent/internal/generated"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/api/equality"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -91,15 +92,24 @@ func (c *membershipListener) Start(ctx context.Context) {
 			}
 
 			c.wp.Submit(func() {
-				sharedlogging.FromContext(ctx).Infof("Got message from membership: %T", msg.GetMessage())
+				ctx, span := otel.GetTracerProvider().Tracer("com.formance.agent").Start(ctx, "newOrder", trace.WithNewRoot())
+				defer span.End()
+				logging.FromContext(ctx).
+					WithField("traceId", span.SpanContext().TraceID()).
+					WithField("spanId", span.SpanContext().SpanID()).
+					Infof("Got message from membership: %T", msg.GetMessage())
 				switch msg := msg.Message.(type) {
 				case *generated.Order_ExistingStack:
+					span.SetName("syncExistingStack")
 					c.syncExistingStack(ctx, msg.ExistingStack)
 				case *generated.Order_DeletedStack:
+					span.SetName("deleteStack")
 					c.deleteStack(ctx, msg.DeletedStack)
 				case *generated.Order_DisabledStack:
+					span.SetName("disableStack")
 					c.disableStack(ctx, msg.DisabledStack)
 				case *generated.Order_EnabledStack:
+					span.SetName("enableStack")
 					c.enableStack(ctx, msg.EnabledStack)
 				}
 			})
@@ -108,7 +118,6 @@ func (c *membershipListener) Start(ctx context.Context) {
 }
 
 func (c *membershipListener) syncExistingStack(ctx context.Context, membershipStack *generated.Stack) {
-
 	versions := membershipStack.Versions
 	if versions == "" {
 		versions = "default"
@@ -125,7 +134,7 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 		},
 	})
 	if err != nil {
-		sharedlogging.FromContext(ctx).Errorf("Unable to create stack cluster side: %s", err)
+		logging.FromContext(ctx).Errorf("Unable to create stack cluster side: %s", err)
 		return
 	}
 
@@ -133,7 +142,7 @@ func (c *membershipListener) syncExistingStack(ctx context.Context, membershipSt
 	c.syncStargate(ctx, metadata, stack, membershipStack)
 	c.syncAuthClients(ctx, metadata, stack, membershipStack.StaticClients)
 
-	sharedlogging.FromContext(ctx).Infof("Stack %s updated cluster side", stack.GetName())
+	logging.FromContext(ctx).Infof("Stack %s updated cluster side", stack.GetName())
 }
 
 func (c *membershipListener) generateMetadata(membershipStack *generated.Stack) map[string]any {
@@ -247,11 +256,11 @@ func (c *membershipListener) syncStargate(ctx context.Context, metadata map[stri
 				},
 			},
 		}); err != nil {
-			sharedlogging.FromContext(ctx).Errorf("Unable to create module Stargate cluster side: %s", err)
+			logging.FromContext(ctx).Errorf("Unable to create module Stargate cluster side: %s", err)
 		}
 	} else {
 		if err := c.client.EnsureNotExists(ctx, "Stargates", stargateName); err != nil {
-			sharedlogging.FromContext(ctx).Errorf("Unable to delete module Stargate cluster side: %s", err)
+			logging.FromContext(ctx).Errorf("Unable to delete module Stargate cluster side: %s", err)
 		}
 	}
 }
@@ -268,7 +277,7 @@ func (c *membershipListener) syncAuthClients(ctx context.Context, metadata map[s
 				},
 			})
 		if err != nil {
-			sharedlogging.FromContext(ctx).Errorf("Unable to create AuthClient cluster side: %s", err)
+			logging.FromContext(ctx).Errorf("Unable to create AuthClient cluster side: %s", err)
 			continue
 		}
 		expectedAuthClients = append(expectedAuthClients, authClient)
@@ -276,7 +285,7 @@ func (c *membershipListener) syncAuthClients(ctx context.Context, metadata map[s
 
 	authClients, err := c.client.List(ctx, "AuthClients", stackLabels(stack.GetName()))
 	if err != nil {
-		sharedlogging.FromContext(ctx).Errorf("Unable to list AuthClient cluster side: %s", err)
+		logging.FromContext(ctx).Errorf("Unable to list AuthClient cluster side: %s", err)
 		return
 	}
 
@@ -290,43 +299,43 @@ func (c *membershipListener) syncAuthClients(ctx context.Context, metadata map[s
 	}, []string{})
 
 	for _, name := range authClientsToDelete {
-		sharedlogging.FromContext(ctx).Infof("Deleting AuthClient %s", name)
+		logging.FromContext(ctx).Infof("Deleting AuthClient %s", name)
 		if err := c.client.EnsureNotExists(ctx, "AuthClients", name); err != nil {
-			sharedlogging.FromContext(ctx).Errorf("Unable to delete AuthClient %s cluster side: %s", name, err)
+			logging.FromContext(ctx).Errorf("Unable to delete AuthClient %s cluster side: %s", name, err)
 		}
 	}
 }
 
 func (c *membershipListener) deleteStack(ctx context.Context, stack *generated.DeletedStack) {
 	if err := c.client.EnsureNotExists(ctx, "Stacks", stack.ClusterName); err != nil {
-		sharedlogging.FromContext(ctx).Errorf("Deleting cluster side: %s", err)
+		logging.FromContext(ctx).Errorf("Deleting cluster side: %s", err)
 		return
 	}
-	sharedlogging.FromContext(ctx).Infof("Stack %s deleted", stack.ClusterName)
+	logging.FromContext(ctx).Infof("Stack %s deleted", stack.ClusterName)
 }
 
 func (c *membershipListener) disableStack(ctx context.Context, stack *generated.DisabledStack) {
 
 	if err := c.client.Patch(ctx, "Stacks", stack.ClusterName, []byte(`{"spec": {"disabled": true}}`)); err != nil {
-		sharedlogging.FromContext(ctx).Errorf("Disabling cluster side: %s", err)
+		logging.FromContext(ctx).Errorf("Disabling cluster side: %s", err)
 		return
 	}
 
-	sharedlogging.FromContext(ctx).Infof("Stack %s disabled", stack.ClusterName)
+	logging.FromContext(ctx).Infof("Stack %s disabled", stack.ClusterName)
 }
 
 func (c *membershipListener) enableStack(ctx context.Context, stack *generated.EnabledStack) {
 	if err := c.client.Patch(ctx, "Stacks", stack.ClusterName, []byte(`{"spec": {"disabled": false}}`)); err != nil {
-		sharedlogging.FromContext(ctx).Errorf("Disabling cluster side: %s", err)
+		logging.FromContext(ctx).Errorf("Disabling cluster side: %s", err)
 		return
 	}
 
-	sharedlogging.FromContext(ctx).Infof("Stack %s enabled", stack.ClusterName)
+	logging.FromContext(ctx).Infof("Stack %s enabled", stack.ClusterName)
 }
 
 func (c *membershipListener) createOrUpdate(ctx context.Context, gvk schema.GroupVersionKind, name string, stackName string, owner *metav1.OwnerReference, content map[string]any) (*unstructured.Unstructured, error) {
 
-	logger := sharedlogging.FromContext(ctx).WithFields(map[string]any{
+	logger := logging.FromContext(ctx).WithFields(map[string]any{
 		"gvk": gvk,
 	})
 	logger.Infof("creating object '%s'", name)

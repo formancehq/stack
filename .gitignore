@@ -38,3 +38,6 @@ openapi/node_modules
 .aws
 
 .kube
+
+# Helm
+*.tgz

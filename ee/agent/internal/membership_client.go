@@ -6,9 +6,11 @@ import (
 	"time"
 
 	"github.com/formancehq/stack/components/agent/internal/generated"
-	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/logging"
+
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -66,28 +68,42 @@ func (c *membershipClient) connectMetadata(ctx context.Context, modules []string
 	return md, nil
 }
 
+func LoggingClientStreamInterceptor(l logging.Logger) grpc.StreamClientInterceptor {
+	return func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+		span := trace.SpanFromContext(ctx)
+
+		logging.FromContext(ctx).
+			WithField("traceId", span.SpanContext().TraceID()).
+			WithField("spanId", span.SpanContext().SpanID()).
+			WithField("method", method).
+			Infof("Starting stream")
+		return streamer(logging.ContextWithLogger(ctx, l), desc, cc, method, opts...)
+	}
+}
+
 func (c *membershipClient) connect(ctx context.Context, modules []string, eeModules []string) error {
-	sharedlogging.FromContext(ctx).WithFields(map[string]any{
+	logging.FromContext(ctx).WithFields(map[string]any{
 		"id": c.clientInfo.ID,
 	}).Infof("Establish connection to server")
 	c.connectContext, c.connectCancel = context.WithCancel(ctx)
 
 	opts := append(c.opts,
-		grpc.WithUnaryInterceptor(otelgrpc.UnaryClientInterceptor()),
-		grpc.WithStreamInterceptor(otelgrpc.StreamClientInterceptor()),
+		grpc.WithChainStreamInterceptor(
+			LoggingClientStreamInterceptor(logging.FromContext(ctx)),
+		),
+		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
 	)
 	conn, err := grpc.Dial(c.address, opts...)
 	if err != nil {
 		return err
 	}
-	sharedlogging.FromContext(ctx).Info("Connected to GRPC server!")
+
 	c.serverClient = generated.NewServerClient(conn)
 
 	md, err := c.connectMetadata(ctx, modules, eeModules)
 	if err != nil {
 		return err
 	}
-
 	connectContext := metadata.NewOutgoingContext(c.connectContext, md)
 	connectClient, err := c.serverClient.Join(connectContext)
 	if err != nil {
@@ -113,7 +129,7 @@ func (c *membershipClient) sendPong(ctx context.Context) {
 			Pong: &generated.Pong{},
 		},
 	}); err != nil {
-		sharedlogging.FromContext(ctx).Errorf("Unable to send pong to server: %s", err)
+		logging.FromContext(ctx).Errorf("Unable to send pong to server: %s", err)
 		if errors.Is(err, io.EOF) {
 			panic(err)
 		}
@@ -191,7 +207,7 @@ func (c *membershipClient) Start(ctx context.Context) error {
 			}
 			<-time.After(50 * time.Millisecond)
 		case err := <-errCh:
-			sharedlogging.FromContext(ctx).Errorf("Stream closed with error: %s", err)
+			logging.FromContext(ctx).Errorf("Stream closed with error: %s", err)
 			return err
 		}
 	}
