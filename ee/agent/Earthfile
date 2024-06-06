@@ -3,6 +3,7 @@ VERSION 0.8
 IMPORT github.com/formancehq/earthly:tags/v0.12.0 AS core
 
 IMPORT ../.. AS stack
+IMPORT ../../helm/libs AS helm-libs 
 IMPORT .. AS ee
 
 FROM core+base-image
@@ -136,14 +137,21 @@ tests:
 helm-validate:
     FROM core+helm-base
     WORKDIR /src
-    COPY helm .
+
+    COPY (helm-libs+sources/*) helm/libs/
+    COPY --dir helm ee/agent/
+
+    WORKDIR /src/ee/agent/helm
+    RUN helm dependencies update
     DO --pass-args core+HELM_VALIDATE
-    SAVE ARTIFACT /src AS LOCAL helm
+    SAVE ARTIFACT /src/ee/agent/helm AS LOCAL helm
 
 helm-package:
     FROM +helm-validate
     RUN helm package .
     SAVE ARTIFACT /src
+
+    SAVE ARTIFACT . AS LOCAL helm
 
 release:
     BUILD --pass-args stack+goreleaser --path=ee/agent

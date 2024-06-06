@@ -56,6 +56,10 @@ server:
     enabled: true
     insecureSkipVerify: true
 
+config:
+  monitoring:
+    serviceName: agent
+
 agent:
   id: "b7549a16-f74a-4815-ab1e-bb8ef1c3833b"
   baseUrl: ""

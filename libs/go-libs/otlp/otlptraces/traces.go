@@ -52,19 +52,20 @@ func TracesModule(cfg ModuleConfig) fx.Option {
 	options = append(options,
 		fx.Supply(cfg),
 		otlp.LoadResource(cfg.ServiceName, cfg.ResourceAttributes),
-		fx.Provide(func(tp *tracesdk.TracerProvider) trace.TracerProvider { return tp }),
 		fx.Provide(fx.Annotate(func(options ...tracesdk.TracerProviderOption) *tracesdk.TracerProvider {
 			return tracesdk.NewTracerProvider(options...)
 		}, fx.ParamTags(TracerProviderOptionKey))),
-		fx.Invoke(func(lc fx.Lifecycle, tracerProvider *tracesdk.TracerProvider) {
+		fx.Invoke(func(tp *tracesdk.TracerProvider) trace.TracerProvider {
+			otel.SetTracerProvider(tp)
+
 			// set global propagator to tracecontext (the default is no-op).
 			otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(
 				b3.New(), propagation.TraceContext{})) // B3 format is common and used by zipkin. Always enabled right now.
+
+			return tp
+		}),
+		fx.Invoke(func(lc fx.Lifecycle, tracerProvider *tracesdk.TracerProvider) {
 			lc.Append(fx.Hook{
-				OnStart: func(ctx context.Context) error {
-					otel.SetTracerProvider(tracerProvider)
-					return nil
-				},
 				OnStop: func(ctx context.Context) error {
 					return tracerProvider.Shutdown(ctx)
 				},
