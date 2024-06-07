@@ -1,8 +1,14 @@
 global:
   monitoring:
+    traces:
+      enabled: true
+      mode: grpc
+      exporter: otlp
+      endpoint: otel-collector-opentelemetry-collector.formance.svc.cluster.local
+      port: 4317
+      insecure: true
     logs:
       format: ""
-
 image:
   pullPolicy: Always
 
