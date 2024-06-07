@@ -21,3 +21,16 @@ func (c *Client) GetV1Transactions(ctx context.Context, token string, pageSize i
 
 	return c.client.Transactions.GetV1Transactions(&params)
 }
+
+func (c *Client) GetV1TransactionsID(ctx context.Context, id string) (*transactions.GetV1TransactionsIDOK, error) {
+	f := connectors.ClientMetrics(ctx, "atlar", "list_transactions")
+	now := time.Now()
+	defer f(ctx, now)
+
+	params := transactions.GetV1TransactionsIDParams{
+		Context: ctx,
+		ID:      id,
+	}
+
+	return c.client.Transactions.GetV1TransactionsID(&params)
+}
