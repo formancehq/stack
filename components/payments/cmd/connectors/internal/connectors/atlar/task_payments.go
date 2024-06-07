@@ -120,10 +120,6 @@ func InitiatePaymentTask(config Config, client *client.Client, transferID string
 			},
 			ConnectorID: connectorID,
 		}
-		err = ingester.AddTransferInitiationPaymentID(ctx, transfer, paymentID, time.Now())
-		if err != nil {
-			return err
-		}
 
 		var taskDescriptor models.TaskDescriptor
 		taskDescriptor, err = models.EncodeTaskDescriptor(TaskDescriptor{
@@ -241,6 +237,7 @@ func UpdatePaymentStatusTask(
 				getCreditTransferResponse.Payload.Reconciliation.BookedTransactionID,
 			)
 			if err != nil {
+				otel.RecordError(span, err)
 				return err
 			}
 
@@ -253,10 +250,10 @@ func UpdatePaymentStatusTask(
 			}
 			err = ingester.AddTransferInitiationPaymentID(ctx, transfer, paymentID, time.Now())
 			if err != nil {
+				otel.RecordError(span, err)
 				return err
 			}
 
-			// this is done
 			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessed, "", time.Now())
 			if err != nil {
 				otel.RecordError(span, err)
