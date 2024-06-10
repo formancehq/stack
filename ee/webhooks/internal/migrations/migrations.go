@@ -196,7 +196,6 @@ func Migrate(ctx context.Context, db *bun.DB) error {
 					return errors.Wrap(err, "adding 'comment' column to attempts")
 				}
 
-
 				return nil
 			},
 		},

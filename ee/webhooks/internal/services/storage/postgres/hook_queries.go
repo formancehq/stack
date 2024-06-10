@@ -10,37 +10,16 @@ import (
 )	
 
 
-
-
-var TableHooks = &Table{
-	Name: "configs",
-	Columns: map[string]string{
-		"ID":"id",
-		"NAME":"name",
-		"STATUS":"status",
-		"EVENT": "event_types",
-		"ENDPOINT": "endpoint",
-		"SECRET": "secret",
-		"DCREATION": "created_at",
-		"DSTATUS": "date_status",
-		"RETRY": "retry",
-	},
-}
-
-func hookColumnsAsListStr() string {
-	var sb strings.Builder
-	sb.WriteString(TableHooks.Columns["ID"]+",")
-	sb.WriteString(TableHooks.Columns["NAME"]+",")
-	sb.WriteString(TableHooks.Columns["STATUS"]+",")
-	sb.WriteString(TableHooks.Columns["EVENT"]+",")
-	sb.WriteString(TableHooks.Columns["ENDPOINT"]+",")
-	sb.WriteString(TableHooks.Columns["SECRET"]+",")
-	sb.WriteString(TableHooks.Columns["DCREATION"]+",")
-	sb.WriteString(TableHooks.Columns["DSTATUS"]+",")
-	sb.WriteString(TableHooks.Columns["RETRY"])
-	return sb.String()
-
-}
+const (
+	selectOneHookQuery string = "SELECT * FROM configs WHERE id = ?"
+	selectHooksQuery  = "SELECT * FROM configs WHERE status != ?" 
+	selectHooksWithPaginationQuery  = "SELECT * FROM configs WHERE  status !=  ? ORDER By name LIMIT ? OFFSET ?"
+	insertHookQuery  = "INSERT INTO configs (id, name, status, event_types, endpoint, secret, created_at, date_status, retry) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+	updateHookStatusQuery = "UPDATE configs SET status = ?, date_status = ? WHERE id = ?"
+	updateHookSecretQuery = "UPDATE configs SET secret = ? WHERE id = ?"
+	updateHookEndpointQuery = "UPDATE configs SET endpoint = ? WHERE id = ?"
+	updateHookRetryQuery = "UPDATE configs SET retry = ? WHERE id = ?"
+)
 
 
 func (store PostgresStore) GetHook(index string) (commons.Hook, error){
@@ -61,11 +40,8 @@ func (store PostgresStore) GetHook(index string) (commons.Hook, error){
 
 func (store PostgresStore) SaveHook(hook commons.Hook) error {
 
-	query := insertQuery.Fill(TableHooks.Name, 
-							hookColumnsAsListStr(), 
-							insertQuery.ValuesNb(len(TableHooks.Columns)))
-
-	_,err := store.db.NewRaw(string(query), 
+	
+	_,err := store.db.NewRaw(insertHookQuery, 
 							hook.ID, 
 							hook.Name,
 							hook.Status,
@@ -97,12 +73,7 @@ func (store PostgresStore) DeleteHook(index string) (commons.Hook, error) {
 func (store PostgresStore) changeHookStatus(index string, status commons.HookStatus) (commons.Hook, error) {
 	var hook commons.Hook
 	
-	updateRaw := fmt.Sprintf("%s = ?, %s = ?",TableHooks.Columns["STATUS"],	TableHooks.Columns["DSTATUS"])
-	conditionRaw := fmt.Sprintf("id = ?")
-
-	query := updateQuery.Fill(TableHooks.Name, updateRaw, conditionRaw)
-	
-	_, err := store.db.NewRaw(string(query), string(status), "NOW()", index).Exec(context.Background(), &hook)
+	_, err := store.db.NewRaw(updateHookStatusQuery, string(status), "NOW()", index).Exec(context.Background(), &hook)
 
 	if err == sql.ErrNoRows {
 		return hook, nil

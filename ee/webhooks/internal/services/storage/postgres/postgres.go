@@ -112,6 +112,11 @@ func (store PostgresStore) Close() error {
 }
 
 
+func getLogInsertRequest(log commons.Log){
+	
+}
+
+
 func NewPostgresStoreProvider(db *bun.DB) PostgresStore {	
 	postgresStore := PostgresStore{
 		db: db,
