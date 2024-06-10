@@ -131,6 +131,22 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 						Ledger:   "default",
 						PageSize: ptr(pageSize),
 						Expand:   pointer.For("volumes"),
+						RequestBody: map[string]any{
+							"$and": []map[string]any{
+								{
+									"$match": map[string]any{
+										"source": "world",
+									},
+								},
+								{
+									"$not": map[string]any{
+										"$exists": map[string]any{
+											"metadata": "foo",
+										},
+									},
+								},
+							},
+						},
 					},
 				)
 				Expect(err).ToNot(HaveOccurred())
