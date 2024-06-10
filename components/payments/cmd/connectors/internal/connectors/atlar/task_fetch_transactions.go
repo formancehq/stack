@@ -72,69 +72,15 @@ func ingestPaymentsBatch(
 	batch := ingestion.PaymentBatch{}
 
 	for _, item := range pagedTransactions.Payload.Items {
-		if _, ok := supportedCurrenciesWithDecimal[*item.Amount.Currency]; !ok {
-			// Discard transactions with unsupported currencies
+		batchElement, err := atlarTransactionToPaymentBatchElement(connectorID, item)
+		if err != nil {
+			return err
+		}
+		if batchElement == nil {
 			continue
 		}
 
-		raw, err := json.Marshal(item)
-		if err != nil {
-			return err
-		}
-
-		paymentType := determinePaymentType(item)
-
-		itemAmount := item.Amount
-		amount, err := atlarTransactionAmountToPaymentAbsoluteAmount(*itemAmount.Value)
-		if err != nil {
-			return err
-		}
-
-		createdAt, err := ParseAtlarTimestamp(item.Created)
-		if err != nil {
-			return err
-		}
-
-		paymentId := models.PaymentID{
-			PaymentReference: models.PaymentReference{
-				Reference: item.ID,
-				Type:      paymentType,
-			},
-			ConnectorID: connectorID,
-		}
-
-		batchElement := ingestion.PaymentBatchElement{
-			Payment: &models.Payment{
-				ID:            paymentId,
-				Reference:     item.ID,
-				Type:          paymentType,
-				ConnectorID:   connectorID,
-				CreatedAt:     createdAt,
-				Status:        determinePaymentStatus(item),
-				Scheme:        determinePaymentScheme(item),
-				Amount:        amount,
-				InitialAmount: amount,
-				Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, *item.Amount.Currency),
-				Metadata:      ExtractPaymentMetadata(paymentId, item),
-				RawData:       raw,
-			},
-		}
-
-		if *itemAmount.Value >= 0 {
-			// DEBIT
-			batchElement.Payment.DestinationAccountID = &models.AccountID{
-				Reference:   *item.Account.ID,
-				ConnectorID: connectorID,
-			}
-		} else {
-			// CREDIT
-			batchElement.Payment.SourceAccountID = &models.AccountID{
-				Reference:   *item.Account.ID,
-				ConnectorID: connectorID,
-			}
-		}
-
-		batch = append(batch, batchElement)
+		batch = append(batch, *batchElement)
 	}
 
 	if err := ingester.IngestPayments(ctx, batch); err != nil {
@@ -142,6 +88,75 @@ func ingestPaymentsBatch(
 	}
 
 	return nil
+}
+
+func atlarTransactionToPaymentBatchElement(
+	connectorID models.ConnectorID,
+	transaction *atlar_models.Transaction,
+) (*ingestion.PaymentBatchElement, error) {
+	if _, ok := supportedCurrenciesWithDecimal[*transaction.Amount.Currency]; !ok {
+		// Discard transactions with unsupported currencies
+		return nil, nil
+	}
+
+	raw, err := json.Marshal(transaction)
+	if err != nil {
+		return nil, err
+	}
+
+	paymentType := determinePaymentType(transaction)
+
+	itemAmount := transaction.Amount
+	amount, err := atlarTransactionAmountToPaymentAbsoluteAmount(*itemAmount.Value)
+	if err != nil {
+		return nil, err
+	}
+
+	createdAt, err := ParseAtlarTimestamp(transaction.Created)
+	if err != nil {
+		return nil, err
+	}
+
+	paymentId := models.PaymentID{
+		PaymentReference: models.PaymentReference{
+			Reference: transaction.ID,
+			Type:      paymentType,
+		},
+		ConnectorID: connectorID,
+	}
+
+	batchElement := ingestion.PaymentBatchElement{
+		Payment: &models.Payment{
+			ID:            paymentId,
+			Reference:     transaction.ID,
+			Type:          paymentType,
+			ConnectorID:   connectorID,
+			CreatedAt:     createdAt,
+			Status:        determinePaymentStatus(transaction),
+			Scheme:        determinePaymentScheme(transaction),
+			Amount:        amount,
+			InitialAmount: amount,
+			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, *transaction.Amount.Currency),
+			Metadata:      ExtractPaymentMetadata(paymentId, transaction),
+			RawData:       raw,
+		},
+	}
+
+	if *itemAmount.Value >= 0 {
+		// DEBIT
+		batchElement.Payment.DestinationAccountID = &models.AccountID{
+			Reference:   *transaction.Account.ID,
+			ConnectorID: connectorID,
+		}
+	} else {
+		// CREDIT
+		batchElement.Payment.SourceAccountID = &models.AccountID{
+			Reference:   *transaction.Account.ID,
+			ConnectorID: connectorID,
+		}
+	}
+
+	return &batchElement, nil
 }
 
 func determinePaymentType(item *atlar_models.Transaction) models.PaymentType {
