@@ -81,6 +81,12 @@ type not struct {
 	expression Builder
 }
 
+func (s not) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]any{
+		"$not": s.expression,
+	})
+}
+
 var _ Builder = (*not)(nil)
 
 func (n not) Build(context Context) (string, []any, error) {

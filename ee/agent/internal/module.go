@@ -180,7 +180,7 @@ func runMembershipClient(lc fx.Lifecycle, membershipClient *membershipClient, lo
 				return err
 			}
 			go func() {
-				if err := membershipClient.Start(logging.ContextWithLogger(context.Background(), logger)); err != nil {
+				if err := membershipClient.Start(logging.ContextWithLogger(ctx, logger)); err != nil {
 					panic(err)
 				}
 			}()
@@ -193,7 +193,7 @@ func runMembershipClient(lc fx.Lifecycle, membershipClient *membershipClient, lo
 func runMembershipListener(lc fx.Lifecycle, client *membershipListener, logger logging.Logger) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			go client.Start(logging.ContextWithLogger(context.Background(), logger))
+			go client.Start(logging.ContextWithLogger(ctx, logger))
 			return nil
 		},
 	})
