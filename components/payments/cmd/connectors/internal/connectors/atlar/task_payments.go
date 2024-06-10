@@ -115,14 +115,10 @@ func InitiatePaymentTask(config Config, client *client.Client, transferID string
 
 		paymentID = &models.PaymentID{
 			PaymentReference: models.PaymentReference{
-				Reference: postCreditTransferResponse.Payload.ID,
+				Reference: postCreditTransferResponse.Payload.Reconciliation.ExpectedTransactionID,
 				Type:      models.PaymentTypePayOut,
 			},
 			ConnectorID: connectorID,
-		}
-		err = ingester.AddTransferInitiationPaymentID(ctx, transfer, paymentID, time.Now())
-		if err != nil {
-			return err
 		}
 
 		var taskDescriptor models.TaskDescriptor
@@ -234,7 +230,30 @@ func UpdatePaymentStatusTask(
 			return nil
 
 		case "RECONCILED":
-			// this is done
+			err = ingestAtlarTransaction(ctx,
+				ingester,
+				connectorID,
+				client,
+				getCreditTransferResponse.Payload.Reconciliation.BookedTransactionID,
+			)
+			if err != nil {
+				otel.RecordError(span, err)
+				return err
+			}
+
+			paymentID = &models.PaymentID{
+				PaymentReference: models.PaymentReference{
+					Reference: getCreditTransferResponse.Payload.Reconciliation.BookedTransactionID,
+					Type:      models.PaymentTypePayOut,
+				},
+				ConnectorID: connectorID,
+			}
+			err = ingester.AddTransferInitiationPaymentID(ctx, transfer, paymentID, time.Now())
+			if err != nil {
+				otel.RecordError(span, err)
+				return err
+			}
+
 			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessed, "", time.Now())
 			if err != nil {
 				otel.RecordError(span, err)
@@ -244,7 +263,6 @@ func UpdatePaymentStatusTask(
 			return nil
 
 		case "REJECTED", "FAILED", "RETURNED":
-			// this has failed
 			err = ingester.UpdateTransferInitiationPaymentsStatus(
 				ctx, transfer, paymentID, models.TransferInitiationStatusFailed,
 				fmt.Sprintf("paymant initiation status is \"%s\"", status), time.Now(),
@@ -332,4 +350,35 @@ func deserializeAtlarPaymentExternalID(serialized string) (string, int, error) {
 		return "", 0, errors.New("cannot deserialize malformed externalID")
 	}
 	return matches[1], attempts, nil
+}
+
+func ingestAtlarTransaction(
+	ctx context.Context,
+	ingester ingestion.Ingester,
+	connectorID models.ConnectorID,
+	client *client.Client,
+	transactionId string,
+) error {
+
+	transactionResponse, err := client.GetV1TransactionsID(ctx, transactionId)
+	if err != nil {
+		return err
+	}
+
+	batchElement, err := atlarTransactionToPaymentBatchElement(connectorID, transactionResponse.Payload)
+	if err != nil {
+		return err
+	}
+	if batchElement == nil {
+		return nil
+	}
+
+	batch := ingestion.PaymentBatch{*batchElement}
+
+	err = ingester.IngestPayments(ctx, batch)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
