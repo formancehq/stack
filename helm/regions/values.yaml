@@ -6,7 +6,7 @@ operator:
 
   image:
     repository: "ghcr.io/formancehq/operator"
-    tag: "v2.0.0-rc.33"
+    tag: "v2.0.0-rc.34"
   operator:
     disableWebhooks: false
     region: "private"
@@ -29,7 +29,7 @@ agent:
   enabled: false
 
   image:
-    tag: "v2.0.0-rc.33"
+    tag: "v2.0.0-rc.34"
   server:
     address: "app.formance.cloud:443"
     tls:
@@ -54,33 +54,33 @@ versions:
       search: v0.10.0
       auth: v0.4.4
       wallets: v0.4.6
-      webhooks: v2.0.0-rc.33
+      webhooks: v2.0.0-rc.34
       payments: v1.0.0-rc.5
       stargate: v0.1.10
-      gateway: v2.0.0-rc.33
+      gateway: v2.0.0-rc.34
       ledger: v1.10.14
-      operator-utils: v2.0.0-rc.33
+      operator-utils: v2.0.0-rc.34
     v1.0:
       orchestration: v0.2.1
       reconciliation: v0.1.0
       search: v0.10.0
       auth: v0.4.4
       wallets: v0.4.6
-      webhooks: v2.0.0-rc.33
+      webhooks: v2.0.0-rc.34
       payments: v1.0.0-rc.5
       stargate: v0.1.10
-      gateway: v2.0.0-rc.33
+      gateway: v2.0.0-rc.34
       ledger: v1.10.14
-      operator-utils: v2.0.0-rc.33
+      operator-utils: v2.0.0-rc.34
     v2.0:
-      ledger: v2.0.0-rc.33
-      search: v2.0.0-rc.33
-      stargate: v2.0.0-rc.33
-      auth: v2.0.0-rc.33
-      wallets: v2.0.0-rc.33
-      webhooks: v2.0.0-rc.33
-      gateway: v2.0.0-rc.33
-      payments: v2.0.0-rc.33
-      orchestration: v2.0.0-rc.33
-      reconciliation: v2.0.0-rc.33
-      operator-utils: v2.0.0-rc.33
+      ledger: v2.0.0-rc.34
+      search: v2.0.0-rc.34
+      stargate: v2.0.0-rc.34
+      auth: v2.0.0-rc.34
+      wallets: v2.0.0-rc.34
+      webhooks: v2.0.0-rc.34
+      gateway: v2.0.0-rc.34
+      payments: v2.0.0-rc.34
+      orchestration: v2.0.0-rc.34
+      reconciliation: v2.0.0-rc.34
+      operator-utils: v2.0.0-rc.34
