@@ -22,6 +22,12 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		})
 		Expect(err).To(BeNil())
 		Expect(createLedgerResponse.StatusCode).To(Equal(http.StatusNoContent))
+
+		_, err = Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+			Ledger: "another",
+		})
+		Expect(err).To(BeNil())
+		Expect(createLedgerResponse.StatusCode).To(Equal(http.StatusNoContent))
 	})
 	When("listing logs", func() {
 		var (
@@ -52,6 +58,27 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 						Timestamp: &timestamp1,
 					},
 					Ledger: "default",
+				},
+			)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
+
+			_, err = Client().Ledger.V2CreateTransaction(
+				TestContext(),
+				operations.V2CreateTransactionRequest{
+					V2PostTransaction: shared.V2PostTransaction{
+						Metadata: map[string]string{},
+						Postings: []shared.V2Posting{
+							{
+								Amount:      big.NewInt(100),
+								Asset:       "USD",
+								Source:      "world",
+								Destination: "foo:foo",
+							},
+						},
+						Timestamp: &timestamp1,
+					},
+					Ledger: "another",
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
