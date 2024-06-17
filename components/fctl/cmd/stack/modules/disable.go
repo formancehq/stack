@@ -25,7 +25,7 @@ func NewDisableController() *DisableController {
 }
 
 func NewDisableCommand() *cobra.Command {
-	return fctl.NewMembershipCommand("disable <module-name> --stack=<stack-id>)",
+	return fctl.NewStackCommand("disable <module-name>",
 		fctl.WithConfirmFlag(),
 		fctl.WithShortDescription("disable a module"),
 		fctl.WithAliases("dis", "d"),

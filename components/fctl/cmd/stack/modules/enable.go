@@ -26,7 +26,7 @@ func NewEnableController() *EnableController {
 }
 
 func NewEnableCommand() *cobra.Command {
-	return fctl.NewMembershipCommand("enable <module-name> --stack=<stack-id>)",
+	return fctl.NewStackCommand("enable <module-name>",
 		fctl.WithConfirmFlag(),
 		fctl.WithShortDescription("Enable a module"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
