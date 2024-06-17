@@ -24,5 +24,10 @@ func Module(ledgerURL string, ledgerName, chartPrefix string) fx.Option {
 		fx.Provide(func(ledger Ledger, chart *Chart) *Manager {
 			return NewManager(ledgerName, ledger, chart)
 		}),
+		fx.Invoke(func(manager *Manager, lc fx.Lifecycle) {
+			lc.Append(fx.Hook{
+				OnStart: manager.Init,
+			})
+		}),
 	)
 }

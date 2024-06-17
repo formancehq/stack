@@ -16,7 +16,6 @@ import (
 )
 
 var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, func() {
-
 	When("creating a wallet", func() {
 		var (
 			createWalletResponse *operations.CreateWalletResponse
