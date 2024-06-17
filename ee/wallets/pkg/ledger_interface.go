@@ -22,9 +22,10 @@ import (
 )
 
 type ListAccountsQuery struct {
-	Cursor   string
-	Limit    int
-	Metadata metadata.Metadata
+	Cursor        string
+	Limit         int
+	Metadata      metadata.Metadata
+	ExpandVolumes bool
 }
 
 type ListTransactionsQuery struct {
@@ -72,11 +73,11 @@ func (a AccountWithVolumesAndBalances) GetVolumes() map[string]shared.V2Volume {
 }
 
 type AccountsCursorResponseCursor struct {
-	Data     []Account `json:"data"`
-	HasMore  bool      `json:"hasMore"`
-	Next     *string   `json:"next,omitempty"`
-	PageSize int64     `json:"pageSize"`
-	Previous *string   `json:"previous,omitempty"`
+	Data     []AccountWithVolumesAndBalances `json:"data"`
+	HasMore  bool                            `json:"hasMore"`
+	Next     *string                         `json:"next,omitempty"`
+	PageSize int64                           `json:"pageSize"`
+	Previous *string                         `json:"previous,omitempty"`
 }
 
 func (c AccountsCursorResponseCursor) GetNext() *string {
@@ -87,7 +88,7 @@ func (c AccountsCursorResponseCursor) GetPrevious() *string {
 	return c.Previous
 }
 
-func (c AccountsCursorResponseCursor) GetData() []Account {
+func (c AccountsCursorResponseCursor) GetData() []AccountWithVolumesAndBalances {
 	return c.Data
 }
 
@@ -245,6 +246,9 @@ func (d DefaultLedger) ListAccounts(ctx context.Context, ledger string, q ListAc
 	}
 	if q.Cursor == "" {
 		req.PageSize = pointer.For(int64(q.Limit))
+		if q.ExpandVolumes {
+			req.Expand = pointer.For("volumes")
+		}
 
 		conditions := make([]query.Builder, 0)
 		if q.Metadata != nil {
@@ -273,10 +277,23 @@ func (d DefaultLedger) ListAccounts(ctx context.Context, ledger string, q ListAc
 	}
 
 	return &AccountsCursorResponseCursor{
-		Data: collectionutils.Map(ret.V2AccountsCursorResponse.Cursor.Data, func(from shared.V2Account) Account {
-			return Account{
-				Address:  from.Address,
-				Metadata: from.Metadata,
+		Data: collectionutils.Map(ret.V2AccountsCursorResponse.Cursor.Data, func(from shared.V2Account) AccountWithVolumesAndBalances {
+			return AccountWithVolumesAndBalances{
+				Account: Account{
+					Address:  from.Address,
+					Metadata: from.Metadata,
+				},
+				Balances: func() map[string]*big.Int {
+					if from.Volumes == nil {
+						return nil
+					}
+					ret := make(map[string]*big.Int)
+					for asset, volumes := range from.Volumes {
+						ret[asset] = big.NewInt(0).Sub(volumes.Input, volumes.Output)
+					}
+					return ret
+				}(),
+				Volumes: from.Volumes,
 			}
 		}),
 		HasMore:  ret.V2AccountsCursorResponse.Cursor.HasMore,

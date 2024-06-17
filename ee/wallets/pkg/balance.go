@@ -94,6 +94,7 @@ func (b Balances) Swap(i, j int) {
 func BalanceFromAccount(account interface {
 	MetadataOwner
 	GetAddress() string
+	GetBalances() map[string]*big.Int
 }) Balance {
 	expiresAtRaw := GetMetadata(account, MetadataKeyBalanceExpiresAt)
 	var expiresAt *time.Time

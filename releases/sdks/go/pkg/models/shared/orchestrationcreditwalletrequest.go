@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-type CreditWalletRequest struct {
+type OrchestrationCreditWalletRequest struct {
 	Amount Monetary `json:"amount"`
 	// The balance to credit
 	Balance *string `json:"balance,omitempty"`
@@ -18,53 +18,53 @@ type CreditWalletRequest struct {
 	Timestamp *time.Time        `json:"timestamp,omitempty"`
 }
 
-func (c CreditWalletRequest) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(c, "", false)
+func (o OrchestrationCreditWalletRequest) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(o, "", false)
 }
 
-func (c *CreditWalletRequest) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &c, "", false, false); err != nil {
+func (o *OrchestrationCreditWalletRequest) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &o, "", false, false); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (o *CreditWalletRequest) GetAmount() Monetary {
+func (o *OrchestrationCreditWalletRequest) GetAmount() Monetary {
 	if o == nil {
 		return Monetary{}
 	}
 	return o.Amount
 }
 
-func (o *CreditWalletRequest) GetBalance() *string {
+func (o *OrchestrationCreditWalletRequest) GetBalance() *string {
 	if o == nil {
 		return nil
 	}
 	return o.Balance
 }
 
-func (o *CreditWalletRequest) GetMetadata() map[string]string {
+func (o *OrchestrationCreditWalletRequest) GetMetadata() map[string]string {
 	if o == nil {
-		return nil
+		return map[string]string{}
 	}
 	return o.Metadata
 }
 
-func (o *CreditWalletRequest) GetReference() *string {
+func (o *OrchestrationCreditWalletRequest) GetReference() *string {
 	if o == nil {
 		return nil
 	}
 	return o.Reference
 }
 
-func (o *CreditWalletRequest) GetSources() []Subject {
+func (o *OrchestrationCreditWalletRequest) GetSources() []Subject {
 	if o == nil {
-		return nil
+		return []Subject{}
 	}
 	return o.Sources
 }
 
-func (o *CreditWalletRequest) GetTimestamp() *time.Time {
+func (o *OrchestrationCreditWalletRequest) GetTimestamp() *time.Time {
 	if o == nil {
 		return nil
 	}
