@@ -166,10 +166,9 @@ func (c *Extension) StopLedger() {
 func envVars(configuration LedgerConfiguration) []string {
 	return []string{
 		"BIND=:3068",
-		"STORAGE_DRIVER=postgres",
-		"STORAGE_POSTGRES_CONN_STRING=" + configuration.PostgresDSN,
-		"STORAGE_POSTGRES_MAX_OPEN_CONNS=50",
-		"STORAGE_POSTGRES_MAX_IDLE_CONNS=50",
+		"POSTGRES_URI=" + configuration.PostgresDSN,
+		"POSTGRES_MAX_OPEN_CONNS=50",
+		"POSTGRES_MAX_IDLE_CONNS=50",
 		"DEBUG=false",
 	}
 }
