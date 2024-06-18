@@ -10,7 +10,7 @@ import (
 
 type Store interface {
 	vm.Store
-	InsertLogs(ctx context.Context, logs ...*ledger.ChainedLog) error
+	InsertLogs(ctx context.Context, logs ...*ledger.ChainedLogWithContext) error
 	GetLastLog(ctx context.Context) (*ledger.ChainedLog, error)
 	GetLastTransaction(ctx context.Context) (*ledger.ExpandedTransaction, error)
 	ReadLogWithIdempotencyKey(ctx context.Context, key string) (*ledger.ChainedLog, error)

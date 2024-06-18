@@ -5,17 +5,19 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
+	"github.com/formancehq/ledger/internal/opentelemetry/tracer"
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 	"math/big"
 
 	"github.com/formancehq/stack/libs/go-libs/time"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 
-	storageerrors "github.com/formancehq/ledger/internal/storage/sqlutils"
-
 	ledger "github.com/formancehq/ledger/internal"
 	"github.com/formancehq/stack/libs/go-libs/query"
-	"github.com/lib/pq"
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
 )
@@ -32,7 +34,7 @@ type Logs struct {
 	Type           string              `bun:"type,type:log_type"`
 	Hash           []byte              `bun:"hash,type:bytea"`
 	Date           time.Time           `bun:"date,type:timestamptz"`
-	Data           []byte              `bun:"data,type:jsonb"`
+	Data           RawMessage              `bun:"data,type:jsonb"`
 	IdempotencyKey string              `bun:"idempotency_key,type:varchar(256),unique"`
 }
 
@@ -87,48 +89,37 @@ func (store *Store) logsQueryBuilder(q PaginatedQueryOptions[any]) func(*bun.Sel
 	}
 }
 
-func (store *Store) InsertLogs(ctx context.Context, activeLogs ...*ledger.ChainedLog) error {
-	return store.withTransaction(ctx, func(tx bun.Tx) error {
-		// Beware: COPY query is not supported by bun if the pgx driver is used.
-		stmt, err := tx.Prepare(pq.CopyInSchema(
-			store.bucket.name,
-			LogTableName,
-			"ledger", "id", "type", "hash", "date", "data", "idempotency_key",
-		))
-		if err != nil {
-			return storageerrors.PostgresError(err)
-		}
+func (store *Store) InsertLogs(ctx context.Context, activeLogs ...*ledger.ChainedLogWithContext) error {
+	links := make([]trace.Link, 0)
+	for _, log := range activeLogs {
+		links = append(links, trace.LinkFromContext(log.Context))
+	}
 
-		ls := make([]Logs, len(activeLogs))
-		for i, chainedLogs := range activeLogs {
-			data, err := json.Marshal(chainedLogs.Data)
+	ctx, span := tracer.Start(context.Background(), "InsertLogBatch", trace.WithLinks(links...))
+	defer span.End()
+
+	span.SetAttributes(attribute.Int("count", len(activeLogs)))
+
+	_, err := store.bucket.db.
+		NewInsert().
+		Model(pointer.For(collectionutils.Map(activeLogs, func(from *ledger.ChainedLogWithContext) Logs {
+			data, err := json.Marshal(from.Data)
 			if err != nil {
-				return errors.Wrap(err, "marshaling log data")
+				panic(err)
 			}
 
-			ls[i] = Logs{
+			return Logs{
 				Ledger:         store.name,
-				ID:             (*bunpaginate.BigInt)(chainedLogs.ID),
-				Type:           chainedLogs.Type.String(),
-				Hash:           chainedLogs.Hash,
-				Date:           chainedLogs.Date,
+				ID:             (*bunpaginate.BigInt)(from.ID),
+				Type:           from.Type.String(),
+				Hash:           from.Hash,
+				Date:           from.Date,
 				Data:           data,
-				IdempotencyKey: chainedLogs.IdempotencyKey,
+				IdempotencyKey: from.IdempotencyKey,
 			}
-
-			_, err = stmt.Exec(ls[i].Ledger, ls[i].ID, ls[i].Type, ls[i].Hash, ls[i].Date, RawMessage(ls[i].Data), chainedLogs.IdempotencyKey)
-			if err != nil {
-				return storageerrors.PostgresError(err)
-			}
-		}
-
-		_, err = stmt.Exec()
-		if err != nil {
-			return storageerrors.PostgresError(err)
-		}
-
-		return stmt.Close()
-	})
+		}))).
+		Exec(ctx)
+	return err
 }
 
 func (store *Store) GetLastLog(ctx context.Context) (*ledger.ChainedLog, error) {

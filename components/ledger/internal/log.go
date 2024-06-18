@@ -1,6 +1,7 @@
 package ledger
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/json"
 	"math/big"
@@ -71,10 +72,14 @@ func (lt *LogType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+type ChainedLogWithContext struct {
+	ChainedLog
+	Context context.Context
+}
+
 type ChainedLog struct {
 	Log
 	ID        *big.Int `json:"id"`
-	Projected bool     `json:"-"`
 	Hash      []byte   `json:"hash"`
 }
 
@@ -298,11 +303,14 @@ func HydrateLog(_type LogType, data []byte) (any, error) {
 
 type Accounts map[string]Account
 
-func ChainLogs(logs ...*Log) []*ChainedLog {
-	var previous *ChainedLog
-	ret := make([]*ChainedLog, 0)
+func ChainLogs(logs ...*Log) []*ChainedLogWithContext {
+	var previous *ChainedLogWithContext
+	ret := make([]*ChainedLogWithContext, 0)
 	for _, log := range logs {
-		next := log.ChainLog(previous)
+		next := &ChainedLogWithContext{
+			ChainedLog: *log.ChainLog(&previous.ChainedLog),
+			Context:    context.Background(),
+		}
 		ret = append(ret, next)
 		previous = next
 	}
