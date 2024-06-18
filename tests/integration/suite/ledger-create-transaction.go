@@ -513,6 +513,62 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(shared.V2ErrorsEnumMetadataOverride))
 		})
 	})
+	When("creating a tx with dry run mode", func() {
+		var (
+			err error
+			ret *operations.V2CreateTransactionResponse
+		)
+		BeforeEach(func() {
+			ret, err = Client().Ledger.V2CreateTransaction(
+				TestContext(),
+				operations.V2CreateTransactionRequest{
+					IdempotencyKey: ptr("testing"),
+					V2PostTransaction: shared.V2PostTransaction{
+						Metadata: map[string]string{},
+						Script: &shared.V2PostTransactionScript{
+							Plain: `send [COIN 100] (
+								source = @world
+								destination = @bob
+							)`,
+							Vars: map[string]interface{}{},
+						},
+					},
+					DryRun: pointer.For(true),
+					Ledger: "default",
+				},
+			)
+		})
+		It("should be ok", func() {
+			Expect(err).To(BeNil())
+		})
+		Then("creating a tx without dry run", func() {
+			var (
+				txResponse *operations.V2CreateTransactionResponse
+			)
+			BeforeEach(func() {
+				txResponse, err = Client().Ledger.V2CreateTransaction(
+					TestContext(),
+					operations.V2CreateTransactionRequest{
+						IdempotencyKey: ptr("testing"),
+						V2PostTransaction: shared.V2PostTransaction{
+							Metadata: map[string]string{},
+							Script: &shared.V2PostTransactionScript{
+								Plain: `send [COIN 100] (
+								source = @world
+								destination = @bob
+							)`,
+								Vars: map[string]interface{}{},
+							},
+						},
+						Ledger: "default",
+					},
+				)
+			})
+			It("Should return the same tx id as with dry run", func() {
+				Expect(txResponse.V2CreateTransactionResponse.Data.ID.Uint64()).To(Equal(ret.V2CreateTransactionResponse.Data.ID.Uint64()))
+			})
+		})
+	})
 })
 
 type GenericOpenAPIError interface {
