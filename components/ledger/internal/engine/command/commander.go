@@ -28,7 +28,7 @@ type Parameters struct {
 }
 
 type Commander struct {
-	*batching.Batcher[*ledger.ChainedLogWithContext]
+	*batching.Batcher[*ledger.ChainedLog]
 	store      Store
 	locker     Locker
 	compiler   *Compiler
@@ -121,9 +121,11 @@ func (commander *Commander) exec(ctx context.Context, parameters Parameters, scr
 
 			return program, nil
 		}()
+		if err != nil {
+			return nil, err
+		}
 
 		m := vm.NewMachine(*program)
-
 		if err := m.SetVarsFromJSON(script.Vars); err != nil {
 			return nil, NewErrCompilationFailed(err)
 		}
@@ -160,7 +162,7 @@ func (commander *Commander) exec(ctx context.Context, parameters Parameters, scr
 		defer unlock(ctx)
 
 		err = func() error {
-			_, span := tracer.Start(ctx, "ResolveBalances")
+			ctx, span := tracer.Start(ctx, "ResolveBalances")
 			defer span.End()
 
 			err = m.ResolveBalances(ctx, commander.store)

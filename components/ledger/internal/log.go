@@ -79,8 +79,8 @@ type ChainedLogWithContext struct {
 
 type ChainedLog struct {
 	Log
-	ID        *big.Int `json:"id"`
-	Hash      []byte   `json:"hash"`
+	ID   *big.Int `json:"id"`
+	Hash []byte   `json:"hash"`
 }
 
 func (l *ChainedLog) WithID(id uint64) *ChainedLog {
@@ -303,14 +303,11 @@ func HydrateLog(_type LogType, data []byte) (any, error) {
 
 type Accounts map[string]Account
 
-func ChainLogs(logs ...*Log) []*ChainedLogWithContext {
-	var previous *ChainedLogWithContext
-	ret := make([]*ChainedLogWithContext, 0)
+func ChainLogs(logs ...*Log) []*ChainedLog {
+	var previous *ChainedLog
+	ret := make([]*ChainedLog, 0)
 	for _, log := range logs {
-		next := &ChainedLogWithContext{
-			ChainedLog: *log.ChainLog(&previous.ChainedLog),
-			Context:    context.Background(),
-		}
+		next := log.ChainLog(previous)
 		ret = append(ret, next)
 		previous = next
 	}

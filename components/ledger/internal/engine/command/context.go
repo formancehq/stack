@@ -35,10 +35,7 @@ func (e *executionContext) AppendLog(ctx context.Context, log *ledger.Log) (*led
 		_, span := tracer.Start(ctx, "AppendLogToQueue")
 		defer span.End()
 
-		e.commander.Append(&ledger.ChainedLogWithContext{
-			ChainedLog: *chainedLog,
-			Context:    ctx,
-		}, func() {
+		e.commander.Append(chainedLog, func() {
 			close(done)
 		})
 	}()

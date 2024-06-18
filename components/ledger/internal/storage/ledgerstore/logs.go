@@ -5,12 +5,10 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
-	"github.com/formancehq/ledger/internal/opentelemetry/tracer"
+	"math/big"
+
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
-	"math/big"
 
 	"github.com/formancehq/stack/libs/go-libs/time"
 
@@ -34,7 +32,7 @@ type Logs struct {
 	Type           string              `bun:"type,type:log_type"`
 	Hash           []byte              `bun:"hash,type:bytea"`
 	Date           time.Time           `bun:"date,type:timestamptz"`
-	Data           RawMessage              `bun:"data,type:jsonb"`
+	Data           RawMessage          `bun:"data,type:jsonb"`
 	IdempotencyKey string              `bun:"idempotency_key,type:varchar(256),unique"`
 }
 
@@ -89,20 +87,20 @@ func (store *Store) logsQueryBuilder(q PaginatedQueryOptions[any]) func(*bun.Sel
 	}
 }
 
-func (store *Store) InsertLogs(ctx context.Context, activeLogs ...*ledger.ChainedLogWithContext) error {
-	links := make([]trace.Link, 0)
-	for _, log := range activeLogs {
-		links = append(links, trace.LinkFromContext(log.Context))
-	}
-
-	ctx, span := tracer.Start(context.Background(), "InsertLogBatch", trace.WithLinks(links...))
-	defer span.End()
-
-	span.SetAttributes(attribute.Int("count", len(activeLogs)))
+func (store *Store) InsertLogs(ctx context.Context, activeLogs ...*ledger.ChainedLog) error {
+	//links := make([]trace.Link, 0)
+	//for _, log := range activeLogs {
+	//	links = append(links, trace.LinkFromContext(log.Context))
+	//}
+	//
+	//ctx, span := tracer.Start(context.Background(), "InsertLogBatch", trace.WithLinks(links...))
+	//defer span.End()
+	//
+	//span.SetAttributes(attribute.Int("count", len(activeLogs)))
 
 	_, err := store.bucket.db.
 		NewInsert().
-		Model(pointer.For(collectionutils.Map(activeLogs, func(from *ledger.ChainedLogWithContext) Logs {
+		Model(pointer.For(collectionutils.Map(activeLogs, func(from *ledger.ChainedLog) Logs {
 			data, err := json.Marshal(from.Data)
 			if err != nil {
 				panic(err)
