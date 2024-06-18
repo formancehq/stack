@@ -101,6 +101,10 @@ func NewManager(
 	}
 }
 
+func (m *Manager) Init(ctx context.Context) error {
+	return m.client.EnsureLedgerExists(ctx, m.ledgerName)
+}
+
 //nolint:cyclop
 func (m *Manager) Debit(ctx context.Context, debit Debit) (*DebitHold, error) {
 	if err := debit.Validate(); err != nil {
@@ -156,7 +160,7 @@ func (m *Manager) Debit(ctx context.Context, debit Debit) (*DebitHold, error) {
 	}
 
 	postTransaction := PostTransaction{
-		Script: &shared.PostTransactionScript{
+		Script: &shared.V2PostTransactionScript{
 			Plain: BuildDebitWalletScript(metadata, sources...),
 			Vars: map[string]interface{}{
 				"destination": dest.getAccount(m.chart),
@@ -216,7 +220,7 @@ func (m *Manager) ConfirmHold(ctx context.Context, debit ConfirmHold) error {
 	}
 
 	postTransaction := PostTransaction{
-		Script: &shared.PostTransactionScript{
+		Script: &shared.V2PostTransactionScript{
 			Plain: BuildConfirmHoldScript(debit.Final, hold.Asset),
 			Vars:  vars,
 		},
@@ -242,7 +246,7 @@ func (m *Manager) VoidHold(ctx context.Context, void VoidHold) error {
 	}
 
 	postTransaction := PostTransaction{
-		Script: &shared.PostTransactionScript{
+		Script: &shared.V2PostTransactionScript{
 			Plain: BuildCancelHoldScript(hold.Asset),
 			Vars: map[string]interface{}{
 				"hold": m.chart.GetHoldAccount(void.HoldID),
@@ -271,7 +275,7 @@ func (m *Manager) Credit(ctx context.Context, credit Credit) error {
 	}
 
 	postTransaction := PostTransaction{
-		Script: &shared.PostTransactionScript{
+		Script: &shared.V2PostTransactionScript{
 			Plain: BuildCreditWalletScript(credit.Sources.ResolveAccounts(m.chart)...),
 			Vars: map[string]interface{}{
 				"destination": credit.destinationAccount(m.chart),
@@ -373,7 +377,7 @@ func (m *Manager) ListBalances(ctx context.Context, query ListQuery[ListBalances
 
 func (m *Manager) ListTransactions(ctx context.Context, query ListQuery[ListTransactions]) (*ListResponse[Transaction], error) {
 	var (
-		response *shared.TransactionsCursorResponseCursor
+		response *shared.V2TransactionsCursorResponseCursor
 		err      error
 	)
 	if query.PaginationToken == "" {
@@ -396,10 +400,10 @@ func (m *Manager) ListTransactions(ctx context.Context, query ListQuery[ListTran
 		return nil, errors.Wrap(err, "listing transactions")
 	}
 
-	return newListResponse[shared.Transaction, Transaction](response, func(tx shared.Transaction) Transaction {
+	return newListResponse[shared.V2ExpandedTransaction, Transaction](response, func(tx shared.V2ExpandedTransaction) Transaction {
 		return Transaction{
-			Transaction: tx,
-			Ledger:      m.ledgerName,
+			V2ExpandedTransaction: tx,
+			Ledger:                m.ledgerName,
 		}
 	}), nil
 }

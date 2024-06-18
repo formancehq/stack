@@ -40,9 +40,9 @@ func TestHoldsConfirm(t *testing.T) {
 				Balances: balances,
 			}, nil
 		}),
-		WithCreateTransaction(func(ctx context.Context, name string, postTransaction wallet.PostTransaction) (*shared.Transaction, error) {
+		WithCreateTransaction(func(ctx context.Context, name string, postTransaction wallet.PostTransaction) (*shared.V2Transaction, error) {
 			compareJSON(t, wallet.PostTransaction{
-				Script: &shared.PostTransactionScript{
+				Script: &shared.V2PostTransactionScript{
 					Plain: wallet.BuildConfirmHoldScript(false, "USD"),
 					Vars: map[string]interface{}{
 						"hold": testEnv.Chart().GetHoldAccount(hold.ID),
@@ -55,7 +55,7 @@ func TestHoldsConfirm(t *testing.T) {
 				},
 				Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.TransactionMetadata(nil)),
 			}, postTransaction)
-			return &shared.Transaction{}, nil
+			return &shared.V2Transaction{}, nil
 		}),
 	)
 	testEnv.Router().ServeHTTP(rec, req)
@@ -88,16 +88,16 @@ func TestHoldsPartialConfirm(t *testing.T) {
 				Balances: map[string]*big.Int{
 					"USD": big.NewInt(100),
 				},
-				Volumes: map[string]shared.Volume{
+				Volumes: map[string]shared.V2Volume{
 					"USD": {
 						Input: big.NewInt(100),
 					},
 				},
 			}, nil
 		}),
-		WithCreateTransaction(func(ctx context.Context, name string, postTransaction wallet.PostTransaction) (*shared.Transaction, error) {
+		WithCreateTransaction(func(ctx context.Context, name string, postTransaction wallet.PostTransaction) (*shared.V2Transaction, error) {
 			compareJSON(t, wallet.PostTransaction{
-				Script: &shared.PostTransactionScript{
+				Script: &shared.V2PostTransactionScript{
 					Plain: wallet.BuildConfirmHoldScript(false, "USD"),
 					Vars: map[string]interface{}{
 						"hold": testEnv.Chart().GetHoldAccount(hold.ID),
@@ -110,7 +110,7 @@ func TestHoldsPartialConfirm(t *testing.T) {
 				},
 				Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.TransactionMetadata(nil)),
 			}, postTransaction)
-			return &shared.Transaction{}, nil
+			return &shared.V2Transaction{}, nil
 		}),
 	)
 	testEnv.Router().ServeHTTP(rec, req)
@@ -143,7 +143,7 @@ func TestHoldsConfirmWithTooHighAmount(t *testing.T) {
 				Balances: map[string]*big.Int{
 					"USD": big.NewInt(100),
 				},
-				Volumes: map[string]shared.Volume{
+				Volumes: map[string]shared.V2Volume{
 					"USD": {
 						Input: big.NewInt(100),
 					},
@@ -181,7 +181,7 @@ func TestHoldsConfirmWithClosedHold(t *testing.T) {
 				Balances: map[string]*big.Int{
 					"USD": big.NewInt(0),
 				},
-				Volumes: map[string]shared.Volume{
+				Volumes: map[string]shared.V2Volume{
 					"USD": {
 						Input: big.NewInt(100),
 					},
@@ -223,16 +223,16 @@ func TestHoldsPartialConfirmWithFinal(t *testing.T) {
 				Balances: map[string]*big.Int{
 					"USD": big.NewInt(100),
 				},
-				Volumes: map[string]shared.Volume{
+				Volumes: map[string]shared.V2Volume{
 					"USD": {
 						Input: big.NewInt(100),
 					},
 				},
 			}, nil
 		}),
-		WithCreateTransaction(func(ctx context.Context, name string, script wallet.PostTransaction) (*shared.Transaction, error) {
+		WithCreateTransaction(func(ctx context.Context, name string, script wallet.PostTransaction) (*shared.V2Transaction, error) {
 			compareJSON(t, wallet.PostTransaction{
-				Script: &shared.PostTransactionScript{
+				Script: &shared.V2PostTransactionScript{
 					Plain: wallet.BuildConfirmHoldScript(true, "USD"),
 					Vars: map[string]interface{}{
 						"hold": testEnv.Chart().GetHoldAccount(hold.ID),
@@ -246,7 +246,7 @@ func TestHoldsPartialConfirmWithFinal(t *testing.T) {
 				},
 				Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.TransactionMetadata(nil)),
 			}, script)
-			return &shared.Transaction{}, nil
+			return &shared.V2Transaction{}, nil
 		}),
 	)
 	testEnv.Router().ServeHTTP(rec, req)
