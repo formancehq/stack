@@ -21,6 +21,12 @@ import (
 )
 
 const (
+	selectWaitingAttempts string = "SELECT "
+)
+
+
+
+const (
 	attemptPageSize int = 64
 )
 

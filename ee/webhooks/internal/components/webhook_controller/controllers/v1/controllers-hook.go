@@ -6,12 +6,10 @@ import (
 	"net/http"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/go-chi/chi/v5"
 
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 
-	"github.com/formancehq/webhooks/internal/commons"
 	controllersCommons "github.com/formancehq/webhooks/internal/components/webhook_controller/controllers/commons"
 	"github.com/formancehq/webhooks/internal/components/webhook_controller/controllers/utils"
 	r "github.com/formancehq/webhooks/internal/components/webhook_controller/routes"
@@ -261,15 +259,9 @@ func V1CreateHookController(database storeInterface.IStoreProvider, hook utils.V
 
 	newHook, err := controllersCommons.CreateHook(database, "", hook.EventTypes, hook.Endpoint, hook.Secret, true)
 
-		if err != nil {
-			return utils.InternalErrorResp[utils.V1Hook](err)
-		}
-
-	go func(){
-		_ = controllersCommons.SendEvent(database, commons.NewHookType, nil, &newHook)
-		//TODO(CriticPolitic) 
-		logging.Errorf("Controller:V1CreateHookController:SendEvent : %x", err)
-	}()	
+	if err != nil {
+		return utils.InternalErrorResp[utils.V1Hook](err)
+	}
 
 	return utils.SuccessResp(utils.ToV1Hook(newHook))
 
@@ -335,12 +327,6 @@ func V1DeleteHookController(database storeInterface.IStoreProvider, id string) u
 		return utils.NotFoundErrorResp[utils.V1Hook](errors.New(fmt.Sprintf("Hook (id : %s) doesn't exist", id)))
 	}
 
-	go func(){
-		_ = controllersCommons.SendEvent(database, commons.ChangeHookStatusType, nil, &hook)
-		//TODO(CriticPolitic)
-		logging.Errorf("Controller:V1DeleteHookController:SendEvent : %x", err)
-	}()	
-
 	return utils.SuccessResp(utils.ToV1Hook(hook))
 }
 
@@ -353,12 +339,6 @@ func V1ActiveHookController(database storeInterface.IStoreProvider, id string) u
 		return utils.NotFoundErrorResp[utils.V1Hook](errors.New(fmt.Sprintf("Hook (id : %s) doesn't exist", id)))
 	}
 
-	go func(){
-		_ = controllersCommons.SendEvent(database, commons.ChangeHookStatusType, nil, &hook)
-		//TODO(CriticPolitic)
-		logging.Errorf("Controller:V1ActiveHookController:SendEvent : %x", err)
-	}()	
-
 	return utils.SuccessResp(utils.ToV1Hook(hook))
 }
 
@@ -370,12 +350,6 @@ func V1DeactiveHookController(database storeInterface.IStoreProvider, id string)
 	if(hook.ID == ""){
 		return utils.NotFoundErrorResp[utils.V1Hook](errors.New(fmt.Sprintf("Hook (id : %s) doesn't exist", id)))
 	}
-
-	go func(){
-		_ = controllersCommons.SendEvent(database, commons.ChangeHookStatusType, nil, &hook)
-		//TODO(CriticPolitic)
-		logging.Errorf("Controller:V1DeactiveHookController:SendEvent : %x", err)
-	}()	
 
 	return utils.SuccessResp(utils.ToV1Hook(hook))
 }
@@ -393,12 +367,6 @@ func V1ChangeSecretController(database storeInterface.IStoreProvider, id, secret
 	if(hook.ID == ""){
 		return utils.NotFoundErrorResp[utils.V1Hook](errors.New(fmt.Sprintf("Hook (id : %s) doesn't exist", id)))
 	}
-
-	go func(){
-		_ = controllersCommons.SendEvent(database, commons.ChangeHookSecretType, nil, &hook)
-		//TODO(CriticPolitic)
-		logging.Errorf("Controller:V1ChangeSecretHookController:SendEvent : %x", err)
-	}()	
 
 	return utils.SuccessResp(utils.ToV1Hook(hook))
 

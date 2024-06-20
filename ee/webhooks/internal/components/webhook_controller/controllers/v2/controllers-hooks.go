@@ -349,11 +349,6 @@ func V2DeleteHookController(database storeInterface.IStoreProvider, id string) u
 		return utils.NotFoundErrorResp[commons.Hook](errors.New(fmt.Sprintf("Hook (id : %s) doesn't exist", id)))
 	}
 
-	go func(){
-		_ = controllersCommons.SendEvent(database, commons.ChangeHookStatusType, nil, &hook)
-		//TODO(log) What to do with err
-	}()	
-
 	return utils.SuccessResp(hook)
 }
 
@@ -365,11 +360,6 @@ func V2ActiveHookController(database storeInterface.IStoreProvider, id string) u
 	if(hook.ID == ""){
 		return utils.NotFoundErrorResp[commons.Hook](errors.New(fmt.Sprintf("Hook (id : %s) doesn't exist", id)))
 	}
-
-	go func(){
-		_ = controllersCommons.SendEvent(database, commons.ChangeHookStatusType, nil, &hook)
-		//TODO(log) What to do with err
-	}()	
 
 	return utils.SuccessResp(hook)
 }
@@ -383,11 +373,6 @@ func V2DeactiveHookController(database storeInterface.IStoreProvider, id string)
 	if(hook.ID == ""){
 		return utils.NotFoundErrorResp[commons.Hook](errors.New(fmt.Sprintf("Hook (id : %s) doesn't exist", id)))
 	}
-
-	go func(){
-		_ = controllersCommons.SendEvent(database, commons.ChangeHookStatusType, nil, &hook)
-		//TODO(log) What to do with err
-	}()	
 
 	return utils.SuccessResp(hook)
 }
@@ -405,11 +390,6 @@ func V2ChangeSecretController(database storeInterface.IStoreProvider, id, secret
 	if(hook.ID == ""){
 		return utils.NotFoundErrorResp[commons.Hook](errors.New(fmt.Sprintf("Hook (id : %s) doesn't exist", id)))
 	}
-
-	go func(){
-		_ = controllersCommons.SendEvent(database, commons.ChangeHookSecretType, nil, &hook)
-		//TODO(log) What to do with err
-	}()	
 
 	return utils.SuccessResp(hook)
 }
@@ -442,11 +422,6 @@ func V2ChangeEndpointController(database storeInterface.IStoreProvider, id, endp
 		return utils.NotFoundErrorResp[commons.Hook](errors.New(fmt.Sprintf("Hook (id : %s) doesn't exist", id)))
 	}
 
-	go func(){
-		_ = controllersCommons.SendEvent(database, commons.ChangeHookEndpointType, nil, &hook)
-		//TODO(log) What to do with err
-	}()	
-
 	return utils.SuccessResp(hook)
 }
 
@@ -461,11 +436,6 @@ func V2ChangeRetryController(database storeInterface.IStoreProvider, id string, 
 	if(hook.ID == ""){
 		return utils.NotFoundErrorResp[commons.Hook](errors.New(fmt.Sprintf("Hook (id : %s) doesn't exist", id)))
 	}
-
-	go func(){
-		_ = controllersCommons.SendEvent(database, commons.ChangeHookEndpointType, nil, &hook)
-		//TODO(log) What to do with err
-	}()	
 
 	return utils.SuccessResp(hook)
 }
