@@ -15,7 +15,6 @@ import (
 
 	ledger "github.com/formancehq/ledger/internal"
 	"github.com/formancehq/ledger/internal/bus"
-	"github.com/formancehq/ledger/internal/engine/utils/batching"
 	"github.com/formancehq/ledger/internal/machine/vm"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
@@ -28,7 +27,7 @@ type Parameters struct {
 }
 
 type Commander struct {
-	*batching.Batcher[*ledger.ChainedLog]
+	//*batching.Batcher[*ledger.ChainedLog]
 	store      Store
 	locker     Locker
 	compiler   *Compiler
@@ -48,7 +47,7 @@ func New(store Store, locker Locker, compiler *Compiler, referencer *Referencer,
 		compiler:   compiler,
 		lastTXID:   big.NewInt(-1),
 		referencer: referencer,
-		Batcher:    batching.NewBatcher(store.InsertLogs, 1, batchSize),
+		//Batcher:    batching.NewBatcher(store.InsertLogs, 1, batchSize),
 		monitor:    monitor,
 	}
 }
@@ -149,7 +148,7 @@ func (commander *Commander) exec(ctx context.Context, parameters Parameters, scr
 		}
 
 		unlock, err := func() (Unlock, error) {
-			_, span := tracer.Start(ctx, "Lock")
+			ctx, span := tracer.Start(ctx, "Lock")
 			defer span.End()
 
 			unlock, err := commander.locker.Lock(ctx, lockAccounts)
@@ -311,7 +310,7 @@ func (commander *Commander) RevertTransaction(ctx context.Context, parameters Pa
 }
 
 func (commander *Commander) Close() {
-	commander.Batcher.Close()
+	//commander.Batcher.Close()
 	commander.running.Wait()
 }
 

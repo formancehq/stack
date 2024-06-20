@@ -30,30 +30,31 @@ func (e *executionContext) AppendLog(ctx context.Context, log *ledger.Log) (*led
 		return e.commander.chainLog(log)
 	}()
 
-	done := make(chan struct{})
-	func() {
-		_, span := tracer.Start(ctx, "AppendLogToQueue")
-		defer span.End()
-
-		e.commander.Append(chainedLog, func() {
-			close(done)
-		})
-	}()
-
+	//done := make(chan struct{})
 	err := func() error {
-		_, span := tracer.Start(ctx, "WaitLogAck")
+		ctx, span := tracer.Start(ctx, "InsertLog")
 		defer span.End()
 
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		case <-done:
-			return nil
-		}
+		return e.commander.store.InsertLogs(ctx, chainedLog)
 	}()
 	if err != nil {
 		return nil, err
 	}
+
+	//err := func() error {
+	//	_, span := tracer.Start(ctx, "WaitLogAck")
+	//	defer span.End()
+	//
+	//	select {
+	//	case <-ctx.Done():
+	//		return ctx.Err()
+	//	case <-done:
+	//		return nil
+	//	}
+	//}()
+	//if err != nil {
+	//	return nil, err
+	//}
 
 	return chainedLog, nil
 }
