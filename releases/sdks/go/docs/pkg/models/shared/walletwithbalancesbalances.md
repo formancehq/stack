@@ -1,4 +1,4 @@
-# WalletBalances
+# WalletWithBalancesBalances
 
 
 ## Fields

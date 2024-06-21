@@ -45,7 +45,7 @@ func (o *CreditWalletRequest) GetBalance() *string {
 
 func (o *CreditWalletRequest) GetMetadata() map[string]string {
 	if o == nil {
-		return nil
+		return map[string]string{}
 	}
 	return o.Metadata
 }
@@ -59,7 +59,7 @@ func (o *CreditWalletRequest) GetReference() *string {
 
 func (o *CreditWalletRequest) GetSources() []Subject {
 	if o == nil {
-		return nil
+		return []Subject{}
 	}
 	return o.Sources
 }

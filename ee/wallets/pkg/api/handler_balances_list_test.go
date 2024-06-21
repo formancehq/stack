@@ -40,19 +40,17 @@ func TestBalancesList(t *testing.T) {
 
 				if page >= numberOfPages-1 {
 					return &wallet.AccountsCursorResponseCursor{
-						Data: make([]wallet.AccountWithVolumesAndBalances, 0),
+						Data: make([]wallet.Account, 0),
 					}, nil
 				}
 				hasMore := page < numberOfPages-1
 				previous := fmt.Sprint(page - 1)
 				next := fmt.Sprint(page + 1)
-				accounts := make([]wallet.AccountWithVolumesAndBalances, 0)
+				accounts := make([]wallet.Account, 0)
 				for _, balance := range balances[page*pageSize : (page+1)*pageSize] {
-					accounts = append(accounts, wallet.AccountWithVolumesAndBalances{
-						Account: wallet.Account{
-							Address:  testEnv.Chart().GetBalanceAccount(walletID, balance.Name),
-							Metadata: metadataWithExpectingTypesAfterUnmarshalling(balance.LedgerMetadata(walletID)),
-						},
+					accounts = append(accounts, wallet.Account{
+						Address:  testEnv.Chart().GetBalanceAccount(walletID, balance.Name),
+						Metadata: metadataWithExpectingTypesAfterUnmarshalling(balance.LedgerMetadata(walletID)),
 					})
 				}
 				return &wallet.AccountsCursorResponseCursor{
@@ -71,13 +69,11 @@ func TestBalancesList(t *testing.T) {
 				wallet.MetadataKeyWalletID:      walletID,
 			}, query.Metadata)
 
-			accounts := make([]wallet.AccountWithVolumesAndBalances, 0)
+			accounts := make([]wallet.Account, 0)
 			for _, balance := range balances[:pageSize] {
-				accounts = append(accounts, wallet.AccountWithVolumesAndBalances{
-					Account: wallet.Account{
-						Address:  testEnv.Chart().GetBalanceAccount(walletID, balance.Name),
-						Metadata: metadataWithExpectingTypesAfterUnmarshalling(balance.LedgerMetadata(walletID)),
-					},
+				accounts = append(accounts, wallet.Account{
+					Address:  testEnv.Chart().GetBalanceAccount(walletID, balance.Name),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(balance.LedgerMetadata(walletID)),
 				})
 			}
 			return &wallet.AccountsCursorResponseCursor{

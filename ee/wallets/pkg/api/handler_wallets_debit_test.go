@@ -289,49 +289,39 @@ func TestWalletsDebit(t *testing.T) {
 					require.Equal(t, query.Metadata, wallet.BalancesMetadataFilter(walletID))
 
 					return &wallet.AccountsCursorResponseCursor{
-						Data: []wallet.AccountWithVolumesAndBalances{
+						Data: []wallet.Account{
 							{
-								Account: wallet.Account{
-									Address: testEnv.Chart().GetBalanceAccount(walletID, "coupon2"),
-									Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.Balance{
-										Name:     "coupon2",
-										Priority: 10,
-									}.LedgerMetadata(walletID)),
-								},
+								Address: testEnv.Chart().GetBalanceAccount(walletID, "coupon2"),
+								Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.Balance{
+									Name:     "coupon2",
+									Priority: 10,
+								}.LedgerMetadata(walletID)),
 							},
 							{
-								Account: wallet.Account{
-									Address: testEnv.Chart().GetBalanceAccount(walletID, "coupon1"),
-									Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.Balance{
-										Name:      "coupon1",
-										ExpiresAt: ptr(time.Now().Add(5 * time.Second)),
-									}.LedgerMetadata(walletID)),
-								},
+								Address: testEnv.Chart().GetBalanceAccount(walletID, "coupon1"),
+								Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.Balance{
+									Name:      "coupon1",
+									ExpiresAt: ptr(time.Now().Add(5 * time.Second)),
+								}.LedgerMetadata(walletID)),
 							},
 							{
-								Account: wallet.Account{
-									Address: testEnv.Chart().GetBalanceAccount(walletID, "coupon3"),
-									Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.Balance{
-										Name:      "coupon3",
-										ExpiresAt: ptr(time.Now().Add(-time.Minute)),
-									}.LedgerMetadata(walletID)),
-								},
+								Address: testEnv.Chart().GetBalanceAccount(walletID, "coupon3"),
+								Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.Balance{
+									Name:      "coupon3",
+									ExpiresAt: ptr(time.Now().Add(-time.Minute)),
+								}.LedgerMetadata(walletID)),
 							},
 							{
-								Account: wallet.Account{
-									Address: testEnv.Chart().GetBalanceAccount(walletID, "coupon4"),
-									Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.Balance{
-										Name: "coupon4",
-									}.LedgerMetadata(walletID)),
-								},
+								Address: testEnv.Chart().GetBalanceAccount(walletID, "coupon4"),
+								Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.Balance{
+									Name: "coupon4",
+								}.LedgerMetadata(walletID)),
 							},
 							{
-								Account: wallet.Account{
-									Address: testEnv.Chart().GetBalanceAccount(walletID, "main"),
-									Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.Balance{
-										Name: "main",
-									}.LedgerMetadata(walletID)),
-								},
+								Address: testEnv.Chart().GetBalanceAccount(walletID, "main"),
+								Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.Balance{
+									Name: "main",
+								}.LedgerMetadata(walletID)),
 							},
 						},
 					}, nil

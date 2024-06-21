@@ -56,7 +56,6 @@ func NewDebitHold(walletID string, destination Subject, asset, description strin
 func DebitHoldFromLedgerAccount(account interface {
 	MetadataOwner
 	GetAddress() string
-	GetBalances() map[string]*big.Int
 }) DebitHold {
 	destination := metadata.UnmarshalValue[metadata.Metadata](account.GetMetadata()[MetadataKeyHoldSubject])
 

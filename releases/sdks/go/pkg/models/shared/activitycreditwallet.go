@@ -3,11 +3,11 @@
 package shared
 
 type ActivityCreditWallet struct {
-	Data *OrchestrationCreditWalletRequest `json:"data,omitempty"`
-	ID   *string                           `json:"id,omitempty"`
+	Data *CreditWalletRequest `json:"data,omitempty"`
+	ID   *string              `json:"id,omitempty"`
 }
 
-func (o *ActivityCreditWallet) GetData() *OrchestrationCreditWalletRequest {
+func (o *ActivityCreditWallet) GetData() *CreditWalletRequest {
 	if o == nil {
 		return nil
 	}

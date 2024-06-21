@@ -11,9 +11,8 @@ import (
 )
 
 type ListWallets struct {
-	Metadata       metadata.Metadata
-	Name           string
-	ExpandBalances bool
+	Metadata metadata.Metadata
+	Name     string
 }
 
 type PatchRequest struct {
@@ -34,22 +33,22 @@ func (c *CreateRequest) Bind(r *http.Request) error {
 }
 
 type Wallet struct {
-	ID        string              `json:"id"`
-	Name      string              `json:"name"`
-	Metadata  metadata.Metadata   `json:"metadata"`
-	CreatedAt time.Time           `json:"createdAt"`
-	Ledger    string              `json:"ledger"`
-	Balances  map[string]*big.Int `json:"balances,omitempty"`
+	ID        string            `json:"id"`
+	Name      string            `json:"name"`
+	Metadata  metadata.Metadata `json:"metadata"`
+	CreatedAt time.Time         `json:"createdAt"`
+	Ledger    string            `json:"ledger"`
 }
 
-func (w *Wallet) UnmarshalJSON(data []byte) error {
+type WithBalances struct {
+	Wallet
+	Balances map[string]*big.Int `json:"balances"`
+}
+
+func (w *WithBalances) UnmarshalJSON(data []byte) error {
 	type view struct {
-		ID        string            `json:"id"`
-		Name      string            `json:"name"`
-		Metadata  metadata.Metadata `json:"metadata"`
-		CreatedAt time.Time         `json:"createdAt"`
-		Ledger    string            `json:"ledger"`
-		Balances  struct {
+		Wallet
+		Balances struct {
 			Main ExpandedBalance `json:"main"`
 		} `json:"balances"`
 	}
@@ -57,33 +56,21 @@ func (w *Wallet) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
 	}
-	*w = Wallet{
-		ID:        v.ID,
-		Name:      v.Name,
-		Metadata:  v.Metadata,
-		CreatedAt: v.CreatedAt,
-		Ledger:    v.Ledger,
-		Balances:  v.Balances.Main.Assets,
+	*w = WithBalances{
+		Wallet:   v.Wallet,
+		Balances: v.Balances.Main.Assets,
 	}
 	return nil
 }
 
-func (w Wallet) MarshalJSON() ([]byte, error) {
+func (w WithBalances) MarshalJSON() ([]byte, error) {
 	return json.Marshal(struct {
-		ID        string            `json:"id"`
-		Name      string            `json:"name"`
-		Metadata  metadata.Metadata `json:"metadata"`
-		CreatedAt time.Time         `json:"createdAt"`
-		Ledger    string            `json:"ledger"`
-		Balances  struct {
+		Wallet
+		Balances struct {
 			Main ExpandedBalance `json:"main"`
 		} `json:"balances"`
 	}{
-		ID:        w.ID,
-		Name:      w.Name,
-		Metadata:  w.Metadata,
-		CreatedAt: w.CreatedAt,
-		Ledger:    w.Ledger,
+		Wallet: w.Wallet,
 		Balances: struct {
 			Main ExpandedBalance `json:"main"`
 		}{
@@ -115,15 +102,12 @@ func NewWallet(name, ledger string, m metadata.Metadata) Wallet {
 		Name:      name,
 		CreatedAt: time.Now().UTC().Round(time.Nanosecond),
 		Ledger:    ledger,
-		Balances:  map[string]*big.Int{},
 	}
 }
 
-func WithBalancesFromAccount(ledger string, account interface {
+func FromAccount(ledger string, account interface {
 	MetadataOwner
-	GetBalances() map[string]*big.Int
 }) Wallet {
-
 	createdAt, err := time.Parse(time.RFC3339Nano, GetMetadata(account, MetadataKeyCreatedAt))
 	if err != nil {
 		panic(err)
@@ -135,12 +119,15 @@ func WithBalancesFromAccount(ledger string, account interface {
 		Metadata:  ExtractCustomMetadata(account),
 		CreatedAt: createdAt,
 		Ledger:    ledger,
-		Balances: func() map[string]*big.Int {
-			ret := account.GetBalances()
-			if ret == nil {
-				return map[string]*big.Int{}
-			}
-			return ret
-		}(),
+	}
+}
+
+func WithBalancesFromAccount(ledger string, account interface {
+	MetadataOwner
+	GetBalances() map[string]*big.Int
+}) WithBalances {
+	return WithBalances{
+		Wallet:   FromAccount(ledger, account),
+		Balances: account.GetBalances(),
 	}
 }

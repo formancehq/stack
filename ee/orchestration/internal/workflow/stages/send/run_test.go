@@ -401,7 +401,7 @@ var (
 				}},
 				Returns: []any{
 					&shared.GetWalletResponse{
-						Data: shared.Wallet{
+						Data: shared.WalletWithBalances{
 							ID:     "wallet1",
 							Ledger: "default",
 						},
@@ -885,7 +885,7 @@ var (
 					ID: "bar",
 				}},
 				Returns: []any{&shared.GetWalletResponse{
-					Data: shared.Wallet{
+					Data: shared.WalletWithBalances{
 						ID:     "bar",
 						Ledger: "default",
 					},
@@ -942,7 +942,7 @@ var (
 					ID: "wallet",
 				}},
 				Returns: []any{&shared.GetWalletResponse{
-					Data: shared.Wallet{
+					Data: shared.WalletWithBalances{
 						Ledger: "ledger2",
 						ID:     "wallet",
 					},
@@ -1091,7 +1091,7 @@ var (
 					ID: "foo",
 				}},
 				Returns: []any{&shared.GetWalletResponse{
-					Data: shared.Wallet{
+					Data: shared.WalletWithBalances{
 						ID: "foo",
 						Metadata: map[string]string{
 							"stripeConnectID": "abcd",
@@ -1150,7 +1150,7 @@ var (
 					ID: "wallet",
 				}},
 				Returns: []any{&shared.GetWalletResponse{
-					Data: shared.Wallet{
+					Data: shared.WalletWithBalances{
 						ID:     "wallet",
 						Ledger: "ledger1",
 					},
@@ -1226,7 +1226,7 @@ var (
 					ID: "foo",
 				}},
 				Returns: []any{&shared.GetWalletResponse{
-					Data: shared.Wallet{
+					Data: shared.WalletWithBalances{
 						ID:     "foo",
 						Ledger: "default",
 					},
@@ -1238,7 +1238,7 @@ var (
 					ID: "bar",
 				}},
 				Returns: []any{&shared.GetWalletResponse{
-					Data: shared.Wallet{
+					Data: shared.WalletWithBalances{
 						Ledger: "default",
 						ID:     "bar",
 					},
@@ -1298,7 +1298,7 @@ var (
 					ID: "wallet1",
 				}},
 				Returns: []any{&shared.GetWalletResponse{
-					Data: shared.Wallet{
+					Data: shared.WalletWithBalances{
 						Ledger: "ledger1",
 						ID:     "wallet1",
 					},
@@ -1310,7 +1310,7 @@ var (
 					ID: "wallet2",
 				}},
 				Returns: []any{&shared.GetWalletResponse{
-					Data: shared.Wallet{
+					Data: shared.WalletWithBalances{
 						Ledger: "ledger2",
 						ID:     "wallet2",
 					},
@@ -1382,7 +1382,7 @@ var (
 					ID: "foo",
 				}},
 				Returns: []any{&shared.GetWalletResponse{
-					Data: shared.Wallet{
+					Data: shared.WalletWithBalances{
 						ID: "foo",
 						Metadata: map[string]string{
 							"stripeConnectID": "abcd",

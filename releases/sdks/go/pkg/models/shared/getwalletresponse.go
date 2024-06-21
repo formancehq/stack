@@ -3,12 +3,12 @@
 package shared
 
 type GetWalletResponse struct {
-	Data Wallet `json:"data"`
+	Data WalletWithBalances `json:"data"`
 }
 
-func (o *GetWalletResponse) GetData() Wallet {
+func (o *GetWalletResponse) GetData() WalletWithBalances {
 	if o == nil {
-		return Wallet{}
+		return WalletWithBalances{}
 	}
 	return o.Data
 }
