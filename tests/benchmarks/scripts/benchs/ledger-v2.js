@@ -7,15 +7,9 @@ import {startLedger, stopLedger} from 'k6/x/formancehq/benchmarks';
 import exec from 'k6/execution';
 
 export function setup() {
-    const stackURL = `${__ENV.STACK_URL}`;
-    if (!stackURL) {
-        return startLedger({
-            version: 'latest',
-        });
-    }
-    return {
-        url: stackURL,
-    }
+    return startLedger({
+        version: 'latest',
+    });
 }
 
 export let options = K6Options();

@@ -43,13 +43,11 @@ func TestWalletsList(t *testing.T) {
 				hasMore := page < numberOfPages-1
 				previous := fmt.Sprint(page - 1)
 				next := fmt.Sprint(page + 1)
-				accounts := make([]wallet.AccountWithVolumesAndBalances, 0)
+				accounts := make([]wallet.Account, 0)
 				for _, w := range wallets[page*pageSize : (page+1)*pageSize] {
-					accounts = append(accounts, wallet.AccountWithVolumesAndBalances{
-						Account: wallet.Account{
-							Address:  testEnv.Chart().GetMainBalanceAccount(w.ID),
-							Metadata: metadataWithExpectingTypesAfterUnmarshalling(w.LedgerMetadata()),
-						},
+					accounts = append(accounts, wallet.Account{
+						Address:  testEnv.Chart().GetMainBalanceAccount(w.ID),
+						Metadata: metadataWithExpectingTypesAfterUnmarshalling(w.LedgerMetadata()),
 					})
 				}
 
@@ -69,13 +67,11 @@ func TestWalletsList(t *testing.T) {
 			}, query.Metadata)
 
 			next := "1"
-			accounts := make([]wallet.AccountWithVolumesAndBalances, 0)
+			accounts := make([]wallet.Account, 0)
 			for _, w := range wallets[:pageSize] {
-				accounts = append(accounts, wallet.AccountWithVolumesAndBalances{
-					Account: wallet.Account{
-						Address:  testEnv.Chart().GetMainBalanceAccount(w.ID),
-						Metadata: metadataWithExpectingTypesAfterUnmarshalling(w.LedgerMetadata()),
-					},
+				accounts = append(accounts, wallet.Account{
+					Address:  testEnv.Chart().GetMainBalanceAccount(w.ID),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(w.LedgerMetadata()),
 				})
 			}
 
@@ -128,11 +124,9 @@ func TestWalletsListByName(t *testing.T) {
 			return &wallet.AccountsCursorResponseCursor{
 				PageSize: defaultLimit,
 				HasMore:  false,
-				Data: []wallet.AccountWithVolumesAndBalances{{
-					Account: wallet.Account{
-						Address:  testEnv.Chart().GetMainBalanceAccount(wallets[1].ID),
-						Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallets[1].LedgerMetadata()),
-					},
+				Data: []wallet.Account{{
+					Address:  testEnv.Chart().GetMainBalanceAccount(wallets[1].ID),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallets[1].LedgerMetadata()),
 				}},
 			}, nil
 		}),
@@ -172,11 +166,9 @@ func TestWalletsListFilterMetadata(t *testing.T) {
 
 			return &wallet.AccountsCursorResponseCursor{
 				PageSize: defaultLimit,
-				Data: []wallet.AccountWithVolumesAndBalances{{
-					Account: wallet.Account{
-						Address:  testEnv.Chart().GetMainBalanceAccount(wallets[2].ID),
-						Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallets[2].LedgerMetadata()),
-					},
+				Data: []wallet.Account{{
+					Address:  testEnv.Chart().GetMainBalanceAccount(wallets[2].ID),
+					Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallets[2].LedgerMetadata()),
 				}},
 			}, nil
 		}),
