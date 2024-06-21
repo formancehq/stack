@@ -332,13 +332,11 @@ func (m *Manager) ListWallets(ctx context.Context, query ListQuery[ListWallets])
 			}
 			return metadata
 		},
-		ExpandVolumes: query.Payload.ExpandBalances,
 	}, func(account interface {
 		MetadataOwner
 		GetAddress() string
-		GetBalances() map[string]*big.Int
 	}) Wallet {
-		return WithBalancesFromAccount(m.ledgerName, account)
+		return FromAccount(m.ledgerName, account)
 	})
 }
 
@@ -449,7 +447,7 @@ func (m *Manager) UpdateWallet(ctx context.Context, id string, data *PatchReques
 	return nil
 }
 
-func (m *Manager) GetWallet(ctx context.Context, id string) (*Wallet, error) {
+func (m *Manager) GetWallet(ctx context.Context, id string) (*WithBalances, error) {
 	account, err := m.client.GetAccount(
 		ctx,
 		m.ledgerName,
@@ -480,7 +478,6 @@ func (m *Manager) GetWalletSummary(ctx context.Context, id string) (*Summary, er
 	}, func(src interface {
 		MetadataOwner
 		GetAddress() string
-		GetBalances() map[string]*big.Int
 	}) ExpandedBalance {
 		account, err := m.client.GetAccount(ctx, m.ledgerName, src.GetAddress())
 		if err != nil {
@@ -532,7 +529,6 @@ func (m *Manager) GetWalletSummary(ctx context.Context, id string) (*Summary, er
 	}, func(src interface {
 		MetadataOwner
 		GetAddress() string
-		GetBalances() map[string]*big.Int
 	}) ExpandedDebitHold {
 		account, err := m.client.GetAccount(ctx, m.ledgerName, src.GetAddress())
 		if err != nil {
@@ -607,14 +603,12 @@ func (m *Manager) GetBalance(ctx context.Context, walletID string, balanceName s
 
 type mapAccountListQuery struct {
 	Pagination
-	Metadata      func() metadata.Metadata
-	ExpandVolumes bool
+	Metadata func() metadata.Metadata
 }
 
 func mapAccountList[TO any](ctx context.Context, r *Manager, query mapAccountListQuery, mapper mapper[interface {
 	MetadataOwner
 	GetAddress() string
-	GetBalances() map[string]*big.Int
 }, TO]) (*ListResponse[TO], error) {
 	var (
 		cursor *AccountsCursorResponseCursor
@@ -622,9 +616,8 @@ func mapAccountList[TO any](ctx context.Context, r *Manager, query mapAccountLis
 	)
 	if query.PaginationToken == "" {
 		cursor, err = r.client.ListAccounts(ctx, r.ledgerName, ListAccountsQuery{
-			Limit:         query.Limit,
-			Metadata:      query.Metadata(),
-			ExpandVolumes: query.ExpandVolumes,
+			Limit:    query.Limit,
+			Metadata: query.Metadata(),
 		})
 	} else {
 		cursor, err = r.client.ListAccounts(ctx, r.ledgerName, ListAccountsQuery{
@@ -635,7 +628,7 @@ func mapAccountList[TO any](ctx context.Context, r *Manager, query mapAccountLis
 		return nil, err
 	}
 
-	return newListResponse[AccountWithVolumesAndBalances, TO](cursor, func(item AccountWithVolumesAndBalances) TO {
+	return newListResponse[Account, TO](cursor, func(item Account) TO {
 		return mapper(&item)
 	}), nil
 }
@@ -645,9 +638,7 @@ const maxPageSize = 100
 func fetchAndMapAllAccounts[TO any](ctx context.Context, r *Manager, md metadata.Metadata, mapper mapper[interface {
 	MetadataOwner
 	GetAddress() string
-	GetBalances() map[string]*big.Int
 }, TO]) ([]TO, error) {
-
 	ret := make([]TO, 0)
 	query := mapAccountListQuery{
 		Metadata: func() metadata.Metadata {

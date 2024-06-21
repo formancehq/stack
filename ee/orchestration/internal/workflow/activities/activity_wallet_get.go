@@ -28,7 +28,7 @@ func (a Activities) GetWallet(ctx context.Context, request GetWalletRequest) (*s
 
 var GetWalletActivity = Activities{}.GetWallet
 
-func GetWallet(ctx workflow.Context, id string) (*shared.Wallet, error) {
+func GetWallet(ctx workflow.Context, id string) (*shared.WalletWithBalances, error) {
 	ret := &shared.GetWalletResponse{}
 	if err := executeActivity(ctx, GetWalletActivity, ret, GetWalletRequest{
 		ID: id,

@@ -42,9 +42,10 @@ func TestWalletsGet(t *testing.T) {
 	testEnv.Router().ServeHTTP(rec, req)
 
 	require.Equal(t, http.StatusOK, rec.Result().StatusCode)
-	walletWithBalances := wallet.Wallet{}
+	walletWithBalances := wallet.WithBalances{}
 	readResponse(t, rec, &walletWithBalances)
-	cp := w
-	cp.Balances = balances
-	require.Equal(t, cp, walletWithBalances)
+	require.Equal(t, wallet.WithBalances{
+		Wallet:   w,
+		Balances: balances,
+	}, walletWithBalances)
 }

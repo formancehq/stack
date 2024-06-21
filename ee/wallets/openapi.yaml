@@ -111,13 +111,6 @@ paths:
         schema:
           type: string
           example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
-      - name: expand
-        in: query
-        example: "balances"
-        schema:
-          type: string
-          items:
-            type: string
       tags:
       - Wallets
       responses:
@@ -530,6 +523,31 @@ components:
       - id
       - metadata
       - createdAt
+      - ledger
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique ID of the wallet.
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          description: Metadata associated with the wallet.
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        ledger:
+          type: string
+    WalletWithBalances:
+      type: object
+      required:
+      - name
+      - id
+      - metadata
+      - createdAt
       - balances
       - ledger
       properties:
@@ -627,7 +645,7 @@ components:
       - data
       properties:
         data:
-          $ref: '#/components/schemas/Wallet'
+          $ref: '#/components/schemas/WalletWithBalances'
     DebitWalletResponse:
       type: object
       required:
@@ -858,14 +876,12 @@ components:
           additionalProperties:
             type: string
           description: Metadata associated with the wallet.
-          nullable: true
         reference:
           type: string
         sources:
           type: array
           items:
             $ref: '#/components/schemas/Subject'
-          nullable: true
         balance:
           type: string
           description: The balance to credit
@@ -954,41 +970,36 @@ components:
     GetWalletSummaryResponse:
       type: object
       required:
-        - data
+      - balances
+      - availableFunds
+      - expiredFunds
+      - expirableFunds
+      - holdFunds
       properties:
-        data:
+        balances:
+          type: array
+          items:
+            $ref: '#/components/schemas/BalanceWithAssets'
+        availableFunds:
           type: object
-          required:
-          - balances
-          - availableFunds
-          - expiredFunds
-          - expirableFunds
-          - holdFunds
-          properties:
-            balances:
-              type: array
-              items:
-                $ref: '#/components/schemas/BalanceWithAssets'
-            availableFunds:
-              type: object
-              additionalProperties:
-                type: integer
-                format: bigint
-            expiredFunds:
-              type: object
-              additionalProperties:
-                type: integer
-                format: bigint
-            expirableFunds:
-              type: object
-              additionalProperties:
-                type: integer
-                format: bigint
-            holdFunds:
-              type: object
-              additionalProperties:
-                type: integer
-                format: bigint
+          additionalProperties:
+            type: integer
+            format: bigint
+        expiredFunds:
+          type: object
+          additionalProperties:
+            type: integer
+            format: bigint
+        expirableFunds:
+          type: object
+          additionalProperties:
+            type: integer
+            format: bigint
+        holdFunds:
+          type: object
+          additionalProperties:
+            type: integer
+            format: bigint
     ListBalancesResponse:
       type: object
       required:
