@@ -264,5 +264,39 @@ var _ = Describe("LedgerController", func() {
 				})
 			})
 		})
+		Context("With database connection pool settings", func() {
+			var connectionPoolSettings *v1beta1.Settings
+			BeforeEach(func() {
+				connectionPoolSettings = settings.New(uuid.NewString(), "modules.ledger.database.connection-pool", "max-idle=10, max-idle-time=10s, max-open=10", stack.Name)
+			})
+			JustBeforeEach(func() {
+				Expect(Create(connectionPoolSettings)).To(Succeed())
+			})
+			AfterEach(func() {
+				Expect(Delete(connectionPoolSettings)).To(Succeed())
+			})
+			It("Should configure the deployment with appropriate env vars", func() {
+				deployment := &appsv1.Deployment{}
+				Eventually(func(g Gomega) []corev1.EnvVar {
+					g.Expect(Get(core.GetNamespacedResourceName(stack.Name, "ledger"), deployment)).To(Succeed())
+					return deployment.Spec.Template.Spec.Containers[0].Env
+				}).Should(
+					ContainElements(
+						corev1.EnvVar{
+							Name:  "POSTGRES_MAX_IDLE_CONNS",
+							Value: "10",
+						},
+						corev1.EnvVar{
+							Name:  "POSTGRES_CONN_MAX_IDLE_TIME",
+							Value: "10s",
+						},
+						corev1.EnvVar{
+							Name:  "POSTGRES_CONN_MAX_OPEN_CONNS",
+							Value: "10",
+						},
+					),
+				)
+			})
+		})
 	})
 })
