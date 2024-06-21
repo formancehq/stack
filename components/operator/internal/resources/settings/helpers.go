@@ -258,6 +258,7 @@ func GetMap(ctx core.Context, stack string, keys ...string) (map[string]string, 
 	ret := make(map[string]string)
 	parts := strings.Split(*value, ",")
 	for _, part := range parts {
+		part := strings.TrimSpace(part)
 		parts := strings.SplitN(part, "=", 2)
 		ret[parts[0]] = parts[1]
 	}
@@ -265,6 +266,8 @@ func GetMap(ctx core.Context, stack string, keys ...string) (map[string]string, 
 	return ret, nil
 }
 
+// TODO(gfyrag): GetAs only allow to map to structure containing only strings.
+// With a bit of reflection, we could be able to have a more smart mapping to structure with usefull types.
 func GetAs[T any](ctx core.Context, stack string, keys ...string) (*T, error) {
 	m, err := GetMap(ctx, stack, keys...)
 	if err != nil {
