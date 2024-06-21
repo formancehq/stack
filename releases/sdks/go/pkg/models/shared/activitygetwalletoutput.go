@@ -3,12 +3,12 @@
 package shared
 
 type ActivityGetWalletOutput struct {
-	Data WalletWithBalances `json:"data"`
+	Data Wallet `json:"data"`
 }
 
-func (o *ActivityGetWalletOutput) GetData() WalletWithBalances {
+func (o *ActivityGetWalletOutput) GetData() Wallet {
 	if o == nil {
-		return WalletWithBalances{}
+		return Wallet{}
 	}
 	return o.Data
 }

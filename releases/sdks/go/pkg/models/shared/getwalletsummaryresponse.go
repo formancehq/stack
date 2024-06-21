@@ -7,7 +7,7 @@ import (
 	"math/big"
 )
 
-type GetWalletSummaryResponse struct {
+type GetWalletSummaryResponseData struct {
 	AvailableFunds map[string]*big.Int `json:"availableFunds"`
 	Balances       []BalanceWithAssets `json:"balances"`
 	ExpirableFunds map[string]*big.Int `json:"expirableFunds"`
@@ -15,48 +15,59 @@ type GetWalletSummaryResponse struct {
 	HoldFunds      map[string]*big.Int `json:"holdFunds"`
 }
 
-func (g GetWalletSummaryResponse) MarshalJSON() ([]byte, error) {
+func (g GetWalletSummaryResponseData) MarshalJSON() ([]byte, error) {
 	return utils.MarshalJSON(g, "", false)
 }
 
-func (g *GetWalletSummaryResponse) UnmarshalJSON(data []byte) error {
+func (g *GetWalletSummaryResponseData) UnmarshalJSON(data []byte) error {
 	if err := utils.UnmarshalJSON(data, &g, "", false, false); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (o *GetWalletSummaryResponse) GetAvailableFunds() map[string]*big.Int {
+func (o *GetWalletSummaryResponseData) GetAvailableFunds() map[string]*big.Int {
 	if o == nil {
 		return map[string]*big.Int{}
 	}
 	return o.AvailableFunds
 }
 
-func (o *GetWalletSummaryResponse) GetBalances() []BalanceWithAssets {
+func (o *GetWalletSummaryResponseData) GetBalances() []BalanceWithAssets {
 	if o == nil {
 		return []BalanceWithAssets{}
 	}
 	return o.Balances
 }
 
-func (o *GetWalletSummaryResponse) GetExpirableFunds() map[string]*big.Int {
+func (o *GetWalletSummaryResponseData) GetExpirableFunds() map[string]*big.Int {
 	if o == nil {
 		return map[string]*big.Int{}
 	}
 	return o.ExpirableFunds
 }
 
-func (o *GetWalletSummaryResponse) GetExpiredFunds() map[string]*big.Int {
+func (o *GetWalletSummaryResponseData) GetExpiredFunds() map[string]*big.Int {
 	if o == nil {
 		return map[string]*big.Int{}
 	}
 	return o.ExpiredFunds
 }
 
-func (o *GetWalletSummaryResponse) GetHoldFunds() map[string]*big.Int {
+func (o *GetWalletSummaryResponseData) GetHoldFunds() map[string]*big.Int {
 	if o == nil {
 		return map[string]*big.Int{}
 	}
 	return o.HoldFunds
+}
+
+type GetWalletSummaryResponse struct {
+	Data GetWalletSummaryResponseData `json:"data"`
+}
+
+func (o *GetWalletSummaryResponse) GetData() GetWalletSummaryResponseData {
+	if o == nil {
+		return GetWalletSummaryResponseData{}
+	}
+	return o.Data
 }

@@ -7,7 +7,19 @@ import (
 	"time"
 )
 
+type Balances struct {
+	Main V2AssetHolder `json:"main"`
+}
+
+func (o *Balances) GetMain() V2AssetHolder {
+	if o == nil {
+		return V2AssetHolder{}
+	}
+	return o.Main
+}
+
 type V2Wallet struct {
+	Balances  Balances  `json:"balances"`
 	CreatedAt time.Time `json:"createdAt"`
 	// The unique ID of the wallet.
 	ID     string `json:"id"`
@@ -26,6 +38,13 @@ func (v *V2Wallet) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	return nil
+}
+
+func (o *V2Wallet) GetBalances() Balances {
+	if o == nil {
+		return Balances{}
+	}
+	return o.Balances
 }
 
 func (o *V2Wallet) GetCreatedAt() time.Time {

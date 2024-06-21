@@ -9,8 +9,9 @@ import (
 func (m *MainHandler) listWalletsHandler(w http.ResponseWriter, r *http.Request) {
 	query := readPaginatedRequest[wallet.ListWallets](r, func(r *http.Request) wallet.ListWallets {
 		return wallet.ListWallets{
-			Metadata: getQueryMap(r.URL.Query(), "metadata"),
-			Name:     r.URL.Query().Get("name"),
+			Metadata:       getQueryMap(r.URL.Query(), "metadata"),
+			Name:           r.URL.Query().Get("name"),
+			ExpandBalances: r.URL.Query().Get("expand") == "balances",
 		}
 	})
 	response, err := m.manager.ListWallets(r.Context(), query)

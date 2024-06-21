@@ -747,6 +747,7 @@ func main() {
 
     request := operations.ListWalletsRequest{
         Cursor: v2.String("aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="),
+        Expand: v2.String("balances"),
         Metadata: map[string]string{
             "admin": "true",
         },

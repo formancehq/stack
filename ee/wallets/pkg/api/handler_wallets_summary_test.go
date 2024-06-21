@@ -92,31 +92,41 @@ func TestWalletSummary(t *testing.T) {
 			switch {
 			case query.Metadata[wallet.MetadataKeyWalletID] == w.ID:
 				return &wallet.AccountsCursorResponseCursor{
-					Data: []wallet.Account{
+					Data: []wallet.AccountWithVolumesAndBalances{
 						{
-							Address:  testEnv.Chart().GetMainBalanceAccount(w.ID),
-							Metadata: metadataWithExpectingTypesAfterUnmarshalling(w.LedgerMetadata()),
+							Account: wallet.Account{
+								Address:  testEnv.Chart().GetMainBalanceAccount(w.ID),
+								Metadata: metadataWithExpectingTypesAfterUnmarshalling(w.LedgerMetadata()),
+							},
 						},
 						{
-							Address:  testEnv.Chart().GetBalanceAccount(w.ID, "coupon1"),
-							Metadata: metadataWithExpectingTypesAfterUnmarshalling(coupon1Balance.LedgerMetadata(w.ID)),
+							Account: wallet.Account{
+								Address:  testEnv.Chart().GetBalanceAccount(w.ID, "coupon1"),
+								Metadata: metadataWithExpectingTypesAfterUnmarshalling(coupon1Balance.LedgerMetadata(w.ID)),
+							},
 						},
 						{
-							Address:  testEnv.Chart().GetBalanceAccount(w.ID, "coupon2"),
-							Metadata: metadataWithExpectingTypesAfterUnmarshalling(coupon2Balance.LedgerMetadata(w.ID)),
+							Account: wallet.Account{
+								Address:  testEnv.Chart().GetBalanceAccount(w.ID, "coupon2"),
+								Metadata: metadataWithExpectingTypesAfterUnmarshalling(coupon2Balance.LedgerMetadata(w.ID)),
+							},
 						},
 					},
 				}, nil
 			case query.Metadata[wallet.MetadataKeyHoldWalletID] == w.ID:
 				return &wallet.AccountsCursorResponseCursor{
-					Data: []wallet.Account{
+					Data: []wallet.AccountWithVolumesAndBalances{
 						{
-							Address:  testEnv.Chart().GetHoldAccount(hold1.ID),
-							Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold1.LedgerMetadata(testEnv.Chart())),
+							Account: wallet.Account{
+								Address:  testEnv.Chart().GetHoldAccount(hold1.ID),
+								Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold1.LedgerMetadata(testEnv.Chart())),
+							},
 						},
 						{
-							Address:  testEnv.Chart().GetHoldAccount(hold2.ID),
-							Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold2.LedgerMetadata(testEnv.Chart())),
+							Account: wallet.Account{
+								Address:  testEnv.Chart().GetHoldAccount(hold2.ID),
+								Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold2.LedgerMetadata(testEnv.Chart())),
+							},
 						},
 					},
 				}, nil

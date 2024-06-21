@@ -878,6 +878,7 @@ components:
         - id
         - metadata
         - createdAt
+        - balances
         - ledger
       properties:
         id:
@@ -886,14 +887,21 @@ components:
           description: The unique ID of the wallet.
         metadata:
           type: object
+          description: Metadata associated with the wallet.
           additionalProperties:
             type: string
-          description: Metadata associated with the wallet.
         name:
           type: string
         createdAt:
           type: string
           format: date-time
+        balances:
+          type: object
+          required:
+            - main
+          properties:
+            main:
+              $ref: '#/components/schemas/AssetHolder'
         ledger:
           type: string
     Cursor:
@@ -1341,41 +1349,7 @@ components:
         - data
       properties:
         data:
-          $ref: '#/components/schemas/WalletWithBalances'
-
-    WalletWithBalances:
-      type: object
-      required:
-        - name
-        - id
-        - metadata
-        - createdAt
-        - balances
-        - ledger
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: The unique ID of the wallet.
-        metadata:
-          type: object
-          description: Metadata associated with the wallet.
-          additionalProperties:
-            type: string
-        name:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        balances:
-          type: object
-          required:
-            - main
-          properties:
-            main:
-              $ref: '#/components/schemas/AssetHolder'
-        ledger:
-          type: string
+          $ref: '#/components/schemas/Wallet'
 
     AssetHolder:
       type: object

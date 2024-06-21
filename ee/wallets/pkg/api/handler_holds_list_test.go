@@ -39,11 +39,13 @@ func TestHoldsList(t *testing.T) {
 				wallet.MetadataKeyWalletSpecType: wallet.HoldWallet,
 			}, query.Metadata)
 
-			accounts := make([]wallet.Account, 0)
+			accounts := make([]wallet.AccountWithVolumesAndBalances, 0)
 			for _, hold := range holds[:pageSize] {
-				accounts = append(accounts, wallet.Account{
-					Address:  testEnv.Chart().GetMainBalanceAccount(hold.ID),
-					Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
+				accounts = append(accounts, wallet.AccountWithVolumesAndBalances{
+					Account: wallet.Account{
+						Address:  testEnv.Chart().GetMainBalanceAccount(hold.ID),
+						Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
+					},
 				})
 			}
 
@@ -91,11 +93,13 @@ func TestHoldsListWithPagination(t *testing.T) {
 				hasMore := page < numberOfPages-1
 				previous := fmt.Sprint(page - 1)
 				next := fmt.Sprint(page + 1)
-				accounts := make([]wallet.Account, 0)
+				accounts := make([]wallet.AccountWithVolumesAndBalances, 0)
 				for _, hold := range holds[page*pageSize : (page+1)*pageSize] {
-					accounts = append(accounts, wallet.Account{
-						Address:  testEnv.Chart().GetMainBalanceAccount(hold.ID),
-						Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
+					accounts = append(accounts, wallet.AccountWithVolumesAndBalances{
+						Account: wallet.Account{
+							Address:  testEnv.Chart().GetMainBalanceAccount(hold.ID),
+							Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
+						},
 					})
 				}
 
@@ -116,11 +120,13 @@ func TestHoldsListWithPagination(t *testing.T) {
 			}, query.Metadata)
 
 			next := "1"
-			accounts := make([]wallet.Account, 0)
+			accounts := make([]wallet.AccountWithVolumesAndBalances, 0)
 			for _, hold := range holds[:pageSize] {
-				accounts = append(accounts, wallet.Account{
-					Address:  testEnv.Chart().GetMainBalanceAccount(hold.ID),
-					Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
+				accounts = append(accounts, wallet.AccountWithVolumesAndBalances{
+					Account: wallet.Account{
+						Address:  testEnv.Chart().GetMainBalanceAccount(hold.ID),
+						Metadata: metadataWithExpectingTypesAfterUnmarshalling(hold.LedgerMetadata(testEnv.Chart())),
+					},
 				})
 			}
 
