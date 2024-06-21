@@ -12,9 +12,9 @@ type CreditWalletRequest struct {
 	// The balance to credit
 	Balance *string `json:"balance,omitempty"`
 	// Metadata associated with the wallet.
-	Metadata  map[string]string `json:"metadata"`
+	Metadata  map[string]string `json:"metadata,omitempty"`
 	Reference *string           `json:"reference,omitempty"`
-	Sources   []Subject         `json:"sources"`
+	Sources   []Subject         `json:"sources,omitempty"`
 	Timestamp *time.Time        `json:"timestamp,omitempty"`
 }
 
@@ -45,7 +45,7 @@ func (o *CreditWalletRequest) GetBalance() *string {
 
 func (o *CreditWalletRequest) GetMetadata() map[string]string {
 	if o == nil {
-		return map[string]string{}
+		return nil
 	}
 	return o.Metadata
 }
@@ -59,7 +59,7 @@ func (o *CreditWalletRequest) GetReference() *string {
 
 func (o *CreditWalletRequest) GetSources() []Subject {
 	if o == nil {
-		return []Subject{}
+		return nil
 	}
 	return o.Sources
 }

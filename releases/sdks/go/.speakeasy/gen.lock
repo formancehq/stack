@@ -1,7 +1,7 @@
 lockVersion: 2.0.0
 id: 7eac0a45-60a2-40bb-9e85-26bd77ec2a6d
 management:
-  docChecksum: 3f179f848fa2227b6d6da6aa61d05141
+  docChecksum: 09fd9d887717d67e69a8602402ba2302
   docVersion: v0.0.0
   speakeasyVersion: 1.292.0
   generationVersion: 2.332.4
@@ -336,7 +336,7 @@ generatedFiles:
   - /pkg/models/shared/activityreverttransactionoutput.go
   - /pkg/models/shared/orchestrationtransaction.go
   - /pkg/models/shared/orchestrationlistwalletsresponse.go
-  - /pkg/models/shared/wallet.go
+  - /pkg/models/shared/orchestrationwallet.go
   - /pkg/models/shared/activitygetwalletoutput.go
   - /pkg/models/shared/walletwithbalances.go
   - /pkg/models/shared/assetholder.go
@@ -365,7 +365,7 @@ generatedFiles:
   - /pkg/models/shared/activitydebitwallet.go
   - /pkg/models/shared/debitwalletrequest.go
   - /pkg/models/shared/activitycreditwallet.go
-  - /pkg/models/shared/creditwalletrequest.go
+  - /pkg/models/shared/orchestrationcreditwalletrequest.go
   - /pkg/models/shared/activitycreatetransaction.go
   - /pkg/models/shared/orchestrationposttransaction.go
   - /pkg/models/shared/activityconfirmhold.go
@@ -537,7 +537,9 @@ generatedFiles:
   - /pkg/models/shared/balance.go
   - /pkg/models/shared/createbalancerequest.go
   - /pkg/models/shared/createwalletresponse.go
+  - /pkg/models/shared/wallet.go
   - /pkg/models/shared/createwalletrequest.go
+  - /pkg/models/shared/creditwalletrequest.go
   - /pkg/models/shared/debitwalletresponse.go
   - /pkg/models/shared/getbalanceresponse.go
   - /pkg/models/shared/balancewithassets.go
@@ -1020,7 +1022,7 @@ generatedFiles:
   - docs/pkg/models/shared/orchestrationtransaction.md
   - docs/pkg/models/shared/orchestrationlistwalletsresponsecursor.md
   - docs/pkg/models/shared/orchestrationlistwalletsresponse.md
-  - docs/pkg/models/shared/wallet.md
+  - docs/pkg/models/shared/orchestrationwallet.md
   - docs/pkg/models/shared/activitygetwalletoutput.md
   - docs/pkg/models/shared/walletwithbalancesbalances.md
   - docs/pkg/models/shared/walletwithbalances.md
@@ -1055,7 +1057,7 @@ generatedFiles:
   - docs/pkg/models/shared/activitydebitwallet.md
   - docs/pkg/models/shared/debitwalletrequest.md
   - docs/pkg/models/shared/activitycreditwallet.md
-  - docs/pkg/models/shared/creditwalletrequest.md
+  - docs/pkg/models/shared/orchestrationcreditwalletrequest.md
   - docs/pkg/models/shared/activitycreatetransaction.md
   - docs/pkg/models/shared/orchestrationposttransactionscript.md
   - docs/pkg/models/shared/orchestrationposttransaction.md
@@ -1282,7 +1284,10 @@ generatedFiles:
   - docs/pkg/models/shared/balance.md
   - docs/pkg/models/shared/createbalancerequest.md
   - docs/pkg/models/shared/createwalletresponse.md
+  - docs/pkg/models/shared/walletbalances.md
+  - docs/pkg/models/shared/wallet.md
   - docs/pkg/models/shared/createwalletrequest.md
+  - docs/pkg/models/shared/creditwalletrequest.md
   - docs/pkg/models/shared/debitwalletresponse.md
   - docs/pkg/models/shared/getbalanceresponse.md
   - docs/pkg/models/shared/balancewithassets.md

@@ -251,7 +251,6 @@ var _ = Describe("Membership listener", func() {
 					}).Should(HaveOccurred())
 				}
 			})
-
 		})
 		Context("then when disabling the stack", func() {
 			BeforeEach(func() {
