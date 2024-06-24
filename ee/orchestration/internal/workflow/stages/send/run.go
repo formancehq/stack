@@ -133,14 +133,14 @@ func savePayment(ctx workflow.Context, timestamp *time.Time, paymentID string, m
 	}
 	reference := paymentAccountName(paymentID)
 	_, err = activities.CreateTransaction(internal.InfiniteRetryContext(ctx), internalLedger, activities.PostTransaction{
-		Postings: []shared.Posting{{
+		Postings: []shared.V2Posting{{
 			Amount:      payment.InitialAmount,
 			Asset:       payment.Asset,
 			Destination: paymentAccountName(paymentID),
 			Source:      "world",
 		}},
 		Timestamp: timestamp,
-		Metadata:  collectionutils.ConvertMap(m, collectionutils.ToAny[string]),
+		Metadata:  m,
 		Reference: &reference,
 	})
 	if err != nil {
@@ -293,14 +293,14 @@ func runWalletToAccount(ctx workflow.Context, timestamp *time.Time, source *Wall
 	}
 
 	return justError(activities.CreateTransaction(internal.InfiniteRetryContext(ctx), destination.Ledger, activities.PostTransaction{
-		Postings: []shared.Posting{{
+		Postings: []shared.V2Posting{{
 			Amount:      amount.Amount,
 			Asset:       amount.Asset,
 			Destination: destination.ID,
 			Source:      "world",
 		}},
 		Timestamp: timestamp,
-		Metadata: collectionutils.MergeMaps(collectionutils.ConvertMap(m, collectionutils.ToAny[string]), map[string]any{
+		Metadata: collectionutils.MergeMaps(m, map[string]string{
 			moveFromLedgerMetadata: sourceWallet.Ledger,
 		}),
 	}))
@@ -330,7 +330,7 @@ func runAccountToWallet(ctx workflow.Context, timestamp *time.Time, source *Ledg
 	}
 
 	if err := justError(activities.CreateTransaction(internal.InfiniteRetryContext(ctx), source.Ledger, activities.PostTransaction{
-		Postings: []shared.Posting{{
+		Postings: []shared.V2Posting{{
 			Amount:      amount.Amount,
 			Asset:       amount.Asset,
 			Destination: "world",
@@ -338,8 +338,8 @@ func runAccountToWallet(ctx workflow.Context, timestamp *time.Time, source *Ledg
 		}},
 		Timestamp: timestamp,
 		Metadata: collectionutils.MergeMaps(
-			collectionutils.ConvertMap(m, collectionutils.ToAny[string]),
-			map[string]any{
+			m,
+			map[string]string{
 				moveToLedgerMetadata: destinationWallet.Ledger,
 			},
 		),
@@ -369,47 +369,41 @@ func runAccountToAccount(ctx workflow.Context, timestamp *time.Time, source *Led
 	}
 	if source.Ledger == destination.Ledger {
 		return justError(activities.CreateTransaction(internal.InfiniteRetryContext(ctx), destination.Ledger, activities.PostTransaction{
-			Postings: []shared.Posting{{
+			Postings: []shared.V2Posting{{
 				Amount:      amount.Amount,
 				Asset:       amount.Asset,
 				Destination: destination.ID,
 				Source:      source.ID,
 			}},
 			Timestamp: timestamp,
-			Metadata:  collectionutils.ConvertMap(m, collectionutils.ToAny[string]),
+			Metadata:  m,
 		}))
 	}
 	if err := justError(activities.CreateTransaction(internal.InfiniteRetryContext(ctx), source.Ledger, activities.PostTransaction{
-		Postings: []shared.Posting{{
+		Postings: []shared.V2Posting{{
 			Amount:      amount.Amount,
 			Asset:       amount.Asset,
 			Destination: "world",
 			Source:      source.ID,
 		}},
 		Timestamp: timestamp,
-		Metadata: collectionutils.MergeMaps(
-			collectionutils.ConvertMap(m, collectionutils.ToAny[string]),
-			map[string]any{
-				moveToLedgerMetadata: destination.Ledger,
-			},
-		),
+		Metadata: collectionutils.MergeMaps(m, map[string]string{
+			moveToLedgerMetadata: destination.Ledger,
+		}),
 	})); err != nil {
 		return err
 	}
 	return justError(activities.CreateTransaction(internal.InfiniteRetryContext(ctx), destination.Ledger, activities.PostTransaction{
-		Postings: []shared.Posting{{
+		Postings: []shared.V2Posting{{
 			Amount:      amount.Amount,
 			Asset:       amount.Asset,
 			Destination: destination.ID,
 			Source:      "world",
 		}},
 		Timestamp: timestamp,
-		Metadata: collectionutils.MergeMaps(
-			collectionutils.ConvertMap(m, collectionutils.ToAny[string]),
-			map[string]any{
-				moveFromLedgerMetadata: source.Ledger,
-			},
-		),
+		Metadata: collectionutils.MergeMaps(m, map[string]string{
+			moveFromLedgerMetadata: source.Ledger,
+		}),
 	}))
 }
 
@@ -440,13 +434,13 @@ func runAccountToPayment(ctx workflow.Context, timestamp *time.Time, source *Led
 		return err
 	}
 	return justError(activities.CreateTransaction(internal.InfiniteRetryContext(ctx), source.Ledger, activities.PostTransaction{
-		Postings: []shared.Posting{{
+		Postings: []shared.V2Posting{{
 			Amount:      amount.Amount,
 			Asset:       amount.Asset,
 			Destination: "world",
 			Source:      source.ID,
 		}},
 		Timestamp: timestamp,
-		Metadata:  collectionutils.ConvertMap(m, collectionutils.ToAny[string]),
+		Metadata:  m,
 	}))
 }
