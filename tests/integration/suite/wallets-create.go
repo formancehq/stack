@@ -2,6 +2,8 @@ package suite
 
 import (
 	"fmt"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
+	"math/big"
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -17,17 +19,29 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 	When(fmt.Sprintf("creating %d wallets", countWallets), func() {
 		JustBeforeEach(func() {
 			for i := 0; i < countWallets; i++ {
+				name := uuid.NewString()
 				response, err := Client().Wallets.CreateWallet(
 					TestContext(),
 					&shared.CreateWalletRequest{
 						Metadata: map[string]string{
 							"wallets_number": fmt.Sprint(i),
 						},
-						Name: uuid.NewString(),
+						Name: name,
 					},
 				)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(response.StatusCode).To(Equal(201))
+
+				_, err = Client().Wallets.CreditWallet(TestContext(), operations.CreditWalletRequest{
+					CreditWalletRequest: &shared.CreditWalletRequest{
+						Amount: shared.Monetary{
+							Amount: big.NewInt(100),
+							Asset:  "USD",
+						},
+					},
+					ID: response.CreateWalletResponse.Data.ID,
+				})
+				Expect(err).ToNot(HaveOccurred())
 			}
 		})
 		Then("listing them", func() {
@@ -55,6 +69,17 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 				})
 				It("should return only one item", func() {
 					Expect(response.ListWalletsResponse.Cursor.Data).To(HaveLen(1))
+				})
+			})
+			Context("expanding balances", func() {
+				BeforeEach(func() {
+					request.Expand = pointer.For("balances")
+				})
+				It("should return all items with volumes and balances", func() {
+					Expect(response.ListWalletsResponse.Cursor.Data).To(HaveLen(3))
+					for _, wallet := range response.ListWalletsResponse.Cursor.Data {
+						Expect(wallet.Balances.Main.Assets["USD"]).To(Equal(big.NewInt(100)))
+					}
 				})
 			})
 		})

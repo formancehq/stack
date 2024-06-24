@@ -15,6 +15,7 @@ type ListWalletsRequest struct {
 	// No other parameters can be set when the pagination token is set.
 	//
 	Cursor *string `queryParam:"style=form,explode=true,name=cursor"`
+	Expand *string `queryParam:"style=form,explode=true,name=expand"`
 	// Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below.
 	Metadata map[string]string `queryParam:"style=deepObject,explode=true,name=metadata"`
 	// Filter on wallet name
@@ -39,6 +40,13 @@ func (o *ListWalletsRequest) GetCursor() *string {
 		return nil
 	}
 	return o.Cursor
+}
+
+func (o *ListWalletsRequest) GetExpand() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Expand
 }
 
 func (o *ListWalletsRequest) GetMetadata() map[string]string {
