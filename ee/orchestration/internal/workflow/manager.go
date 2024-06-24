@@ -225,6 +225,7 @@ func (m *WorkflowManager) ReadInstanceHistory(ctx context.Context, instanceID st
 				Input:     input,
 				StartedAt: *event.EventTime,
 			}
+
 			for historyIterator.HasNext() {
 				event, err = historyIterator.Next()
 				if err != nil {
@@ -301,6 +302,7 @@ func (m *WorkflowManager) ReadStageHistory(ctx context.Context, instanceID strin
 				StartedAt: *event.EventTime,
 				Attempt:   1,
 			}
+
 			ret = append(ret, activityHistory)
 
 			if len(described.PendingActivities) > 0 &&
@@ -329,6 +331,19 @@ func (m *WorkflowManager) ReadStageHistory(ctx context.Context, instanceID strin
 						if err := json.Unmarshal(result.Payloads[0].Data, &output); err != nil {
 							panic(err)
 						}
+
+						// notes(gfyrag): keep compat with format from ledger v1 (since we have moved to ledger v2 api)
+						// maybe we should define proper boundaries on activities, independent of the formance sdk
+						// to avoid breaking histories
+						switch activityTaskScheduledEventAttributes.ActivityType.Name {
+						case "CreateTransaction":
+							switch tx := output["data"].(type) {
+							case map[string]any:
+								tx["txid"] = tx["id"]
+								output["data"] = []any{tx}
+							}
+						}
+
 						activityHistory.Output = map[string]any{
 							activityTaskScheduledEventAttributes.ActivityType.Name: output,
 						}

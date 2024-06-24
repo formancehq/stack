@@ -30,6 +30,12 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 			srv.Close()
 		})
 		BeforeEach(func() {
+			createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+				Ledger: "default",
+			})
+			Expect(err).To(BeNil())
+			Expect(createLedgerResponse.StatusCode).To(Equal(http.StatusNoContent))
+
 			srv = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				if r.Header.Get("Authorization") == "" {
 					w.WriteHeader(http.StatusForbidden)

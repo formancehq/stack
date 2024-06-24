@@ -7,6 +7,7 @@ import (
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"github.com/nats-io/nats.go"
 	"math/big"
+	"net/http"
 	"time"
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
@@ -26,6 +27,12 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 			now                    = time.Now().Round(time.Microsecond).UTC()
 		)
 		BeforeEach(func() {
+			createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+				Ledger: "default",
+			})
+			Expect(err).To(BeNil())
+			Expect(createLedgerResponse.StatusCode).To(Equal(http.StatusNoContent))
+
 			response, err := Client().Orchestration.V2CreateWorkflow(
 				TestContext(),
 				&shared.V2CreateWorkflowRequest{
