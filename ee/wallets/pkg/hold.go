@@ -87,7 +87,7 @@ func (h ExpandedDebitHold) IsClosed() bool {
 func ExpandedDebitHoldFromLedgerAccount(account interface {
 	MetadataOwner
 	GetAddress() string
-	GetVolumes() map[string]shared.Volume
+	GetVolumes() map[string]shared.V2Volume
 	GetBalances() map[string]*big.Int
 }) ExpandedDebitHold {
 	hold := ExpandedDebitHold{

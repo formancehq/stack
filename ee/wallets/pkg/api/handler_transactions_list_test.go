@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+
 	sharedapi "github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
@@ -25,16 +27,16 @@ func TestTransactionsList(t *testing.T) {
 
 	w := wallet.NewWallet(uuid.NewString(), "default", metadata.Metadata{})
 
-	var transactions []shared.Transaction
+	var transactions []shared.V2Transaction
 	for i := 0; i < 10; i++ {
-		transactions = append(transactions, shared.Transaction{
-			Postings: []shared.Posting{{
+		transactions = append(transactions, shared.V2Transaction{
+			Postings: []shared.V2Posting{{
 				Amount:      big.NewInt(100),
 				Asset:       "USD/2",
 				Destination: "bank",
 				Source:      "world",
 			}},
-			Metadata: map[string]any{},
+			Metadata: map[string]string{},
 		})
 	}
 	const pageSize = 2
@@ -42,7 +44,7 @@ func TestTransactionsList(t *testing.T) {
 
 	var testEnv *testEnv
 	testEnv = newTestEnv(
-		WithListTransactions(func(ctx context.Context, ledger string, query wallet.ListTransactionsQuery) (*shared.TransactionsCursorResponseCursor, error) {
+		WithListTransactions(func(ctx context.Context, ledger string, query wallet.ListTransactionsQuery) (*shared.V2TransactionsCursorResponseCursor, error) {
 			if query.Cursor != "" {
 				page, err := strconv.ParseInt(query.Cursor, 10, 64)
 				if err != nil {
@@ -50,18 +52,29 @@ func TestTransactionsList(t *testing.T) {
 				}
 
 				if page >= numberOfPages-1 {
-					return &shared.TransactionsCursorResponseCursor{}, nil
+					return &shared.V2TransactionsCursorResponseCursor{}, nil
 				}
 				hasMore := page < numberOfPages-1
 				previous := fmt.Sprint(page - 1)
 				next := fmt.Sprint(page + 1)
 
-				return &shared.TransactionsCursorResponseCursor{
+				return &shared.V2TransactionsCursorResponseCursor{
 					PageSize: pageSize,
 					HasMore:  hasMore,
 					Previous: pointer.For(previous),
 					Next:     pointer.For(next),
-					Data:     transactions[page*pageSize : (page+1)*pageSize],
+					Data: collectionutils.Map(transactions[page*pageSize:(page+1)*pageSize], func(from shared.V2Transaction) shared.V2ExpandedTransaction {
+						return shared.V2ExpandedTransaction{
+							ID:                from.ID,
+							Metadata:          from.Metadata,
+							PostCommitVolumes: nil,
+							Postings:          from.Postings,
+							PreCommitVolumes:  nil,
+							Reference:         from.Reference,
+							Reverted:          from.Reverted,
+							Timestamp:         from.Timestamp,
+						}
+					}),
 				}, nil
 			}
 
@@ -69,11 +82,22 @@ func TestTransactionsList(t *testing.T) {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetMainBalanceAccount(w.ID), query.Account)
 
-			return &shared.TransactionsCursorResponseCursor{
+			return &shared.V2TransactionsCursorResponseCursor{
 				PageSize: pageSize,
 				HasMore:  true,
 				Next:     pointer.For("1"),
-				Data:     transactions[:pageSize],
+				Data: collectionutils.Map(transactions[:pageSize], func(from shared.V2Transaction) shared.V2ExpandedTransaction {
+					return shared.V2ExpandedTransaction{
+						ID:                from.ID,
+						Metadata:          from.Metadata,
+						PostCommitVolumes: nil,
+						Postings:          from.Postings,
+						PreCommitVolumes:  nil,
+						Reference:         from.Reference,
+						Reverted:          from.Reverted,
+						Timestamp:         from.Timestamp,
+					}
+				}),
 			}, nil
 		}),
 	)
@@ -83,7 +107,7 @@ func TestTransactionsList(t *testing.T) {
 	testEnv.Router().ServeHTTP(rec, req)
 
 	require.Equal(t, http.StatusOK, rec.Result().StatusCode)
-	cursor := &sharedapi.Cursor[shared.Transaction]{}
+	cursor := &sharedapi.Cursor[shared.V2Transaction]{}
 	readCursor(t, rec, cursor)
 	require.Len(t, cursor.Data, pageSize)
 	require.EqualValues(t, transactions[:pageSize], cursor.Data)
@@ -91,7 +115,7 @@ func TestTransactionsList(t *testing.T) {
 	req = newRequest(t, http.MethodGet, fmt.Sprintf("/transactions?cursor=%s", cursor.Next), nil)
 	rec = httptest.NewRecorder()
 	testEnv.Router().ServeHTTP(rec, req)
-	cursor = &sharedapi.Cursor[shared.Transaction]{}
+	cursor = &sharedapi.Cursor[shared.V2Transaction]{}
 	readCursor(t, rec, cursor)
 	require.Len(t, cursor.Data, pageSize)
 	require.EqualValues(t, transactions[pageSize:pageSize*2], cursor.Data)

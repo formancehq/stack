@@ -244,7 +244,7 @@ func (a Application) handleDeployment(ctx core.Context, deploymentLabels map[str
 	if isJsonLogging {
 		mutators = append(mutators, func(t *appsv1.Deployment) error {
 			v := corev1.EnvVar{
-				Name: "JSON_FORMATTING_LOGGER",
+				Name:  "JSON_FORMATTING_LOGGER",
 				Value: "true",
 			}
 			for i, container := range t.Spec.Template.Spec.InitContainers {

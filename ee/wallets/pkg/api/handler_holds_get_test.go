@@ -39,7 +39,7 @@ func TestHoldsGet(t *testing.T) {
 				Balances: map[string]*big.Int{
 					"USD": big.NewInt(50),
 				},
-				Volumes: map[string]shared.Volume{
+				Volumes: map[string]shared.V2Volume{
 					"USD": {
 						Input: big.NewInt(100),
 					},

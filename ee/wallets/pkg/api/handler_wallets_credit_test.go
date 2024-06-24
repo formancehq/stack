@@ -24,7 +24,7 @@ func TestWalletsCredit(t *testing.T) {
 	type testCase struct {
 		name                    string
 		request                 wallet.CreditRequest
-		postTransactionResult   shared.Transaction
+		postTransactionResult   shared.V2Transaction
 		expectedPostTransaction func(testEnv *testEnv, walletID string) wallet.PostTransaction
 		expectedStatusCode      int
 		expectedErrorCode       string
@@ -40,7 +40,7 @@ func TestWalletsCredit(t *testing.T) {
 			},
 			expectedPostTransaction: func(testEnv *testEnv, walletID string) wallet.PostTransaction {
 				return wallet.PostTransaction{
-					Script: &shared.PostTransactionScript{
+					Script: &shared.V2PostTransactionScript{
 						Plain: wallet.BuildCreditWalletScript("world"),
 						Vars: map[string]interface{}{
 							"destination": testEnv.chart.GetMainBalanceAccount(walletID),
@@ -67,7 +67,7 @@ func TestWalletsCredit(t *testing.T) {
 			},
 			expectedPostTransaction: func(testEnv *testEnv, walletID string) wallet.PostTransaction {
 				return wallet.PostTransaction{
-					Script: &shared.PostTransactionScript{
+					Script: &shared.V2PostTransactionScript{
 						Plain: wallet.BuildCreditWalletScript(
 							"emitter1",
 							testEnv.Chart().GetMainBalanceAccount("wallet1"),
@@ -94,7 +94,7 @@ func TestWalletsCredit(t *testing.T) {
 			},
 			expectedPostTransaction: func(testEnv *testEnv, walletID string) wallet.PostTransaction {
 				return wallet.PostTransaction{
-					Script: &shared.PostTransactionScript{
+					Script: &shared.V2PostTransactionScript{
 						Plain: wallet.BuildCreditWalletScript(
 							testEnv.Chart().GetBalanceAccount("emitter1", "secondary"),
 						),
@@ -118,7 +118,7 @@ func TestWalletsCredit(t *testing.T) {
 			},
 			expectedPostTransaction: func(testEnv *testEnv, walletID string) wallet.PostTransaction {
 				return wallet.PostTransaction{
-					Script: &shared.PostTransactionScript{
+					Script: &shared.V2PostTransactionScript{
 						Plain: wallet.BuildCreditWalletScript("world"),
 						Vars: map[string]interface{}{
 							"destination": testEnv.Chart().GetBalanceAccount(walletID, "secondary"),
@@ -149,7 +149,7 @@ func TestWalletsCredit(t *testing.T) {
 			},
 			expectedPostTransaction: func(testEnv *testEnv, walletID string) wallet.PostTransaction {
 				return wallet.PostTransaction{
-					Script: &shared.PostTransactionScript{
+					Script: &shared.V2PostTransactionScript{
 						Plain: wallet.BuildCreditWalletScript("world"),
 						Vars: map[string]interface{}{
 							"destination": testEnv.chart.GetMainBalanceAccount(walletID),
@@ -181,7 +181,7 @@ func TestWalletsCredit(t *testing.T) {
 				postTransaction wallet.PostTransaction
 			)
 			testEnv = newTestEnv(
-				WithCreateTransaction(func(ctx context.Context, ledger string, p wallet.PostTransaction) (*shared.Transaction, error) {
+				WithCreateTransaction(func(ctx context.Context, ledger string, p wallet.PostTransaction) (*shared.V2Transaction, error) {
 					require.Equal(t, testEnv.LedgerName(), ledger)
 					postTransaction = p
 					return &testCase.postTransactionResult, nil

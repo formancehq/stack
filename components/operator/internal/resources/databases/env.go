@@ -2,11 +2,13 @@ package databases
 
 import (
 	"fmt"
-
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/settings"
+	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
+	"strconv"
+	"time"
 )
 
 func GetPostgresEnvVars(ctx core.Context, stack *v1beta1.Stack, db *v1beta1.Database) ([]corev1.EnvVar, error) {
@@ -69,5 +71,38 @@ func PostgresEnvVarsWithPrefix(ctx core.Context, stack *v1beta1.Stack, database 
 			fmt.Sprintf("%sPOSTGRES_DATABASE", prefix))),
 	)
 
+	config, err := settings.GetAs[connectionPoolConfiguration](ctx, stack.Name, "modules", database.Spec.Service, "database", "connection-pool")
+	if err != nil {
+		return nil, err
+	}
+
+	if config.MaxIdle != "" {
+		_, err := strconv.ParseUint(config.MaxIdle, 10, 64)
+		if err != nil {
+			return nil, errors.Wrap(err, "cannot parse max idle value")
+		}
+		ret = append(ret, core.Env(fmt.Sprintf("%sPOSTGRES_MAX_IDLE_CONNS", prefix), config.MaxIdle))
+	}
+	if config.MaxIdleTime != "" {
+		_, err := time.ParseDuration(config.MaxIdleTime)
+		if err != nil {
+			return nil, errors.Wrap(err, "cannot parse max idle time value")
+		}
+		ret = append(ret, core.Env(fmt.Sprintf("%sPOSTGRES_CONN_MAX_IDLE_TIME", prefix), config.MaxIdleTime))
+	}
+	if config.MaxOpen != "" {
+		_, err := strconv.ParseUint(config.MaxOpen, 10, 64)
+		if err != nil {
+			return nil, errors.Wrap(err, "cannot parse max open conns value")
+		}
+		ret = append(ret, core.Env(fmt.Sprintf("%sPOSTGRES_CONN_MAX_OPEN_CONNS", prefix), config.MaxOpen))
+	}
+
 	return ret, nil
+}
+
+type connectionPoolConfiguration struct {
+	MaxIdle     string `json:"max-idle,omitempty"`
+	MaxIdleTime string `json:"max-idle-time,omitempty"`
+	MaxOpen     string `json:"max-open,omitempty"`
 }

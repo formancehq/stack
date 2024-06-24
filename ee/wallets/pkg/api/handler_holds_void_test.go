@@ -38,16 +38,16 @@ func TestHoldsVoid(t *testing.T) {
 				Balances: map[string]*big.Int{
 					"USD": big.NewInt(100),
 				},
-				Volumes: map[string]shared.Volume{
+				Volumes: map[string]shared.V2Volume{
 					"USD": {
 						Input: big.NewInt(100),
 					},
 				},
 			}, nil
 		}),
-		WithCreateTransaction(func(ctx context.Context, name string, script wallet.PostTransaction) (*shared.Transaction, error) {
+		WithCreateTransaction(func(ctx context.Context, name string, script wallet.PostTransaction) (*shared.V2Transaction, error) {
 			compareJSON(t, wallet.PostTransaction{
-				Script: &shared.PostTransactionScript{
+				Script: &shared.V2PostTransactionScript{
 					Plain: wallet.BuildCancelHoldScript("USD"),
 					Vars: map[string]interface{}{
 						"hold": testEnv.Chart().GetHoldAccount(hold.ID),
@@ -56,7 +56,7 @@ func TestHoldsVoid(t *testing.T) {
 				},
 				Metadata: metadataWithExpectingTypesAfterUnmarshalling(wallet.TransactionMetadata(nil)),
 			}, script)
-			return &shared.Transaction{}, nil
+			return &shared.V2Transaction{}, nil
 		}),
 	)
 	testEnv.Router().ServeHTTP(rec, req)

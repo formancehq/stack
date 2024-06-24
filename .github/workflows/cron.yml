@@ -20,7 +20,7 @@ jobs:
             username: "NumaryBot"
             password: ${{ secrets.NUMARY_GITHUB_TOKEN }}
         - name: Build and Push Base
-          uses: docker/build-push-action@v5
+          uses: docker/build-push-action@v6
           with:
             platforms: linux/amd64,linux/arm64
             push: true
@@ -29,7 +29,7 @@ jobs:
             target: base
             tags: ghcr.io/formancehq/base:22.04
         - name: Build and Push Scratch
-          uses: docker/build-push-action@v5
+          uses: docker/build-push-action@v6
           with:
             platforms: linux/amd64,linux/arm64
             push: true

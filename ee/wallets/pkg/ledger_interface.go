@@ -2,9 +2,14 @@ package wallet
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"math/big"
 	stdtime "time"
+
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
+
+	"github.com/formancehq/stack/libs/go-libs/query"
 
 	"github.com/formancehq/stack/libs/go-libs/time"
 
@@ -32,17 +37,16 @@ type ListTransactionsQuery struct {
 }
 
 type PostTransaction struct {
-	Metadata  map[string]string             `json:"metadata,omitempty"`
-	Postings  []shared.Posting              `json:"postings,omitempty"`
-	Reference *string                       `json:"reference,omitempty"`
-	Script    *shared.PostTransactionScript `json:"script,omitempty"`
-	Timestamp *time.Time                    `json:"timestamp,omitempty"`
+	Metadata  map[string]string               `json:"metadata,omitempty"`
+	Postings  []shared.V2Posting              `json:"postings,omitempty"`
+	Reference *string                         `json:"reference,omitempty"`
+	Script    *shared.V2PostTransactionScript `json:"script,omitempty"`
+	Timestamp *time.Time                      `json:"timestamp,omitempty"`
 }
 
 type Account struct {
 	Address  string            `json:"address"`
 	Metadata map[string]string `json:"metadata,omitempty"`
-	Type     *string           `json:"type,omitempty"`
 }
 
 func (a Account) GetMetadata() map[string]string {
@@ -55,15 +59,15 @@ func (a Account) GetAddress() string {
 
 type AccountWithVolumesAndBalances struct {
 	Account
-	Balances map[string]*big.Int      `json:"balances,omitempty"`
-	Volumes  map[string]shared.Volume `json:"volumes,omitempty"`
+	Balances map[string]*big.Int        `json:"balances,omitempty"`
+	Volumes  map[string]shared.V2Volume `json:"volumes,omitempty"`
 }
 
 func (a AccountWithVolumesAndBalances) GetBalances() map[string]*big.Int {
 	return a.Balances
 }
 
-func (a AccountWithVolumesAndBalances) GetVolumes() map[string]shared.Volume {
+func (a AccountWithVolumesAndBalances) GetVolumes() map[string]shared.V2Volume {
 	return a.Volumes
 }
 
@@ -92,51 +96,92 @@ func (c AccountsCursorResponseCursor) GetHasMore() bool {
 }
 
 type Ledger interface {
+	EnsureLedgerExists(ctx context.Context, name string) error
 	AddMetadataToAccount(ctx context.Context, ledger, account string, metadata map[string]string) error
 	GetAccount(ctx context.Context, ledger, account string) (*AccountWithVolumesAndBalances, error)
 	ListAccounts(ctx context.Context, ledger string, query ListAccountsQuery) (*AccountsCursorResponseCursor, error)
-	ListTransactions(ctx context.Context, ledger string, query ListTransactionsQuery) (*shared.TransactionsCursorResponseCursor, error)
-	CreateTransaction(ctx context.Context, ledger string, postTransaction PostTransaction) (*shared.Transaction, error)
+	ListTransactions(ctx context.Context, ledger string, query ListTransactionsQuery) (*shared.V2TransactionsCursorResponseCursor, error)
+	CreateTransaction(ctx context.Context, ledger string, postTransaction PostTransaction) (*shared.V2Transaction, error)
 }
 
 type DefaultLedger struct {
 	client *sdk.Formance
 }
 
-func (d DefaultLedger) ListTransactions(ctx context.Context, ledger string, query ListTransactionsQuery) (*shared.TransactionsCursorResponseCursor, error) {
-	req := operations.ListTransactionsRequest{
+func (d DefaultLedger) EnsureLedgerExists(ctx context.Context, name string) error {
+	_, err := d.client.Ledger.V2GetLedger(ctx, operations.V2GetLedgerRequest{
+		Ledger: name,
+	})
+	if err == nil {
+		return nil
+	}
+
+	switch err := err.(type) {
+	case *sdkerrors.V2ErrorResponse:
+		if err.ErrorCode != shared.V2ErrorsEnumNotFound {
+			return err
+		}
+	default:
+		return err
+	}
+
+	_, err = d.client.Ledger.V2CreateLedger(ctx, operations.V2CreateLedgerRequest{
+		V2CreateLedgerRequest: &shared.V2CreateLedgerRequest{
+			Bucket: pointer.For(name),
+		},
+		Ledger: name,
+	})
+	return err
+}
+
+func (d DefaultLedger) ListTransactions(ctx context.Context, ledger string, q ListTransactionsQuery) (*shared.V2TransactionsCursorResponseCursor, error) {
+	req := operations.V2ListTransactionsRequest{
 		Ledger: ledger,
 	}
-	if query.Cursor == "" {
-		req.PageSize = pointer.For(int64(query.Limit))
-		req.Destination = pointer.For(query.Destination)
-		req.Source = pointer.For(query.Source)
-		req.Account = pointer.For(query.Account)
-		req.Metadata = make(map[string]any)
-
-		for key, value := range query.Metadata {
-			req.Metadata[fmt.Sprintf("metadata[%s]", key)] = value
+	if q.Cursor == "" {
+		req.PageSize = pointer.For(int64(q.Limit))
+		conditions := make([]query.Builder, 0)
+		if q.Destination != "" {
+			conditions = append(conditions, query.Match("destination", q.Destination))
+		}
+		if q.Source != "" {
+			conditions = append(conditions, query.Match("source", q.Source))
+		}
+		if q.Account != "" {
+			conditions = append(conditions, query.Match("account", q.Source))
+		}
+		if q.Metadata != nil {
+			for k, v := range q.Metadata {
+				conditions = append(conditions, query.Match(fmt.Sprintf("metadata[%s]", k), v))
+			}
+		}
+		if len(conditions) > 0 {
+			data, err := json.Marshal(query.And(conditions...))
+			if err != nil {
+				panic(err)
+			}
+			body := make(map[string]any)
+			if err := json.Unmarshal(data, &body); err != nil {
+				panic(err)
+			}
+			req.RequestBody = body
 		}
 	} else {
-		req.Cursor = pointer.For(query.Cursor)
+		req.Cursor = pointer.For(q.Cursor)
 	}
 
-	rsp, err := d.client.Ledger.ListTransactions(ctx, req)
+	rsp, err := d.client.Ledger.V2ListTransactions(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	return &rsp.TransactionsCursorResponse.Cursor, nil
+	return &rsp.V2TransactionsCursorResponse.Cursor, nil
 }
 
-func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, transaction PostTransaction) (*shared.Transaction, error) {
-	txMetadata := make(map[string]any, 0)
-	for k, v := range transaction.Metadata {
-		txMetadata[k] = v
-	}
-	ret, err := d.client.Ledger.CreateTransaction(ctx, operations.CreateTransactionRequest{
-		PostTransaction: shared.PostTransaction{
-			Metadata:  txMetadata,
+func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, transaction PostTransaction) (*shared.V2Transaction, error) {
+	ret, err := d.client.Ledger.V2CreateTransaction(ctx, operations.V2CreateTransactionRequest{
+		V2PostTransaction: shared.V2PostTransaction{
+			Metadata:  transaction.Metadata,
 			Postings:  transaction.Postings,
 			Reference: transaction.Reference,
 			Script:    transaction.Script,
@@ -153,18 +198,13 @@ func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, tra
 		return nil, err
 	}
 
-	return &ret.TransactionsResponse.Data[0], nil
+	return &ret.V2CreateTransactionResponse.Data, nil
 }
 
 func (d DefaultLedger) AddMetadataToAccount(ctx context.Context, ledger, account string, metadata map[string]string) error {
 
-	m := make(map[string]any)
-	for k, v := range metadata {
-		m[k] = v
-	}
-
-	_, err := d.client.Ledger.AddMetadataToAccount(ctx, operations.AddMetadataToAccountRequest{
-		RequestBody: m,
+	_, err := d.client.Ledger.V2AddMetadataToAccount(ctx, operations.V2AddMetadataToAccountRequest{
+		RequestBody: metadata,
 		Address:     account,
 		Ledger:      ledger,
 	})
@@ -175,56 +215,74 @@ func (d DefaultLedger) AddMetadataToAccount(ctx context.Context, ledger, account
 }
 
 func (d DefaultLedger) GetAccount(ctx context.Context, ledger, account string) (*AccountWithVolumesAndBalances, error) {
-	ret, err := d.client.Ledger.GetAccount(ctx, operations.GetAccountRequest{
+	ret, err := d.client.Ledger.V2GetAccount(ctx, operations.V2GetAccountRequest{
 		Address: account,
 		Ledger:  ledger,
+		Expand:  pointer.For("volumes"),
 	})
 	if err != nil {
 		return nil, err
 	}
 
+	balances := make(map[string]*big.Int)
+	for asset, volumes := range ret.V2AccountResponse.Data.Volumes {
+		balances[asset] = big.NewInt(0).Sub(volumes.Input, volumes.Output)
+	}
+
 	return &AccountWithVolumesAndBalances{
 		Account: Account{
-			Address:  ret.AccountResponse.Data.Address,
-			Metadata: convertAccountMetadata(ret.AccountResponse.Data.Metadata),
-			Type:     ret.AccountResponse.Data.Type,
+			Address:  ret.V2AccountResponse.Data.Address,
+			Metadata: ret.V2AccountResponse.Data.Metadata,
 		},
-		Balances: ret.AccountResponse.Data.Balances,
-		Volumes:  ret.AccountResponse.Data.Volumes,
+		Balances: balances,
+		Volumes:  ret.V2AccountResponse.Data.Volumes,
 	}, nil
 }
 
-func (d DefaultLedger) ListAccounts(ctx context.Context, ledger string, query ListAccountsQuery) (*AccountsCursorResponseCursor, error) {
-	req := operations.ListAccountsRequest{
+func (d DefaultLedger) ListAccounts(ctx context.Context, ledger string, q ListAccountsQuery) (*AccountsCursorResponseCursor, error) {
+	req := operations.V2ListAccountsRequest{
 		Ledger: ledger,
 	}
-	if query.Cursor == "" {
-		req.PageSize = pointer.For(int64(query.Limit))
-		req.Metadata = make(map[string]any)
-		for key, value := range query.Metadata {
-			req.Metadata[key] = value
+	if q.Cursor == "" {
+		req.PageSize = pointer.For(int64(q.Limit))
+
+		conditions := make([]query.Builder, 0)
+		if q.Metadata != nil {
+			for k, v := range q.Metadata {
+				conditions = append(conditions, query.Match(fmt.Sprintf("metadata[%s]", k), v))
+			}
+		}
+		if len(conditions) > 0 {
+			data, err := json.Marshal(query.And(conditions...))
+			if err != nil {
+				panic(err)
+			}
+			body := make(map[string]any)
+			if err := json.Unmarshal(data, &body); err != nil {
+				panic(err)
+			}
+			req.RequestBody = body
 		}
 	} else {
-		req.Cursor = pointer.For(query.Cursor)
+		req.Cursor = pointer.For(q.Cursor)
 	}
 
-	ret, err := d.client.Ledger.ListAccounts(ctx, req)
+	ret, err := d.client.Ledger.V2ListAccounts(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
 	return &AccountsCursorResponseCursor{
-		Data: collectionutils.Map(ret.AccountsCursorResponse.Cursor.Data, func(from shared.Account) Account {
+		Data: collectionutils.Map(ret.V2AccountsCursorResponse.Cursor.Data, func(from shared.V2Account) Account {
 			return Account{
 				Address:  from.Address,
-				Metadata: convertAccountMetadata(from.Metadata),
-				Type:     from.Type,
+				Metadata: from.Metadata,
 			}
 		}),
-		HasMore:  ret.AccountsCursorResponse.Cursor.HasMore,
-		Next:     ret.AccountsCursorResponse.Cursor.Next,
-		PageSize: ret.AccountsCursorResponse.Cursor.PageSize,
-		Previous: ret.AccountsCursorResponse.Cursor.Previous,
+		HasMore:  ret.V2AccountsCursorResponse.Cursor.HasMore,
+		Next:     ret.V2AccountsCursorResponse.Cursor.Next,
+		PageSize: ret.V2AccountsCursorResponse.Cursor.PageSize,
+		Previous: ret.V2AccountsCursorResponse.Cursor.Previous,
 	}, nil
 }
 
@@ -234,19 +292,4 @@ func NewDefaultLedger(client *sdk.Formance) *DefaultLedger {
 	return &DefaultLedger{
 		client: client,
 	}
-}
-
-func convertAccountMetadata(m map[string]any) map[string]string {
-	ret := make(map[string]string)
-	for k, v := range m {
-		switch v := v.(type) {
-		case string:
-			ret[k] = v
-		case map[string]any:
-			ret[k] = metadata.MarshalValue(v)
-		default:
-			ret[k] = fmt.Sprint(v)
-		}
-	}
-	return ret
 }

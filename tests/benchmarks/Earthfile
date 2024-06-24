@@ -26,7 +26,7 @@ run:
     WORKDIR /
     COPY --dir tools .
     WITH DOCKER \
-        --compose tools/docker-compose-simple.yml \
+        --compose tools/docker-compose.yml \
         --load ghcr.io/formancehq/ledger:latest=../../components/ledger+build-image
         RUN TEST_ID=$(date +%s)-v2 \
             K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM=true \
