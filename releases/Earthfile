@@ -16,11 +16,10 @@ sdk-generate:
   ARG version=v0.0.0
   COPY (stack+build-final-spec/latest.json --version=$version) /src/releases/build/latest.json
   WORKDIR /src/releases
-  ARG LANG=go
-  COPY --if-exists --dir ./sdks/${LANG} ./sdks/${LANG}
-  RUN rm -rf ./sdks/${LANG}/gen.yaml ./sdks/${LANG}/LICENSE ./sdks/${LANG}/.github/workflows
-  COPY --dir templates/sdk/${LANG}/* ./sdks/${LANG}/
-  ENV key ".${LANG}.version"
-  RUN yq e -i 'eval(env(key)) = env(version)' ./sdks/${LANG}/gen.yaml
-  RUN --secret SPEAKEASY_API_KEY speakeasy generate sdk -s ./build/latest.json -o ./sdks/${LANG} -l ${LANG}
-  SAVE ARTIFACT /src/releases/sdks/${LANG} AS LOCAL ./sdks/${LANG}
+  COPY --if-exists --dir ./sdks/go ./sdks/go
+  RUN rm -rf ./sdks/go/gen.yaml ./sdks/go/LICENSE ./sdks/go/.github/workflows
+  COPY --dir templates/sdk/go/* ./sdks/go/
+  ENV key ".go.version"
+  RUN yq e -i 'eval(env(key)) = env(version)' ./sdks/go/gen.yaml
+  RUN --secret SPEAKEASY_API_KEY speakeasy generate sdk -s ./build/latest.json -o ./sdks/go -l go
+  SAVE ARTIFACT /src/releases/sdks/go AS LOCAL ./sdks/go

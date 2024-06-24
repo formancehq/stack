@@ -222,21 +222,19 @@ var _ = Describe("Membership listener", func() {
 		})
 		When("removing modules", func() {
 			var (
-				moduleToRemove []*generated.Module
+				modulesToRemove map[string]struct{}
 			)
 			BeforeEach(func() {
-				moduleToRemove = []*generated.Module{
-					{
-						Name: "Webhooks",
-					},
-					{
-						Name: "Search",
-					},
-				}
+
+				modulesToRemove = map[string]struct{}{}
+				modulesToRemove["Webhooks"] = struct{}{}
+				modulesToRemove["Search"] = struct{}{}
 
 				membershipStack.Modules = collectionutils.Filter(membershipStack.Modules, func(module *generated.Module) bool {
-					return !collectionutils.Contains(moduleToRemove, module)
+					_, exist := modulesToRemove[module.Name]
+					return !exist
 				})
+
 				membershipClient.Orders() <- &generated.Order{
 					Message: &generated.Order_ExistingStack{
 						ExistingStack: membershipStack,
@@ -244,14 +242,13 @@ var _ = Describe("Membership listener", func() {
 				}
 			})
 			It("modules should be removed", func() {
-				for _, module := range moduleToRemove {
+				for moduleName := range modulesToRemove {
 					Eventually(func(g Gomega) error {
 						u := &unstructured.Unstructured{}
-						return LoadResource(module.Name, membershipStack.ClusterName, u)
+						return LoadResource(moduleName, membershipStack.ClusterName, u)
 					}).Should(HaveOccurred())
 				}
 			})
-
 		})
 		Context("then when disabling the stack", func() {
 			BeforeEach(func() {

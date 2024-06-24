@@ -3,16 +3,16 @@
 package shared
 
 type OrchestrationListWalletsResponseCursor struct {
-	Data     []Wallet `json:"data"`
-	HasMore  *bool    `json:"hasMore,omitempty"`
-	Next     *string  `json:"next,omitempty"`
-	PageSize int64    `json:"pageSize"`
-	Previous *string  `json:"previous,omitempty"`
+	Data     []OrchestrationWallet `json:"data"`
+	HasMore  *bool                 `json:"hasMore,omitempty"`
+	Next     *string               `json:"next,omitempty"`
+	PageSize int64                 `json:"pageSize"`
+	Previous *string               `json:"previous,omitempty"`
 }
 
-func (o *OrchestrationListWalletsResponseCursor) GetData() []Wallet {
+func (o *OrchestrationListWalletsResponseCursor) GetData() []OrchestrationWallet {
 	if o == nil {
-		return []Wallet{}
+		return []OrchestrationWallet{}
 	}
 	return o.Data
 }

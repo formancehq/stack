@@ -7,8 +7,20 @@ import (
 	"time"
 )
 
+type WalletBalances struct {
+	Main AssetHolder `json:"main"`
+}
+
+func (o *WalletBalances) GetMain() AssetHolder {
+	if o == nil {
+		return AssetHolder{}
+	}
+	return o.Main
+}
+
 type Wallet struct {
-	CreatedAt time.Time `json:"createdAt"`
+	Balances  *WalletBalances `json:"balances,omitempty"`
+	CreatedAt time.Time       `json:"createdAt"`
 	// The unique ID of the wallet.
 	ID     string `json:"id"`
 	Ledger string `json:"ledger"`
@@ -26,6 +38,13 @@ func (w *Wallet) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	return nil
+}
+
+func (o *Wallet) GetBalances() *WalletBalances {
+	if o == nil {
+		return nil
+	}
+	return o.Balances
 }
 
 func (o *Wallet) GetCreatedAt() time.Time {
