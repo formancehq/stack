@@ -3,6 +3,9 @@ package activities
 import (
 	"context"
 
+	"github.com/formancehq/stack/libs/go-libs/pointer"
+	"go.temporal.io/sdk/activity"
+
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
 	"go.temporal.io/sdk/temporal"
@@ -16,23 +19,18 @@ type AddAccountMetadataRequest struct {
 }
 
 func (a Activities) AddAccountMetadata(ctx context.Context, request AddAccountMetadataRequest) error {
-
-	body := make(map[string]any)
-	for k, v := range request.Metadata {
-		body[k] = v
-	}
-
-	_, err := a.client.Ledger.AddMetadataToAccount(
+	_, err := a.client.Ledger.V2AddMetadataToAccount(
 		ctx,
-		operations.AddMetadataToAccountRequest{
-			RequestBody: body,
-			Address:     request.Account,
-			Ledger:      request.Ledger,
+		operations.V2AddMetadataToAccountRequest{
+			RequestBody:    request.Metadata,
+			Address:        request.Account,
+			Ledger:         request.Ledger,
+			IdempotencyKey: pointer.For(activity.GetInfo(ctx).ActivityID),
 		},
 	)
 	if err != nil {
 		switch err := err.(type) {
-		case *sdkerrors.ErrorResponse:
+		case *sdkerrors.V2ErrorResponse:
 			return temporal.NewApplicationError(err.ErrorMessage, string(err.ErrorCode), err.Details)
 		default:
 			return err
