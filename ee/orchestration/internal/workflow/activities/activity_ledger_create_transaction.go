@@ -4,9 +4,6 @@ import (
 	"context"
 	stdtime "time"
 
-	"github.com/formancehq/stack/libs/go-libs/pointer"
-	"go.temporal.io/sdk/activity"
-
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
 	"github.com/formancehq/stack/libs/go-libs/time"
 
@@ -52,7 +49,7 @@ func (a Activities) CreateTransaction(ctx context.Context, request CreateTransac
 				}(),
 			},
 			Ledger:         request.Ledger,
-			IdempotencyKey: pointer.For(activity.GetInfo(ctx).ActivityID),
+			IdempotencyKey: getLedgerIK(ctx),
 		},
 	)
 	if err != nil {
