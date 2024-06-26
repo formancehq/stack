@@ -1,9 +1,14 @@
 package activities
 
 import (
+	"context"
+	"fmt"
+
 	sdk "github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/orchestration/internal/temporalworker"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/pkg/errors"
+	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )
@@ -75,4 +80,9 @@ func executeActivity(ctx workflow.Context, activity any, ret any, request any) e
 		return err
 	}
 	return nil
+}
+
+func getLedgerIK(ctx context.Context) *string {
+	activityInfo := activity.GetInfo(ctx)
+	return pointer.For(fmt.Sprintf("%s-%s", activityInfo.WorkflowExecution.RunID, activityInfo.ActivityID))
 }

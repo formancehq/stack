@@ -3,9 +3,6 @@ package activities
 import (
 	"context"
 
-	"github.com/formancehq/stack/libs/go-libs/pointer"
-	"go.temporal.io/sdk/activity"
-
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
 	"go.temporal.io/sdk/temporal"
@@ -25,7 +22,7 @@ func (a Activities) AddAccountMetadata(ctx context.Context, request AddAccountMe
 			RequestBody:    request.Metadata,
 			Address:        request.Account,
 			Ledger:         request.Ledger,
-			IdempotencyKey: pointer.For(activity.GetInfo(ctx).ActivityID),
+			IdempotencyKey: getLedgerIK(ctx),
 		},
 	)
 	if err != nil {
