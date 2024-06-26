@@ -29,6 +29,7 @@ func (s *Storage) UpdatePaymentMetadata(ctx context.Context, paymentID models.Pa
 		On("CONFLICT (payment_id, key) DO UPDATE").
 		Set("value = EXCLUDED.value").
 		Set("changelog = metadata.changelog || EXCLUDED.changelog").
+		Where("metadata.value != EXCLUDED.value").
 		Exec(ctx)
 	if err != nil {
 		return e("failed to update payment metadata", err)
