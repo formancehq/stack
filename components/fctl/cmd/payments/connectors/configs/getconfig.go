@@ -2,6 +2,7 @@ package configs
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
 	"github.com/formancehq/fctl/cmd/payments/connectors/views"
@@ -9,6 +10,7 @@ import (
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -93,12 +95,44 @@ func (c *PaymentsGetConfigController) Run(cmd *cobra.Command, args []string) (fc
 		c.store.ConnectorConfig = response.ConnectorConfigResponse
 
 	case versions.V1:
-		if provider == "" {
-			return nil, fmt.Errorf("provider is required")
+		connectorList, err := store.Client().Payments.ListAllConnectors(cmd.Context())
+		if err != nil {
+			return nil, err
+		}
+		if connectorList.StatusCode >= 300 {
+			return nil, fmt.Errorf("unexpected status code: %d", connectorList.StatusCode)
 		}
 
-		if connectorID == "" {
-			return nil, fmt.Errorf("connector-id is required")
+		connectorsFiltered := collectionutils.Filter(connectorList.ConnectorsResponse.Data, func(connector shared.ConnectorsResponseData) bool {
+			if connectorID != "" {
+				return connector.ConnectorID == connectorID
+			}
+
+			if provider != "" {
+				return connector.Provider == shared.Connector(strings.ToUpper(provider))
+			}
+
+			return true
+		})
+
+		switch len(connectorsFiltered) {
+		case 0:
+			return nil, fmt.Errorf("no connectors found")
+		case 1:
+			provider = string(connectorsFiltered[0].Provider)
+			connectorID = connectorsFiltered[0].ConnectorID
+		default:
+			options := make([]string, 0, len(connectorsFiltered))
+			for _, connector := range connectorsFiltered {
+				options = append(options, strings.Join([]string{"id:" + connector.ConnectorID, "provider:" + string(connector.Provider), "name:" + connector.Name, "enabled:" + fctl.BoolPointerToString(connector.Enabled)}, " "))
+			}
+			printer := pterm.DefaultInteractiveSelect.WithOptions(options)
+			selectedOption, err := printer.Show("Please select a connector")
+			if err != nil {
+				return nil, err
+			}
+			connectorID = strings.Split(strings.Split(selectedOption, " ")[0], ":")[1]
+			provider = strings.Split(strings.Split(selectedOption, " ")[1], ":")[1]
 		}
 
 		response, err := store.Client().Payments.ReadConnectorConfigV1(cmd.Context(), operations.ReadConnectorConfigV1Request{
@@ -113,7 +147,7 @@ func (c *PaymentsGetConfigController) Run(cmd *cobra.Command, args []string) (fc
 			return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 		}
 
-		c.store.Provider = provider
+		c.store.Provider = strings.ToLower(provider)
 		c.store.ConnectorID = connectorID
 		c.store.ConnectorConfig = response.ConnectorConfigResponse
 	}
@@ -125,7 +159,6 @@ func (c *PaymentsGetConfigController) Run(cmd *cobra.Command, args []string) (fc
 // TODO: This need to use the ui.NewListModel
 func (c *PaymentsGetConfigController) Render(cmd *cobra.Command, args []string) error {
 	var err error
-
 	switch c.store.Provider {
 	case internal.StripeConnector:
 		err = views.DisplayStripeConfig(cmd, c.store.ConnectorConfig)
