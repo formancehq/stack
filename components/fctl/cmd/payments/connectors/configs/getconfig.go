@@ -104,11 +104,6 @@ func (c *PaymentsGetConfigController) Run(cmd *cobra.Command, args []string) (fc
 		}
 
 		connectorsFiltered := collectionutils.Filter(connectorList.ConnectorsResponse.Data, func(connector shared.ConnectorsResponseData) bool {
-			// Maybe we should add a flag to show disabled connectors ?
-			if connector.Enabled != nil && !*connector.Enabled {
-				return false
-			}
-
 			if connectorID != "" {
 				return connector.ConnectorID == connectorID
 			}
@@ -129,15 +124,15 @@ func (c *PaymentsGetConfigController) Run(cmd *cobra.Command, args []string) (fc
 		default:
 			options := make([]string, 0, len(connectorsFiltered))
 			for _, connector := range connectorsFiltered {
-				options = append(options, strings.Join([]string{connector.ConnectorID, string(connector.Provider), connector.Name}, " "))
+				options = append(options, strings.Join([]string{"id:" + connector.ConnectorID, "provider:" + string(connector.Provider), "name:" + connector.Name, "enabled:" + fctl.BoolPointerToString(connector.Enabled)}, " "))
 			}
 			printer := pterm.DefaultInteractiveSelect.WithOptions(options)
 			selectedOption, err := printer.Show("Please select a connector")
 			if err != nil {
 				return nil, err
 			}
-			connectorID = strings.Split(selectedOption, " ")[0]
-			provider = strings.Split(selectedOption, " ")[1]
+			connectorID = strings.Split(strings.Split(selectedOption, " ")[0], ":")[1]
+			provider = strings.Split(strings.Split(selectedOption, " ")[1], ":")[1]
 		}
 
 		response, err := store.Client().Payments.ReadConnectorConfigV1(cmd.Context(), operations.ReadConnectorConfigV1Request{
