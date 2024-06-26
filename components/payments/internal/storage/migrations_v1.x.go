@@ -386,6 +386,11 @@ func registerMigrationsV1(ctx context.Context, migrator *migrations.Migrator) {
 				return nil
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				return fixExpandingChangelogs(ctx, tx)
+			},
+		},
 	)
 }
 
@@ -1024,6 +1029,63 @@ func migrateTransferInitiationID(ctx context.Context, tx bun.Tx) error {
 	`)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func fixExpandingChangelogs(ctx context.Context, tx bun.Tx) error {
+	var createdAt time.Time
+	for {
+		var metadata []models.PaymentMetadata
+		query := tx.NewSelect().
+			Model(&metadata).
+			Order("created_at ASC").
+			Limit(100)
+
+		if !createdAt.IsZero() {
+			query.Where("created_at > ?", createdAt)
+		}
+
+		err := query.Scan(ctx)
+		if err != nil {
+			return err
+		}
+
+		fmt.Println("Processing", len(metadata), "metadata")
+
+		if len(metadata) == 0 {
+			break
+		}
+
+		for i, m := range metadata {
+			if m.Changelog == nil {
+				continue
+			}
+
+			var newChangelogs []models.MetadataChangelog
+			for _, cl := range m.Changelog {
+				if len(newChangelogs) > 0 && cl.Value == newChangelogs[len(newChangelogs)-1].Value {
+					continue
+				}
+
+				newChangelogs = append(newChangelogs, cl)
+			}
+
+			metadata[i].Changelog = newChangelogs
+			createdAt = m.CreatedAt
+		}
+
+		fmt.Println("Updating", len(metadata), "metadata")
+
+		_, err = tx.NewInsert().
+			Model(&metadata).
+			On("CONFLICT (payment_id, key) DO UPDATE").
+			Set("changelog = EXCLUDED.changelog").
+			Exec(ctx)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
