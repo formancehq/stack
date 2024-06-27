@@ -2,6 +2,7 @@ package webhookcollector
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"sync"
 	"time"
@@ -28,9 +29,7 @@ func (c *Collector) Run() {
 
 func (c *Collector) Init(){
 
-	c.StartHandleEventFromDatabase()
-	c.StartRetrySaveToDatabase()
-
+	c.StartHandleFreshLogs()
 
 	hooks, err := c.Database.LoadHooks()
 	if err != nil {
@@ -39,6 +38,7 @@ func (c *Collector) Init(){
 		os.Exit(1)
 	}
 	c.State.LoadHooks(hooks)
+
 	attempts, err := c.Database.LoadWaitingAttempts()
 	if err != nil {
 		c.Stop()
@@ -112,9 +112,9 @@ func (c *Collector) handleSuccess(sAttempt *commons.SharedAttempt){
 	commons.SetSuccesStatus(sAttempt.Val)
 	_, err := c.Database.CompleteAttempt(sAttempt.Val.ID)
 	if err != nil {
-		//TODO(CriticPolitic)
-		logging.Errorf("Collector:handleSuccess:Database.CompleteAttempt() : %x", err)
-		c.State.ToSaveAttempts.Add(sAttempt)
+		message := fmt.Sprintf("Collector:handleSuccess:Database.CompleteAttempt() : %x", err)
+		logging.Error(message)
+		panic(message)
 	}
 }
 
@@ -122,34 +122,35 @@ func (c *Collector) handleNextRetry(sAttempt *commons.SharedAttempt){
 	sAttempt.Val.NbTry += 1
 	commons.SetNextRetry(sAttempt.Val)
 	c.State.WaitingAttempts.Add(sAttempt)
-
+	
 	go func(){
 		_, err := c.Database.UpdateAttemptNextTry(sAttempt.Val.ID, sAttempt.Val.NextTry, sAttempt.Val.LastHttpStatusCode)
 		if err != nil {
-			//TODO(CriticPolitic)
-			logging.Errorf("Collector:handleNextRetry:Database.UpdateAttemptNextTry: %x", err)
+			message := fmt.Sprintf("Collector:handleNextRetry:Database.UpdateAttemptNextTry: %x", err)
+			logging.Error(message)
+			panic(message)
 		}
 	}()
 }
 
 func (c *Collector) handleMissingHook(sAttempt *commons.SharedAttempt){
 	commons.SetAbortMissingHookStatus(sAttempt.Val)
-	_, err := c.Database.AbortAttempt(sAttempt.Val.ID, string(sAttempt.Val.Comment))
+	_, err := c.Database.AbortAttempt(sAttempt.Val.ID, string(sAttempt.Val.Comment), false)
 	if err != nil {
-		//TODO(CriticPolitic)
-		logging.Error(err)
-		c.State.ToSaveAttempts.Add(sAttempt)
+		message := fmt.Sprintf("Collector:handleMissingHook:Database.AbortAttempt: %x", err)
+		logging.Error(message)
+		panic(message)
 		
 	}
 }
 
 func (c *Collector) handleDisabledHook(sAttempt *commons.SharedAttempt){
 	commons.SetAbortDisableHook(sAttempt.Val)
-	_, err := c.Database.AbortAttempt(sAttempt.Val.ID, string(sAttempt.Val.Comment))
+	_, err := c.Database.AbortAttempt(sAttempt.Val.ID, string(sAttempt.Val.Comment), false)
 	if err != nil {
-		//TODO(CriticPolitic)
-		logging.Error(err)
-		c.State.ToSaveAttempts.Add(sAttempt)
+		message := fmt.Sprintf("Collector:handleDisabledHook:Database.AbortAttempt: %x", err)
+		logging.Error(message)
+		panic(message)
 	}
 }
 
@@ -159,15 +160,8 @@ func (c *Collector) handleDisabledHook(sAttempt *commons.SharedAttempt){
 func NewCollector(runnerParams component.RunnerParams, database storeInterface.IStoreProvider,  
 	client clientInterface.IHTTPClient) *Collector {
 
-		eventChan, err := database.ListenUpdates(runnerParams.DelayPull, commons.HookChannel, commons.AttemptChannel)
-		
-		if(err!=nil){
-			logging.Error(err)
-			os.Exit(1)
-		}
-
 		return &Collector{
-			WebhookRunner: *component.NewWebhookRunner(runnerParams, eventChan, database,client),
+			WebhookRunner: *component.NewWebhookRunner(runnerParams, database,client, commons.HookChannel, commons.AttemptChannel),
 		}
 
 }

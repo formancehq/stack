@@ -35,7 +35,7 @@ type WebhookRunner struct{
 	
 	Queue *sync.Queue
 	StopChan chan struct{}
-	EventChan chan commons.Event
+	LogChannels []commons.Channel
 
 	State *commons.State
 	
@@ -51,31 +51,65 @@ func (wr *WebhookRunner) Run(){
 
 }
 
-func (wr *WebhookRunner) StartHandleEventFromDatabase(){
-	go wr.State.RoutineEvent(wr.StopChan, wr.EventChan, wr.HandleEvent)
+func (wr *WebhookRunner) StartHandleFreshLogs(){
+	go wr.HandleFreshLogs(wr.StopChan)
 }
 
-func (wr *WebhookRunner) StartRetrySaveToDatabase(){
-	ticker := time.NewTicker(10*time.Second)
-	go wr.State.RoutineTime(wr.StopChan, ticker, wr.ToSaveProcess)
+func (wr *WebhookRunner) HandleFreshLogs(stopChan chan struct{}){
+
+	ticker := time.NewTicker(time.Duration(wr.RunnerParams.DelayPull)*time.Second)
+	var last_time time.Time = time.Now()
+
+	for {
+		select {
+		case <- stopChan:
+			return 
+		case <- ticker.C :
+			freezeTime := time.Now()
+			logs, err := wr.Database.GetFreshLogs(wr.LogChannels, last_time)
+			last_time = freezeTime
+			if(err != nil) {
+				message := fmt.Sprintf("WebhookRunner:HandleFreshLogs() - LogChannels : %s : Error while attempting to reach the database: %x", wr.LogChannels, err)
+				logging.Error(message)
+				panic(message)
+			}
+
+			for _,log := range *logs {		
+				wr.HandleFreshLog(log)
+			}
+		}
+	}
+
 }
- 
-func (wr *WebhookRunner) HandleEvent(e commons.Event){
+
+func (wr *WebhookRunner) HandleFreshLog(log *commons.Log) {
+	fmt.Println("HandleFreshLog")
+	e, err := commons.Event{}.FromPayload(log.Payload)
+	if(err != nil) {
+		message := fmt.Sprintf("WebhookRunner:HandleFreshLogs() - LogChannels : %s : Error while Event.FromPayload(log.payload): %x", wr.LogChannels, err)
+		logging.Error(message)
+		panic(message)
+	}
 	eventType := commons.TypeFromEvent(e) 
+
 	switch eventType {
 
 	case commons.NewHookType :
 		hook, err := wr.Database.GetHook(e.ID)
 		if (err!=nil){
-			//TODO(CriticPolitic)
-			logging.Errorf("WebhookRunner:NewHookEvent:Database.GetHook() : %x", err)
+			message := fmt.Sprintf("WebhookRunner:HandleFreshLogs() - LogChannels : %s : Case NewHookType Error while attempting to reach the database: %x", wr.LogChannels, err)
+			logging.Error(message)
+			panic(message)
 		}else {
 			wr.State.AddNewHook(&hook)
 		}
 		
 	case commons.ChangeHookStatusType:
-		switch e.Value {
+		fmt.Println(e.Value)
+		strValue := e.Value.(string)
+		switch commons.HookStatus(strValue) {
 		case commons.EnableStatus:
+			fmt.Println("ENABLE CASE")
 			wr.State.ActivateHook(e.ID)
 		case commons.DisableStatus:
 			wr.State.DisableHook(e.ID)
@@ -91,10 +125,12 @@ func (wr *WebhookRunner) HandleEvent(e commons.Event){
 	
 	case commons.NewWaitingAttemptType:
 		attempt, err := wr.Database.GetAttempt(e.ID)
-		if (err!=nil){
-			//TODO(CriticPolitic)
-			logging.Errorf("WebhookRunner:NewWaitingAttemptEvent:Database.GetAttempt() : %x", err)
+		if (err != nil) {
+			message := fmt.Sprintf("WebhookRunner:HandleFreshLogs() - LogChannels : %s : Error while NewWaitingAttemptType :  wr.Database.GetAttempt(e.ID): %x", wr.LogChannels, err)
+			logging.Error(message)
+			panic(message)
 		}
+		
 		wr.State.AddNewAttempt(&attempt)
 	case commons.FlushWaitingAttemptType:
 		wr.State.FlushAttempt(e.ID)
@@ -103,22 +139,8 @@ func (wr *WebhookRunner) HandleEvent(e commons.Event){
 	case commons.AbortWaitingAttemptType:
 		wr.State.AbortAttempt(e.ID)
 	default:
-		//TODO(Translate)
-		logging.Error(fmt.Sprintf("Un évenement non traité est survenue : %x", e))
-	}
-}
-
-func (wr *WebhookRunner) ToSaveProcess(){
-	if(wr.State.ToSaveAttempts.Size()==0){return}
-	
-	toSave := wr.State.ToSaveAttempts.Empty()
-	for _,sAttempt := range *toSave.Val {
-		_, err := wr.Database.ChangeAttemptStatus(sAttempt.Val.ID, sAttempt.Val.Status, string(sAttempt.Val.Comment))
-		if err != nil {
-			wr.State.ToSaveAttempts.Add(sAttempt)
-			//TODO(Translate)
-			logging.Error(fmt.Sprintf("Une erreur survient pendant une requête vers la DB: %x", err))
-		}
+		message := fmt.Sprintf("WebhookRunner:HandleFreshLogs() - LogChannels : %s : Unknow Log Type: %x", wr.LogChannels, e)
+		logging.Error(message)
 	}
 }
 
@@ -132,18 +154,11 @@ func (wr *WebhookRunner) HandleRequest(ctx context.Context, sAttempt *commons.Sh
 	return statusCode, err
 }
 
-func (wr *WebhookRunner) SendEvent(t commons.EventType, attempt *commons.Attempt, hook *commons.Hook) error{
-	event, err := commons.EventFromType(t, attempt, hook)
-	if err != nil {return err}
-	
-	return wr.Database.NotifyUpdate(event) 
-}
-
 
 func NewWebhookRunner(runnerParams RunnerParams, 
-					eventChan chan commons.Event,
 					database storeInterface.IStoreProvider, 
 					client clientInterface.IHTTPClient,
+					logChannels ...commons.Channel,
 					) *WebhookRunner{
 
 	return &WebhookRunner{
@@ -151,8 +166,7 @@ func NewWebhookRunner(runnerParams RunnerParams,
 
 		Queue: sync.NewQueue(runnerParams.MaxCall),
 		StopChan: make(chan struct{},0),
-		EventChan: eventChan,
-
+		LogChannels: logChannels,
 		State: commons.NewState(),
 
 		Database: database,

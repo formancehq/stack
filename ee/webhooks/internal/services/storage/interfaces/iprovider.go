@@ -24,20 +24,25 @@ type IStoreProvider interface {
 
 
 	GetAttempt(index string) (commons.Attempt, error)
-	SaveAttempt(attempts commons.Attempt) (error)
+	SaveAttempt(attempts commons.Attempt, wrapInLog bool) (error)
 
 	CompleteAttempt(index string) (commons.Attempt, error)
-	AbortAttempt(index string, comment string) (commons.Attempt, error)
-	ChangeAttemptStatus(index string, status commons.AttemptStatus, comment string) (commons.Attempt, error)
+	AbortAttempt(index string, comment string, wrapInLog bool) (commons.Attempt, error)
+	ChangeAttemptStatus(index string, status commons.AttemptStatus, comment string, wrapInLog bool) (commons.Attempt, error)
 	UpdateAttemptNextTry(index string, nextTry time.Time, statusCode int)(commons.Attempt, error)
 
 	GetWaitingAttempts(page int, size int) (*[]*commons.Attempt, bool, error)
 	LoadWaitingAttempts() (*[]*commons.Attempt, error)
 
-	GetAbortedAttempts(page int, size int) (*[]*commons.Attempt, bool, error)	
+	GetAbortedAttempts(page int, size int) (*[]*commons.Attempt, bool, error)
+
+	WriteLog(id, channel, payload string, created_time time.Time) error 
 	
+	FlushAttempts(index string) (error)
+	
+
+	GetFreshLogs(channels []commons.Channel, lastDate time.Time) (*[]*commons.Log, error)
 	ListenUpdates(delay int, channels ...commons.Channel) (chan commons.Event, error)
-	NotifyUpdate(commons.Event) error
 	
 	Close() error
 

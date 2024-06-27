@@ -9,7 +9,6 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
-	controllersCommons "github.com/formancehq/webhooks/internal/components/webhook_controller/controllers/commons"
 	"github.com/formancehq/webhooks/internal/commons"
 	"github.com/formancehq/webhooks/internal/components/webhook_controller/controllers/utils"
 	r "github.com/formancehq/webhooks/internal/components/webhook_controller/routes"
@@ -19,11 +18,6 @@ import (
 	storeInterface "github.com/formancehq/webhooks/internal/services/storage/interfaces"
 
 )
-
-const (
-	selectWaitingAttempts string = "SELECT "
-)
-
 
 
 const (
@@ -189,6 +183,8 @@ func V2GetWaitingAttemptsController(database storeInterface.IStoreProvider, filt
 
 	return utils.SuccessResp[bunpaginate.Cursor[commons.Attempt]](Cursor)
 }
+
+
 func V2GetAbortedAttemptsController(database storeInterface.IStoreProvider, filterCursor string) utils.Response[bunpaginate.Cursor[commons.Attempt]]{
 	hasMore := false
 		
@@ -225,11 +221,25 @@ func V2GetAbortedAttemptsController(database storeInterface.IStoreProvider, filt
 
 func V2RetryWaitingAttemptsController(database storeInterface.IStoreProvider) utils.Response[any]{
 	
-	err := controllersCommons.SendEvent(database, commons.FlushWaitingAttemptsType, nil, nil)
+	ev, err := commons.EventFromType(commons.FlushWaitingAttemptsType, nil, nil)
 	if err != nil {
 		return utils.InternalErrorResp[any](err)
 	}
 
+	log, err := commons.LogFromEvent(ev)
+
+	if err != nil {
+		return utils.InternalErrorResp[any](err)
+	}
+
+
+
+	err = database.WriteLog(log.ID, log.Payload, string(log.Channel), log.CreatedAt)
+
+	if err != nil {
+		return utils.InternalErrorResp[any](err)
+	}
+	
 	return utils.SuccessResp[any](nil)
 
 }
@@ -248,18 +258,33 @@ func V2RetryWaitingAttemptController(database storeInterface.IStoreProvider, id 
 		return utils.NotFoundErrorResp[any](errors.New(fmt.Sprintf("Attempt (id : %s) are not waiting anymore", id)))
 	}
 
-	err = controllersCommons.SendEvent(database, commons.FlushWaitingAttemptType, nil, nil)
-	
+	ev, err := commons.EventFromType(commons.FlushWaitingAttemptType, &attempt, nil)
 	if err != nil {
 		return utils.InternalErrorResp[any](err)
 	}
 
+	log, err := commons.LogFromEvent(ev)
+
+	if err != nil {
+		return utils.InternalErrorResp[any](err)
+	}
+
+
+
+	err = database.WriteLog(log.ID, log.Payload, string(log.Channel), log.CreatedAt)
+
+	if err != nil {
+		return utils.InternalErrorResp[any](err)
+	}
+	
 	return utils.SuccessResp[any](nil)
+
 
 }
 
 func V2AbortWaitingAttemptController(database storeInterface.IStoreProvider, id string) utils.Response[commons.Attempt]{
-	attempt, err := database.AbortAttempt(id, string(commons.AbortUser))
+	attempt, err := database.AbortAttempt(id, string(commons.AbortUser), true)
+	
 	if err != nil {
 		return utils.InternalErrorResp[commons.Attempt](err)
 	}
@@ -267,11 +292,6 @@ func V2AbortWaitingAttemptController(database storeInterface.IStoreProvider, id 
 	if(attempt.ID == ""){
 		return utils.NotFoundErrorResp[commons.Attempt](errors.New(fmt.Sprintf("Attempt (id : %s) doesn't exist", id)))
 	}
-
-	go func(){
-		_ = controllersCommons.SendEvent(database, commons.AbortWaitingAttemptType, &attempt, nil)
-		//TODO(log) What to do with err
-	}()	
 
 	return utils.SuccessResp(attempt)
 

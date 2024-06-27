@@ -1,7 +1,12 @@
 package storage
 
 import (
+	"context"
 	"fmt"
+	"time"
+
+	"github.com/formancehq/webhooks/internal/commons"
+	"github.com/uptrace/bun"
 )
 
 const (
@@ -16,15 +21,14 @@ func wrapWithLogQuery(query string) string {
 
 		WITH wrap_query AS (
 			%s
+		),
+
+		inserted_log AS (
+			INSERT INTO logs (id, channel, payload, created_at)
+			VALUES (?, ?, ?, ?)
 			RETURNING *
 		)
 
-		json_payload AS (
-    		SELECT json_agg(wrap_query) AS payload
-    		FROM wrap_query
-		)
-
-		INSERT INTO logs (id, channel, payload, created_at) VALUE (?, ?, ?, ?) ;
 		SELECT * FROM wrap_query;
 		
 		COMMIT; 
@@ -33,3 +37,19 @@ func wrapWithLogQuery(query string) string {
 	return fmt.Sprintf(rawQuery, query)
 
 }
+
+
+func (store PostgresStore) WriteLog(id, channel, payload string, created_at time.Time) error {
+
+	_, err := store.db.NewRaw(insertLogQuery, id, channel, payload, created_at).Exec(context.Background())
+	
+	return err 
+
+}
+
+func (store PostgresStore) GetFreshLogs(channels []commons.Channel, lastDate time.Time) (*[]*commons.Log, error) {
+	res := make([]*commons.Log, 0)
+	_, err := store.db.NewRaw(selectFreshLogs, bun.In(channels), lastDate).Exec(context.Background(), &res)
+
+	return &res, err 
+}	

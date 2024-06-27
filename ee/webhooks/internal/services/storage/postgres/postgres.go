@@ -90,22 +90,6 @@ func (store PostgresStore) ListenUpdates(delay int, channels ...commons.Channel)
 	return dbEventChan, nil
 }
 
-func (store PostgresStore) NotifyUpdate(event commons.Event) error {
-
-	log, err := commons.LogFromEvent(event)
-	if err!= nil {return err}
-
-	table := "logs"
-	columnExpr := fmt.Sprintf("%s, %s, %s, %s", "id", "channel", "payload", "created_at")
-	valueExpr := fmt.Sprintf("?, ?, ?, ?")
-	_,err = store.db.NewRaw(
-		fmt.Sprintf(`INSERT INTO "%s" (%s) VALUES (%s)`, table, columnExpr, valueExpr), 
-			log.ID, log.Channel, log.Payload, log.CreatedAt).Exec(context.Background())
-
-	return err 
-
-}
-
 
 func (store PostgresStore) Close() error {
 	return store.db.Close()

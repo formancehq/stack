@@ -102,7 +102,6 @@ func EventFromType(t EventType, attempt *Attempt, hook *Hook) (Event, error) {
 }
 
 func TypeFromEvent(ev Event) EventType {
-	
 	if(ev.Channel == AttemptChannel){
 		if(ev.Attribute == "id"){return NewWaitingAttemptType}
 		if(ev.Attribute == "nexttry"){

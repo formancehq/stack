@@ -1,9 +1,9 @@
 package commons
 
-import(
-	"github.com/formancehq/stack/libs/go-libs/sync/shared"	
+import (
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/sync/shared"
 )
 
 

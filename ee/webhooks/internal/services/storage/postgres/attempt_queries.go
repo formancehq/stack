@@ -4,57 +4,28 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/formancehq/webhooks/internal/commons"
 )	
 
 
-var TableAttempts = &Table{
-	Name: "attempts",
-	Columns: map[string]string{
-		"ID":"id",
-		"HOOKID":"webhook_id",
-		"HOOKNAME":"hook_name", 
-		"HOOKEP": "hook_endpoint", 
-		"EVENT":"event", 
-		"PAYLOAD": "payload", 
-		"STATUSC": "status_code",
-		"DOCCURED":"date_occured", 
-		"STATUS":"status", 
-		"DSTATUS": "date_status", 
-		"COMMENT":"comment", 
-		"NEXTTRY": "next_retry_after"},
-}
+const (
+	selectOneAttemptQuery string = "SELECT * FROM attempts WHERE id = ? "
+	selectAttemptsQuery = "SELECT * FROM attempts WHERE (status = ? ) OR (status = ?)"
+	selectAttemptsWithPaginationQuery string = "SELECT * FROM attempts WHERE (status = ? ) OR (status = ?) ORDER BY date_status DESC LIMIT ? OFFSET ?" 
+	insertAttemptQuery = "INSERT INTO attempts (id, webhook_id, hook_name, hook_endpoint, event, payload, status_code, date_occured, status, date_status, comment, next_retry_after) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *"
+	updateAttemptStatus = "UPDATE attempts SET status = ?, date_status = NOW(), comment = ? WHERE id = ? RETURNING *"
+	updateAttemptNextTry = "UPDATE attempts SET next_retry_after = ?, status_code = ? WHERE id = ? RETURNING *"
+)
 
-func attemptColumnsAsListStr() string {
-	var sb strings.Builder
-	sb.WriteString(TableAttempts.Columns["ID"]+",")
-	sb.WriteString(TableAttempts.Columns["HOOKID"]+",")
-	sb.WriteString(TableAttempts.Columns["HOOKNAME"]+",")
-	sb.WriteString(TableAttempts.Columns["HOOKEP"]+",")
-	sb.WriteString(TableAttempts.Columns["EVENT"]+",")
-	sb.WriteString(TableAttempts.Columns["PAYLOAD"]+",")
-	sb.WriteString(TableAttempts.Columns["STATUSC"]+",")
-	sb.WriteString(TableAttempts.Columns["DOCCURED"]+",")
-	sb.WriteString(TableAttempts.Columns["STATUS"]+",")
-	sb.WriteString(TableAttempts.Columns["DSTATUS"]+",")
-	sb.WriteString(TableAttempts.Columns["COMMENT"]+",")
-	sb.WriteString(TableAttempts.Columns["NEXTTRY"])
-	
-	return sb.String()
 
-}
+
 
 func (store PostgresStore) GetAttempt(index string)(commons.Attempt, error){
 	var attempt commons.Attempt
 
-	err := store.db.NewSelect().
-	ColumnExpr("*"). 
-	Table(TableAttempts.Name). 
-	Where("id = ?", index). 
-	Scan(context.Background(), &attempt)
+	err := store.db.NewRaw(selectOneAttemptQuery, index).Scan(context.Background(), &attempt)
 
 	if err == sql.ErrNoRows {
 		return attempt, nil
@@ -64,15 +35,38 @@ func (store PostgresStore) GetAttempt(index string)(commons.Attempt, error){
 
 }
 
-func (store PostgresStore) SaveAttempt(attempt commons.Attempt) error {
-	
+func (store PostgresStore) SaveAttempt(attempt commons.Attempt, wrapInLog bool) error {
 
-		query := insertQuery.
-		Fill(TableAttempts.Name, 
-			attemptColumnsAsListStr(), 
-			insertQuery.ValuesNb(len(TableAttempts.Columns)))
-	
-		_,err := store.db.NewRaw(string(query), 
+		var err error 
+
+		if(wrapInLog){
+			event, err := commons.EventFromType(commons.NewWaitingAttemptType, &attempt, nil)
+			if err != nil {return err}
+			log, err := commons.LogFromEvent(event)
+			
+			wrapQuery := wrapWithLogQuery(insertAttemptQuery)
+
+			_,err = store.db.NewRaw(wrapQuery, 
+							attempt.ID, 
+							attempt.HookID,
+							attempt.HookName,
+							attempt.HookEndpoint, 
+							attempt.Event,
+							attempt.Payload,
+							attempt.LastHttpStatusCode,
+							attempt.DateOccured,
+							string(attempt.Status),
+							attempt.DateStatus,
+							string(attempt.Comment),  
+							attempt.NextTry,
+							log.ID,
+							log.Channel,
+							log.Payload, 
+							log.CreatedAt).
+				Exec(context.Background())
+
+		} else {
+			_,err = store.db.NewRaw(insertAttemptQuery, 
 							attempt.ID, 
 							attempt.HookID,
 							attempt.HookName,
@@ -86,32 +80,54 @@ func (store PostgresStore) SaveAttempt(attempt commons.Attempt) error {
 							string(attempt.Comment),  
 							attempt.NextTry).
 				Exec(context.Background())
-
+		}
 
 		return err
 }
 
 
 func (store PostgresStore) CompleteAttempt(index string) (commons.Attempt, error) {
-	return store.ChangeAttemptStatus(index, commons.SuccessStatus, "")
+	return store.ChangeAttemptStatus(index, commons.SuccessStatus, "", false)
 }
 
-func (store PostgresStore) AbortAttempt(index string, comment string) (commons.Attempt, error){
-	return store.ChangeAttemptStatus(index, commons.AbortStatus, comment)
+func (store PostgresStore) AbortAttempt(index string, comment string, wrapInLog bool) (commons.Attempt, error){
+	return store.ChangeAttemptStatus(index, commons.AbortStatus, comment, wrapInLog)
 }
 
-func (store PostgresStore) ChangeAttemptStatus(index string, status commons.AttemptStatus, comment string) (commons.Attempt, error){
+func (store PostgresStore) ChangeAttemptStatus(index string, status commons.AttemptStatus, comment string, wrapInLog bool) (commons.Attempt, error){
 	var attempt commons.Attempt
+	attempt.ID = index 
 
-	updateRaw := fmt.Sprintf("%s = ?, %s = ?, %s = ?", TableAttempts.Columns["STATUS"], TableAttempts.Columns["DSTATUS"], TableAttempts.Columns["COMMENT"])
-	conditionRaw := fmt.Sprintf("id = ?")
+	var err error 
 
-	query := updateQuery.Fill(TableAttempts.Name, updateRaw, conditionRaw)
 
-	_, err := store.db.NewRaw(string(query), string(status), "NOW()", comment, index).Exec(context.Background(), &attempt)
+	if(wrapInLog){
+		event, err := commons.EventFromType(commons.AbortWaitingAttemptType, &attempt, nil)
+		if err != nil {return attempt, err}
+		log, err := commons.LogFromEvent(event)
+		
+		wrapQuery := wrapWithLogQuery(updateAttemptStatus)
+		 _,err = store.db.NewRaw(wrapQuery, 
+			string(status),  
+			comment, 
+			index,
+			log.ID,
+			log.Channel,
+			log.Payload, 
+			log.CreatedAt,
+			).Exec(context.Background(), &attempt)
+	} else {
+		_,err = store.db.NewRaw(updateAttemptStatus, 
+			string(status), 
+			comment, 
+			index,
+			).Exec(context.Background(), &attempt)
+	}
+	fmt.Println(err)
 
 	if err == sql.ErrNoRows {
-		return attempt, nil
+		attempt.ID = ""
+		return attempt, err
 	}
 
 	return attempt, err 
@@ -120,12 +136,7 @@ func (store PostgresStore) ChangeAttemptStatus(index string, status commons.Atte
 func (store PostgresStore) UpdateAttemptNextTry(index string, nextTry time.Time, statusCode int)(commons.Attempt, error){
 	var attempt commons.Attempt
 
-	updateRaw := fmt.Sprintf("%s = ?, %s = ?", TableAttempts.Columns["NEXTTRY"], TableAttempts.Columns["STATUSC"])
-	conditionRaw := fmt.Sprintf("id = ?")
-
-	query := updateQuery.Fill(TableAttempts.Name, updateRaw, conditionRaw)
-
-	_, err := store.db.NewRaw(string(query), nextTry,statusCode, index).Exec(context.Background(), &attempt)
+	_, err := store.db.NewRaw(updateAttemptNextTry, nextTry,statusCode, index).Exec(context.Background(), &attempt)
 
 	if err == sql.ErrNoRows {
 		return attempt, nil
@@ -138,12 +149,7 @@ func (store PostgresStore) GetWaitingAttempts(page, size int) (*[]*commons.Attem
 	res := make([]*commons.Attempt, 0)
 	hasMore := false 
 
-	err := store.db.NewSelect().
-	ColumnExpr("*").
-	Table(TableAttempts.Name). 
-	Where("(status = ?) OR (status = 'to_retry')", commons.WaitingStatus).  // 'to_retry' is for V1 compatibility...
-	Limit(size+1).
-	Offset(size*page).
+	err := store.db.NewRaw(selectAttemptsWithPaginationQuery, commons.WaitingStatus, "to_retry", size+1, size*page).
 	Scan(context.Background(), &res)
 
 	hasMore = len(res) == (size+1)
@@ -159,12 +165,8 @@ func (store PostgresStore) GetAbortedAttempts(page, size int) (*[]*commons.Attem
 	res := make([]*commons.Attempt, 0)
 	hasMore := false 
 
-	err := store.db.NewSelect().
-	ColumnExpr("*").
-	Table(TableAttempts.Name). 
-	Where("(status = ?) OR (status = 'failed')", commons.AbortStatus).  // 'failed' is for V1 compatibility...
-	Limit(size+1).
-	Offset(size*page).
+
+	err := store.db.NewRaw(selectAttemptsWithPaginationQuery, commons.AbortStatus, "failed", size+1, size*page).
 	Scan(context.Background(), &res)
 
 	hasMore = len(res) == (size+1)
@@ -180,13 +182,40 @@ func (store PostgresStore) GetAbortedAttempts(page, size int) (*[]*commons.Attem
 func (store PostgresStore) LoadWaitingAttempts() (*[]*commons.Attempt, error){
 	res := make([]*commons.Attempt, 0)
 
-	err := store.db.NewSelect().
-	ColumnExpr("*").
-	Table(TableAttempts.Name). 
-	Where("(status = ?) OR (status = 'to_retry')", commons.WaitingStatus).  // 'to_retry' is for V1 compatibility...
-	Scan(context.Background(), &res)
+	err := store.db.NewRaw(selectAttemptsQuery, commons.WaitingStatus, "to_retry").Scan(context.Background(), &res)
 
 	return &res, err
+}
+
+
+func (store PostgresStore) FlushAttempts(index string) error {
+
+	attempt := commons.Attempt{}
+	var log commons.Log
+	var err error 
+	
+	if(index != ""){
+		
+		attempt.ID = index 
+		event, err := commons.EventFromType(commons.FlushWaitingAttemptType, &attempt, nil)
+		if err != nil {return err}
+
+		log, err = commons.LogFromEvent(event)
+		if err != nil {return err}
+
+	} else {
+
+		event, err := commons.EventFromType(commons.FlushWaitingAttemptsType, &attempt, nil)
+		if err != nil {return err}
+
+		log, err = commons.LogFromEvent(event)
+		if err != nil {return err}
+
+	}
+
+	err = store.db.NewRaw(insertLogQuery, log.ID, log.Channel, log.Payload, log.CreatedAt).Scan(context.Background())
+
+	return err 
 }
 
 

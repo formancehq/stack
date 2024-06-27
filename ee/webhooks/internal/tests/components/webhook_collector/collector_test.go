@@ -76,11 +76,12 @@ func HandleGoodHook(t *testing.T){
 	var wg sync.WaitGroup
 	sAttempt := commons.NewSharedAttempt(ActiveGoodHook.ID, 
 		ActiveGoodHook.Name, ActiveGoodHook.Endpoint, "testevent", "payload good")
-	Database.SaveAttempt(*sAttempt.Val)
+	Database.SaveAttempt(*sAttempt.Val, true)
 
 	wg.Add(1)
 	WebhookCollector.AsyncHandleSharedAttempt(sAttempt, &wg)
-
+	wg.Wait()
+	
 	attempt, err := Database.GetAttempt(sAttempt.Val.ID)
 	require.NoError(t, err)
 
@@ -91,7 +92,7 @@ func HandleBadHook(t *testing.T){
 	var wg sync.WaitGroup
 	sAttempt := commons.NewSharedAttempt(ActiveBadHook.ID, 
 		ActiveBadHook.Name, ActiveBadHook.Endpoint, "testevent", "payload bad")
-	Database.SaveAttempt(*sAttempt.Val)
+	Database.SaveAttempt(*sAttempt.Val, true)
 
 	wg.Add(1)
 	WebhookCollector.AsyncHandleSharedAttempt(sAttempt, &wg)
@@ -110,7 +111,7 @@ func HandleDeactiveHook(t *testing.T){
 	var wg sync.WaitGroup
 	sAttempt := commons.NewSharedAttempt(DeactiveHook.ID, 
 	DeactiveHook.Name, DeactiveHook.Endpoint, "testevent", "payload bad")
-	Database.SaveAttempt(*sAttempt.Val)
+	Database.SaveAttempt(*sAttempt.Val, true)
 
 	wg.Add(1)
 	WebhookCollector.AsyncHandleSharedAttempt(sAttempt, &wg)
@@ -129,7 +130,7 @@ func HandleMissingHook(t *testing.T){
 	var wg sync.WaitGroup
 	sAttempt := commons.NewSharedAttempt("noID", 
 	"no name", "no endpoint", "testevent", "payload bad")
-	Database.SaveAttempt(*sAttempt.Val)
+	Database.SaveAttempt(*sAttempt.Val, true)
 
 	wg.Add(1)
 	WebhookCollector.AsyncHandleSharedAttempt(sAttempt, &wg)

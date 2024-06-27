@@ -293,11 +293,6 @@ func V2CreateHookController(database storeInterface.IStoreProvider, hookParams c
 		return utils.InternalErrorResp[commons.Hook](err)
 	}
 
-	go func(){
-		_ = controllersCommons.SendEvent(database, commons.NewHookType, nil, &hook)
-		//TODO(log) What to do with err
-	}()	
-
 	return utils.SuccessResp(hook)
 }
 

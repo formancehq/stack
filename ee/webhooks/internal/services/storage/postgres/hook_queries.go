@@ -3,7 +3,8 @@ package storage
 import (
 	"context"
 	"database/sql"
-	"fmt"
+	"strings"
+
 	"github.com/formancehq/webhooks/internal/commons"
 )	
 
@@ -11,7 +12,7 @@ import (
 const (
 	selectOneHookQuery string = "SELECT * FROM configs WHERE id = ?"
 	selectHooksQuery  = "SELECT * FROM configs WHERE status != ?" 
-	selectHooksWithPaginationQuery  = "SELECT * FROM configs WHERE  status !=  ? ORDER By name LIMIT ? OFFSET ?"
+	selectHooksWithPaginationQuery  = "SELECT * FROM configs WHERE  status !=  ? AND %condWhere% ORDER By name LIMIT ? OFFSET ?"
 	insertHookQuery  = "INSERT INTO configs (id, name, status, event_types, endpoint, secret, created_at, date_status, retry) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *"
 	updateHookStatusQuery = "UPDATE configs SET status = ?, date_status = NOW() WHERE id = ? RETURNING *"
 	updateHookSecretQuery = "UPDATE configs SET secret = ? WHERE id = ? RETURNING *"
@@ -20,7 +21,7 @@ const (
 )
 
 const (
-	whereEndpointPartialQuery = "WHERE endpoint = ?"
+	endpointCriteria = "endpoint = '%val%'"
 )
 
 
@@ -78,6 +79,8 @@ func (store PostgresStore) DeleteHook(index string) (commons.Hook, error) {
 
 func (store PostgresStore) changeHookStatus(index string, status commons.HookStatus) (commons.Hook, error) {
 	var hook commons.Hook
+	hook.ID = index 
+	hook.Status = status
 	
 	event, err := commons.EventFromType(commons.ChangeHookStatusType, nil, &hook)
 	if err != nil {return hook, err}
@@ -89,6 +92,7 @@ func (store PostgresStore) changeHookStatus(index string, status commons.HookSta
 	_, err = store.db.NewRaw(wrapQuery, string(status),index, log.ID, log.Channel, log.Payload, log.CreatedAt).Exec(context.Background(), &hook)
 
 	if err == sql.ErrNoRows {
+		hook.ID = ""
 		return hook, nil
 	}
 
@@ -99,7 +103,9 @@ func (store PostgresStore) changeHookStatus(index string, status commons.HookSta
 
 func (store PostgresStore) UpdateHookEndpoint(index string, endpoint string) (commons.Hook, error) {
 	var hook commons.Hook
-	
+	hook.ID = index 
+	hook.Endpoint = endpoint 
+
 	event, err := commons.EventFromType(commons.ChangeHookEndpointType, nil, &hook)
 	if err != nil {return hook, err}
 	log, err := commons.LogFromEvent(event)
@@ -109,6 +115,7 @@ func (store PostgresStore) UpdateHookEndpoint(index string, endpoint string) (co
 	_, err = store.db.NewRaw(wrapQuery, string(endpoint),index, log.ID, log.Channel, log.Payload, log.CreatedAt).Exec(context.Background(), &hook)
 
 	if err == sql.ErrNoRows {
+		hook.ID = ""
 		return hook, nil
 	}
 
@@ -117,6 +124,8 @@ func (store PostgresStore) UpdateHookEndpoint(index string, endpoint string) (co
 
 func (store PostgresStore) UpdateHookSecret(index string, secret string) (commons.Hook, error) {
 	var hook commons.Hook
+	hook.ID = index 
+	hook.Secret = secret
 
 	event, err := commons.EventFromType(commons.ChangeHookSecretType, nil, &hook)
 	if err != nil {return hook, err}
@@ -127,6 +136,7 @@ func (store PostgresStore) UpdateHookSecret(index string, secret string) (common
 	_, err = store.db.NewRaw(wrapQuery, secret,index, log.ID, log.Channel, log.Payload, log.CreatedAt).Exec(context.Background(), &hook)
 
 	if err == sql.ErrNoRows {
+		hook.ID = ""
 		return hook, nil
 	}
 
@@ -136,6 +146,8 @@ func (store PostgresStore) UpdateHookSecret(index string, secret string) (common
 
 func (store PostgresStore) UpdateHookRetry(index string, retry bool) (commons.Hook, error){
 	var hook commons.Hook
+	hook.ID = index 
+	hook.Retry = retry 
 
 	event, err := commons.EventFromType(commons.ChangeHookRetryType, nil, &hook)
 	if err != nil {return hook, err}
@@ -146,6 +158,7 @@ func (store PostgresStore) UpdateHookRetry(index string, retry bool) (commons.Ho
 	_, err = store.db.NewRaw(wrapQuery, retry,index, log.ID, log.Channel, log.Payload, log.CreatedAt).Exec(context.Background(), &hook)
 
 	if err == sql.ErrNoRows {
+		hook.ID = ""
 		return hook, nil
 	}
 
@@ -158,12 +171,16 @@ func (store PostgresStore) GetHooks(page, size int, filterEndpoint string) (*[]*
 	res := make([]*commons.Hook, 0)
 	hasMore := false 
 
+	condWhere := "1=1"
+
 	rawQuery := selectHooksWithPaginationQuery
 	if(filterEndpoint != ""){
-		rawQuery = fmt.Sprint(rawQuery, " ", whereEndpointPartialQuery)
+		condWhere = strings.Replace(endpointCriteria, "%val%", filterEndpoint, 1)
 	}
 
-	_, err := store.db.NewRaw(rawQuery, size+1, size*page, filterEndpoint).Exec(context.Background(), &res)
+	rawQuery = strings.Replace(rawQuery, "%condWhere%", condWhere, 1)
+
+	_, err := store.db.NewRaw(rawQuery,commons.DeleteStatus, size+1, size*page).Exec(context.Background(), &res)
 
 	if(err != nil){
 		return &res, hasMore, err

@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	"github.com/formancehq/webhooks/internal/commons"
+	
 	v2Ctrl "github.com/formancehq/webhooks/internal/components/webhook_controller/controllers/v2"
 	"github.com/stretchr/testify/require"
-	utilsCtrl "github.com/formancehq/webhooks/internal/components/webhook_controller/controllers/utils"
 )
 
 
@@ -37,13 +37,13 @@ func v2InsertAttempt(t *testing.T){
 	hook := resp.Data 
 
 	attempt := commons.NewAttempt(hook.ID, hook.Name, hook.Endpoint, hook.Events[0], "Attempt1")
-	require.NoError(t, Database.SaveAttempt(*attempt))	
+	require.NoError(t, Database.SaveAttempt(*attempt, true))	
 	attempt2 := commons.NewAttempt(hook.ID, hook.Name, hook.Endpoint, hook.Events[0], "Attempt2")
-	require.NoError(t, Database.SaveAttempt(*attempt2))	
+	require.NoError(t, Database.SaveAttempt(*attempt2, true))	
 	attempt3 := commons.NewAttempt(hook.ID, hook.Name, hook.Endpoint, hook.Events[0], "Attempt3")
-	require.NoError(t, Database.SaveAttempt(*attempt3))	
+	require.NoError(t, Database.SaveAttempt(*attempt3, true))	
 	attempt4 := commons.NewAttempt(hook.ID, hook.Name, hook.Endpoint, hook.Events[0], "Attempt4")
-	require.NoError(t, Database.SaveAttempt(*attempt4))	
+	require.NoError(t, Database.SaveAttempt(*attempt4, true))	
 
 
 }
@@ -54,26 +54,6 @@ func v2GetWaitingAttempts(t *testing.T){
 	require.Len(t, resp.Data.Data, 4)
 }
 
-func v2GetAbortedAttempts(t *testing.T){
-	resp := v2Ctrl.V2GetAbortedAttemptsController(Database, "")
-	require.NoError(t, resp.Err)
-	require.Len(t, resp.Data.Data, 0)
-}
-
-func v2RetryWaitingAttempt(t *testing.T){
-	badId := "23"
-	respE := v2Ctrl.V2AbortWaitingAttemptController(Database, badId)
-	require.Error(t, respE.Err)
-	require.Equal(t, utilsCtrl.NotFoundType, respE.T)
-	
-	temp := v2Ctrl.V2GetWaitingAttemptsController(Database, "")
-	require.NoError(t, temp.Err)
-	attempt := temp.Data.Data[0]
-	resp := v2Ctrl.V2RetryWaitingAttemptController(Database, attempt.ID)
-	require.NoError(t, resp.Err)
-
-}
-
 func v2AbortWaitingAttempt(t *testing.T){
 	temp := v2Ctrl.V2GetWaitingAttemptsController(Database, "")
 	require.NoError(t, temp.Err)
@@ -82,6 +62,21 @@ func v2AbortWaitingAttempt(t *testing.T){
 	resp := v2Ctrl.V2AbortWaitingAttemptController(Database, attempt.ID)
 	require.NoError(t, resp.Err)
 	require.Equal(t, commons.AbortUser, resp.Data.Comment)
+}
+
+func v2GetAbortedAttempts(t *testing.T){
+	resp := v2Ctrl.V2GetAbortedAttemptsController(Database, "")
+	require.NoError(t, resp.Err)
+	require.Len(t, resp.Data.Data, 1)
+}
+
+func v2RetryWaitingAttempt(t *testing.T){	
+	temp := v2Ctrl.V2GetWaitingAttemptsController(Database, "")
+	require.NoError(t, temp.Err)
+	attempt := temp.Data.Data[0]
+	resp := v2Ctrl.V2RetryWaitingAttemptController(Database, attempt.ID)
+	require.NoError(t, resp.Err)
+
 }
 
 func v2RetryWaitingAttempts(t *testing.T){

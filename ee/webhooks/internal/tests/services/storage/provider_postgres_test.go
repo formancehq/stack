@@ -138,7 +138,7 @@ func insertAttempt(t *testing.T){
 	hooks,_, _ := Database.GetHooks(0, 1, "")
 	hook := *(*hooks)[0]
 	attempt := commons.NewAttempt(hook.ID, hook.Name, hook.Endpoint, hook.Events[0], "TEST")
-	require.NoError(t, Database.SaveAttempt(*attempt))	
+	require.NoError(t, Database.SaveAttempt(*attempt, true))	
 }
 
 func getAttempt(t *testing.T){
@@ -166,10 +166,10 @@ func abortAttempt(t *testing.T){
 	hooks,_, _ := Database.GetHooks(0, 1, "")
 	hook := *(*hooks)[0]
 	attempt := commons.NewAttempt(hook.ID, hook.Name, hook.Endpoint, hook.Events[0], "TEST")
-	require.NoError(t, Database.SaveAttempt(*attempt))	
+	require.NoError(t, Database.SaveAttempt(*attempt, true))	
 	attempts,_, _ := Database.GetWaitingAttempts(0, 1)
 	attempt1 := *(*attempts)[0]
-	attempt1, err := Database.AbortAttempt(attempt1.ID, "TESTABORT")
+	attempt1, err := Database.AbortAttempt(attempt1.ID, "TESTABORT", true)
 	require.NoError(t, err)
 	require.Equal(t, commons.AbortStatus, attempt1.Status)
 	require.Equal(t, "TESTABORT", string(attempt1.Comment))
@@ -188,7 +188,7 @@ func updateAttemptNextTry(t *testing.T){
 	hooks,_, _ := Database.GetHooks(0, 1, "")
 	hook := *(*hooks)[0]
 	attempt := commons.NewAttempt(hook.ID, hook.Name, hook.Endpoint, hook.Events[0], "TEST")
-	require.NoError(t, Database.SaveAttempt(*attempt))	
+	require.NoError(t, Database.SaveAttempt(*attempt, true))	
 	attempts,_, _ := Database.GetWaitingAttempts(0, 1)
 	attempt1 := *(*attempts)[0]
 	now := time.Now()

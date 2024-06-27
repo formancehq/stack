@@ -3,6 +3,7 @@ package webhookworker
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"strings"
 	"sync"
@@ -31,7 +32,7 @@ type Worker struct {
 }
 
 func (w *Worker) Init(){
-	w.StartHandleEventFromDatabase()
+	w.StartHandleFreshLogs()
 
 	hooks, err := w.Database.LoadHooks()
 	if err != nil {
@@ -104,17 +105,16 @@ func (w *Worker) HandlerTriggedHookFactory(ctx context.Context, event string, pa
 		hook := sHook.Val
 		attempt := sAttempt.Val
 		statusCode, err := w.HandleRequest(ctx, sAttempt, sHook)
-		if err != nil {
-			globalError = err 		
-		} else {
-			tmp := w.HandleResponse(statusCode, attempt, hook)
-			globalError = tmp
 		
+		if(err != nil){
+			message := fmt.Sprintf("Worker:triggedSHooks.AsyncApply() - HandleTriggedHookFactory() - func(sHook *commons.SharedHook,wg *sync.WaitGroup) - w.HandleRequest - Something Went wrong while trying to make http request: %x", err)
+			logging.Error(message)
+			panic(message)
+			
 		}
 
-		if(globalError != nil){
-			logging.FromContext(ctx).Errorf("Worker.HandlerTriggedHook() - globalError : %x", globalError)
-		}
+		w.HandleResponse(statusCode, attempt, hook)
+
 		
 	}
 }
@@ -122,27 +122,16 @@ func (w *Worker) HandlerTriggedHookFactory(ctx context.Context, event string, pa
 func (w *Worker) HandleResponse(statusCode int, attempt *commons.Attempt, hook *commons.Hook) error{
 	attempt.LastHttpStatusCode = statusCode
 	attempt.NbTry += 1
+	var err error 
+	
 	if(commons.IsHTTPRequestSuccess(statusCode)) {
 		commons.SetSuccesStatus(attempt)
-		
+		err = w.Database.SaveAttempt(*attempt, true)
 	}
 
 	if(!hook.Retry && !attempt.IsSuccess()){
 		commons.SetAbortNoRetryModeStatus(attempt)
-	}
-	
-	err := w.Database.SaveAttempt(*attempt)
-	
-	if(err == nil && attempt.Status == commons.WaitingStatus){
-		
-		go func(){
-			
-			err1 := w.SendEvent(commons.NewWaitingAttemptType, attempt, nil)
-			
-			if err1!= nil {
-				//TODO(LOG) QUOI FAIRE ?
-			}
-		}()
+		err = w.Database.SaveAttempt(*attempt, false)
 	}
 
 	return err
@@ -150,13 +139,8 @@ func (w *Worker) HandleResponse(statusCode int, attempt *commons.Attempt, hook *
 }
 
 func NewWorker(runnerParams component.RunnerParams, database storeInterface.IStoreProvider, client clientInterface.IHTTPClient) *Worker {
-	eventChan, err := database.ListenUpdates(runnerParams.DelayPull, commons.HookChannel)
-	if(err!=nil){
-		logging.Error(err)
-		os.Exit(1)
-	}
 
 	return &Worker{
-		WebhookRunner: *component.NewWebhookRunner(runnerParams, eventChan, database, client),
+		WebhookRunner: *component.NewWebhookRunner(runnerParams, database, client, commons.HookChannel),
 	}
 }
