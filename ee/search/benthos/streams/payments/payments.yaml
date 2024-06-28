@@ -162,7 +162,7 @@ pipeline:
         - bloblang: |
               root = {
                 "document": {
-                    "data": this.payload,
+                    "data": this.payload.without("rawData"),
                     "indexed": {
                         "id": this.payload.id,
                         "provider": this.payload.provider,

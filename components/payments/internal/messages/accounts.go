@@ -1,6 +1,7 @@
 package messages
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/publish"
@@ -10,14 +11,15 @@ import (
 )
 
 type accountMessagePayload struct {
-	ID           string    `json:"id"`
-	CreatedAt    time.Time `json:"createdAt"`
-	Reference    string    `json:"reference"`
-	ConnectorID  string    `json:"connectorId"`
-	Provider     string    `json:"provider"`
-	DefaultAsset string    `json:"defaultAsset"`
-	AccountName  string    `json:"accountName"`
-	Type         string    `json:"type"`
+	ID           string          `json:"id"`
+	CreatedAt    time.Time       `json:"createdAt"`
+	Reference    string          `json:"reference"`
+	ConnectorID  string          `json:"connectorId"`
+	Provider     string          `json:"provider"`
+	DefaultAsset string          `json:"defaultAsset"`
+	AccountName  string          `json:"accountName"`
+	Type         string          `json:"type"`
+	RawData      json.RawMessage `json:"rawData"`
 }
 
 func (m *Messages) NewEventSavedAccounts(provider models.ConnectorProvider, account *models.Account) publish.EventMessage {
@@ -30,6 +32,7 @@ func (m *Messages) NewEventSavedAccounts(provider models.ConnectorProvider, acco
 		AccountName:  account.AccountName,
 		Type:         string(account.Type),
 		Provider:     provider.String(),
+		RawData:      account.RawData,
 	}
 
 	if account.Type == models.AccountTypeExternalFormance {
