@@ -15,8 +15,21 @@ type responseWriter struct {
 }
 
 func (w *responseWriter) Write(data []byte) (int, error) {
+	if w.Header().Get("Content-Type") == "application/octet-stream" {
+		return w.ResponseWriter.Write(data)
+	}
 	w.data = append(w.data, data...)
-	return w.ResponseWriter.Write(w.data)
+	return len(data), nil
+}
+
+func (w *responseWriter) finalize() {
+	if w.Header().Get("Content-Type") == "application/octet-stream" {
+		return
+	}
+	_, err := w.ResponseWriter.Write(w.data)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func OTLPMiddleware(serverName string) func(h http.Handler) http.Handler {
@@ -33,6 +46,8 @@ func OTLPMiddleware(serverName string) func(h http.Handler) http.Handler {
 
 				rw := &responseWriter{w, make([]byte, 0, 1024)}
 				defer func() {
+					rw.finalize()
+
 					trace.SpanFromContext(r.Context()).
 						SetAttributes(attribute.String("http.response", string(rw.data)))
 				}()
