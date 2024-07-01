@@ -270,6 +270,32 @@ func RegisterV2HookControllers(server serverInterfaces.IHTTPServer, database sto
 
 
 	})
+
+	server.Register(string(r.V2ChangeHookRetry.Method), r.V2ChangeHookRetry.Url, func(w http.ResponseWriter, r *http.Request) {
+
+		id := chi.URLParam(r, "id")
+		retry := &utils.Retry{}
+		if err := utils.DecodeJSONBody(r, &retry); err != nil {
+			sharedapi.BadRequest(w, utils.ErrValidation, err)
+			return
+		}
+
+		hook, err := controllersCommons.UpdateRetry(database, id, retry.Retry)
+		
+		if err != nil {
+			sharedapi.InternalServerError(w, r, err)
+			return
+		}
+		
+		if(hook.ID == ""){
+			sharedapi.NotFound(w, errors.New(fmt.Sprintf("Hook (id : %s) doesn't exist", id)))
+			return
+		}
+		
+		sharedapi.Ok(w, hook)
+
+
+	})
 }
 
 
@@ -325,6 +351,7 @@ func V2GetHooksController(database storeInterface.IStoreProvider, filterEndpoint
 	}
 
 	Cursor := bunpaginate.Cursor[commons.Hook]{
+		PageSize: pageSize,
 		HasMore: hasMore,
 		Previous: strPrevious,
 		Next: strNext,

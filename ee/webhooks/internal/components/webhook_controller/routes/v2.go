@@ -1,3 +1,4 @@
+
 package routes
 
 import(
@@ -9,7 +10,7 @@ import(
 var V2GetHooks = s.NewRoute(s.GET, "/v2/hooks")
 var V2CreateHook = s.NewRoute(s.POST, "/v2/hooks")
 var V2DeleteHook = s.NewRoute(s.DELETE, "/v2/hooks/{id}")
-var V2TestHook = s.NewRoute(s.GET, "/v2/hooks/{id}/test")
+var V2TestHook = s.NewRoute(s.POST, "/v2/hooks/{id}/test")
 var V2ActiveHook = s.NewRoute(s.PUT,"/v2/hooks/{id}/activate")
 var V2DeactiveHook = s.NewRoute(s.PUT, "/v2/hooks/{id}/deactivate")
 var V2ChangeHookSecret = s.NewRoute(s.PUT, "/v2/hooks/{id}/secret")

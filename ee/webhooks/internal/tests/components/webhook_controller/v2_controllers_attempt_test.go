@@ -1,27 +1,23 @@
 package webhookcontroller
 
 import (
-	
 	"testing"
-
 	"github.com/formancehq/webhooks/internal/commons"
-	
 	v2Ctrl "github.com/formancehq/webhooks/internal/components/webhook_controller/controllers/v2"
 	"github.com/stretchr/testify/require"
 )
 
 
 func TestRunAttemptV2(t *testing.T){
-	
 	t.Run("InsertAttempt", v2InsertAttempt)
 	t.Run("GetWaitingAttempts", v2GetWaitingAttempts)
+	t.Run("AbortWaitingAttempt", v2AbortWaitingAttempt)
 	t.Run("GetAbortedAttempts", v2GetAbortedAttempts)
 	t.Run("RetryWaitingAttempt", v2RetryWaitingAttempt)
-	t.Run("AbortWaitingAttempt", v2AbortWaitingAttempt)
-
 	t.Run("RetryWaitingAttempts", v2RetryWaitingAttempts)
-
 }
+
+
 
 func v2InsertAttempt(t *testing.T){
 	params := commons.HookBodyParams{
@@ -43,8 +39,11 @@ func v2InsertAttempt(t *testing.T){
 	attempt3 := commons.NewAttempt(hook.ID, hook.Name, hook.Endpoint, hook.Events[0], "Attempt3")
 	require.NoError(t, Database.SaveAttempt(*attempt3, true))	
 	attempt4 := commons.NewAttempt(hook.ID, hook.Name, hook.Endpoint, hook.Events[0], "Attempt4")
-	require.NoError(t, Database.SaveAttempt(*attempt4, true))	
-
+	require.NoError(t, Database.SaveAttempt(*attempt4, true))
+	attempt5 := commons.NewAttempt(hook.ID, hook.Name, hook.Endpoint, hook.Events[0], "AttemptAborted")	
+	attempt5.Status = commons.AbortStatus
+	attempt5.Comment = commons.AbortUser
+	require.NoError(t, Database.SaveAttempt(*attempt5, true))
 
 }
 
@@ -61,13 +60,14 @@ func v2AbortWaitingAttempt(t *testing.T){
 
 	resp := v2Ctrl.V2AbortWaitingAttemptController(Database, attempt.ID)
 	require.NoError(t, resp.Err)
+	require.Equal(t, attempt.ID , resp.Data.ID)
 	require.Equal(t, commons.AbortUser, resp.Data.Comment)
 }
 
 func v2GetAbortedAttempts(t *testing.T){
 	resp := v2Ctrl.V2GetAbortedAttemptsController(Database, "")
 	require.NoError(t, resp.Err)
-	require.Len(t, resp.Data.Data, 1)
+	require.Len(t, resp.Data.Data, 2)
 }
 
 func v2RetryWaitingAttempt(t *testing.T){	
@@ -76,7 +76,6 @@ func v2RetryWaitingAttempt(t *testing.T){
 	attempt := temp.Data.Data[0]
 	resp := v2Ctrl.V2RetryWaitingAttemptController(Database, attempt.ID)
 	require.NoError(t, resp.Err)
-
 }
 
 func v2RetryWaitingAttempts(t *testing.T){

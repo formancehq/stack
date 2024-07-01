@@ -3,7 +3,6 @@ package storage
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/formancehq/webhooks/internal/commons"
@@ -102,6 +101,7 @@ func (store PostgresStore) ChangeAttemptStatus(index string, status commons.Atte
 
 
 	if(wrapInLog){
+		
 		event, err := commons.EventFromType(commons.AbortWaitingAttemptType, &attempt, nil)
 		if err != nil {return attempt, err}
 		log, err := commons.LogFromEvent(event)
@@ -116,6 +116,8 @@ func (store PostgresStore) ChangeAttemptStatus(index string, status commons.Atte
 			log.Payload, 
 			log.CreatedAt,
 			).Exec(context.Background(), &attempt)
+		
+		
 	} else {
 		_,err = store.db.NewRaw(updateAttemptStatus, 
 			string(status), 
@@ -123,7 +125,7 @@ func (store PostgresStore) ChangeAttemptStatus(index string, status commons.Atte
 			index,
 			).Exec(context.Background(), &attempt)
 	}
-	fmt.Println(err)
+	
 
 	if err == sql.ErrNoRows {
 		attempt.ID = ""
@@ -165,10 +167,10 @@ func (store PostgresStore) GetAbortedAttempts(page, size int) (*[]*commons.Attem
 	res := make([]*commons.Attempt, 0)
 	hasMore := false 
 
-
+	
 	err := store.db.NewRaw(selectAttemptsWithPaginationQuery, commons.AbortStatus, "failed", size+1, size*page).
 	Scan(context.Background(), &res)
-
+	
 	hasMore = len(res) == (size+1)
 
 	if(hasMore){
@@ -217,10 +219,3 @@ func (store PostgresStore) FlushAttempts(index string) error {
 
 	return err 
 }
-
-
-
-
-
-
-

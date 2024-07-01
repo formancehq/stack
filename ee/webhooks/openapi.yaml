@@ -1,8 +1,7 @@
 openapi: 3.0.3
 info:
   title: Webhooks
-  version: "WEBHOOKS_VERSION"
-
+  version: WEBHOOKS_VERSION
 paths:
   /configs:
     get:
@@ -33,14 +32,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConfigsResponse'
-
         default:
           description: Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
     post:
       summary: Insert a new config
       description: |
@@ -69,14 +66,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConfigResponse'
-
         default:
           description: Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
   /configs/{id}:
     delete:
       summary: Delete one config
@@ -95,14 +90,12 @@ paths:
       responses:
         "200":
           description: Config successfully deleted.
-
         default:
           description: Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
   /configs/{id}/test:
     get:
       summary: Test one config
@@ -125,14 +118,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AttemptResponse'
-
         default:
           description: Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
   /configs/{id}/activate:
     put:
       summary: Activate one config
@@ -155,14 +146,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConfigResponse'
-
         default:
           description: Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
   /configs/{id}/deactivate:
     put:
       summary: Deactivate one config
@@ -185,14 +174,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConfigResponse'
-
         default:
           description: Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
   /configs/{id}/secret/change:
     put:
       summary: Change the signing secret of a config
@@ -224,14 +211,394 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConfigResponse'
-
         default:
           description: Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /v2/hooks:
+    get:
+      summary: Get Many hooks
+      description: List of Available hooks
+      operationId: getManyHooks
+      tag:
+        - Webhooks
+      parameters:
+        - name: endpoint
+          in: query
+          description: Optional filter by endpoint URL
+          required: false
+          schema:
+            type: string
+            example: https://example.com
+        - name: cursor
+          in: query
+          description: optional cursor filter for pagination
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/V2HookCursorResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      summary: Insert new Hook
+      description: |
+        Insert a new webhooks config.
 
+        The endpoint should be a valid https URL and be unique.
+
+        The secret is the endpoint's verification secret.
+        If not passed or empty, a secret is automatically generated.
+        The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
+
+        All eventTypes are converted to lower-case when inserted.
+      operationId: insertConfig1
+      tags: Webhooks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V2HookBodyParams'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V2HookResponse'
+  /v2/hooks/{hookId}:
+    delete:
+      summary: Delete one Hook
+      operationId: deleteHook
+      parameters:
+        - name: hookId
+          in: path
+          description: Hook ID
+          required: true
+          schema:
+            type: string
+            example: 4997257d-dfb6-445b-929c-cbe2ab182818
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V2HookResponse'
+          description: The hooks successfully deleted
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v2/hooks/{hookId}/test:
+    post:
+      summary: Test one Hook
+      operationId: testHook
+      tags: Webhooks
+      parameters:
+        - name: hookId
+          in: path
+          description: Hook ID
+          required: true
+          schema:
+            type: string
+            example: 4997257d-dfb6-445b-929c-cbe2ab182818
+      requestBody:
+        content:
+          application/json:
+            schema:
+              payload:
+                type: string
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V2AttemptResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v2/hooks/{hookId}/activate:
+    put:
+      summary: Activate one Hook
+      operationId: activateHook
+      tags: Webhooks
+      parameters:
+        - name: hookId
+          in: path
+          description: Hook ID
+          required: true
+          schema:
+            type: string
+            example: 4997257d-dfb6-445b-929c-cbe2ab182818
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V2HookResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v2/hooks/{hookId}/deactivate:
+    put:
+      summary: Deactivate one Hook
+      operationId: deactivateHook
+      tags: Webhooks
+      parameters:
+        - name: hookId
+          in: path
+          description: Hook ID
+          required: true
+          schema:
+            type: string
+            example: 4997257d-dfb6-445b-929c-cbe2ab182818
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V2HookResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v2/hooks/{hookId}/secret:
+    put:
+      summary: Change the secret of one Hook
+      operationId: updateSecretHook
+      tags: Webhooks
+      parameters:
+        - name: hookId
+          in: path
+          description: Hook ID
+          required: true
+          schema:
+            type: string
+            example: 4997257d-dfb6-445b-929c-cbe2ab182818
+      requestBody:
+        content:
+          application/json:
+            schema:
+              secret:
+                type: string
+                default: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V2HookResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v2/hooks/{hookId}/endpoint:
+    put:
+      summary: Change the endpointt of one Hook
+      operationId: updateEndpointHook
+      tags: Webhooks
+      parameters:
+        - name: hookId
+          in: path
+          description: Hook ID
+          required: true
+          schema:
+            type: string
+            example: 4997257d-dfb6-445b-929c-cbe2ab182818
+      requestBody:
+        content:
+          application/json:
+            schema:
+              endpoint:
+                type: string
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V2HookResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v2/hooks/{hookId}/retry:
+    put:
+      summary: Change the retry attribute of one Hook
+      operationId: updateSecretHook1
+      tags: Webhooks
+      parameters:
+        - name: hookId
+          in: path
+          description: Hook ID
+          required: true
+          schema:
+            type: string
+            example: 4997257d-dfb6-445b-929c-cbe2ab182818
+      requestBody:
+        content:
+          application/json:
+            schema:
+              retry:
+                type: boolean
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V2HookResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v2/attempts/waiting:
+    get:
+      summary: Get Waiting Attempts
+      description: List of Available hooks
+      operationId: getWaitingAttempts
+      tag:
+        - Webhooks
+      parameters:
+        - name: cursor
+          in: query
+          description: optional cursor filter for pagination
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/V2AttemptCursorResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v2/attempts/aborted:
+    get:
+      summary: Get aborted Attempts
+      operationId: getAbortedAttempts
+      tag:
+        - Webhooks
+      parameters:
+        - name: cursor
+          in: query
+          description: optional cursor filter for pagination
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/V2AttemptCursorResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v2/attempts/waiting/flush:
+    put:
+      summary: Retry all the waiting attempts
+      operationId: retryWaitingAttempts
+      tag:
+        - Webhooks
+      responses:
+        "200":
+          description: OK
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v2/attempts/waiting/{attemptId}/flush:
+    put:
+      summary: Retry one waiting Attempt
+      operationId: retryWaitingAttempt
+      tag:
+        - Webhooks
+      parameters:
+        - name: attemptId
+          in: path
+          description: Attempt ID
+          required: true
+          schema:
+            type: string
+            example: 4997257d-dfb6-445b-929c-cbe2ab182818
+      responses:
+        "200":
+          description: OK
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v2/attempts/waiting/{attemptId}/abort:
+    put:
+      summary: Abort one waiting attempt
+      operationId: retryWaitingAttempt1
+      tag:
+        - Webhooks
+      parameters:
+        - name: attemptId
+          in: path
+          description: Attempt ID
+          required: true
+          schema:
+            type: string
+            example: 4997257d-dfb6-445b-929c-cbe2ab182818
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V2AttemptResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     ConfigUser:
@@ -242,20 +609,21 @@ components:
       properties:
         name:
           type: string
-          example: "customer_payment"
+          example: customer_payment
         endpoint:
           type: string
-          example: "https://example.com"
+          example: https://example.com
         secret:
           type: string
-          example: "V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"
+          example: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
         eventTypes:
           type: array
           items:
             type: string
-            example: "TYPE1"
-          example: ["TYPE1", "TYPE2"]
-
+            example: TYPE1
+          example:
+            - TYPE1
+            - TYPE2
     ConfigsResponse:
       type: object
       required:
@@ -272,7 +640,6 @@ components:
               type: object
               required:
                 - data
-
     Cursor:
       type: object
       required:
@@ -286,7 +653,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/WebhooksConfig'
-
     ConfigResponse:
       type: object
       required:
@@ -294,7 +660,6 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/WebhooksConfig'
-
     WebhooksConfig:
       properties:
         id:
@@ -302,16 +667,18 @@ components:
           format: uuid
         endpoint:
           type: string
-          example: "https://example.com"
+          example: https://example.com
         secret:
           type: string
-          example: "V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"
+          example: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
         eventTypes:
           type: array
           items:
             type: string
-            example: "TYPE1"
-          example: ["TYPE1", "TYPE2"]
+            example: TYPE1
+          example:
+            - TYPE1
+            - TYPE2
         active:
           type: boolean
           example: true
@@ -329,16 +696,14 @@ components:
         - active
         - createdAt
         - updatedAt
-
     ConfigChangeSecret:
       type: object
       properties:
         secret:
           type: string
-          example: "V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"
+          example: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
       required:
         - secret
-
     AttemptResponse:
       type: object
       required:
@@ -346,7 +711,6 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/Attempt'
-
     Attempt:
       properties:
         id:
@@ -388,7 +752,6 @@ components:
         - statusCode
         - retryAttempt
         - status
-
     ErrorResponse:
       type: object
       required:
@@ -399,11 +762,10 @@ components:
           $ref: '#/components/schemas/ErrorsEnum'
         errorMessage:
           type: string
-          example: "[VALIDATION] invalid 'cursor' query param"
+          example: '[VALIDATION] invalid ''cursor'' query param'
         details:
           type: string
-          example: "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9"
-
+          example: https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9
     ErrorsEnum:
       type: string
       enum:
@@ -411,3 +773,171 @@ components:
         - VALIDATION
         - NOT_FOUND
       example: VALIDATION
+    V2Cursor:
+      type: object
+      required:
+        - pageSize
+        - hasMore
+        - previous
+        - next
+        - data
+      properties:
+        pageSize:
+          type: integer
+        hasMore:
+          type: boolean
+        previous:
+          type: string
+        next:
+          type: string
+        data:
+          type: array
+          items: {}
+    V2BaseResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          oneOf: []
+    V2HookCursorResponse:
+      type: object
+      required:
+        - cursor
+      properties:
+        cursor:
+          allOf:
+            - $ref: '#/components/schemas/V2Cursor'
+            - type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/V2Hook'
+    V2AttemptCursorResponse:
+      type: object
+      required:
+        - cursor
+      properties:
+        cursor:
+          allOf:
+            - $ref: '#/components/schemas/V2Cursor'
+            - type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/V2Attempt'
+    V2HookResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/V2Hook'
+    V2AttemptResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/V2Attempt'
+    V2Hook:
+      type: object
+      required:
+        - id
+        - name
+        - status
+        - events
+        - endpoint
+        - secret
+        - retry
+        - dateCreation
+        - dateStatus
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        status:
+          type: string
+        events:
+          type: array
+          items:
+            type: string
+        endpoint:
+          type: string
+        secret:
+          type: string
+        retry:
+          type: boolean
+        dateCreation:
+          type: string
+          format: date-time
+        dateStatus:
+          type: string
+          format: date-time
+    V2Attempt:
+      type: object
+      required:
+        - id
+        - hookId
+        - hookName
+        - hookEndpoint
+        - event
+        - payload
+        - statusCode
+        - dateOccured
+        - status
+        - dateStatus
+        - comment
+        - nextRetryAfter
+      properties:
+        id:
+          type: string
+          format: uuid
+        hookId:
+          type: string
+          format: uuid
+        hookName:
+          type: string
+        hookEndpoint:
+          type: string
+        event:
+          type: string
+        payload:
+          type: string
+        statusCode:
+          type: integer
+        dateOccured:
+          type: string
+          format: date-time
+        status:
+          type: string
+        dateStatus:
+          type: string
+          format: date-time
+        comment:
+          type: string
+        nextRetryAfter:
+          type: string
+          format: date-time
+    V2HookBodyParams:
+      type: object
+      required:
+        - endpoint
+        - events
+      properties:
+        name:
+          type: string
+        endpoint:
+          type: string
+        secret:
+          type: string
+        events:
+          type: array
+          items:
+            type: string
+        retry:
+          type: boolean

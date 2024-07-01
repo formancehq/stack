@@ -165,6 +165,10 @@ type Endpoint struct {
 	Endpoint string `json:"endpoint"`
 }
 
+type Retry struct {
+	Retry bool `json:"retry"`
+}
+
 func ToValues[T []*G, G any](in T) []G {
 	out := make([]G, 0)
 	for _, v := range in {
