@@ -16,3 +16,4 @@
 | `V2ErrorsEnumAlreadyRevert`     | ALREADY_REVERT                  |
 | `V2ErrorsEnumNoPostings`        | NO_POSTINGS                     |
 | `V2ErrorsEnumLedgerNotFound`    | LEDGER_NOT_FOUND                |
+| `V2ErrorsEnumImport`            | IMPORT                          |

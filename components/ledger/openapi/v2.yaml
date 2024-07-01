@@ -1680,6 +1680,7 @@ components:
         - ALREADY_REVERT
         - NO_POSTINGS
         - LEDGER_NOT_FOUND
+        - IMPORT
       example: VALIDATION
 
     V2LedgerInfoResponse:
