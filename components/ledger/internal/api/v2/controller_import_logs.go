@@ -5,6 +5,8 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/formancehq/ledger/internal/engine"
+
 	ledger "github.com/formancehq/ledger/internal"
 	"github.com/formancehq/ledger/internal/api/backend"
 	"github.com/formancehq/stack/libs/go-libs/api"
@@ -19,6 +21,14 @@ func importLogs(w http.ResponseWriter, r *http.Request) {
 		errChan <- backend.LedgerFromContext(r.Context()).Import(r.Context(), stream)
 	}()
 	dec := json.NewDecoder(r.Body)
+	handleError := func(err error) {
+		switch {
+		case errors.Is(err, engine.ImportError{}):
+			api.WriteErrorResponse(w, http.StatusBadRequest, "IMPORT", err)
+		default:
+			api.InternalServerError(w, r, err)
+		}
+	}
 	for {
 		l := &ledger.ChainedLog{}
 		if err := dec.Decode(l); err != nil {
@@ -33,14 +43,14 @@ func importLogs(w http.ResponseWriter, r *http.Request) {
 			api.InternalServerError(w, r, r.Context().Err())
 			return
 		case err := <-errChan:
-			api.InternalServerError(w, r, err)
+			handleError(err)
 			return
 		}
 	}
 	select {
 	case err := <-errChan:
 		if err != nil {
-			api.InternalServerError(w, r, err)
+			handleError(err)
 			return
 		}
 	case <-r.Context().Done():

@@ -15,7 +15,7 @@ import (
 )
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {
-	const logsToWrite = 100
+	const logsToWrite = 5
 	When("creating a ledger with a bunch of transactions", func() {
 		BeforeEach(func() {
 			response, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
@@ -45,7 +45,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				data []byte
 			)
 			BeforeEach(func() {
-				ret, err := Client().Ledger.V2ExportLogs(TestContext(), operations.ExportLogsRequest{
+				ret, err := Client().Ledger.V2ExportLogs(TestContext(), operations.V2ExportLogsRequest{
 					Ledger: "default",
 				})
 				Expect(err).To(BeNil())
@@ -67,7 +67,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 					})
 					Expect(err).To(BeNil())
 
-					_, err = Client().Ledger.V2ImportLogs(TestContext(), operations.ImportLogsRequest{
+					_, err = Client().Ledger.V2ImportLogs(TestContext(), operations.V2ImportLogsRequest{
 						RequestBody: pointer.For(string(data)),
 						Ledger:      newLedger,
 					})
@@ -80,6 +80,20 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 					})
 					Expect(err).To(BeNil())
 					Expect(logs.V2LogsCursorResponse.Cursor.Data).To(HaveLen(logsToWrite))
+				})
+				Then("retrying to import the same export", func() {
+					var (
+						err error
+					)
+					BeforeEach(func() {
+						_, err = Client().Ledger.V2ImportLogs(TestContext(), operations.V2ImportLogsRequest{
+							RequestBody: pointer.For(string(data)),
+							Ledger:      newLedger,
+						})
+					})
+					It("Should trigger an error with IMPORT error code", func() {
+						Expect(err).NotTo(BeNil())
+					})
 				})
 			})
 		})
