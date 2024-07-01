@@ -16,7 +16,15 @@ func bulkHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	ret, errorsInBulk, err := ProcessBulk(r.Context(), backend.LedgerFromContext(r.Context()), b, sharedapi.QueryParamBool(r, "continueOnFailure"))
+
+	ret, errorsInBulk, err := ProcessBulk(
+		r.Context(),
+		backend.LedgerFromContext(r.Context()),
+		b,
+		sharedapi.QueryParamBool(r, "continueOnFailure"),
+		sharedapi.QueryParamBool(r, "parallel"),
+	)
+
 	if err != nil || errorsInBulk {
 		w.WriteHeader(http.StatusBadRequest)
 	}
