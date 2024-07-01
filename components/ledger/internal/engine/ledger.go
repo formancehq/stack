@@ -43,7 +43,7 @@ func New(
 	if publisher != nil {
 		monitor = bus.NewLedgerMonitor(publisher, store.Name())
 	}
-	return &Ledger{
+	ret := &Ledger{
 		commander: command.New(
 			store,
 			command.NewDefaultLocker(),
@@ -54,6 +54,7 @@ func New(
 		),
 		store: store,
 	}
+	return ret
 }
 
 func (l *Ledger) Start(ctx context.Context) {
@@ -152,4 +153,55 @@ func (l *Ledger) IsDatabaseUpToDate(ctx context.Context) (bool, error) {
 func (l *Ledger) GetVolumesWithBalances(ctx context.Context, q ledgerstore.GetVolumesWithBalancesQuery) (*bunpaginate.Cursor[ledger.VolumesWithBalanceByAssetByAccount], error) {
 	volumes, err := l.store.GetVolumesWithBalances(ctx, q)
 	return volumes, newStorageError(err, "getting Volumes with balances")
+}
+
+func (l *Ledger) Import(ctx context.Context, stream chan *ledger.ChainedLog) error {
+	batch := make([]*ledger.ChainedLog, 0)
+	for log := range stream {
+		batch = append(batch, log)
+
+		if len(batch) == 100 { // todo(gfyrag): how to configure?
+			if err := l.store.InsertLogs(ctx, batch...); err != nil {
+				return err
+			}
+			batch = make([]*ledger.ChainedLog, 0)
+		}
+	}
+	if len(batch) > 0 {
+		if err := l.store.InsertLogs(ctx, batch...); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+type ExportWriter interface {
+	Write(ctx context.Context, log *ledger.ChainedLog) error
+}
+
+type ExportWriterFn func(ctx context.Context, log *ledger.ChainedLog) error
+
+func (fn ExportWriterFn) Write(ctx context.Context, log *ledger.ChainedLog) error {
+	return fn(ctx, log)
+}
+
+func (l *Ledger) Export(ctx context.Context, w ExportWriter) error {
+	return bunpaginate.Iterate(
+		ctx,
+		ledgerstore.
+			NewGetLogsQuery(ledgerstore.NewPaginatedQueryOptions[any](nil).WithPageSize(100)).
+			WithOrder(bunpaginate.OrderAsc),
+		func(ctx context.Context, q ledgerstore.GetLogsQuery) (*bunpaginate.Cursor[ledger.ChainedLog], error) {
+			return l.store.GetLogs(ctx, q)
+		},
+		func(cursor *bunpaginate.Cursor[ledger.ChainedLog]) error {
+			for _, data := range cursor.Data {
+				if err := w.Write(ctx, &data); err != nil {
+					return err
+				}
+			}
+			return nil
+		},
+	)
 }

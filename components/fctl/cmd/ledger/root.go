@@ -22,6 +22,8 @@ func NewCommand() *cobra.Command {
 			NewListCommand(),
 			NewSetMetadataCommand(),
 			NewDeleteMetadataCommand(),
+			NewExportCommand(),
+			NewImportCommand(),
 			transactions.NewLedgerTransactionsCommand(),
 			accounts.NewLedgerAccountsCommand(),
 			volumes.NewLedgerVolumesCommand(),
