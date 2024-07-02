@@ -76,7 +76,7 @@ func TestBalancesCreate(t *testing.T) {
 				appliedMetadata map[string]string
 			)
 			testEnv := newTestEnv(
-				WithAddMetadataToAccount(func(ctx context.Context, ledger, account string, metadata map[string]string) error {
+				WithAddMetadataToAccount(func(ctx context.Context, ledger, account, ik string, metadata map[string]string) error {
 					targetedLedger = ledger
 					targetedAccount = account
 					appliedMetadata = metadata

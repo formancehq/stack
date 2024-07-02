@@ -106,7 +106,7 @@ func (m *Manager) Init(ctx context.Context) error {
 }
 
 //nolint:cyclop
-func (m *Manager) Debit(ctx context.Context, debit Debit) (*DebitHold, error) {
+func (m *Manager) Debit(ctx context.Context, ik string, debit Debit) (*DebitHold, error) {
 	if err := debit.Validate(); err != nil {
 		return nil, err
 	}
@@ -181,14 +181,14 @@ func (m *Manager) Debit(ctx context.Context, debit Debit) (*DebitHold, error) {
 		postTransaction.Reference = &debit.Reference
 	}
 
-	if err := m.CreateTransaction(ctx, postTransaction); err != nil {
+	if err := m.CreateTransaction(ctx, ik, postTransaction); err != nil {
 		return nil, err
 	}
 
 	return hold, nil
 }
 
-func (m *Manager) ConfirmHold(ctx context.Context, debit ConfirmHold) error {
+func (m *Manager) ConfirmHold(ctx context.Context, ik string, debit ConfirmHold) error {
 	account, err := m.client.GetAccount(ctx, m.ledgerName, m.chart.GetHoldAccount(debit.HoldID))
 	if err != nil {
 		return errors.Wrap(err, "getting account")
@@ -227,14 +227,14 @@ func (m *Manager) ConfirmHold(ctx context.Context, debit ConfirmHold) error {
 		Metadata: TransactionMetadata(metadata.Metadata{}),
 	}
 
-	if err := m.CreateTransaction(ctx, postTransaction); err != nil {
+	if err := m.CreateTransaction(ctx, ik, postTransaction); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (m *Manager) VoidHold(ctx context.Context, void VoidHold) error {
+func (m *Manager) VoidHold(ctx context.Context, ik string, void VoidHold) error {
 	account, err := m.client.GetAccount(ctx, m.ledgerName, m.chart.GetHoldAccount(void.HoldID))
 	if err != nil {
 		return errors.Wrap(err, "getting account")
@@ -256,14 +256,14 @@ func (m *Manager) VoidHold(ctx context.Context, void VoidHold) error {
 		Metadata: TransactionMetadata(metadata.Metadata{}),
 	}
 
-	if err := m.CreateTransaction(ctx, postTransaction); err != nil {
+	if err := m.CreateTransaction(ctx, ik, postTransaction); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (m *Manager) Credit(ctx context.Context, credit Credit) error {
+func (m *Manager) Credit(ctx context.Context, ik string, credit Credit) error {
 	if err := credit.Validate(); err != nil {
 		return err
 	}
@@ -293,15 +293,15 @@ func (m *Manager) Credit(ctx context.Context, credit Credit) error {
 		postTransaction.Reference = &credit.Reference
 	}
 
-	if err := m.CreateTransaction(ctx, postTransaction); err != nil {
+	if err := m.CreateTransaction(ctx, ik, postTransaction); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (m *Manager) CreateTransaction(ctx context.Context, postTransaction PostTransaction) error {
-	if _, err := m.client.CreateTransaction(ctx, m.ledgerName, postTransaction); err != nil {
+func (m *Manager) CreateTransaction(ctx context.Context, ik string, postTransaction PostTransaction) error {
+	if _, err := m.client.CreateTransaction(ctx, m.ledgerName, ik, postTransaction); err != nil {
 		switch err := err.(type) {
 		case *sdkerrors.WalletsErrorResponse:
 			if err.ErrorCode == sdkerrors.SchemasWalletsErrorResponseErrorCodeInsufficientFund {
@@ -417,6 +417,7 @@ func (m *Manager) CreateWallet(ctx context.Context, data *CreateRequest) (*Walle
 		ctx,
 		m.ledgerName,
 		m.chart.GetMainBalanceAccount(wallet.ID),
+		"",
 		wallet.LedgerMetadata(),
 	); err != nil {
 		return nil, errors.Wrap(err, "adding metadata to account")
@@ -425,7 +426,7 @@ func (m *Manager) CreateWallet(ctx context.Context, data *CreateRequest) (*Walle
 	return &wallet, nil
 }
 
-func (m *Manager) UpdateWallet(ctx context.Context, id string, data *PatchRequest) error {
+func (m *Manager) UpdateWallet(ctx context.Context, id, ik string, data *PatchRequest) error {
 	account, err := m.client.GetAccount(ctx, m.ledgerName, m.chart.GetMainBalanceAccount(id))
 	if err != nil {
 		return ErrWalletNotFound
@@ -442,7 +443,7 @@ func (m *Manager) UpdateWallet(ctx context.Context, id string, data *PatchReques
 	meta := metadata.Metadata(account.GetMetadata())
 	meta = meta.Merge(EncodeCustomMetadata(newCustomMetadata))
 
-	if err := m.client.AddMetadataToAccount(ctx, m.ledgerName, m.chart.GetMainBalanceAccount(id), meta); err != nil {
+	if err := m.client.AddMetadataToAccount(ctx, m.ledgerName, m.chart.GetMainBalanceAccount(id), ik, meta); err != nil {
 		return errors.Wrap(err, "adding metadata to account")
 	}
 
@@ -584,6 +585,7 @@ func (m *Manager) CreateBalance(ctx context.Context, data *CreateBalance) (*Bala
 		ctx,
 		m.ledgerName,
 		m.chart.GetBalanceAccount(data.WalletID, balance.Name),
+		"",
 		balance.LedgerMetadata(data.WalletID),
 	); err != nil {
 		return nil, errors.Wrap(err, "adding metadata to account")

@@ -98,11 +98,11 @@ func (c AccountsCursorResponseCursor) GetHasMore() bool {
 
 type Ledger interface {
 	EnsureLedgerExists(ctx context.Context, name string) error
-	AddMetadataToAccount(ctx context.Context, ledger, account string, metadata map[string]string) error
+	AddMetadataToAccount(ctx context.Context, ledger, account, ik string, metadata map[string]string) error
 	GetAccount(ctx context.Context, ledger, account string) (*AccountWithVolumesAndBalances, error)
 	ListAccounts(ctx context.Context, ledger string, query ListAccountsQuery) (*AccountsCursorResponseCursor, error)
 	ListTransactions(ctx context.Context, ledger string, query ListTransactionsQuery) (*shared.V2TransactionsCursorResponseCursor, error)
-	CreateTransaction(ctx context.Context, ledger string, postTransaction PostTransaction) (*shared.V2Transaction, error)
+	CreateTransaction(ctx context.Context, ledger, ik string, postTransaction PostTransaction) (*shared.V2Transaction, error)
 }
 
 type DefaultLedger struct {
@@ -179,7 +179,7 @@ func (d DefaultLedger) ListTransactions(ctx context.Context, ledger string, q Li
 	return &rsp.V2TransactionsCursorResponse.Cursor, nil
 }
 
-func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, transaction PostTransaction) (*shared.V2Transaction, error) {
+func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger, ik string, transaction PostTransaction) (*shared.V2Transaction, error) {
 	ret, err := d.client.Ledger.V2CreateTransaction(ctx, operations.V2CreateTransactionRequest{
 		V2PostTransaction: shared.V2PostTransaction{
 			Metadata:  transaction.Metadata,
@@ -193,7 +193,8 @@ func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, tra
 				return &transaction.Timestamp.Time
 			}(),
 		},
-		Ledger: ledger,
+		Ledger:         ledger,
+		IdempotencyKey: pointer.For(ik),
 	})
 	if err != nil {
 		return nil, err
@@ -202,12 +203,13 @@ func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, tra
 	return &ret.V2CreateTransactionResponse.Data, nil
 }
 
-func (d DefaultLedger) AddMetadataToAccount(ctx context.Context, ledger, account string, metadata map[string]string) error {
+func (d DefaultLedger) AddMetadataToAccount(ctx context.Context, ledger, account, ik string, metadata map[string]string) error {
 
 	_, err := d.client.Ledger.V2AddMetadataToAccount(ctx, operations.V2AddMetadataToAccountRequest{
-		RequestBody: metadata,
-		Address:     account,
-		Ledger:      ledger,
+		RequestBody:    metadata,
+		Address:        account,
+		Ledger:         ledger,
+		IdempotencyKey: pointer.For(ik),
 	})
 	if err != nil {
 		return err

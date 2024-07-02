@@ -191,6 +191,12 @@ paths:
       operationId: updateWallet
       tags:
       - Wallets
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: Use an idempotency key
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
@@ -323,6 +329,11 @@ paths:
       required: true
       schema:
         type: string
+    - name: Idempotency-Key
+      in: header
+      description: Use an idempotency key
+      schema:
+        type: string
     post:
       summary: Debit a wallet
       operationId: debitWallet
@@ -354,6 +365,11 @@ paths:
     - name: id
       in: path
       required: true
+      schema:
+        type: string
+    - name: Idempotency-Key
+      in: header
+      description: Use an idempotency key
       schema:
         type: string
     post:
@@ -467,6 +483,11 @@ paths:
         required: true
         schema:
           type: string
+      - name: Idempotency-Key
+        in: header
+        description: Use an idempotency key
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -491,6 +512,11 @@ paths:
     - name: hold_id
       in: path
       required: true
+      schema:
+        type: string
+    - name: Idempotency-Key
+      in: header
+      description: Use an idempotency key
       schema:
         type: string
     post:
@@ -974,6 +1000,7 @@ components:
         expiresAt:
           type: string
           format: date-time
+          nullable: true
         priority:
           type: integer
           format: bigint

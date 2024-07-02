@@ -45,7 +45,7 @@ func TestHoldsVoid(t *testing.T) {
 				},
 			}, nil
 		}),
-		WithCreateTransaction(func(ctx context.Context, name string, script wallet.PostTransaction) (*shared.V2Transaction, error) {
+		WithCreateTransaction(func(ctx context.Context, name, ik string, script wallet.PostTransaction) (*shared.V2Transaction, error) {
 			compareJSON(t, wallet.PostTransaction{
 				Script: &shared.V2PostTransactionScript{
 					Plain: wallet.BuildCancelHoldScript("USD"),

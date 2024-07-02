@@ -4,6 +4,8 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/formancehq/stack/libs/go-libs/api"
+
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
@@ -16,7 +18,7 @@ func (m *MainHandler) debitWalletHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	hold, err := m.manager.Debit(r.Context(), wallet.Debit{
+	hold, err := m.manager.Debit(r.Context(), api.IdempotencyKeyFromRequest(r), wallet.Debit{
 		WalletID:     chi.URLParam(r, "walletID"),
 		DebitRequest: *data,
 	})
