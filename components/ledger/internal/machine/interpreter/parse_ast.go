@@ -1,0 +1,372 @@
+package interpreter
+
+import (
+	"fmt"
+	"math/big"
+
+	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"github.com/formancehq/ledger/internal/machine"
+	"github.com/formancehq/ledger/internal/machine/script/parser"
+)
+
+type SendStatement struct {
+	Amount      int64
+	Source      Source
+	Destination Destination
+}
+
+type Program struct {
+	Statements []SendStatement
+}
+
+type parseVisitor struct {
+	errListener *ErrorListener
+}
+
+type CompileError struct {
+	StartL, StartC int
+	EndL, EndC     int
+	Msg            string
+}
+
+type CompileArtifacts struct {
+	Errors  []CompileError
+	Program *Program
+}
+
+type ErrorListener struct {
+	*antlr.DefaultErrorListener
+	Errors []CompileError
+}
+
+func CompileFull(input string) CompileArtifacts {
+	artifacts := CompileArtifacts{}
+
+	errListener := &ErrorListener{}
+
+	is := antlr.NewInputStream(input)
+	lexer := parser.NewNumScriptLexer(is)
+	lexer.RemoveErrorListeners()
+	lexer.AddErrorListener(errListener)
+
+	stream := antlr.NewCommonTokenStream(lexer, antlr.LexerDefaultTokenChannel)
+	p := parser.NewNumScriptParser(stream)
+	p.RemoveErrorListeners()
+	p.AddErrorListener(errListener)
+
+	p.BuildParseTrees = true
+
+	tree := p.Script()
+
+	artifacts.Errors = append(artifacts.Errors, errListener.Errors...)
+	if len(errListener.Errors) != 0 {
+		return artifacts
+	}
+
+	visitor := parseVisitor{
+		errListener: errListener,
+	}
+
+	program, err := visitor.visitScript(tree)
+	if err != nil {
+		fmt.Printf("#### err: %#v\n", err)
+		panic("TODO handle")
+		// return artifacts
+	}
+
+	artifacts.Program = program
+	return artifacts
+}
+
+func (p *parseVisitor) visitScript(c parser.IScriptContext) (*Program, *CompileError) {
+	program := &Program{}
+
+	switch c := c.(type) {
+	case *parser.ScriptContext:
+		// TODO fetch vars
+
+		for _, stmt := range c.GetStmts() {
+			switch c := stmt.(type) {
+			case *parser.SendContext:
+				statement, err := p.visitSend(c)
+				if err != nil {
+					return nil, err
+				}
+				program.Statements = append(program.Statements, *statement)
+
+			default:
+				panic("TODO unimplemented statement type")
+			}
+		}
+
+	default:
+		panic("TODO unimplemented script type")
+	}
+
+	return program, nil
+}
+
+func (p *parseVisitor) visitTopLevelSource(c *parser.SendContext) (Source, *CompileError) {
+	switch c := c.GetSrc().(type) {
+	case *parser.SrcContext:
+		src, err := p.visitSource(c.Source())
+		if err != nil {
+			return nil, err
+		}
+		return src, nil
+
+	case *parser.SrcAllotmentContext:
+		portions, err := p.visitAllotmentPortions(c.SourceAllotment().GetPortions())
+		if err != nil {
+			return nil, err
+		}
+
+		sources := c.SourceAllotment().GetSources()
+
+		allottedSrc := &AllottedSrc{}
+		for i, portion := range portions {
+			source, err := p.visitSource(sources[i])
+			if err != nil {
+				return nil, err
+			}
+
+			allottedSrc.Allotments = append(allottedSrc.Allotments, Allotment[Source]{
+				Ratio: portion,
+				Value: source,
+			})
+		}
+
+		return allottedSrc, nil
+
+	default:
+		panic("TODO Unhandled source")
+	}
+}
+
+func (p *parseVisitor) visitSend(c *parser.SendContext) (*SendStatement, *CompileError) {
+	statement := SendStatement{}
+
+	monExpr := c.GetMon().(*parser.ExprLiteralContext)
+	mon, err := p.visitMonetaryLit(monExpr.GetLit())
+	if err != nil {
+		return nil, err
+	}
+	statement.Amount = int64(mon.Uint64())
+
+	src, err := p.visitTopLevelSource(c)
+	if err != nil {
+		return nil, err
+	}
+	statement.Source = src
+
+	dest, err := p.visitDestination(c.GetDest())
+	if err != nil {
+		return nil, err
+	}
+	statement.Destination = dest
+
+	return &statement, nil
+}
+
+func (p *parseVisitor) visitMonetaryLit(c parser.ILiteralContext) (*machine.MonetaryInt, *CompileError) {
+	monCtx, ok := c.(*parser.LitMonetaryContext)
+	if !ok {
+		return nil, InternalError(c)
+	}
+
+	amt, err := machine.ParseMonetaryInt(monCtx.Monetary().GetAmt().GetText())
+	if err != nil {
+		return nil, LogicError(c, err)
+	}
+	return amt, nil
+
+}
+
+func (p *parseVisitor) visitAccountLit(c parser.ILiteralContext) (*machine.AccountAddress, *CompileError) {
+	switch c := c.(type) {
+	case *parser.LitAccountContext:
+		account := machine.AccountAddress(c.GetText()[1:])
+		return &account, nil
+
+	default:
+		panic("INVALID TOKEN (expeting accoutn)")
+	}
+}
+
+func (p *parseVisitor) visitSource(c parser.ISourceContext) (Source, *CompileError) {
+	switch c := c.(type) {
+	case *parser.SrcAccountContext:
+		accountLit := c.SourceAccount().GetAccount().(*parser.ExprLiteralContext)
+		account, err := p.visitAccountLit(accountLit.GetLit())
+		if err != nil {
+			return nil, err
+		}
+		return &AccountSrc{Name: string(*account)}, nil
+
+	case *parser.SrcMaxedContext:
+		maxed := c.SourceMaxed()
+		src := maxed.GetSrc()
+
+		nestedSrc, err := p.visitSource(src)
+		if err != nil {
+			return nil, err
+		}
+
+		capLit := maxed.GetMax().(*parser.ExprLiteralContext).GetLit()
+		cap, err := p.visitMonetaryLit(capLit)
+		if err != nil {
+			return nil, err
+		}
+
+		cappedSrc := CappedSrc{
+			Cap:    int64(cap.Uint64()),
+			Source: nestedSrc,
+		}
+		return &cappedSrc, nil
+
+	case *parser.SrcInOrderContext:
+		seq := &SeqSrc{}
+
+		for _, source := range c.SourceInOrder().GetSources() {
+			src, err := p.visitSource(source)
+			if err != nil {
+				return nil, err
+			}
+
+			seq.Sources = append(seq.Sources, src)
+		}
+
+		return seq, nil
+	}
+
+	return nil, nil
+}
+
+func (p *parseVisitor) visitDestination(c parser.IDestinationContext) (Destination, *CompileError) {
+	switch c := c.(type) {
+	case *parser.DestAccountContext:
+		e, ok := c.Expression().(*parser.ExprLiteralContext)
+		if !ok {
+			return nil, InternalError(c)
+		}
+		account, err := p.visitAccountLit(e.GetLit())
+		if err != nil {
+			return nil, err
+		}
+		return &AccountDest{Name: string(*account)}, nil
+
+	case *parser.DestInOrderContext:
+		amounts := c.DestinationInOrder().GetAmounts()
+		dests := c.DestinationInOrder().GetDests()
+		dests = append(dests, c.DestinationInOrder().GetRemainingDest())
+
+		destSeq := SeqDest{}
+		for i, dest := range dests {
+
+			var maxMon *machine.MonetaryInt
+			if i < len(amounts) {
+				amtLit := amounts[i].(*parser.ExprLiteralContext).GetLit()
+				mon, err := p.visitMonetaryLit(amtLit)
+				if err != nil {
+					return nil, err
+				}
+				maxMon = mon
+			}
+
+			switch dest := dest.(type) {
+			case *parser.IsKeptContext:
+				panic("TODO kept context")
+			case *parser.IsDestinationContext:
+				nestedDest, err := p.visitDestination(dest.Destination())
+				if err != nil {
+					return nil, err
+				}
+				if maxMon != nil {
+					nestedDest = &CappedDest{
+						Cap:         int64(maxMon.Uint64()),
+						Destination: nestedDest,
+					}
+				}
+				destSeq.Destinations = append(destSeq.Destinations, nestedDest)
+			}
+		}
+
+		return &destSeq, nil
+	case *parser.DestAllotmentContext:
+		portions, err := p.visitAllotmentPortions(c.DestinationAllotment().GetPortions())
+		if err != nil {
+			return nil, err
+		}
+
+		dests := c.DestinationAllotment().GetDests()
+
+		allotedDest := AllottedDest{}
+
+		for i, portion := range portions {
+			switch c := dests[i].(type) {
+			case *parser.IsKeptContext:
+				panic("TODO handle kept dest")
+
+			case *parser.IsDestinationContext:
+				dest, err := p.visitDestination(c.Destination())
+				if err != nil {
+					return nil, err
+				}
+
+				allotedDest.Allotments = append(allotedDest.Allotments, Allotment[Destination]{
+					Ratio: portion,
+					Value: dest,
+				})
+			}
+		}
+
+		return &allotedDest, nil
+	default:
+		return nil, InternalError(c)
+	}
+}
+
+func (p *parseVisitor) visitAllotmentPortions(portions []parser.IAllotmentPortionContext) ([]big.Rat, *CompileError) {
+	var result []big.Rat
+	for _, c := range portions {
+		switch c := c.(type) {
+		case *parser.AllotmentPortionConstContext:
+			portion, err := machine.ParsePortionSpecific(c.GetText())
+			if err != nil {
+				return nil, LogicError(c, err)
+			}
+			result = append(result, *portion.Specific)
+
+		case *parser.AllotmentPortionVarContext:
+			panic("TODO handle vars in allotment")
+
+		case *parser.AllotmentPortionRemainingContext:
+			panic("TODO handle remaining")
+
+		}
+	}
+	return result, nil
+}
+
+func LogicError(c antlr.ParserRuleContext, err error) *CompileError {
+	endC := c.GetStop().GetColumn() + len(c.GetStop().GetText())
+	return &CompileError{
+		StartL: c.GetStart().GetLine(),
+		StartC: c.GetStart().GetColumn(),
+		EndL:   c.GetStop().GetLine(),
+		EndC:   endC,
+		Msg:    err.Error(),
+	}
+}
+
+const InternalErrorMsg = "internal compiler error, please report to the issue tracker"
+
+func InternalError(c antlr.ParserRuleContext) *CompileError {
+	return &CompileError{
+		StartL: c.GetStart().GetLine(),
+		StartC: c.GetStart().GetColumn(),
+		EndL:   c.GetStop().GetLine(),
+		EndC:   c.GetStop().GetColumn(),
+		Msg:    InternalErrorMsg,
+	}
+}
