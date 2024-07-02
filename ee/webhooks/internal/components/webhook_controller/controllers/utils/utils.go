@@ -1,73 +1,69 @@
-
 package utils
 
-import(
+import (
+	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io"
 	"net/http"
-	"errors"
 	"net/url"
-	"encoding/base64"
-	"fmt"
-	"crypto/rand"
-	"strings"
 	"strconv"
-
+	"strings"
 )
 
-type ErrorType string 
+type ErrorType string
 
 const (
-	NoneType ErrorType = "NONE"
+	NoneType       ErrorType = "NONE"
 	ValidationType ErrorType = "VALIDATION_TYPE"
-	NotFoundType ErrorType = "NOT_FOUND"
-	InternalType ErrorType = "INTERNAL_TYPE"
+	NotFoundType   ErrorType = "NOT_FOUND"
+	InternalType   ErrorType = "INTERNAL_TYPE"
 )
 
 type Response[T interface{}] struct {
-	T ErrorType 
-	Err error 
+	T    ErrorType
+	Err  error
 	Data *T
 }
 
-func SuccessResp[T interface{}](d T) Response[T]{
+func SuccessResp[T interface{}](d T) Response[T] {
 	return Response[T]{
-		T : NoneType,
-		Err : nil, 
+		T:    NoneType,
+		Err:  nil,
 		Data: &d,
 	}
 }
 
-func ValidationErrorResp[T interface{}]( err error ) Response[T]{
+func ValidationErrorResp[T interface{}](err error) Response[T] {
 	return Response[T]{
-		T:ValidationType,
-		Err:err,
-		Data: nil, 
-	}
-}
-
-func InternalErrorResp[T interface{}](err error) Response[T]{
-	return Response[T]{
-		T:InternalType,
-		Err:err,
+		T:    ValidationType,
+		Err:  err,
 		Data: nil,
 	}
 }
 
-func NotFoundErrorResp[T interface{}](err error) Response[T]{
+func InternalErrorResp[T interface{}](err error) Response[T] {
 	return Response[T]{
-		T:NotFoundType,
-		Err:err, 
-		Data:nil,
+		T:    InternalType,
+		Err:  err,
+		Data: nil,
+	}
+}
+
+func NotFoundErrorResp[T interface{}](err error) Response[T] {
+	return Response[T]{
+		T:    NotFoundType,
+		Err:  err,
+		Data: nil,
 	}
 }
 
 const (
-	ErrValidation = "VALIDATION_REQUEST"
+	ErrValidation  = "VALIDATION_REQUEST"
 	ErrHealthcheck = "HEALTHCHECK_STATUS"
 )
-
-
 
 func DecodeJSONBody(r *http.Request, v any) error {
 	data, err := io.ReadAll(r.Body)
@@ -78,7 +74,7 @@ func DecodeJSONBody(r *http.Request, v any) error {
 	if len(data) > 0 {
 		return errors.New("Empty Body")
 	}
-	
+
 	if err := json.Unmarshal([]byte(data), &v); err != nil {
 		return err
 	}
@@ -92,7 +88,6 @@ var (
 	ErrInvalidSecret     = errors.New("decoded secret should be of size 24")
 )
 
-
 func ValidateEndpoint(endpoint string) error {
 	if u, err := url.Parse(endpoint); err != nil || len(u.String()) == 0 {
 		return ErrInvalidEndpoint
@@ -101,8 +96,8 @@ func ValidateEndpoint(endpoint string) error {
 }
 
 func ValidateSecret(secret *string) error {
-	
-	if(*secret != ""){
+
+	if *secret != "" {
 		var decoded []byte
 		var err error
 		if decoded, err = base64.StdEncoding.DecodeString(*secret); err != nil {
@@ -138,20 +133,22 @@ func newSecret() string {
 	return base64.StdEncoding.EncodeToString(token)
 }
 
-func ReadCursor(strCursor string) (int, error){
-	if (strCursor == "") {return 0,nil}
-	return strconv.Atoi(strCursor) 
+func ReadCursor(strCursor string) (int, error) {
+	if strCursor == "" {
+		return 0, nil
+	}
+	return strconv.Atoi(strCursor)
 }
 
-func PaginationCursor(cursor int, hasMore bool) (previous, next string){
+func PaginationCursor(cursor int, hasMore bool) (previous, next string) {
 	strP := ""
 	strN := ""
 
-	if(hasMore){
-		strN = fmt.Sprintf("%d", cursor + 1) 
+	if hasMore {
+		strN = fmt.Sprintf("%d", cursor+1)
 	}
-	if(cursor>0){
-		strP = fmt.Sprintf("%d", cursor-1) 
+	if cursor > 0 {
+		strP = fmt.Sprintf("%d", cursor-1)
 	}
 
 	return strP, strN

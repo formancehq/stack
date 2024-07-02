@@ -15,20 +15,18 @@ import (
 var Database storage.PostgresStore
 var WebhookWorker webhookworker.Worker
 
-func TestMain(m *testing.M){
+func TestMain(m *testing.M) {
 	testutils.StartPostgresServer()
-	var err error 
+	var err error
 	Database, err = testutils.GetStoreProvider()
 	if err != nil {
 		logging.Error(err)
 		os.Exit(1)
 	}
 
-	WebhookWorker = *webhookworker.NewWorker(component.DefaultRunnerParams(), 
-	Database, testutils.NewHTTPClient())
+	WebhookWorker = *webhookworker.NewWorker(component.DefaultRunnerParams(),
+		Database, testutils.NewHTTPClient())
 
 	m.Run()
 	testutils.StopPostgresServer()
 }
-
-

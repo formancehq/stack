@@ -7,23 +7,24 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 )
 
-
 type Table struct {
-	Name string 
+	Name    string
 	Columns map[string]string
 }
 
-func (t *Table) ListColumns() string{
+func (t *Table) ListColumns() string {
 	return strings.Join(collectionutils.Values(t.Columns), ",")
 }
 
-func (t *Table) ExcludedRow() string{
+func (t *Table) ExcludedRow() string {
 	str := ""
-	for key,column := range t.Columns{
-		if(key == "ID") {continue}
+	for key, column := range t.Columns {
+		if key == "ID" {
+			continue
+		}
 		str += fmt.Sprintf("%s = EXCLUDED.%s,", column, column)
 	}
-	str = str[:len(str)-1]+";"
+	str = str[:len(str)-1] + ";"
 	return str
 
 }

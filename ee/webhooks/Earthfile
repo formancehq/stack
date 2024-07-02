@@ -11,7 +11,7 @@ sources:
     DO stack+INCLUDE_GO_LIBS --LOCATION libs/go-libs
     WORKDIR /src/ee/webhooks
     COPY go.* .
-    COPY --dir pkg cmd .
+    COPY --dir internal cmd .
     COPY main.go .
     SAVE ARTIFACT /src
 
@@ -58,7 +58,7 @@ lint:
     WORKDIR /src/ee/webhooks
     DO --pass-args stack+GO_LINT
     SAVE ARTIFACT cmd AS LOCAL cmd
-    SAVE ARTIFACT pkg AS LOCAL pkg
+    SAVE ARTIFACT p AS LOCAL internal
     SAVE ARTIFACT main.go AS LOCAL main.go
 
 pre-commit:

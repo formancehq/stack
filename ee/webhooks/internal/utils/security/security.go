@@ -7,11 +7,9 @@ import (
 	"fmt"
 	"strings"
 	"time"
-
 )
 
-
-func SignNow(id string, secret string, payload []byte) (string, error){
+func SignNow(id string, secret string, payload []byte) (string, error) {
 	return Sign(id, time.Now().UTC().Unix(), secret, payload)
 }
 
@@ -59,4 +57,3 @@ func Verify(signatures, id string, timestamp int64, secret string, payload []byt
 
 	return false, nil
 }
-

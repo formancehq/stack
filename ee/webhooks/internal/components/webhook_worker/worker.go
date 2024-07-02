@@ -26,12 +26,11 @@ import (
 
 var Tracer = otel.Tracer("WebhookWorker")
 
-
 type Worker struct {
 	component.WebhookRunner
 }
 
-func (w *Worker) Init(){
+func (w *Worker) Init() {
 	w.StartHandleFreshLogs()
 
 	hooks, err := w.Database.LoadHooks()
@@ -50,7 +49,7 @@ func (w *Worker) HandleMessage(msg *message.Message) error {
 		logging.FromContext(msg.Context()).Error(err.Error())
 		return err
 	}
-	
+
 	ctx, span := Tracer.Start(msg.Context(), "WebhookWorker:HandleMessage",
 		trace.WithLinks(trace.Link{
 			SpanContext: span.SpanContext(),
@@ -78,7 +77,9 @@ func (w *Worker) HandleMessage(msg *message.Message) error {
 	}
 
 	triggedSHooks := w.State.ActiveHooksByEvent.Get(event)
-	if(triggedSHooks == nil || triggedSHooks.Size() == 0) {return nil}
+	if triggedSHooks == nil || triggedSHooks.Size() == 0 {
+		return nil
+	}
 
 	payload, err := json.Marshal(ev)
 	if err != nil {
@@ -87,55 +88,53 @@ func (w *Worker) HandleMessage(msg *message.Message) error {
 	}
 
 	var globalError error = nil
-	
+
 	triggedSHooks.AsyncApply(w.HandlerTriggedHookFactory(traceCtx, event, string(payload), globalError))
 
 	return globalError
 
 }
 
-func (w *Worker) HandlerTriggedHookFactory(ctx context.Context, event string, payload string, globalError error) func(*commons.SharedHook, *sync.WaitGroup){
-	
-	return func(sHook *commons.SharedHook,wg *sync.WaitGroup){
-		
+func (w *Worker) HandlerTriggedHookFactory(ctx context.Context, event string, payload string, globalError error) func(*commons.SharedHook, *sync.WaitGroup) {
+
+	return func(sHook *commons.SharedHook, wg *sync.WaitGroup) {
+
 		defer wg.Done()
-		
 
 		sAttempt := commons.NewSharedAttempt(sHook.Val.ID, sHook.Val.Name, sHook.Val.Endpoint, event, string(payload))
 		hook := sHook.Val
 		attempt := sAttempt.Val
 		statusCode, err := w.HandleRequest(ctx, sAttempt, sHook)
-		
-		if(err != nil){
+
+		if err != nil {
 			message := fmt.Sprintf("Worker:triggedSHooks.AsyncApply() - HandleTriggedHookFactory() - func(sHook *commons.SharedHook,wg *sync.WaitGroup) - w.HandleRequest - Something Went wrong while trying to make http request: %x", err)
 			logging.Error(message)
 			panic(message)
-			
+
 		}
 
 		w.HandleResponse(statusCode, attempt, hook)
 
-		
 	}
 }
 
-func (w *Worker) HandleResponse(statusCode int, attempt *commons.Attempt, hook *commons.Hook) error{
+func (w *Worker) HandleResponse(statusCode int, attempt *commons.Attempt, hook *commons.Hook) error {
 	attempt.LastHttpStatusCode = statusCode
 	attempt.NbTry += 1
-	var err error 
-	
-	if(commons.IsHTTPRequestSuccess(statusCode)) {
+	var err error
+
+	if commons.IsHTTPRequestSuccess(statusCode) {
 		commons.SetSuccesStatus(attempt)
 		err = w.Database.SaveAttempt(*attempt, true)
 	}
 
-	if(!hook.Retry && !attempt.IsSuccess()){
+	if !hook.Retry && !attempt.IsSuccess() {
 		commons.SetAbortNoRetryModeStatus(attempt)
 		err = w.Database.SaveAttempt(*attempt, false)
 	}
 
 	return err
-	
+
 }
 
 func NewWorker(runnerParams component.RunnerParams, database storeInterface.IStoreProvider, client clientInterface.IHTTPClient) *Worker {

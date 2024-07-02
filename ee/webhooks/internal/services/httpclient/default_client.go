@@ -16,15 +16,15 @@ import (
 )
 
 type DefaultHttpClient struct {
-	httpClient  *http.Client
+	httpClient *http.Client
 }
 
 var Tracer = otel.Tracer("webhook")
 
-func (dc *DefaultHttpClient) Call(context context.Context, hook *commons.Hook, attempt *commons.Attempt, isTest bool) (int, error){
+func (dc *DefaultHttpClient) Call(context context.Context, hook *commons.Hook, attempt *commons.Attempt, isTest bool) (int, error) {
 
 	parentSpan := trace.SpanFromContext(context)
-	ctx, span := Tracer.Start(context, 
+	ctx, span := Tracer.Start(context,
 		"Webhook::Hook.Service::processAttempt::DefaultHttpClient.Call",
 		trace.WithLinks(trace.Link{
 			SpanContext: parentSpan.SpanContext(),
@@ -38,15 +38,13 @@ func (dc *DefaultHttpClient) Call(context context.Context, hook *commons.Hook, a
 			attribute.Int("attempt-nbTry", attempt.NbTry),
 		),
 	)
-	
 
 	defer span.End()
 
-
 	req, err := http.NewRequestWithContext(
-		ctx, 
+		ctx,
 		http.MethodPost,
-		hook.Endpoint, 
+		hook.Endpoint,
 		bytes.NewBuffer([]byte(attempt.Payload)))
 
 	if err != nil {
@@ -66,20 +64,19 @@ func (dc *DefaultHttpClient) Call(context context.Context, hook *commons.Hook, a
 	req.Header.Set("formance-webhook-test", fmt.Sprintf("%v", isTest))
 
 	resp, err := dc.httpClient.Do(req)
-	if(err!=nil){
+	if err != nil {
 		span.RecordError(err)
-		return 0,err 
-		
+		return 0, err
+
 	}
 
 	span.SetAttributes(attribute.Int("attempt-statusCode", resp.StatusCode))
 
-	return resp.StatusCode,nil
+	return resp.StatusCode, nil
 
 }
 
-
-func NewDefaultHttpClient(httpClient  *http.Client) DefaultHttpClient{
+func NewDefaultHttpClient(httpClient *http.Client) DefaultHttpClient {
 	return DefaultHttpClient{
 		httpClient: httpClient,
 	}

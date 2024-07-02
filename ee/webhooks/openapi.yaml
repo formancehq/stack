@@ -222,7 +222,7 @@ paths:
       summary: Get Many hooks
       description: List of Available hooks
       operationId: getManyHooks
-      tag:
+      tags:
         - Webhooks
       parameters:
         - name: endpoint
@@ -244,7 +244,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#components/schemas/V2HookCursorResponse'
+                $ref: '#/components/schemas/V2HookCursorResponse'
         default:
           description: Error
           content:
@@ -264,7 +264,8 @@ paths:
 
         All eventTypes are converted to lower-case when inserted.
       operationId: insertConfig1
-      tags: Webhooks
+      tags:
+        - Webhooks
       requestBody:
         content:
           application/json:
@@ -306,7 +307,8 @@ paths:
     post:
       summary: Test one Hook
       operationId: testHook
-      tags: Webhooks
+      tags:
+        - Webhooks
       parameters:
         - name: hookId
           in: path
@@ -319,8 +321,10 @@ paths:
         content:
           application/json:
             schema:
-              payload:
-                type: string
+              type: object
+              properties:
+                payload:
+                  type: string
         required: true
       responses:
         "200":
@@ -338,7 +342,8 @@ paths:
     put:
       summary: Activate one Hook
       operationId: activateHook
-      tags: Webhooks
+      tags:
+        - Webhooks
       parameters:
         - name: hookId
           in: path
@@ -363,7 +368,8 @@ paths:
     put:
       summary: Deactivate one Hook
       operationId: deactivateHook
-      tags: Webhooks
+      tags:
+        - Webhooks
       parameters:
         - name: hookId
           in: path
@@ -388,7 +394,8 @@ paths:
     put:
       summary: Change the secret of one Hook
       operationId: updateSecretHook
-      tags: Webhooks
+      tags:
+        - Webhooks
       parameters:
         - name: hookId
           in: path
@@ -401,9 +408,11 @@ paths:
         content:
           application/json:
             schema:
-              secret:
-                type: string
-                default: ""
+              type: object
+              properties:
+                secret:
+                  type: string
+                  default: ""
         required: true
       responses:
         "200":
@@ -421,7 +430,8 @@ paths:
     put:
       summary: Change the endpointt of one Hook
       operationId: updateEndpointHook
-      tags: Webhooks
+      tags:
+        - Webhooks
       parameters:
         - name: hookId
           in: path
@@ -434,8 +444,10 @@ paths:
         content:
           application/json:
             schema:
-              endpoint:
-                type: string
+              type: object
+              properties:
+                endpoint:
+                  type: string
         required: true
       responses:
         "200":
@@ -453,7 +465,8 @@ paths:
     put:
       summary: Change the retry attribute of one Hook
       operationId: updateSecretHook1
-      tags: Webhooks
+      tags:
+        - Webhooks
       parameters:
         - name: hookId
           in: path
@@ -466,8 +479,10 @@ paths:
         content:
           application/json:
             schema:
-              retry:
-                type: boolean
+              type: object
+              properties:
+                retry:
+                  type: boolean
         required: true
       responses:
         "200":
@@ -486,7 +501,7 @@ paths:
       summary: Get Waiting Attempts
       description: List of Available hooks
       operationId: getWaitingAttempts
-      tag:
+      tags:
         - Webhooks
       parameters:
         - name: cursor
@@ -501,7 +516,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#components/schemas/V2AttemptCursorResponse'
+                $ref: '#/components/schemas/V2AttemptCursorResponse'
         default:
           description: Error
           content:
@@ -512,7 +527,7 @@ paths:
     get:
       summary: Get aborted Attempts
       operationId: getAbortedAttempts
-      tag:
+      tags:
         - Webhooks
       parameters:
         - name: cursor
@@ -527,7 +542,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#components/schemas/V2AttemptCursorResponse'
+                $ref: '#/components/schemas/V2AttemptCursorResponse'
         default:
           description: Error
           content:
@@ -538,7 +553,7 @@ paths:
     put:
       summary: Retry all the waiting attempts
       operationId: retryWaitingAttempts
-      tag:
+      tags:
         - Webhooks
       responses:
         "200":
@@ -553,7 +568,7 @@ paths:
     put:
       summary: Retry one waiting Attempt
       operationId: retryWaitingAttempt
-      tag:
+      tags:
         - Webhooks
       parameters:
         - name: attemptId
@@ -576,7 +591,7 @@ paths:
     put:
       summary: Abort one waiting attempt
       operationId: retryWaitingAttempt1
-      tag:
+      tags:
         - Webhooks
       parameters:
         - name: attemptId
@@ -792,52 +807,49 @@ components:
           type: string
         data:
           type: array
-          items: {}
+          items:
+            type: object
     V2BaseResponse:
       type: object
       required:
         - data
       properties:
         data:
-          oneOf: []
+          type: object
     V2HookCursorResponse:
       type: object
       required:
         - cursor
       properties:
         cursor:
-          allOf:
-            - $ref: '#/components/schemas/V2Cursor'
-            - type: object
-              properties:
-                data:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/V2Hook'
+          $ref: '#/components/schemas/V2Cursor'
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/V2Hook'
     V2AttemptCursorResponse:
       type: object
       required:
         - cursor
       properties:
         cursor:
-          allOf:
-            - $ref: '#/components/schemas/V2Cursor'
-            - type: object
-              properties:
-                data:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/V2Attempt'
+          $ref: '#/components/schemas/V2Cursor'
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/V2Attempt'
     V2HookResponse:
       allOf:
-        - $ref: '#/components/schemas/BaseResponse'
+        - $ref: '#/components/schemas/V2BaseResponse'
         - type: object
           properties:
             data:
               $ref: '#/components/schemas/V2Hook'
     V2AttemptResponse:
       allOf:
-        - $ref: '#/components/schemas/BaseResponse'
+        - $ref: '#/components/schemas/V2BaseResponse'
         - type: object
           properties:
             data:

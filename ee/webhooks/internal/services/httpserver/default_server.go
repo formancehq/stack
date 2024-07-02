@@ -15,23 +15,20 @@ import (
 	"github.com/riandyrn/otelchi"
 )
 
-
 var HealthcheckRoute = "/_healthcheck"
 var InfoRoute = "/_info"
 
-
 type DefaultServerParams struct {
-	Addr string
-	Info commons.ServiceInfo
-	Auth auth.Auth
+	Addr   string
+	Info   commons.ServiceInfo
+	Auth   auth.Auth
 	Logger logging.Logger
 }
 
-
 type DefaultHTTPServer struct {
-	server *http.Server
+	server  *http.Server
 	handler *chi.Mux
-	logger logging.Logger
+	logger  logging.Logger
 }
 
 func (server *DefaultHTTPServer) Run(ctx context.Context) error {
@@ -48,28 +45,29 @@ func (server *DefaultHTTPServer) Stop(ctx context.Context) error {
 	return server.server.Shutdown(ctx)
 }
 
-func (server *DefaultHTTPServer) Register(method string, url string, handler func(http.ResponseWriter, *http.Request)){
+func (server *DefaultHTTPServer) Register(method string, url string, handler func(http.ResponseWriter, *http.Request)) {
 	switch MethodHTTP(method) {
-	case GET :
+	case GET:
 		server.handler.Get(url, handler)
-	case POST : 
+	case POST:
 		server.handler.Post(url, handler)
-	case PUT :
+	case PUT:
 		server.handler.Put(url, handler)
-	case DELETE :
-		server.handler.Delete(url, handler) 
+	case DELETE:
+		server.handler.Delete(url, handler)
 	}
 }
 
-func NewDefaultHTTPServer(addr string, info commons.ServiceInfo, a auth.Auth, logger logging.Logger ) DefaultHTTPServer{
-	
+func NewDefaultHTTPServer(addr string, info commons.ServiceInfo, a auth.Auth, logger logging.Logger) DefaultHTTPServer {
+
 	router := chi.NewRouter()
 
-	defaultServer := DefaultHTTPServer{	
-		handler : router,
-		server :  &http.Server{
-			Addr: addr,
-			Handler: router,
+	defaultServer := DefaultHTTPServer{
+		handler: router,
+		logger:  logger,
+		server: &http.Server{
+			Addr:              addr,
+			Handler:           router,
 			ReadHeaderTimeout: 10 * time.Second,
 		},
 	}
@@ -89,13 +87,13 @@ func NewDefaultHTTPServer(addr string, info commons.ServiceInfo, a auth.Auth, lo
 		r.Get(HealthcheckRoute, func(_ http.ResponseWriter, r *http.Request) {
 			logging.FromContext(r.Context()).Infof("health check OK")
 		})
-		r.Get(InfoRoute,  func(w http.ResponseWriter, r *http.Request) {
+		r.Get(InfoRoute, func(w http.ResponseWriter, r *http.Request) {
 			sharedapi.RawOk(w, info)
-		})	
+		})
 	})
 	defaultServer.handler.Use(auth.Middleware(a))
 	defaultServer.handler.Use(otelchi.Middleware("webhooks"))
-	
+
 	return defaultServer
 }
 

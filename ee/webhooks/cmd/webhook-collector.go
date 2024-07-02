@@ -26,10 +26,6 @@ import (
 	"go.uber.org/fx"
 )
 
-
-
-
-
 func newWebhookWCollectorCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:     "collector",
@@ -39,7 +35,6 @@ func newWebhookWCollectorCommand() *cobra.Command {
 		PreRunE: handleAutoMigrate,
 	}
 }
-
 
 func webhookCollectorRun(cmd *cobra.Command, _ []string) error {
 
@@ -57,50 +52,49 @@ func webhookCollectorRun(cmd *cobra.Command, _ []string) error {
 			func() *http.Client {
 				return fxmodules.FxProvideHttpClient()
 			},
-			func (client *http.Client) *httpclient.DefaultHttpClient {
+			func(client *http.Client) *httpclient.DefaultHttpClient {
 				defaultClient := httpclient.NewDefaultHttpClient(client)
 				return &defaultClient
 			},
-			
+
 			func() *component.RunnerParams {
-				
+
 				runnerParams := flag.LoadRunnerParams()
 
 				return &runnerParams
 			},
 
-			func (db *bun.DB) *storage.PostgresStore {
+			func(db *bun.DB) *storage.PostgresStore {
 				database := storage.NewPostgresStoreProvider(db)
 				return &database
 			},
 
-			func(lc fx.Lifecycle, 
+			func(lc fx.Lifecycle,
 				database *storage.PostgresStore,
 				runnerParams *component.RunnerParams,
 				client *httpclient.DefaultHttpClient,
-				) *webhookCollector.Collector {
-					
-					Collector := webhookCollector.NewCollector(*runnerParams, database, client)
-					Collector.Init()
+			) *webhookCollector.Collector {
 
-					lc.Append(fx.Hook{
-						OnStart: func(ctx context.Context) error {
-							Collector.Run()
-						 return nil
-						},
-						OnStop: func(ctx context.Context) error {
-							Collector.Stop()
-						  return nil
-						},
-					  })
+				Collector := webhookCollector.NewCollector(*runnerParams, database, client)
+				Collector.Init()
 
-					return Collector
+				lc.Append(fx.Hook{
+					OnStart: func(ctx context.Context) error {
+						Collector.Run()
+						return nil
+					},
+					OnStop: func(ctx context.Context) error {
+						Collector.Stop()
+						return nil
+					},
+				})
+
+				return Collector
 			},
 		),
 
-		fx.Invoke(func(*webhookCollector.Collector){}),
+		fx.Invoke(func(*webhookCollector.Collector) {}),
 	}
-
 
 	return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 }

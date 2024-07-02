@@ -11,9 +11,7 @@ import (
 	_ "github.com/stretchr/testify/require"
 )
 
-
-
-func TestRunHandleLogs(t *testing.T){
+func TestRunHandleLogs(t *testing.T) {
 
 	t.Run("NewHookLog", newHookLog)
 
@@ -34,9 +32,7 @@ func TestRunHandleLogs(t *testing.T){
 	t.Run("AbortWaitingAttemptLog", abortWaitingAttemptLog)
 }
 
-
-
-func newHookLog(t *testing.T){
+func newHookLog(t *testing.T) {
 	var start_time time.Time = time.Now()
 
 	newHook := commons.NewHook("Test", []string{"testLog"}, "/localhost/", "", false)
@@ -55,7 +51,7 @@ func newHookLog(t *testing.T){
 	require.NotNil(t, saveHook)
 }
 
-func changeHookStatusLog(t *testing.T){
+func changeHookStatusLog(t *testing.T) {
 	var start_time time.Time = time.Now()
 	hooks, _, err := Database.GetHooks(0, 1, "")
 	require.NoError(t, err)
@@ -64,7 +60,6 @@ func changeHookStatusLog(t *testing.T){
 
 	require.Equal(t, commons.DisableStatus, hook.Status)
 	hookIndex := hook.ID
-
 
 	_, err = Database.ActivateHook(hookIndex)
 	require.NoError(t, err)
@@ -105,7 +100,6 @@ func changeHookStatusLog(t *testing.T){
 	saveHook = WebhookRunner.State.HooksById.Get(hook.ID)
 	require.Equal(t, commons.EnableStatus, saveHook.Val.Status)
 
-
 	start_time = time.Now()
 	_, err = Database.DeleteHook(hookIndex)
 	require.NoError(t, err)
@@ -119,12 +113,11 @@ func changeHookStatusLog(t *testing.T){
 	saveHook = WebhookRunner.State.HooksById.Get(hook.ID)
 	require.Nil(t, saveHook)
 
-
 }
 
-func changeHookSecretLog(t *testing.T){
+func changeHookSecretLog(t *testing.T) {
 	var start_time time.Time = time.Now()
-	
+
 	newHook := commons.NewHook("Test", []string{"testLog"}, "/localhost/", "", false)
 	err := Database.SaveHook(*newHook)
 	require.NoError(t, err)
@@ -137,14 +130,12 @@ func changeHookSecretLog(t *testing.T){
 
 	WebhookRunner.HandleFreshLog(NewHookLog)
 
-
-
 	hooks, _, err := Database.GetHooks(0, 1, "")
 	require.NoError(t, err)
 	require.Len(t, *hooks, 1)
 	hook := (*hooks)[0]
 	newSecret := "Y2VjaWVzdHVuc2VjcmV0dmFsaWRlcyEh"
-	start_time  = time.Now()
+	start_time = time.Now()
 	_, err = Database.UpdateHookSecret(hook.ID, newSecret)
 	require.NoError(t, err)
 
@@ -160,13 +151,13 @@ func changeHookSecretLog(t *testing.T){
 
 }
 
-func changeHookEndpointLog(t *testing.T){
+func changeHookEndpointLog(t *testing.T) {
 	hooks, _, err := Database.GetHooks(0, 1, "")
 	require.NoError(t, err)
 	require.Len(t, *hooks, 1)
 	hook := (*hooks)[0]
 	newEndpoint := "www.google.fr/top"
-	
+
 	var start_time time.Time = time.Now()
 	_, err = Database.UpdateHookEndpoint(hook.ID, newEndpoint)
 	require.NoError(t, err)
@@ -178,19 +169,18 @@ func changeHookEndpointLog(t *testing.T){
 	ChangeHookSecretLog := (*logs)[0]
 
 	WebhookRunner.HandleFreshLog(ChangeHookSecretLog)
-	
+
 	saveHook := WebhookRunner.State.HooksById.Get(hook.ID)
 	require.Equal(t, newEndpoint, saveHook.Val.Endpoint)
 }
 
-func changeHookRetryLog(t *testing.T){
+func changeHookRetryLog(t *testing.T) {
 	hooks, _, err := Database.GetHooks(0, 1, "")
 	require.NoError(t, err)
 	require.Len(t, *hooks, 1)
 	hook := (*hooks)[0]
 	require.False(t, hook.Retry)
 
-	
 	var start_time time.Time = time.Now()
 	_, err = Database.UpdateHookRetry(hook.ID, true)
 	require.NoError(t, err)
@@ -207,7 +197,7 @@ func changeHookRetryLog(t *testing.T){
 	require.True(t, saveHook.Val.Retry)
 }
 
-func newWaitingAttemptLog(t *testing.T){
+func newWaitingAttemptLog(t *testing.T) {
 	hooks, _, err := Database.GetHooks(0, 1, "")
 	require.NoError(t, err)
 	require.Len(t, *hooks, 1)
@@ -235,56 +225,51 @@ func newWaitingAttemptLog(t *testing.T){
 
 }
 
-func flushWaitingAttemptLog(t *testing.T){
+func flushWaitingAttemptLog(t *testing.T) {
 	now := time.Now()
 	attempt := (*WebhookRunner.State.WaitingAttempts.Val)[0]
-	attempt.Val.NextTry = now.Add(5*time.Hour)
+	attempt.Val.NextTry = now.Add(5 * time.Hour)
 	var start_time time.Time = time.Now()
-	
+
 	ev, err := commons.EventFromType(commons.FlushWaitingAttemptType, attempt.Val, nil)
 	require.NoError(t, err)
 	log, err := commons.LogFromEvent(ev)
 	require.NoError(t, err)
 
-	
 	err = Database.WriteLog(log.ID, string(log.Channel), log.Payload, log.CreatedAt)
 	require.NoError(t, err)
-	
-	
+
 	logs, err := Database.GetFreshLogs([]commons.Channel{commons.AttemptChannel}, start_time)
 	require.NoError(t, err)
 	require.Len(t, *logs, 1)
-	
-	FlushWaitingAttemptLog := (*logs)[0]
-	
-	WebhookRunner.HandleFreshLog(FlushWaitingAttemptLog)
 
+	FlushWaitingAttemptLog := (*logs)[0]
+
+	WebhookRunner.HandleFreshLog(FlushWaitingAttemptLog)
 
 	attempt = (*WebhookRunner.State.WaitingAttempts.Val)[0]
 	require.True(t, attempt.Val.NextTry.Before(now.Add(5*time.Hour)))
 
 }
 
-func flushWaitingAttemptsLog( t *testing.T){
+func flushWaitingAttemptsLog(t *testing.T) {
 	now := time.Now()
 	attempt := (*WebhookRunner.State.WaitingAttempts.Val)[0]
-	attempt.Val.NextTry = now.Add(5*time.Hour)
-	
+	attempt.Val.NextTry = now.Add(5 * time.Hour)
+
 	var start_time time.Time = time.Now()
 	ev, err := commons.EventFromType(commons.FlushWaitingAttemptsType, attempt.Val, nil)
 	require.NoError(t, err)
 	log, err := commons.LogFromEvent(ev)
 	require.NoError(t, err)
 
-	
 	err = Database.WriteLog(log.ID, string(log.Channel), log.Payload, log.CreatedAt)
 	require.NoError(t, err)
-	
-	
+
 	logs, err := Database.GetFreshLogs([]commons.Channel{commons.AttemptChannel}, start_time)
 	require.NoError(t, err)
 	require.Len(t, *logs, 1)
-	
+
 	FlushWaitingAttemptsLog := (*logs)[0]
 	WebhookRunner.HandleFreshLog(FlushWaitingAttemptsLog)
 
@@ -292,24 +277,23 @@ func flushWaitingAttemptsLog( t *testing.T){
 	require.True(t, attempt.Val.NextTry.Before(now.Add(5*time.Hour)))
 }
 
-func abortWaitingAttemptLog( t *testing.T){
-	attempts, _, _ := Database.GetWaitingAttempts(0,1)
+func abortWaitingAttemptLog(t *testing.T) {
+	attempts, _, _ := Database.GetWaitingAttempts(0, 1)
 	require.Len(t, *attempts, 1)
 
 	attempt := (*attempts)[0]
 
 	var start_time time.Time = time.Now()
-	_,err := Database.AbortAttempt(attempt.ID, "TEST LOG", true)
+	_, err := Database.AbortAttempt(attempt.ID, "TEST LOG", true)
 	require.NoError(t, err)
 
 	logs, err := Database.GetFreshLogs([]commons.Channel{commons.AttemptChannel}, start_time)
 	require.NoError(t, err)
 	require.Len(t, *logs, 1)
-	
+
 	AbortAttemptsLog := (*logs)[0]
 	WebhookRunner.HandleFreshLog(AbortAttemptsLog)
 
-	
 	require.Len(t, *WebhookRunner.State.WaitingAttempts.Val, 0)
 
 }

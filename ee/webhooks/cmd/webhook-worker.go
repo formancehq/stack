@@ -32,7 +32,7 @@ import (
 func newWebhookWorkerCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:     "worker",
-		Aliases: []string{"work","wrk"},
+		Aliases: []string{"work", "wrk"},
 		Short:   "Run webhook Worker",
 		RunE:    webhookWorkerRun,
 		PreRunE: handleAutoMigrate,
@@ -56,58 +56,55 @@ func webhookWorkerRun(cmd *cobra.Command, _ []string) error {
 			func() *http.Client {
 				return fxmodules.FxProvideHttpClient()
 			},
-			func (client *http.Client) *httpclient.DefaultHttpClient {
+			func(client *http.Client) *httpclient.DefaultHttpClient {
 				defaultClient := httpclient.NewDefaultHttpClient(client)
 				return &defaultClient
 			},
-			
+
 			func() *component.RunnerParams {
-				
+
 				runnerParams := flag.LoadRunnerParams()
 
 				return &runnerParams
 			},
 
-			func (db *bun.DB) *storage.PostgresStore {
+			func(db *bun.DB) *storage.PostgresStore {
 				database := storage.NewPostgresStoreProvider(db)
 				return &database
 			},
 
-			func(lc fx.Lifecycle, 
+			func(lc fx.Lifecycle,
 				database *storage.PostgresStore,
 				runnerParams *component.RunnerParams,
 				client *httpclient.DefaultHttpClient,
-				r *message.Router, 
+				r *message.Router,
 				subscriber message.Subscriber,
-				topics []string, 
-				) *webhookworker.Worker {
-					
-					Worker := webhookworker.NewWorker(*runnerParams, database, client)
-					Worker.Init()
-					
-					lc.Append(fx.Hook{
-						OnStart: func(ctx context.Context) error {
-							for _, topic := range topics {
-								r.AddNoPublisherHandler(fmt.Sprintf("messages-%s", topic), topic, subscriber, Worker.HandleMessage)
-								
-							  }
-						 return nil
-						},
-						OnStop: func(ctx context.Context) error {
-							Worker.Stop()
-						  return nil
-						},
-					  })
+				topics []string,
+			) *webhookworker.Worker {
 
-					  
+				Worker := webhookworker.NewWorker(*runnerParams, database, client)
+				Worker.Init()
 
-					return Worker
+				lc.Append(fx.Hook{
+					OnStart: func(ctx context.Context) error {
+						for _, topic := range topics {
+							r.AddNoPublisherHandler(fmt.Sprintf("messages-%s", topic), topic, subscriber, Worker.HandleMessage)
+
+						}
+						return nil
+					},
+					OnStop: func(ctx context.Context) error {
+						Worker.Stop()
+						return nil
+					},
+				})
+
+				return Worker
 			},
 		),
 
-		fx.Invoke(func(*webhookworker.Worker){}),
+		fx.Invoke(func(*webhookworker.Worker) {}),
 	}
-
 
 	return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 }

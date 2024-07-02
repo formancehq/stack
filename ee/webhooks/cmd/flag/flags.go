@@ -1,23 +1,22 @@
 package flag
 
 import (
-	"strings"
-	"time"
 	component "github.com/formancehq/webhooks/internal/components/commons"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+	"strings"
+	"time"
 )
 
 const (
 	LogLevel = "log-level"
 	Listen   = "listen"
 
-	MaxCall = "max-call"
-	MaxRetry = "max-retry"
-	TimeOut = "time-out"
+	MaxCall   = "max-call"
+	MaxRetry  = "max-retry"
+	TimeOut   = "time-out"
 	DelayPull = "delay-pull"
-
 
 	KafkaTopics = "kafka-topics"
 	AutoMigrate = "auto-migrate"
@@ -39,7 +38,6 @@ func Init(flagSet *pflag.FlagSet) {
 	flagSet.String(LogLevel, logrus.InfoLevel.String(), "Log level")
 	flagSet.String(Listen, DefaultBindAddressServer, "server HTTP bind address")
 
-
 	flagSet.Int(TimeOut, 2000, "Set time out for hook request (ms)")
 	flagSet.Int(MaxRetry, 60, "Set max  number of retries for failed attempt")
 	flagSet.Int(MaxCall, 20, "Set max number of http request at the same time")
@@ -58,8 +56,7 @@ func init() {
 	LoadEnv(viper.GetViper())
 }
 
-
-func LoadRunnerParams() component.RunnerParams{
+func LoadRunnerParams() component.RunnerParams {
 	stateParams := component.DefaultRunnerParams()
 	stateParams.MaxRetry = viper.GetInt(MaxRetry)
 	stateParams.MaxCall = viper.GetInt(MaxCall)

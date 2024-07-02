@@ -2,16 +2,15 @@ package fxmodules
 
 import (
 	"fmt"
-	"net/http"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"net/http"
 
 	"go.opentelemetry.io/otel"
-
 )
 
 var Tracer = otel.Tracer("webhook")
 
-func FxProvideHttpClient() *http.Client{
+func FxProvideHttpClient() *http.Client {
 	return &http.Client{
 		Transport: otelhttp.NewTransport(http.DefaultTransport, otelhttp.WithSpanNameFormatter(func(operation string, r *http.Request) string {
 			str := fmt.Sprintf("%s %s", r.Method, r.URL.Path)
@@ -23,4 +22,3 @@ func FxProvideHttpClient() *http.Client{
 	}
 
 }
-

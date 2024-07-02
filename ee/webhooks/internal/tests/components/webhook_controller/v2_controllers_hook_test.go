@@ -10,13 +10,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-
-func TestRunHookV2(t *testing.T){
+func TestRunHookV2(t *testing.T) {
 	//Reset Hooks
 	resp := v2Ctrl.V2GetHooksController(Database, "", "")
 	for _, hook := range resp.Data.Data {
 		r := v2Ctrl.V2DeleteHookController(Database, hook.ID)
-		require.NoError(t,r.Err)
+		require.NoError(t, r.Err)
 	}
 	t.Run("InsertHook", v2InsertHook)
 
@@ -33,44 +32,42 @@ func TestRunHookV2(t *testing.T){
 	t.Run("ChangeEndpoint", v2ChangeEndpoint)
 }
 
-
-func v2InsertHook(t *testing.T){
+func v2InsertHook(t *testing.T) {
 	badHook1 := commons.HookBodyParams{
-		Name:"Test1",
-		Endpoint:"", 
-		Secret:"", 
-		Events : []string{"event1"}}
+		Name:     "Test1",
+		Endpoint: "",
+		Secret:   "",
+		Events:   []string{"event1"}}
 
 	resp := v2Ctrl.V2CreateHookController(Database, badHook1)
 	require.Error(t, resp.Err, "Validation error expected for bad endpoint")
 	require.Equal(t, resp.T, utilsCtrl.ValidationType, "Validation type error expected for bad endpoint")
-	
+
 	badHook2 := commons.HookBodyParams{
-		Name:"Test1",
-		Endpoint:"http://www.exemple-endpoint.com/valide", 
-		Secret:"badsecret!", 
-		Events : []string{"event1"}}
+		Name:     "Test1",
+		Endpoint: "http://www.exemple-endpoint.com/valide",
+		Secret:   "badsecret!",
+		Events:   []string{"event1"}}
 
 	resp = v2Ctrl.V2CreateHookController(Database, badHook2)
 	require.Error(t, resp.Err, "Validation error expected for bad secret")
 	require.Equal(t, resp.T, utilsCtrl.ValidationType, "Validation type error expected for bad secret")
 
 	badHook3 := commons.HookBodyParams{
-		Name:"Test1",
-		Endpoint:"http://www.exemple-endpoint.com/valide", 
-		Secret:"Y2VjaWVzdHVuc2VjcmV0dmFsaWRlcyEh", 
-		Events : []string{""}}
+		Name:     "Test1",
+		Endpoint: "http://www.exemple-endpoint.com/valide",
+		Secret:   "Y2VjaWVzdHVuc2VjcmV0dmFsaWRlcyEh",
+		Events:   []string{""}}
 
 	resp = v2Ctrl.V2CreateHookController(Database, badHook3)
 	require.Error(t, resp.Err, "Validation error expected for bad events")
 	require.Equal(t, resp.T, utilsCtrl.ValidationType, "Validation type error expected for bad events")
 
-
 	hook1 := commons.HookBodyParams{
-		Name:"Test1",
-		Endpoint:"http://www.exemple-endpoint.com/valide", 
-		Secret:"Y2VjaWVzdHVuc2VjcmV0dmFsaWRlcyEh", 
-		Events : []string{"event"}}
+		Name:     "Test1",
+		Endpoint: "http://www.exemple-endpoint.com/valide",
+		Secret:   "Y2VjaWVzdHVuc2VjcmV0dmFsaWRlcyEh",
+		Events:   []string{"event"}}
 
 	resp = v2Ctrl.V2CreateHookController(Database, hook1)
 	require.NoError(t, resp.Err)
@@ -78,10 +75,10 @@ func v2InsertHook(t *testing.T){
 	require.Equal(t, resp.Data.Endpoint, "http://www.exemple-endpoint.com/valide")
 
 	hook2 := commons.HookBodyParams{
-		Name:"Test2",
-		Endpoint:"http://www.exemple-endpoint.com/valide", 
-		Secret:"Y2VjaWVzdHVuc2VjcmV0dmFsaWRlcyEh", 
-		Events : []string{"event"}}
+		Name:     "Test2",
+		Endpoint: "http://www.exemple-endpoint.com/valide",
+		Secret:   "Y2VjaWVzdHVuc2VjcmV0dmFsaWRlcyEh",
+		Events:   []string{"event"}}
 
 	resp = v2Ctrl.V2CreateHookController(Database, hook2)
 	require.NoError(t, resp.Err)
@@ -89,21 +86,21 @@ func v2InsertHook(t *testing.T){
 	require.Equal(t, resp.Data.Endpoint, "http://www.exemple-endpoint.com/valide")
 
 	hook3 := commons.HookBodyParams{
-		Name:"Test3",
-		Endpoint:"http://www.exemple-endpoint.com/valide", 
-		Secret:"Y2VjaWVzdHVuc2VjcmV0dmFsaWRlcyEh", 
-		Events : []string{"event"}}
+		Name:     "Test3",
+		Endpoint: "http://www.exemple-endpoint.com/valide",
+		Secret:   "Y2VjaWVzdHVuc2VjcmV0dmFsaWRlcyEh",
+		Events:   []string{"event"}}
 
 	resp = v2Ctrl.V2CreateHookController(Database, hook3)
 	require.NoError(t, resp.Err)
 	require.NotEmpty(t, resp.Data.ID)
 	require.Equal(t, resp.Data.Endpoint, "http://www.exemple-endpoint.com/valide")
-	
+
 	hook4 := commons.HookBodyParams{
-		Name:"Test4",
-		Endpoint:"http://www.exemple-endpoint.com/valide2", 
-		Secret:"Y2VjaWVzdHVuc2VjcmV0dmFsaWRlcyEh", 
-		Events : []string{"event"}}
+		Name:     "Test4",
+		Endpoint: "http://www.exemple-endpoint.com/valide2",
+		Secret:   "Y2VjaWVzdHVuc2VjcmV0dmFsaWRlcyEh",
+		Events:   []string{"event"}}
 
 	resp = v2Ctrl.V2CreateHookController(Database, hook4)
 	require.NoError(t, resp.Err)
@@ -111,8 +108,8 @@ func v2InsertHook(t *testing.T){
 	require.Equal(t, resp.Data.Endpoint, "http://www.exemple-endpoint.com/valide2")
 }
 
-func v2GetHooks(t *testing.T){
-	badCursor := "bad"	
+func v2GetHooks(t *testing.T) {
+	badCursor := "bad"
 
 	goodEndpoint := "http://www.exemple-endpoint.com/valide"
 
@@ -120,7 +117,7 @@ func v2GetHooks(t *testing.T){
 	require.Error(t, resp.Err, "Validation error expected for bad cursor")
 	require.Equal(t, resp.T, utilsCtrl.ValidationType, "Validation type error expected for bad cursor")
 
-	resp = v2Ctrl.V2GetHooksController(Database, "", "") 
+	resp = v2Ctrl.V2GetHooksController(Database, "", "")
 	require.NoError(t, resp.Err)
 	require.Len(t, resp.Data.Data, 4)
 
@@ -129,7 +126,7 @@ func v2GetHooks(t *testing.T){
 	require.Len(t, resp.Data.Data, 3)
 }
 
-func v2DeleteHook(t *testing.T){
+func v2DeleteHook(t *testing.T) {
 	wrongId := "23"
 
 	resp := v2Ctrl.V2DeleteHookController(Database, wrongId)
@@ -146,7 +143,7 @@ func v2DeleteHook(t *testing.T){
 	require.Len(t, temp.Data.Data, 3)
 }
 
-func v2DeactiveHook(t *testing.T){
+func v2DeactiveHook(t *testing.T) {
 	wrongId := "23"
 
 	resp := v2Ctrl.V2DeactiveHookController(Database, wrongId)
@@ -158,10 +155,10 @@ func v2DeactiveHook(t *testing.T){
 	resp = v2Ctrl.V2DeactiveHookController(Database, hook.ID)
 	require.NoError(t, resp.Err)
 	require.Equal(t, false, resp.Data.Active)
-	
+
 }
 
-func v2ActiveHook(t *testing.T){
+func v2ActiveHook(t *testing.T) {
 	wrongId := "23"
 
 	resp := v2Ctrl.V2ActiveHookController(Database, wrongId)
@@ -170,8 +167,11 @@ func v2ActiveHook(t *testing.T){
 
 	var inactiveHook commons.Hook
 	temp := v2Ctrl.V2GetHooksController(Database, "", "")
-	for _,h := range temp.Data.Data {
-		if !h.Active {inactiveHook = h; return;}
+	for _, h := range temp.Data.Data {
+		if !h.Active {
+			inactiveHook = h
+			return
+		}
 	}
 
 	if inactiveHook.ID == "" {
@@ -185,7 +185,7 @@ func v2ActiveHook(t *testing.T){
 
 }
 
-func v2ChangeSecret(t *testing.T){
+func v2ChangeSecret(t *testing.T) {
 	badSecret := "badsecret!"
 	temp := v2Ctrl.V2GetHooksController(Database, "", "")
 	hook := temp.Data.Data[0]
@@ -197,7 +197,7 @@ func v2ChangeSecret(t *testing.T){
 	require.NotEqual(t, hook.Secret, resp.Data.Secret)
 }
 
-func v2ChangeEndpoint(t *testing.T){
+func v2ChangeEndpoint(t *testing.T) {
 	badEndpoint := ""
 	newEndpoint := "http://www.exemple-endpoint.com/newvalide"
 	temp := v2Ctrl.V2GetHooksController(Database, "", "")
@@ -211,7 +211,6 @@ func v2ChangeEndpoint(t *testing.T){
 
 }
 
-func V2TestHook(t *testing.T){
+func V2TestHook(t *testing.T) {
 	//TODO(Test)
 }
-

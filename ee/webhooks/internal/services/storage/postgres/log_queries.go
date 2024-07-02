@@ -38,12 +38,13 @@ func wrapWithLogQuery(query string) string {
 
 }
 
-
 func (store PostgresStore) WriteLog(id, channel, payload string, created_at time.Time) error {
 
 	_, err := store.db.NewRaw(insertLogQuery, id, channel, payload, created_at).Exec(context.Background())
-	
-	return err 
+
+	return err
+
+	return err
 
 }
 
@@ -51,5 +52,5 @@ func (store PostgresStore) GetFreshLogs(channels []commons.Channel, lastDate tim
 	res := make([]*commons.Log, 0)
 	_, err := store.db.NewRaw(selectFreshLogs, bun.In(channels), lastDate).Exec(context.Background(), &res)
 
-	return &res, err 
-}	
+	return &res, err
+}

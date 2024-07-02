@@ -15,16 +15,16 @@ import (
 var Database storage.PostgresStore
 var WebhookRunner component.WebhookRunner
 
-func TestMain(m *testing.M){
-	
+func TestMain(m *testing.M) {
+
 	testutils.StartPostgresServer()
-	var err error 
+	var err error
 	Database, err = testutils.GetStoreProvider()
-	WebhookRunner = *component.NewWebhookRunner(component.DefaultRunnerParams(), 
-												Database, 
-												testutils.NewHTTPClient(),
-												commons.HookChannel, 
-												commons.AttemptChannel)
+	WebhookRunner = *component.NewWebhookRunner(component.DefaultRunnerParams(),
+		Database,
+		testutils.NewHTTPClient(),
+		commons.HookChannel,
+		commons.AttemptChannel)
 	if err != nil {
 		logging.Error(err)
 		os.Exit(1)
@@ -32,5 +32,3 @@ func TestMain(m *testing.M){
 	m.Run()
 	testutils.StopPostgresServer()
 }
-
-

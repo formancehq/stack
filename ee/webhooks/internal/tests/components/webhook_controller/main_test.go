@@ -12,10 +12,9 @@ import (
 
 var Database storage.PostgresStore
 
-
-func TestMain(m *testing.M){
+func TestMain(m *testing.M) {
 	testutils.StartPostgresServer()
-	var err error 
+	var err error
 	Database, err = testutils.GetStoreProvider()
 	if err != nil {
 		logging.Error(err)
@@ -24,5 +23,3 @@ func TestMain(m *testing.M){
 	m.Run()
 	testutils.StopPostgresServer()
 }
-
-

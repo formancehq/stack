@@ -9,14 +9,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-
-
-func TestRunV1(t *testing.T){
+func TestRunV1(t *testing.T) {
 	//Reset Hooks
 	resp := v1Ctrl.V1GetHooksController(Database, "", "", "")
 	for _, hook := range resp.Data.Data {
 		r := v1Ctrl.V1DeleteHookController(Database, hook.ID)
-		require.NoError(t,r.Err)
+		require.NoError(t, r.Err)
 	}
 
 	t.Run("InsertHook", v1InsertHook)
@@ -32,40 +30,38 @@ func TestRunV1(t *testing.T){
 	t.Run("ChangeSecret", v1ChangeSecret)
 }
 
-
-func v1InsertHook(t *testing.T){
+func v1InsertHook(t *testing.T) {
 	badHook1 := utilsCtrl.V1HookUser{
-		Endpoint:"", 
-		Secret:"", 
-		EventTypes : []string{"event1"}}
-	
+		Endpoint:   "",
+		Secret:     "",
+		EventTypes: []string{"event1"}}
+
 	resp := v1Ctrl.V1CreateHookController(Database, badHook1)
 	require.Error(t, resp.Err, "Validation error expected for bad endpoint")
 	require.Equal(t, resp.T, utilsCtrl.ValidationType, "Validation type error expected for bad endpoint")
-	
+
 	badHook2 := utilsCtrl.V1HookUser{
-		Endpoint:"http://www.exemple-endpoint.com/valide", 
-		Secret:"badsecret!", 
-		EventTypes : []string{"event1"}}
+		Endpoint:   "http://www.exemple-endpoint.com/valide",
+		Secret:     "badsecret!",
+		EventTypes: []string{"event1"}}
 
 	resp = v1Ctrl.V1CreateHookController(Database, badHook2)
 	require.Error(t, resp.Err, "Validation error expected for bad secret")
 	require.Equal(t, resp.T, utilsCtrl.ValidationType, "Validation type error expected for bad secret")
 
 	badHook3 := utilsCtrl.V1HookUser{
-		Endpoint:"http://www.exemple-endpoint.com/valide", 
-		Secret:"Y2VjaWVzdHVuc2VjcmV0dmFsaWRlcyEh", 
-		EventTypes : []string{""}}
+		Endpoint:   "http://www.exemple-endpoint.com/valide",
+		Secret:     "Y2VjaWVzdHVuc2VjcmV0dmFsaWRlcyEh",
+		EventTypes: []string{""}}
 
 	resp = v1Ctrl.V1CreateHookController(Database, badHook3)
 	require.Error(t, resp.Err, "Validation error expected for bad events")
 	require.Equal(t, resp.T, utilsCtrl.ValidationType, "Validation type error expected for bad events")
 
-
 	hook1 := utilsCtrl.V1HookUser{
-		Endpoint:"http://www.exemple-endpoint.com/valide", 
-		Secret:"Y2VjaWVzdHVuc2VjcmV0dmFsaWRlcyEh", 
-		EventTypes : []string{"event"}}
+		Endpoint:   "http://www.exemple-endpoint.com/valide",
+		Secret:     "Y2VjaWVzdHVuc2VjcmV0dmFsaWRlcyEh",
+		EventTypes: []string{"event"}}
 
 	resp = v1Ctrl.V1CreateHookController(Database, hook1)
 	require.NoError(t, resp.Err)
@@ -73,24 +69,24 @@ func v1InsertHook(t *testing.T){
 	require.Equal(t, resp.Data.Endpoint, "http://www.exemple-endpoint.com/valide")
 
 	hook2 := utilsCtrl.V1HookUser{
-		Endpoint:"http://www.exemple-endpoint.com/valide", 
-		Secret:"Y2VjaWVzdHVuc2VjcmV0dmFsaWRlcyEh", 
-		EventTypes : []string{"event"}}
+		Endpoint:   "http://www.exemple-endpoint.com/valide",
+		Secret:     "Y2VjaWVzdHVuc2VjcmV0dmFsaWRlcyEh",
+		EventTypes: []string{"event"}}
 
 	resp = v1Ctrl.V1CreateHookController(Database, hook2)
 	require.NoError(t, resp.Err)
-	
+
 	hook3 := utilsCtrl.V1HookUser{
-		Endpoint:"http://www.exemple-endpoint.com/valide2", 
-		Secret:"Y2VjaWVzdHVuc2VjcmV0dmFsaWRlcyEh", 
-		EventTypes : []string{"event"}}
+		Endpoint:   "http://www.exemple-endpoint.com/valide2",
+		Secret:     "Y2VjaWVzdHVuc2VjcmV0dmFsaWRlcyEh",
+		EventTypes: []string{"event"}}
 
 	resp = v1Ctrl.V1CreateHookController(Database, hook3)
 	require.NoError(t, resp.Err)
-	
+
 }
 
-func v1GetHooks(t *testing.T){
+func v1GetHooks(t *testing.T) {
 	badCursor := "bad"
 	wrongId := "23"
 
@@ -104,7 +100,7 @@ func v1GetHooks(t *testing.T){
 	require.NoError(t, resp.Err)
 	require.Len(t, resp.Data.Data, 0)
 
-	resp = v1Ctrl.V1GetHooksController(Database, "", "", "") 
+	resp = v1Ctrl.V1GetHooksController(Database, "", "", "")
 	require.NoError(t, resp.Err)
 	require.Len(t, resp.Data.Data, 3)
 
@@ -113,7 +109,7 @@ func v1GetHooks(t *testing.T){
 	require.Len(t, resp.Data.Data, 2)
 }
 
-func v1DeleteHook(t *testing.T){
+func v1DeleteHook(t *testing.T) {
 	wrongId := "23"
 
 	resp := v1Ctrl.V1DeleteHookController(Database, wrongId)
@@ -130,7 +126,7 @@ func v1DeleteHook(t *testing.T){
 	require.Len(t, temp.Data.Data, 2)
 }
 
-func v1DeactiveHook(t *testing.T){
+func v1DeactiveHook(t *testing.T) {
 	wrongId := "23"
 
 	resp := v1Ctrl.V1DeactiveHookController(Database, wrongId)
@@ -142,10 +138,10 @@ func v1DeactiveHook(t *testing.T){
 	resp = v1Ctrl.V1DeactiveHookController(Database, hook.ID)
 	require.NoError(t, resp.Err)
 	require.Equal(t, false, resp.Data.Active)
-	
+
 }
 
-func v1ActiveHook(t *testing.T){
+func v1ActiveHook(t *testing.T) {
 	wrongId := "23"
 
 	resp := v1Ctrl.V1ActiveHookController(Database, wrongId)
@@ -154,8 +150,11 @@ func v1ActiveHook(t *testing.T){
 
 	var inactiveHook utilsCtrl.V1Hook
 	temp := v1Ctrl.V1GetHooksController(Database, "", "", "")
-	for _,h := range temp.Data.Data {
-		if !h.Active {inactiveHook = h; return;}
+	for _, h := range temp.Data.Data {
+		if !h.Active {
+			inactiveHook = h
+			return
+		}
 	}
 
 	if inactiveHook.ID == "" {
@@ -169,7 +168,7 @@ func v1ActiveHook(t *testing.T){
 
 }
 
-func v1ChangeSecret(t *testing.T){
+func v1ChangeSecret(t *testing.T) {
 	badSecret := "badsecret!"
 	temp := v1Ctrl.V1GetHooksController(Database, "", "", "")
 	hook := temp.Data.Data[0]
@@ -179,8 +178,4 @@ func v1ChangeSecret(t *testing.T){
 	resp = v1Ctrl.V1ChangeSecretController(Database, hook.ID, "")
 	require.NoError(t, resp.Err)
 	require.NotEqual(t, hook.Secret, resp.Data.Secret)
-}
-
-func v1TestHook(t *testing.T){
-	//TODO(Test)
 }

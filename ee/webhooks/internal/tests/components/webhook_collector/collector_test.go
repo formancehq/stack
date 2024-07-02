@@ -17,17 +17,14 @@ import (
 
 var ActiveGoodHook *commons.Hook
 var ActiveBadHook *commons.Hook
-var DeactiveHook *commons.Hook 
+var DeactiveHook *commons.Hook
 
 var TestServer *http.Server
 
 var GoodHandler func(http.ResponseWriter, *http.Request)
 var BadHandler func(http.ResponseWriter, *http.Request)
 
-
-
-
-func TestRunCollector(t *testing.T){
+func TestRunCollector(t *testing.T) {
 
 	GoodHandler = func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -42,21 +39,27 @@ func TestRunCollector(t *testing.T){
 	TestServer = testutils.NewHTTPServer(4567, [2]interface{}{"/good", http.HandlerFunc(GoodHandler)}, [2]interface{}{"/bad", http.HandlerFunc(BadHandler)})
 	defer TestServer.Close()
 
-
-
 	ActiveGoodHook = commons.NewHook("HookGood", []string{"testevent"}, "http://127.0.0.1:4567/good", "", false)
 	ActiveGoodHook.Status = commons.EnableStatus
 	ActiveBadHook = commons.NewHook("HookBad", []string{"testevent"}, "http://127.0.0.1:4567/bad", "", false)
 	ActiveBadHook.Status = commons.EnableStatus
 	DeactiveHook = commons.NewHook("HookDeactive", []string{"testevent"}, "http://127.0.0.1:4567/good", "", false)
 
-
 	err := Database.SaveHook(*ActiveGoodHook)
-	if err != nil {logging.Error(err) ; os.Exit(1)}
+	if err != nil {
+		logging.Error(err)
+		os.Exit(1)
+	}
 	err = Database.SaveHook(*ActiveBadHook)
-	if err != nil {logging.Error(err) ; os.Exit(1)}
+	if err != nil {
+		logging.Error(err)
+		os.Exit(1)
+	}
 	err = Database.SaveHook(*DeactiveHook)
-	if err != nil {logging.Error(err) ; os.Exit(1)}
+	if err != nil {
+		logging.Error(err)
+		os.Exit(1)
+	}
 
 	WebhookCollector.State.AddNewHook(ActiveBadHook)
 	WebhookCollector.State.AddNewHook(ActiveGoodHook)
@@ -71,26 +74,25 @@ func TestRunCollector(t *testing.T){
 	t.Run("HandleMissingHook", HandleMissingHook)
 }
 
-
-func HandleGoodHook(t *testing.T){
+func HandleGoodHook(t *testing.T) {
 	var wg sync.WaitGroup
-	sAttempt := commons.NewSharedAttempt(ActiveGoodHook.ID, 
+	sAttempt := commons.NewSharedAttempt(ActiveGoodHook.ID,
 		ActiveGoodHook.Name, ActiveGoodHook.Endpoint, "testevent", "payload good")
 	Database.SaveAttempt(*sAttempt.Val, true)
 
 	wg.Add(1)
 	WebhookCollector.AsyncHandleSharedAttempt(sAttempt, &wg)
 	wg.Wait()
-	
+
 	attempt, err := Database.GetAttempt(sAttempt.Val.ID)
 	require.NoError(t, err)
 
 	require.Equal(t, commons.SuccessStatus, attempt.Status)
 }
 
-func HandleBadHook(t *testing.T){
+func HandleBadHook(t *testing.T) {
 	var wg sync.WaitGroup
-	sAttempt := commons.NewSharedAttempt(ActiveBadHook.ID, 
+	sAttempt := commons.NewSharedAttempt(ActiveBadHook.ID,
 		ActiveBadHook.Name, ActiveBadHook.Endpoint, "testevent", "payload bad")
 	Database.SaveAttempt(*sAttempt.Val, true)
 
@@ -107,10 +109,10 @@ func HandleBadHook(t *testing.T){
 
 }
 
-func HandleDeactiveHook(t *testing.T){
+func HandleDeactiveHook(t *testing.T) {
 	var wg sync.WaitGroup
-	sAttempt := commons.NewSharedAttempt(DeactiveHook.ID, 
-	DeactiveHook.Name, DeactiveHook.Endpoint, "testevent", "payload bad")
+	sAttempt := commons.NewSharedAttempt(DeactiveHook.ID,
+		DeactiveHook.Name, DeactiveHook.Endpoint, "testevent", "payload bad")
 	Database.SaveAttempt(*sAttempt.Val, true)
 
 	wg.Add(1)
@@ -122,14 +124,12 @@ func HandleDeactiveHook(t *testing.T){
 	require.Equal(t, commons.AbortStatus, attempt.Status)
 	require.Equal(t, commons.AbortDisabledHook, attempt.Comment)
 
-	
 }
 
-
-func HandleMissingHook(t *testing.T){
+func HandleMissingHook(t *testing.T) {
 	var wg sync.WaitGroup
-	sAttempt := commons.NewSharedAttempt("noID", 
-	"no name", "no endpoint", "testevent", "payload bad")
+	sAttempt := commons.NewSharedAttempt("noID",
+		"no name", "no endpoint", "testevent", "payload bad")
 	Database.SaveAttempt(*sAttempt.Val, true)
 
 	wg.Add(1)
@@ -140,6 +140,5 @@ func HandleMissingHook(t *testing.T){
 
 	require.Equal(t, commons.AbortStatus, attempt.Status)
 	require.Equal(t, commons.AbortMissingHook, attempt.Comment)
-
 
 }
