@@ -184,6 +184,11 @@ func ingestAccountsBatch(
 			return err
 		}
 
+		metadata := make(map[string]string)
+		for k, v := range account.Metadata {
+			metadata[k] = v
+		}
+
 		batch = append(batch, &models.Account{
 			ID: models.AccountID{
 				Reference:   account.ID,
@@ -195,6 +200,7 @@ func ingestAccountsBatch(
 			DefaultAsset: currency.FormatAsset(supportedCurrenciesWithDecimal, string(account.DefaultCurrency)),
 			Type:         models.AccountTypeInternal,
 			RawData:      raw,
+			Metadata:     metadata,
 		})
 	}
 
