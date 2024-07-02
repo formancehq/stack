@@ -5,6 +5,8 @@ import (
 	"math/big"
 	"net/http"
 
+	"github.com/formancehq/stack/libs/go-libs/api"
+
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
@@ -28,7 +30,7 @@ func (m *MainHandler) confirmHoldHandler(w http.ResponseWriter, r *http.Request)
 		}
 	}
 
-	err := m.manager.ConfirmHold(r.Context(), wallet.ConfirmHold{
+	err := m.manager.ConfirmHold(r.Context(), api.IdempotencyKeyFromRequest(r), wallet.ConfirmHold{
 		HoldID: chi.URLParam(r, "holdID"),
 		Amount: big.NewInt(data.Amount),
 		Final:  data.Final,
