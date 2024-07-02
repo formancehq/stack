@@ -4,6 +4,7 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"github.com/google/uuid"
@@ -44,10 +45,36 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 						Metadata: map[string]string{},
 					},
 					ID: response.CreateWalletResponse.Data.ID,
+					IdempotencyKey: pointer.For("foo"),
 				})
 				Expect(err).To(Succeed())
 			})
 			It("should be ok", func() {})
+			Then("crediting again with the same ik", func() {
+				BeforeEach(func() {
+					_, err := Client().Wallets.CreditWallet(TestContext(), operations.CreditWalletRequest{
+						CreditWalletRequest: &shared.CreditWalletRequest{
+							Amount: shared.Monetary{
+								Amount: big.NewInt(1000),
+								Asset:  "USD/2",
+							},
+							Sources:  []shared.Subject{},
+							Metadata: map[string]string{},
+						},
+						ID: response.CreateWalletResponse.Data.ID,
+						IdempotencyKey: pointer.For("foo"),
+					})
+					Expect(err).To(Succeed())
+				})
+				It("Should not trigger any movements", func() {
+					balance, err := Client().Wallets.GetBalance(TestContext(), operations.GetBalanceRequest{
+						BalanceName: "main",
+						ID:          response.CreateWalletResponse.Data.ID,
+					})
+					Expect(err).To(Succeed())
+					Expect(balance.GetBalanceResponse.Data.Assets["USD/2"]).To(Equal(big.NewInt(1000)))
+				})
+			})
 		})
 		Then("crediting it with specified timestamp", func() {
 			now := time.Now().Round(time.Microsecond).UTC()

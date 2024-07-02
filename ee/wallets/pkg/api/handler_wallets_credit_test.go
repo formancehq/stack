@@ -181,7 +181,7 @@ func TestWalletsCredit(t *testing.T) {
 				postTransaction wallet.PostTransaction
 			)
 			testEnv = newTestEnv(
-				WithCreateTransaction(func(ctx context.Context, ledger string, p wallet.PostTransaction) (*shared.V2Transaction, error) {
+				WithCreateTransaction(func(ctx context.Context, ledger, ik string, p wallet.PostTransaction) (*shared.V2Transaction, error) {
 					require.Equal(t, testEnv.LedgerName(), ledger)
 					postTransaction = p
 					return &testCase.postTransactionResult, nil

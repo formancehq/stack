@@ -4,6 +4,8 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/formancehq/stack/libs/go-libs/api"
+
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
@@ -29,7 +31,7 @@ func (m *MainHandler) creditWalletHandler(w http.ResponseWriter, r *http.Request
 		CreditRequest: *data,
 	}
 
-	err := m.manager.Credit(r.Context(), credit)
+	err := m.manager.Credit(r.Context(), api.IdempotencyKeyFromRequest(r), credit)
 	if err != nil {
 		switch {
 		case errors.Is(err, wallet.ErrBalanceNotExists),

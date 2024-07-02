@@ -4,6 +4,8 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/formancehq/stack/libs/go-libs/api"
+
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
@@ -16,7 +18,7 @@ func (m *MainHandler) patchWalletHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	err := m.manager.UpdateWallet(r.Context(), chi.URLParam(r, "walletID"), data)
+	err := m.manager.UpdateWallet(r.Context(), chi.URLParam(r, "walletID"), api.IdempotencyKeyFromRequest(r), data)
 	if err != nil {
 		switch {
 		case errors.Is(err, wallet.ErrWalletNotFound):

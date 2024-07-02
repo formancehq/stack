@@ -19,8 +19,17 @@ func (o *UpdateWalletRequestBody) GetMetadata() map[string]string {
 }
 
 type UpdateWalletRequest struct {
-	RequestBody *UpdateWalletRequestBody `request:"mediaType=application/json"`
-	ID          string                   `pathParam:"style=simple,explode=false,name=id"`
+	// Use an idempotency key
+	IdempotencyKey *string                  `header:"style=simple,explode=false,name=Idempotency-Key"`
+	RequestBody    *UpdateWalletRequestBody `request:"mediaType=application/json"`
+	ID             string                   `pathParam:"style=simple,explode=false,name=id"`
+}
+
+func (o *UpdateWalletRequest) GetIdempotencyKey() *string {
+	if o == nil {
+		return nil
+	}
+	return o.IdempotencyKey
 }
 
 func (o *UpdateWalletRequest) GetRequestBody() *UpdateWalletRequestBody {

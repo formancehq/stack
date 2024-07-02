@@ -33,7 +33,7 @@ func TestWalletsCreate(t *testing.T) {
 		md      map[string]string
 	)
 	testEnv := newTestEnv(
-		WithAddMetadataToAccount(func(ctx context.Context, l, a string, m map[string]string) error {
+		WithAddMetadataToAccount(func(ctx context.Context, l, a, ik string, m map[string]string) error {
 			ledger = l
 			account = a
 			md = m

@@ -92,11 +92,11 @@ func newTestEnv(opts ...Option) *testEnv {
 }
 
 type (
-	addMetadataToAccountFn func(ctx context.Context, ledger, account string, metadata map[string]string) error
+	addMetadataToAccountFn func(ctx context.Context, ledger, account, ik string, metadata map[string]string) error
 	getAccountFn           func(ctx context.Context, ledger, account string) (*wallet.AccountWithVolumesAndBalances, error)
 	listAccountsFn         func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*wallet.AccountsCursorResponseCursor, error)
 	listTransactionsFn     func(ctx context.Context, ledger string, query wallet.ListTransactionsQuery) (*shared.V2TransactionsCursorResponseCursor, error)
-	createTransactionFn    func(ctx context.Context, ledger string, postTransaction wallet.PostTransaction) (*shared.V2Transaction, error)
+	createTransactionFn    func(ctx context.Context, ledger, ik string, postTransaction wallet.PostTransaction) (*shared.V2Transaction, error)
 )
 
 type LedgerMock struct {
@@ -111,8 +111,8 @@ func (l *LedgerMock) EnsureLedgerExists(ctx context.Context, name string) error 
 	return nil
 }
 
-func (l *LedgerMock) AddMetadataToAccount(ctx context.Context, ledger, account string, metadata map[string]string) error {
-	return l.addMetadataToAccount(ctx, ledger, account, metadata)
+func (l *LedgerMock) AddMetadataToAccount(ctx context.Context, ledger, account, ik string, metadata map[string]string) error {
+	return l.addMetadataToAccount(ctx, ledger, account, ik, metadata)
 }
 
 func (l *LedgerMock) GetAccount(ctx context.Context, ledger, account string) (*wallet.AccountWithVolumesAndBalances, error) {
@@ -123,8 +123,8 @@ func (l *LedgerMock) ListAccounts(ctx context.Context, ledger string, query wall
 	return l.listAccounts(ctx, ledger, query)
 }
 
-func (l *LedgerMock) CreateTransaction(ctx context.Context, ledger string, postTransaction wallet.PostTransaction) (*shared.V2Transaction, error) {
-	return l.createTransaction(ctx, ledger, postTransaction)
+func (l *LedgerMock) CreateTransaction(ctx context.Context, ledger, ik string, postTransaction wallet.PostTransaction) (*shared.V2Transaction, error) {
+	return l.createTransaction(ctx, ledger, ik, postTransaction)
 }
 
 func (l *LedgerMock) ListTransactions(ctx context.Context, ledger string, query wallet.ListTransactionsQuery) (*shared.V2TransactionsCursorResponseCursor, error) {
