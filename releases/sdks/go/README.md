@@ -111,6 +111,7 @@ func main() {
 * [V2DeleteAccountMetadata](docs/sdks/ledger/README.md#v2deleteaccountmetadata) - Delete metadata by key
 * [V2DeleteLedgerMetadata](docs/sdks/ledger/README.md#v2deleteledgermetadata) - Delete ledger metadata by key
 * [V2DeleteTransactionMetadata](docs/sdks/ledger/README.md#v2deletetransactionmetadata) - Delete metadata by key
+* [V2ExportLogs](docs/sdks/ledger/README.md#v2exportlogs) - Export logs
 * [V2GetAccount](docs/sdks/ledger/README.md#v2getaccount) - Get account by its address
 * [V2GetBalancesAggregated](docs/sdks/ledger/README.md#v2getbalancesaggregated) - Get the aggregated balances from selected accounts
 * [V2GetInfo](docs/sdks/ledger/README.md#v2getinfo) - Show server information
@@ -118,6 +119,7 @@ func main() {
 * [V2GetLedgerInfo](docs/sdks/ledger/README.md#v2getledgerinfo) - Get information about a ledger
 * [V2GetTransaction](docs/sdks/ledger/README.md#v2gettransaction) - Get transaction from a ledger by its ID
 * [V2GetVolumesWithBalances](docs/sdks/ledger/README.md#v2getvolumeswithbalances) - Get list of volumes with balances for (account/asset)
+* [V2ImportLogs](docs/sdks/ledger/README.md#v2importlogs) - Import logs
 * [V2ListAccounts](docs/sdks/ledger/README.md#v2listaccounts) - List accounts from a ledger
 * [V2ListLedgers](docs/sdks/ledger/README.md#v2listledgers) - List ledgers
 * [V2ListLogs](docs/sdks/ledger/README.md#v2listlogs) - List the logs from a ledger

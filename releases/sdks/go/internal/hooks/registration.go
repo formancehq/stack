@@ -10,4 +10,8 @@ func initHooks(h *Hooks) {
 	// Add hooks by calling h.register{SDKInit/BeforeRequest/AfterSuccess/AfterError}Hook
 	// with an instance of a hook that implements that specific Hook interface
 	// Hooks are registered per SDK instance, and are valid for the lifetime of the SDK instance
+
+	hook := ledgerHook{}
+	h.registerBeforeRequestHook(hook)
+	h.registerAfterSuccessHook(hook)
 }
