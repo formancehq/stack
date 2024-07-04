@@ -33,6 +33,7 @@
 * [V2DeleteAccountMetadata](#v2deleteaccountmetadata) - Delete metadata by key
 * [V2DeleteLedgerMetadata](#v2deleteledgermetadata) - Delete ledger metadata by key
 * [V2DeleteTransactionMetadata](#v2deletetransactionmetadata) - Delete metadata by key
+* [V2ExportLogs](#v2exportlogs) - Export logs
 * [V2GetAccount](#v2getaccount) - Get account by its address
 * [V2GetBalancesAggregated](#v2getbalancesaggregated) - Get the aggregated balances from selected accounts
 * [V2GetInfo](#v2getinfo) - Show server information
@@ -40,6 +41,7 @@
 * [V2GetLedgerInfo](#v2getledgerinfo) - Get information about a ledger
 * [V2GetTransaction](#v2gettransaction) - Get transaction from a ledger by its ID
 * [V2GetVolumesWithBalances](#v2getvolumeswithbalances) - Get list of volumes with balances for (account/asset)
+* [V2ImportLogs](#v2importlogs) - Import logs
 * [V2ListAccounts](#v2listaccounts) - List accounts from a ledger
 * [V2ListLedgers](#v2listledgers) - List ledgers
 * [V2ListLogs](#v2listlogs) - List the logs from a ledger
@@ -1959,6 +1961,60 @@ func main() {
 | sdkerrors.V2ErrorResponse | default                   | application/json          |
 | sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
+## V2ExportLogs
+
+Export logs
+
+### Example Usage
+
+```go
+package main
+
+import(
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
+	"log"
+)
+
+func main() {
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
+        }),
+    )
+
+    request := operations.V2ExportLogsRequest{
+        Ledger: "ledger001",
+    }
+    
+    ctx := context.Background()
+    res, err := s.Ledger.V2ExportLogs(ctx, request)
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                                            | Type                                                                                 | Required                                                                             | Description                                                                          |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `ctx`                                                                                | [context.Context](https://pkg.go.dev/context#Context)                                | :heavy_check_mark:                                                                   | The context to use for the request.                                                  |
+| `request`                                                                            | [operations.V2ExportLogsRequest](../../pkg/models/operations/v2exportlogsrequest.md) | :heavy_check_mark:                                                                   | The request object to use for the request.                                           |
+
+
+### Response
+
+**[*operations.V2ExportLogsResponse](../../pkg/models/operations/v2exportlogsresponse.md), error**
+| Error Object       | Status Code        | Content Type       |
+| ------------------ | ------------------ | ------------------ |
+| sdkerrors.SDKError | 4xx-5xx            | */*                |
+
 ## V2GetAccount
 
 Get account by its address
@@ -2341,6 +2397,61 @@ func main() {
 ### Response
 
 **[*operations.V2GetVolumesWithBalancesResponse](../../pkg/models/operations/v2getvolumeswithbalancesresponse.md), error**
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | default                   | application/json          |
+| sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
+
+## V2ImportLogs
+
+Import logs
+
+### Example Usage
+
+```go
+package main
+
+import(
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/formance-sdk-go/v2"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"context"
+	"log"
+)
+
+func main() {
+    s := v2.New(
+        v2.WithSecurity(shared.Security{
+            Authorization: "<YOUR_AUTHORIZATION_HERE>",
+        }),
+    )
+
+    request := operations.V2ImportLogsRequest{
+        Ledger: "ledger001",
+    }
+    
+    ctx := context.Background()
+    res, err := s.Ledger.V2ImportLogs(ctx, request)
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                                            | Type                                                                                 | Required                                                                             | Description                                                                          |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `ctx`                                                                                | [context.Context](https://pkg.go.dev/context#Context)                                | :heavy_check_mark:                                                                   | The context to use for the request.                                                  |
+| `request`                                                                            | [operations.V2ImportLogsRequest](../../pkg/models/operations/v2importlogsrequest.md) | :heavy_check_mark:                                                                   | The request object to use for the request.                                           |
+
+
+### Response
+
+**[*operations.V2ImportLogsResponse](../../pkg/models/operations/v2importlogsresponse.md), error**
 | Error Object              | Status Code               | Content Type              |
 | ------------------------- | ------------------------- | ------------------------- |
 | sdkerrors.V2ErrorResponse | default                   | application/json          |

@@ -1,0 +1,49 @@
+tables:
+  moves:
+    properties:
+      ...
+    engine: MergeTree
+    order:
+      ...
+
+  materialized_views:
+    transactions_mv: |
+      select
+          discriminator as ledger,
+          JSONExtractUInt(data, 'transaction', 'id') as id,
+          date as insertion_date,
+          timestamp(JSONExtractString(data, 'transaction', 'timestamp')) as effective_date,
+          JSONExtractString(data, 'transaction', 'reference') as reference,
+          JSONExtract(data, 'transaction', 'postings', 'Array(Tuple(source String, destination String, asset String, amount Int256))') as postings
+      from logs
+      where type = 'NEW_TRANSACTION'
+      order by id
+      
+  entities:
+    transactions:
+      filters:
+        metadata: |
+          select transaction_id
+          from transactions_match_metadata(key='{{ .Key }}', value='{{ .Value }}', date=toDateTime({{ .Date }}))
+        source: |
+          select id
+          from transactions
+          where arrayExists(v -> v like '{{ .Value }}', sources)
+      properties:
+        inline:
+          - id
+          - postings
+          - insertion_date
+          - effective_date
+          - reference
+        expanded:
+          metadata: |
+            select transaction_id, groupArray(metadata) as metadata
+            from (
+              select *
+              from transactions_metadata
+              where (date <= toDateTime('{{ .Date }}'))
+              order by transaction_id, date desc
+            )
+            group by transaction_id
+            order by transaction_id

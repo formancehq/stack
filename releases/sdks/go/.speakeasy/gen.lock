@@ -1,7 +1,7 @@
 lockVersion: 2.0.0
 id: 7eac0a45-60a2-40bb-9e85-26bd77ec2a6d
 management:
-  docChecksum: 9b5e414195f0c0428e44134300a0532d
+  docChecksum: f349c78f846ac290e8a10eff3984042d
   docVersion: v0.0.0
   speakeasyVersion: 1.292.0
   generationVersion: 2.332.4
@@ -13,6 +13,7 @@ features:
     constsAndDefaults: 0.1.4
     core: 3.4.8
     deprecations: 2.81.1
+    downloadStreams: 0.1.1
     errors: 2.81.9
     getRequestBodies: 2.81.1
     globalSecurity: 2.82.9
@@ -93,6 +94,7 @@ generatedFiles:
   - /pkg/models/operations/v2deleteaccountmetadata.go
   - /pkg/models/operations/v2deleteledgermetadata.go
   - /pkg/models/operations/v2deletetransactionmetadata.go
+  - /pkg/models/operations/v2exportlogs.go
   - /pkg/models/operations/v2getaccount.go
   - /pkg/models/operations/v2getbalancesaggregated.go
   - /pkg/models/operations/v2getinfo.go
@@ -100,6 +102,7 @@ generatedFiles:
   - /pkg/models/operations/v2getledgerinfo.go
   - /pkg/models/operations/v2gettransaction.go
   - /pkg/models/operations/v2getvolumeswithbalances.go
+  - /pkg/models/operations/v2importlogs.go
   - /pkg/models/operations/v2listaccounts.go
   - /pkg/models/operations/v2listledgers.go
   - /pkg/models/operations/v2listlogs.go
@@ -647,6 +650,8 @@ generatedFiles:
   - docs/pkg/models/operations/v2deleteledgermetadataresponse.md
   - docs/pkg/models/operations/v2deletetransactionmetadatarequest.md
   - docs/pkg/models/operations/v2deletetransactionmetadataresponse.md
+  - docs/pkg/models/operations/v2exportlogsrequest.md
+  - docs/pkg/models/operations/v2exportlogsresponse.md
   - docs/pkg/models/operations/v2getaccountrequest.md
   - docs/pkg/models/operations/v2getaccountresponse.md
   - docs/pkg/models/operations/v2getbalancesaggregatedrequest.md
@@ -660,6 +665,8 @@ generatedFiles:
   - docs/pkg/models/operations/v2gettransactionresponse.md
   - docs/pkg/models/operations/v2getvolumeswithbalancesrequest.md
   - docs/pkg/models/operations/v2getvolumeswithbalancesresponse.md
+  - docs/pkg/models/operations/v2importlogsrequest.md
+  - docs/pkg/models/operations/v2importlogsresponse.md
   - docs/pkg/models/operations/v2listaccountsrequest.md
   - docs/pkg/models/operations/v2listaccountsresponse.md
   - docs/pkg/models/operations/v2listledgersrequest.md
