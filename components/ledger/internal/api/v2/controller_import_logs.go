@@ -35,6 +35,9 @@ func importLogs(w http.ResponseWriter, r *http.Request) {
 			if errors.Is(err, io.EOF) {
 				close(stream)
 				break
+			} else {
+				api.InternalServerError(w, r, err)
+				return
 			}
 		}
 		select {
