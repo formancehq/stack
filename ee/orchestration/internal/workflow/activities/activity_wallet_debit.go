@@ -51,7 +51,8 @@ func (a Activities) DebitWallet(ctx context.Context, request DebitWalletRequest)
 					return &request.Data.Timestamp.Time
 				}(),
 			},
-			ID: request.ID,
+			ID:             request.ID,
+			IdempotencyKey: getIK(ctx),
 		},
 	)
 	if err != nil {

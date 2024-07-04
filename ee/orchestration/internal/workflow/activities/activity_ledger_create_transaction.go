@@ -49,7 +49,7 @@ func (a Activities) CreateTransaction(ctx context.Context, request CreateTransac
 				}(),
 			},
 			Ledger:         request.Ledger,
-			IdempotencyKey: getLedgerIK(ctx),
+			IdempotencyKey: getIK(ctx),
 		},
 	)
 	if err != nil {

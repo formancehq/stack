@@ -15,7 +15,8 @@ func (a Activities) VoidHold(ctx context.Context, request VoidHoldRequest) error
 	_, err := a.client.Wallets.VoidHold(
 		ctx,
 		operations.VoidHoldRequest{
-			HoldID: request.ID,
+			HoldID:         request.ID,
+			IdempotencyKey: getIK(ctx),
 		},
 	)
 	if err != nil {
