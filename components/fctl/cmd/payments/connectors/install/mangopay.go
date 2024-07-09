@@ -39,6 +39,7 @@ func NewMangoPayCommand() *cobra.Command {
 	return fctl.NewCommand(internal.MangoPayConnector+" <file>|-",
 		fctl.WithShortDescription("Install a MangoPay connector"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithConfirmFlag(),
 		fctl.WithController[*PaymentsConnectorsMangoPayStore](c),
 	)
 }

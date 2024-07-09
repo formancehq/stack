@@ -42,6 +42,7 @@ func NewModulrCommand() *cobra.Command {
 	return fctl.NewCommand(internal.ModulrConnector+" <file>|-",
 		fctl.WithShortDescription("Install a Modulr connector"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithConfirmFlag(),
 		fctl.WithController[*PaymentsConnectorsModulrStore](c),
 	)
 }

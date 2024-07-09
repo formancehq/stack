@@ -41,6 +41,7 @@ func NewCurrencyCloudCommand() *cobra.Command {
 	return fctl.NewCommand(internal.CurrencyCloudConnector+" <file>|-",
 		fctl.WithShortDescription("Install a Currency Cloud connector"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithConfirmFlag(),
 		fctl.WithController[*PaymentsConnectorsCurrencyCloudStore](c),
 	)
 }

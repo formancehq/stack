@@ -41,6 +41,7 @@ func NewWiseCommand() *cobra.Command {
 	return fctl.NewCommand(internal.WiseConnector+" <file>|-",
 		fctl.WithShortDescription("Install a Wise connector"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithConfirmFlag(),
 		fctl.WithController[*PaymentsConnectorsWiseStore](c),
 	)
 }
