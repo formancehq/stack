@@ -39,6 +39,7 @@ func NewGenericCommand() *cobra.Command {
 	return fctl.NewCommand(internal.GenericConnector+" <file>|-",
 		fctl.WithShortDescription("Install a Generic connector"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithConfirmFlag(),
 		fctl.WithController[*PaymentsConnectorsGenericStore](c),
 	)
 }

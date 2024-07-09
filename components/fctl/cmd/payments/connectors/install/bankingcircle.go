@@ -41,6 +41,7 @@ func NewBankingCircleCommand() *cobra.Command {
 	return fctl.NewCommand(internal.BankingCircleConnector+" <file>|-",
 		fctl.WithShortDescription("Install a Banking Circle connector"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithConfirmFlag(),
 		fctl.WithController[*PaymentsConnectorsBankingCircleStore](c),
 	)
 }
