@@ -39,6 +39,7 @@ func NewMoneycorpCommand() *cobra.Command {
 	return fctl.NewCommand(internal.MoneycorpConnector+" <file>|-",
 		fctl.WithShortDescription("Install a Moneycorp connector"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithConfirmFlag(),
 		fctl.WithController[*PaymentsConnectorsMoneycorpStore](c),
 	)
 }
