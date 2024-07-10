@@ -19,6 +19,11 @@ func createIngress(ctx core.Context, stack *v1beta1.Stack,
 		annotations = map[string]string{}
 	}
 
+	ingressClassName, err := settings.GetString(ctx, stack.Name, "gateway", "ingress", "class")
+	if err != nil {
+		return err
+	}
+
 	name := types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      "gateway",
@@ -68,6 +73,17 @@ func createIngress(ctx core.Context, stack *v1beta1.Stack,
 						},
 					},
 				},
+			}
+
+			return nil
+		},
+		func(ingress *v1.Ingress) error {
+			switch {
+				case ingressClassName != nil:
+					ingress.Spec.IngressClassName = ingressClassName
+				case gateway.Spec.Ingress.IngressClassName != nil:
+					ingress.Spec.IngressClassName = gateway.Spec.Ingress.IngressClassName
+				default:
 			}
 
 			return nil
