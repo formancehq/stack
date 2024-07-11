@@ -85,7 +85,7 @@ spec:
                       Example : `formance.example.com`
                     type: string
                   ingressClassName:
-                    description: Custom Ingress class to use
+                    description: Ingress class to use
                     type: string
                   scheme:
                     default: https

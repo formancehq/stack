@@ -36,7 +36,7 @@ type GatewayIngress struct {
 	// +kubebuilder:default:="https"
 	Scheme string `json:"scheme"`
 
-	// Custom Ingress class to use
+	// Ingress class to use
 	//+optional
 	IngressClassName *string `json:"ingressClassName,omitempty"`
 
