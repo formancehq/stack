@@ -44,7 +44,8 @@ func (a Activities) CreditWallet(ctx context.Context, request CreditWalletReques
 					return &request.Data.Timestamp.Time
 				}(),
 			},
-			ID: request.ID,
+			ID:             request.ID,
+			IdempotencyKey: getIK(ctx),
 		},
 	)
 	if err != nil {

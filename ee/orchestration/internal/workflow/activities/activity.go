@@ -82,7 +82,7 @@ func executeActivity(ctx workflow.Context, activity any, ret any, request any) e
 	return nil
 }
 
-func getLedgerIK(ctx context.Context) *string {
+func getIK(ctx context.Context) *string {
 	activityInfo := activity.GetInfo(ctx)
 	return pointer.For(fmt.Sprintf("%s-%s", activityInfo.WorkflowExecution.RunID, activityInfo.ActivityID))
 }

@@ -20,6 +20,7 @@ func (a Activities) ConfirmHold(ctx context.Context, request ConfirmHoldRequest)
 		operations.ConfirmHoldRequest{
 			ConfirmHoldRequest: &shared.ConfirmHoldRequest{},
 			HoldID:             request.ID,
+			IdempotencyKey:     getIK(ctx),
 		},
 	)
 	if err != nil {

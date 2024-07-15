@@ -22,7 +22,7 @@ func (a Activities) AddAccountMetadata(ctx context.Context, request AddAccountMe
 			RequestBody:    request.Metadata,
 			Address:        request.Account,
 			Ledger:         request.Ledger,
-			IdempotencyKey: getLedgerIK(ctx),
+			IdempotencyKey: getIK(ctx),
 		},
 	)
 	if err != nil {
