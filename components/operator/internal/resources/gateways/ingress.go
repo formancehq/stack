@@ -78,12 +78,13 @@ func createIngress(ctx core.Context, stack *v1beta1.Stack,
 			return nil
 		},
 		func(ingress *v1.Ingress) error {
-			switch {
-				case ingressClassName != nil:
-					ingress.Spec.IngressClassName = ingressClassName
-				case gateway.Spec.Ingress.IngressClassName != nil:
-					ingress.Spec.IngressClassName = gateway.Spec.Ingress.IngressClassName
-				default:
+			if gateway.Spec.Ingress.IngressClassName != nil {
+				ingress.Spec.IngressClassName = gateway.Spec.Ingress.IngressClassName
+				return nil
+			}
+
+			if ingressClassName != nil {
+				ingress.Spec.IngressClassName = ingressClassName
 			}
 
 			return nil
