@@ -49,7 +49,7 @@ func FetchAccountsTask(config Config, client *client.Client) task.Task {
 
 			token = pagedAccounts.Payload.NextToken
 
-			if err := ingestAccountsBatch(ctx, connectorID, ingester, pagedAccounts); err != nil {
+			if err := ingestAccountsBatch(ctx, connectorID, taskID, ingester, pagedAccounts, client); err != nil {
 				otel.RecordError(span, err)
 				return err
 			}
@@ -107,9 +107,19 @@ func FetchAccountsTask(config Config, client *client.Client) task.Task {
 func ingestAccountsBatch(
 	ctx context.Context,
 	connectorID models.ConnectorID,
+	taskID models.TaskID,
 	ingester ingestion.Ingester,
 	pagedAccounts *accounts.GetV1AccountsOK,
+	client *client.Client,
 ) error {
+	ctx, span := connectors.StartSpan(
+		ctx,
+		"atlar.taskFetchAccounts.ingestAccountsBatch",
+		attribute.String("connectorID", connectorID.String()),
+		attribute.String("taskID", taskID.String()),
+	)
+	defer span.End()
+
 	accountsBatch := ingestion.AccountBatch{}
 	balanceBatch := ingestion.BalanceBatch{}
 
@@ -124,6 +134,14 @@ func ingestAccountsBatch(
 			return fmt.Errorf("failed to parse opening date: %w", err)
 		}
 
+		requestCtx, cancel := contextutil.DetachedWithTimeout(ctx, 30*time.Second)
+		defer cancel()
+		thirdPartyResponse, err := client.GetV1BetaThirdPartiesID(requestCtx, account.ThirdPartyID)
+		if err != nil {
+			otel.RecordError(span, err)
+			return err
+		}
+
 		accountsBatch = append(accountsBatch, &models.Account{
 			ID: models.AccountID{
 				Reference:   *account.ID,
@@ -135,7 +153,7 @@ func ingestAccountsBatch(
 			DefaultAsset: currency.FormatAsset(supportedCurrenciesWithDecimal, account.Currency),
 			AccountName:  account.Name,
 			Type:         models.AccountTypeInternal,
-			Metadata:     ExtractAccountMetadata(account),
+			Metadata:     ExtractAccountMetadata(account, thirdPartyResponse.Payload),
 			RawData:      raw,
 		})
 

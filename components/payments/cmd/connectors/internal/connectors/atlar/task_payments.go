@@ -233,6 +233,7 @@ func UpdatePaymentStatusTask(
 			err = ingestAtlarTransaction(ctx,
 				ingester,
 				connectorID,
+				taskID,
 				client,
 				getCreditTransferResponse.Payload.Reconciliation.BookedTransactionID,
 			)
@@ -356,16 +357,19 @@ func ingestAtlarTransaction(
 	ctx context.Context,
 	ingester ingestion.Ingester,
 	connectorID models.ConnectorID,
+	taskID models.TaskID,
 	client *client.Client,
 	transactionId string,
 ) error {
 
-	transactionResponse, err := client.GetV1TransactionsID(ctx, transactionId)
+	requestCtx, cancel := contextutil.DetachedWithTimeout(ctx, 30*time.Second)
+	defer cancel()
+	transactionResponse, err := client.GetV1TransactionsID(requestCtx, transactionId)
 	if err != nil {
 		return err
 	}
 
-	batchElement, err := atlarTransactionToPaymentBatchElement(connectorID, transactionResponse.Payload)
+	batchElement, err := atlarTransactionToPaymentBatchElement(ctx, connectorID, taskID, transactionResponse.Payload, client)
 	if err != nil {
 		return err
 	}
