@@ -84,6 +84,9 @@ spec:
                       Indicates the hostname on which the stack will be served.
                       Example : `formance.example.com`
                     type: string
+                  ingressClassName:
+                    description: Ingress class to use
+                    type: string
                   scheme:
                     default: https
                     description: |-

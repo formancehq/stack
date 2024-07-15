@@ -34,7 +34,12 @@ type GatewayIngress struct {
 	//
 	// Actually, It should be `https` unless you know what you are doing.
 	// +kubebuilder:default:="https"
-	Scheme      string            `json:"scheme"`
+	Scheme string `json:"scheme"`
+
+	// Ingress class to use
+	//+optional
+	IngressClassName *string `json:"ingressClassName,omitempty"`
+
 	// Custom annotations to add on the ingress
 	Annotations map[string]string `json:"annotations,omitempty"`
 	// Allow to customize the tls part of the ingress
