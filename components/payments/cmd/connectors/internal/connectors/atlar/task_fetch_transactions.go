@@ -49,7 +49,7 @@ func FetchTransactionsTask(config Config, client *client.Client) task.Task {
 
 			token = pagedTransactions.Payload.NextToken
 
-			if err := ingestPaymentsBatch(ctx, connectorID, ingester, pagedTransactions); err != nil {
+			if err := ingestPaymentsBatch(ctx, connectorID, taskID, ingester, client, pagedTransactions); err != nil {
 				otel.RecordError(span, err)
 				return err
 			}
@@ -66,13 +66,15 @@ func FetchTransactionsTask(config Config, client *client.Client) task.Task {
 func ingestPaymentsBatch(
 	ctx context.Context,
 	connectorID models.ConnectorID,
+	taskID models.TaskID,
 	ingester ingestion.Ingester,
+	client *client.Client,
 	pagedTransactions *transactions.GetV1TransactionsOK,
 ) error {
 	batch := ingestion.PaymentBatch{}
 
 	for _, item := range pagedTransactions.Payload.Items {
-		batchElement, err := atlarTransactionToPaymentBatchElement(connectorID, item)
+		batchElement, err := atlarTransactionToPaymentBatchElement(ctx, connectorID, taskID, item, client)
 		if err != nil {
 			return err
 		}
@@ -91,9 +93,20 @@ func ingestPaymentsBatch(
 }
 
 func atlarTransactionToPaymentBatchElement(
+	ctx context.Context,
 	connectorID models.ConnectorID,
+	taskID models.TaskID,
 	transaction *atlar_models.Transaction,
+	client *client.Client,
 ) (*ingestion.PaymentBatchElement, error) {
+	ctx, span := connectors.StartSpan(
+		ctx,
+		"atlar.atlarTransactionToPaymentBatchElement",
+		attribute.String("connectorID", connectorID.String()),
+		attribute.String("taskID", taskID.String()),
+	)
+	defer span.End()
+
 	if _, ok := supportedCurrenciesWithDecimal[*transaction.Amount.Currency]; !ok {
 		// Discard transactions with unsupported currencies
 		return nil, nil
@@ -117,6 +130,22 @@ func atlarTransactionToPaymentBatchElement(
 		return nil, err
 	}
 
+	requestCtx, cancel := contextutil.DetachedWithTimeout(ctx, 30*time.Second)
+	defer cancel()
+	accountResponse, err := client.GetV1AccountsID(requestCtx, *transaction.Account.ID)
+	if err != nil {
+		otel.RecordError(span, err)
+		return nil, err
+	}
+
+	requestCtx, cancel = contextutil.DetachedWithTimeout(ctx, 30*time.Second)
+	defer cancel()
+	thirdPartyResponse, err := client.GetV1BetaThirdPartiesID(requestCtx, *&accountResponse.Payload.ThirdPartyID)
+	if err != nil {
+		otel.RecordError(span, err)
+		return nil, err
+	}
+
 	paymentId := models.PaymentID{
 		PaymentReference: models.PaymentReference{
 			Reference: transaction.ID,
@@ -137,7 +166,7 @@ func atlarTransactionToPaymentBatchElement(
 			Amount:        amount,
 			InitialAmount: amount,
 			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, *transaction.Amount.Currency),
-			Metadata:      ExtractPaymentMetadata(paymentId, transaction),
+			Metadata:      ExtractPaymentMetadata(paymentId, transaction, accountResponse.Payload, thirdPartyResponse.Payload),
 			RawData:       raw,
 		},
 	}
@@ -197,7 +226,7 @@ func determinePaymentScheme(item *atlar_models.Transaction) models.PaymentScheme
 	return models.PaymentSchemeSepa
 }
 
-func ExtractPaymentMetadata(paymentId models.PaymentID, transaction *atlar_models.Transaction) []*models.PaymentMetadata {
+func ExtractPaymentMetadata(paymentId models.PaymentID, transaction *atlar_models.Transaction, account *atlar_models.Account, bank *atlar_models.ThirdParty) []*models.PaymentMetadata {
 	result := []*models.PaymentMetadata{}
 	if transaction.Date != "" {
 		result = append(result, ComputePaymentMetadata(paymentId, "date", transaction.Date))
@@ -207,6 +236,9 @@ func ExtractPaymentMetadata(paymentId models.PaymentID, transaction *atlar_model
 	}
 	result = append(result, ComputePaymentMetadata(paymentId, "remittanceInformation/type", *transaction.RemittanceInformation.Type))
 	result = append(result, ComputePaymentMetadata(paymentId, "remittanceInformation/value", *transaction.RemittanceInformation.Value))
+	result = append(result, ComputePaymentMetadata(paymentId, "bank/id", bank.ID))
+	result = append(result, ComputePaymentMetadata(paymentId, "bank/name", bank.Name))
+	result = append(result, ComputePaymentMetadata(paymentId, "bank/bic", account.Bank.Bic))
 	result = append(result, ComputePaymentMetadata(paymentId, "btc/domain", transaction.Characteristics.BankTransactionCode.Domain))
 	result = append(result, ComputePaymentMetadata(paymentId, "btc/family", transaction.Characteristics.BankTransactionCode.Family))
 	result = append(result, ComputePaymentMetadata(paymentId, "btc/subfamily", transaction.Characteristics.BankTransactionCode.Subfamily))
