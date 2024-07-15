@@ -361,16 +361,26 @@ func ingestAtlarTransaction(
 	client *client.Client,
 	transactionId string,
 ) error {
+	ctx, span := connectors.StartSpan(
+		ctx,
+		"atlar.taskUpdatePaymentStatus.ingestAtlarTransaction",
+		attribute.String("connectorID", connectorID.String()),
+		attribute.String("taskID", taskID.String()),
+		attribute.String("transactionID", transactionId),
+	)
+	defer span.End()
 
 	requestCtx, cancel := contextutil.DetachedWithTimeout(ctx, 30*time.Second)
 	defer cancel()
 	transactionResponse, err := client.GetV1TransactionsID(requestCtx, transactionId)
 	if err != nil {
+		otel.RecordError(span, err)
 		return err
 	}
 
 	batchElement, err := atlarTransactionToPaymentBatchElement(ctx, connectorID, taskID, transactionResponse.Payload, client)
 	if err != nil {
+		otel.RecordError(span, err)
 		return err
 	}
 	if batchElement == nil {
@@ -381,6 +391,7 @@ func ingestAtlarTransaction(
 
 	err = ingester.IngestPayments(ctx, batch)
 	if err != nil {
+		otel.RecordError(span, err)
 		return err
 	}
 
