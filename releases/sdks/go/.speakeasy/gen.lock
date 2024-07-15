@@ -1,7 +1,7 @@
 lockVersion: 2.0.0
 id: 7eac0a45-60a2-40bb-9e85-26bd77ec2a6d
 management:
-  docChecksum: f349c78f846ac290e8a10eff3984042d
+  docChecksum: 8a9ef86467c00955c6ddee01c0a79bcb
   docVersion: v0.0.0
   speakeasyVersion: 1.292.0
   generationVersion: 2.332.4
@@ -673,6 +673,7 @@ generatedFiles:
   - docs/pkg/models/operations/v2listledgersresponse.md
   - docs/pkg/models/operations/v2listlogsrequest.md
   - docs/pkg/models/operations/v2listlogsresponse.md
+  - docs/pkg/models/operations/order.md
   - docs/pkg/models/operations/v2listtransactionsrequest.md
   - docs/pkg/models/operations/v2listtransactionsresponse.md
   - docs/pkg/models/operations/v2readstatsrequest.md

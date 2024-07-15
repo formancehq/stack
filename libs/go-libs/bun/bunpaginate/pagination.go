@@ -64,6 +64,12 @@ func (a *ColumnPaginatedQuery[PAYLOAD]) WithPageSize(pageSize uint64) *ColumnPag
 	return a
 }
 
+func (a *ColumnPaginatedQuery[PAYLOAD]) WithColumn(column string) *ColumnPaginatedQuery[PAYLOAD] {
+	a.Column = column
+
+	return a
+}
+
 type OffsetPaginatedQuery[OPTIONS any] struct {
 	Offset   uint64  `json:"offset"`
 	Order    Order   `json:"order"`
