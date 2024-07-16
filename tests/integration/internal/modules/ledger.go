@@ -23,6 +23,7 @@ var Ledger = internal.NewModule("ledger").
 					"--json-formatting-logger=false",
 					"--bind=0.0.0.0:0", // Random port
 					"--debug",
+					"--emit-logs",
 				}
 			}),
 	)

@@ -55,6 +55,10 @@ func (e *executionContext) AppendLog(ctx context.Context, log *ledger.Log) (*led
 		return nil, err
 	}
 
+	if e.commander.emitLogs {
+		e.commander.monitor.Log(ctx, log)
+	}
+
 	return chainedLog, nil
 }
 

@@ -2,7 +2,8 @@
   "type": "object",
   "properties": {
     "app": {
-      "type": "string"
+      "type": "string",
+      "deprecated": true
     },
     "version": {
       "type": "string"
@@ -15,7 +16,8 @@
       "type": "string"
     },
     "ledger": {
-      "type": "string"
+      "type": "string",
+      "deprecated": true
     },
     "payload": {
       "type": "object",
@@ -49,7 +51,6 @@
   },
   "required": [
     "date",
-    "app",
     "version",
     "type",
     "payload"

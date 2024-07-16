@@ -20,7 +20,7 @@ const (
 	otelContextKey = "otel-context"
 )
 
-func NewMessage(ctx context.Context, m EventMessage) *message.Message {
+func NewMessage(ctx context.Context, m any) *message.Message {
 	data, err := json.Marshal(m)
 	if err != nil {
 		panic(err)

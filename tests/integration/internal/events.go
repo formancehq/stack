@@ -3,11 +3,13 @@ package internal
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/formancehq/stack/libs/events"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/nats-io/nats.go"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/types"
+	"github.com/pkg/errors"
 )
 
 func NatsClient() *nats.Conn {
@@ -87,17 +89,31 @@ func (r *receiveEventMatcher) Match(actual interface{}) (success bool, err error
 		case msg := <-v:
 			data = msg.Data
 		default:
-			return false, nil
+			return false, errors.New("no message received")
 		}
 	case chan []byte:
 		select {
 		case msg := <-v:
 			data = msg
 		default:
-			return false, nil
+			return false, errors.New("no message received")
 		}
 	default:
 		return false, fmt.Errorf("expected chan *nats.Msg or chan []uint8, got %T", actual)
+	}
+
+	spew.Dump(string(data))
+
+	type typed struct {
+		Type string `json:"type"`
+	}
+	t := typed{}
+	if err := json.Unmarshal(data, &t); err != nil {
+		return false, nil
+	}
+
+	if t.Type != r.eventName {
+		return false, fmt.Errorf("expect type %s, got %s", r.eventName, t.Type)
 	}
 
 	r.err = events.Check(data, r.serviceName, r.eventName)

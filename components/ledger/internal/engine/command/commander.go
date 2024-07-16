@@ -41,8 +41,9 @@ type Commander struct {
 	running    sync.WaitGroup
 	referencer *Referencer
 
-	monitor bus.Monitor
-	chain   Chainer
+	monitor  bus.Monitor
+	chain    Chainer
+	emitLogs bool
 }
 
 func New(
@@ -53,6 +54,7 @@ func New(
 	monitor bus.Monitor,
 	chain Chainer,
 	batchSize int,
+	emitLogs bool,
 ) *Commander {
 	return &Commander{
 		store:      store,
@@ -62,6 +64,7 @@ func New(
 		referencer: referencer,
 		Batcher:    batching.NewBatcher(store.InsertLogs, 1, batchSize),
 		monitor:    monitor,
+		emitLogs:   emitLogs,
 	}
 }
 
@@ -309,11 +312,6 @@ func (commander *Commander) RevertTransaction(ctx context.Context, parameters Pa
 	return log.Data.(ledger.RevertedTransactionLogPayload).RevertTransaction, nil
 }
 
-func (commander *Commander) Close() {
-	commander.Batcher.Close()
-	commander.running.Wait()
-}
-
 func (commander *Commander) DeleteMetadata(ctx context.Context, parameters Parameters, targetType string, targetID any, key string) error {
 	execContext := newExecutionContext(commander, parameters)
 	_, err := execContext.run(ctx, func(executionContext *executionContext) (*ledger.ChainedLog, error) {
@@ -351,4 +349,9 @@ func (commander *Commander) DeleteMetadata(ctx context.Context, parameters Param
 	commander.monitor.DeletedMetadata(ctx, targetType, targetID, key)
 
 	return nil
+}
+
+func (commander *Commander) Close() {
+	commander.Batcher.Close()
+	commander.running.Wait()
 }

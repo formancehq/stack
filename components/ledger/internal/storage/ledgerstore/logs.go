@@ -20,10 +20,6 @@ import (
 	"github.com/uptrace/bun"
 )
 
-const (
-	LogTableName = "logs"
-)
-
 type Logs struct {
 	bun.BaseModel `bun:"logs,alias:logs"`
 
@@ -88,15 +84,6 @@ func (store *Store) logsQueryBuilder(q PaginatedQueryOptions[any]) func(*bun.Sel
 }
 
 func (store *Store) InsertLogs(ctx context.Context, activeLogs ...*ledger.ChainedLog) error {
-	//links := make([]trace.Link, 0)
-	//for _, log := range activeLogs {
-	//	links = append(links, trace.LinkFromContext(log.Context))
-	//}
-	//
-	//ctx, span := tracer.Start(context.Background(), "InsertLogBatch", trace.WithLinks(links...))
-	//defer span.End()
-	//
-	//span.SetAttributes(attribute.Int("count", len(activeLogs)))
 
 	_, err := store.bucket.db.
 		NewInsert().

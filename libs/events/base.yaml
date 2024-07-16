@@ -3,6 +3,7 @@ type: object
 properties:
   app:
     type: string
+    deprecated: true
   version:
     type: string
   date:
@@ -12,12 +13,12 @@ properties:
     type: string
   ledger:
     type: string
+    deprecated: true
   payload:
     type: object
     additionalProperties: true
 required:
 - date
-- app
 - version
 - type
 - payload

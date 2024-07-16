@@ -11,7 +11,6 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	ledgerevents "github.com/formancehq/ledger/pkg/events"
-	"github.com/formancehq/stack/libs/events"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	. "github.com/formancehq/stack/tests/integration/internal"
@@ -175,10 +174,11 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			})
 			It("Should fail with "+string(shared.V2ErrorsEnumConflict)+" error code", func() {})
 		})
-		It("should trigger a new event", func() {
+		It("should trigger two new events", func() {
+			// Wait for log
+			Eventually(msgs).Should(ReceiveEvent("ledger", ledgerevents.EventTypeNewLog))
 			// Wait for created transaction event
-			msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
-			Expect(events.Check(msg.Data, "ledger", ledgerevents.EventTypeCommittedTransactions)).Should(Succeed())
+			Eventually(msgs).Should(ReceiveEvent("ledger", ledgerevents.EventTypeCommittedTransactions))
 		})
 		It("should pop a transaction, two accounts and two assets entries on search service", func() {
 			expectedTx := map[string]any{

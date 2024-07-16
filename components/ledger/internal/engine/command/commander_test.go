@@ -162,7 +162,7 @@ func TestCreateTransaction(t *testing.T) {
 			store := storageerrors.NewInMemoryStore()
 			ctx := logging.TestingContext()
 
-			commander := New(store, NoOpLocker, NewCompiler(1024), NewReferencer(), bus.NewNoOpMonitor(), chain.New(store), 50)
+			commander := New(store, NoOpLocker, NewCompiler(1024), NewReferencer(), bus.NewNoOpMonitor(), chain.New(store), 50, false)
 			go commander.Run(ctx)
 			defer commander.Close()
 
@@ -213,7 +213,7 @@ func TestRevert(t *testing.T) {
 	err := store.InsertLogs(context.Background(), log)
 	require.NoError(t, err)
 
-	commander := New(store, NoOpLocker, NewCompiler(1024), NewReferencer(), bus.NewNoOpMonitor(), chain.New(store), 50)
+	commander := New(store, NoOpLocker, NewCompiler(1024), NewReferencer(), bus.NewNoOpMonitor(), chain.New(store), 50, false)
 	go commander.Run(ctx)
 	defer commander.Close()
 
@@ -233,7 +233,7 @@ func TestRevertWithAlreadyReverted(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	commander := New(store, NoOpLocker, NewCompiler(1024), NewReferencer(), bus.NewNoOpMonitor(), chain.New(store), 50)
+	commander := New(store, NoOpLocker, NewCompiler(1024), NewReferencer(), bus.NewNoOpMonitor(), chain.New(store), 50, false)
 	go commander.Run(ctx)
 	defer commander.Close()
 
@@ -254,7 +254,7 @@ func TestRevertWithRevertOccurring(t *testing.T) {
 	require.NoError(t, err)
 
 	referencer := NewReferencer()
-	commander := New(store, NoOpLocker, NewCompiler(1024), referencer, bus.NewNoOpMonitor(), chain.New(store), 50)
+	commander := New(store, NoOpLocker, NewCompiler(1024), referencer, bus.NewNoOpMonitor(), chain.New(store), 50, false)
 	go commander.Run(ctx)
 	defer commander.Close()
 
@@ -281,7 +281,7 @@ func TestForceRevert(t *testing.T) {
 	)...)
 	require.NoError(t, err)
 
-	commander := New(store, NoOpLocker, NewCompiler(1024), NewReferencer(), bus.NewNoOpMonitor(), chain.New(store), 50)
+	commander := New(store, NoOpLocker, NewCompiler(1024), NewReferencer(), bus.NewNoOpMonitor(), chain.New(store), 50, false)
 	go commander.Run(ctx)
 	defer commander.Close()
 
@@ -322,7 +322,7 @@ func TestRevertAtEffectiveDate(t *testing.T) {
 	)...)
 	require.NoError(t, err)
 
-	commander := New(store, NoOpLocker, NewCompiler(1024), NewReferencer(), bus.NewNoOpMonitor(), chain.New(store), 50)
+	commander := New(store, NoOpLocker, NewCompiler(1024), NewReferencer(), bus.NewNoOpMonitor(), chain.New(store), 50, false)
 	go commander.Run(ctx)
 	defer commander.Close()
 
@@ -372,7 +372,7 @@ func TestParallelTransactions(t *testing.T) {
 	store, err := ledgerstore.New(bucket, "default")
 	require.NoError(t, err)
 
-	commander := New(store, NewDefaultLocker(), NewCompiler(1024), NewReferencer(), bus.NewNoOpMonitor(), chain.New(store), 50)
+	commander := New(store, NewDefaultLocker(), NewCompiler(1024), NewReferencer(), bus.NewNoOpMonitor(), chain.New(store), 50, false)
 	go commander.Run(ctx)
 	defer commander.Close()
 

@@ -5,7 +5,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -18,7 +19,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -140,7 +142,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -150,7 +151,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -163,7 +165,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -285,7 +288,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -295,7 +297,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -308,7 +311,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -430,7 +434,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -442,7 +445,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -455,7 +459,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -577,7 +582,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -587,7 +591,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -600,7 +605,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -722,7 +728,152 @@
         },
         "required": [
           "date",
-          "app",
+          "version",
+          "type",
+          "payload"
+        ]
+      },
+      "NEW_LOG": {
+        "type": "object",
+        "properties": {
+          "app": {
+            "type": "string",
+            "deprecated": true
+          },
+          "version": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "type": {
+            "type": "string"
+          },
+          "ledger": {
+            "type": "string",
+            "deprecated": true
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "id",
+              "createdAt",
+              "scheduledAt",
+              "connectorId",
+              "provider",
+              "description",
+              "type",
+              "destinationAccountId",
+              "amount",
+              "asset",
+              "attempts",
+              "status",
+              "error"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "scheduledAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "connectorId": {
+                "type": "string"
+              },
+              "provider": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "TRANSFER",
+                  "PAYOUT"
+                ]
+              },
+              "sourceAccountId": {
+                "type": "string"
+              },
+              "destinationAccountId": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "number",
+                "format": "bigint"
+              },
+              "asset": {
+                "type": "string"
+              },
+              "attempts": {
+                "type": "number"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "WAITING_FOR_VALIDATION",
+                  "PROCESSING",
+                  "PROCESSED",
+                  "FAILED",
+                  "REJECTED",
+                  "VALIDATED",
+                  "ASK_RETRIED",
+                  "ASK_REVERSED",
+                  "REVERSE_PROCESSING",
+                  "REVERSE_FAILED",
+                  "PARTIALLY_REVERSED",
+                  "REVERSED"
+                ]
+              },
+              "error": {
+                "type": "string"
+              },
+              "relatedPayments": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "transferInitiationId",
+                    "paymentId",
+                    "createdAt",
+                    "status",
+                    "error"
+                  ],
+                  "properties": {
+                    "transferInitiationId": {
+                      "type": "string"
+                    },
+                    "paymentId": {
+                      "type": "string"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "date",
           "version",
           "type",
           "payload"
@@ -732,7 +883,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -745,7 +897,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -867,7 +1020,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -877,7 +1029,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -890,7 +1043,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -1012,7 +1166,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -1026,7 +1179,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -1039,7 +1193,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -1161,7 +1316,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -1171,7 +1325,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -1184,7 +1339,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -1306,7 +1462,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -1316,7 +1471,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -1329,7 +1485,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -1451,7 +1608,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -1461,7 +1617,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -1474,7 +1631,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -1596,7 +1754,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -1606,7 +1763,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -1619,7 +1777,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -1741,7 +1900,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -1751,7 +1909,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -1764,7 +1923,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -1886,7 +2046,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -1896,7 +2055,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -1909,7 +2069,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -2031,7 +2192,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -2041,7 +2201,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -2054,7 +2215,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -2176,7 +2338,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -2190,7 +2351,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -2203,7 +2365,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -2325,7 +2488,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -2335,7 +2497,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -2348,7 +2511,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -2470,7 +2634,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -2480,7 +2643,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -2493,7 +2657,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -2615,7 +2780,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -2625,7 +2789,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -2638,7 +2803,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -2760,7 +2926,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -2772,7 +2937,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -2785,7 +2951,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -2907,7 +3074,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -2917,7 +3083,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -2930,7 +3097,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -3052,7 +3220,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -3062,7 +3229,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -3075,7 +3243,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -3197,7 +3366,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -3207,7 +3375,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -3220,7 +3389,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -3342,7 +3512,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -3352,7 +3521,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -3365,7 +3535,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -3487,7 +3658,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -3497,7 +3667,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -3510,7 +3681,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -3632,7 +3804,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -3642,7 +3813,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -3655,7 +3827,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -3777,7 +3950,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -3787,7 +3959,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -3800,7 +3973,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -3922,7 +4096,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"
@@ -3932,7 +4105,8 @@
         "type": "object",
         "properties": {
           "app": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "version": {
             "type": "string"
@@ -3945,7 +4119,8 @@
             "type": "string"
           },
           "ledger": {
-            "type": "string"
+            "type": "string",
+            "deprecated": true
           },
           "payload": {
             "type": "object",
@@ -4067,7 +4242,6 @@
         },
         "required": [
           "date",
-          "app",
           "version",
           "type",
           "payload"

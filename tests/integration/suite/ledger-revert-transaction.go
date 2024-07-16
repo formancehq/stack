@@ -15,7 +15,6 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	ledgerevents "github.com/formancehq/ledger/pkg/events"
-	"github.com/formancehq/stack/libs/events"
 	. "github.com/formancehq/stack/tests/integration/internal"
 )
 
@@ -137,8 +136,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			})
 			It("should trigger a new event", func() {
 				// Wait for created transaction event
-				msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
-				Expect(events.Check(msg.Data, "ledger", ledgerevents.EventTypeRevertedTransaction)).Should(Succeed())
+				Eventually(msgs).Should(ReceiveEvent("ledger", ledgerevents.EventTypeRevertedTransaction))
 			})
 			It("should revert the original transaction", func() {
 				response, err := Client().Ledger.V2GetTransaction(

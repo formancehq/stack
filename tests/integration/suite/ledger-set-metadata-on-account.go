@@ -1,20 +1,17 @@
 package suite
 
 import (
-	"github.com/formancehq/stack/tests/integration/internal/modules"
-	"math/big"
-	"net/http"
-	"reflect"
-	"time"
-
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	ledgerevents "github.com/formancehq/ledger/pkg/events"
-	"github.com/formancehq/stack/libs/events"
 	. "github.com/formancehq/stack/tests/integration/internal"
+	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"github.com/nats-io/nats.go"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"math/big"
+	"net/http"
+	"reflect"
 )
 
 var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
@@ -159,8 +156,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			}))
 		})
 		It("should trigger a new event", func() {
-			msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
-			Expect(events.Check(msg.Data, "ledger", ledgerevents.EventTypeSavedMetadata)).Should(Succeed())
+			Eventually(msgs).Should(ReceiveEvent("ledger", ledgerevents.EventTypeSavedMetadata))
 		})
 		It("should pop an account with the correct metadata on search service", func() {
 			Eventually(func() bool {

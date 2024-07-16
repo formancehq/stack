@@ -7,6 +7,7 @@ import (
 	ledger "github.com/formancehq/ledger/internal"
 	"github.com/formancehq/ledger/pkg/events"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/logs"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 )
@@ -16,13 +17,14 @@ type Monitor interface {
 	SavedMetadata(ctx context.Context, targetType, id string, metadata metadata.Metadata)
 	RevertedTransaction(ctx context.Context, reverted, revert *ledger.Transaction)
 	DeletedMetadata(ctx context.Context, targetType string, targetID any, key string)
+	Log(ctx context.Context, log *ledger.Log)
 }
 
 type noOpMonitor struct{}
 
+func (n noOpMonitor) Log(ctx context.Context, log *ledger.Log) {}
 func (n noOpMonitor) DeletedMetadata(ctx context.Context, targetType string, targetID any, key string) {
 }
-
 func (n noOpMonitor) CommittedTransactions(ctx context.Context, res ledger.Transaction, accountMetadata map[string]metadata.Metadata) {
 }
 func (n noOpMonitor) SavedMetadata(ctx context.Context, targetType string, id string, metadata metadata.Metadata) {
@@ -87,6 +89,18 @@ func (l *ledgerMonitor) DeletedMetadata(ctx context.Context, targetType string, 
 			TargetID:   targetID,
 			Key:        key,
 		}))
+}
+
+func (l *ledgerMonitor) Log(ctx context.Context, log *ledger.Log) {
+	if err := l.publisher.Publish(events.EventTypeNewLog, publish.NewMessage(ctx, logs.Log{
+		Date:    log.Date,
+		Version: events.EventVersion,
+		Type:    events.EventTypeNewLog,
+		Payload: log.Data,
+	})); err != nil {
+		logging.FromContext(ctx).Errorf("publishing message: %s", err)
+		return
+	}
 }
 
 func (l *ledgerMonitor) publish(ctx context.Context, topic string, ev publish.EventMessage) {

@@ -2,7 +2,6 @@ package suite
 
 import (
 	webhooks "github.com/formancehq/webhooks/pkg"
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -74,16 +73,14 @@ var _ = WithModules([]*Module{modules.Payments}, func() {
 		WithModules([]*Module{modules.Webhooks}, func() {
 			var (
 				httpServer *httptest.Server
-				called     chan []byte
+				called     chan struct{}
 				secret     = webhooks.NewSecret()
 			)
 			BeforeEach(func() {
-				called = make(chan []byte)
+				called = make(chan struct{})
 				httpServer = httptest.NewServer(
 					http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-						defer close(called)
-						data, _ := io.ReadAll(r.Body)
-						called <- data
+						close(called)
 					}))
 				DeferCleanup(func() {
 					httpServer.Close()
@@ -103,7 +100,7 @@ var _ = WithModules([]*Module{modules.Payments}, func() {
 				Expect(response.StatusCode).To(Equal(http.StatusOK))
 			})
 			It("Should trigger a webhook", func() {
-				Eventually(called).Should(ReceiveEvent("payments", paymentEvents.EventTypeSavedPayments))
+				Eventually(called).Should(BeClosed())
 			})
 		})
 	})

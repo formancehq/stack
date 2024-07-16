@@ -29,7 +29,8 @@ type Ledger struct {
 }
 
 type GlobalLedgerConfig struct {
-	batchSize int
+	BatchSize int
+	EmitLogs  bool
 }
 
 type LedgerConfig struct {
@@ -40,7 +41,7 @@ type LedgerConfig struct {
 
 var (
 	defaultLedgerConfig = GlobalLedgerConfig{
-		batchSize: 50,
+		BatchSize: 50,
 	}
 )
 
@@ -64,7 +65,8 @@ func New(
 			command.NewReferencer(),
 			monitor,
 			chain,
-			ledgerConfig.batchSize,
+			ledgerConfig.BatchSize,
+			ledgerConfig.EmitLogs,
 		),
 		store:       store,
 		config:      ledgerConfig,
