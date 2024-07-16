@@ -22,6 +22,10 @@ func (i *DefaultIngester) UpdateTransferInitiationPayment(
 	errorMessage string,
 	updatedAt time.Time,
 ) error {
+	if err := i.addTransferInitiationPaymentID(ctx, tf, paymentID, updatedAt); err != nil {
+		return err
+	}
+
 	if err := i.updateTransferInitiationPaymentStatus(
 		ctx,
 		tf,
@@ -30,10 +34,6 @@ func (i *DefaultIngester) UpdateTransferInitiationPayment(
 		errorMessage,
 		updatedAt,
 	); err != nil {
-		return err
-	}
-
-	if err := i.addTransferInitiationPaymentID(ctx, tf, paymentID, updatedAt); err != nil {
 		return err
 	}
 
