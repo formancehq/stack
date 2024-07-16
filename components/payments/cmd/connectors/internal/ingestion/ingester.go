@@ -15,6 +15,7 @@ type Ingester interface {
 	IngestPayments(ctx context.Context, batch PaymentBatch) error
 	IngestBalances(ctx context.Context, batch BalanceBatch, checkIfAccountExists bool) error
 	UpdateTaskState(ctx context.Context, state any) error
+	UpdateTransferInitiationPayment(ctx context.Context, tf *models.TransferInitiation, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, updatedAt time.Time) error
 	UpdateTransferInitiationPaymentsStatus(ctx context.Context, tf *models.TransferInitiation, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, updatedAt time.Time) error
 	UpdateTransferReversalStatus(ctx context.Context, transfer *models.TransferInitiation, transferReversal *models.TransferReversal) error
 	AddTransferInitiationPaymentID(ctx context.Context, tf *models.TransferInitiation, paymentID *models.PaymentID, updatedAt time.Time) error
