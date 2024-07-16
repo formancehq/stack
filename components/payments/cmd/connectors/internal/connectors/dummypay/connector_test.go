@@ -98,6 +98,10 @@ func (m *MockIngester) UpdateTaskState(ctx context.Context, state any) error {
 	return nil
 }
 
+func (m *MockIngester) UpdateTransferInitiationPayment(ctx context.Context, tf *models.TransferInitiation, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, updatedAt time.Time) error {
+	return nil
+}
+
 func (m *MockIngester) UpdateTransferInitiationPaymentsStatus(ctx context.Context, tf *models.TransferInitiation, paymentID *models.PaymentID, status models.TransferInitiationStatus, errorMessage string, updatedAt time.Time) error {
 	return nil
 }

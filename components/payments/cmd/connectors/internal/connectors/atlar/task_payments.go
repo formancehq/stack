@@ -249,13 +249,8 @@ func UpdatePaymentStatusTask(
 				},
 				ConnectorID: connectorID,
 			}
-			err = ingester.AddTransferInitiationPaymentID(ctx, transfer, paymentID, time.Now())
-			if err != nil {
-				otel.RecordError(span, err)
-				return err
-			}
 
-			err = ingester.UpdateTransferInitiationPaymentsStatus(ctx, transfer, paymentID, models.TransferInitiationStatusProcessed, "", time.Now())
+			err = ingester.UpdateTransferInitiationPayment(ctx, transfer, paymentID, models.TransferInitiationStatusProcessed, "", time.Now())
 			if err != nil {
 				otel.RecordError(span, err)
 				return err
