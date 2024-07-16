@@ -139,6 +139,32 @@ rules:
 - apiGroups:
   - formance.com
   resources:
+  - analytics
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - formance.com
+  resources:
+  - analytics/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - formance.com
+  resources:
+  - analytics/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - formance.com
+  resources:
   - authclients
   verbs:
   - create

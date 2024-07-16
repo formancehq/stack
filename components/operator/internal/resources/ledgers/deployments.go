@@ -301,6 +301,16 @@ func createLedgerContainerFull(ctx core.Context, stack *v1beta1.Stack, v2 bool) 
 		container.Env = append(container.Env, brokers.GetPublisherEnvVars(stack, broker, "ledger", prefix)...)
 	}
 
+	if v2 {
+		hasDependency, err := core.HasDependency(ctx, stack.Name, &v1beta1.Analytics{})
+		if err != nil {
+			return nil, err
+		}
+		if hasDependency {
+			container.Env = append(container.Env, core.Env("EMIT_LOGS", "true"))
+		}
+	}
+
 	return container, nil
 }
 

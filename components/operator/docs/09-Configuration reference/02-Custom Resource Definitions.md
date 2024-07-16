@@ -18,6 +18,7 @@ Various parts of the stack can be configured either using the CRD properties or 
 
 
 Modules :
+- [Analytics](#analytics)
 - [Auth](#auth)
 - [Gateway](#gateway)
 - [Ledger](#ledger)
@@ -332,6 +333,93 @@ spec:
 
 
 ### Modules
+
+#### Analytics
+
+
+
+Analytics is the Schema for the analytics API
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+| Field | Description | Default | Validation |
+| --- | --- | --- | --- |
+| `apiVersion` _string_ | `formance.com/v1beta1` | | |
+| `kind` _string_ | `Analytics` | | |
+| `metadata` _[ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta)_ | Refer to Kubernetes API documentation for fields of `metadata`. |  |  |
+| `spec` _[AnalyticsSpec](#analyticsspec)_ |  |  |  |
+| `status` _[AnalyticsStatus](#analyticsstatus)_ |  |  |  |
+
+
+
+##### AnalyticsSpec
+
+
+
+AnalyticsSpec defines the desired state of Analytics
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+| Field | Description | Default | Validation |
+| --- | --- | --- | --- |
+| `debug` _boolean_ | Allow to enable debug mode on the module | false |  |
+| `dev` _boolean_ | Allow to enable dev mode on the module<br />Dev mode is used to allow some application to do custom setup in development mode (allow insecure certificates for example) | false |  |
+| `version` _string_ | Version allow to override global version defined at stack level for a specific module |  |  |
+| `stack` _string_ | Stack indicates the stack on which the module is installed |  |  |
+
+
+
+
+
+##### AnalyticsStatus
+
+
+
+AnalyticsStatus defines the observed state of Analytics
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+| Field | Description | Default | Validation |
+| --- | --- | --- | --- |
+| `ready` _boolean_ | Ready indicates if the resource is seen as completely reconciled |  |  |
+| `info` _string_ | Info can contain any additional like reconciliation errors |  |  |
+
 
 #### Auth
 

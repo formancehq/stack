@@ -184,4 +184,10 @@ resources:
   kind: Broker
   path: github.com/formancehq/operator/api/formance.com/v1beta1
   version: v1beta1
+- api:
+    crdVersion: v1
+  group: formance.com
+  kind: Analytics
+  path: github.com/formancehq/operator/api/formance.com/v1beta1
+  version: v1beta1
 version: "3"
