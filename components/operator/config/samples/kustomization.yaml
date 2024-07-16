@@ -20,4 +20,5 @@ resources:
 - formance.com_v1beta1_resourcereference.yaml
 - formance.com_v1beta1_brokerconsumer.yaml
 - formance.com_v1beta1_broker.yaml
+- formance.com_v1beta1_analytics.yaml
 #+kubebuilder:scaffold:manifestskustomizesamples

@@ -1,6 +1,7 @@
 package resources
 
 import (
+	_ "github.com/formancehq/operator/internal/resources/analytics"
 	_ "github.com/formancehq/operator/internal/resources/authclients"
 	_ "github.com/formancehq/operator/internal/resources/auths"
 	_ "github.com/formancehq/operator/internal/resources/benthos"

@@ -2,6 +2,7 @@ package ledger
 
 import (
 	"fmt"
+
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
@@ -9,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type ImportStore struct {}
+type ImportStore struct{}
 type ImportController struct {
 	store         *ImportStore
 	inputFileFlag string
@@ -46,7 +47,7 @@ func (c *ImportController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	store := fctl.GetStackStore(cmd.Context())
 
 	_, err := store.Client().Ledger.V2ImportLogs(cmd.Context(), operations.V2ImportLogsRequest{
-		Ledger: args[0],
+		Ledger:      args[0],
 		RequestBody: pointer.For(fmt.Sprintf("file:%s", args[1])),
 	})
 
