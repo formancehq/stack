@@ -74,7 +74,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 					hookBodyParam,
 				)
 				Expect(err).ToNot(HaveOccurred())
-				Expect(response.StatusCode).To(Equal(http.StatusOK))
+				Expect(response.StatusCode).To(Equal(http.StatusCreated))
 				hook = response.V2HookResponse.Data
 				DeferCleanup(func() {
 					httpServer.Close()
@@ -126,7 +126,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 					hookBodyParam,
 				)
 				Expect(err).ToNot(HaveOccurred())
-				Expect(response.StatusCode).To(Equal(http.StatusOK))
+				Expect(response.StatusCode).To(Equal(http.StatusCreated))
 				hook2 = &response.V2HookResponse.Data
 				DeferCleanup(func() {
 					httpServer.Close()

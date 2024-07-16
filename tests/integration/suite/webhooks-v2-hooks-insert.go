@@ -31,7 +31,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 				hookBodyParams,
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response.StatusCode).To(Equal(http.StatusOK))
+			Expect(response.StatusCode).To(Equal(http.StatusCreated))
 			newV2Hook := response.V2HookResponse.Data
 			Expect(newV2Hook.Endpoint).To(Equal(hookBodyParams.Endpoint))
 			Expect(newV2Hook.Events).To(Equal(hookBodyParams.Events))

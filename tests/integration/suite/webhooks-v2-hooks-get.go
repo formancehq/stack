@@ -83,7 +83,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 				hookBody1,
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response1.StatusCode).To(Equal(http.StatusOK))
+			Expect(response1.StatusCode).To(Equal(http.StatusCreated))
 			hook1 = &response1.V2HookResponse.Data
 			Expect(hook1.Name).To(Equal(*(hookBody1.Name)))
 
@@ -92,7 +92,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 				hookBody2,
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response2.StatusCode).To(Equal(http.StatusOK))
+			Expect(response2.StatusCode).To(Equal(http.StatusCreated))
 			hook2 = &response2.V2HookResponse.Data
 			Expect(hook2.Name).To(Equal(*(hookBody2.Name)))
 			
@@ -101,7 +101,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 				hookBody3,
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response3.StatusCode).To(Equal(http.StatusOK))
+			Expect(response3.StatusCode).To(Equal(http.StatusCreated))
 			hook3 = &response3.V2HookResponse.Data
 			Expect(hook3.Name).To(Equal(*(hookBody3.Name)))
 
@@ -110,7 +110,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 				hookBody4,
 			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(response4.StatusCode).To(Equal(http.StatusOK))
+			Expect(response4.StatusCode).To(Equal(http.StatusCreated))
 			hook4 = &response4.V2HookResponse.Data
 			Expect(hook4.Name).To(Equal(*(hookBody4.Name)))
 		})
