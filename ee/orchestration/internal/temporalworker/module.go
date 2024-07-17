@@ -30,10 +30,9 @@ func (d DefinitionSet) Append(definition Definition) DefinitionSet {
 	return d
 }
 
-func New(logger logging.Logger, c client.Client, taskQueue string, workflows, activities []DefinitionSet) worker.Worker {
-	worker := worker.New(c, taskQueue, worker.Options{
-		BackgroundActivityContext: logging.ContextWithLogger(context.Background(), logger),
-	})
+func New(logger logging.Logger, c client.Client, taskQueue string, workflows, activities []DefinitionSet, options worker.Options) worker.Worker {
+	options.BackgroundActivityContext = logging.ContextWithLogger(context.Background(), logger)
+	worker := worker.New(c, taskQueue, options)
 
 	for _, set := range workflows {
 		for _, workflow := range set {
@@ -54,11 +53,11 @@ func New(logger logging.Logger, c client.Client, taskQueue string, workflows, ac
 	return worker
 }
 
-func NewWorkerModule(taskQueue string) fx.Option {
+func NewWorkerModule(taskQueue string, options worker.Options) fx.Option {
 	return fx.Options(
 		fx.Provide(
 			fx.Annotate(func(logger logging.Logger, c client.Client, workflows, activities []DefinitionSet) worker.Worker {
-				return New(logger, c, taskQueue, workflows, activities)
+				return New(logger, c, taskQueue, workflows, activities, options)
 			}, fx.ParamTags(``, ``, `group:"workflows"`, `group:"activities"`)),
 		),
 		fx.Invoke(func(lc fx.Lifecycle, w worker.Worker) {

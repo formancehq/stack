@@ -7,11 +7,13 @@ import (
 	"os"
 	"testing"
 
+	"go.temporal.io/sdk/worker"
+
 	"github.com/formancehq/orchestration/internal/temporalworker"
 	"github.com/formancehq/orchestration/internal/workflow/stages"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/publish"
-	chi "github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"go.temporal.io/sdk/testsuite"
 
@@ -53,6 +55,7 @@ func test(t *testing.T, fn func(router *chi.Mux, backend api.Backend, db *bun.DB
 		[]temporalworker.DefinitionSet{
 			workflow.NewActivities(publish.NoOpPublisher, db).DefinitionSet(),
 		},
+		worker.Options{},
 	)
 	require.NoError(t, worker.Start())
 	t.Cleanup(worker.Stop)

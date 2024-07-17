@@ -4,6 +4,8 @@ import (
 	"testing"
 	"time"
 
+	worker "go.temporal.io/sdk/worker"
+
 	"github.com/formancehq/orchestration/internal/temporalworker"
 	"github.com/formancehq/orchestration/internal/workflow/stages"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -42,6 +44,7 @@ func TestConfig(t *testing.T) {
 		[]temporalworker.DefinitionSet{
 			NewActivities(publish.NoOpPublisher, db).DefinitionSet(),
 		},
+		worker.Options{},
 	)
 	require.NoError(t, worker.Start())
 	t.Cleanup(worker.Stop)
