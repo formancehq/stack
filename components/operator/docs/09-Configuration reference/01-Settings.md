@@ -34,6 +34,7 @@ While we have some basic types (string, number, bool ...), we also have some com
 | gateway.ingress.annotations                                                              | Map    |                                            | Allow to specify custom annotations to apply on the gateway ingress                                                            |
 | logging.json                                                                             | bool   |                                            | Configure services to log as json                                                                                              |
 | modules.`<module-name>`.database.connection-pool                                         | Map    | max-idle=10, max-idle-time=10, max-open=10 | Configure database connection pool for each module. See [Golang documentation](https://go.dev/doc/database/manage-connections) |
+| orchestration.max-parallel-activities                                                    | Int    | 10                                         | Configure max parallel temporal activities on orchestration workers                                                            |
 
 ### Postgres URI format
 

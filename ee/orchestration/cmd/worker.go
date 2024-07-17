@@ -30,7 +30,7 @@ func workerOptions() fx.Option {
 	return fx.Options(
 		stackClientModule(),
 		temporalworker.NewWorkerModule(viper.GetString(temporalTaskQueueFlag), worker.Options{
-			TaskQueueActivitiesPerSecond: viper.GetFloat64(temporalMaxActivitiesPerSecond),
+			TaskQueueActivitiesPerSecond: viper.GetFloat64(temporalMaxParallelActivities),
 		}),
 		triggers.NewListenerModule(
 			viper.GetString(stackFlag),

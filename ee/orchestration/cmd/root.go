@@ -50,9 +50,9 @@ const (
 	temporalSSLClientKeyFlag       = "temporal-ssl-client-key"
 	temporalSSLClientCertFlag      = "temporal-ssl-client-cert"
 	temporalTaskQueueFlag          = "temporal-task-queue"
-	temporalInitSearchAttributes   = "temporal-init-search-attributes"
-	temporalMaxActivitiesPerSecond = "temporal-max-activities-per-second"
-	topicsFlag                     = "topics"
+	temporalInitSearchAttributes  = "temporal-init-search-attributes"
+	temporalMaxParallelActivities = "temporal-max-parallel-activities"
+	topicsFlag                    = "topics"
 	listenFlag                     = "listen"
 	workerFlag                     = "worker"
 )
@@ -76,7 +76,7 @@ func NewRootCommand() *cobra.Command {
 	cmd.PersistentFlags().String(temporalSSLClientCertFlag, "", "Temporal client cert")
 	cmd.PersistentFlags().String(temporalTaskQueueFlag, "default", "Temporal task queue name")
 	cmd.PersistentFlags().Bool(temporalInitSearchAttributes, false, "Init temporal search attributes")
-	cmd.PersistentFlags().Float64(temporalMaxActivitiesPerSecond, 10, "Maximum number of parallel activities")
+	cmd.PersistentFlags().Float64(temporalMaxParallelActivities, 10, "Maximum number of parallel activities")
 	cmd.PersistentFlags().StringSlice(topicsFlag, []string{}, "Topics to listen")
 	cmd.PersistentFlags().String(stackFlag, "", "Stack")
 	cmd.AddCommand(
