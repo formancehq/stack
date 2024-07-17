@@ -41,20 +41,20 @@ var (
 )
 
 const (
-	stackFlag                      = "stack"
-	stackURLFlag                   = "stack-url"
-	stackClientIDFlag              = "stack-client-id"
-	stackClientSecretFlag          = "stack-client-secret"
-	temporalAddressFlag            = "temporal-address"
-	temporalNamespaceFlag          = "temporal-namespace"
-	temporalSSLClientKeyFlag       = "temporal-ssl-client-key"
-	temporalSSLClientCertFlag      = "temporal-ssl-client-cert"
-	temporalTaskQueueFlag          = "temporal-task-queue"
+	stackFlag                     = "stack"
+	stackURLFlag                  = "stack-url"
+	stackClientIDFlag             = "stack-client-id"
+	stackClientSecretFlag         = "stack-client-secret"
+	temporalAddressFlag           = "temporal-address"
+	temporalNamespaceFlag         = "temporal-namespace"
+	temporalSSLClientKeyFlag      = "temporal-ssl-client-key"
+	temporalSSLClientCertFlag     = "temporal-ssl-client-cert"
+	temporalTaskQueueFlag         = "temporal-task-queue"
 	temporalInitSearchAttributes  = "temporal-init-search-attributes"
 	temporalMaxParallelActivities = "temporal-max-parallel-activities"
 	topicsFlag                    = "topics"
-	listenFlag                     = "listen"
-	workerFlag                     = "worker"
+	listenFlag                    = "listen"
+	workerFlag                    = "worker"
 )
 
 func NewRootCommand() *cobra.Command {
