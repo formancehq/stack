@@ -1,15 +1,16 @@
-package webhooks
+package hooks
 
 import (
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
-	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
 type ActivateWebhookStore struct {
 	Success bool `json:"success"`
+	ErrorResponse error `json:"error"`
+	
 }
 type ActivateWebhookController struct {
 	store *ActivateWebhookStore
@@ -17,7 +18,7 @@ type ActivateWebhookController struct {
 
 func NewDefaultVersionStore() *ActivateWebhookStore {
 	return &ActivateWebhookStore{
-		Success: true,
+		Success: false,
 	}
 }
 func NewActivateWebhookController() *ActivateWebhookController {
@@ -35,26 +36,35 @@ func (c *ActivateWebhookController) Run(cmd *cobra.Command, args []string) (fctl
 		return nil, fctl.ErrMissingApproval
 	}
 
-	request := operations.ActivateConfigRequest{
-		ID: args[0],
+	request := operations.ActivateHookRequest{
+		HookID: args[0],
 	}
-	_, err := store.Client().Webhooks.ActivateConfig(cmd.Context(), request)
-	if err != nil {
-		return nil, errors.Wrap(err, "activating config")
+	_, err := store.Client().Webhooks.ActivateHook(cmd.Context(), request)
+
+	if err!= nil {
+		c.store.ErrorResponse = err
+	} else {
+		c.store.Success = true
 	}
 
 	return c, nil
 }
 
-func (*ActivateWebhookController) Render(cmd *cobra.Command, args []string) error {
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Config activated successfully")
+func (c *ActivateWebhookController) Render(cmd *cobra.Command, args []string) error {
+	
+	if c.store.ErrorResponse != nil {
+		pterm.Warning.WithShowLineNumber(false).Printfln(c.store.ErrorResponse.Error())
+		return nil
+	}
+	
+	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Hook activated successfully")
 
 	return nil
 }
 
 func NewActivateCommand() *cobra.Command {
-	return fctl.NewCommand("activate <config-id>",
-		fctl.WithShortDescription("Activate one config"),
+	return fctl.NewCommand("activate <hook-id>",
+		fctl.WithShortDescription("Activate one Hook"),
 		fctl.WithAliases("ac", "a"),
 		fctl.WithConfirmFlag(),
 		fctl.WithArgs(cobra.ExactArgs(1)),

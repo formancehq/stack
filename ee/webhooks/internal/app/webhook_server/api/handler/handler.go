@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	hookPageSize    int = 20
-	attemptPageSize int = 64
+	hookPageSize    int = 80
+	attemptPageSize int = 80
 )
 
 type PayloadBody struct {

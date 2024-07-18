@@ -1,15 +1,16 @@
-package webhooks
+package hooks
 
 import (
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
-	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
 type DesactivateWebhookStore struct {
 	Success bool `json:"success"`
+	ErrorResponse error `json:"error"`
+	
 }
 
 type DesactivateWebhookController struct {
@@ -40,22 +41,28 @@ func (c *DesactivateWebhookController) Run(cmd *cobra.Command, args []string) (f
 		return nil, fctl.ErrMissingApproval
 	}
 
-	request := operations.DeactivateConfigRequest{
-		ID: args[0],
+	request := operations.DeactivateHookRequest{
+		HookID: args[0],
 	}
-	response, err := store.Client().Webhooks.DeactivateConfig(cmd.Context(), request)
-	if err != nil {
-		return nil, errors.Wrap(err, "deactivating config")
+	_, err := store.Client().Webhooks.DeactivateHook(cmd.Context(), request)
+	
+	if err!= nil {
+		c.store.ErrorResponse = err
+	} else {
+		c.store.Success = true
 	}
-
-	c.store.Success = !response.ConfigResponse.Data.Active
 
 	return c, nil
 }
 
 func (c *DesactivateWebhookController) Render(cmd *cobra.Command, args []string) error {
+	if c.store.ErrorResponse != nil {
+		pterm.Warning.WithShowLineNumber(false).Printfln(c.store.ErrorResponse.Error())
+		return nil
+	}
 
-	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Config deactivated successfully")
+
+	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Hook deactivated successfully")
 
 	return nil
 }
