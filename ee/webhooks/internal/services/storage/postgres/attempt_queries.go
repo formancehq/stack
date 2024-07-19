@@ -205,6 +205,7 @@ func (store PostgresStore) FlushAttempts(index string) error {
 	var log models.Log
 	var err error
 
+
 	if index != "" {
 
 		attempt.ID = index

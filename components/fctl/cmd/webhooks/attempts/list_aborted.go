@@ -32,11 +32,11 @@ func (c *ListAbortedController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 	cursor := fctl.GetString(cmd, c.cursorFlag)
 
 
-	request := operations.GetWaitingAttemptsRequest{
+	request := operations.GetAbortedAttemptsRequest{
 		Cursor: &cursor,
 	}
 
-	response, err := store.Client().Webhooks.GetWaitingAttempts(cmd.Context(), request)
+	response, err := store.Client().Webhooks.GetAbortedAttempts(cmd.Context(), request)
 	if err!= nil {
 		c.store.ErrorResponse = err
 	} else {

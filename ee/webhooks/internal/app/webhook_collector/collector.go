@@ -60,7 +60,7 @@ func (c *Collector) HandleWaitingAttempts() {
 
 	wAttempts.Apply(func(s *models.SharedAttempt) {
 
-		if s.Val.NextTry.Before(now) {
+		if s.Val.NextTry.Before(now) || s.Val.NextTry.Equal(now) {
 			toHandles.Add(s)
 		} else {
 			c.State.WaitingAttempts.Add(s)

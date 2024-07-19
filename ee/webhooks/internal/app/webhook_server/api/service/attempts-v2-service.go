@@ -79,19 +79,8 @@ func V2GetAbortedAttempts(filterCursor string, pageSize int) utils.Response[bunp
 
 func V2RetryWaitingAttempts() utils.Response[any] {
 
-	ev, err := models.EventFromType(models.FlushWaitingAttemptsType, nil, nil)
-	if err != nil {
-		return utils.InternalErrorResp[any](err)
-	}
-
-	log, err := models.LogFromEvent(ev)
-
-	if err != nil {
-		return utils.InternalErrorResp[any](err)
-	}
-
-	err = getDatabase().WriteLog(log.ID, log.Payload, string(log.Channel), log.CreatedAt)
-
+	err := getDatabase().FlushAttempts("")
+	
 	if err != nil {
 		return utils.InternalErrorResp[any](err)
 	}
@@ -114,18 +103,7 @@ func V2RetryWaitingAttempt(id string) utils.Response[any] {
 		return utils.NotFoundErrorResp[any](errors.New(fmt.Sprintf("Attempt (id : %s) are not waiting anymore", id)))
 	}
 
-	ev, err := models.EventFromType(models.FlushWaitingAttemptType, &attempt, nil)
-	if err != nil {
-		return utils.InternalErrorResp[any](err)
-	}
-
-	log, err := models.LogFromEvent(ev)
-
-	if err != nil {
-		return utils.InternalErrorResp[any](err)
-	}
-
-	err = database.WriteLog(log.ID, log.Payload, string(log.Channel), log.CreatedAt)
+	err = getDatabase().FlushAttempts(attempt.ID)
 
 	if err != nil {
 		return utils.InternalErrorResp[any](err)

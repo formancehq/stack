@@ -1,6 +1,7 @@
 package attempts
 
 import (
+	"strconv"
 	"time"
 
 	fctl "github.com/formancehq/fctl/pkg"
@@ -60,6 +61,7 @@ func (c *ListWaitingController) Render(cmd *cobra.Command, args []string) error 
 		return []string{
 			attempt.ID,
 			string(attempt.Status),
+			strconv.FormatInt(attempt.StatusCode, 10),
 			attempt.HookName,
 			attempt.HookID,
 			attempt.HookEndpoint,
@@ -71,7 +73,7 @@ func (c *ListWaitingController) Render(cmd *cobra.Command, args []string) error 
 
 	})
 	
-	tableData = fctl.Prepend(tableData, []string{"ID", "Status", "Hook Name", "Hook ID", "Hook Endpoint", "Event", "Created At", "Next Try", "Payload"})
+	tableData = fctl.Prepend(tableData, []string{"ID", "Status", "Last Status Code", "Hook Name", "Hook ID", "Hook Endpoint", "Event", "Created At", "Next Try", "Payload"})
 	
 	tableData = printer.AddCursorRowsToTable(tableData, printer.CursorArgs{
 		HasMore : c.store.Cursor.HasMore,
