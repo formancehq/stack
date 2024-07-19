@@ -159,6 +159,9 @@ func (commander *Commander) exec(ctx context.Context, parameters Parameters, scr
 
 			return unlock, nil
 		}()
+		if err != nil {
+			return nil, err
+		}
 		defer unlock(ctx)
 
 		err = func() error {
