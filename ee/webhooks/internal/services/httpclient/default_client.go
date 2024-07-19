@@ -65,7 +65,8 @@ func (dc DefaultHttpClient) Call(context context.Context, hook *models.Hook, att
 	resp, err := dc.httpClient.Do(req)
 	if err != nil {
 		span.RecordError(err)
-		return 0, err
+		
+		return 503, nil
 
 	}
 
