@@ -5,6 +5,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"math/big"
 	"net/http"
+	"sort"
 	"time"
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
@@ -34,7 +35,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 })
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {
-	BeforeEach(func() {
+	JustBeforeEach(func() {
 		createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 			Ledger: "default",
 		})
@@ -50,8 +51,17 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			timestamp    = time.Now().Round(time.Second).UTC()
 			transactions []shared.V2ExpandedTransaction
 		)
-		BeforeEach(func() {
+		JustBeforeEach(func() {
 			for i := 0; i < int(txCount); i++ {
+				offset := time.Duration(int(txCount)-i)*time.Minute
+				// 1 transaction of 2 is backdated to test pagination using effective date
+				if offset % 2 == 0 {
+					offset += 1
+				} else {
+					offset -= 1
+				}
+				txTimestamp := timestamp.Add(-offset)
+
 				response, err := Client().Ledger.V2CreateTransaction(
 					TestContext(),
 					operations.V2CreateTransactionRequest{
@@ -65,7 +75,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 									Destination: fmt.Sprintf("account:%d", i),
 								},
 							},
-							Timestamp: &timestamp,
+							Timestamp: pointer.For(txTimestamp),
 						},
 						Ledger: "default",
 					},
@@ -123,32 +133,33 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		Then(fmt.Sprintf("listing transactions using page size of %d", pageSize), func() {
 			var (
 				rsp *shared.V2TransactionsCursorResponse
+				req operations.V2ListTransactionsRequest
 			)
 			BeforeEach(func() {
-				response, err := Client().Ledger.V2ListTransactions(
-					TestContext(),
-					operations.V2ListTransactionsRequest{
-						Ledger:   "default",
-						PageSize: ptr(pageSize),
-						Expand:   pointer.For("volumes"),
-						RequestBody: map[string]any{
-							"$and": []map[string]any{
-								{
-									"$match": map[string]any{
-										"source": "world",
-									},
+				req = operations.V2ListTransactionsRequest{
+					Ledger:   "default",
+					PageSize: ptr(pageSize),
+					Expand:   pointer.For("volumes"),
+					RequestBody: map[string]any{
+						"$and": []map[string]any{
+							{
+								"$match": map[string]any{
+									"source": "world",
 								},
-								{
-									"$not": map[string]any{
-										"$exists": map[string]any{
-											"metadata": "foo",
-										},
+							},
+							{
+								"$not": map[string]any{
+									"$exists": map[string]any{
+										"metadata": "foo",
 									},
 								},
 							},
 						},
 					},
-				)
+				}
+			})
+			JustBeforeEach(func() {
+				response, err := Client().Ledger.V2ListTransactions(TestContext(), req)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(response.StatusCode).To(Equal(200))
 
@@ -157,12 +168,25 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				Expect(rsp.Cursor.Previous).To(BeNil())
 				Expect(rsp.Cursor.Next).NotTo(BeNil())
 			})
+			Context("with effective ordering", func() {
+				BeforeEach(func() {
+					req.Order = pointer.For(operations.OrderEffective)
+				})
+				It("Should be ok, and returns transactions ordered by effective timestamp", func() {
+					Expect(rsp.Cursor.PageSize).To(Equal(pageSize))
+					sorted := transactions[:pageSize]
+					sort.SliceStable(sorted, func(i, j int) bool {
+						return sorted[i].Timestamp.After(sorted[j].Timestamp)
+					})
+					Expect(rsp.Cursor.Data).To(Equal(sorted))
+				})
+			})
 			It("Should be ok", func() {
 				Expect(rsp.Cursor.PageSize).To(Equal(pageSize))
 				Expect(rsp.Cursor.Data).To(Equal(transactions[:pageSize]))
 			})
 			Then("following next cursor", func() {
-				BeforeEach(func() {
+				JustBeforeEach(func() {
 
 					// Create a new transaction to ensure cursor is stable
 					_, err := Client().Ledger.V2CreateTransaction(
@@ -204,7 +228,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 					Expect(rsp.Cursor.Next).To(BeNil())
 				})
 				Then("following previous cursor", func() {
-					BeforeEach(func() {
+					JustBeforeEach(func() {
 						response, err := Client().Ledger.V2ListTransactions(
 							TestContext(),
 							operations.V2ListTransactionsRequest{
@@ -233,7 +257,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				response *operations.V2ListTransactionsResponse
 				now      = time.Now().Round(time.Second).UTC()
 			)
-			BeforeEach(func() {
+			JustBeforeEach(func() {
 				response, err = Client().Ledger.V2ListTransactions(
 					TestContext(),
 					operations.V2ListTransactionsRequest{
@@ -275,7 +299,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				response *operations.V2ListTransactionsResponse
 				now      = time.Now().Round(time.Second).UTC()
 			)
-			BeforeEach(func() {
+			JustBeforeEach(func() {
 				response, err = Client().Ledger.V2ListTransactions(
 					TestContext(),
 					operations.V2ListTransactionsRequest{
@@ -333,7 +357,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			var (
 				err error
 			)
-			BeforeEach(func() {
+			JustBeforeEach(func() {
 				_, err = Client().Ledger.V2ListTransactions(
 					TestContext(),
 					operations.V2ListTransactionsRequest{
@@ -369,7 +393,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		t3 shared.V2ExpandedTransaction
 	)
 	When("creating transactions", func() {
-		BeforeEach(func() {
+		JustBeforeEach(func() {
 			response, err := Client().Ledger.V2CreateTransaction(
 				TestContext(),
 				operations.V2CreateTransactionRequest{

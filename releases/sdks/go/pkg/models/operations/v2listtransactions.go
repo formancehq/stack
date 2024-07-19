@@ -3,11 +3,36 @@
 package operations
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/utils"
 	"net/http"
 	"time"
 )
+
+type Order string
+
+const (
+	OrderEffective Order = "effective"
+)
+
+func (e Order) ToPointer() *Order {
+	return &e
+}
+func (e *Order) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "effective":
+		*e = Order(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for Order: %v", v)
+	}
+}
 
 type V2ListTransactionsRequest struct {
 	RequestBody map[string]any `request:"mediaType=application/json"`
@@ -20,10 +45,12 @@ type V2ListTransactionsRequest struct {
 	Expand *string `queryParam:"style=form,explode=true,name=expand"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
+	Order  *Order `queryParam:"style=form,explode=true,name=order"`
 	// The maximum number of results to return per page.
 	//
 	PageSize *int64     `queryParam:"style=form,explode=true,name=pageSize"`
 	Pit      *time.Time `queryParam:"style=form,explode=true,name=pit"`
+	Reverse  *bool      `queryParam:"style=form,explode=true,name=reverse"`
 }
 
 func (v V2ListTransactionsRequest) MarshalJSON() ([]byte, error) {
@@ -65,6 +92,13 @@ func (o *V2ListTransactionsRequest) GetLedger() string {
 	return o.Ledger
 }
 
+func (o *V2ListTransactionsRequest) GetOrder() *Order {
+	if o == nil {
+		return nil
+	}
+	return o.Order
+}
+
 func (o *V2ListTransactionsRequest) GetPageSize() *int64 {
 	if o == nil {
 		return nil
@@ -77,6 +111,13 @@ func (o *V2ListTransactionsRequest) GetPit() *time.Time {
 		return nil
 	}
 	return o.Pit
+}
+
+func (o *V2ListTransactionsRequest) GetReverse() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.Reverse
 }
 
 type V2ListTransactionsResponse struct {

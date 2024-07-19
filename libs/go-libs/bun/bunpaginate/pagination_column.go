@@ -6,7 +6,9 @@ import (
 	"math/big"
 	"reflect"
 	"strings"
+	"time"
 
+	libtime "github.com/formancehq/stack/libs/go-libs/time"
 	"github.com/uptrace/bun"
 )
 
@@ -59,14 +61,29 @@ func UsingColumn[FILTERS any, ENTITY any](ctx context.Context,
 	}
 
 	var (
-		paginationIDs = make([]*BigInt, 0)
+		paginationIDs = make([]*big.Int, 0)
 	)
 	for _, t := range ret {
-		paginationID := reflect.ValueOf(t).
+		rawPaginationID := reflect.ValueOf(t).
 			Field(paginatedColumnIndex).
-			Interface().(*BigInt)
+			Interface()
+		var paginationID *big.Int
+		switch rawPaginationID := rawPaginationID.(type) {
+		case time.Time:
+			paginationID = big.NewInt(rawPaginationID.UTC().UnixMicro())
+		case libtime.Time:
+			paginationID = big.NewInt(rawPaginationID.UTC().UnixMicro())
+		case *BigInt:
+			paginationID = (*big.Int)(rawPaginationID)
+		case *big.Int:
+			paginationID = rawPaginationID
+		case int64:
+			paginationID = big.NewInt(rawPaginationID)
+		default:
+			panic(fmt.Sprintf("invalid paginationID, type %T not handled", rawPaginationID))
+		}
 		if query.Bottom == nil {
-			query.Bottom = (*big.Int)(paginationID)
+			query.Bottom = paginationID
 		}
 		paginationIDs = append(paginationIDs, paginationID)
 	}
@@ -90,13 +107,13 @@ func UsingColumn[FILTERS any, ENTITY any](ctx context.Context,
 
 		if hasMore {
 			cp := query
-			cp.PaginationID = (*big.Int)(paginationIDs[len(paginationIDs)-2])
+			cp.PaginationID = paginationIDs[len(paginationIDs)-2]
 			previous = &cp
 		}
 	} else {
 		if hasMore {
 			cp := query
-			cp.PaginationID = (*big.Int)(paginationIDs[len(paginationIDs)-1])
+			cp.PaginationID = paginationIDs[len(paginationIDs)-1]
 			next = &cp
 		}
 		if query.PaginationID != nil {
