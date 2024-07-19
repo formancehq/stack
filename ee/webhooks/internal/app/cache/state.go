@@ -168,7 +168,7 @@ func (s *State) FlushAttempt(id string) *models.SharedAttempt {
 	sAttempt.WLock()
 	sAttempt.Val.NextTry = time.Now()
 	sAttempt.WUnlock()
-	
+
 	return sAttempt
 }
 

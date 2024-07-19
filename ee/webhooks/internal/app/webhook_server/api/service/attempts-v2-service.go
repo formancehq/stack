@@ -80,7 +80,7 @@ func V2GetAbortedAttempts(filterCursor string, pageSize int) utils.Response[bunp
 func V2RetryWaitingAttempts() utils.Response[any] {
 
 	err := getDatabase().FlushAttempts("")
-	
+
 	if err != nil {
 		return utils.InternalErrorResp[any](err)
 	}
