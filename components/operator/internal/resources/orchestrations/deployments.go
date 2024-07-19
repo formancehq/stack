@@ -158,6 +158,12 @@ func createDeployment(ctx Context, stack *v1beta1.Stack, orchestration *v1beta1.
 		annotations["database-secret-hash"] = temporalSecretResourceReference.Status.Hash
 	}
 
+	maxParallelActivities, err := settings.GetIntOrDefault(ctx, stack.Name, 10, "orchestration", "max-parallel-activities")
+	if err != nil {
+		return err
+	}
+	env = append(env, Env("TEMPORAL_MAX_PARALLEL_ACTIVITIES", fmt.Sprint(maxParallelActivities)))
+
 	tpl := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "orchestration",

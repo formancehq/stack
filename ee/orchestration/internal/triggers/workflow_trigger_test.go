@@ -4,6 +4,8 @@ import (
 	"testing"
 	"time"
 
+	worker "go.temporal.io/sdk/worker"
+
 	"github.com/formancehq/orchestration/internal/storage"
 	"github.com/formancehq/orchestration/internal/temporalworker"
 	"github.com/formancehq/orchestration/internal/workflow"
@@ -47,6 +49,7 @@ func TestWorkflow(t *testing.T) {
 			workflow.NewActivities(publish.NoOpPublisher, db).DefinitionSet(),
 			NewActivities(db, workflowManager, NewDefaultExpressionEvaluator(), publish.NoOpPublisher).DefinitionSet(),
 		},
+		worker.Options{},
 	)
 	require.NoError(t, worker.Start())
 	t.Cleanup(worker.Stop)

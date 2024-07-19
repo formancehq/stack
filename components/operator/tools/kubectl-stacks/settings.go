@@ -21,7 +21,7 @@ func NewSettingsCommand(configFlags *genericclioptions.ConfigFlags) *cobra.Comma
 	return ret
 }
 
-func NewAddSettingsCommand(configFlags *genericclioptions.ConfigFlags) *cobra.Command {
+func  NewAddSettingsCommand(configFlags *genericclioptions.ConfigFlags) *cobra.Command {
 	ret := &cobra.Command{
 		Use: "add <name> <key> <value>",
 		Short: "Create a new settings",

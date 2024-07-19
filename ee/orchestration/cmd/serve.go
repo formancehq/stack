@@ -70,6 +70,7 @@ func newServeCommand() *cobra.Command {
 
 	cmd.Flags().Bool(workerFlag, false, "Enable worker mode")
 	cmd.Flags().String(listenFlag, ":8080", "Listening address")
+	cmd.Flags().Float64(temporalMaxParallelActivities, 10, "Maximum number of parallel activities")
 	service.BindFlags(cmd)
 
 	return cmd

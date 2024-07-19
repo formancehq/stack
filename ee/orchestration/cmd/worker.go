@@ -3,6 +3,8 @@ package cmd
 import (
 	"net/http"
 
+	"go.temporal.io/sdk/worker"
+
 	"github.com/formancehq/orchestration/internal/triggers"
 
 	sdk "github.com/formancehq/formance-sdk-go/v2"
@@ -27,7 +29,9 @@ func stackClientModule() fx.Option {
 func workerOptions() fx.Option {
 	return fx.Options(
 		stackClientModule(),
-		temporalworker.NewWorkerModule(viper.GetString(temporalTaskQueueFlag)),
+		temporalworker.NewWorkerModule(viper.GetString(temporalTaskQueueFlag), worker.Options{
+			TaskQueueActivitiesPerSecond: viper.GetFloat64(temporalMaxParallelActivities),
+		}),
 		triggers.NewListenerModule(
 			viper.GetString(stackFlag),
 			viper.GetString(temporalTaskQueueFlag),

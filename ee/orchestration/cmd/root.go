@@ -41,19 +41,20 @@ var (
 )
 
 const (
-	stackFlag                    = "stack"
-	stackURLFlag                 = "stack-url"
-	stackClientIDFlag            = "stack-client-id"
-	stackClientSecretFlag        = "stack-client-secret"
-	temporalAddressFlag          = "temporal-address"
-	temporalNamespaceFlag        = "temporal-namespace"
-	temporalSSLClientKeyFlag     = "temporal-ssl-client-key"
-	temporalSSLClientCertFlag    = "temporal-ssl-client-cert"
-	temporalTaskQueueFlag        = "temporal-task-queue"
-	temporalInitSearchAttributes = "temporal-init-search-attributes"
-	topicsFlag                   = "topics"
-	listenFlag                   = "listen"
-	workerFlag                   = "worker"
+	stackFlag                     = "stack"
+	stackURLFlag                  = "stack-url"
+	stackClientIDFlag             = "stack-client-id"
+	stackClientSecretFlag         = "stack-client-secret"
+	temporalAddressFlag           = "temporal-address"
+	temporalNamespaceFlag         = "temporal-namespace"
+	temporalSSLClientKeyFlag      = "temporal-ssl-client-key"
+	temporalSSLClientCertFlag     = "temporal-ssl-client-cert"
+	temporalTaskQueueFlag         = "temporal-task-queue"
+	temporalInitSearchAttributes  = "temporal-init-search-attributes"
+	temporalMaxParallelActivities = "temporal-max-parallel-activities"
+	topicsFlag                    = "topics"
+	listenFlag                    = "listen"
+	workerFlag                    = "worker"
 )
 
 func NewRootCommand() *cobra.Command {
@@ -75,6 +76,7 @@ func NewRootCommand() *cobra.Command {
 	cmd.PersistentFlags().String(temporalSSLClientCertFlag, "", "Temporal client cert")
 	cmd.PersistentFlags().String(temporalTaskQueueFlag, "default", "Temporal task queue name")
 	cmd.PersistentFlags().Bool(temporalInitSearchAttributes, false, "Init temporal search attributes")
+	cmd.PersistentFlags().Float64(temporalMaxParallelActivities, 10, "Maximum number of parallel activities")
 	cmd.PersistentFlags().StringSlice(topicsFlag, []string{}, "Topics to listen")
 	cmd.PersistentFlags().String(stackFlag, "", "Stack")
 	cmd.AddCommand(
