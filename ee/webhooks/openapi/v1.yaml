@@ -407,7 +407,7 @@ components:
     ErrorsEnum:
       type: string
       enum:
-        - INTERNAL_TYPE
-        - VALIDATION_TYPE
+        - INTERNAL
+        - VALIDATION
         - NOT_FOUND
       example: VALIDATION_TYPE

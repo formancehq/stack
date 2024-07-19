@@ -93,6 +93,7 @@ func V2RetryWaitingAttempt(id string) utils.Response[any] {
 
 	attempt, err := getDatabase().GetAttempt(id)
 	if err != nil {
+
 		return utils.InternalErrorResp[any](err)
 	}
 

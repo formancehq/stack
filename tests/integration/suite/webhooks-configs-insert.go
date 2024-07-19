@@ -66,7 +66,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 				cfg,
 			)
 			Expect(err).To(HaveOccurred())
-			Expect(err.(*sdkerrors.WebhooksErrorResponse).ErrorCode).To(Equal(shared.WebhooksErrorsEnumValidationType))
+			Expect(err.(*sdkerrors.WebhooksErrorResponse).ErrorCode).To(Equal(shared.WebhooksErrorsEnumValidation))
 		})
 	
 		It("inserting an invalid config with invalid secret", func() {

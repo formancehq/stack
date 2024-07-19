@@ -16,9 +16,9 @@ type ErrorType string
 
 const (
 	NoneType       ErrorType = "NONE"
-	ValidationType ErrorType = "VALIDATION_TYPE"
+	ValidationType ErrorType = "VALIDATION"
 	NotFoundType   ErrorType = "NOT_FOUND"
-	InternalType   ErrorType = "INTERNAL_TYPE"
+	InternalType   ErrorType = "INTERNAL"
 )
 
 type Response[T interface{}] struct {

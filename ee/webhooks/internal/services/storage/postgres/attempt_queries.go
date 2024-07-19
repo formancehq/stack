@@ -232,7 +232,7 @@ func (store PostgresStore) FlushAttempts(index string) error {
 
 	}
 
-	err = store.db.NewRaw(insertLogQuery, log.ID, log.Channel, log.Payload, log.CreatedAt).Scan(context.Background())
+	_, err = store.db.NewRaw(insertLogQuery, log.ID, log.Channel, log.Payload, log.CreatedAt).Exec(context.Background())
 
 	return err
 }
