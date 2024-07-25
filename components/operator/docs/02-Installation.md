@@ -19,7 +19,7 @@ To install the Formance Operator CRDs, you can use the following command:
 
 ```bash
 helm upgrade --install operator-crds oci://ghcr.io/formancehq/helm/operator-crds \
---version v2.0.0-rc.30 \
+--version v2.0.3 \
 --namespace formance-system \
 --create-namespace
 ```
@@ -28,13 +28,13 @@ As noticed above, the version will always be the same as the operator version. C
 
 ### Operator Deployment
 
-From version v2.0.0-rc.30, CRDs are now packaged with `helm.sh/resource-policy: keep` to avoid deletion of the CRDs when the operator is uninstalled.
+From version v2.0.3, CRDs are now packaged with `helm.sh/resource-policy: keep` to avoid deletion of the CRDs when the operator is uninstalled.
 
 You can deploy Formance Operator using Helm:
 
 ```bash
 helm upgrade --install regions oci://ghcr.io/formancehq/helm/regions \
---version v2.0.0-rc.30 \
+--version v2.0.3 \
 --namespace formance-system \
 --create-namespace \
 --set operator.operator-crds.create=false
@@ -86,7 +86,7 @@ Then you will be able to disable `operator-crds.create: false` and install the o
 
 ```bash
 helm upgrade --install regions oci://ghcr.io/formancehq/helm/regions \
---version v2.0.0-rc.30 \
+--version v2.0.3 \
 --namespace $NAMESPACE \
 --create-namespace \
 --set operator.operator-crds.create=false
@@ -97,7 +97,7 @@ helm upgrade --install regions oci://ghcr.io/formancehq/helm/regions \
 
 ```bash
 helm upgrade --install $RELEASE_NAME oci://ghcr.io/formancehq/helm/operator-crds \
---version v2.0.0-rc.30 \
+--version v2.0.3 \
 --namespace $NAMESPACE \
 --create-namespace
 ```

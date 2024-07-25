@@ -11,7 +11,7 @@ services:
       - ".local/gateway/Caddyfile:/etc/caddy/Caddyfile"
 
   ledger:
-    image: "ghcr.io/formancehq/ledger:v2.0.0-rc.27"
+    image: "ghcr.io/formancehq/ledger:v2.0.3"
     healthcheck:
       test: [ "CMD", "wget", "http://127.0.0.1:8080/_info", "-O", "-", "-q" ]
       interval: 10s
@@ -24,7 +24,7 @@ services:
       POSTGRES_URI: "postgresql://formance:formance@postgres:${FORMANCE_POSTGRES_PORT:-5432}/ledger?sslmode=disable"
 
   payments-migrate:
-    image: "ghcr.io/formancehq/payments:v2.0.0-rc.27"
+    image: "ghcr.io/formancehq/payments:v2.0.3"
     command: migrate up
     depends_on:
       postgres:
@@ -33,7 +33,7 @@ services:
       POSTGRES_URI: "postgres://formance:formance@postgres:${FORMANCE_POSTGRES_PORT:-5432}/payments?sslmode=disable"
 
   payments-api:
-    image: "ghcr.io/formancehq/payments:v2.0.0-rc.27"
+    image: "ghcr.io/formancehq/payments:v2.0.3"
     command: api server
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://127.0.0.1:8080/_healthcheck" ]
@@ -51,7 +51,7 @@ services:
       CONFIG_ENCRYPTION_KEY: mysuperencryptionkey
 
   payments-connectors:
-    image: "ghcr.io/formancehq/payments:v2.0.0-rc.27"
+    image: "ghcr.io/formancehq/payments:v2.0.3"
     command: connectors server
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://127.0.0.1:8080/_healthcheck" ]
