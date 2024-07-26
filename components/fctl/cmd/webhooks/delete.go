@@ -49,7 +49,7 @@ func (c *DeleteWebhookController) Run(cmd *cobra.Command, args []string) (fctl.R
 	request := operations.DeleteConfigRequest{
 		ID: args[0],
 	}
-	_, err := store.Client().Webhooks.DeleteConfig(cmd.Context(), request)
+	_, err := store.Client().Webhooks.V1.DeleteConfig(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "deleting config")
 	}

@@ -68,7 +68,7 @@ func (c *SetMetadataController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		Txid:        transactionID,
 		RequestBody: collectionutils.ConvertMap(metadata, collectionutils.ToAny[string]),
 	}
-	response, err := store.Client().Ledger.AddMetadataOnTransaction(cmd.Context(), request)
+	response, err := store.Client().Ledger.V1.AddMetadataOnTransaction(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}

@@ -71,7 +71,7 @@ func (c *PaymentsConnectorsMangoPayController) Run(cmd *cobra.Command, args []st
 			MangoPayConfig: &config,
 		},
 	}
-	response, err := store.Client().Payments.InstallConnector(cmd.Context(), request)
+	response, err := store.Client().Payments.V1.InstallConnector(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "installing connector")
 	}

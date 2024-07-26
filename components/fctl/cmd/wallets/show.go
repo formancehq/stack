@@ -58,7 +58,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, errors.New("You need to specify wallet id using --id or --name flags")
 	}
 
-	response, err := store.Client().Wallets.GetWallet(cmd.Context(), operations.GetWalletRequest{
+	response, err := store.Client().Wallets.V1.GetWallet(cmd.Context(), operations.GetWalletRequest{
 		ID: walletID,
 	})
 	if err != nil {

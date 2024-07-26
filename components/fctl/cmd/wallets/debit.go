@@ -107,8 +107,7 @@ func (c *DebitWalletController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		}
 	}
 
-	response, err := store.Client().Wallets.DebitWallet(cmd.Context(), operations.DebitWalletRequest{
-		IdempotencyKey: fctl.Ptr(fctl.GetString(cmd, c.ikFlag)),
+	response, err := store.Client().Wallets.V1.DebitWallet(cmd.Context(), operations.DebitWalletRequest{
 		DebitWalletRequest: &shared.DebitWalletRequest{
 			Amount: shared.Monetary{
 				Asset:  asset,

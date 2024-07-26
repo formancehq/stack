@@ -56,7 +56,7 @@ func (c *ListBalancesController) Run(cmd *cobra.Command, args []string) (fctl.Re
 		pageSize = fctl.Ptr(int64(ps))
 	}
 
-	response, err := store.Client().Payments.GetAccountBalances(
+	response, err := store.Client().Payments.V1.GetAccountBalances(
 		cmd.Context(),
 		operations.GetAccountBalancesRequest{
 			Cursor:    cursor,

@@ -90,7 +90,7 @@ func (c *UpdateWiseConnectorConfigController) Run(cmd *cobra.Command, args []str
 		return nil, err
 	}
 
-	response, err := store.Client().Payments.UpdateConnectorConfigV1(cmd.Context(), operations.UpdateConnectorConfigV1Request{
+	response, err := store.Client().Payments.V1.UpdateConnectorConfigV1(cmd.Context(), operations.UpdateConnectorConfigV1Request{
 		ConnectorConfig: shared.ConnectorConfig{
 			WiseConfig: config,
 		},

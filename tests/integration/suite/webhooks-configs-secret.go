@@ -26,7 +26,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 				"ledger.committed_transactions",
 			},
 		}
-		response, err := Client().Webhooks.InsertConfig(
+		response, err := Client().Webhooks.V1.InsertConfig(
 			TestContext(),
 			cfg,
 		)
@@ -39,7 +39,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 	Context("changing the secret of the inserted one", func() {
 		Context("without passing a secret", func() {
 			BeforeEach(func() {
-				response, err := Client().Webhooks.ChangeConfigSecret(
+				response, err := Client().Webhooks.V1.ChangeConfigSecret(
 					TestContext(),
 					operations.ChangeConfigSecretRequest{
 						ConfigChangeSecret: &shared.ConfigChangeSecret{
@@ -55,7 +55,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 
 			Context("getting all configs", func() {
 				It("should return 1 config with a different secret", func() {
-					response, err := Client().Webhooks.GetManyConfigs(
+					response, err := Client().Webhooks.V1.GetManyConfigs(
 						TestContext(),
 						operations.GetManyConfigsRequest{},
 					)
@@ -74,7 +74,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 		Context("bringing our own valid secret", func() {
 			newSecret := webhooks.NewSecret()
 			BeforeEach(func() {
-				response, err := Client().Webhooks.ChangeConfigSecret(
+				response, err := Client().Webhooks.V1.ChangeConfigSecret(
 					TestContext(),
 					operations.ChangeConfigSecretRequest{
 						ConfigChangeSecret: &shared.ConfigChangeSecret{
@@ -91,7 +91,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 
 			Context("getting all configs", func() {
 				It("should return 1 config with the passed secret", func() {
-					response, err := Client().Webhooks.GetManyConfigs(
+					response, err := Client().Webhooks.V1.GetManyConfigs(
 						TestContext(),
 						operations.GetManyConfigsRequest{},
 					)
@@ -109,7 +109,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 		Context("bringing our own invalid secret", func() {
 			invalidSecret := "invalid"
 			It("should return a bad request error", func() {
-				_, err := Client().Webhooks.ChangeConfigSecret(
+				_, err := Client().Webhooks.V1.ChangeConfigSecret(
 					TestContext(),
 					operations.ChangeConfigSecretRequest{
 						ConfigChangeSecret: &shared.ConfigChangeSecret{

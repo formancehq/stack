@@ -18,7 +18,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 	When("creating a bulk on a ledger", func() {
 		var m map[string]string
 		JustBeforeEach(func() {
-			response, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+			response, err := Client().Ledger.V2.CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 				Ledger: "default",
 				V2CreateLedgerRequest: &shared.V2CreateLedgerRequest{
 					Metadata: m,
@@ -30,7 +30,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		It("Should be ok", func() {})
 		Then("trying to create another ledger with the same name", func() {
 			JustBeforeEach(func() {
-				_, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+				_, err := Client().Ledger.V2.CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 					Ledger: "default",
 				})
 				Expect(err).NotTo(BeNil())
@@ -45,7 +45,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				}
 			})
 			It("Should be ok", func() {
-				ledger, err := Client().Ledger.V2GetLedger(TestContext(), operations.V2GetLedgerRequest{
+				ledger, err := Client().Ledger.V2.GetLedger(TestContext(), operations.V2GetLedgerRequest{
 					Ledger: "default",
 				})
 				Expect(err).To(BeNil())
@@ -55,7 +55,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 	})
 	When("bucket naming convention depends on the database 63 bytes length (pg constraint)", func() {
 		It("should fail with > 63 characters in ledger or bucket name", func() {
-			_, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+			_, err := Client().Ledger.V2.CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 				V2CreateLedgerRequest: &shared.V2CreateLedgerRequest{
 					Bucket: pointer.For(strings.Repeat("a", 64)),
 				},

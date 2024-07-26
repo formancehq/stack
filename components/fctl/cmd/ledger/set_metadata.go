@@ -57,7 +57,7 @@ func (c *SetMetadataController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		Ledger:      args[0],
 		RequestBody: metadata,
 	}
-	response, err := store.Client().Ledger.V2UpdateLedgerMetadata(cmd.Context(), request)
+	response, err := store.Client().Ledger.V2.UpdateLedgerMetadata(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}

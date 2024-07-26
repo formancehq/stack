@@ -33,7 +33,7 @@ var _ = WithModules([]*Module{modules.Payments}, func() {
 
 			paymentsDir := filepath.Join(os.TempDir(), uuid.NewString())
 			Expect(os.MkdirAll(paymentsDir, 0o777)).To(Succeed())
-			response, err := Client().Payments.InstallConnector(
+			response, err := Client().Payments.V1.InstallConnector(
 				TestContext(),
 				operations.InstallConnectorRequest{
 					ConnectorConfig: shared.ConnectorConfig{
@@ -61,7 +61,7 @@ var _ = WithModules([]*Module{modules.Payments}, func() {
 		})
 		It("should generate some payments", func() {
 			Eventually(func(g Gomega) []shared.Payment {
-				response, err := Client().Payments.ListPayments(
+				response, err := Client().Payments.V1.ListPayments(
 					TestContext(),
 					operations.ListPaymentsRequest{},
 				)
@@ -89,7 +89,7 @@ var _ = WithModules([]*Module{modules.Payments}, func() {
 					httpServer.Close()
 				})
 
-				response, err := Client().Webhooks.InsertConfig(
+				response, err := Client().Webhooks.V1.InsertConfig(
 					TestContext(),
 					shared.ConfigUser{
 						Endpoint: httpServer.URL,

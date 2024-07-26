@@ -61,7 +61,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, fmt.Errorf("transfer initiation are only supported in >= v1.0.0")
 	}
 
-	response, err := store.Client().Payments.GetTransferInitiation(cmd.Context(), operations.GetTransferInitiationRequest{
+	response, err := store.Client().Payments.V1.GetTransferInitiation(cmd.Context(), operations.GetTransferInitiationRequest{
 		TransferID: args[0],
 	})
 	if err != nil {

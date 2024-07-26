@@ -12,7 +12,7 @@ type VoidHoldRequest struct {
 }
 
 func (a Activities) VoidHold(ctx context.Context, request VoidHoldRequest) error {
-	_, err := a.client.Wallets.VoidHold(
+	_, err := a.client.Wallets.V1.VoidHold(
 		ctx,
 		operations.VoidHoldRequest{
 			HoldID:         request.ID,

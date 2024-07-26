@@ -66,7 +66,7 @@ func (c *DeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, fctl.ErrMissingApproval
 	}
 
-	response, err := store.Client().Payments.DeleteTransferInitiation(
+	response, err := store.Client().Payments.V1.DeleteTransferInitiation(
 		cmd.Context(),
 		operations.DeleteTransferInitiationRequest{
 			TransferID: args[0],

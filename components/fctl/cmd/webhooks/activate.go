@@ -38,7 +38,8 @@ func (c *ActivateWebhookController) Run(cmd *cobra.Command, args []string) (fctl
 	request := operations.ActivateConfigRequest{
 		ID: args[0],
 	}
-	_, err := store.Client().Webhooks.ActivateConfig(cmd.Context(), request)
+
+	_, err := store.Client().Webhooks.V1.ActivateConfig(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "activating config")
 	}

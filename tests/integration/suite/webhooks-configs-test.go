@@ -63,7 +63,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 						"ledger.committed_transactions",
 					},
 				}
-				response, err := Client().Webhooks.InsertConfig(
+				response, err := Client().Webhooks.V1.InsertConfig(
 					TestContext(),
 					cfg,
 				)
@@ -77,7 +77,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 
 			Context("testing the inserted one", func() {
 				It("should return a successful attempt", func() {
-					response, err := Client().Webhooks.TestConfig(
+					response, err := Client().Webhooks.V1.TestConfig(
 						TestContext(),
 						operations.TestConfigRequest{
 							ID: insertResp.Data.ID,
@@ -111,7 +111,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 						"ledger.committed_transactions",
 					},
 				}
-				response, err := Client().Webhooks.InsertConfig(
+				response, err := Client().Webhooks.V1.InsertConfig(
 					TestContext(),
 					cfg,
 				)
@@ -125,7 +125,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 
 			Context("testing the inserted one", func() {
 				It("should return a failed attempt", func() {
-					response, err := Client().Webhooks.TestConfig(
+					response, err := Client().Webhooks.V1.TestConfig(
 						TestContext(),
 						operations.TestConfigRequest{
 							ID: insertResp.Data.ID,
@@ -145,7 +145,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 
 		Context("testing an unknown ID", func() {
 			It("should fail", func() {
-				_, err := Client().Webhooks.TestConfig(
+				_, err := Client().Webhooks.V1.TestConfig(
 					TestContext(),
 					operations.TestConfigRequest{
 						ID: "unknown",

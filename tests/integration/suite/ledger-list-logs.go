@@ -17,13 +17,13 @@ import (
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {
 	BeforeEach(func() {
-		createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+		createLedgerResponse, err := Client().Ledger.V2.CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 			Ledger: "default",
 		})
 		Expect(err).To(BeNil())
 		Expect(createLedgerResponse.StatusCode).To(Equal(http.StatusNoContent))
 
-		_, err = Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+		_, err = Client().Ledger.V2.CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 			Ledger: "another",
 		})
 		Expect(err).To(BeNil())
@@ -42,7 +42,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			}
 		)
 		BeforeEach(func() {
-			response, err := Client().Ledger.V2CreateTransaction(
+			response, err := Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.V2CreateTransactionRequest{
 					V2PostTransaction: shared.V2PostTransaction{
@@ -63,7 +63,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			_, err = Client().Ledger.V2CreateTransaction(
+			_, err = Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.V2CreateTransactionRequest{
 					V2PostTransaction: shared.V2PostTransaction{
@@ -84,7 +84,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			response, err = Client().Ledger.V2CreateTransaction(
+			response, err = Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.V2CreateTransactionRequest{
 					V2PostTransaction: shared.V2PostTransaction{
@@ -105,7 +105,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(200))
 
-			addMetadataResponse, err := Client().Ledger.V2AddMetadataToAccount(
+			addMetadataResponse, err := Client().Ledger.V2.AddMetadataToAccount(
 				TestContext(),
 				operations.V2AddMetadataToAccountRequest{
 					RequestBody: m2,
@@ -117,7 +117,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(addMetadataResponse.StatusCode).To(Equal(204))
 		})
 		It("should be listed on api with ListLogs", func() {
-			response, err := Client().Ledger.V2ListLogs(
+			response, err := Client().Ledger.V2.ListLogs(
 				TestContext(),
 				operations.V2ListLogsRequest{
 					Ledger: "default",
@@ -209,7 +209,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			for i := int64(0); i < accountCounts; i++ {
 				now := time.Now().Round(time.Millisecond).UTC()
 
-				response, err := Client().Ledger.V2CreateTransaction(
+				response, err := Client().Ledger.V2.CreateTransaction(
 					TestContext(),
 					operations.V2CreateTransactionRequest{
 						V2PostTransaction: shared.V2PostTransaction{
@@ -256,7 +256,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				rsp *shared.V2LogsCursorResponse
 			)
 			BeforeEach(func() {
-				response, err := Client().Ledger.V2ListLogs(
+				response, err := Client().Ledger.V2.ListLogs(
 					TestContext(),
 					operations.V2ListLogsRequest{
 						Ledger:   "default",
@@ -280,7 +280,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			})
 			Then("following next cursor", func() {
 				BeforeEach(func() {
-					response, err := Client().Ledger.V2ListLogs(
+					response, err := Client().Ledger.V2.ListLogs(
 						TestContext(),
 						operations.V2ListLogsRequest{
 							Cursor: rsp.Cursor.Next,
@@ -302,7 +302,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				})
 				Then("following previous cursor", func() {
 					BeforeEach(func() {
-						response, err := Client().Ledger.V2ListLogs(
+						response, err := Client().Ledger.V2.ListLogs(
 							TestContext(),
 							operations.V2ListLogsRequest{
 								Cursor: rsp.Cursor.Previous,

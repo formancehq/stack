@@ -47,7 +47,7 @@ func (c *InstancesShowController) GetStore() *InstancesShowStore {
 func (c *InstancesShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	store := fctl.GetStackStore(cmd.Context())
 
-	res, err := store.Client().Orchestration.GetInstance(cmd.Context(), operations.GetInstanceRequest{
+	res, err := store.Client().Orchestration.V1.GetInstance(cmd.Context(), operations.GetInstanceRequest{
 		InstanceID: args[0],
 	})
 	if err != nil {
@@ -55,7 +55,7 @@ func (c *InstancesShowController) Run(cmd *cobra.Command, args []string) (fctl.R
 	}
 
 	c.store.WorkflowInstance = res.GetWorkflowInstanceResponse.Data
-	response, err := store.Client().Orchestration.GetWorkflow(cmd.Context(), operations.GetWorkflowRequest{
+	response, err := store.Client().Orchestration.V1.GetWorkflow(cmd.Context(), operations.GetWorkflowRequest{
 		FlowID: res.GetWorkflowInstanceResponse.Data.WorkflowID,
 	})
 	if err != nil {

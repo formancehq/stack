@@ -17,7 +17,7 @@ import (
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {
 	BeforeEach(func() {
-		createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+		createLedgerResponse, err := Client().Ledger.V2.CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 			Ledger: "default",
 		})
 		Expect(err).To(BeNil())
@@ -30,7 +30,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		)
 		BeforeEach(func() {
 			// Create a transaction
-			response, err := Client().Ledger.V2CreateTransaction(
+			response, err := Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.V2CreateTransactionRequest{
 					V2PostTransaction: shared.V2PostTransaction{
@@ -54,7 +54,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			rsp = response.V2CreateTransactionResponse
 
 			// Check existence on api
-			getResponse, err := Client().Ledger.V2GetTransaction(
+			getResponse, err := Client().Ledger.V2.GetTransaction(
 				TestContext(),
 				operations.V2GetTransactionRequest{
 					Ledger: "default",
@@ -69,7 +69,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				"foo": "bar",
 			}
 
-			_, err := Client().Ledger.V2AddMetadataOnTransaction(
+			_, err := Client().Ledger.V2.AddMetadataOnTransaction(
 				TestContext(),
 				operations.V2AddMetadataOnTransactionRequest{
 					RequestBody: metadata,
@@ -85,7 +85,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				"foo": "bar",
 			}
 			BeforeEach(func() {
-				response, err := Client().Ledger.V2AddMetadataOnTransaction(
+				response, err := Client().Ledger.V2.AddMetadataOnTransaction(
 					TestContext(),
 					operations.V2AddMetadataOnTransactionRequest{
 						RequestBody: metadata,
@@ -98,7 +98,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			})
 			It("should be available on api", func() {
 				// Check existence on api
-				response, err := Client().Ledger.V2GetTransaction(
+				response, err := Client().Ledger.V2.GetTransaction(
 					TestContext(),
 					operations.V2GetTransactionRequest{
 						Ledger: "default",

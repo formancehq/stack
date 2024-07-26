@@ -45,7 +45,7 @@ func (c *ChangeSecretWebhookController) Run(cmd *cobra.Command, args []string) (
 		secret = args[1]
 	}
 
-	response, err := store.Client().Webhooks.
+	response, err := store.Client().Webhooks.V1.
 		ChangeConfigSecret(cmd.Context(), operations.ChangeConfigSecretRequest{
 			ConfigChangeSecret: &shared.ConfigChangeSecret{
 				Secret: secret,

@@ -10,7 +10,8 @@ paths:
       summary: Get server info
       operationId: getServerInfo
       tags:
-        - Payments
+        - payments.v1
+      
       responses:
         "200":
           $ref: '#/components/responses/ServerInfo'
@@ -21,7 +22,8 @@ paths:
     post:
       summary: Create a payment
       tags:
-        - Payments
+        - payments.v1
+      
       operationId: createPayment
       description: Create a payment
       requestBody:
@@ -34,8 +36,9 @@ paths:
     get:
       summary: List payments
       operationId: listPayments
+      
       tags:
-        - Payments
+        - payments.v1
       parameters:
         - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/Cursor'
@@ -51,8 +54,9 @@ paths:
     get:
       summary: Get a payment
       tags:
-        - Payments
+        - payments.v1
       operationId: getPayment
+      
       parameters:
         - $ref: '#/components/parameters/PaymentId'
       responses:
@@ -65,8 +69,9 @@ paths:
     patch:
       summary: Update metadata
       tags:
-        - Payments
+        - payments.v1
       operationId: updateMetadata
+      
       parameters:
         - $ref: '#/components/parameters/PaymentId'
       requestBody:
@@ -81,8 +86,9 @@ paths:
     get:
       summary: List Transfer Initiations
       operationId: listTransferInitiations
+      
       tags:
-        - Payments
+        - payments.v1
       parameters:
         - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/Cursor'
@@ -96,8 +102,9 @@ paths:
     post:
       summary: Create a TransferInitiation
       tags:
-        - Payments
+        - payments.v1
       operationId: createTransferInitiation
+      
       description: Create a transfer initiation
       requestBody:
         $ref: '#/components/requestBodies/TransferInitiation'
@@ -111,8 +118,9 @@ paths:
     get:
       summary: Get a transfer initiation
       tags:
-        - Payments
+        - payments.v1
       operationId: getTransferInitiation
+      
       parameters:
         - $ref: '#/components/parameters/TransferId'
       responses:
@@ -123,8 +131,9 @@ paths:
     delete:
       summary: Delete a transfer initiation
       operationId: deleteTransferInitiation
+      
       tags:
-        - Payments
+        - payments.v1
       description: Delete a transfer initiation by its id.
       parameters:
         - $ref: '#/components/parameters/TransferId'
@@ -138,8 +147,9 @@ paths:
     post:
       summary: Update the status of a transfer initiation
       tags:
-        - Payments
+        - payments.v1
       operationId: udpateTransferInitiationStatus
+      
       description: Update a transfer initiation status
       parameters:
         - $ref: '#/components/parameters/TransferId'
@@ -155,8 +165,9 @@ paths:
     post:
       summary: Reverse a transfer initiation
       tags:
-        - Payments
+        - payments.v1
       operationId: reverseTransferInitiation
+      
       description: Reverse transfer initiation
       parameters:
         - $ref: '#/components/parameters/TransferId'
@@ -172,8 +183,9 @@ paths:
     post:
       summary: Retry a failed transfer initiation
       tags:
-        - Payments
+        - payments.v1
       operationId: retryTransferInitiation
+      
       description: Retry a failed transfer initiation
       parameters:
         - $ref: '#/components/parameters/TransferId'
@@ -187,8 +199,9 @@ paths:
     get:
       summary: List Pools
       operationId: listPools
+      
       tags:
-        - Payments
+        - payments.v1
       parameters:
         - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/Cursor'
@@ -202,8 +215,9 @@ paths:
     post:
       summary: Create a Pool
       tags:
-        - Payments
+        - payments.v1
       operationId: createPool
+      
       description: Create a Pool
       requestBody:
         $ref: '#/components/requestBodies/Pool'
@@ -216,8 +230,9 @@ paths:
     get:
       summary: Get a Pool
       tags:
-        - Payments
+        - payments.v1
       operationId: getPool
+      
       parameters:
         - $ref: '#/components/parameters/PoolId'
       responses:
@@ -228,8 +243,9 @@ paths:
     delete:
       summary: Delete a Pool
       operationId: deletePool
+      
       tags:
-        - Payments
+        - payments.v1
       description: Delete a pool by its id.
       parameters:
         - $ref: '#/components/parameters/PoolId'
@@ -242,8 +258,9 @@ paths:
     post:
       summary: Add an account to a pool
       tags:
-        - Payments
+        - payments.v1
       operationId: addAccountToPool
+      
       description: Add an account to a pool
       parameters:
         - $ref: '#/components/parameters/PoolId'
@@ -258,8 +275,9 @@ paths:
     delete:
       summary: Remove an account from a pool
       operationId: removeAccountFromPool
+      
       tags:
-        - Payments
+        - payments.v1
       description: Remove an account from a pool by its id.
       parameters:
         - $ref: '#/components/parameters/PoolId'
@@ -273,8 +291,9 @@ paths:
     get:
       summary: Get pool balances
       operationId: getPoolBalances
+      
       tags:
-        - Payments
+        - payments.v1
       parameters:
         - $ref: '#/components/parameters/PoolId'
         - name: at
@@ -295,8 +314,9 @@ paths:
     post:
       summary: Create an account
       tags:
-        - Payments
+        - payments.v1
       operationId: createAccount
+      
       description: Create an account
       requestBody:
         $ref: '#/components/requestBodies/Account'
@@ -308,8 +328,9 @@ paths:
     get:
       summary: List accounts
       operationId: listAccounts
+      
       tags:
-        - Payments
+        - payments.v1
       parameters:
         - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/Cursor'
@@ -331,8 +352,9 @@ paths:
     get:
       summary: Get an account
       tags:
-        - Payments
+        - payments.v1
       operationId: getAccount
+      
       parameters:
         - $ref: '#/components/parameters/AccountId'
       responses:
@@ -345,8 +367,9 @@ paths:
     get:
       summary: Get account balances
       operationId: getAccountBalances
+      
       tags:
-        - Payments
+        - payments.v1
       parameters:
         - $ref: '#/components/parameters/AccountId'
         - name: limit
@@ -395,8 +418,9 @@ paths:
     post:
       summary: Create a BankAccount in Payments and on the PSP
       tags:
-        - Payments
+        - payments.v1
       operationId: createBankAccount
+      
       description: Create a bank account in Payments and on the PSP.
       requestBody:
         $ref: '#/components/requestBodies/BankAccount'
@@ -408,8 +432,9 @@ paths:
     get:
       summary: List bank accounts created by user on Formance
       operationId: listBankAccounts
+      
       tags:
-        - Payments
+        - payments.v1
       parameters:
         - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/Cursor'
@@ -425,8 +450,9 @@ paths:
     get:
       summary: Get a bank account created by user on Formance
       tags:
-        - Payments
+        - payments.v1
       operationId: getBankAccount
+      
       parameters:
         - $ref: '#/components/parameters/BankAccountId'
       responses:
@@ -439,8 +465,9 @@ paths:
     post:
       summary: Forward a bank account to a connector
       tags:
-        - Payments
+        - payments.v1
       operationId: forwardBankAccount
+      
       parameters:
         - $ref: '#/components/parameters/BankAccountId'
       requestBody:
@@ -455,8 +482,9 @@ paths:
     patch:
       summary: Update metadata of a bank account
       tags:
-        - Payments
+        - payments.v1
       operationId: updateBankAccountMetadata
+      
       parameters:
         - $ref: '#/components/parameters/BankAccountId'
       requestBody:
@@ -471,8 +499,9 @@ paths:
     get:
       summary: List all installed connectors
       operationId: listAllConnectors
+      
       tags:
-        - Payments
+        - payments.v1
       description: List all installed connectors.
       responses:
         "200":
@@ -484,8 +513,9 @@ paths:
     get:
       summary: List the configs of each available connector
       operationId: listConfigsAvailableConnectors
+      
       tags:
-        - Payments
+        - payments.v1
       description: List the configs of each available connector.
       responses:
         "200":
@@ -497,8 +527,9 @@ paths:
     post:
       summary: Install a connector
       tags:
-        - Payments
+        - payments.v1
       operationId: installConnector
+      
       description: Install a connector by its name and config.
       parameters:
         - $ref: '#/components/parameters/Connector'
@@ -513,8 +544,9 @@ paths:
       summary: Uninstall a connector
       deprecated: true
       operationId: uninstallConnector
+      
       tags:
-        - Payments
+        - payments.v1
       description: Uninstall a connector by its name.
       parameters:
         - $ref: '#/components/parameters/Connector'
@@ -527,8 +559,9 @@ paths:
     delete:
       summary: Uninstall a connector
       operationId: uninstallConnectorV1
+      
       tags:
-        - Payments
+        - payments.v1
       description: Uninstall a connector by its name.
       parameters:
         - $ref: '#/components/parameters/Connector'
@@ -544,8 +577,9 @@ paths:
       summary: Read the config of a connector
       deprecated: true
       operationId: readConnectorConfig
+      
       tags:
-        - Payments
+        - payments.v1
       description: Read connector config
       parameters:
         - $ref: '#/components/parameters/Connector'
@@ -559,8 +593,9 @@ paths:
     post:
       summary: Update the config of a connector
       operationId: updateConnectorConfigV1
+      
       tags:
-        - Payments
+        - payments.v1
       description: Update connector config
       parameters:
         - $ref: '#/components/parameters/Connector'
@@ -575,8 +610,9 @@ paths:
     get:
       summary: Read the config of a connector
       operationId: readConnectorConfigV1
+      
       tags:
-        - Payments
+        - payments.v1
       description: Read connector config
       parameters:
         - $ref: '#/components/parameters/Connector'
@@ -592,8 +628,9 @@ paths:
       summary: Reset a connector
       deprecated: true
       operationId: resetConnector
+      
       tags:
-        - Payments
+        - payments.v1
       description: |
         Reset a connector by its name.
         It will remove the connector and ALL PAYMENTS generated with it.
@@ -608,8 +645,9 @@ paths:
     post:
       summary: Reset a connector
       operationId: resetConnectorV1
+      
       tags:
-        - Payments
+        - payments.v1
       description: |
         Reset a connector by its name.
         It will remove the connector and ALL PAYMENTS generated with it.
@@ -627,8 +665,9 @@ paths:
       summary: List tasks from a connector
       deprecated: true
       tags:
-        - Payments
+        - payments.v1
       operationId: listConnectorTasks
+      
       description: List all tasks associated with this connector.
       parameters:
         - $ref: '#/components/parameters/Connector'
@@ -644,8 +683,9 @@ paths:
     get:
       summary: List tasks from a connector
       tags:
-        - Payments
+        - payments.v1
       operationId: listConnectorTasksV1
+      
       description: List all tasks associated with this connector.
       parameters:
         - $ref: '#/components/parameters/Connector'
@@ -663,8 +703,9 @@ paths:
       summary: Read a specific task of the connector
       deprecated: true
       tags:
-        - Payments
+        - payments.v1
       operationId: getConnectorTask
+      
       description: Get a specific task associated to the connector.
       parameters:
         - $ref: '#/components/parameters/Connector'
@@ -679,8 +720,9 @@ paths:
     get:
       summary: Read a specific task of the connector
       tags:
-        - Payments
+        - payments.v1
       operationId: getConnectorTaskV1
+      
       description: Get a specific task associated to the connector.
       parameters:
         - $ref: '#/components/parameters/Connector'
@@ -696,8 +738,9 @@ paths:
     post:
       summary: Transfer funds between Connector accounts
       tags:
-        - Payments
+        - payments.v1
       operationId: connectorsTransfer
+      
       description: Execute a transfer between two accounts.
       parameters:
         - $ref: '#/components/parameters/Connector'

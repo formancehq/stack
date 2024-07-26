@@ -66,7 +66,7 @@ func (c *RetryController) Run(cmd *cobra.Command, args []string) (fctl.Renderabl
 	}
 
 	//nolint:gosimple
-	response, err := store.Client().Payments.RetryTransferInitiation(cmd.Context(), operations.RetryTransferInitiationRequest{
+	response, err := store.Client().Payments.V1.RetryTransferInitiation(cmd.Context(), operations.RetryTransferInitiationRequest{
 		TransferID: args[0],
 	})
 	if err != nil {

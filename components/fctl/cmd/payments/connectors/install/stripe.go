@@ -65,7 +65,7 @@ func (c *PaymentsConnectorsStripeController) Run(cmd *cobra.Command, args []stri
 	if !fctl.CheckStackApprobation(cmd, store.Stack(), "You are about to install connector '%s'", internal.StripeConnector) {
 		return nil, fctl.ErrMissingApproval
 	}
-	response, err := store.Client().Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
+	response, err := store.Client().Payments.V1.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
 		ConnectorConfig: shared.ConnectorConfig{
 			StripeConfig: &config,
 		},

@@ -10,7 +10,7 @@ paths:
       summary: Get server info
       operationId: getServerInfo
       tags:
-      - Orchestration
+      - orchestration.v1
       responses:
         200:
           description: Server information
@@ -26,7 +26,7 @@ paths:
       operationId: listTriggers
       description: List triggers
       tags:
-      - Orchestration
+      - orchestration.v1
       parameters:
         - name: name
           in: query
@@ -48,7 +48,7 @@ paths:
       operationId: createTrigger
       description: Create trigger
       tags:
-      - Orchestration
+      - orchestration.v1
       requestBody:
         content:
           application/json:
@@ -76,7 +76,7 @@ paths:
       operationId: readTrigger
       description: Read trigger
       tags:
-        - Orchestration
+        - orchestration.v1
       responses:
         200:
           description: A specific trigger
@@ -91,7 +91,7 @@ paths:
       operationId: deleteTrigger
       description: Read trigger
       tags:
-      - Orchestration
+      - orchestration.v1
       responses:
         204:
           description: Trigger deleted
@@ -110,7 +110,7 @@ paths:
       operationId: listTriggersOccurrences
       description: List triggers occurrences
       tags:
-        - Orchestration
+        - orchestration.v1
       responses:
         200:
           description: List of triggers occurrences
@@ -126,7 +126,7 @@ paths:
       operationId: listWorkflows
       description: List registered workflows
       tags:
-      - Orchestration
+      - orchestration.v1
       responses:
         200:
           description: List of workflows
@@ -141,7 +141,7 @@ paths:
       operationId: createWorkflow
       description: Create a workflow
       tags:
-      - Orchestration
+      - orchestration.v1
       requestBody:
         content:
           application/json:
@@ -169,7 +169,7 @@ paths:
     get:
       summary: Get a flow by id
       tags:
-      - Orchestration
+      - orchestration.v1
       description: Get a flow by id
       operationId: getWorkflow
       responses:
@@ -184,7 +184,7 @@ paths:
     delete:
       summary: Delete a flow by id
       tags:
-      - Orchestration
+      - orchestration.v1
       description: Delete a flow by id
       operationId: deleteWorkflow
       responses:
@@ -214,7 +214,7 @@ paths:
         schema:
           type: boolean
       tags:
-      - Orchestration
+      - orchestration.v1
       requestBody:
         content:
           application/json:
@@ -251,7 +251,7 @@ paths:
         example: true
         required: false
       tags:
-      - Orchestration
+      - orchestration.v1
       responses:
         200:
           description: List of workflow instances
@@ -276,7 +276,7 @@ paths:
       description: Get a workflow instance by id
       operationId: getInstance
       tags:
-      - Orchestration
+      - orchestration.v1
       responses:
         default:
           $ref: '#/components/responses/ErrorResponse'
@@ -301,7 +301,7 @@ paths:
       description: Send an event to a running workflow
       operationId: sendEvent
       tags:
-      - Orchestration
+      - orchestration.v1
       requestBody:
         content:
           application/json:
@@ -332,7 +332,7 @@ paths:
       description: Cancel a running workflow
       operationId: cancelEvent
       tags:
-      - Orchestration
+      - orchestration.v1
       responses:
         default:
           $ref: '#/components/responses/ErrorResponse'
@@ -353,7 +353,7 @@ paths:
       description: Get a workflow instance history by id
       operationId: getInstanceHistory
       tags:
-      - Orchestration
+      - orchestration.v1
       responses:
         default:
           $ref: '#/components/responses/ErrorResponse'
@@ -385,7 +385,7 @@ paths:
       description: Get a workflow instance stage history
       operationId: getInstanceStageHistory
       tags:
-      - Orchestration
+      - orchestration.v1
       responses:
         default:
           $ref: '#/components/responses/ErrorResponse'

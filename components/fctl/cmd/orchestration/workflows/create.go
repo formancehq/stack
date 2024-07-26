@@ -55,7 +55,7 @@ func (c *WorkflowsCreateController) Run(cmd *cobra.Command, args []string) (fctl
 	}
 
 	//nolint:gosimple
-	response, err := store.Client().Orchestration.
+	response, err := store.Client().Orchestration.V1.
 		CreateWorkflow(cmd.Context(), &shared.CreateWorkflowRequest{
 			Name:   config.Name,
 			Stages: config.Stages,

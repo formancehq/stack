@@ -47,7 +47,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	request := operations.GetHoldRequest{
 		HoldID: args[0],
 	}
-	response, err := store.Client().Wallets.GetHold(cmd.Context(), request)
+	response, err := store.Client().Wallets.V1.GetHold(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "getting hold")
 	}

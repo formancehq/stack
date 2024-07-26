@@ -53,7 +53,7 @@ func (c *WorkflowsListController) Run(cmd *cobra.Command, args []string) (fctl.R
 
 	store := fctl.GetStackStore(cmd.Context())
 
-	response, err := store.Client().Orchestration.ListWorkflows(cmd.Context())
+	response, err := store.Client().Orchestration.V1.ListWorkflows(cmd.Context())
 	if err != nil {
 		return nil, err
 	}

@@ -80,7 +80,7 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 			Priority:  priority,
 		},
 	}
-	response, err := store.Client().Wallets.CreateBalance(cmd.Context(), request)
+	response, err := store.Client().Wallets.V1.CreateBalance(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "creating balance")
 	}

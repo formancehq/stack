@@ -52,7 +52,7 @@ func (c *VoidController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		IdempotencyKey: fctl.Ptr(fctl.GetString(cmd, c.ikFlag)),
 		HoldID:         args[0],
 	}
-	_, err := store.Client().Wallets.VoidHold(cmd.Context(), request)
+	_, err := store.Client().Wallets.V1.VoidHold(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "voiding hold")
 	}

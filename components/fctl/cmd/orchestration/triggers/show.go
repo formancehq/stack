@@ -45,7 +45,7 @@ func (c *TriggersShowController) GetStore() *TriggersShowStore {
 func (c *TriggersShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	store := fctl.GetStackStore(cmd.Context())
 
-	res, err := store.Client().Orchestration.ReadTrigger(cmd.Context(), operations.ReadTriggerRequest{
+	res, err := store.Client().Orchestration.V1.ReadTrigger(cmd.Context(), operations.ReadTriggerRequest{
 		TriggerID: args[0],
 	})
 	if err != nil {

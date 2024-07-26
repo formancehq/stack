@@ -70,7 +70,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		pageSize = fctl.Ptr(int64(ps))
 	}
 
-	response, err := store.Client().Payments.ListTransferInitiations(
+	response, err := store.Client().Payments.V1.ListTransferInitiations(
 		cmd.Context(),
 		operations.ListTransferInitiationsRequest{
 			Cursor:   cursor,

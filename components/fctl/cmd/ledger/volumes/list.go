@@ -101,7 +101,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		GroupBy:       &groupBy,
 	}
 
-	response, err := store.Client().Ledger.V2GetVolumesWithBalances(cmd.Context(), request)
+	response, err := store.Client().Ledger.V2.GetVolumesWithBalances(cmd.Context(), request)
 
 	if err != nil {
 		return nil, errors.Wrap(err, "Get Volumes With Balances")

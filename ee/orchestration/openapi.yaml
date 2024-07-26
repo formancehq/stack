@@ -8,7 +8,7 @@ paths:
       summary: Get server info
       operationId: getServerInfo
       tags:
-        - Orchestration
+        - orchestration.v1
       responses:
         "200":
           description: Server information
@@ -24,7 +24,7 @@ paths:
       operationId: listTriggers
       description: List triggers
       tags:
-        - Orchestration
+        - orchestration.v1
       parameters:
         - name: name
           in: query
@@ -46,7 +46,7 @@ paths:
       operationId: createTrigger
       description: Create trigger
       tags:
-        - Orchestration
+        - orchestration.v1
       requestBody:
         content:
           application/json:
@@ -74,7 +74,7 @@ paths:
       operationId: readTrigger
       description: Read trigger
       tags:
-        - Orchestration
+        - orchestration.v1
       responses:
         "200":
           description: A specific trigger
@@ -89,7 +89,7 @@ paths:
       operationId: deleteTrigger
       description: Read trigger
       tags:
-        - Orchestration
+        - orchestration.v1
       responses:
         "204":
           description: Trigger deleted
@@ -108,7 +108,7 @@ paths:
       operationId: listTriggersOccurrences
       description: List triggers occurrences
       tags:
-        - Orchestration
+        - orchestration.v1
       responses:
         "200":
           description: List of triggers occurrences
@@ -124,7 +124,7 @@ paths:
       operationId: listWorkflows
       description: List registered workflows
       tags:
-        - Orchestration
+        - orchestration.v1
       responses:
         "200":
           description: List of workflows
@@ -139,7 +139,7 @@ paths:
       operationId: createWorkflow
       description: Create a workflow
       tags:
-        - Orchestration
+        - orchestration.v1
       requestBody:
         content:
           application/json:
@@ -166,7 +166,7 @@ paths:
     get:
       summary: Get a flow by id
       tags:
-        - Orchestration
+        - orchestration.v1
       description: Get a flow by id
       operationId: getWorkflow
       responses:
@@ -181,7 +181,7 @@ paths:
     delete:
       summary: Delete a flow by id
       tags:
-        - Orchestration
+        - orchestration.v1
       description: Delete a flow by id
       operationId: deleteWorkflow
       responses:
@@ -210,7 +210,7 @@ paths:
           schema:
             type: boolean
       tags:
-        - Orchestration
+        - orchestration.v1
       requestBody:
         content:
           application/json:
@@ -246,7 +246,7 @@ paths:
           example: true
           required: false
       tags:
-        - Orchestration
+        - orchestration.v1
       responses:
         "200":
           description: List of workflow instances
@@ -270,7 +270,7 @@ paths:
       description: Get a workflow instance by id
       operationId: getInstance
       tags:
-        - Orchestration
+        - orchestration.v1
       responses:
         "200":
           description: The workflow instance
@@ -294,7 +294,7 @@ paths:
       description: Send an event to a running workflow
       operationId: sendEvent
       tags:
-        - Orchestration
+        - orchestration.v1
       requestBody:
         content:
           application/json:
@@ -324,7 +324,7 @@ paths:
       description: Cancel a running workflow
       operationId: cancelEvent
       tags:
-        - Orchestration
+        - orchestration.v1
       responses:
         "204":
           description: No content
@@ -344,7 +344,7 @@ paths:
       description: Get a workflow instance history by id
       operationId: getInstanceHistory
       tags:
-        - Orchestration
+        - orchestration.v1
       responses:
         "200":
           description: The workflow instance history
@@ -375,7 +375,7 @@ paths:
       description: Get a workflow instance stage history
       operationId: getInstanceStageHistory
       tags:
-        - Orchestration
+        - orchestration.v1
       responses:
         "200":
           description: The workflow instance stage history
@@ -389,8 +389,9 @@ paths:
     get:
       summary: Get server info
       operationId: v2GetServerInfo
+      x-speakeasy-name-override: GetServerInfo
       tags:
-        - Orchestration
+        - orchestration.v2
       responses:
         "200":
           description: Server information
@@ -405,9 +406,12 @@ paths:
       summary: List triggers
       operationId: v2ListTriggers
       description: List triggers
+      x-speakeasy-name-override: ListTriggers
       tags:
-        - Orchestration
+        - orchestration.v2
       parameters:
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/PageSize'
         - name: name
           in: query
           description: search by name
@@ -427,8 +431,9 @@ paths:
       summary: Create trigger
       operationId: v2CreateTrigger
       description: Create trigger
+      x-speakeasy-name-override: CreateTrigger
       tags:
-        - Orchestration
+        - orchestration.v2
       requestBody:
         content:
           application/json:
@@ -455,8 +460,9 @@ paths:
       summary: Read trigger
       operationId: v2ReadTrigger
       description: Read trigger
+      x-speakeasy-name-override: ReadTrigger
       tags:
-        - Orchestration
+        - orchestration.v2
       responses:
         "200":
           description: A specific trigger
@@ -470,8 +476,9 @@ paths:
       summary: Delete trigger
       operationId: v2DeleteTrigger
       description: Read trigger
+      x-speakeasy-name-override: DeleteTrigger
       tags:
-        - Orchestration
+        - orchestration.v2
       responses:
         "204":
           description: Trigger deleted
@@ -489,8 +496,9 @@ paths:
       summary: Test trigger
       operationId: testTrigger
       description: Test trigger
+      x-speakeasy-name-override: TestTrigger
       tags:
-        - Orchestration
+        - orchestration.v2
       requestBody:
         content:
           application/json:
@@ -518,8 +526,12 @@ paths:
       summary: List triggers occurrences
       operationId: v2ListTriggersOccurrences
       description: List triggers occurrences
+      x-speakeasy-name-override: ListTriggersOccurrences
       tags:
-        - Orchestration
+        - orchestration.v2
+      parameters:
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/PageSize'
       responses:
         "200":
           description: List of triggers occurrences
@@ -534,8 +546,12 @@ paths:
       summary: List registered workflows
       operationId: v2ListWorkflows
       description: List registered workflows
+      x-speakeasy-name-override: ListWorkflows
       tags:
-        - Orchestration
+        - orchestration.v2
+      parameters:
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/PageSize'
       responses:
         "200":
           description: List of workflows
@@ -549,8 +565,9 @@ paths:
       summary: Create workflow
       operationId: v2CreateWorkflow
       description: Create a workflow
+      x-speakeasy-name-override: CreateWorkflow
       tags:
-        - Orchestration
+        - orchestration.v2
       requestBody:
         content:
           application/json:
@@ -577,9 +594,10 @@ paths:
     get:
       summary: Get a flow by id
       tags:
-        - Orchestration
+        - orchestration.v2
       description: Get a flow by id
       operationId: v2GetWorkflow
+      x-speakeasy-name-override: GetWorkflow
       responses:
         "200":
           description: The workflow
@@ -592,9 +610,10 @@ paths:
     delete:
       summary: Delete a flow by id
       tags:
-        - Orchestration
+        - orchestration.v2
       description: Delete a flow by id
       operationId: v2DeleteWorkflow
+      x-speakeasy-name-override: DeleteWorkflow
       responses:
         "204":
           description: No content
@@ -613,6 +632,7 @@ paths:
       description: Run workflow
       summary: Run workflow
       operationId: v2RunWorkflow
+      x-speakeasy-name-override: RunWorkflow
       parameters:
         - in: query
           name: wait
@@ -621,7 +641,7 @@ paths:
           schema:
             type: boolean
       tags:
-        - Orchestration
+        - orchestration.v2
       requestBody:
         content:
           application/json:
@@ -641,7 +661,10 @@ paths:
       description: List instances of a workflow
       summary: List instances of a workflow
       operationId: v2ListInstances
+      x-speakeasy-name-override: ListInstances
       parameters:
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/PageSize'
         - in: query
           description: A workflow id
           name: workflowID
@@ -657,7 +680,7 @@ paths:
           example: true
           required: false
       tags:
-        - Orchestration
+        - orchestration.v2
       responses:
         "200":
           description: List of workflow instances
@@ -680,8 +703,9 @@ paths:
       summary: Get a workflow instance by id
       description: Get a workflow instance by id
       operationId: v2GetInstance
+      x-speakeasy-name-override: GetInstance
       tags:
-        - Orchestration
+        - orchestration.v2
       responses:
         "200":
           description: The workflow instance
@@ -704,8 +728,9 @@ paths:
       summary: Send an event to a running workflow
       description: Send an event to a running workflow
       operationId: v2SendEvent
+      x-speakeasy-name-override: SendEvent
       tags:
-        - Orchestration
+        - orchestration.v2
       requestBody:
         content:
           application/json:
@@ -734,8 +759,9 @@ paths:
       summary: Cancel a running workflow
       description: Cancel a running workflow
       operationId: v2CancelEvent
+      x-speakeasy-name-override: CancelEvent
       tags:
-        - Orchestration
+        - orchestration.v2
       responses:
         "204":
           description: No content
@@ -754,8 +780,9 @@ paths:
       summary: Get a workflow instance history by id
       description: Get a workflow instance history by id
       operationId: v2GetInstanceHistory
+      x-speakeasy-name-override: GetInstanceHistory
       tags:
-        - Orchestration
+        - orchestration.v2
       responses:
         "200":
           description: The workflow instance history
@@ -785,8 +812,9 @@ paths:
       summary: Get a workflow instance stage history
       description: Get a workflow instance stage history
       operationId: v2GetInstanceStageHistory
+      x-speakeasy-name-override: GetInstanceStageHistory
       tags:
-        - Orchestration
+        - orchestration.v2
       responses:
         "200":
           description: The workflow instance stage history
@@ -1193,11 +1221,32 @@ components:
       properties:
         event:
           type: string
+    UpdateAccount:
+      type: object
+      properties:
+        id:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+        ledger:
+          type: string
+      required:
+        - id
+        - ledger
+        - metadata
+    Update:
+      type: object
+      properties:
+        account:
+          $ref: '#/components/schemas/UpdateAccount'
     Stage:
       anyOf:
         - $ref: '#/components/schemas/StageSend'
         - $ref: '#/components/schemas/StageDelay'
         - $ref: '#/components/schemas/StageWaitEvent'
+        - $ref: '#/components/schemas/Update'
     StripeTransferRequest:
       type: object
       properties:
@@ -1305,6 +1354,21 @@ components:
           type: string
         ledger:
           type: string
+    ActivityAddAccountMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+        ledger:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - id
+        - ledger
+        - metadata
     ActivityCreateTransaction:
       type: object
       properties:
@@ -1735,6 +1799,8 @@ components:
       properties:
         GetAccount:
           $ref: '#/components/schemas/ActivityGetAccount'
+        AddAccountMetadata:
+          $ref: '#/components/schemas/ActivityAddAccountMetadata'
         CreateTransaction:
           $ref: '#/components/schemas/ActivityCreateTransaction'
         RevertTransaction:
@@ -2401,11 +2467,32 @@ components:
       properties:
         event:
           type: string
+    V2UpdateAccount:
+      type: object
+      properties:
+        id:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+        ledger:
+          type: string
+      required:
+        - id
+        - ledger
+        - metadata
+    V2Update:
+      type: object
+      properties:
+        account:
+          $ref: '#/components/schemas/V2UpdateAccount'
     V2Stage:
       anyOf:
         - $ref: '#/components/schemas/V2StageSend'
         - $ref: '#/components/schemas/V2StageDelay'
         - $ref: '#/components/schemas/V2StageWaitEvent'
+        - $ref: '#/components/schemas/V2Update'
     V2StripeTransferRequest:
       type: object
       properties:
@@ -2513,6 +2600,21 @@ components:
           type: string
         ledger:
           type: string
+    V2ActivityAddAccountMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+        ledger:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - id
+        - ledger
+        - metadata
     V2ActivityCreateTransaction:
       type: object
       properties:
@@ -2928,6 +3030,8 @@ components:
       properties:
         GetAccount:
           $ref: '#/components/schemas/V2ActivityGetAccount'
+        AddAccountMetadata:
+          $ref: '#/components/schemas/V2ActivityAddAccountMetadata'
         CreateTransaction:
           $ref: '#/components/schemas/V2ActivityCreateTransaction'
         StripeTransfer:
@@ -3145,3 +3249,26 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/V2Error'
+  parameters:
+    Cursor:
+      name: cursor
+      in: query
+      description: |
+        Parameter used in pagination requests.
+        Set to the value of next for the next page of results.
+        Set to the value of previous for the previous page of results.
+        No other parameters can be set when this parameter is set.
+      schema:
+        type: string
+        example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
+    PageSize:
+      name: pageSize
+      in: query
+      description: |
+        The maximum number of results to return per page.
+      example: 100
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+        maximum: 1000

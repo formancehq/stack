@@ -72,45 +72,30 @@ components:
 x-tagGroups:
   - name: Auth
     tags:
-      - Clients
-      - Scopes
-      - Users
-      - Auth
+      - auth.v1
   - name: Ledger
     tags:
-      - Ledger
-      - Server
-      - Accounts
-      - Mapping
-      - Script
-      - Stats
-      - Transactions
-      - Balances
-      - server
-      - accounts
-      - mapping
-      - script
-      - stats
-      - transactions
-      - balances
+      - ledger.v1
+      - ledger.v2
   - name: Payments
     tags:
-      - Payments
+      - payments.v1
   - name: Search
     tags:
-      - Search
+      - search.v1
   - name: Wallets
     tags:
-      - Wallets
+      - wallets.v1
   - name: Webhooks
     tags:
-      - Webhooks
+      - webhooks.v1
   - name: Flows
     tags:
-      - Orchestration
+      - orchestration.v1
+      - orchestration.v2
   - name: Reconciliation
     tags:
-      - Reconciliation
+      - reconciliation.v1
 
 paths:
   /versions:
