@@ -167,17 +167,20 @@ func (s *Service) computeDrift(
 
 // Missing asset should be considered as asset with balance 0
 func harmonizeBalances(ledgerBalances, paymentsBalances map[string]*big.Int) (map[string]*big.Int, map[string]*big.Int) {
+	allAssets := make(map[string]struct{})
 	for asset := range ledgerBalances {
-		_, ok := paymentsBalances[asset]
-		if !ok {
-			paymentsBalances[asset] = big.NewInt(0)
-		}
+		allAssets[asset] = struct{}{}
+	}
+	for asset := range paymentsBalances {
+		allAssets[asset] = struct{}{}
 	}
 
-	for asset := range paymentsBalances {
-		_, ok := ledgerBalances[asset]
-		if !ok {
+	for asset := range allAssets {
+		if _, ok := ledgerBalances[asset]; !ok {
 			ledgerBalances[asset] = big.NewInt(0)
+		}
+		if _, ok := paymentsBalances[asset]; !ok {
+			paymentsBalances[asset] = big.NewInt(0)
 		}
 	}
 
