@@ -134,14 +134,18 @@ func TestReconciliation(t *testing.T) {
 				ReconciledAtPayments: time.Time{},
 				Status:               models.ReconciliationNotOK,
 				LedgerBalances: map[string]*big.Int{
+					"USD": big.NewInt(0),
 					"EUR": big.NewInt(200),
 				},
 				PaymentsBalances: map[string]*big.Int{
 					"USD": big.NewInt(-100),
 					"EUR": big.NewInt(-200),
 				},
-				DriftBalances: map[string]*big.Int{},
-				Error:         "different number of assets",
+				DriftBalances: map[string]*big.Int{
+					"EUR": big.NewInt(0),
+					"USD": big.NewInt(100),
+				},
+				Error: "balance drift for asset USD",
 			},
 		},
 		{
@@ -163,17 +167,79 @@ func TestReconciliation(t *testing.T) {
 				LedgerBalances: map[string]*big.Int{
 					"USD": big.NewInt(100),
 					"EUR": big.NewInt(200),
+					"DKK": big.NewInt(0),
 				},
 				PaymentsBalances: map[string]*big.Int{
 					"USD": big.NewInt(-100),
 					"DKK": big.NewInt(-200),
+					"EUR": big.NewInt(0),
 				},
 				DriftBalances: map[string]*big.Int{
 					"USD": big.NewInt(0),
 					"EUR": big.NewInt(200),
 					"DKK": big.NewInt(200),
 				},
-				Error: "missing asset EUR in paymentBalances; missing asset DKK in ledgerBalances",
+				Error: "balance drift for asset DKK",
+			},
+		},
+		{
+			name:            "missing payments balance with ledger balance at 0",
+			ledgerVersion:   "v2.0.0-beta.1",
+			paymentsVersion: "v1.0.0-rc.4",
+			ledgerBalances: map[string]*big.Int{
+				"USD": big.NewInt(100),
+				"EUR": big.NewInt(0),
+			},
+			paymentsBalances: map[string]*big.Int{
+				"USD": big.NewInt(-100),
+			},
+			expectedReco: &models.Reconciliation{
+				ReconciledAtLedger:   time.Time{},
+				ReconciledAtPayments: time.Time{},
+				Status:               models.ReconciliationOK,
+				LedgerBalances: map[string]*big.Int{
+					"USD": big.NewInt(100),
+					"EUR": big.NewInt(0),
+				},
+				PaymentsBalances: map[string]*big.Int{
+					"USD": big.NewInt(-100),
+					"EUR": big.NewInt(0),
+				},
+				DriftBalances: map[string]*big.Int{
+					"USD": big.NewInt(0),
+					"EUR": big.NewInt(0),
+				},
+				Error: "",
+			},
+		},
+		{
+			name:            "missing ledger balance with payments balance at 0",
+			ledgerVersion:   "v2.0.0-beta.1",
+			paymentsVersion: "v1.0.0-rc.4",
+			ledgerBalances: map[string]*big.Int{
+				"USD": big.NewInt(100),
+			},
+			paymentsBalances: map[string]*big.Int{
+				"USD": big.NewInt(-100),
+				"EUR": big.NewInt(0),
+			},
+			expectedReco: &models.Reconciliation{
+				ReconciledAtLedger:   time.Time{},
+				ReconciledAtPayments: time.Time{},
+				Status:               models.ReconciliationOK,
+				LedgerBalances: map[string]*big.Int{
+					"USD": big.NewInt(100),
+					"EUR": big.NewInt(0),
+				},
+				PaymentsBalances: map[string]*big.Int{
+					"USD": big.NewInt(-100),
+					"EUR": big.NewInt(0),
+				},
+				DriftBalances: map[string]*big.Int{
+					"USD": big.NewInt(0),
+					"EUR": big.NewInt(0),
+				},
+				Error: "",
 			},
 		},
 	}
