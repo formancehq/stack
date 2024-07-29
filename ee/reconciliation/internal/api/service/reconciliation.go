@@ -52,23 +52,25 @@ func (s *Service) Reconciliation(ctx context.Context, policyID string, req *Reco
 		return nil, newStorageError(err, "failed to get policy")
 	}
 
-	var paymentBalance map[string]*big.Int
+	var paymentsBalances map[string]*big.Int
 	eg.Go(func() error {
 		var err error
-		paymentBalance, err = s.getPaymentPoolBalance(ctxGroup, policy.PaymentsPoolID.String(), req.ReconciledAtPayments)
+		paymentsBalances, err = s.getPaymentPoolBalance(ctxGroup, policy.PaymentsPoolID.String(), req.ReconciledAtPayments)
 		return err
 	})
 
-	var ledgerBalance map[string]*big.Int
+	var ledgerBalances map[string]*big.Int
 	eg.Go(func() error {
 		var err error
-		ledgerBalance, err = s.getAccountsAggregatedBalance(ctxGroup, policy.LedgerName, policy.LedgerQuery, req.ReconciledAtLedger)
+		ledgerBalances, err = s.getAccountsAggregatedBalance(ctxGroup, policy.LedgerName, policy.LedgerQuery, req.ReconciledAtLedger)
 		return err
 	})
 
 	if err := eg.Wait(); err != nil {
 		return nil, err
 	}
+
+	ledgerBalances, paymentsBalances = harmonizeBalances(ledgerBalances, paymentsBalances)
 
 	res := &models.Reconciliation{
 		ID:                   uuid.New(),
@@ -77,13 +79,13 @@ func (s *Service) Reconciliation(ctx context.Context, policyID string, req *Reco
 		ReconciledAtLedger:   req.ReconciledAtLedger,
 		ReconciledAtPayments: req.ReconciledAtPayments,
 		Status:               models.ReconciliationOK,
-		PaymentsBalances:     paymentBalance,
-		LedgerBalances:       ledgerBalance,
+		PaymentsBalances:     paymentsBalances,
+		LedgerBalances:       ledgerBalances,
 		DriftBalances:        make(map[string]*big.Int),
 	}
 
 	var reconciliationError bool
-	if len(paymentBalance) != len(ledgerBalance) {
+	if len(paymentsBalances) != len(ledgerBalances) {
 		res.Status = models.ReconciliationNotOK
 		res.Error = "different number of assets"
 		reconciliationError = true
@@ -91,8 +93,8 @@ func (s *Service) Reconciliation(ctx context.Context, policyID string, req *Reco
 	}
 
 	if !reconciliationError {
-		for asset, ledgerBalance := range ledgerBalance {
-			err := s.computeDrift(res, asset, ledgerBalance, paymentBalance[asset])
+		for asset, ledgerBalance := range ledgerBalances {
+			err := s.computeDrift(res, asset, ledgerBalance, paymentsBalances[asset])
 			if err != nil {
 				res.Status = models.ReconciliationNotOK
 				if res.Error == "" {
@@ -103,13 +105,13 @@ func (s *Service) Reconciliation(ctx context.Context, policyID string, req *Reco
 			}
 		}
 
-		for asset, paymentBalance := range paymentBalance {
+		for asset, paymentBalance := range paymentsBalances {
 			if _, ok := res.DriftBalances[asset]; ok {
 				// Already computed
 				continue
 			}
 
-			err := s.computeDrift(res, asset, ledgerBalance[asset], paymentBalance)
+			err := s.computeDrift(res, asset, ledgerBalances[asset], paymentBalance)
 			if err != nil {
 				res.Status = models.ReconciliationNotOK
 				res.Error = res.Error + "; " + err.Error()
@@ -161,6 +163,28 @@ func (s *Service) computeDrift(
 	}
 
 	return nil
+}
+
+// Missing asset should be considered as asset with balance 0
+func harmonizeBalances(ledgerBalances, paymentsBalances map[string]*big.Int) (map[string]*big.Int, map[string]*big.Int) {
+	allAssets := make(map[string]struct{})
+	for asset := range ledgerBalances {
+		allAssets[asset] = struct{}{}
+	}
+	for asset := range paymentsBalances {
+		allAssets[asset] = struct{}{}
+	}
+
+	for asset := range allAssets {
+		if _, ok := ledgerBalances[asset]; !ok {
+			ledgerBalances[asset] = big.NewInt(0)
+		}
+		if _, ok := paymentsBalances[asset]; !ok {
+			paymentsBalances[asset] = big.NewInt(0)
+		}
+	}
+
+	return ledgerBalances, paymentsBalances
 }
 
 func (s *Service) GetReconciliation(ctx context.Context, id string) (*models.Reconciliation, error) {
