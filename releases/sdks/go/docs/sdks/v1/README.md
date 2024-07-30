@@ -25,8 +25,8 @@ Create client
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
@@ -38,11 +38,9 @@ func main() {
             Authorization: os.Getenv("AUTHORIZATION"),
         }),
     )
-    var request *shared.CreateClientRequest = &shared.CreateClientRequest{
-        Name: "<value>",
-    }
+
     ctx := context.Background()
-    res, err := s.Auth.V1.CreateClient(ctx, request)
+    res, err := s.Auth.V1.CreateClient(ctx, nil)
     if err != nil {
         log.Fatal(err)
     }
@@ -78,8 +76,8 @@ Add a secret to a client
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -132,8 +130,8 @@ Delete client
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -186,8 +184,8 @@ Delete a secret from a client
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -241,8 +239,8 @@ Retrieve OpenID connect well-knowns.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
@@ -291,8 +289,8 @@ Get server info
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
@@ -341,8 +339,8 @@ List clients
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
@@ -391,8 +389,8 @@ List users
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
@@ -441,8 +439,8 @@ Read client
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -495,8 +493,8 @@ Read user
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -549,8 +547,8 @@ Update client
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"

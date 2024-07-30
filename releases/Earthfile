@@ -1,7 +1,7 @@
 VERSION 0.8
 
-IMPORT github.com/formancehq/earthly:tags/v0.15.0 AS core
-IMPORT ./../ AS stack
+IMPORT github.com/formancehq/earthly:feat/monorepo AS core
+IMPORT ./.. AS stack
 
 sources:
   FROM core+base-image
@@ -12,12 +12,12 @@ sdk-generate:
   FROM node:20-alpine
   RUN apk update && apk add yq git
   WORKDIR /src
-  COPY (stack+speakeasy/speakeasy) /bin/speakeasy
+  COPY (core+sources-speakeasy/speakeasy) /bin/speakeasy
   ARG version=v0.0.0
   COPY (stack+build-final-spec/latest.json --version=$version) /src/releases/build/latest.json
   WORKDIR /src/releases
   COPY --if-exists --dir ./sdks/go ./sdks/go
-  RUN rm -rf ./sdks/go/gen.yaml ./sdks/go/LICENSE ./sdks/go/.github/workflows
+  RUN rm -rf ./sdks/go/gen.yaml
   COPY --dir templates/sdk/go/* ./sdks/go/
   ENV key ".go.version"
   RUN yq e -i 'eval(env(key)) = env(version)' ./sdks/go/gen.yaml

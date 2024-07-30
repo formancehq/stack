@@ -1,6 +1,6 @@
 VERSION 0.8
 
-IMPORT github.com/formancehq/earthly:tags/v0.15.0 AS core
+IMPORT github.com/formancehq/earthly:feat/monorepo AS core
 IMPORT ../.. AS stack
 IMPORT ../../components/operator AS operator
 IMPORT ../../ee/agent AS agent
@@ -38,4 +38,4 @@ helm-package:
 helm-publish:
   FROM --pass-args +helm-package
   WORKDIR /src/helm/regions
-  DO --pass-args stack+HELM_PUBLISH --path=/src/helm/regions/*.tgz
+  DO --pass-args core+HELM_PUBLISH --path=/src/helm/regions/*.tgz

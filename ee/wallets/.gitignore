@@ -2,3 +2,5 @@ vendor
 .idea
 coverage.*
 wallets
+sdks
+libs

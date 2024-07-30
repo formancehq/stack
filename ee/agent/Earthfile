@@ -1,16 +1,15 @@
 VERSION 0.8
+PROJECT FormanceHQ/agent
 
-IMPORT github.com/formancehq/earthly:tags/v0.15.0 AS core
-
-IMPORT ../.. AS stack
-IMPORT ../../helm/libs AS helm-libs 
-IMPORT .. AS ee
+IMPORT github.com/formancehq/earthly:feat/monorepo AS core
+IMPORT github.com/formancehq/stack/components/operator:feat/monorepo AS operator
+IMPORT github.com/formancehq/stack/helm/libs:feat/monorepo AS helm-libs
 
 FROM core+base-image
 
 sources:
     WORKDIR src
-    COPY (../../components/operator+sources/*) /src
+    COPY (operator+sources/*) /src
     WORKDIR /src/ee/agent
     COPY go.* .
     COPY --dir cmd internal tests .
@@ -37,7 +36,7 @@ lint:
     COPY (+sources/*) /src
     COPY --pass-args +tidy/go.* .
     WORKDIR /src/ee/agent
-    DO --pass-args stack+GO_LINT
+    DO --pass-args core+GO_LINT
     SAVE ARTIFACT cmd AS LOCAL cmd
     SAVE ARTIFACT internal AS LOCAL internal
     SAVE ARTIFACT main.go AS LOCAL main.go
@@ -91,7 +90,7 @@ tidy:
     FROM core+builder-image
     COPY --pass-args (+sources/src) /src
     WORKDIR /src/ee/agent
-    DO --pass-args stack+GO_TIDY
+    DO --pass-args core+GO_TIDY
 
 generate:
     FROM core+builder-image
@@ -153,4 +152,7 @@ helm-package:
     SAVE ARTIFACT . AS LOCAL helm
 
 release:
-    BUILD --pass-args stack+goreleaser --path=ee/agent
+    FROM core+builder-image
+    ARG mode=local
+    COPY . /src
+    DO core+GORELEASER --mode=$mode

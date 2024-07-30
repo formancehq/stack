@@ -16,8 +16,8 @@ Elasticsearch.v1 query engine
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
@@ -81,8 +81,8 @@ Get server info
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"

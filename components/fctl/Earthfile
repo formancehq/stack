@@ -1,9 +1,7 @@
 VERSION 0.8
+PROJECT FormanceHQ/fctl
 
-IMPORT github.com/formancehq/earthly:tags/v0.15.0 AS core
-IMPORT ../.. AS stack
-IMPORT ../../releases AS releases
-IMPORT .. AS components
+IMPORT github.com/formancehq/earthly:feat/monorepo AS core
 
 FROM core+base-image
 
@@ -21,7 +19,7 @@ deploy-staging:
 
 sources:
     WORKDIR src
-    COPY --pass-args (releases+sdk-generate/go) /src/releases/sdks/go
+    DO core+INCLURE_SDK_GO --LOCATION /src/releases/sdks/go
     WORKDIR /src/components/fctl
     COPY go.* .
     COPY --dir cmd pkg membershipclient .
@@ -33,7 +31,7 @@ lint:
     COPY (+sources/*) /src
     COPY --pass-args +tidy/go.* .
     WORKDIR /src/components/fctl
-    DO --pass-args stack+GO_LINT
+    DO --pass-args core+GO_LINT
     SAVE ARTIFACT cmd AS LOCAL cmd
     SAVE ARTIFACT pkg AS LOCAL pkg
     SAVE ARTIFACT main.go AS LOCAL main.go
@@ -62,7 +60,7 @@ tidy:
     FROM core+builder-image
     COPY --pass-args (+sources/src) /src
     WORKDIR /src/components/fctl
-    DO --pass-args stack+GO_TIDY
+    DO --pass-args core+GO_TIDY
 
 membership-openapi:
     FROM core+base-image
@@ -87,4 +85,7 @@ generate-membership-client:
     SAVE ARTIFACT ./membershipclient AS LOCAL membershipclient
 
 release:
-    BUILD --pass-args stack+goreleaser --path=components/fctl
+    FROM core+builder-image
+    ARG mode=local
+    COPY . /src
+    DO core+GORELEASER --mode=$mode

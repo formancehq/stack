@@ -21,8 +21,8 @@ Activate a webhooks config by ID, to start receiving webhooks to its endpoint.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -80,8 +80,8 @@ The format is a random string of bytes of size 24, base64 encoded. (larger size 
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -138,8 +138,8 @@ Deactivate a webhooks config by ID, to stop receiving webhooks to its endpoint.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -193,8 +193,8 @@ Delete a webhooks config by ID.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -248,8 +248,8 @@ Sorted by updated date descending
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -313,8 +313,8 @@ All eventTypes are converted to lower-case when inserted.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
@@ -373,8 +373,8 @@ Test a config by sending a webhook to its endpoint.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"

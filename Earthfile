@@ -1,7 +1,7 @@
 VERSION 0.8
 PROJECT FormanceHQ/stack
 
-IMPORT github.com/formancehq/earthly:tags/v0.15.0 AS core
+IMPORT github.com/formancehq/earthly:feat/monorepo AS core
 
 sources:
     FROM core+base-image
@@ -62,33 +62,6 @@ openapi:
         COPY (./ee/$component+openapi/src/ee/$component) /src/ee/$component
     END
     SAVE ARTIFACT /src
-
-goreleaser:
-    FROM core+builder-image
-    ARG --required path
-    COPY . /src
-    WORKDIR /src/$path
-    ARG mode=local
-    LET buildArgs = --clean
-    IF [ "$mode" = "local" ]
-        SET buildArgs = --nightly --skip=publish --clean
-    ELSE IF [ "$mode" = "ci" ]
-        SET buildArgs = --nightly --clean
-    END
-    IF [ "$mode" != "local" ]
-        WITH DOCKER
-            RUN --secret GITHUB_TOKEN echo $GITHUB_TOKEN | docker login ghcr.io -u NumaryBot --password-stdin
-        END
-    END
-    WITH DOCKER
-        RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
-            --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
-            --secret GORELEASER_KEY \
-            --secret GITHUB_TOKEN \
-            --secret SPEAKEASY_API_KEY \
-            --secret FURY_TOKEN \
-            goreleaser release -f .goreleaser.yml $buildArgs
-    END
 
 all-ci-goreleaser:
     LOCALLY
@@ -190,30 +163,3 @@ helm-publish:
     LOCALLY
     BUILD ./helm/+publish
     BUILD ./components/operator+helm-publish
-
-HELM_PUBLISH:
-    FUNCTION
-    ARG --required path
-    WITH DOCKER
-        RUN --secret GITHUB_TOKEN echo $GITHUB_TOKEN | docker login ghcr.io -u NumaryBot --password-stdin
-    END
-    WITH DOCKER
-        RUN helm push ${path} oci://ghcr.io/formancehq/helm
-    END
-
-GO_LINT:
-    FUNCTION
-    COPY (+sources/out --LOCATION=.golangci.yml) .golangci.yml
-    ARG GOPROXY
-    RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
-        --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
-        --mount=type=cache,id=golangci,target=/root/.cache/golangci-lint \
-        golangci-lint run --fix ./...
-
-GO_TIDY:
-    FUNCTION
-    ARG GOPROXY
-    RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
-        --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
-        go mod tidy
-    SAVE ARTIFACT go.* AS LOCAL .

@@ -22,8 +22,8 @@ Create a policy
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
@@ -81,8 +81,8 @@ Delete a policy by its id.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -136,8 +136,8 @@ Get a policy
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -191,8 +191,8 @@ Get a reconciliation
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -246,8 +246,8 @@ List policies
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -302,8 +302,8 @@ List reconciliations
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -358,11 +358,11 @@ Reconcile using a policy
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
 	"context"
 	"log"
 )
@@ -418,8 +418,8 @@ Get server info
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"

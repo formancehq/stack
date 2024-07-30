@@ -1,7 +1,9 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema-pro.json
+version: 2
 project_name: wallets
 includes:
-  - from_file:
-      path: ./../../.goreleaser.default.yaml
+  - from_url:
+      url: https://raw.githubusercontent.com/formancehq/earthly/feat/monorepo/.goreleaser.default.yaml
 monorepo:
   tag_prefix: v
   dir: ./

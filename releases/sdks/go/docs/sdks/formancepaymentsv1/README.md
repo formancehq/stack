@@ -57,8 +57,8 @@ Add an account to a pool
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -115,11 +115,11 @@ Execute a transfer between two accounts.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"math/big"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"math/big"
 	"context"
 	"log"
 )
@@ -177,8 +177,8 @@ Create an account
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
 	"context"
@@ -235,8 +235,8 @@ Create a bank account in Payments and on the PSP.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
@@ -291,8 +291,8 @@ Create a payment
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"math/big"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
@@ -354,8 +354,8 @@ Create a Pool
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
@@ -411,8 +411,8 @@ Create a transfer initiation
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"math/big"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
@@ -475,8 +475,8 @@ Delete a pool by its id.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -530,8 +530,8 @@ Delete a transfer initiation by its id.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -585,8 +585,8 @@ Forward a bank account to a connector
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -643,8 +643,8 @@ Get account balances
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -704,8 +704,8 @@ Get a bank account created by user on Formance
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -761,8 +761,8 @@ Get a specific task associated to the connector.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -817,8 +817,8 @@ Get a specific task associated to the connector.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -874,8 +874,8 @@ Get a payment
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -929,8 +929,8 @@ Get a Pool
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -984,11 +984,11 @@ Get pool balances
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
 	"context"
 	"log"
 )
@@ -1041,8 +1041,8 @@ Get a transfer initiation
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1096,8 +1096,8 @@ Install a connector by its name and config.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1158,8 +1158,8 @@ List all installed connectors.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
@@ -1209,8 +1209,8 @@ List all bank accounts created by user on Formance.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1269,8 +1269,8 @@ List the configs of each available connector.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
@@ -1322,8 +1322,8 @@ List all tasks associated with this connector.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1379,8 +1379,8 @@ List all tasks associated with this connector.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1437,8 +1437,8 @@ List payments
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1497,8 +1497,8 @@ List Pools
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1557,8 +1557,8 @@ List Transfer Initiations
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1617,8 +1617,8 @@ Get an account
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1672,8 +1672,8 @@ Get server info
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
@@ -1723,8 +1723,8 @@ List accounts
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1785,8 +1785,8 @@ Read connector config
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1840,8 +1840,8 @@ Read connector config
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1896,8 +1896,8 @@ Remove an account from a pool by its id.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1956,8 +1956,8 @@ It will remove the connector and ALL PAYMENTS generated with it.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -2013,8 +2013,8 @@ It will remove the connector and ALL PAYMENTS generated with it.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -2069,8 +2069,8 @@ Retry a failed transfer initiation
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -2124,11 +2124,11 @@ Reverse transfer initiation
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"math/big"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"math/big"
 	"context"
 	"log"
 )
@@ -2189,8 +2189,8 @@ Update a transfer initiation status
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -2249,8 +2249,8 @@ Uninstall a connector by its name.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -2304,8 +2304,8 @@ Uninstall a connector by its name.
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -2360,8 +2360,8 @@ Update metadata of a bank account
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -2420,8 +2420,8 @@ Update connector config
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -2484,8 +2484,8 @@ Update metadata
 package main
 
 import(
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"

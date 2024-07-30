@@ -3,10 +3,10 @@ id: 7eac0a45-60a2-40bb-9e85-26bd77ec2a6d
 management:
   docChecksum: 0565b0e11806fc861715659cc13d103e
   docVersion: v0.0.0
-  speakeasyVersion: 1.346.0
-  generationVersion: 2.379.3
-  releaseVersion: v0.0.0
-  configChecksum: 86fb0b4c762641bbbe6b4f59e9dd3989
+  speakeasyVersion: 1.351.0
+  generationVersion: 2.384.1
+  releaseVersion: 0.0.1
+  configChecksum: 6bfd58cd58bbce137d68ce4f0a59a45e
 features:
   go:
     additionalDependencies: 0.1.0
@@ -15,7 +15,7 @@ features:
     defaultEnabledRetries: 0.2.0
     deprecations: 2.81.1
     downloadStreams: 0.1.1
-    envVarSecurityUsage: 0.2.0
+    envVarSecurityUsage: 0.2.1
     errors: 2.81.9
     getRequestBodies: 2.81.1
     globalSecurity: 2.82.9

@@ -1,9 +1,31 @@
 openapi: 3.0.3
 info:
-  title: Payments API
-  version: "PAYMENTS_VERSION"
+  title: Formance Stack API
+  description: |
+    Open, modular foundation for unique payments flows
 
-# ---------------------- PATHS ----------------------
+    # Introduction
+    This API is documented in **OpenAPI format**.
+
+    # Authentication
+    Formance Stack offers one forms of authentication:
+      - OAuth2
+    OAuth2 - an open protocol to allow secure authorization in a simple
+    and standard method from web, mobile and desktop applications.
+    <SecurityDefinitions />
+  contact:
+    name: Formance
+    url: https://www.formance.com
+    email: support@formance.com
+  x-logo:
+    url: https://avatars.githubusercontent.com/u/84325077?s=200&v=4
+    altText: Formance
+  version: SDK_VERSION
+servers:
+  - url: http://localhost
+    description: local server
+security:
+  - Authorization: []
 paths:
   /_info:
     get:
@@ -11,19 +33,16 @@ paths:
       operationId: getServerInfo
       tags:
         - payments.v1
-      
       responses:
         "200":
           $ref: '#/components/responses/ServerInfo'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /payments:
     post:
       summary: Create a payment
       tags:
         - payments.v1
-      
       operationId: createPayment
       description: Create a payment
       requestBody:
@@ -36,7 +55,6 @@ paths:
     get:
       summary: List payments
       operationId: listPayments
-      
       tags:
         - payments.v1
       parameters:
@@ -49,14 +67,12 @@ paths:
           $ref: '#/components/responses/Payments'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /payments/{paymentId}:
     get:
       summary: Get a payment
       tags:
         - payments.v1
       operationId: getPayment
-      
       parameters:
         - $ref: '#/components/parameters/PaymentId'
       responses:
@@ -64,14 +80,12 @@ paths:
           $ref: '#/components/responses/Payment'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /payments/{paymentId}/metadata:
     patch:
       summary: Update metadata
       tags:
         - payments.v1
       operationId: updateMetadata
-      
       parameters:
         - $ref: '#/components/parameters/PaymentId'
       requestBody:
@@ -81,12 +95,10 @@ paths:
           $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /transfer-initiations:
     get:
       summary: List Transfer Initiations
       operationId: listTransferInitiations
-      
       tags:
         - payments.v1
       parameters:
@@ -104,7 +116,6 @@ paths:
       tags:
         - payments.v1
       operationId: createTransferInitiation
-      
       description: Create a transfer initiation
       requestBody:
         $ref: '#/components/requestBodies/TransferInitiation'
@@ -113,14 +124,12 @@ paths:
           $ref: '#/components/responses/TransferInitiation'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /transfer-initiations/{transferId}:
     get:
       summary: Get a transfer initiation
       tags:
         - payments.v1
       operationId: getTransferInitiation
-      
       parameters:
         - $ref: '#/components/parameters/TransferId'
       responses:
@@ -131,7 +140,6 @@ paths:
     delete:
       summary: Delete a transfer initiation
       operationId: deleteTransferInitiation
-      
       tags:
         - payments.v1
       description: Delete a transfer initiation by its id.
@@ -142,14 +150,12 @@ paths:
           $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /transfer-initiations/{transferId}/status:
     post:
       summary: Update the status of a transfer initiation
       tags:
         - payments.v1
       operationId: udpateTransferInitiationStatus
-      
       description: Update a transfer initiation status
       parameters:
         - $ref: '#/components/parameters/TransferId'
@@ -160,14 +166,12 @@ paths:
           $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-  
   /transfer-initiations/{transferId}/reverse:
     post:
       summary: Reverse a transfer initiation
       tags:
         - payments.v1
       operationId: reverseTransferInitiation
-      
       description: Reverse transfer initiation
       parameters:
         - $ref: '#/components/parameters/TransferId'
@@ -178,14 +182,12 @@ paths:
           $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /transfer-initiations/{transferId}/retry:
     post:
       summary: Retry a failed transfer initiation
       tags:
         - payments.v1
       operationId: retryTransferInitiation
-      
       description: Retry a failed transfer initiation
       parameters:
         - $ref: '#/components/parameters/TransferId'
@@ -194,12 +196,10 @@ paths:
           $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /pools:
     get:
       summary: List Pools
       operationId: listPools
-      
       tags:
         - payments.v1
       parameters:
@@ -217,7 +217,6 @@ paths:
       tags:
         - payments.v1
       operationId: createPool
-      
       description: Create a Pool
       requestBody:
         $ref: '#/components/requestBodies/Pool'
@@ -232,7 +231,6 @@ paths:
       tags:
         - payments.v1
       operationId: getPool
-      
       parameters:
         - $ref: '#/components/parameters/PoolId'
       responses:
@@ -243,7 +241,6 @@ paths:
     delete:
       summary: Delete a Pool
       operationId: deletePool
-      
       tags:
         - payments.v1
       description: Delete a pool by its id.
@@ -260,7 +257,6 @@ paths:
       tags:
         - payments.v1
       operationId: addAccountToPool
-      
       description: Add an account to a pool
       parameters:
         - $ref: '#/components/parameters/PoolId'
@@ -275,7 +271,6 @@ paths:
     delete:
       summary: Remove an account from a pool
       operationId: removeAccountFromPool
-      
       tags:
         - payments.v1
       description: Remove an account from a pool by its id.
@@ -291,7 +286,6 @@ paths:
     get:
       summary: Get pool balances
       operationId: getPoolBalances
-      
       tags:
         - payments.v1
       parameters:
@@ -309,14 +303,12 @@ paths:
           $ref: '#/components/responses/PoolBalances'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /accounts:
     post:
       summary: Create an account
       tags:
         - payments.v1
       operationId: createAccount
-      
       description: Create an account
       requestBody:
         $ref: '#/components/requestBodies/Account'
@@ -328,7 +320,6 @@ paths:
     get:
       summary: List accounts
       operationId: listAccounts
-      
       tags:
         - payments.v1
       parameters:
@@ -347,14 +338,12 @@ paths:
           $ref: '#/components/responses/Accounts'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /accounts/{accountId}:
     get:
       summary: Get an account
       tags:
         - payments.v1
       operationId: getAccount
-      
       parameters:
         - $ref: '#/components/parameters/AccountId'
       responses:
@@ -362,12 +351,10 @@ paths:
           $ref: '#/components/responses/Account'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /accounts/{accountId}/balances:
     get:
       summary: Get account balances
       operationId: getAccountBalances
-      
       tags:
         - payments.v1
       parameters:
@@ -413,14 +400,12 @@ paths:
           $ref: '#/components/responses/AccountBalances'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /bank-accounts:
     post:
       summary: Create a BankAccount in Payments and on the PSP
       tags:
         - payments.v1
       operationId: createBankAccount
-      
       description: Create a bank account in Payments and on the PSP.
       requestBody:
         $ref: '#/components/requestBodies/BankAccount'
@@ -432,7 +417,6 @@ paths:
     get:
       summary: List bank accounts created by user on Formance
       operationId: listBankAccounts
-      
       tags:
         - payments.v1
       parameters:
@@ -445,14 +429,12 @@ paths:
           $ref: '#/components/responses/BankAccounts'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /bank-accounts/{bankAccountId}:
     get:
       summary: Get a bank account created by user on Formance
       tags:
         - payments.v1
       operationId: getBankAccount
-      
       parameters:
         - $ref: '#/components/parameters/BankAccountId'
       responses:
@@ -460,14 +442,12 @@ paths:
           $ref: '#/components/responses/BankAccount'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /bank-accounts/{bankAccountId}/forward:
     post:
       summary: Forward a bank account to a connector
       tags:
         - payments.v1
       operationId: forwardBankAccount
-      
       parameters:
         - $ref: '#/components/parameters/BankAccountId'
       requestBody:
@@ -477,14 +457,12 @@ paths:
           $ref: '#/components/responses/BankAccount'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /bank-accounts/{bankAccountId}/metadata:
     patch:
       summary: Update metadata of a bank account
       tags:
         - payments.v1
       operationId: updateBankAccountMetadata
-      
       parameters:
         - $ref: '#/components/parameters/BankAccountId'
       requestBody:
@@ -494,12 +472,10 @@ paths:
           $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /connectors:
     get:
       summary: List all installed connectors
       operationId: listAllConnectors
-      
       tags:
         - payments.v1
       description: List all installed connectors.
@@ -508,12 +484,10 @@ paths:
           $ref: '#/components/responses/Connectors'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /connectors/configs:
     get:
       summary: List the configs of each available connector
       operationId: listConfigsAvailableConnectors
-      
       tags:
         - payments.v1
       description: List the configs of each available connector.
@@ -522,14 +496,12 @@ paths:
           $ref: '#/components/responses/ConnectorsConfigs'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /connectors/{connector}:
     post:
       summary: Install a connector
       tags:
         - payments.v1
       operationId: installConnector
-      
       description: Install a connector by its name and config.
       parameters:
         - $ref: '#/components/parameters/Connector'
@@ -544,7 +516,6 @@ paths:
       summary: Uninstall a connector
       deprecated: true
       operationId: uninstallConnector
-      
       tags:
         - payments.v1
       description: Uninstall a connector by its name.
@@ -559,7 +530,6 @@ paths:
     delete:
       summary: Uninstall a connector
       operationId: uninstallConnectorV1
-      
       tags:
         - payments.v1
       description: Uninstall a connector by its name.
@@ -571,13 +541,11 @@ paths:
           $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /connectors/{connector}/config:
     get:
       summary: Read the config of a connector
       deprecated: true
       operationId: readConnectorConfig
-      
       tags:
         - payments.v1
       description: Read connector config
@@ -588,12 +556,10 @@ paths:
           $ref: '#/components/responses/ConnectorConfig'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /connectors/{connector}/{connectorId}/config:
     post:
       summary: Update the config of a connector
       operationId: updateConnectorConfigV1
-      
       tags:
         - payments.v1
       description: Update connector config
@@ -610,7 +576,6 @@ paths:
     get:
       summary: Read the config of a connector
       operationId: readConnectorConfigV1
-      
       tags:
         - payments.v1
       description: Read connector config
@@ -622,13 +587,11 @@ paths:
           $ref: '#/components/responses/ConnectorConfig'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /connectors/{connector}/reset:
     post:
       summary: Reset a connector
       deprecated: true
       operationId: resetConnector
-      
       tags:
         - payments.v1
       description: |
@@ -645,7 +608,6 @@ paths:
     post:
       summary: Reset a connector
       operationId: resetConnectorV1
-      
       tags:
         - payments.v1
       description: |
@@ -659,7 +621,6 @@ paths:
           $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-  
   /connectors/{connector}/tasks:
     get:
       summary: List tasks from a connector
@@ -667,7 +628,6 @@ paths:
       tags:
         - payments.v1
       operationId: listConnectorTasks
-      
       description: List all tasks associated with this connector.
       parameters:
         - $ref: '#/components/parameters/Connector'
@@ -678,14 +638,12 @@ paths:
           $ref: '#/components/responses/Tasks'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /connectors/{connector}/{connectorId}/tasks:
     get:
       summary: List tasks from a connector
       tags:
         - payments.v1
       operationId: listConnectorTasksV1
-      
       description: List all tasks associated with this connector.
       parameters:
         - $ref: '#/components/parameters/Connector'
@@ -697,7 +655,6 @@ paths:
           $ref: '#/components/responses/Tasks'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /connectors/{connector}/tasks/{taskId}:
     get:
       summary: Read a specific task of the connector
@@ -705,7 +662,6 @@ paths:
       tags:
         - payments.v1
       operationId: getConnectorTask
-      
       description: Get a specific task associated to the connector.
       parameters:
         - $ref: '#/components/parameters/Connector'
@@ -715,14 +671,12 @@ paths:
           $ref: '#/components/responses/Task'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /connectors/{connector}/{connectorId}/tasks/{taskId}:
     get:
       summary: Read a specific task of the connector
       tags:
         - payments.v1
       operationId: getConnectorTaskV1
-      
       description: Get a specific task associated to the connector.
       parameters:
         - $ref: '#/components/parameters/Connector'
@@ -733,14 +687,12 @@ paths:
           $ref: '#/components/responses/Task'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
   /connectors/{connector}/transfers:
     post:
       summary: Transfer funds between Connector accounts
       tags:
         - payments.v1
       operationId: connectorsTransfer
-      
       description: Execute a transfer between two accounts.
       parameters:
         - $ref: '#/components/parameters/Connector'
@@ -751,337 +703,16 @@ paths:
           $ref: '#/components/responses/Transfer'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-  
-# ---------------------- COMPONENTS ----------------------
 components:
-  # ---------------------- PARAMETERS ----------------------
-  parameters:
-    Query:
-      name: query
-      in: query
-      required: false
-      description: |
-        Filters used to filter resources.
-      schema:
-        type: string
-    PageSize:
-      name: pageSize
-      in: query
-      description: |
-        The maximum number of results to return per page.
-      example: 100
-      schema:
-        type: integer
-        format: int64
-        minimum: 1
-        maximum: 1000
-        default: 15
-    Cursor:
-      name: cursor
-      in: query
-      description: |
-        Parameter used in pagination requests. Maximum page size is set to 15.
-        Set to the value of next for the next page of results.
-        Set to the value of previous for the previous page of results.
-        No other parameters can be set when this parameter is set.
-      schema:
-        type: string
-        example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
-    Sort:
-      name: sort
-      in: query
-      schema:
-        type: array
-        items:
-          type: string
-      description: Fields used to sort payments (default is date:desc).
-      example:
-      - date:asc
-      - status:desc
-    PaymentId:
-      name: paymentId
-      in: path
-      schema:
-        type: string
-      description: The payment ID.
-      example: XXX
-      required: true
-    AccountId:
-      name: accountId
-      in: path
-      schema:
-        type: string
-      description: The account ID.
-      example: XXX
-      required: true
-    ConnectorID:
-      name: connectorId
-      in: path
-      schema:
-        type: string
-      description: The connector ID.
-      example: XXX
-      required: true
-    PoolId:
-      name: poolId
-      in: path
-      schema:
-        type: string
-      description: The pool ID.
-      example: XXX
-      required: true
-    TransferId:
-      name: transferId
-      in: path
-      schema:
-        type: string
-      description: The transfer ID.
-      example: XXX
-      required: true
-    BankAccountId:
-      name: bankAccountId
-      in: path
-      schema:
-        type: string
-      description: The bank account ID.
-      example: XXX
-      required: true
-    Connector:
-      name: connector
-      description: The name of the connector.
-      in: path
-      schema:
-        $ref: '#/components/schemas/Connector'
-      required: true
-    TaskId:
-      name: taskId
-      description: The task ID.
-      example: task1
-      in: path
-      schema:
-        type: string
-      required: true
-
-  # ---------------------- RESPONSES ----------------------
-  responses:
-    NoContent:
-      description: No content
-    PaymentsErrorResponse:
-      description: Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PaymentsErrorResponse'
-    ServerInfo:
-      description: Server information
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ServerInfo'
-    Payments:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PaymentsCursor'
-    Payment:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PaymentResponse'
-    Pools:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PoolsCursor'
-    Pool:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PoolResponse'
-    PoolBalances:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PoolBalancesResponse'
-    TransferInitiations:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/TransferInitiationsCursor'
-    TransferInitiation:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/TransferInitiationResponse'
-    Accounts:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/AccountsCursor'
-    Account:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/AccountResponse'
-    AccountBalances:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/BalancesCursor'
-    ConnectorInstalled:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ConnectorResponse'
-    Connectors:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ConnectorsResponse'
-    BankAccounts:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/BankAccountsCursor'
-    BankAccount:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/BankAccountResponse'
-    ConnectorsConfigs:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ConnectorsConfigsResponse'
-    ConnectorConfig:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ConnectorConfigResponse'
-    Tasks:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/TasksCursor'
-    Task:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/TaskResponse'
-    Transfer:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/TransferResponse'
-    Transfers:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/TransfersResponse'
-  # ---------------------- REQUESTS ----------------------
-  requestBodies:
-    ConnectorConfig:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ConnectorConfig'
-    UpdateMetadata:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PaymentMetadata'
-    Payment:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PaymentRequest'
-    Account:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/AccountRequest'
-    Pool:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PoolRequest'
-    AddAccountToPool:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/AddAccountToPoolRequest'
-    TransferInitiation:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/TransferInitiationRequest'
-    ForwardBankAccount:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ForwardBankAccountRequest'
-    UpdateBankAccountMetadata:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UpdateBankAccountMetadataRequest'
-    BankAccount:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/BankAccountRequest'
-    UpdateTransferInitiationStatus:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UpdateTransferInitiationStatusRequest'
-    ReverseTransferInitiation:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ReverseTransferInitiationRequest'
-    Transfer:
-      required: true
-      content:
-        application/json:
-          schema:
-              $ref: '#/components/schemas/TransferRequest'
-
-  # ---------------------- SCHEMAS ----------------------
+  securitySchemes:
+    Authorization:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: /api/auth/oauth/token
+          refreshUrl: /api/auth/oauth/token
+          scopes: {}
   schemas:
-    # ---------------------- CURSORS ----------------------
     CursorBase:
       type: object
       required:
@@ -1100,7 +731,7 @@ components:
           example: false
         previous:
           type: string
-          example: "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+          example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
         next:
           type: string
           example: ""
@@ -1224,8 +855,6 @@ components:
                       - $ref: '#/components/schemas/TaskBankingCircle'
                       - $ref: '#/components/schemas/TaskMangoPay'
                       - $ref: '#/components/schemas/TaskMoneycorp'
-
-    # ---------------------- RESPONSES ----------------------
     ConnectorConfigResponse:
       type: object
       required:
@@ -1337,7 +966,7 @@ components:
     TaskResponse:
       type: object
       required:
-          - data
+        - data
       properties:
         data:
           oneOf:
@@ -1380,7 +1009,6 @@ components:
                 type: string
               error:
                 type: string
-    # ---------------------- DATA MODELS ----------------------
     Connector:
       type: string
       enum:
@@ -1431,13 +1059,13 @@ components:
       properties:
         name:
           type: string
-          example: 'My Stripe Account'
+          example: My Stripe Account
         pollingPeriod:
           type: string
-          example: '60s'
+          example: 60s
           description: |
             The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
-          default: '120s'
+          default: 120s
         apiKey:
           type: string
           example: XXX
@@ -1457,15 +1085,15 @@ components:
       properties:
         name:
           type: string
-          example: 'My DummyPay Account'
+          example: My DummyPay Account
         filePollingPeriod:
           type: string
-          example: '60s'
+          example: 60s
           description: The frequency at which the connector will try to fetch new payment objects from the directory
-          default: '10s'
+          default: 10s
         directory:
           type: string
-          example: '/tmp/dummypay'
+          example: /tmp/dummypay
         prefixFileToIngest:
           type: string
         numberOfAccountsPreGenerated:
@@ -1482,41 +1110,41 @@ components:
       properties:
         name:
           type: string
-          example: 'My Wise Account'
+          example: My Wise Account
         apiKey:
           type: string
-          example: 'XXX'
+          example: XXX
         pollingPeriod:
           type: string
-          example: '60s'
+          example: 60s
           description: |
             The frequency at which the connector will try to fetch new BalanceTransaction objects from Wise API.
-          default: '120s'
+          default: 120s
     ModulrConfig:
       type: object
       required:
-      - name
-      - apiKey
-      - apiSecret
+        - name
+        - apiKey
+        - apiSecret
       properties:
         name:
           type: string
-          example: 'My Modulr Account'
+          example: My Modulr Account
         apiKey:
           type: string
-          example: 'XXX'
+          example: XXX
         apiSecret:
           type: string
-          example: 'XXX'
+          example: XXX
         endpoint:
           type: string
-          example: 'XXX'
+          example: XXX
         pollingPeriod:
           type: string
-          example: '60s'
+          example: 60s
           description: |
             The frequency at which the connector will try to fetch new BalanceTransaction objects from Modulr API.
-          default: '120s'
+          default: 120s
     BankingCircleConfig:
       type: object
       required:
@@ -1530,31 +1158,31 @@ components:
       properties:
         name:
           type: string
-          example: 'My Banking Circle Account'
+          example: My Banking Circle Account
         username:
           type: string
-          example: 'XXX'
+          example: XXX
         password:
           type: string
-          example: 'XXX'
+          example: XXX
         endpoint:
           type: string
-          example: 'XXX'
+          example: XXX
         authorizationEndpoint:
           type: string
-          example: 'XXX'
+          example: XXX
         userCertificate:
           type: string
-          example: 'XXX'
+          example: XXX
         userCertificateKey:
           type: string
-          example: 'XXX'
+          example: XXX
         pollingPeriod:
           type: string
-          example: '60s'
+          example: 60s
           description: |
             The frequency at which the connector will try to fetch new BalanceTransaction objects from Banking Circle API.
-          default: '120s'
+          default: 120s
     GenericConfig:
       type: object
       required:
@@ -1564,19 +1192,19 @@ components:
       properties:
         name:
           type: string
-          example: 'My Generic Account'
+          example: My Generic Account
         apiKey:
           type: string
-          example: 'XXX'
+          example: XXX
         endpoint:
           type: string
-          example: 'XXX'
+          example: XXX
         pollingPeriod:
           type: string
-          example: '60s'
+          example: 60s
           description: |
             The frequency at which the connector will try to fetch new BalanceTransaction objects from the API.
-          default: '120s'
+          default: 120s
     MangoPayConfig:
       type: object
       required:
@@ -1587,22 +1215,22 @@ components:
       properties:
         name:
           type: string
-          example: 'My MangoPay Account'
+          example: My MangoPay Account
         pollingPeriod:
           type: string
-          example: '60s'
+          example: 60s
           description: |
             The frequency at which the connector will try to fetch new BalanceTransaction objects from MangoPay API.
-          default: '120s'
+          default: 120s
         clientID:
           type: string
-          example: 'XXX'
+          example: XXX
         apiKey:
           type: string
-          example: 'XXX'
+          example: XXX
         endpoint:
           type: string
-          example: 'XXX'
+          example: XXX
     MoneycorpConfig:
       type: object
       required:
@@ -1613,22 +1241,22 @@ components:
       properties:
         name:
           type: string
-          example: 'My Moneycorp Account'
+          example: My Moneycorp Account
         clientID:
           type: string
-          example: 'XXX'
+          example: XXX
         apiKey:
           type: string
-          example: 'XXX'
+          example: XXX
         endpoint:
           type: string
-          example: 'XXX'
+          example: XXX
         pollingPeriod:
           type: string
-          example: '60s'
+          example: 60s
           description: |
             The frequency at which the connector will try to fetch new BalanceTransaction objects from MoneyCorp API.
-          default: '120s'
+          default: 120s
     CurrencyCloudConfig:
       type: object
       required:
@@ -1638,23 +1266,23 @@ components:
       properties:
         name:
           type: string
-          example: 'My CurrencyCloud Account'
+          example: My CurrencyCloud Account
         apiKey:
           type: string
-          example: 'XXX'
+          example: XXX
         loginID:
           type: string
-          example: 'XXX'
-          description: 'Username of the API Key holder'
+          example: XXX
+          description: Username of the API Key holder
         pollingPeriod:
           type: string
-          example: '60s'
+          example: 60s
           description: The frequency at which the connector will fetch transactions
-          default: '120s'
+          default: 120s
         endpoint:
           type: string
-          example: 'XXX'
-          description: 'The endpoint to use for the API. Defaults to https://devapi.currencycloud.com'
+          example: XXX
+          description: The endpoint to use for the API. Defaults to https://devapi.currencycloud.com
     AdyenConfig:
       type: object
       required:
@@ -1664,22 +1292,22 @@ components:
       properties:
         name:
           type: string
-          example: 'My Adyen Account'
+          example: My Adyen Account
         apiKey:
           type: string
-          example: 'XXX'
+          example: XXX
         hmacKey:
           type: string
-          example: 'XXX'
+          example: XXX
         liveEndpointPrefix:
           type: string
-          example: 'XXX'
+          example: XXX
         pollingPeriod:
           type: string
-          example: '60s'
+          example: 60s
           description: |
             The frequency at which the connector will try to fetch new BalanceTransaction objects from Adyen API.
-          default: '120s'
+          default: 120s
     AtlarConfig:
       type: object
       required:
@@ -1689,7 +1317,7 @@ components:
       properties:
         name:
           type: string
-          example: 'My Atlar Account'
+          example: My Atlar Account
         baseUrl:
           type: string
           example: https://api.example.com
@@ -1698,16 +1326,16 @@ components:
             The base URL the client uses for making requests towards the Atlar API.
         pollingPeriod:
           type: string
-          example: '60s'
+          example: 60s
           description: |
             The frequency at which the connector tries to fetch new Transaction objects from the Atlar API.
-          default: '120s'
+          default: 120s
         transferInitiationStatusPollingPeriod:
           type: string
-          example: '60s'
+          example: 60s
           description: |
             The frequency at which the connector tries to fetch the status of payment initiations from the Atlar API.
-          default: '120s'
+          default: 120s
         accessKey:
           type: string
           example: XXX
@@ -1960,28 +1588,28 @@ components:
         metadata:
           $ref: '#/components/schemas/PaymentMetadata'
     PaymentAdjustment:
-        type: object
-        required:
-          - reference
-          - createdAt
-          - amount
-          - status
-          - raw
-        properties:
-          reference:
-            type: string
-          createdAt:
-            type: string
-            format: date-time
-          status:
-            $ref: '#/components/schemas/PaymentStatus'
-          amount:
-            type: integer
-            format: bigint
-            minimum: 0
-            example: 100
-          raw:
-            type: object
+      type: object
+      required:
+        - reference
+        - createdAt
+        - amount
+        - status
+        - raw
+      properties:
+        reference:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        amount:
+          type: integer
+          format: bigint
+          minimum: 0
+          example: 100
+        raw:
+          type: object
     PaymentMetadata:
       type: object
       additionalProperties:
@@ -2303,7 +1931,7 @@ components:
           type: string
         name:
           type: string
-          example: 'My account'
+          example: My account
         accountNumber:
           type: string
         iban:
@@ -2534,7 +2162,7 @@ components:
     ServerInfo:
       type: object
       required:
-      - version
+        - version
       properties:
         version:
           type: string
@@ -2548,7 +2176,7 @@ components:
           $ref: '#/components/schemas/PaymentsErrorsEnum'
         errorMessage:
           type: string
-          example: "[VALIDATION] missing reference"
+          example: '[VALIDATION] missing reference'
     PaymentsErrorsEnum:
       type: string
       enum:
@@ -2556,3 +2184,323 @@ components:
         - VALIDATION
         - NOT_FOUND
       example: VALIDATION
+  responses:
+    NoContent:
+      description: No content
+    PaymentsErrorResponse:
+      description: Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PaymentsErrorResponse'
+    ServerInfo:
+      description: Server information
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ServerInfo'
+    Payments:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PaymentsCursor'
+    Payment:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PaymentResponse'
+    Pools:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PoolsCursor'
+    Pool:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PoolResponse'
+    PoolBalances:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PoolBalancesResponse'
+    TransferInitiations:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TransferInitiationsCursor'
+    TransferInitiation:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TransferInitiationResponse'
+    Accounts:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AccountsCursor'
+    Account:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AccountResponse'
+    AccountBalances:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BalancesCursor'
+    ConnectorInstalled:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ConnectorResponse'
+    Connectors:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ConnectorsResponse'
+    BankAccounts:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BankAccountsCursor'
+    BankAccount:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BankAccountResponse'
+    ConnectorsConfigs:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ConnectorsConfigsResponse'
+    ConnectorConfig:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ConnectorConfigResponse'
+    Tasks:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TasksCursor'
+    Task:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TaskResponse'
+    Transfer:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TransferResponse'
+    Transfers:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TransfersResponse'
+  parameters:
+    Query:
+      name: query
+      in: query
+      required: false
+      description: |
+        Filters used to filter resources.
+      schema:
+        type: string
+    PageSize:
+      name: pageSize
+      in: query
+      description: |
+        The maximum number of results to return per page.
+      example: 100
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+        maximum: 1000
+        default: 15
+    Cursor:
+      name: cursor
+      in: query
+      description: |
+        Parameter used in pagination requests. Maximum page size is set to 15.
+        Set to the value of next for the next page of results.
+        Set to the value of previous for the previous page of results.
+        No other parameters can be set when this parameter is set.
+      schema:
+        type: string
+        example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
+    Sort:
+      name: sort
+      in: query
+      schema:
+        type: array
+        items:
+          type: string
+      description: Fields used to sort payments (default is date:desc).
+      example:
+        - date:asc
+        - status:desc
+    PaymentId:
+      name: paymentId
+      in: path
+      schema:
+        type: string
+      description: The payment ID.
+      example: XXX
+      required: true
+    AccountId:
+      name: accountId
+      in: path
+      schema:
+        type: string
+      description: The account ID.
+      example: XXX
+      required: true
+    ConnectorID:
+      name: connectorId
+      in: path
+      schema:
+        type: string
+      description: The connector ID.
+      example: XXX
+      required: true
+    PoolId:
+      name: poolId
+      in: path
+      schema:
+        type: string
+      description: The pool ID.
+      example: XXX
+      required: true
+    TransferId:
+      name: transferId
+      in: path
+      schema:
+        type: string
+      description: The transfer ID.
+      example: XXX
+      required: true
+    BankAccountId:
+      name: bankAccountId
+      in: path
+      schema:
+        type: string
+      description: The bank account ID.
+      example: XXX
+      required: true
+    Connector:
+      name: connector
+      description: The name of the connector.
+      in: path
+      schema:
+        $ref: '#/components/schemas/Connector'
+      required: true
+    TaskId:
+      name: taskId
+      description: The task ID.
+      example: task1
+      in: path
+      schema:
+        type: string
+      required: true
+  requestBodies:
+    ConnectorConfig:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ConnectorConfig'
+    UpdateMetadata:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PaymentMetadata'
+    Payment:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PaymentRequest'
+    Account:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AccountRequest'
+    Pool:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PoolRequest'
+    AddAccountToPool:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AddAccountToPoolRequest'
+    TransferInitiation:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TransferInitiationRequest'
+    ForwardBankAccount:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ForwardBankAccountRequest'
+    UpdateBankAccountMetadata:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateBankAccountMetadataRequest'
+    BankAccount:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BankAccountRequest'
+    UpdateTransferInitiationStatus:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateTransferInitiationStatusRequest'
+    ReverseTransferInitiation:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ReverseTransferInitiationRequest'
+    Transfer:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TransferRequest'

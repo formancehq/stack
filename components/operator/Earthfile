@@ -1,15 +1,15 @@
 VERSION 0.8
+PROJECT FormanceHQ/operator
 
-IMPORT github.com/formancehq/earthly:tags/v0.15.0 AS core
-IMPORT ../.. AS stack
-IMPORT .. AS components
+IMPORT github.com/formancehq/earthly:feat/monorepo AS core
+IMPORT github.com/formancehq/stack/ee/search:feat/monorepo AS search
 
 FROM core+base-image
 
 sources:
     FROM core+builder-image
     WORKDIR /src
-    COPY (stack+sources/out --LOCATION=ee/search) ee/search
+    COPY (search+sources/src/ee/search) ee/search
     WORKDIR /src/components/operator
     COPY --dir api internal pkg cmd .
     COPY go.* .
@@ -139,7 +139,7 @@ lint:
     COPY (+sources/*) /src
     COPY --pass-args +tidy/go.* .
     WORKDIR /src/components/operator
-    DO --pass-args stack+GO_LINT
+    DO --pass-args core+GO_LINT
     SAVE ARTIFACT api AS LOCAL api
     SAVE ARTIFACT internal AS LOCAL internal
 
@@ -203,7 +203,7 @@ tidy:
     FROM core+builder-image
     COPY --pass-args (+sources/src) /src
     WORKDIR /src/components/operator
-    DO --pass-args stack+GO_TIDY
+    DO --pass-args core+GO_TIDY
     BUILD ./tools/utils+tidy
     BUILD ./tools/kubectl-stacks+tidy
 
@@ -232,9 +232,14 @@ helm-publish:
     WORKDIR /src
     FOR dir IN $(ls -d */)
         WORKDIR /src/$dir
-        DO --pass-args stack+HELM_PUBLISH --path=/src/${dir}*.tgz
+        DO --pass-args core+HELM_PUBLISH --path=/src/${dir}*.tgz
     END
 
 release:
-    BUILD --pass-args stack+goreleaser --path=components/operator
-    BUILD --pass-args stack+goreleaser --path=components/operator/tools/utils
+    FROM core+builder-image
+    ARG mode=local
+    COPY . /src
+    DO core+GORELEASER --mode=$mode
+    IF [ "$mode" = "release" ]
+        BUILD --pass-args +helm-publish
+    END

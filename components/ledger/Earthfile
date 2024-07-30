@@ -1,18 +1,25 @@
 VERSION 0.8
+PROJECT FormanceHQ/ledger
 
-IMPORT github.com/formancehq/earthly:tags/v0.15.0 AS core
-IMPORT ../.. AS stack
-IMPORT .. AS components
+IMPORT github.com/formancehq/earthly:feat/monorepo AS core
 
 FROM core+base-image
 
 sources:
     WORKDIR src
-    COPY (stack+sources/out --LOCATION=libs/core) /src/libs/core
+    DO core+INCLUDE_CORE_LIBS --LOCATION libs/core
     WORKDIR /src/components/ledger
     COPY go.mod go.sum .
     COPY --dir internal pkg cmd .
     COPY main.go .
+    SAVE ARTIFACT /src
+
+sources-sdk:
+    WORKDIR /src
+    COPY (+openapi/openapi.yaml) /src/openapi.yaml
+    COPY (core+sources-speakeasy/speakeasy) /bin/speakeasy
+    COPY (core+sources/out/go.gen.yaml --LOCATION=sdk/) /src/gen.yaml
+    RUN --secret SPEAKEASY_API_KEY speakeasy generate sdk -s ./openapi.yaml -o ./ -l go
     SAVE ARTIFACT /src
 
 generate:
@@ -98,7 +105,7 @@ deploy:
     RUN kubectl patch Versions.formance.com default -p "{\"spec\":{\"ledger\": \"${tag}\"}}" --type=merge
 
 deploy-staging:
-    BUILD --pass-args stack+deployer-module --MODULE=ledger
+    BUILD --pass-args core+deployer-module --MODULE=ledger
 
 lint:
     FROM core+builder-image
@@ -106,7 +113,7 @@ lint:
     WORKDIR /src/components/ledger
     COPY --pass-args +tidy/go.* .
     COPY --dir test .
-    DO --pass-args stack+GO_LINT --ADDITIONAL_ARGUMENTS="--build-tags it"
+    DO --pass-args core+GO_LINT --ADDITIONAL_ARGUMENTS="--build-tags it"
     SAVE ARTIFACT cmd AS LOCAL cmd
     SAVE ARTIFACT internal AS LOCAL internal
     SAVE ARTIFACT pkg AS LOCAL pkg
@@ -158,23 +165,19 @@ benchstat:
     RUN --no-cache benchstat /tmp/main.txt /tmp/branch.txt
 
 openapi:
-    FROM node:20-alpine
-    RUN apk update && apk add yq
-    RUN npm install -g openapi-merge-cli
-    WORKDIR /src/components/ledger
-    COPY --dir openapi openapi
-    RUN openapi-merge-cli --config ./openapi/openapi-merge.json
-    RUN yq -oy ./openapi.json > openapi.yaml
-    SAVE ARTIFACT ./openapi.yaml AS LOCAL ./openapi.yaml
+    DO --pass-args core+OPENAPI
 
 tidy:
     FROM core+builder-image
     COPY --pass-args (+sources/src) /src
     WORKDIR /src/components/ledger
-    DO --pass-args stack+GO_TIDY
+    DO --pass-args core+GO_TIDY
 
 release:
-    BUILD --pass-args stack+goreleaser --path=components/ledger
+    FROM core+builder-image
+    ARG mode=local
+    COPY . /src
+    DO core+GORELEASER --mode=$mode
 
 generate-sdk:
     FROM node:20-alpine
@@ -185,5 +188,4 @@ generate-sdk:
     COPY openapi/v2.yaml openapi.yaml
     COPY --dir pkg/client client
     RUN --secret SPEAKEASY_API_KEY speakeasy generate sdk -s ./openapi.yaml -o ./client -l go
-
     SAVE ARTIFACT client AS LOCAL ./pkg/client

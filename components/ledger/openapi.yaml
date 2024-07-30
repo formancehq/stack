@@ -1,10 +1,31 @@
 openapi: 3.0.3
 info:
-  title: Ledger API
-  contact: {}
-  version: LEDGER_VERSION
+  title: Formance Stack API
+  description: |
+    Open, modular foundation for unique payments flows
+
+    # Introduction
+    This API is documented in **OpenAPI format**.
+
+    # Authentication
+    Formance Stack offers one forms of authentication:
+      - OAuth2
+    OAuth2 - an open protocol to allow secure authorization in a simple
+    and standard method from web, mobile and desktop applications.
+    <SecurityDefinitions />
+  contact:
+    name: Formance
+    url: https://www.formance.com
+    email: support@formance.com
+  x-logo:
+    url: https://avatars.githubusercontent.com/u/84325077?s=200&v=4
+    altText: Formance
+  version: SDK_VERSION
 servers:
-  - url: http://localhost:8080/
+  - url: http://localhost
+    description: local server
+security:
+  - Authorization: []
 paths:
   /_info:
     get:
@@ -2251,6 +2272,14 @@ paths:
                 type: string
                 format: binary
 components:
+  securitySchemes:
+    Authorization:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: /api/auth/oauth/token
+          refreshUrl: /api/auth/oauth/token
+          scopes: {}
   schemas:
     AccountsCursorResponse:
       type: object

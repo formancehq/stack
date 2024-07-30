@@ -1,0 +1,9 @@
+libs:
+  - changed-files:
+    - any-glob-to-any-file: "libs/*"
+openapi:
+  - changed-files:
+    - any-glob-to-any-file: "openapi/*"
+github:
+  - changed-files:
+    - any-glob-to-any-file: ".github/*"

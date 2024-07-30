@@ -1,6 +1,6 @@
 VERSION 0.8
 
-IMPORT github.com/formancehq/earthly:tags/v0.15.0 AS core
+IMPORT github.com/formancehq/earthly:feat/monorepo AS core
 IMPORT .. AS stack
 
 deploy:
@@ -16,6 +16,7 @@ deploy-staging:
 run:
     LOCALLY
     ARG --required TARGET
+    BUILD ./fctl+$TARGET
     BUILD ./ledger+$TARGET
     BUILD ./operator+$TARGET
     BUILD ./payments+$TARGET

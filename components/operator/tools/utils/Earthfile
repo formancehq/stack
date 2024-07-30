@@ -1,17 +1,16 @@
 VERSION 0.8
-
-IMPORT github.com/formancehq/earthly:tags/v0.15.0 AS core
-IMPORT ../../../.. AS stack
-IMPORT ../../.. AS components
+IMPORT github.com/formancehq/earthly:feat/monorepo AS core
+IMPORT ../../ AS operator
 
 FROM core+base-image
 
 sources:
     FROM core+builder-image
     WORKDIR /src
+    COPY (operator+sources/src/components/operator) /src/components/operator
     WORKDIR /src/components/operator/tools/utils
+    COPY go.* *.go .
     COPY --dir cmd .
-    COPY go.* main.go .
     SAVE ARTIFACT /src
 
 compile:
@@ -33,7 +32,7 @@ lint:
     COPY (+sources/*) /src
     COPY --pass-args +tidy/go.* .
     WORKDIR /src/components/operator/tools/utils
-    DO --pass-args stack+GO_LINT
+    DO --pass-args core+GO_LINT
     SAVE ARTIFACT cmd AS LOCAL cmd
 
 pre-commit:
@@ -46,7 +45,7 @@ tidy:
     FROM core+builder-image
     COPY --pass-args (+sources/src) /src
     WORKDIR /src/components/operator/tools/utils
-    DO --pass-args stack+GO_TIDY
+    DO --pass-args core+GO_TIDY
 
 release:
-    BUILD --pass-args stack+goreleaser --path=components/operator/tools/utils
+    BUILD --pass-args core+goreleaser --path=components/operator/tools/utils

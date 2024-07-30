@@ -83,3 +83,5 @@ require (
 )
 
 replace github.com/formancehq/operator => ./../..
+
+replace github.com/formancehq/stack/libs/go-libs => ./../../../../libs/go-libs

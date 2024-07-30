@@ -1,7 +1,6 @@
 VERSION 0.8
 
-IMPORT github.com/formancehq/earthly:tags/v0.15.0 AS core
-IMPORT ../.. AS stack
+IMPORT github.com/formancehq/earthly:feat/monorepo AS core
 
 FROM core+base-image
 
@@ -14,7 +13,7 @@ tidy:
     FROM core+builder-image
     COPY (+sources/*) /src
     WORKDIR /src
-    DO --pass-args stack+GO_TIDY
+    DO --pass-args core+GO_TIDY
     SAVE ARTIFACT go.* AS LOCAL ./
 
 lint:
@@ -22,7 +21,7 @@ lint:
     COPY (+sources/*) /src
     WORKDIR /src
     COPY --pass-args +tidy/go.* .
-    DO --pass-args stack+GO_LINT
+    DO --pass-args core+GO_LINT
     SAVE ARTIFACT * AS LOCAL ./
 
 pre-commit:

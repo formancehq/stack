@@ -1,9 +1,31 @@
 openapi: 3.0.3
 info:
-  title: Auth API
-  contact: {}
-  version: "AUTH_VERSION"
+  title: Formance Stack API
+  description: |
+    Open, modular foundation for unique payments flows
 
+    # Introduction
+    This API is documented in **OpenAPI format**.
+
+    # Authentication
+    Formance Stack offers one forms of authentication:
+      - OAuth2
+    OAuth2 - an open protocol to allow secure authorization in a simple
+    and standard method from web, mobile and desktop applications.
+    <SecurityDefinitions />
+  contact:
+    name: Formance
+    url: https://www.formance.com
+    email: support@formance.com
+  x-logo:
+    url: https://avatars.githubusercontent.com/u/84325077?s=200&v=4
+    altText: Formance
+  version: SDK_VERSION
+servers:
+  - url: http://localhost
+    description: local server
+security:
+  - Authorization: []
 paths:
   /.well-known/openid-configuration:
     get:
@@ -12,11 +34,10 @@ paths:
       tags:
         - auth.v1
       responses:
-        200:
+        "200":
           description: |
             OpenID provider configuration.
             See https://swagger.io/docs/specification/authentication/openid-connect-discovery/ for details
-
   /_info:
     get:
       summary: Get server info
@@ -24,7 +45,7 @@ paths:
       tags:
         - auth.v1
       responses:
-        200:
+        "200":
           description: Server information
           content:
             application/json:
@@ -138,7 +159,7 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateSecretRequest'
       responses:
-        200:
+        "200":
           description: Created secret
           content:
             application/json:
@@ -164,7 +185,7 @@ paths:
           schema:
             type: string
       responses:
-        204:
+        "204":
           description: Secret deleted
   /users:
     get:
@@ -174,7 +195,7 @@ paths:
       description: List users
       operationId: listUsers
       responses:
-        200:
+        "200":
           description: List of users
           content:
             application/json:
@@ -195,13 +216,21 @@ paths:
           schema:
             type: string
       responses:
-        200:
+        "200":
           description: Retrieved user
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReadUserResponse'
 components:
+  securitySchemes:
+    Authorization:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: /api/auth/oauth/token
+          refreshUrl: /api/auth/oauth/token
+          scopes: {}
   schemas:
     Metadata:
       type: object
@@ -384,7 +413,7 @@ components:
     ServerInfo:
       type: object
       required:
-      - version
+        - version
       properties:
         version:
           type: string

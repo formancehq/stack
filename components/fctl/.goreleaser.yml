@@ -1,9 +1,10 @@
-# source about auto completion = https://carlosbecker.com/posts/golang-completions-cobra/
-
+# yaml-language-server: $schema=https://goreleaser.com/static/schema-pro.json
+version: 2
 project_name: fctl
+
 includes:
-  - from_file:
-      path: ./../../.goreleaser.default.yaml
+  - from_url:
+      url: https://raw.githubusercontent.com/formancehq/earthly/feat/monorepo/.goreleaser.default.yaml
 monorepo:
   tag_prefix: v
   dir: ./
@@ -43,7 +44,7 @@ brews:
       owner: formancehq
       name: homebrew-tap
     name: fctl
-    folder: Formula
+    directory: Formula
     homepage: https://formance.com
     skip_upload: 'false'
     test: |
