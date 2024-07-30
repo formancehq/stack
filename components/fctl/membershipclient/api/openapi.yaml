@@ -2038,9 +2038,6 @@ components:
           items:
             $ref: '#/components/schemas/StackClaim'
           type: array
-      required:
-      - orgClaim
-      - stackClaims
       type: object
     StackClaims:
       items:

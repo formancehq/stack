@@ -5,13 +5,13 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Role** | Pointer to [**Role**](Role.md) |  | [optional] [default to EMPTY]
-**StackClaims** | [**[]StackClaim**](StackClaim.md) |  | 
+**StackClaims** | Pointer to [**[]StackClaim**](StackClaim.md) |  | [optional] 
 
 ## Methods
 
 ### NewInvitationClaim
 
-`func NewInvitationClaim(stackClaims []StackClaim, ) *InvitationClaim`
+`func NewInvitationClaim() *InvitationClaim`
 
 NewInvitationClaim instantiates a new InvitationClaim object
 This constructor will assign default values to properties that have it defined,
@@ -70,6 +70,11 @@ and a boolean to check if the value has been set.
 
 SetStackClaims sets StackClaims field to given value.
 
+### HasStackClaims
+
+`func (o *InvitationClaim) HasStackClaims() bool`
+
+HasStackClaims returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
