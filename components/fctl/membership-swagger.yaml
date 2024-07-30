@@ -1861,9 +1861,6 @@ components:
           $ref: "#/components/schemas/Role"
         stackClaims:
           $ref: "#/components/schemas/StackClaims"
-      required:
-        - orgClaim
-        - stackClaims
     StackClaims:
       type: array
       items:
