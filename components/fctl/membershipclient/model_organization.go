@@ -45,10 +45,6 @@ type Organization struct {
 func NewOrganization(name string, id string, ownerId string) *Organization {
 	this := Organization{}
 	this.Name = name
-	var defaultOrganizationAccess Role = EMPTY
-	this.DefaultOrganizationAccess = &defaultOrganizationAccess
-	var defaultStackAccess Role = EMPTY
-	this.DefaultStackAccess = &defaultStackAccess
 	this.Id = id
 	this.OwnerId = ownerId
 	return &this
@@ -59,10 +55,6 @@ func NewOrganization(name string, id string, ownerId string) *Organization {
 // but it doesn't guarantee that properties required by API are set
 func NewOrganizationWithDefaults() *Organization {
 	this := Organization{}
-	var defaultOrganizationAccess Role = EMPTY
-	this.DefaultOrganizationAccess = &defaultOrganizationAccess
-	var defaultStackAccess Role = EMPTY
-	this.DefaultStackAccess = &defaultStackAccess
 	return &this
 }
 

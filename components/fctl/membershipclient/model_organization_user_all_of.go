@@ -20,15 +20,19 @@ var _ MappedNullable = &OrganizationUserAllOf{}
 // OrganizationUserAllOf struct for OrganizationUserAllOf
 type OrganizationUserAllOf struct {
 	Role Role `json:"role"`
+	Email string `json:"email"`
+	Id string `json:"id"`
 }
 
 // NewOrganizationUserAllOf instantiates a new OrganizationUserAllOf object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewOrganizationUserAllOf(role Role) *OrganizationUserAllOf {
+func NewOrganizationUserAllOf(role Role, email string, id string) *OrganizationUserAllOf {
 	this := OrganizationUserAllOf{}
 	this.Role = role
+	this.Email = email
+	this.Id = id
 	return &this
 }
 
@@ -37,8 +41,6 @@ func NewOrganizationUserAllOf(role Role) *OrganizationUserAllOf {
 // but it doesn't guarantee that properties required by API are set
 func NewOrganizationUserAllOfWithDefaults() *OrganizationUserAllOf {
 	this := OrganizationUserAllOf{}
-	var role Role = EMPTY
-	this.Role = role
 	return &this
 }
 
@@ -66,6 +68,54 @@ func (o *OrganizationUserAllOf) SetRole(v Role) {
 	o.Role = v
 }
 
+// GetEmail returns the Email field value
+func (o *OrganizationUserAllOf) GetEmail() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Email
+}
+
+// GetEmailOk returns a tuple with the Email field value
+// and a boolean to check if the value has been set.
+func (o *OrganizationUserAllOf) GetEmailOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Email, true
+}
+
+// SetEmail sets field value
+func (o *OrganizationUserAllOf) SetEmail(v string) {
+	o.Email = v
+}
+
+// GetId returns the Id field value
+func (o *OrganizationUserAllOf) GetId() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Id
+}
+
+// GetIdOk returns a tuple with the Id field value
+// and a boolean to check if the value has been set.
+func (o *OrganizationUserAllOf) GetIdOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Id, true
+}
+
+// SetId sets field value
+func (o *OrganizationUserAllOf) SetId(v string) {
+	o.Id = v
+}
+
 func (o OrganizationUserAllOf) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -77,6 +127,8 @@ func (o OrganizationUserAllOf) MarshalJSON() ([]byte, error) {
 func (o OrganizationUserAllOf) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["role"] = o.Role
+	toSerialize["email"] = o.Email
+	toSerialize["id"] = o.Id
 	return toSerialize, nil
 }
 

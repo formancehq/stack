@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Role** | Pointer to [**Role**](Role.md) |  | [optional] [default to EMPTY]
+**Role** | Pointer to [**Role**](Role.md) |  | [optional] 
 **StackClaims** | Pointer to [**[]StackClaim**](StackClaim.md) |  | [optional] 
 
 ## Methods

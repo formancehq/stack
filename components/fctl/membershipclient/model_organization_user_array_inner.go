@@ -21,7 +21,6 @@ var _ MappedNullable = &OrganizationUserArrayInner{}
 type OrganizationUserArrayInner struct {
 	Role Role `json:"role"`
 	Email string `json:"email"`
-	// User ID
 	Id string `json:"id"`
 }
 
@@ -42,8 +41,6 @@ func NewOrganizationUserArrayInner(role Role, email string, id string) *Organiza
 // but it doesn't guarantee that properties required by API are set
 func NewOrganizationUserArrayInnerWithDefaults() *OrganizationUserArrayInner {
 	this := OrganizationUserArrayInner{}
-	var role Role = EMPTY
-	this.Role = role
 	return &this
 }
 

@@ -34,10 +34,6 @@ type OrganizationData struct {
 func NewOrganizationData(name string) *OrganizationData {
 	this := OrganizationData{}
 	this.Name = name
-	var defaultOrganizationAccess Role = EMPTY
-	this.DefaultOrganizationAccess = &defaultOrganizationAccess
-	var defaultStackAccess Role = EMPTY
-	this.DefaultStackAccess = &defaultStackAccess
 	return &this
 }
 
@@ -46,10 +42,6 @@ func NewOrganizationData(name string) *OrganizationData {
 // but it doesn't guarantee that properties required by API are set
 func NewOrganizationDataWithDefaults() *OrganizationData {
 	this := OrganizationData{}
-	var defaultOrganizationAccess Role = EMPTY
-	this.DefaultOrganizationAccess = &defaultOrganizationAccess
-	var defaultStackAccess Role = EMPTY
-	this.DefaultStackAccess = &defaultStackAccess
 	return &this
 }
 

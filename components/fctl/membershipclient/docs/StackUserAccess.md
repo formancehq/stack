@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **StackId** | **string** | Stack ID | 
 **UserId** | **string** | User ID | 
-**Role** | [**Role**](Role.md) |  | [default to EMPTY]
+**Role** | [**Role**](Role.md) |  | 
 
 ## Methods
 

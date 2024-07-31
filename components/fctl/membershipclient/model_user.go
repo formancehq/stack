@@ -22,6 +22,7 @@ type User struct {
 	Email string `json:"email"`
 	// User ID
 	Id string `json:"id"`
+	Role *SystemRole `json:"role,omitempty"`
 }
 
 // NewUser instantiates a new User object
@@ -91,6 +92,38 @@ func (o *User) SetId(v string) {
 	o.Id = v
 }
 
+// GetRole returns the Role field value if set, zero value otherwise.
+func (o *User) GetRole() SystemRole {
+	if o == nil || IsNil(o.Role) {
+		var ret SystemRole
+		return ret
+	}
+	return *o.Role
+}
+
+// GetRoleOk returns a tuple with the Role field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *User) GetRoleOk() (*SystemRole, bool) {
+	if o == nil || IsNil(o.Role) {
+		return nil, false
+	}
+	return o.Role, true
+}
+
+// HasRole returns a boolean if a field has been set.
+func (o *User) HasRole() bool {
+	if o != nil && !IsNil(o.Role) {
+		return true
+	}
+
+	return false
+}
+
+// SetRole gets a reference to the given SystemRole and assigns it to the Role field.
+func (o *User) SetRole(v SystemRole) {
+	o.Role = &v
+}
+
 func (o User) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -103,6 +136,9 @@ func (o User) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["email"] = o.Email
 	toSerialize["id"] = o.Id
+	if !IsNil(o.Role) {
+		toSerialize["role"] = o.Role
+	}
 	return toSerialize, nil
 }
 

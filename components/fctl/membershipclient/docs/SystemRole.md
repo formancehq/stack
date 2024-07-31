@@ -1,13 +1,11 @@
-# Role
+# SystemRole
 
 ## Enum
 
 
-* `NONE` (value: `"NONE"`)
+* `USER` (value: `"USER"`)
 
-* `ADMIN` (value: `"ADMIN"`)
-
-* `GUEST` (value: `"GUEST"`)
+* `SYSTEM` (value: `"SYSTEM"`)
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

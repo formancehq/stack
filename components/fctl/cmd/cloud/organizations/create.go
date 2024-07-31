@@ -4,6 +4,7 @@ import (
 	"github.com/formancehq/fctl/cmd/cloud/organizations/internal"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
+	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/spf13/cobra"
 )
 
@@ -27,7 +28,7 @@ func NewCreateController() *CreateController {
 }
 
 func NewCreateCommand() *cobra.Command {
-	return fctl.NewCommand("create <name> --default-stack-role \"ADMIN\" --default-organization-role \"ADMIN\"",
+	return fctl.NewCommand(`create <name> --default-stack-role "ADMIN" --default-organization-role "ADMIN"`,
 		fctl.WithAliases("cr", "c"),
 		fctl.WithShortDescription("Create organization"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
@@ -52,20 +53,27 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 
 	defaultStackRole := fctl.GetString(cmd, "default-stack-role")
 	defaultOrganizationRole := fctl.GetString(cmd, "default-organization-role")
+	domain := fctl.GetString(cmd, "domain")
+
+	orgData := membershipclient.OrganizationData{
+		Name: args[0],
+	}
+
+	if defaultOrganizationRole != "" {
+		orgData.DefaultOrganizationAccess = membershipclient.Role(defaultOrganizationRole).Ptr()
+	}
+
+	if defaultStackRole != "" {
+		orgData.DefaultStackAccess = membershipclient.Role(defaultStackRole).Ptr()
+	}
+
+	if domain != "" {
+		orgData.Domain = pointer.For(domain)
+	}
+
 	response, _, err := store.Client().
 		CreateOrganization(cmd.Context()).
-		Body(membershipclient.OrganizationData{
-			Name:                      args[0],
-			DefaultOrganizationAccess: membershipclient.Role(defaultOrganizationRole).Ptr(),
-			DefaultStackAccess:        membershipclient.Role(defaultStackRole).Ptr(),
-			Domain: func() *string {
-				str := fctl.GetString(cmd, "domain")
-				if str == "" {
-					return nil
-				}
-				return &str
-			}(),
-		}).Execute()
+		Body(orgData).Execute()
 	if err != nil {
 		return nil, err
 	}

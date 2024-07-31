@@ -4,13 +4,15 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Role** | [**Role**](Role.md) |  | [default to EMPTY]
+**Role** | [**Role**](Role.md) |  | 
+**Email** | **string** |  | 
+**Id** | **string** |  | 
 
 ## Methods
 
 ### NewOrganizationUserAllOf
 
-`func NewOrganizationUserAllOf(role Role, ) *OrganizationUserAllOf`
+`func NewOrganizationUserAllOf(role Role, email string, id string, ) *OrganizationUserAllOf`
 
 NewOrganizationUserAllOf instantiates a new OrganizationUserAllOf object
 This constructor will assign default values to properties that have it defined,
@@ -43,6 +45,46 @@ and a boolean to check if the value has been set.
 `func (o *OrganizationUserAllOf) SetRole(v Role)`
 
 SetRole sets Role field to given value.
+
+
+### GetEmail
+
+`func (o *OrganizationUserAllOf) GetEmail() string`
+
+GetEmail returns the Email field if non-nil, zero value otherwise.
+
+### GetEmailOk
+
+`func (o *OrganizationUserAllOf) GetEmailOk() (*string, bool)`
+
+GetEmailOk returns a tuple with the Email field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetEmail
+
+`func (o *OrganizationUserAllOf) SetEmail(v string)`
+
+SetEmail sets Email field to given value.
+
+
+### GetId
+
+`func (o *OrganizationUserAllOf) GetId() string`
+
+GetId returns the Id field if non-nil, zero value otherwise.
+
+### GetIdOk
+
+`func (o *OrganizationUserAllOf) GetIdOk() (*string, bool)`
+
+GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetId
+
+`func (o *OrganizationUserAllOf) SetId(v string)`
+
+SetId sets Id field to given value.
 
 
 

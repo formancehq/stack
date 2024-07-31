@@ -29,8 +29,6 @@ type InvitationClaim struct {
 // will change when the set of required properties is changed
 func NewInvitationClaim() *InvitationClaim {
 	this := InvitationClaim{}
-	var role Role = EMPTY
-	this.Role = &role
 	return &this
 }
 
@@ -39,8 +37,6 @@ func NewInvitationClaim() *InvitationClaim {
 // but it doesn't guarantee that properties required by API are set
 func NewInvitationClaimWithDefaults() *InvitationClaim {
 	this := InvitationClaim{}
-	var role Role = EMPTY
-	this.Role = &role
 	return &this
 }
 

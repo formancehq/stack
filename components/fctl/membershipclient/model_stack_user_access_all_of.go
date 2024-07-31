@@ -43,8 +43,6 @@ func NewStackUserAccessAllOf(stackId string, userId string, role Role) *StackUse
 // but it doesn't guarantee that properties required by API are set
 func NewStackUserAccessAllOfWithDefaults() *StackUserAccessAllOf {
 	this := StackUserAccessAllOf{}
-	var role Role = EMPTY
-	this.Role = role
 	return &this
 }
 
