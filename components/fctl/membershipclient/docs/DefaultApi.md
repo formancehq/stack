@@ -136,7 +136,7 @@ import (
 func main() {
     organizationId := "organizationId_example" // string | 
     email := "email_example" // string | 
-    invitationClaim := *openapiclient.NewInvitationClaim([]openapiclient.StackClaim{*openapiclient.NewStackClaim("Id_example", openapiclient.Role(""))}) // InvitationClaim |  (optional)
+    invitationClaim := *openapiclient.NewInvitationClaim() // InvitationClaim |  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
