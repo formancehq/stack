@@ -149,7 +149,7 @@ func (d DefaultLedger) ListTransactions(ctx context.Context, ledger string, q Li
 			conditions = append(conditions, query.Match("source", q.Source))
 		}
 		if q.Account != "" {
-			conditions = append(conditions, query.Match("account", q.Source))
+			conditions = append(conditions, query.Match("account", q.Account))
 		}
 		if q.Metadata != nil {
 			for k, v := range q.Metadata {
