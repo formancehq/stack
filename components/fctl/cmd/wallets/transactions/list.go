@@ -38,6 +38,8 @@ func NewListCommand() *cobra.Command {
 		fctl.WithShortDescription("List transactions"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
 		fctl.WithController[*ListStore](NewListController()),
+		internal.WithTargetingWalletByName(),
+		internal.WithTargetingWalletByID(),
 	)
 }
 
