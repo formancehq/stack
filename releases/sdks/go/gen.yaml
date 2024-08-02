@@ -11,7 +11,7 @@ generation:
     oAuth2ClientCredentialsEnabled: false
   telemetryEnabled: false
 go:
-  version: 0.0.1
+  version: v0.0.0
   additionalDependencies: {}
   author: Formance
   clientServerStatusCodesAsErrors: true
