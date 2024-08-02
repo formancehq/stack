@@ -24,9 +24,11 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 		BeforeEach(func() {
 			createWalletResponse, err = Client().Wallets.CreateWallet(
 				TestContext(),
-				&shared.CreateWalletRequest{
-					Name:     uuid.NewString(),
-					Metadata: map[string]string{},
+				operations.CreateWalletRequest{
+					CreateWalletRequest: &shared.CreateWalletRequest{
+						Name:     uuid.NewString(),
+						Metadata: map[string]string{},
+					},
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
