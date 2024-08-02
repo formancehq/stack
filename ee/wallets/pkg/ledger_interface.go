@@ -8,6 +8,7 @@ import (
 	stdtime "time"
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
+	"github.com/pkg/errors"
 
 	"github.com/formancehq/stack/libs/go-libs/query"
 
@@ -224,7 +225,16 @@ func (d DefaultLedger) GetAccount(ctx context.Context, ledger, account string) (
 		Expand:  pointer.For("volumes"),
 	})
 	if err != nil {
-		return nil, err
+		switch v := err.(type) {
+		case *sdkerrors.V2ErrorResponse:
+			if v.ErrorCode == shared.V2ErrorsEnumNotFound {
+				return nil, errors.Wrap(ErrAccountNotFound, err.Error())
+			} else {
+				return nil, err
+			}
+		default:
+			return nil, err
+		}
 	}
 
 	balances := make(map[string]*big.Int)

@@ -571,12 +571,15 @@ func (m *Manager) CreateBalance(ctx context.Context, data *CreateBalance) (*Bala
 		return nil, err
 	}
 	ret, err := m.client.GetAccount(ctx, m.ledgerName, m.chart.GetBalanceAccount(data.WalletID, data.Name))
-	if err != nil {
+	switch {
+	case errors.Is(err, ErrAccountNotFound):
+	case err == nil:
+		if ret.Metadata != nil &&
+			ret.Metadata[MetadataKeyWalletBalance] == TrueValue {
+			return nil, ErrBalanceAlreadyExists
+		}
+	default:
 		return nil, err
-	}
-	if ret.Metadata != nil &&
-		ret.Metadata[MetadataKeyWalletBalance] == TrueValue {
-		return nil, ErrBalanceAlreadyExists
 	}
 
 	balance := NewBalance(data.Name, data.ExpiresAt)
