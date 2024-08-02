@@ -54,7 +54,7 @@ func (a *App) Run(ctx context.Context) error {
 		exitCode = shutdownSignal.ExitCode
 	}
 
-	logger.Infof("Stopping app...")
+	logger.Infof("Stopping app... %d", exitCode)
 
 	if err := app.Stop(logging.ContextWithLogger(contextWithLifecycle(
 		context.Background(), // Don't reuse original context as it can have been cancelled, and we really need to properly stop the app

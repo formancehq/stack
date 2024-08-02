@@ -34,6 +34,7 @@ func ContextWithServerInfo(ctx context.Context) context.Context {
 	return context.WithValue(ctx, serverInfoKey, &serverInfo{
 		started: make(chan struct{}),
 	})
+
 }
 
 func Started(ctx context.Context) chan struct{} {

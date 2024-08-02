@@ -6,7 +6,7 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
-	webhooks "github.com/formancehq/webhooks/pkg"
+	webhooks "github.com/formancehq/webhooks/pkg/utils"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -15,6 +15,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 	var (
 		secret     = webhooks.NewSecret()
 		insertResp *shared.ConfigResponse
+		
 	)
 
 	BeforeEach(func() {
@@ -33,9 +34,10 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 		Expect(response.StatusCode).To(Equal(200))
 
 		insertResp = response.ConfigResponse
+
 	})
 
-	Context("deactivating the inserted one", func() {
+	Context("Config: deactivating the inserted one", func() {
 		BeforeEach(func() {
 			response, err := Client().Webhooks.DeactivateConfig(
 				TestContext(),
@@ -49,7 +51,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 			Expect(response.ConfigResponse.Data.Active).To(BeFalse())
 		})
 
-		Context("getting all configs", func() {
+		Context("Config: getting all configs", func() {
 			It("should return 1 deactivated config", func() {
 				response, err := Client().Webhooks.GetManyConfigs(
 					TestContext(),
@@ -64,7 +66,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 		})
 	})
 
-	Context("deactivating the inserted one, then reactivating it", func() {
+	Context("Config: deactivating the inserted one, then reactivating it", func() {
 		BeforeEach(func() {
 			response, err := Client().Webhooks.DeactivateConfig(
 				TestContext(),
@@ -87,7 +89,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 			Expect(activateConfigResponse.ConfigResponse.Data.Active).To(BeTrue())
 		})
 
-		Context("getting all configs", func() {
+		Context("Config: getting all configs", func() {
 			It("should return 1 activated config", func() {
 				response, err := Client().Webhooks.GetManyConfigs(
 					TestContext(),
@@ -102,7 +104,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 		})
 	})
 
-	Context("trying to deactivate an unknown ID", func() {
+	Context("Config : trying to deactivate an unknown ID", func() {
 		It("should fail", func() {
 			_, err := Client().Webhooks.DeactivateConfig(
 				TestContext(),

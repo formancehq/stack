@@ -4,6 +4,7 @@ import (
 	"strings"
 	"time"
 
+	cache "github.com/formancehq/webhooks/internal/app/cache"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -12,12 +13,11 @@ import (
 const (
 	LogLevel = "log-level"
 	Listen   = "listen"
-	Worker   = "worker"
 
-	RetryPeriod     = "retry-period"
-	AbortAfter      = "abort-after"
-	MinBackoffDelay = "min-backoff-delay"
-	MaxBackoffDelay = "max-backoff-delay"
+	MaxCall   = "max-call"
+	MaxRetry  = "max-retry"
+	TimeOut   = "time-out"
+	DelayPull = "delay-pull"
 
 	KafkaTopics = "kafka-topics"
 	AutoMigrate = "auto-migrate"
@@ -37,16 +37,14 @@ var (
 
 func Init(flagSet *pflag.FlagSet) {
 	flagSet.String(LogLevel, logrus.InfoLevel.String(), "Log level")
-
 	flagSet.String(Listen, DefaultBindAddressServer, "server HTTP bind address")
-	flagSet.Duration(RetryPeriod, DefaultRetryPeriod, "worker retry period")
-	flagSet.Bool(Worker, false, "Enable worker on server")
+
+	flagSet.Int(TimeOut, 2000, "Set time out for hook request (ms)")
+	flagSet.Int(MaxRetry, 60, "Set max  number of retries for failed attempt")
+	flagSet.Int(MaxCall, 20, "Set max number of http request at the same time")
+	flagSet.Int(DelayPull, 1, "Period of time for pulling the database and synchronise cached data")
 
 	flagSet.StringSlice(KafkaTopics, []string{DefaultKafkaTopic}, "Kafka topics")
-
-	flagSet.Duration(AbortAfter, 30*24*time.Hour, "consider a webhook as failed after retrying it for this duration.")
-	flagSet.Duration(MinBackoffDelay, time.Minute, "minimum backoff delay")
-	flagSet.Duration(MaxBackoffDelay, time.Hour, "maximum backoff delay")
 	flagSet.Bool(AutoMigrate, false, "auto migrate database")
 }
 
@@ -57,4 +55,14 @@ func LoadEnv(v *viper.Viper) {
 
 func init() {
 	LoadEnv(viper.GetViper())
+}
+
+func LoadRunnerParams() cache.CacheParams {
+	stateParams := cache.DefaultCacheParams()
+	stateParams.MaxRetry = viper.GetInt(MaxRetry)
+	stateParams.MaxCall = viper.GetInt(MaxCall)
+	stateParams.TimeOut = viper.GetInt(TimeOut)
+	stateParams.DelayPull = viper.GetInt(DelayPull)
+
+	return stateParams
 }

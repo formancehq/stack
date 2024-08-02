@@ -1,0 +1,16 @@
+# V2Hook
+
+
+## Fields
+
+| Field                                                             | Type                                                              | Required                                                          | Description                                                       |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `DateCreation`                                                    | [time.Time](https://pkg.go.dev/time#Time)                         | :heavy_check_mark:                                                | N/A                                                               |
+| `DateStatus`                                                      | [time.Time](https://pkg.go.dev/time#Time)                         | :heavy_check_mark:                                                | N/A                                                               |
+| `Endpoint`                                                        | *string*                                                          | :heavy_check_mark:                                                | N/A                                                               |
+| `Events`                                                          | []*string*                                                        | :heavy_check_mark:                                                | N/A                                                               |
+| `ID`                                                              | *string*                                                          | :heavy_check_mark:                                                | N/A                                                               |
+| `Name`                                                            | *string*                                                          | :heavy_check_mark:                                                | N/A                                                               |
+| `Retry`                                                           | *bool*                                                            | :heavy_check_mark:                                                | N/A                                                               |
+| `Secret`                                                          | *string*                                                          | :heavy_check_mark:                                                | N/A                                                               |
+| `Status`                                                          | [shared.V2HookStatus](../../../pkg/models/shared/v2hookstatus.md) | :heavy_check_mark:                                                | N/A                                                               |
