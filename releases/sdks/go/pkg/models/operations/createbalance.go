@@ -9,7 +9,9 @@ import (
 
 type CreateBalanceRequest struct {
 	CreateBalanceRequest *shared.CreateBalanceRequest `request:"mediaType=application/json"`
-	ID                   string                       `pathParam:"style=simple,explode=false,name=id"`
+	// Use an idempotency key
+	IdempotencyKey *string `header:"style=simple,explode=false,name=Idempotency-Key"`
+	ID             string  `pathParam:"style=simple,explode=false,name=id"`
 }
 
 func (o *CreateBalanceRequest) GetCreateBalanceRequest() *shared.CreateBalanceRequest {
@@ -17,6 +19,13 @@ func (o *CreateBalanceRequest) GetCreateBalanceRequest() *shared.CreateBalanceRe
 		return nil
 	}
 	return o.CreateBalanceRequest
+}
+
+func (o *CreateBalanceRequest) GetIdempotencyKey() *string {
+	if o == nil {
+		return nil
+	}
+	return o.IdempotencyKey
 }
 
 func (o *CreateBalanceRequest) GetID() string {
