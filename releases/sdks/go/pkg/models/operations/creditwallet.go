@@ -9,7 +9,9 @@ import (
 
 type CreditWalletRequest struct {
 	CreditWalletRequest *shared.CreditWalletRequest `request:"mediaType=application/json"`
-	ID                  string                      `pathParam:"style=simple,explode=false,name=id"`
+	// Use an idempotency key
+	IdempotencyKey *string `header:"style=simple,explode=false,name=Idempotency-Key"`
+	ID             string  `pathParam:"style=simple,explode=false,name=id"`
 }
 
 func (o *CreditWalletRequest) GetCreditWalletRequest() *shared.CreditWalletRequest {
@@ -17,6 +19,13 @@ func (o *CreditWalletRequest) GetCreditWalletRequest() *shared.CreditWalletReque
 		return nil
 	}
 	return o.CreditWalletRequest
+}
+
+func (o *CreditWalletRequest) GetIdempotencyKey() *string {
+	if o == nil {
+		return nil
+	}
+	return o.IdempotencyKey
 }
 
 func (o *CreditWalletRequest) GetID() string {
