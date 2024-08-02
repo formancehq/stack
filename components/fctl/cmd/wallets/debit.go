@@ -24,6 +24,7 @@ type DebitWalletController struct {
 	descriptionFlag string
 	balanceFlag     string
 	destinationFlag string
+	ikFlag          string
 }
 
 var _ fctl.Controller[*DebitWalletStore] = (*DebitWalletController)(nil)
@@ -43,6 +44,7 @@ func NewDebitWalletController() *DebitWalletController {
 		descriptionFlag: "description",
 		balanceFlag:     "balance",
 		destinationFlag: "destination",
+		ikFlag:          "ik",
 	}
 }
 
@@ -54,6 +56,7 @@ func NewDebitWalletCommand() *cobra.Command {
 		fctl.WithConfirmFlag(),
 		fctl.WithArgs(cobra.RangeArgs(2, 3)),
 		fctl.WithStringFlag(c.descriptionFlag, "", "Debit description"),
+		fctl.WithStringFlag(c.ikFlag, "", "Idempotency Key"),
 		fctl.WithBoolFlag(c.pendingFlag, false, "Create a pending debit"),
 		fctl.WithStringSliceFlag(c.metadataFlag, []string{""}, "Metadata to use"),
 		fctl.WithStringSliceFlag(c.balanceFlag, []string{""}, "Balance to debit"),
@@ -105,6 +108,7 @@ func (c *DebitWalletController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 	}
 
 	response, err := store.Client().Wallets.DebitWallet(cmd.Context(), operations.DebitWalletRequest{
+		IdempotencyKey: fctl.Ptr(fctl.GetString(cmd, c.ikFlag)),
 		DebitWalletRequest: &shared.DebitWalletRequest{
 			Amount: shared.Monetary{
 				Asset:  asset,

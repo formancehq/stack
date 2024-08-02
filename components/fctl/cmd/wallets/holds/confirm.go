@@ -19,6 +19,7 @@ type ConfirmController struct {
 	store      *ConfirmStore
 	finalFlag  string
 	amountFlag string
+	ikFlag     string
 }
 
 var _ fctl.Controller[*ConfirmStore] = (*ConfirmController)(nil)
@@ -32,6 +33,7 @@ func NewConfirmController() *ConfirmController {
 		store:      NewDefaultConfirmStore(),
 		finalFlag:  "final",
 		amountFlag: "amount",
+		ikFlag:     "ik",
 	}
 }
 
@@ -42,6 +44,7 @@ func NewConfirmCommand() *cobra.Command {
 		fctl.WithAliases("c", "conf"),
 		fctl.WithArgs(cobra.RangeArgs(1, 2)),
 		fctl.WithBoolFlag(c.finalFlag, false, "Is final debit (close hold)"),
+		fctl.WithStringFlag(c.ikFlag, "", "Idempotency Key"),
 		fctl.WithIntFlag(c.amountFlag, 0, "Amount to confirm"),
 		fctl.WithController[*ConfirmStore](c),
 	)

@@ -25,9 +25,11 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 		BeforeEach(func() {
 			response, err = Client().Wallets.CreateWallet(
 				TestContext(),
-				&shared.CreateWalletRequest{
-					Name:     uuid.NewString(),
-					Metadata: map[string]string{},
+				operations.CreateWalletRequest{
+					CreateWalletRequest: &shared.CreateWalletRequest{
+						Name:     uuid.NewString(),
+						Metadata: map[string]string{},
+					},
 				},
 			)
 			Expect(err).ToNot(HaveOccurred())
@@ -44,7 +46,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 						Sources:  []shared.Subject{},
 						Metadata: map[string]string{},
 					},
-					ID: response.CreateWalletResponse.Data.ID,
+					ID:             response.CreateWalletResponse.Data.ID,
 					IdempotencyKey: pointer.For("foo"),
 				})
 				Expect(err).To(Succeed())
@@ -61,7 +63,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 							Sources:  []shared.Subject{},
 							Metadata: map[string]string{},
 						},
-						ID: response.CreateWalletResponse.Data.ID,
+						ID:             response.CreateWalletResponse.Data.ID,
 						IdempotencyKey: pointer.For("foo"),
 					})
 					Expect(err).To(Succeed())

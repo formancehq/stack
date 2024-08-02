@@ -14,6 +14,7 @@ type UpdateStore struct {
 type UpdateController struct {
 	store        *UpdateStore
 	metadataFlag string
+	ikFlag       string
 }
 
 var _ fctl.Controller[*UpdateStore] = (*UpdateController)(nil)
@@ -26,6 +27,7 @@ func NewUpdateController() *UpdateController {
 	return &UpdateController{
 		store:        NewDefaultUpdateStore(),
 		metadataFlag: "metadata",
+		ikFlag:       "ik",
 	}
 }
 
@@ -36,6 +38,7 @@ func NewUpdateCommand() *cobra.Command {
 		fctl.WithAliases("up"),
 		fctl.WithConfirmFlag(),
 		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithStringFlag(c.ikFlag, "", "Idempotency Key"),
 		fctl.WithStringSliceFlag(c.metadataFlag, []string{""}, "Metadata to use"),
 		fctl.WithController[*UpdateStore](c),
 	)
@@ -58,6 +61,7 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	}
 
 	_, err = store.Client().Wallets.UpdateWallet(cmd.Context(), operations.UpdateWalletRequest{
+		IdempotencyKey: fctl.Ptr(fctl.GetString(cmd, c.ikFlag)),
 		RequestBody: &operations.UpdateWalletRequestBody{
 			Metadata: metadata,
 		},
