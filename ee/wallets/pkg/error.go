@@ -6,6 +6,7 @@ import (
 )
 
 var (
+	ErrAccountNotFound         = errors.New("account not found")
 	ErrWalletNotFound          = errors.New("wallet not found")
 	ErrHoldNotFound            = errors.New("hold not found")
 	ErrInsufficientFundError   = errors.New("insufficient fund")
