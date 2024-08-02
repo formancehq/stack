@@ -2,6 +2,7 @@ package wallets
 
 import (
 	fctl "github.com/formancehq/fctl/pkg"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
@@ -14,6 +15,7 @@ type CreateStore struct {
 type CreateController struct {
 	store        *CreateStore
 	metadataFlag string
+	ikFlag       string
 }
 
 var _ fctl.Controller[*CreateStore] = (*CreateController)(nil)
@@ -26,6 +28,7 @@ func NewCreateController() *CreateController {
 	return &CreateController{
 		store:        NewDefaultCreateStore(),
 		metadataFlag: "metadata",
+		ikFlag:       "ik",
 	}
 }
 
@@ -37,6 +40,7 @@ func NewCreateCommand() *cobra.Command {
 		fctl.WithConfirmFlag(),
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithStringSliceFlag(c.metadataFlag, []string{""}, "Metadata to use"),
+		fctl.WithStringFlag(c.ikFlag, "", "Idempotency key"),
 		fctl.WithController[*CreateStore](c),
 	)
 }
@@ -57,11 +61,14 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
-	request := shared.CreateWalletRequest{
-		Name:     args[0],
-		Metadata: metadata,
+	request := operations.CreateWalletRequest{
+		CreateWalletRequest: &shared.CreateWalletRequest{
+			Name:     args[0],
+			Metadata: metadata,
+		},
+		IdempotencyKey: fctl.Ptr(fctl.GetString(cmd, c.ikFlag)),
 	}
-	response, err := store.Client().Wallets.CreateWallet(cmd.Context(), &request)
+	response, err := store.Client().Wallets.CreateWallet(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "creating wallet")
 	}
