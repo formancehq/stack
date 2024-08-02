@@ -27,13 +27,13 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 			now                    = time.Now().Round(time.Microsecond).UTC()
 		)
 		BeforeEach(func() {
-			createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+			createLedgerResponse, err := Client().Ledger.V2.CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 				Ledger: "default",
 			})
 			Expect(err).To(BeNil())
 			Expect(createLedgerResponse.StatusCode).To(Equal(http.StatusNoContent))
 
-			response, err := Client().Orchestration.V2CreateWorkflow(
+			response, err := Client().Orchestration.V2.CreateWorkflow(
 				TestContext(),
 				&shared.V2CreateWorkflowRequest{
 					Name: ptr(uuid.New()),
@@ -82,7 +82,7 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 		Then("executing it", func() {
 			var runWorkflowResponse *shared.V2RunWorkflowResponse
 			BeforeEach(func() {
-				response, err := Client().Orchestration.V2RunWorkflow(
+				response, err := Client().Orchestration.V2.RunWorkflow(
 					TestContext(),
 					operations.V2RunWorkflowRequest{
 						RequestBody: map[string]string{
@@ -117,7 +117,7 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 				var instanceResponse *shared.V2GetWorkflowInstanceResponse
 				BeforeEach(func() {
 					Eventually(func() bool {
-						response, err := Client().Orchestration.V2GetInstance(
+						response, err := Client().Orchestration.V2.GetInstance(
 							TestContext(),
 							operations.V2GetInstanceRequest{
 								InstanceID: runWorkflowResponse.Data.ID,
@@ -145,7 +145,7 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 				//Then("checking ledger account balance", func() {
 				//	var balancesCursorResponse *shared.BalancesCursorResponse
 				//	BeforeEach(func() {
-				//		reponse, err := Client().Ledger.V2GetBalances(
+				//		reponse, err := Client().Ledger.V2.GetBalances(
 				//			TestContext(),
 				//			operations.GetBalancesRequest{
 				//				Address: ptr("bank"),
@@ -167,7 +167,7 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 				Then("reading history", func() {
 					var getWorkflowInstanceHistoryResponse *shared.GetWorkflowInstanceHistoryResponse
 					BeforeEach(func() {
-						response, err := Client().Orchestration.GetInstanceHistory(
+						response, err := Client().Orchestration.V1.GetInstanceHistory(
 							TestContext(),
 							operations.GetInstanceHistoryRequest{
 								InstanceID: runWorkflowResponse.Data.ID,
@@ -219,7 +219,7 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 					Then("reading first stage history", func() {
 						var getWorkflowInstanceHistoryStageResponse *shared.V2GetWorkflowInstanceHistoryStageResponse
 						BeforeEach(func() {
-							response, err := Client().Orchestration.V2GetInstanceStageHistory(
+							response, err := Client().Orchestration.V2.GetInstanceStageHistory(
 								TestContext(),
 								operations.V2GetInstanceStageHistoryRequest{
 									InstanceID: runWorkflowResponse.Data.ID,

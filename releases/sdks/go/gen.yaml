@@ -13,6 +13,7 @@ generation:
 go:
   version: v0.0.0
   additionalDependencies: {}
+  allowUnknownFieldsInWeakUnions: false
   author: Formance
   clientServerStatusCodesAsErrors: true
   flattenGlobalSecurity: false

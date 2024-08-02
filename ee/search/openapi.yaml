@@ -9,7 +9,7 @@ paths:
       summary: Get server info
       operationId: getServerInfo
       tags:
-        - Search
+        - search.v1
       responses:
         "200":
           description: Server information
@@ -19,11 +19,11 @@ paths:
                 $ref: '#/components/schemas/ServerInfo'
   /:
     post:
-      summary: Search
+      summary: search.v1
       tags:
-        - Search
+        - search.v1
       operationId: search
-      description: ElasticSearch query engine
+      description: Elasticsearch.v1 query engine
       requestBody:
         required: true
         content:

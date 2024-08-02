@@ -31,7 +31,7 @@ func DiscoverWalletIDFromName(cmd *cobra.Command, client *formance.Formance, wal
 	request := operations.ListWalletsRequest{
 		Name: &walletName,
 	}
-	wallets, err := client.Wallets.ListWallets(cmd.Context(), request)
+	wallets, err := client.Wallets.V1.ListWallets(cmd.Context(), request)
 	if err != nil {
 		return "", errors.Wrap(err, "listing wallets to retrieve wallet by name")
 	}

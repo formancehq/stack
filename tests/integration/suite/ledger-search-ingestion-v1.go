@@ -47,7 +47,7 @@ var _ = WithModules([]*Module{modules.Search}, func() {
 		})
 		It("should be ingested properly", func() {
 			Eventually(func(g Gomega) bool {
-				response, err := Client().Search.Search(
+				response, err := Client().Search.V1.Search(
 					TestContext(),
 					shared.Query{
 						Target: ptr("TRANSACTION"),
@@ -77,7 +77,7 @@ var _ = WithModules([]*Module{modules.Search}, func() {
 				return true
 			}).Should(BeTrue())
 			Eventually(func(g Gomega) bool {
-				response, err := Client().Search.Search(
+				response, err := Client().Search.V1.Search(
 					TestContext(),
 					shared.Query{
 						Target: ptr("ACCOUNT"),
@@ -124,7 +124,7 @@ var _ = WithModules([]*Module{modules.Search}, func() {
 			})
 			It("should be ok", func() {
 				Eventually(func(g Gomega) bool {
-					response, err := Client().Search.Search(
+					response, err := Client().Search.V1.Search(
 						TestContext(),
 						shared.Query{
 							Target: ptr("ACCOUNT"),

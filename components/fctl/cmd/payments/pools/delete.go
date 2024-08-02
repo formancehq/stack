@@ -66,7 +66,7 @@ func (c *DeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, fctl.ErrMissingApproval
 	}
 
-	response, err := store.Client().Payments.DeletePool(
+	response, err := store.Client().Payments.V1.DeletePool(
 		cmd.Context(),
 		operations.DeletePoolRequest{
 			PoolID: args[0],

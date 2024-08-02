@@ -28,7 +28,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 				"ledger.committed_transactions",
 			},
 		}
-		response, err := Client().Webhooks.InsertConfig(
+		response, err := Client().Webhooks.V1.InsertConfig(
 			TestContext(),
 			cfg,
 		)
@@ -40,7 +40,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 
 	Context("deleting the inserted one", func() {
 		BeforeEach(func() {
-			response, err := Client().Webhooks.DeleteConfig(
+			response, err := Client().Webhooks.V1.DeleteConfig(
 				TestContext(),
 				operations.DeleteConfigRequest{
 					ID: insertResp.Data.ID,
@@ -52,7 +52,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 
 		Context("getting all configs", func() {
 			It("should return 0 config", func() {
-				response, err := Client().Webhooks.GetManyConfigs(
+				response, err := Client().Webhooks.V1.GetManyConfigs(
 					TestContext(),
 					operations.GetManyConfigsRequest{},
 				)
@@ -65,7 +65,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 		})
 
 		AfterEach(func() {
-			_, err := Client().Webhooks.DeleteConfig(
+			_, err := Client().Webhooks.V1.DeleteConfig(
 				TestContext(),
 				operations.DeleteConfigRequest{
 					ID: insertResp.Data.ID,
@@ -78,7 +78,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 
 	Context("trying to delete an unknown ID", func() {
 		It("should fail", func() {
-			_, err := Client().Webhooks.DeleteConfig(
+			_, err := Client().Webhooks.V1.DeleteConfig(
 				TestContext(),
 				operations.DeleteConfigRequest{
 					ID: "unknown",

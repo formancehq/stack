@@ -57,7 +57,7 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
-	_, err = store.Client().Wallets.UpdateWallet(cmd.Context(), operations.UpdateWalletRequest{
+	_, err = store.Client().Wallets.V1.UpdateWallet(cmd.Context(), operations.UpdateWalletRequest{
 		RequestBody: &operations.UpdateWalletRequestBody{
 			Metadata: metadata,
 		},

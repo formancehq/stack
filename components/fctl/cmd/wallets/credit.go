@@ -106,7 +106,7 @@ func (c *CreditWalletController) Run(cmd *cobra.Command, args []string) (fctl.Re
 			Balance:  formance.String(fctl.GetString(cmd, c.balanceFlag)),
 		},
 	}
-	_, err = store.Client().Wallets.CreditWallet(cmd.Context(), request)
+	_, err = store.Client().Wallets.V1.CreditWallet(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "crediting wallet")
 	}

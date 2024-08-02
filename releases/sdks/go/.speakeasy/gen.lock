@@ -1,43 +1,57 @@
 lockVersion: 2.0.0
 id: 7eac0a45-60a2-40bb-9e85-26bd77ec2a6d
 management:
-  docChecksum: 8a9ef86467c00955c6ddee01c0a79bcb
+  docChecksum: 6a6276ca543a30f2559e9f8a0ddea737
   docVersion: v0.0.0
-  speakeasyVersion: 1.292.0
-  generationVersion: 2.332.4
+  speakeasyVersion: 1.346.0
+  generationVersion: 2.379.3
   releaseVersion: v0.0.0
-  configChecksum: 28c1da66ee9378d9623ec2601b659dd5
+  configChecksum: 86fb0b4c762641bbbe6b4f59e9dd3989
 features:
   go:
     additionalDependencies: 0.1.0
     constsAndDefaults: 0.1.4
-    core: 3.4.8
+    core: 3.5.2
+    defaultEnabledRetries: 0.2.0
     deprecations: 2.81.1
     downloadStreams: 0.1.1
+    envVarSecurityUsage: 0.2.0
     errors: 2.81.9
     getRequestBodies: 2.81.1
     globalSecurity: 2.82.9
     globalSecurityCallbacks: 0.1.0
     globalServerURLs: 2.82.2
-    groups: 2.81.2
     ignores: 2.81.1
     intellisenseMarkdownSupport: 0.1.0
+    nameOverrides: 2.81.2
     nullables: 0.1.0
-    responseFormat: 0.1.1
+    responseFormat: 0.1.2
+    retries: 2.83.0
     sdkHooks: 0.1.0
-    unions: 2.85.6
+    unions: 2.85.8
 generatedFiles:
+  - v1.go
   - auth.go
+  - formancev1.go
+  - v2.go
   - ledger.go
+  - formanceorchestrationv1.go
+  - formancev2.go
   - orchestration.go
+  - formancepaymentsv1.go
   - payments.go
+  - formancereconciliationv1.go
   - reconciliation.go
+  - formancesearchv1.go
   - search.go
+  - formancewalletsv1.go
   - wallets.go
+  - formancewebhooksv1.go
   - webhooks.go
   - formance.go
   - go.mod
   - pkg/models/sdkerrors/sdkerror.go
+  - pkg/retry/config.go
   - pkg/types/bigint.go
   - pkg/types/date.go
   - pkg/types/datetime.go
@@ -53,12 +67,13 @@ generatedFiles:
   - pkg/utils/retries.go
   - pkg/utils/security.go
   - pkg/utils/utils.go
-  - /pkg/models/operations/getoidcwellknowns.go
   - /pkg/models/operations/getversions.go
   - /pkg/models/operations/createclient.go
   - /pkg/models/operations/createsecret.go
   - /pkg/models/operations/deleteclient.go
   - /pkg/models/operations/deletesecret.go
+  - /pkg/models/operations/getoidcwellknowns.go
+  - /pkg/models/operations/getserverinfo.go
   - /pkg/models/operations/listclients.go
   - /pkg/models/operations/listusers.go
   - /pkg/models/operations/readclient.go
@@ -127,7 +142,6 @@ generatedFiles:
   - /pkg/models/operations/readtrigger.go
   - /pkg/models/operations/runworkflow.go
   - /pkg/models/operations/sendevent.go
-  - /pkg/models/operations/testtrigger.go
   - /pkg/models/operations/v2cancelevent.go
   - /pkg/models/operations/v2createtrigger.go
   - /pkg/models/operations/v2createworkflow.go
@@ -145,6 +159,7 @@ generatedFiles:
   - /pkg/models/operations/v2readtrigger.go
   - /pkg/models/operations/v2runworkflow.go
   - /pkg/models/operations/v2sendevent.go
+  - /pkg/models/operations/testtrigger.go
   - /pkg/models/operations/addaccounttopool.go
   - /pkg/models/operations/connectorstransfer.go
   - /pkg/models/operations/createaccount.go
@@ -230,6 +245,7 @@ generatedFiles:
   - /pkg/models/shared/createsecretresponse.go
   - /pkg/models/shared/secret.go
   - /pkg/models/shared/createsecretrequest.go
+  - /pkg/models/shared/serverinfo.go
   - /pkg/models/shared/listclientsresponse.go
   - /pkg/models/shared/listusersresponse.go
   - /pkg/models/shared/user.go
@@ -379,11 +395,8 @@ generatedFiles:
   - /pkg/models/shared/listtriggersoccurrencesresponse.go
   - /pkg/models/shared/triggeroccurrence.go
   - /pkg/models/shared/listworkflowsresponse.go
-  - /pkg/models/shared/serverinfo.go
   - /pkg/models/shared/readtriggerresponse.go
   - /pkg/models/shared/runworkflowresponse.go
-  - /pkg/models/shared/v2testtriggerresponse.go
-  - /pkg/models/shared/v2triggertest.go
   - /pkg/models/shared/v2createtriggerresponse.go
   - /pkg/models/shared/v2trigger.go
   - /pkg/models/shared/v2triggerdata.go
@@ -456,6 +469,8 @@ generatedFiles:
   - /pkg/models/shared/v2listworkflowsresponse.go
   - /pkg/models/shared/v2readtriggerresponse.go
   - /pkg/models/shared/v2runworkflowresponse.go
+  - /pkg/models/shared/v2testtriggerresponse.go
+  - /pkg/models/shared/v2triggertest.go
   - /pkg/models/shared/paymentserrorsenum.go
   - /pkg/models/shared/addaccounttopoolrequest.go
   - /pkg/models/shared/transferresponse.go
@@ -573,7 +588,6 @@ generatedFiles:
   - /pkg/models/sdkerrors/reconciliationerrorresponse.go
   - /pkg/models/sdkerrors/walletserrorresponse.go
   - /pkg/models/sdkerrors/webhookserrorresponse.go
-  - docs/pkg/models/operations/getoidcwellknownsresponse.md
   - docs/pkg/models/operations/getversionsresponse.md
   - docs/pkg/models/operations/createclientresponse.md
   - docs/pkg/models/operations/createsecretrequest.md
@@ -582,6 +596,8 @@ generatedFiles:
   - docs/pkg/models/operations/deleteclientresponse.md
   - docs/pkg/models/operations/deletesecretrequest.md
   - docs/pkg/models/operations/deletesecretresponse.md
+  - docs/pkg/models/operations/getoidcwellknownsresponse.md
+  - docs/pkg/models/operations/getserverinforesponse.md
   - docs/pkg/models/operations/listclientsresponse.md
   - docs/pkg/models/operations/listusersresponse.md
   - docs/pkg/models/operations/readclientrequest.md
@@ -713,8 +729,6 @@ generatedFiles:
   - docs/pkg/models/operations/sendeventrequestbody.md
   - docs/pkg/models/operations/sendeventrequest.md
   - docs/pkg/models/operations/sendeventresponse.md
-  - docs/pkg/models/operations/testtriggerrequest.md
-  - docs/pkg/models/operations/testtriggerresponse.md
   - docs/pkg/models/operations/v2canceleventrequest.md
   - docs/pkg/models/operations/v2canceleventresponse.md
   - docs/pkg/models/operations/v2createtriggerresponse.md
@@ -747,6 +761,8 @@ generatedFiles:
   - docs/pkg/models/operations/v2sendeventrequestbody.md
   - docs/pkg/models/operations/v2sendeventrequest.md
   - docs/pkg/models/operations/v2sendeventresponse.md
+  - docs/pkg/models/operations/testtriggerrequest.md
+  - docs/pkg/models/operations/testtriggerresponse.md
   - docs/pkg/models/operations/addaccounttopoolrequest.md
   - docs/pkg/models/operations/addaccounttopoolresponse.md
   - docs/pkg/models/operations/connectorstransferrequest.md
@@ -894,6 +910,7 @@ generatedFiles:
   - docs/pkg/models/shared/createsecretresponse.md
   - docs/pkg/models/shared/secret.md
   - docs/pkg/models/shared/createsecretrequest.md
+  - docs/pkg/models/shared/serverinfo.md
   - docs/pkg/models/shared/listclientsresponse.md
   - docs/pkg/models/shared/listusersresponse.md
   - docs/pkg/models/shared/user.md
@@ -1077,13 +1094,8 @@ generatedFiles:
   - docs/pkg/models/shared/listtriggersoccurrencesresponse.md
   - docs/pkg/models/shared/triggeroccurrence.md
   - docs/pkg/models/shared/listworkflowsresponse.md
-  - docs/pkg/models/shared/serverinfo.md
   - docs/pkg/models/shared/readtriggerresponse.md
   - docs/pkg/models/shared/runworkflowresponse.md
-  - docs/pkg/models/shared/v2testtriggerresponse.md
-  - docs/pkg/models/shared/filter.md
-  - docs/pkg/models/shared/variables.md
-  - docs/pkg/models/shared/v2triggertest.md
   - docs/pkg/models/shared/v2createtriggerresponse.md
   - docs/pkg/models/shared/v2trigger.md
   - docs/pkg/models/shared/v2triggerdata.md
@@ -1167,6 +1179,10 @@ generatedFiles:
   - docs/pkg/models/shared/v2listworkflowsresponse.md
   - docs/pkg/models/shared/v2readtriggerresponse.md
   - docs/pkg/models/shared/v2runworkflowresponse.md
+  - docs/pkg/models/shared/v2testtriggerresponse.md
+  - docs/pkg/models/shared/filter.md
+  - docs/pkg/models/shared/variables.md
+  - docs/pkg/models/shared/v2triggertest.md
   - docs/pkg/models/shared/paymentserrorsenum.md
   - docs/pkg/models/shared/addaccounttopoolrequest.md
   - docs/pkg/models/shared/transferresponse.md
@@ -1334,15 +1350,28 @@ generatedFiles:
   - docs/pkg/models/sdkerrors/schemaswalletserrorresponseerrorcode.md
   - docs/pkg/models/sdkerrors/walletserrorresponse.md
   - docs/pkg/models/sdkerrors/webhookserrorresponse.md
+  - docs/pkg/models/operations/option.md
   - docs/sdks/formance/README.md
   - docs/sdks/auth/README.md
+  - docs/sdks/v1/README.md
   - docs/sdks/ledger/README.md
+  - docs/sdks/formancev1/README.md
+  - docs/sdks/v2/README.md
   - docs/sdks/orchestration/README.md
+  - docs/sdks/formanceorchestrationv1/README.md
+  - docs/sdks/formancev2/README.md
   - docs/sdks/payments/README.md
+  - docs/sdks/formancepaymentsv1/README.md
   - docs/sdks/reconciliation/README.md
+  - docs/sdks/formancereconciliationv1/README.md
   - docs/sdks/search/README.md
+  - docs/sdks/formancesearchv1/README.md
   - docs/sdks/wallets/README.md
+  - docs/sdks/formancewalletsv1/README.md
   - docs/sdks/webhooks/README.md
+  - docs/sdks/formancewebhooksv1/README.md
   - USAGE.md
+  - pkg/models/operations/options.go
   - .gitattributes
   - internal/hooks/hooks.go
+  - CONTRIBUTING.md

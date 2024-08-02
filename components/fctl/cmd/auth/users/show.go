@@ -47,7 +47,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	request := operations.ReadUserRequest{
 		UserID: args[0],
 	}
-	readUserResponse, err := store.Client().Auth.ReadUser(cmd.Context(), request)
+	readUserResponse, err := store.Client().Auth.V1.ReadUser(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}

@@ -103,7 +103,7 @@ func (c *UpdateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 			Scopes:                 fctl.GetStringSlice(cmd, c.scopes),
 		},
 	}
-	response, err := store.Client().Auth.UpdateClient(cmd.Context(), request)
+	response, err := store.Client().Auth.V1.UpdateClient(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}

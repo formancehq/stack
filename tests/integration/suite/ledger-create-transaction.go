@@ -22,7 +22,7 @@ import (
 
 var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 	BeforeEach(func() {
-		createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+		createLedgerResponse, err := Client().Ledger.V2.CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 			Ledger: "default",
 		})
 		Expect(err).To(BeNil())
@@ -41,7 +41,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			cancelSubscription, msgs = SubscribeLedger()
 
 			// Create a transaction
-			response, err := Client().Ledger.V2CreateTransaction(
+			response, err := Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.V2CreateTransactionRequest{
 					V2PostTransaction: shared.V2PostTransaction{
@@ -69,7 +69,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			cancelSubscription()
 		})
 		It("should be available on api", func() {
-			response, err := Client().Ledger.V2GetTransaction(
+			response, err := Client().Ledger.V2.GetTransaction(
 				TestContext(),
 				operations.V2GetTransactionRequest{
 					Ledger: "default",
@@ -121,7 +121,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 				},
 			}))
 
-			accResponse, err := Client().Ledger.V2GetAccount(
+			accResponse, err := Client().Ledger.V2.GetAccount(
 				TestContext(),
 				operations.V2GetAccountRequest{
 					Address: "alice",
@@ -151,7 +151,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			)
 			BeforeEach(func() {
 				// Create a transaction
-				_, err = Client().Ledger.V2CreateTransaction(
+				_, err = Client().Ledger.V2.CreateTransaction(
 					TestContext(),
 					operations.V2CreateTransactionRequest{
 						V2PostTransaction: shared.V2PostTransaction{
@@ -197,7 +197,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 				"ledger":    "default",
 			}
 			Eventually(func(g Gomega) bool {
-				response, err := Client().Search.Search(
+				response, err := Client().Search.V1.Search(
 					TestContext(),
 					shared.Query{
 						Target: ptr("TRANSACTION"),
@@ -214,7 +214,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			}).Should(BeTrue())
 
 			Eventually(func(g Gomega) []map[string]any {
-				response, err := Client().Search.Search(
+				response, err := Client().Search.V1.Search(
 					TestContext(),
 					shared.Query{
 						Target: ptr("TRANSACTION"),
@@ -230,7 +230,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			}).Should(HaveLen(1))
 
 			Eventually(func(g Gomega) bool {
-				response, err := Client().Search.Search(
+				response, err := Client().Search.V1.Search(
 					TestContext(),
 					shared.Query{
 						Target: ptr("ACCOUNT"),
@@ -260,7 +260,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 
 	When("creating a transaction on a ledger with insufficient funds", func() {
 		It("should fail", func() {
-			_, err := Client().Ledger.V2CreateTransaction(
+			_, err := Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.V2CreateTransactionRequest{
 					V2PostTransaction: shared.V2PostTransaction{
@@ -292,7 +292,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			response *operations.V2CreateTransactionResponse
 		)
 		createTransaction := func() {
-			response, err = Client().Ledger.V2CreateTransaction(
+			response, err = Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.V2CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
@@ -330,7 +330,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			err error
 		)
 		BeforeEach(func() {
-			_, err = Client().Ledger.V2CreateTransaction(
+			_, err = Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.V2CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
@@ -359,7 +359,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			err error
 		)
 		BeforeEach(func() {
-			_, err = Client().Ledger.V2CreateTransaction(
+			_, err = Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.V2CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
@@ -395,7 +395,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 		)
 		BeforeEach(func() {
 			v, _ := big.NewInt(0).SetString("1320000000000000000000000000000000000000000000000001", 10)
-			response, err = Client().Ledger.CreateTransaction(
+			response, err = Client().Ledger.V1.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
@@ -430,7 +430,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			err error
 		)
 		BeforeEach(func() {
-			_, err = Client().Ledger.V2CreateTransaction(
+			_, err = Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.V2CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
@@ -456,7 +456,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			err error
 		)
 		BeforeEach(func() {
-			_, err = Client().Ledger.V2CreateTransaction(
+			_, err = Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.V2CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
@@ -487,7 +487,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			err error
 		)
 		BeforeEach(func() {
-			_, err = Client().Ledger.V2CreateTransaction(
+			_, err = Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.V2CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
@@ -519,7 +519,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			ret *operations.V2CreateTransactionResponse
 		)
 		BeforeEach(func() {
-			ret, err = Client().Ledger.V2CreateTransaction(
+			ret, err = Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.V2CreateTransactionRequest{
 					IdempotencyKey: ptr("testing"),
@@ -546,7 +546,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 				txResponse *operations.V2CreateTransactionResponse
 			)
 			BeforeEach(func() {
-				txResponse, err = Client().Ledger.V2CreateTransaction(
+				txResponse, err = Client().Ledger.V2.CreateTransaction(
 					TestContext(),
 					operations.V2CreateTransactionRequest{
 						IdempotencyKey: ptr("testing"),

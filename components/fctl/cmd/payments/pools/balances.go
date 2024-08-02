@@ -45,7 +45,7 @@ func (c *BalancesController) Run(cmd *cobra.Command, args []string) (fctl.Render
 		return nil, err
 	}
 
-	response, err := store.Client().Payments.GetPoolBalances(
+	response, err := store.Client().Payments.V1.GetPoolBalances(
 		cmd.Context(),
 		operations.GetPoolBalancesRequest{
 			At:     at,

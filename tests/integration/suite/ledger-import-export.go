@@ -18,16 +18,16 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 	const logsToWrite = 5
 	When("creating a ledger with a bunch of transactions", func() {
 		BeforeEach(func() {
-			response, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+			response, err := Client().Ledger.V2.CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 				Ledger: "default",
 			})
 			Expect(err).To(BeNil())
 			Expect(response.StatusCode).To(Equal(http.StatusNoContent))
 
-			for i := 0 ; i < logsToWrite ; i++ {
-				_, err := Client().Ledger.V2CreateTransaction(TestContext(), operations.V2CreateTransactionRequest{
+			for i := 0; i < logsToWrite; i++ {
+				_, err := Client().Ledger.V2.CreateTransaction(TestContext(), operations.V2CreateTransactionRequest{
 					V2PostTransaction: shared.V2PostTransaction{
-						Postings:  []shared.V2Posting{{
+						Postings: []shared.V2Posting{{
 							Amount:      big.NewInt(100),
 							Asset:       "USD/2",
 							Destination: "bank",
@@ -35,7 +35,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 						}},
 						Metadata: map[string]string{},
 					},
-					Ledger:            "default",
+					Ledger: "default",
 				})
 				Expect(err).To(BeNil())
 			}
@@ -45,7 +45,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				data []byte
 			)
 			BeforeEach(func() {
-				ret, err := Client().Ledger.V2ExportLogs(TestContext(), operations.V2ExportLogsRequest{
+				ret, err := Client().Ledger.V2.ExportLogs(TestContext(), operations.V2ExportLogsRequest{
 					Ledger: "default",
 				})
 				Expect(err).To(BeNil())
@@ -61,21 +61,21 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				)
 				BeforeEach(func() {
 					newLedger = uuid.NewString()
-					_, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
-						Ledger: newLedger,
+					_, err := Client().Ledger.V2.CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+						Ledger:                newLedger,
 						V2CreateLedgerRequest: &shared.V2CreateLedgerRequest{},
 					})
 					Expect(err).To(BeNil())
 
-					_, err = Client().Ledger.V2ImportLogs(TestContext(), operations.V2ImportLogsRequest{
+					_, err = Client().Ledger.V2.ImportLogs(TestContext(), operations.V2ImportLogsRequest{
 						RequestBody: pointer.For(string(data)),
 						Ledger:      newLedger,
 					})
 					Expect(err).To(BeNil())
 				})
 				It("Should be ok", func() {
-					logs, err := Client().Ledger.V2ListLogs(TestContext(), operations.V2ListLogsRequest{
-						Ledger:      newLedger,
+					logs, err := Client().Ledger.V2.ListLogs(TestContext(), operations.V2ListLogsRequest{
+						Ledger:   newLedger,
 						PageSize: pointer.For(int64(200)),
 					})
 					Expect(err).To(BeNil())
@@ -86,7 +86,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 						err error
 					)
 					BeforeEach(func() {
-						_, err = Client().Ledger.V2ImportLogs(TestContext(), operations.V2ImportLogsRequest{
+						_, err = Client().Ledger.V2.ImportLogs(TestContext(), operations.V2ImportLogsRequest{
 							RequestBody: pointer.For(string(data)),
 							Ledger:      newLedger,
 						})

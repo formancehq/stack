@@ -55,7 +55,7 @@ func (c *ExportController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		ctx = context.WithValue(ctx, "path", out)
 	}
 
-	ret, err := store.Client().Ledger.V2ExportLogs(ctx, operations.V2ExportLogsRequest{
+	ret, err := store.Client().Ledger.V2.ExportLogs(ctx, operations.V2ExportLogsRequest{
 		Ledger: fctl.GetString(cmd, internal.LedgerFlag),
 	})
 	if err != nil {

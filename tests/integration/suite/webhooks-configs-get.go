@@ -13,7 +13,7 @@ import (
 
 var _ = WithModules([]*Module{modules.Webhooks}, func() {
 	It("should return 0 config", func() {
-		response, err := Client().Webhooks.GetManyConfigs(
+		response, err := Client().Webhooks.V1.GetManyConfigs(
 			TestContext(),
 			operations.GetManyConfigsRequest{},
 		)
@@ -47,7 +47,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 				}
 			)
 
-			response, err := Client().Webhooks.InsertConfig(
+			response, err := Client().Webhooks.V1.InsertConfig(
 				TestContext(),
 				cfg1,
 			)
@@ -55,7 +55,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 			Expect(response.StatusCode).To(Equal(http.StatusOK))
 			insertResp1 = response.ConfigResponse
 
-			response, err = Client().Webhooks.InsertConfig(
+			response, err = Client().Webhooks.V1.InsertConfig(
 				TestContext(),
 				cfg2,
 			)
@@ -66,7 +66,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 
 		Context("getting all configs without filters", func() {
 			It("should return 2 configs", func() {
-				response, err := Client().Webhooks.GetManyConfigs(
+				response, err := Client().Webhooks.V1.GetManyConfigs(
 					TestContext(),
 					operations.GetManyConfigsRequest{},
 				)
@@ -83,7 +83,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 
 		Context("getting all configs with known endpoint filter", func() {
 			It("should return 1 config with the same endpoint", func() {
-				response, err := Client().Webhooks.GetManyConfigs(
+				response, err := Client().Webhooks.V1.GetManyConfigs(
 					TestContext(),
 					operations.GetManyConfigsRequest{
 						Endpoint: ptr(insertResp1.Data.Endpoint),
@@ -101,7 +101,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 
 		Context("getting all configs with unknown endpoint filter", func() {
 			It("should return 0 config", func() {
-				response, err := Client().Webhooks.GetManyConfigs(
+				response, err := Client().Webhooks.V1.GetManyConfigs(
 					TestContext(),
 					operations.GetManyConfigsRequest{
 						Endpoint: ptr("https://unknown.com"),
@@ -118,7 +118,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 
 		Context("getting all configs with known ID filter", func() {
 			It("should return 1 config with the same ID", func() {
-				response, err := Client().Webhooks.GetManyConfigs(
+				response, err := Client().Webhooks.V1.GetManyConfigs(
 					TestContext(),
 					operations.GetManyConfigsRequest{
 						ID: ptr(insertResp1.Data.ID),
@@ -136,7 +136,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 
 		Context("getting all configs with unknown ID filter", func() {
 			It("should return 0 config", func() {
-				response, err := Client().Webhooks.GetManyConfigs(
+				response, err := Client().Webhooks.V1.GetManyConfigs(
 					TestContext(),
 					operations.GetManyConfigsRequest{
 						ID: ptr("unknown"),

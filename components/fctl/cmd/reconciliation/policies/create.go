@@ -62,7 +62,7 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	}
 
 	//nolint:gosimple
-	response, err := store.Client().Reconciliation.CreatePolicy(cmd.Context(), request)
+	response, err := store.Client().Reconciliation.V1.CreatePolicy(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}

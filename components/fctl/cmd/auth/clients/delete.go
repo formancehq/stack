@@ -52,7 +52,7 @@ func (c *DeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	request := operations.DeleteClientRequest{
 		ClientID: args[0],
 	}
-	response, err := store.Client().Auth.DeleteClient(cmd.Context(), request)
+	response, err := store.Client().Auth.V1.DeleteClient(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}

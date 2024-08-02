@@ -19,7 +19,7 @@ import (
 
 var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 	BeforeEach(func() {
-		createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+		createLedgerResponse, err := Client().Ledger.V2.CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 			Ledger: "default",
 		})
 		Expect(err).To(BeNil())
@@ -28,7 +28,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 	When("creating a new transaction", func() {
 		BeforeEach(func() {
 			// Create a transaction
-			response, err := Client().Ledger.V2CreateTransaction(
+			response, err := Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.V2CreateTransactionRequest{
 					V2PostTransaction: shared.V2PostTransaction{
@@ -49,7 +49,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			Expect(response.StatusCode).To(Equal(200))
 
 			Eventually(func() bool {
-				response, err := Client().Search.Search(
+				response, err := Client().Search.V1.Search(
 					TestContext(),
 					shared.Query{
 						Target: ptr("ACCOUNT"),
@@ -74,7 +74,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 		})
 		Then("setting a metadata on the destination account", func() {
 			BeforeEach(func() {
-				response, err := Client().Ledger.V2AddMetadataToAccount(
+				response, err := Client().Ledger.V2.AddMetadataToAccount(
 					TestContext(),
 					operations.V2AddMetadataToAccountRequest{
 						RequestBody: map[string]string{
@@ -89,7 +89,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			})
 			It("should be ok", func() {
 				Eventually(func() bool {
-					response, err := Client().Search.Search(
+					response, err := Client().Search.V1.Search(
 						TestContext(),
 						shared.Query{
 							Target: ptr("ACCOUNT"),
@@ -128,7 +128,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			// Subscribe to nats subject
 			cancelSubscription, msgs = SubscribeLedger()
 
-			response, err := Client().Ledger.V2AddMetadataToAccount(
+			response, err := Client().Ledger.V2.AddMetadataToAccount(
 				TestContext(),
 				operations.V2AddMetadataToAccountRequest{
 					RequestBody: metadata,
@@ -143,7 +143,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			cancelSubscription()
 		})
 		It("should be available on api", func() {
-			response, err := Client().Ledger.V2GetAccount(
+			response, err := Client().Ledger.V2.GetAccount(
 				TestContext(),
 				operations.V2GetAccountRequest{
 					Address: "foo",
@@ -164,7 +164,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 		})
 		It("should pop an account with the correct metadata on search service", func() {
 			Eventually(func() bool {
-				response, err := Client().Search.Search(
+				response, err := Client().Search.V1.Search(
 					TestContext(),
 					shared.Query{
 						Target: ptr("ACCOUNT"),

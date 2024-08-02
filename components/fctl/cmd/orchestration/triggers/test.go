@@ -50,7 +50,7 @@ func (c *TriggersTestController) Run(cmd *cobra.Command, args []string) (fctl.Re
 		return nil, err
 	}
 
-	res, err := store.Client().Orchestration.TestTrigger(cmd.Context(), operations.TestTriggerRequest{
+	res, err := store.Client().Orchestration.V2.TestTrigger(cmd.Context(), operations.TestTriggerRequest{
 		TriggerID:   args[0],
 		RequestBody: data,
 	})

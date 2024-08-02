@@ -10,7 +10,7 @@ paths:
       description: Sorted by updated date descending
       operationId: getManyConfigs
       tags:
-        - Webhooks
+        - webhooks.v1
       parameters:
         - name: id
           in: query
@@ -55,7 +55,7 @@ paths:
         All eventTypes are converted to lower-case when inserted.
       operationId: insertConfig
       tags:
-        - Webhooks
+        - webhooks.v1
       requestBody:
         content:
           application/json:
@@ -83,7 +83,7 @@ paths:
       description: Delete a webhooks config by ID.
       operationId: deleteConfig
       tags:
-        - Webhooks
+        - webhooks.v1
       parameters:
         - name: id
           in: path
@@ -109,7 +109,7 @@ paths:
       description: Test a config by sending a webhook to its endpoint.
       operationId: testConfig
       tags:
-        - Webhooks
+        - webhooks.v1
       parameters:
         - name: id
           in: path
@@ -139,7 +139,7 @@ paths:
       description: Activate a webhooks config by ID, to start receiving webhooks to its endpoint.
       operationId: activateConfig
       tags:
-        - Webhooks
+        - webhooks.v1
       parameters:
         - name: id
           in: path
@@ -169,7 +169,7 @@ paths:
       description: Deactivate a webhooks config by ID, to stop receiving webhooks to its endpoint.
       operationId: deactivateConfig
       tags:
-        - Webhooks
+        - webhooks.v1
       parameters:
         - name: id
           in: path
@@ -203,7 +203,7 @@ paths:
         The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
       operationId: changeConfigSecret
       tags:
-        - Webhooks
+        - webhooks.v1
       requestBody:
         content:
           application/json:

@@ -46,7 +46,7 @@ func (c *ImportController) GetStore() *ImportStore {
 func (c *ImportController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	store := fctl.GetStackStore(cmd.Context())
 
-	_, err := store.Client().Ledger.V2ImportLogs(cmd.Context(), operations.V2ImportLogsRequest{
+	_, err := store.Client().Ledger.V2.ImportLogs(cmd.Context(), operations.V2ImportLogsRequest{
 		Ledger:      args[0],
 		RequestBody: pointer.For(fmt.Sprintf("file:%s", args[1])),
 	})

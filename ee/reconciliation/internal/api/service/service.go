@@ -54,19 +54,19 @@ func NewSDKFormance(client *sdk.Formance) *sdkFormanceClient {
 }
 
 func (s *sdkFormanceClient) PaymentsgetServerInfo(ctx context.Context) (*operations.PaymentsgetServerInfoResponse, error) {
-	return s.client.Payments.PaymentsgetServerInfo(ctx)
+	return s.client.Payments.V1.PaymentsgetServerInfo(ctx)
 }
 
 func (s *sdkFormanceClient) GetPoolBalances(ctx context.Context, req operations.GetPoolBalancesRequest) (*operations.GetPoolBalancesResponse, error) {
-	return s.client.Payments.GetPoolBalances(ctx, req)
+	return s.client.Payments.V1.GetPoolBalances(ctx, req)
 }
 
 func (s *sdkFormanceClient) V2GetInfo(ctx context.Context) (*operations.V2GetInfoResponse, error) {
-	return s.client.Ledger.V2GetInfo(ctx)
+	return s.client.Ledger.V2.GetInfo(ctx)
 }
 
 func (s *sdkFormanceClient) V2GetBalancesAggregated(ctx context.Context, req operations.V2GetBalancesAggregatedRequest) (*operations.V2GetBalancesAggregatedResponse, error) {
-	return s.client.Ledger.V2GetBalancesAggregated(ctx, req)
+	return s.client.Ledger.V2.GetBalancesAggregated(ctx, req)
 }
 
 var _ SDKFormance = (*sdkFormanceClient)(nil)

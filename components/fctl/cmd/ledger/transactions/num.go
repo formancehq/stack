@@ -138,7 +138,7 @@ func (c *NumController) Run(cmd *cobra.Command, args []string) (fctl.Renderable,
 
 	ledger := fctl.GetString(cmd, internal.LedgerFlag)
 
-	response, err := store.Client().Ledger.CreateTransaction(cmd.Context(), operations.CreateTransactionRequest{
+	response, err := store.Client().Ledger.V1.CreateTransaction(cmd.Context(), operations.CreateTransactionRequest{
 		PostTransaction: shared.PostTransaction{
 			Metadata:  collectionutils.ConvertMap(metadata, collectionutils.ToAny[string]),
 			Reference: &reference,

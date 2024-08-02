@@ -21,7 +21,7 @@ import (
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {
 	BeforeEach(func() {
-		createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+		createLedgerResponse, err := Client().Ledger.V2.CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 			Ledger: "default",
 		})
 		Expect(err).To(BeNil())
@@ -39,7 +39,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			cancelSubscription, msgs = SubscribeLedger()
 
 			// Create a transaction
-			response, err := Client().Ledger.V2CreateTransaction(
+			response, err := Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.V2CreateTransactionRequest{
 					V2PostTransaction: shared.V2PostTransaction{
@@ -70,7 +70,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		})
 		Then("transferring funds from destination to another account", func() {
 			BeforeEach(func() {
-				response, err := Client().Ledger.V2CreateTransaction(
+				response, err := Client().Ledger.V2.CreateTransaction(
 					TestContext(),
 					operations.V2CreateTransactionRequest{
 						V2PostTransaction: shared.V2PostTransaction{
@@ -98,7 +98,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 					response *operations.V2RevertTransactionResponse
 				)
 				revertTx := func() {
-					response, err = Client().Ledger.V2RevertTransaction(
+					response, err = Client().Ledger.V2.RevertTransaction(
 						TestContext(),
 						operations.V2RevertTransactionRequest{
 							Force:  pointer.For(force),
@@ -125,7 +125,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		})
 		Then("reverting it", func() {
 			BeforeEach(func() {
-				response, err := Client().Ledger.V2RevertTransaction(
+				response, err := Client().Ledger.V2.RevertTransaction(
 					TestContext(),
 					operations.V2RevertTransactionRequest{
 						Ledger: "default",
@@ -141,7 +141,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				Expect(events.Check(msg.Data, "ledger", ledgerevents.EventTypeRevertedTransaction)).Should(Succeed())
 			})
 			It("should revert the original transaction", func() {
-				response, err := Client().Ledger.V2GetTransaction(
+				response, err := Client().Ledger.V2.GetTransaction(
 					TestContext(),
 					operations.V2GetTransactionRequest{
 						Ledger: "default",
@@ -155,7 +155,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			})
 			Then("trying to revert again", func() {
 				It("should be rejected", func() {
-					_, err := Client().Ledger.V2RevertTransaction(
+					_, err := Client().Ledger.V2.RevertTransaction(
 						TestContext(),
 						operations.V2RevertTransactionRequest{
 							Ledger: "default",
@@ -169,7 +169,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		})
 		Then("reverting it at effective date", func() {
 			BeforeEach(func() {
-				response, err := Client().Ledger.V2RevertTransaction(
+				response, err := Client().Ledger.V2.RevertTransaction(
 					TestContext(),
 					operations.V2RevertTransactionRequest{
 						Ledger:          "default",
@@ -181,7 +181,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				Expect(response.StatusCode).To(Equal(201))
 			})
 			It("should revert the original transaction at date of the original tx", func() {
-				response, err := Client().Ledger.V2GetTransaction(
+				response, err := Client().Ledger.V2.GetTransaction(
 					TestContext(),
 					operations.V2GetTransactionRequest{
 						Ledger: "default",

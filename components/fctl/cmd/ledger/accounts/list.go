@@ -69,7 +69,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		Ledger:   fctl.GetString(cmd, internal.LedgerFlag),
 		Metadata: collectionutils.ConvertMap(metadata, collectionutils.ToAny[string]),
 	}
-	rsp, err := store.Client().Ledger.ListAccounts(cmd.Context(), request)
+	rsp, err := store.Client().Ledger.V1.ListAccounts(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}

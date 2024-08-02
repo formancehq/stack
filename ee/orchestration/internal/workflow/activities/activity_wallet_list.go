@@ -15,7 +15,7 @@ type ListWalletsRequest struct {
 }
 
 func (a Activities) ListWallets(ctx context.Context, request ListWalletsRequest) (*shared.ListWalletsResponse, error) {
-	response, err := a.client.Wallets.ListWallets(
+	response, err := a.client.Wallets.V1.ListWallets(
 		ctx,
 		operations.ListWalletsRequest{
 			Name: pointer.For(request.Name),

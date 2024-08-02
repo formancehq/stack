@@ -64,7 +64,7 @@ func (c *ConfirmController) Run(cmd *cobra.Command, args []string) (fctl.Rendera
 			Final:  &final,
 		},
 	}
-	_, err := store.Client().Wallets.ConfirmHold(cmd.Context(), request)
+	_, err := store.Client().Wallets.V1.ConfirmHold(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "confirming hold")
 	}

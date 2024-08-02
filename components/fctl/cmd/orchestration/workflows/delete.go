@@ -42,7 +42,7 @@ func (c *WorkflowsDeleteController) GetStore() *WorkflowsDeleteStore {
 func (c *WorkflowsDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	store := fctl.GetStackStore(cmd.Context())
 
-	_, err := store.Client().Orchestration.DeleteWorkflow(
+	_, err := store.Client().Orchestration.V1.DeleteWorkflow(
 		cmd.Context(),
 		operations.DeleteWorkflowRequest{
 			FlowID: args[0],

@@ -47,7 +47,7 @@ func (c *VoidController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	request := operations.VoidHoldRequest{
 		HoldID: args[0],
 	}
-	_, err := store.Client().Wallets.VoidHold(cmd.Context(), request)
+	_, err := store.Client().Wallets.V1.VoidHold(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "voiding hold")
 	}

@@ -56,7 +56,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		pageSize = fctl.Ptr(int64(ps))
 	}
 
-	response, err := store.Client().Payments.ListPayments(
+	response, err := store.Client().Payments.V1.ListPayments(
 		cmd.Context(),
 		operations.ListPaymentsRequest{
 			Cursor:   cursor,

@@ -63,7 +63,7 @@ func (c *AddAccountController) Run(cmd *cobra.Command, args []string) (fctl.Rend
 		return nil, fmt.Errorf("pools are only supported in >= v1.0.0")
 	}
 
-	response, err := store.Client().Payments.AddAccountToPool(cmd.Context(), operations.AddAccountToPoolRequest{
+	response, err := store.Client().Payments.V1.AddAccountToPool(cmd.Context(), operations.AddAccountToPoolRequest{
 		PoolID: args[0],
 		AddAccountToPoolRequest: shared.AddAccountToPoolRequest{
 			AccountID: args[1],

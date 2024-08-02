@@ -16,7 +16,7 @@ type AddAccountMetadataRequest struct {
 }
 
 func (a Activities) AddAccountMetadata(ctx context.Context, request AddAccountMetadataRequest) error {
-	_, err := a.client.Ledger.V2AddMetadataToAccount(
+	_, err := a.client.Ledger.V2.AddMetadataToAccount(
 		ctx,
 		operations.V2AddMetadataToAccountRequest{
 			RequestBody:    request.Metadata,

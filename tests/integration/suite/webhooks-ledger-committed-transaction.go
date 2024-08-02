@@ -16,7 +16,7 @@ import (
 
 var _ = WithModules([]*Module{modules.Ledger, modules.Webhooks}, func() {
 	BeforeEach(func() {
-		createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+		createLedgerResponse, err := Client().Ledger.V2.CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 			Ledger: "default",
 		})
 		Expect(err).To(BeNil())
@@ -38,7 +38,7 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Webhooks}, func() {
 			httpServer.Close()
 		})
 
-		response, err := Client().Webhooks.InsertConfig(
+		response, err := Client().Webhooks.V1.InsertConfig(
 			TestContext(),
 			shared.ConfigUser{
 				Endpoint: httpServer.URL,
@@ -54,7 +54,7 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Webhooks}, func() {
 
 	When("creating a transaction", func() {
 		BeforeEach(func() {
-			response, err := Client().Ledger.V2CreateTransaction(
+			response, err := Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.V2CreateTransactionRequest{
 					V2PostTransaction: shared.V2PostTransaction{

@@ -22,7 +22,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 				"ledger.committed_transactions",
 			},
 		}
-		response, err := Client().Webhooks.InsertConfig(
+		response, err := Client().Webhooks.V1.InsertConfig(
 			TestContext(),
 			cfg,
 		)
@@ -44,7 +44,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 			Endpoint:   "https://example.com",
 			EventTypes: []string{},
 		}
-		_, err := Client().Webhooks.InsertConfig(
+		_, err := Client().Webhooks.V1.InsertConfig(
 			TestContext(),
 			cfg,
 		)
@@ -58,7 +58,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 				"ledger.committed_transactions",
 			},
 		}
-		_, err := Client().Webhooks.InsertConfig(
+		_, err := Client().Webhooks.V1.InsertConfig(
 			TestContext(),
 			cfg,
 		)
@@ -75,7 +75,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 				"ledger.committed_transactions",
 			},
 		}
-		_, err := Client().Webhooks.InsertConfig(
+		_, err := Client().Webhooks.V1.InsertConfig(
 			TestContext(),
 			cfg,
 		)

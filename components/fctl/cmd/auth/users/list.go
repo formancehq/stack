@@ -49,7 +49,7 @@ func (c *ListController) GetStore() *ListStore {
 
 func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	store := fctl.GetStackStore(cmd.Context())
-	listUsersResponse, err := store.Client().Auth.ListUsers(cmd.Context())
+	listUsersResponse, err := store.Client().Auth.V1.ListUsers(cmd.Context())
 	if err != nil {
 		return nil, err
 	}

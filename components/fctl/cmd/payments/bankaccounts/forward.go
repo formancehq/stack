@@ -79,7 +79,7 @@ func (c *ForwardController) Run(cmd *cobra.Command, args []string) (fctl.Rendera
 	}
 
 	//nolint:gosimple
-	response, err := store.Client().Payments.ForwardBankAccount(cmd.Context(), operations.ForwardBankAccountRequest{
+	response, err := store.Client().Payments.V1.ForwardBankAccount(cmd.Context(), operations.ForwardBankAccountRequest{
 		ForwardBankAccountRequest: shared.ForwardBankAccountRequest{
 			ConnectorID: connectorID,
 		},

@@ -17,7 +17,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration}, func() {
 			workflow *shared.V2Workflow
 		)
 		BeforeEach(func() {
-			response, err := Client().Orchestration.V2CreateWorkflow(
+			response, err := Client().Orchestration.V2.CreateWorkflow(
 				TestContext(),
 				&shared.V2CreateWorkflowRequest{
 					Name: ptr(uuid.New()),
@@ -55,7 +55,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration}, func() {
 			Expect(workflow.ID).NotTo(BeEmpty())
 		})
 		It("should delete the workflow", func() {
-			response, err := Client().Orchestration.V2DeleteWorkflow(
+			response, err := Client().Orchestration.V2.DeleteWorkflow(
 				TestContext(),
 				operations.V2DeleteWorkflowRequest{
 					FlowID: workflow.ID,
@@ -69,7 +69,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration}, func() {
 
 	When("deleting a non-uuid workflow", func() {
 		It("should return 400 with unknown", func() {
-			_, err := Client().Orchestration.V2DeleteWorkflow(
+			_, err := Client().Orchestration.V2.DeleteWorkflow(
 				TestContext(),
 				operations.V2DeleteWorkflowRequest{
 					FlowID: "unknown",
@@ -81,7 +81,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration}, func() {
 	})
 	When("deleting a non-existing workflow", func() {
 		It("should return 404", func() {
-			_, err := Client().Orchestration.V2DeleteWorkflow(
+			_, err := Client().Orchestration.V2.DeleteWorkflow(
 				TestContext(),
 				operations.V2DeleteWorkflowRequest{
 					FlowID: uuid.New(),

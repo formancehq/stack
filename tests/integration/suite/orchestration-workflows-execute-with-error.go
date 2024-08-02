@@ -19,7 +19,7 @@ import (
 
 var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledger}, func() {
 	BeforeEach(func() {
-		createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+		createLedgerResponse, err := Client().Ledger.V2.CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 			Ledger: "default",
 		})
 		Expect(err).To(BeNil())
@@ -30,7 +30,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 			createWorkflowResponse *shared.V2CreateWorkflowResponse
 		)
 		BeforeEach(func() {
-			response, err := Client().Orchestration.V2CreateWorkflow(
+			response, err := Client().Orchestration.V2.CreateWorkflow(
 				TestContext(),
 				&shared.V2CreateWorkflowRequest{
 					Name: ptr(uuid.New()),
@@ -66,7 +66,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 		Then("executing it", func() {
 			var runWorkflowResponse *shared.V2RunWorkflowResponse
 			BeforeEach(func() {
-				response, err := Client().Orchestration.V2RunWorkflow(
+				response, err := Client().Orchestration.V2.RunWorkflow(
 					TestContext(),
 					operations.V2RunWorkflowRequest{
 						RequestBody: map[string]string{},
@@ -82,7 +82,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 				var getWorkflowInstanceHistoryStageResponse *shared.V2GetWorkflowInstanceHistoryStageResponse
 				BeforeEach(func() {
 					Eventually(func(g Gomega) int64 {
-						response, err := Client().Orchestration.V2GetInstanceStageHistory(
+						response, err := Client().Orchestration.V2.GetInstanceStageHistory(
 							TestContext(),
 							operations.V2GetInstanceStageHistoryRequest{
 								InstanceID: runWorkflowResponse.Data.ID,
@@ -129,7 +129,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 
 var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledger}, func() {
 	BeforeEach(func() {
-		createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+		createLedgerResponse, err := Client().Ledger.V2.CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 			Ledger: "default",
 		})
 		Expect(err).To(BeNil())
@@ -140,7 +140,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 			createWorkflowResponse *shared.V2CreateWorkflowResponse
 		)
 		BeforeEach(func() {
-			response, err := Client().Orchestration.V2CreateWorkflow(
+			response, err := Client().Orchestration.V2.CreateWorkflow(
 				TestContext(),
 				&shared.V2CreateWorkflowRequest{
 					Name: ptr(uuid.New()),
@@ -185,7 +185,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 					closeSubscription()
 				})
 
-				response, err := Client().Orchestration.V2RunWorkflow(
+				response, err := Client().Orchestration.V2.RunWorkflow(
 					TestContext(),
 					operations.V2RunWorkflowRequest{
 						RequestBody: map[string]string{},
@@ -199,7 +199,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 			})
 			It("should declare the workflow run instance as errored", func() {
 				Eventually(func(g Gomega) string {
-					response, err := Client().Orchestration.V2GetInstanceStageHistory(
+					response, err := Client().Orchestration.V2.GetInstanceStageHistory(
 						TestContext(),
 						operations.V2GetInstanceStageHistoryRequest{
 							InstanceID: runWorkflowResponse.Data.ID,

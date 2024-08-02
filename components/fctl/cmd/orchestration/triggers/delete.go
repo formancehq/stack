@@ -42,7 +42,7 @@ func (c *TriggersDeleteController) GetStore() *TriggersDeleteStore {
 
 func (c *TriggersDeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	store := fctl.GetStackStore(cmd.Context())
-	_, err := store.Client().Orchestration.DeleteTrigger(cmd.Context(), operations.DeleteTriggerRequest{
+	_, err := store.Client().Orchestration.V1.DeleteTrigger(cmd.Context(), operations.DeleteTriggerRequest{
 		TriggerID: args[0],
 	})
 	if err != nil {

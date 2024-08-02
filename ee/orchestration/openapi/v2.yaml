@@ -9,8 +9,9 @@ paths:
     get:
       summary: Get server info
       operationId: v2GetServerInfo
+      x-speakeasy-name-override: GetServerInfo
       tags:
-      - Orchestration
+      - orchestration.v2
       responses:
         200:
           description: Server information
@@ -25,8 +26,9 @@ paths:
       summary: List triggers
       operationId: v2ListTriggers
       description: List triggers
+      x-speakeasy-name-override: ListTriggers
       tags:
-      - Orchestration
+      - orchestration.v2
       parameters:
         - $ref: '#/components/parameters/Cursor'
         - $ref: '#/components/parameters/PageSize'
@@ -49,8 +51,9 @@ paths:
       summary: Create trigger
       operationId: v2CreateTrigger
       description: Create trigger
+      x-speakeasy-name-override: CreateTrigger
       tags:
-      - Orchestration
+      - orchestration.v2
       requestBody:
         content:
           application/json:
@@ -78,8 +81,9 @@ paths:
       summary: Read trigger
       operationId: v2ReadTrigger
       description: Read trigger
+      x-speakeasy-name-override: ReadTrigger
       tags:
-        - Orchestration
+        - orchestration.v2
       responses:
         200:
           description: A specific trigger
@@ -93,8 +97,9 @@ paths:
       summary: Delete trigger
       operationId: v2DeleteTrigger
       description: Read trigger
+      x-speakeasy-name-override: DeleteTrigger
       tags:
-      - Orchestration
+      - orchestration.v2
       responses:
         204:
           description: Trigger deleted
@@ -114,8 +119,9 @@ paths:
       summary: Test trigger
       operationId: testTrigger
       description: Test trigger
+      x-speakeasy-name-override: TestTrigger
       tags:
-        - Orchestration
+        - orchestration.v2
       requestBody:
         content:
           application/json:
@@ -144,8 +150,9 @@ paths:
       summary: List triggers occurrences
       operationId: v2ListTriggersOccurrences
       description: List triggers occurrences
+      x-speakeasy-name-override: ListTriggersOccurrences
       tags:
-        - Orchestration
+        - orchestration.v2
       parameters:
         - $ref: '#/components/parameters/Cursor'
         - $ref: '#/components/parameters/PageSize'
@@ -163,8 +170,9 @@ paths:
       summary: List registered workflows
       operationId: v2ListWorkflows
       description: List registered workflows
+      x-speakeasy-name-override: ListWorkflows
       tags:
-      - Orchestration
+      - orchestration.v2
       parameters:
         - $ref: '#/components/parameters/Cursor'
         - $ref: '#/components/parameters/PageSize'
@@ -181,8 +189,9 @@ paths:
       summary: Create workflow
       operationId: v2CreateWorkflow
       description: Create a workflow
+      x-speakeasy-name-override: CreateWorkflow
       tags:
-      - Orchestration
+      - orchestration.v2
       requestBody:
         content:
           application/json:
@@ -210,9 +219,10 @@ paths:
     get:
       summary: Get a flow by id
       tags:
-      - Orchestration
+      - orchestration.v2
       description: Get a flow by id
       operationId: v2GetWorkflow
+      x-speakeasy-name-override: GetWorkflow
       responses:
         default:
           $ref: '#/components/responses/V2ErrorResponse'
@@ -225,9 +235,10 @@ paths:
     delete:
       summary: Delete a flow by id
       tags:
-      - Orchestration
+      - orchestration.v2
       description: Delete a flow by id
       operationId: v2DeleteWorkflow
+      x-speakeasy-name-override: DeleteWorkflow
       responses:
         default:
           $ref: '#/components/responses/V2ErrorResponse'
@@ -248,6 +259,7 @@ paths:
       description: Run workflow
       summary: Run workflow
       operationId: v2RunWorkflow
+      x-speakeasy-name-override: RunWorkflow
       parameters:
       - in: query
         name: wait
@@ -256,7 +268,7 @@ paths:
         schema:
           type: boolean
       tags:
-      - Orchestration
+      - orchestration.v2
       requestBody:
         content:
           application/json:
@@ -277,6 +289,7 @@ paths:
       description: List instances of a workflow
       summary: List instances of a workflow
       operationId: v2ListInstances
+      x-speakeasy-name-override: ListInstances
       parameters:
       - $ref: '#/components/parameters/Cursor'
       - $ref: '#/components/parameters/PageSize'
@@ -295,7 +308,7 @@ paths:
         example: true
         required: false
       tags:
-      - Orchestration
+      - orchestration.v2
       responses:
         200:
           description: List of workflow instances
@@ -319,8 +332,9 @@ paths:
       summary: Get a workflow instance by id
       description: Get a workflow instance by id
       operationId: v2GetInstance
+      x-speakeasy-name-override: GetInstance
       tags:
-      - Orchestration
+      - orchestration.v2
       responses:
         default:
           $ref: '#/components/responses/V2ErrorResponse'
@@ -344,8 +358,9 @@ paths:
       summary: Send an event to a running workflow
       description: Send an event to a running workflow
       operationId: v2SendEvent
+      x-speakeasy-name-override: SendEvent
       tags:
-      - Orchestration
+      - orchestration.v2
       requestBody:
         content:
           application/json:
@@ -375,8 +390,9 @@ paths:
       summary: Cancel a running workflow
       description: Cancel a running workflow
       operationId: v2CancelEvent
+      x-speakeasy-name-override: CancelEvent
       tags:
-      - Orchestration
+      - orchestration.v2
       responses:
         default:
           $ref: '#/components/responses/V2ErrorResponse'
@@ -396,8 +412,9 @@ paths:
       summary: Get a workflow instance history by id
       description: Get a workflow instance history by id
       operationId: v2GetInstanceHistory
+      x-speakeasy-name-override: GetInstanceHistory
       tags:
-      - Orchestration
+      - orchestration.v2
       responses:
         default:
           $ref: '#/components/responses/V2ErrorResponse'
@@ -428,8 +445,9 @@ paths:
       summary: Get a workflow instance stage history
       description: Get a workflow instance stage history
       operationId: v2GetInstanceStageHistory
+      x-speakeasy-name-override: GetInstanceStageHistory
       tags:
-      - Orchestration
+      - orchestration.v2
       responses:
         default:
           $ref: '#/components/responses/V2ErrorResponse'

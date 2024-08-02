@@ -62,7 +62,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, fmt.Errorf("pools are only supported in >= v1.0.0")
 	}
 
-	response, err := store.Client().Payments.GetPool(cmd.Context(), operations.GetPoolRequest{
+	response, err := store.Client().Payments.V1.GetPool(cmd.Context(), operations.GetPoolRequest{
 		PoolID: args[0],
 	})
 	if err != nil {

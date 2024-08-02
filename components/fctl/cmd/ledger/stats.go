@@ -49,7 +49,7 @@ func (c *StatsController) Run(cmd *cobra.Command, args []string) (fctl.Renderabl
 	request := operations.ReadStatsRequest{
 		Ledger: fctl.GetString(cmd, internal.LedgerFlag),
 	}
-	response, err := store.Client().Ledger.ReadStats(cmd.Context(), request)
+	response, err := store.Client().Ledger.V1.ReadStats(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}

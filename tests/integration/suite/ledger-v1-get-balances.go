@@ -18,7 +18,7 @@ import (
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {
 	BeforeEach(func() {
-		createLedgerResponse, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+		createLedgerResponse, err := Client().Ledger.V2.CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 			Ledger: "default",
 		})
 		Expect(err).To(BeNil())
@@ -34,7 +34,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		)
 		BeforeEach(func() {
 			for i := 0; i < int(txCount); i++ {
-				response, err := Client().Ledger.V2CreateTransaction(
+				response, err := Client().Ledger.V2.CreateTransaction(
 					TestContext(),
 					operations.V2CreateTransactionRequest{
 						V2PostTransaction: shared.V2PostTransaction{
@@ -62,7 +62,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				err error
 			)
 			BeforeEach(func() {
-				rsp, err = Client().Ledger.GetBalances(
+				rsp, err = Client().Ledger.V1.GetBalances(
 					TestContext(),
 					operations.GetBalancesRequest{
 						Ledger:  "default",

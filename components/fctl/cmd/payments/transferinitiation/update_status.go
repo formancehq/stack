@@ -69,7 +69,7 @@ func (c *UpdateStatusController) Run(cmd *cobra.Command, args []string) (fctl.Re
 	}
 
 	//nolint:gosimple
-	response, err := store.Client().Payments.UdpateTransferInitiationStatus(cmd.Context(), operations.UdpateTransferInitiationStatusRequest{
+	response, err := store.Client().Payments.V1.UdpateTransferInitiationStatus(cmd.Context(), operations.UdpateTransferInitiationStatusRequest{
 		UpdateTransferInitiationStatusRequest: shared.UpdateTransferInitiationStatusRequest{
 			Status: shared.Status(args[1]),
 		},

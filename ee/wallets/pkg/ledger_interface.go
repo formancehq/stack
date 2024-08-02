@@ -111,7 +111,7 @@ type DefaultLedger struct {
 }
 
 func (d DefaultLedger) EnsureLedgerExists(ctx context.Context, name string) error {
-	_, err := d.client.Ledger.V2GetLedger(ctx, operations.V2GetLedgerRequest{
+	_, err := d.client.Ledger.V2.GetLedger(ctx, operations.V2GetLedgerRequest{
 		Ledger: name,
 	})
 	if err == nil {
@@ -127,7 +127,7 @@ func (d DefaultLedger) EnsureLedgerExists(ctx context.Context, name string) erro
 		return err
 	}
 
-	_, err = d.client.Ledger.V2CreateLedger(ctx, operations.V2CreateLedgerRequest{
+	_, err = d.client.Ledger.V2.CreateLedger(ctx, operations.V2CreateLedgerRequest{
 		V2CreateLedgerRequest: &shared.V2CreateLedgerRequest{
 			Bucket: pointer.For(name),
 		},
@@ -172,7 +172,7 @@ func (d DefaultLedger) ListTransactions(ctx context.Context, ledger string, q Li
 		req.Cursor = pointer.For(q.Cursor)
 	}
 
-	rsp, err := d.client.Ledger.V2ListTransactions(ctx, req)
+	rsp, err := d.client.Ledger.V2.ListTransactions(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -181,7 +181,7 @@ func (d DefaultLedger) ListTransactions(ctx context.Context, ledger string, q Li
 }
 
 func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger, ik string, transaction PostTransaction) (*shared.V2Transaction, error) {
-	ret, err := d.client.Ledger.V2CreateTransaction(ctx, operations.V2CreateTransactionRequest{
+	ret, err := d.client.Ledger.V2.CreateTransaction(ctx, operations.V2CreateTransactionRequest{
 		V2PostTransaction: shared.V2PostTransaction{
 			Metadata:  transaction.Metadata,
 			Postings:  transaction.Postings,
@@ -206,7 +206,7 @@ func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger, ik string,
 
 func (d DefaultLedger) AddMetadataToAccount(ctx context.Context, ledger, account, ik string, metadata map[string]string) error {
 
-	_, err := d.client.Ledger.V2AddMetadataToAccount(ctx, operations.V2AddMetadataToAccountRequest{
+	_, err := d.client.Ledger.V2.AddMetadataToAccount(ctx, operations.V2AddMetadataToAccountRequest{
 		RequestBody:    metadata,
 		Address:        account,
 		Ledger:         ledger,
@@ -219,7 +219,7 @@ func (d DefaultLedger) AddMetadataToAccount(ctx context.Context, ledger, account
 }
 
 func (d DefaultLedger) GetAccount(ctx context.Context, ledger, account string) (*AccountWithVolumesAndBalances, error) {
-	ret, err := d.client.Ledger.V2GetAccount(ctx, operations.V2GetAccountRequest{
+	ret, err := d.client.Ledger.V2.GetAccount(ctx, operations.V2GetAccountRequest{
 		Address: account,
 		Ledger:  ledger,
 		Expand:  pointer.For("volumes"),
@@ -283,7 +283,7 @@ func (d DefaultLedger) ListAccounts(ctx context.Context, ledger string, q ListAc
 		req.Cursor = pointer.For(q.Cursor)
 	}
 
-	ret, err := d.client.Ledger.V2ListAccounts(ctx, req)
+	ret, err := d.client.Ledger.V2.ListAccounts(ctx, req)
 	if err != nil {
 		return nil, err
 	}

@@ -15,7 +15,7 @@ type ConfirmHoldRequest struct {
 }
 
 func (a Activities) ConfirmHold(ctx context.Context, request ConfirmHoldRequest) error {
-	response, err := a.client.Wallets.ConfirmHold(
+	response, err := a.client.Wallets.V1.ConfirmHold(
 		ctx,
 		operations.ConfirmHoldRequest{
 			ConfirmHoldRequest: &shared.ConfirmHoldRequest{},

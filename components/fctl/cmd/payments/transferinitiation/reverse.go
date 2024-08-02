@@ -78,7 +78,7 @@ func (c *ReverseController) Run(cmd *cobra.Command, args []string) (fctl.Rendera
 		return nil, fctl.ErrMissingApproval
 	}
 
-	response, err := store.Client().Payments.ReverseTransferInitiation(
+	response, err := store.Client().Payments.V1.ReverseTransferInitiation(
 		cmd.Context(),
 		operations.ReverseTransferInitiationRequest{
 			TransferID:                       args[0],

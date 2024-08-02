@@ -90,7 +90,7 @@ func (c *PaymentsConnectorsUninstallController) Run(cmd *cobra.Command, args []s
 			return nil, fctl.ErrMissingApproval
 		}
 
-		response, err := store.Client().Payments.UninstallConnectorV1(cmd.Context(), operations.UninstallConnectorV1Request{
+		response, err := store.Client().Payments.V1.UninstallConnectorV1(cmd.Context(), operations.UninstallConnectorV1Request{
 			ConnectorID: connectorID,
 			Connector:   shared.Connector(provider),
 		})
@@ -112,7 +112,7 @@ func (c *PaymentsConnectorsUninstallController) Run(cmd *cobra.Command, args []s
 			return nil, fctl.ErrMissingApproval
 		}
 
-		response, err := store.Client().Payments.UninstallConnector(cmd.Context(), operations.UninstallConnectorRequest{
+		response, err := store.Client().Payments.V1.UninstallConnector(cmd.Context(), operations.UninstallConnectorRequest{
 			Connector: shared.Connector(provider),
 		})
 		if err != nil {

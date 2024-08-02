@@ -92,7 +92,7 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		PostLogoutRedirectUris: fctl.GetStringSlice(cmd, c.postLogoutRedirectUriFlag),
 		Scopes:                 fctl.GetStringSlice(cmd, c.scopes),
 	}
-	response, err := store.Client().Auth.CreateClient(cmd.Context(), &request)
+	response, err := store.Client().Auth.V1.CreateClient(cmd.Context(), &request)
 	if err != nil {
 		return nil, err
 	}

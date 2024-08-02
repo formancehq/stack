@@ -116,7 +116,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	}
 	req.Metadata = collectionutils.ConvertMap(metadata, collectionutils.ToAny[string])
 
-	response, err := store.Client().Ledger.ListTransactions(cmd.Context(), req)
+	response, err := store.Client().Ledger.V1.ListTransactions(cmd.Context(), req)
 	if err != nil {
 		return nil, err
 	}

@@ -80,7 +80,7 @@ func (c *PaymentsGetConfigController) Run(cmd *cobra.Command, args []string) (fc
 			return nil, fmt.Errorf("provider is required")
 		}
 
-		response, err := store.Client().Payments.ReadConnectorConfig(cmd.Context(), operations.ReadConnectorConfigRequest{
+		response, err := store.Client().Payments.V1.ReadConnectorConfig(cmd.Context(), operations.ReadConnectorConfigRequest{
 			Connector: shared.Connector(provider),
 		})
 		if err != nil {
@@ -95,7 +95,7 @@ func (c *PaymentsGetConfigController) Run(cmd *cobra.Command, args []string) (fc
 		c.store.ConnectorConfig = response.ConnectorConfigResponse
 
 	case versions.V1:
-		connectorList, err := store.Client().Payments.ListAllConnectors(cmd.Context())
+		connectorList, err := store.Client().Payments.V1.ListAllConnectors(cmd.Context())
 		if err != nil {
 			return nil, err
 		}
@@ -135,7 +135,7 @@ func (c *PaymentsGetConfigController) Run(cmd *cobra.Command, args []string) (fc
 			provider = strings.Split(strings.Split(selectedOption, " ")[1], ":")[1]
 		}
 
-		response, err := store.Client().Payments.ReadConnectorConfigV1(cmd.Context(), operations.ReadConnectorConfigV1Request{
+		response, err := store.Client().Payments.V1.ReadConnectorConfigV1(cmd.Context(), operations.ReadConnectorConfigV1Request{
 			Connector:   shared.Connector(provider),
 			ConnectorID: connectorID,
 		})

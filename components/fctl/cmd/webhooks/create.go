@@ -52,7 +52,7 @@ func (c *CreateWebhookController) Run(cmd *cobra.Command, args []string) (fctl.R
 
 	secret := fctl.GetString(cmd, secretFlag)
 
-	response, err := store.Client().Webhooks.InsertConfig(cmd.Context(), shared.ConfigUser{
+	response, err := store.Client().Webhooks.V1.InsertConfig(cmd.Context(), shared.ConfigUser{
 		Endpoint:   args[0],
 		EventTypes: args[1:],
 		Secret:     &secret,

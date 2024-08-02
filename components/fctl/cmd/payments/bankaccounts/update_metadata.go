@@ -80,7 +80,7 @@ func (c *UpdateMetadataController) Run(cmd *cobra.Command, args []string) (fctl.
 		BankAccountID: bankAccountID,
 	}
 
-	response, err := store.Client().Payments.UpdateBankAccountMetadata(cmd.Context(), request)
+	response, err := store.Client().Payments.V1.UpdateBankAccountMetadata(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}

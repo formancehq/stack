@@ -39,7 +39,7 @@ func (c *ListWebhookController) GetStore() *ListWebhookStore {
 func (c *ListWebhookController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	store := fctl.GetStackStore(cmd.Context())
 	request := operations.GetManyConfigsRequest{}
-	response, err := store.Client().Webhooks.GetManyConfigs(cmd.Context(), request)
+	response, err := store.Client().Webhooks.V1.GetManyConfigs(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "listing all config")
 	}

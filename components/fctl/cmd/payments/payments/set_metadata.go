@@ -62,7 +62,7 @@ func (c *SetMetadataController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		PaymentID:   paymentID,
 	}
 
-	response, err := store.Client().Payments.UpdateMetadata(cmd.Context(), request)
+	response, err := store.Client().Payments.V1.UpdateMetadata(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}

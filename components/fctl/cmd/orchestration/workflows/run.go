@@ -67,7 +67,7 @@ func (c *WorkflowsRunController) Run(cmd *cobra.Command, args []string) (fctl.Re
 		variables[parts[0]] = parts[1]
 	}
 
-	response, err := store.Client().Orchestration.
+	response, err := store.Client().Orchestration.V1.
 		RunWorkflow(cmd.Context(), operations.RunWorkflowRequest{
 			RequestBody: variables,
 			Wait:        &wait,
@@ -86,7 +86,7 @@ func (c *WorkflowsRunController) Render(cmd *cobra.Command, args []string) error
 	store := fctl.GetStackStore(cmd.Context())
 	pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Workflow instance created with ID: %s", c.store.WorkflowInstance.ID)
 	if c.wait {
-		w, err := store.Client().Orchestration.GetWorkflow(cmd.Context(), operations.GetWorkflowRequest{
+		w, err := store.Client().Orchestration.V1.GetWorkflow(cmd.Context(), operations.GetWorkflowRequest{
 			FlowID: args[0],
 		})
 		if err != nil {

@@ -10,7 +10,7 @@ paths:
       summary: Get server info
       operationId: getServerInfo
       tags:
-      - Wallets
+      - wallets.v1
       responses:
         200:
           description: Server information
@@ -55,7 +55,7 @@ paths:
           type: string
           example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
       tags:
-      - Wallets
+      - wallets.v1
       responses:
         '200':
           description: OK
@@ -119,7 +119,7 @@ paths:
           items:
             type: string
       tags:
-      - Wallets
+      - wallets.v1
       responses:
         '200':
           description: OK
@@ -138,7 +138,7 @@ paths:
       summary: Create a new wallet
       operationId: createWallet
       tags:
-      - Wallets
+      - wallets.v1
       requestBody:
         content:
           application/json:
@@ -169,7 +169,7 @@ paths:
       summary: Get a wallet
       operationId: getWallet
       tags:
-      - Wallets
+      - wallets.v1
       responses:
         200:
           description: Wallet
@@ -190,7 +190,7 @@ paths:
       summary: Update a wallet
       operationId: updateWallet
       tags:
-      - Wallets
+      - wallets.v1
       parameters:
         - name: Idempotency-Key
           in: header
@@ -231,7 +231,7 @@ paths:
       summary: Get wallet summary
       operationId: getWalletSummary
       tags:
-      - Wallets
+      - wallets.v1
       responses:
         200:
           description: Wallet summary
@@ -259,7 +259,7 @@ paths:
       summary: List balances of a wallet
       operationId: listBalances
       tags:
-      - Wallets
+      - wallets.v1
       responses:
         200:
           description: Balances list
@@ -271,7 +271,7 @@ paths:
       summary: Create a balance
       operationId: createBalance
       tags:
-      - Wallets
+      - wallets.v1
       requestBody:
         content:
           application/json:
@@ -307,7 +307,7 @@ paths:
       summary: Get detailed balance
       operationId: getBalance
       tags:
-      - Wallets
+      - wallets.v1
       responses:
         200:
           description: Balance summary
@@ -338,7 +338,7 @@ paths:
       summary: Debit a wallet
       operationId: debitWallet
       tags:
-      - Wallets
+      - wallets.v1
       requestBody:
         content:
           application/json:
@@ -376,7 +376,7 @@ paths:
       summary: Credit a wallet
       operationId: creditWallet
       tags:
-      - Wallets
+      - wallets.v1
       requestBody:
         content:
           application/json:
@@ -396,7 +396,7 @@ paths:
     get:
       summary: Get all holds for a wallet
       tags:
-      - Wallets
+      - wallets.v1
       operationId: getHolds
       parameters:
       - name: pageSize
@@ -452,7 +452,7 @@ paths:
     get:
       summary: Get a hold
       tags:
-      - Wallets
+      - wallets.v1
       operationId: getHold
       parameters:
       - name: holdID
@@ -495,7 +495,7 @@ paths:
               $ref: '#/components/schemas/ConfirmHoldRequest'
       summary: Confirm a hold
       tags:
-      - Wallets
+      - wallets.v1
       operationId: confirmHold
       responses:
         204:
@@ -523,7 +523,7 @@ paths:
       summary: Cancel a hold
       operationId: voidHold
       tags:
-      - Wallets
+      - wallets.v1
       responses:
         204:
           description: Hold successfully cancelled, funds returned to wallet

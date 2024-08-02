@@ -65,7 +65,7 @@ func (c *SetMetadataController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 		Address:     address,
 		RequestBody: collectionutils.ConvertMap(metadata, collectionutils.ToAny[string]),
 	}
-	response, err := store.Client().Ledger.AddMetadataToAccount(cmd.Context(), request)
+	response, err := store.Client().Ledger.V1.AddMetadataToAccount(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}

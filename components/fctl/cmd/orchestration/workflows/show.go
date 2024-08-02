@@ -48,7 +48,7 @@ func (c *WorkflowsShowController) Run(cmd *cobra.Command, args []string) (fctl.R
 
 	store := fctl.GetStackStore(cmd.Context())
 
-	response, err := store.Client().Orchestration.
+	response, err := store.Client().Orchestration.V1.
 		GetWorkflow(cmd.Context(), operations.GetWorkflowRequest{
 			FlowID: args[0],
 		})

@@ -76,7 +76,7 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 	}
 
 	//nolint:gosimple
-	response, err := store.Client().Payments.CreatePayment(cmd.Context(), request)
+	response, err := store.Client().Payments.V1.CreatePayment(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}

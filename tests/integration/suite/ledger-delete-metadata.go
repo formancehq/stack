@@ -13,7 +13,7 @@ import (
 var _ = WithModules([]*Module{modules.Ledger}, func() {
 	When("creating a ledger with some metadata", func() {
 		BeforeEach(func() {
-			response, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+			response, err := Client().Ledger.V2.CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 				Ledger: "default",
 				V2CreateLedgerRequest: &shared.V2CreateLedgerRequest{
 					Metadata: map[string]string{
@@ -26,14 +26,14 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		})
 		Then("deleting metadata", func() {
 			BeforeEach(func() {
-				_, err := Client().Ledger.V2DeleteLedgerMetadata(TestContext(), operations.V2DeleteLedgerMetadataRequest{
+				_, err := Client().Ledger.V2.DeleteLedgerMetadata(TestContext(), operations.V2DeleteLedgerMetadataRequest{
 					Ledger: "default",
 					Key:    "foo",
 				})
 				Expect(err).To(BeNil())
 			})
 			It("should be ok", func() {
-				ledger, err := Client().Ledger.V2GetLedger(TestContext(), operations.V2GetLedgerRequest{
+				ledger, err := Client().Ledger.V2.GetLedger(TestContext(), operations.V2GetLedgerRequest{
 					Ledger: "default",
 				})
 				Expect(err).To(BeNil())

@@ -20,7 +20,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 		JustBeforeEach(func() {
 			for i := 0; i < countWallets; i++ {
 				name := uuid.NewString()
-				response, err := Client().Wallets.CreateWallet(
+				response, err := Client().Wallets.V1.CreateWallet(
 					TestContext(),
 					&shared.CreateWalletRequest{
 						Metadata: map[string]string{
@@ -32,7 +32,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 				Expect(err).ToNot(HaveOccurred())
 				Expect(response.StatusCode).To(Equal(201))
 
-				_, err = Client().Wallets.CreditWallet(TestContext(), operations.CreditWalletRequest{
+				_, err = Client().Wallets.V1.CreditWallet(TestContext(), operations.CreditWalletRequest{
 					CreditWalletRequest: &shared.CreditWalletRequest{
 						Amount: shared.Monetary{
 							Amount: big.NewInt(100),
@@ -52,7 +52,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 			)
 			JustBeforeEach(func() {
 				Eventually(func(g Gomega) bool {
-					response, err = Client().Wallets.ListWallets(TestContext(), request)
+					response, err = Client().Wallets.V1.ListWallets(TestContext(), request)
 					g.Expect(err).ToNot(HaveOccurred())
 					g.Expect(response.StatusCode).To(Equal(200))
 					return true

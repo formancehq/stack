@@ -41,7 +41,7 @@ func (a Activities) StripeTransfer(ctx context.Context, request StripeTransferRe
 		Validated:            validated,
 	}
 
-	_, err := a.client.Payments.CreateTransferInitiation(ctx, ti)
+	_, err := a.client.Payments.V1.CreateTransferInitiation(ctx, ti)
 	if err != nil {
 		return err
 	}

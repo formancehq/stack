@@ -25,7 +25,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 				"ledger.committed_transactions",
 			},
 		}
-		response, err := Client().Webhooks.InsertConfig(
+		response, err := Client().Webhooks.V1.InsertConfig(
 			TestContext(),
 			cfg,
 		)
@@ -37,7 +37,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 
 	Context("deactivating the inserted one", func() {
 		BeforeEach(func() {
-			response, err := Client().Webhooks.DeactivateConfig(
+			response, err := Client().Webhooks.V1.DeactivateConfig(
 				TestContext(),
 				operations.DeactivateConfigRequest{
 					ID: insertResp.Data.ID,
@@ -51,7 +51,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 
 		Context("getting all configs", func() {
 			It("should return 1 deactivated config", func() {
-				response, err := Client().Webhooks.GetManyConfigs(
+				response, err := Client().Webhooks.V1.GetManyConfigs(
 					TestContext(),
 					operations.GetManyConfigsRequest{},
 				)
@@ -66,7 +66,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 
 	Context("deactivating the inserted one, then reactivating it", func() {
 		BeforeEach(func() {
-			response, err := Client().Webhooks.DeactivateConfig(
+			response, err := Client().Webhooks.V1.DeactivateConfig(
 				TestContext(),
 				operations.DeactivateConfigRequest{
 					ID: insertResp.Data.ID,
@@ -76,7 +76,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 			Expect(response.StatusCode).To(Equal(200))
 			Expect(response.ConfigResponse.Data.Active).To(BeFalse())
 
-			activateConfigResponse, err := Client().Webhooks.ActivateConfig(
+			activateConfigResponse, err := Client().Webhooks.V1.ActivateConfig(
 				TestContext(),
 				operations.ActivateConfigRequest{
 					ID: insertResp.Data.ID,
@@ -89,7 +89,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 
 		Context("getting all configs", func() {
 			It("should return 1 activated config", func() {
-				response, err := Client().Webhooks.GetManyConfigs(
+				response, err := Client().Webhooks.V1.GetManyConfigs(
 					TestContext(),
 					operations.GetManyConfigsRequest{},
 				)
@@ -104,7 +104,7 @@ var _ = WithModules([]*Module{modules.Webhooks}, func() {
 
 	Context("trying to deactivate an unknown ID", func() {
 		It("should fail", func() {
-			_, err := Client().Webhooks.DeactivateConfig(
+			_, err := Client().Webhooks.V1.DeactivateConfig(
 				TestContext(),
 				operations.DeactivateConfigRequest{
 					ID: "unknown",

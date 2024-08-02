@@ -63,7 +63,7 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, err
 	}
 
-	_, err = store.Client().Ledger.V2CreateLedger(cmd.Context(), operations.V2CreateLedgerRequest{
+	_, err = store.Client().Ledger.V2.CreateLedger(cmd.Context(), operations.V2CreateLedgerRequest{
 		V2CreateLedgerRequest: &shared.V2CreateLedgerRequest{
 			Bucket:   pointer.For(fctl.GetString(cmd, bucketNameFlag)),
 			Metadata: metadata,

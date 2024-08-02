@@ -56,7 +56,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, err
 	}
 
-	response, err := store.Client().Wallets.ListWallets(cmd.Context(), operations.ListWalletsRequest{
+	response, err := store.Client().Wallets.V1.ListWallets(cmd.Context(), operations.ListWalletsRequest{
 		Metadata: metadata,
 	})
 	if err != nil {

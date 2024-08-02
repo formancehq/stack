@@ -82,7 +82,7 @@ func (c *TriggersCreateController) Run(cmd *cobra.Command, args []string) (fctl.
 		}
 	}
 
-	res, err := store.Client().Orchestration.CreateTrigger(cmd.Context(), data)
+	res, err := store.Client().Orchestration.V1.CreateTrigger(cmd.Context(), data)
 	if err != nil {
 		return nil, errors.Wrap(err, "reading trigger")
 	}
