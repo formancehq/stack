@@ -139,6 +139,12 @@ paths:
       operationId: createWallet
       tags:
       - Wallets
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: Use an idempotency key
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
@@ -266,6 +272,12 @@ paths:
       operationId: createBalance
       tags:
       - Wallets
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: Use an idempotency key
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
@@ -326,6 +338,12 @@ paths:
     post:
       summary: Debit a wallet
       operationId: debitWallet
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: Use an idempotency key
+          schema:
+            type: string
       tags:
       - Wallets
       requestBody:
@@ -359,6 +377,12 @@ paths:
     post:
       summary: Credit a wallet
       operationId: creditWallet
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: Use an idempotency key
+          schema:
+            type: string
       tags:
       - Wallets
       requestBody:
@@ -498,6 +522,12 @@ paths:
       operationId: voidHold
       tags:
       - Wallets
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: Use an idempotency key
+          schema:
+            type: string
       responses:
         204:
           description: Hold successfully cancelled, funds returned to wallet

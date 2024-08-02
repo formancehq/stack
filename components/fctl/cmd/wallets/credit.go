@@ -22,6 +22,7 @@ type CreditWalletController struct {
 	metadataFlag string
 	balanceFlag  string
 	sourceFlag   string
+	ikFlag       string
 }
 
 var _ fctl.Controller[*CreditWalletStore] = (*CreditWalletController)(nil)
@@ -36,6 +37,7 @@ func NewCreditWalletController() *CreditWalletController {
 		metadataFlag: "metadata",
 		balanceFlag:  "balance",
 		sourceFlag:   "source",
+		ikFlag:       "ik",
 	}
 }
 func NewCreditWalletCommand() *cobra.Command {
@@ -47,6 +49,7 @@ func NewCreditWalletCommand() *cobra.Command {
 		fctl.WithArgs(cobra.ExactArgs(2)),
 		fctl.WithStringSliceFlag(c.metadataFlag, []string{""}, "Metadata to use"),
 		fctl.WithStringFlag(c.balanceFlag, "", "Balance to credit"),
+		fctl.WithStringFlag(c.ikFlag, "", "Idempotency Key"),
 		fctl.WithStringSliceFlag(c.sourceFlag, []string{}, `Use --source account=<account> | --source wallet=id:<wallet-id>[/<balance>] | --source wallet=name:<wallet-name>[/<balance>]`),
 		internal.WithTargetingWalletByName(),
 		internal.WithTargetingWalletByID(),
@@ -95,7 +98,8 @@ func (c *CreditWalletController) Run(cmd *cobra.Command, args []string) (fctl.Re
 	}
 
 	request := operations.CreditWalletRequest{
-		ID: walletID,
+		IdempotencyKey: fctl.Ptr(fctl.GetString(cmd, c.ikFlag)),
+		ID:             walletID,
 		CreditWalletRequest: &shared.CreditWalletRequest{
 			Amount: shared.Monetary{
 				Asset:  asset,

@@ -13,7 +13,8 @@ type VoidStore struct {
 	HoldId  string `json:"holdId"`
 }
 type VoidController struct {
-	store *VoidStore
+	store  *VoidStore
+	ikFlag string
 }
 
 var _ fctl.Controller[*VoidStore] = (*VoidController)(nil)
@@ -24,16 +25,19 @@ func NewDefaultVoidStore() *VoidStore {
 
 func NewVoidController() *VoidController {
 	return &VoidController{
-		store: NewDefaultVoidStore(),
+		store:  NewDefaultVoidStore(),
+		ikFlag: "ik",
 	}
 }
 
 func NewVoidCommand() *cobra.Command {
+	c := NewVoidController()
 	return fctl.NewCommand("void <hold-id>",
 		fctl.WithShortDescription("Void a hold"),
 		fctl.WithAliases("v"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithController[*VoidStore](NewVoidController()),
+		fctl.WithStringFlag(c.ikFlag, "", "Idempotency Key"),
+		fctl.WithController[*VoidStore](c),
 	)
 }
 
@@ -45,7 +49,8 @@ func (c *VoidController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 
 	store := fctl.GetStackStore(cmd.Context())
 	request := operations.VoidHoldRequest{
-		HoldID: args[0],
+		IdempotencyKey: fctl.Ptr(fctl.GetString(cmd, c.ikFlag)),
+		HoldID:         args[0],
 	}
 	_, err := store.Client().Wallets.VoidHold(cmd.Context(), request)
 	if err != nil {

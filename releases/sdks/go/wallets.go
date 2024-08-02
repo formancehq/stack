@@ -147,6 +147,8 @@ func (s *Wallets) CreateBalance(ctx context.Context, request operations.CreateBa
 	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
 	req.Header.Set("Content-Type", reqContentType)
 
+	utils.PopulateHeaders(ctx, req, request, nil)
+
 	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
 		return nil, err
 	}
@@ -224,7 +226,7 @@ func (s *Wallets) CreateBalance(ctx context.Context, request operations.CreateBa
 }
 
 // CreateWallet - Create a new wallet
-func (s *Wallets) CreateWallet(ctx context.Context, request *shared.CreateWalletRequest) (*operations.CreateWalletResponse, error) {
+func (s *Wallets) CreateWallet(ctx context.Context, request operations.CreateWalletRequest) (*operations.CreateWalletResponse, error) {
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createWallet",
@@ -238,7 +240,7 @@ func (s *Wallets) CreateWallet(ctx context.Context, request *shared.CreateWallet
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
 
-	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, true, "Request", "json", `request:"mediaType=application/json"`)
+	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, true, "CreateWalletRequest", "json", `request:"mediaType=application/json"`)
 	if err != nil {
 		return nil, err
 	}
@@ -250,6 +252,8 @@ func (s *Wallets) CreateWallet(ctx context.Context, request *shared.CreateWallet
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
 	req.Header.Set("Content-Type", reqContentType)
+
+	utils.PopulateHeaders(ctx, req, request, nil)
 
 	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
 		return nil, err
