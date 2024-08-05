@@ -60,11 +60,6 @@ func (e *executionContext) AppendLog(ctx context.Context, log *ledger.Log) (*led
 
 func (e *executionContext) run(ctx context.Context, executor func(e *executionContext) (*ledger.ChainedLog, error)) (*ledger.ChainedLog, error) {
 	if ik := e.parameters.IdempotencyKey; ik != "" {
-		if err := e.commander.referencer.take(referenceIks, ik); err != nil {
-			return nil, err
-		}
-		defer e.commander.referencer.release(referenceIks, ik)
-
 		ctx, span := tracer.Start(ctx, "CheckIK")
 		defer span.End()
 
@@ -75,6 +70,11 @@ func (e *executionContext) run(ctx context.Context, executor func(e *executionCo
 		if err != nil && !storageerrors.IsNotFoundError(err) {
 			return nil, err
 		}
+
+		if err := e.commander.referencer.take(referenceIks, ik); err != nil {
+			return nil, err
+		}
+		defer e.commander.referencer.release(referenceIks, ik)
 	}
 	return executor(e)
 }
