@@ -3,8 +3,14 @@ package command
 import (
 	"fmt"
 	"sync"
+	"time"
 
+	"github.com/hashicorp/golang-lru/v2/expirable"
 	"github.com/pkg/errors"
+)
+
+var (
+	ErrAlreadyTaken = errors.New("already taken")
 )
 
 type Reference int
@@ -17,12 +23,23 @@ const (
 
 type Referencer struct {
 	references map[Reference]*sync.Map
+
+	idempotencyCache *expirable.LRU[string, struct{}]
 }
 
 func (r *Referencer) take(ref Reference, key any) error {
 	_, loaded := r.references[ref].LoadOrStore(fmt.Sprintf("%d/%s", ref, key), struct{}{})
 	if loaded {
-		return errors.New("already taken")
+		return ErrAlreadyTaken
+	}
+
+	if ref == referenceIks {
+		_, ok := r.idempotencyCache.Get(fmt.Sprintf("%d/%s", ref, key))
+		if ok {
+			return ErrAlreadyTaken
+		}
+
+		r.idempotencyCache.Add(fmt.Sprintf("%d/%s", ref, key), struct{}{})
 	}
 	return nil
 }
@@ -38,5 +55,6 @@ func NewReferencer() *Referencer {
 			referenceIks:         {},
 			referenceTxReference: {},
 		},
+		idempotencyCache: expirable.NewLRU[string, struct{}](0, nil, 5*time.Minute),
 	}
 }

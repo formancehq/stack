@@ -199,6 +199,49 @@ func TestCreateTransaction(t *testing.T) {
 	}
 }
 
+func TestCreateTransactionsWithSameIK(t *testing.T) {
+	store := storageerrors.NewInMemoryStore()
+	ctx := logging.TestingContext()
+
+	runScript := ledger.RunScript{
+		Script: ledger.Script{
+			Plain: `
+			send [GEM 100] (
+				source = @world
+				destination = @mint
+			)`,
+		},
+		Timestamp: now,
+		Reference: "test",
+	}
+
+	expectedTx := ledger.NewTransaction().
+		WithPostings(
+			ledger.NewPosting("world", "mint", "GEM", big.NewInt(100)),
+		).
+		WithReference("test")
+
+	referencer := NewReferencer()
+	commander := New(store, NoOpLocker, NewCompiler(1024), referencer, bus.NewNoOpMonitor(), chain.New(store), 50)
+	go commander.Run(ctx)
+	defer commander.Close()
+
+	ret, err := commander.CreateTransaction(ctx, Parameters{
+		IdempotencyKey: "foo",
+	}, runScript)
+	require.NoError(t, err)
+	require.NotNil(t, ret)
+	expectedTx.Timestamp = now
+	internaltesting.RequireEqual(t, expectedTx, ret)
+
+	ret, err = commander.CreateTransaction(ctx, Parameters{
+		IdempotencyKey: "foo",
+	}, runScript)
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrAlreadyTaken)
+	require.Nil(t, ret)
+}
+
 func TestRevert(t *testing.T) {
 	txID := big.NewInt(0)
 	store := storageerrors.NewInMemoryStore()
