@@ -2,6 +2,8 @@ package api
 
 import (
 	"errors"
+	"fmt"
+	"log"
 	"net/http"
 
 	wallet "github.com/formancehq/wallets/pkg"
@@ -29,7 +31,13 @@ func (m *MainHandler) creditWalletHandler(w http.ResponseWriter, r *http.Request
 		CreditRequest: *data,
 	}
 
+<<<<<<< Updated upstream
 	err := m.manager.Credit(r.Context(), credit)
+=======
+	fmt.Println("TOTOTOTOTOTOTOT")
+	log.Println("TOTOTOTOTOTOTOT")
+	err := m.manager.Credit(r.Context(), api.IdempotencyKeyFromRequest(r), credit)
+>>>>>>> Stashed changes
 	if err != nil {
 		switch {
 		case errors.Is(err, wallet.ErrBalanceNotExists),
