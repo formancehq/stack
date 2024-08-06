@@ -8,6 +8,7 @@ import (
 
 	"github.com/formancehq/ledger/internal/machine/vm/program"
 	"github.com/formancehq/ledger/internal/opentelemetry/tracer"
+	"golang.org/x/sync/singleflight"
 
 	"github.com/formancehq/stack/libs/go-libs/time"
 
@@ -35,11 +36,12 @@ type Chainer interface {
 
 type Commander struct {
 	*batching.Batcher[*ledger.ChainedLog]
-	store      Store
-	locker     Locker
-	compiler   *Compiler
-	running    sync.WaitGroup
-	referencer *Referencer
+	store        Store
+	locker       Locker
+	compiler     *Compiler
+	running      sync.WaitGroup
+	referencer   *Referencer
+	singleflight singleflight.Group
 
 	monitor bus.Monitor
 	chain   Chainer

@@ -75,6 +75,14 @@ func (e *executionContext) run(ctx context.Context, executor func(e *executionCo
 		if err != nil && !storageerrors.IsNotFoundError(err) {
 			return nil, err
 		}
+
+		res, err, _ := e.commander.singleflight.Do(e.parameters.IdempotencyKey, func() (interface{}, error) {
+			return executor(e)
+		})
+		if err != nil {
+			return nil, err
+		}
+		return res.(*ledger.ChainedLog), nil
 	}
 	return executor(e)
 }

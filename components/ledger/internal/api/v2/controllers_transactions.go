@@ -103,7 +103,6 @@ func postTransaction(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx, _ := contextutil.Detached(r.Context())
-
 	res, err := l.CreateTransaction(ctx, getCommandParameters(r), *payload.ToRunScript())
 	if err != nil {
 		switch {
