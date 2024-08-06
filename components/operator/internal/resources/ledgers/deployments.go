@@ -68,8 +68,9 @@ func hasDeploymentStrategyChanged(ctx core.Context, stack *v1beta1.Stack, ledger
 		return uninstallLedgerMonoWriterMultipleReader(ctx, stack)
 	case v1beta1.DeploymentStrategyMonoWriterMultipleReader:
 		return core.DeleteIfExists[*appsv1.Deployment](ctx, core.GetNamespacedResourceName(stack.Name, "ledger"))
+	default:
+		return fmt.Errorf("unknown deployment strategy %s", strategy)
 	}
-	return
 }
 
 func installLedger(ctx core.Context, stack *v1beta1.Stack,
