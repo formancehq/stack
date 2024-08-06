@@ -12,62 +12,6 @@ import (
 
 type FallbackAccount machine.Address
 
-// VisitValueAwareSource returns the resource addresses of all the accounts
-func (p *parseVisitor) VisitValueAwareSource(c parser.IValueAwareSourceContext, pushAsset func(), monAddr *machine.Address) (map[machine.Address]struct{}, *CompileError) {
-	neededAccounts := map[machine.Address]struct{}{}
-	isAll := monAddr == nil
-	switch c := c.(type) {
-	case *parser.SrcContext:
-		accounts, _, unbounded, compErr := p.VisitSource(c.Source(), pushAsset, isAll)
-		if compErr != nil {
-			return nil, compErr
-		}
-		for k, v := range accounts {
-			neededAccounts[k] = v
-		}
-		if !isAll {
-			p.PushAddress(*monAddr)
-			err := p.TakeFromSource(unbounded)
-			if err != nil {
-				return nil, LogicError(c, err)
-			}
-		}
-	case *parser.SrcAllotmentContext:
-		if isAll {
-			return nil, LogicError(c, errors.New("cannot take all balance of an allotment source"))
-		}
-		p.PushAddress(*monAddr)
-		p.VisitAllotment(c.SourceAllotment(), c.SourceAllotment().GetPortions())
-		p.AppendInstruction(program.OP_ALLOC)
-
-		sources := c.SourceAllotment().GetSources()
-		n := len(sources)
-		for i := 0; i < n; i++ {
-			accounts, _, fallback, compErr := p.VisitSource(sources[i], pushAsset, isAll)
-			if compErr != nil {
-				return nil, compErr
-			}
-			for k, v := range accounts {
-				neededAccounts[k] = v
-			}
-			err := p.Bump(int64(i + 1))
-			if err != nil {
-				return nil, LogicError(c, err)
-			}
-			err = p.TakeFromSource(fallback)
-			if err != nil {
-				return nil, LogicError(c, err)
-			}
-		}
-		err := p.PushInteger(machine.NewNumber(int64(n)))
-		if err != nil {
-			return nil, LogicError(c, err)
-		}
-		p.AppendInstruction(program.OP_FUNDING_ASSEMBLE)
-	}
-	return neededAccounts, nil
-}
-
 func (p *parseVisitor) TakeFromSource(fallback *FallbackAccount) error {
 	if fallback == nil {
 		p.AppendInstruction(program.OP_TAKE)
