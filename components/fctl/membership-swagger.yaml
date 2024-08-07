@@ -1666,13 +1666,15 @@ components:
             - email
     Role:
       type: string
-      default: ""
       enum:
-        - ""
         - NONE
         - ADMIN
         - GUEST
+    SystemRole:
+      type: string
+      enum:
         - USER
+        - SYSTEM
     User:
       allOf:
         - $ref: "#/components/schemas/UserData"
@@ -1683,6 +1685,10 @@ components:
             id:
               type: string
               description: User ID
+        - type: object
+          properties:
+            role:
+              $ref: "#/components/schemas/SystemRole"
     OrganizationUserArray:
       type: array
       items:
@@ -1698,10 +1704,16 @@ components:
         - type: object
           required:
             - role
+            - email
+            - id
           properties:
             role:
               $ref: "#/components/schemas/Role"
-        - $ref: "#/components/schemas/User"
+            email:
+              type: string
+            id:
+              type: string
+
     OrganizationArray:
       type: array
       items:

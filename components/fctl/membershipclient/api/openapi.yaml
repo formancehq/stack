@@ -1769,18 +1769,21 @@ components:
       allOf:
       - $ref: '#/components/schemas/UserData_allOf'
     Role:
-      default: ""
       enum:
-      - ""
       - NONE
       - ADMIN
       - GUEST
+      type: string
+    SystemRole:
+      enum:
       - USER
+      - SYSTEM
       type: string
     User:
       allOf:
       - $ref: '#/components/schemas/UserData'
       - $ref: '#/components/schemas/User_allOf'
+      - $ref: '#/components/schemas/User_allOf_1'
     OrganizationUserArray:
       items:
         $ref: '#/components/schemas/OrganizationUserArray_inner'
@@ -1795,7 +1798,6 @@ components:
     OrganizationUser:
       allOf:
       - $ref: '#/components/schemas/OrganizationUser_allOf'
-      - $ref: '#/components/schemas/User'
     OrganizationArray:
       items:
         $ref: '#/components/schemas/Organization'
@@ -2350,6 +2352,12 @@ components:
       - id
       type: object
       example: null
+    User_allOf_1:
+      properties:
+        role:
+          $ref: '#/components/schemas/SystemRole'
+      type: object
+      example: null
     OrganizationUserArray_inner:
       allOf:
       - $ref: '#/components/schemas/OrganizationUser'
@@ -2357,7 +2365,13 @@ components:
       properties:
         role:
           $ref: '#/components/schemas/Role'
+        email:
+          type: string
+        id:
+          type: string
       required:
+      - email
+      - id
       - role
       type: object
       example: null

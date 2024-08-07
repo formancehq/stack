@@ -37,8 +37,6 @@ func NewUpdateStackUserRequest(role Role) *UpdateStackUserRequest {
 // but it doesn't guarantee that properties required by API are set
 func NewUpdateStackUserRequestWithDefaults() *UpdateStackUserRequest {
 	this := UpdateStackUserRequest{}
-	var role Role = EMPTY
-	this.Role = role
 	return &this
 }
 

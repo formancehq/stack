@@ -48,10 +48,6 @@ type ListOrganizationExpandedResponseDataInner struct {
 func NewListOrganizationExpandedResponseDataInner(name string, id string, ownerId string) *ListOrganizationExpandedResponseDataInner {
 	this := ListOrganizationExpandedResponseDataInner{}
 	this.Name = name
-	var defaultOrganizationAccess Role = EMPTY
-	this.DefaultOrganizationAccess = &defaultOrganizationAccess
-	var defaultStackAccess Role = EMPTY
-	this.DefaultStackAccess = &defaultStackAccess
 	this.Id = id
 	this.OwnerId = ownerId
 	return &this
@@ -62,10 +58,6 @@ func NewListOrganizationExpandedResponseDataInner(name string, id string, ownerI
 // but it doesn't guarantee that properties required by API are set
 func NewListOrganizationExpandedResponseDataInnerWithDefaults() *ListOrganizationExpandedResponseDataInner {
 	this := ListOrganizationExpandedResponseDataInner{}
-	var defaultOrganizationAccess Role = EMPTY
-	this.DefaultOrganizationAccess = &defaultOrganizationAccess
-	var defaultStackAccess Role = EMPTY
-	this.DefaultStackAccess = &defaultStackAccess
 	return &this
 }
 

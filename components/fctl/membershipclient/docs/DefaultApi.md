@@ -2836,7 +2836,7 @@ import (
 func main() {
     organizationId := "organizationId_example" // string | 
     userId := "userId_example" // string | 
-    updateOrganizationUserRequest := *openapiclient.NewUpdateOrganizationUserRequest(openapiclient.Role("")) // UpdateOrganizationUserRequest |  (optional)
+    updateOrganizationUserRequest := *openapiclient.NewUpdateOrganizationUserRequest(openapiclient.Role("NONE")) // UpdateOrganizationUserRequest |  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -2908,7 +2908,7 @@ func main() {
     organizationId := "organizationId_example" // string | 
     stackId := "stackId_example" // string | 
     userId := "userId_example" // string | 
-    updateStackUserRequest := *openapiclient.NewUpdateStackUserRequest(openapiclient.Role("")) // UpdateStackUserRequest |  (optional)
+    updateStackUserRequest := *openapiclient.NewUpdateStackUserRequest(openapiclient.Role("NONE")) // UpdateStackUserRequest |  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)

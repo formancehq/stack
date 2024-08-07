@@ -5,8 +5,8 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Name** | **string** | Organization name | 
-**DefaultOrganizationAccess** | Pointer to [**Role**](Role.md) |  | [optional] [default to EMPTY]
-**DefaultStackAccess** | Pointer to [**Role**](Role.md) |  | [optional] [default to EMPTY]
+**DefaultOrganizationAccess** | Pointer to [**Role**](Role.md) |  | [optional] 
+**DefaultStackAccess** | Pointer to [**Role**](Role.md) |  | [optional] 
 **Domain** | Pointer to **string** | Organization domain | [optional] 
 
 ## Methods

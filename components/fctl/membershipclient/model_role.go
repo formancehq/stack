@@ -20,20 +20,16 @@ type Role string
 
 // List of Role
 const (
-	EMPTY Role = ""
 	NONE Role = "NONE"
 	ADMIN Role = "ADMIN"
 	GUEST Role = "GUEST"
-	USER Role = "USER"
 )
 
 // All allowed values of Role enum
 var AllowedRoleEnumValues = []Role{
-	"",
 	"NONE",
 	"ADMIN",
 	"GUEST",
-	"USER",
 }
 
 func (v *Role) UnmarshalJSON(src []byte) error {

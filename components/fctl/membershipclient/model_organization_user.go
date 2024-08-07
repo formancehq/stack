@@ -21,7 +21,6 @@ var _ MappedNullable = &OrganizationUser{}
 type OrganizationUser struct {
 	Role Role `json:"role"`
 	Email string `json:"email"`
-	// User ID
 	Id string `json:"id"`
 }
 
@@ -42,8 +41,6 @@ func NewOrganizationUser(role Role, email string, id string) *OrganizationUser {
 // but it doesn't guarantee that properties required by API are set
 func NewOrganizationUserWithDefaults() *OrganizationUser {
 	this := OrganizationUser{}
-	var role Role = EMPTY
-	this.Role = role
 	return &this
 }
 

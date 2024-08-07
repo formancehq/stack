@@ -52,8 +52,6 @@ func NewInvitation(id string, organizationId string, userEmail string, status st
 // but it doesn't guarantee that properties required by API are set
 func NewInvitationWithDefaults() *Invitation {
 	this := Invitation{}
-	var role Role = EMPTY
-	this.Role = role
 	return &this
 }
 

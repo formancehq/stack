@@ -37,8 +37,6 @@ func NewUpdateOrganizationUserRequest(role Role) *UpdateOrganizationUserRequest 
 // but it doesn't guarantee that properties required by API are set
 func NewUpdateOrganizationUserRequestWithDefaults() *UpdateOrganizationUserRequest {
 	this := UpdateOrganizationUserRequest{}
-	var role Role = EMPTY
-	this.Role = role
 	return &this
 }
 

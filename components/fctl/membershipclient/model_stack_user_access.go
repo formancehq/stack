@@ -43,8 +43,6 @@ func NewStackUserAccess(stackId string, userId string, role Role) *StackUserAcce
 // but it doesn't guarantee that properties required by API are set
 func NewStackUserAccessWithDefaults() *StackUserAccess {
 	this := StackUserAccess{}
-	var role Role = EMPTY
-	this.Role = role
 	return &this
 }
 

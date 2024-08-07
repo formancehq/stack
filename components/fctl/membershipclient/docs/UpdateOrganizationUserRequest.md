@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Role** | [**Role**](Role.md) |  | [default to EMPTY]
+**Role** | [**Role**](Role.md) |  | 
 
 ## Methods
 

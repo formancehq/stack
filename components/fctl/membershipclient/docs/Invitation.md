@@ -10,7 +10,7 @@ Name | Type | Description | Notes
 **Status** | **string** |  | 
 **CreationDate** | **time.Time** |  | 
 **UpdatedAt** | Pointer to **string** |  | [optional] 
-**Role** | [**Role**](Role.md) |  | [default to EMPTY]
+**Role** | [**Role**](Role.md) |  | 
 **StackClaims** | Pointer to [**[]StackClaim**](StackClaim.md) |  | [optional] 
 **UserId** | Pointer to **string** |  | [optional] 
 **OrganizationAccess** | Pointer to [**OrganizationUser**](OrganizationUser.md) |  | [optional] 

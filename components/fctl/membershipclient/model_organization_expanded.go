@@ -48,10 +48,6 @@ type OrganizationExpanded struct {
 func NewOrganizationExpanded(name string, id string, ownerId string) *OrganizationExpanded {
 	this := OrganizationExpanded{}
 	this.Name = name
-	var defaultOrganizationAccess Role = EMPTY
-	this.DefaultOrganizationAccess = &defaultOrganizationAccess
-	var defaultStackAccess Role = EMPTY
-	this.DefaultStackAccess = &defaultStackAccess
 	this.Id = id
 	this.OwnerId = ownerId
 	return &this
@@ -62,10 +58,6 @@ func NewOrganizationExpanded(name string, id string, ownerId string) *Organizati
 // but it doesn't guarantee that properties required by API are set
 func NewOrganizationExpandedWithDefaults() *OrganizationExpanded {
 	this := OrganizationExpanded{}
-	var defaultOrganizationAccess Role = EMPTY
-	this.DefaultOrganizationAccess = &defaultOrganizationAccess
-	var defaultStackAccess Role = EMPTY
-	this.DefaultStackAccess = &defaultStackAccess
 	return &this
 }
 
