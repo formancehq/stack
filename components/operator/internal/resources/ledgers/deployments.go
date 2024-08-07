@@ -2,11 +2,12 @@ package ledgers
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/formancehq/operator/internal/resources/brokers"
 	"github.com/formancehq/operator/internal/resources/brokertopics"
 	"github.com/formancehq/operator/internal/resources/caddy"
 	"k8s.io/apimachinery/pkg/types"
-	"strconv"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
@@ -24,33 +25,78 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+const (
+	ConditionTypeDeploymentStrategy      = "LedgerDeploymentStrategy"
+	ReasonLedgerSingle                   = "Single"
+	ReasonLedgerMonoWriterMultipleReader = "MonoWriterMultipleReader"
+)
+
+func hasDeploymentStrategyChanged(ctx core.Context, stack *v1beta1.Stack, ledger *v1beta1.Ledger, strategy string) (err error) {
+	condition := v1beta1.NewCondition(ConditionTypeDeploymentStrategy, ledger.Generation).SetReason(
+		func() string {
+			switch strategy {
+			case v1beta1.DeploymentStrategySingle:
+				return ReasonLedgerSingle
+			case v1beta1.DeploymentStrategyMonoWriterMultipleReader:
+				return ReasonLedgerMonoWriterMultipleReader
+			default:
+				return "unknown strategy"
+			}
+		}(),
+	).SetMessage("Deployment strategy initialized")
+
+	defer func() {
+		ledger.GetConditions().AppendOrReplace(*condition, v1beta1.AndConditions(
+			v1beta1.ConditionTypeMatch(ConditionTypeDeploymentStrategy),
+			v1beta1.ConditionGenerationMatch(ledger.Generation),
+		))
+	}()
+
+	// There is no generation 0, so we can't check for a change in strategy
+	// Uninstall is useless if the ledger deployment strategy has not changed
+	if ledger.GetConditions().Check(v1beta1.AndConditions(
+		v1beta1.ConditionTypeMatch(ConditionTypeDeploymentStrategy),
+		v1beta1.ConditionReasonMatch(condition.Reason),
+		v1beta1.ConditionGenerationMatch(ledger.Generation-1),
+	)) || ledger.GetGeneration() == 1 {
+		return
+	}
+
+	condition.SetMessage("Deployment strategy has changed")
+	switch strategy {
+	case v1beta1.DeploymentStrategySingle:
+		return uninstallLedgerMonoWriterMultipleReader(ctx, stack)
+	case v1beta1.DeploymentStrategyMonoWriterMultipleReader:
+		return core.DeleteIfExists[*appsv1.Deployment](ctx, core.GetNamespacedResourceName(stack.Name, "ledger"))
+	default:
+		return fmt.Errorf("unknown deployment strategy %s", strategy)
+	}
+}
+
 func installLedger(ctx core.Context, stack *v1beta1.Stack,
-	ledger *v1beta1.Ledger, database *v1beta1.Database, image string, isV2 bool) error {
+	ledger *v1beta1.Ledger, database *v1beta1.Database, image string, isV2 bool) (err error) {
 
 	deploymentStrategySettings, err := settings.GetStringOrDefault(ctx, stack.Name, v1beta1.DeploymentStrategySingle, "ledger", "deployment-strategy")
 	if err != nil {
 		return err
 	}
 
-	isSingle := true
-	if deploymentStrategySettings == v1beta1.DeploymentStrategyMonoWriterMultipleReader {
-		isSingle = false
-	}
 	if ledger.Spec.DeploymentStrategy == v1beta1.DeploymentStrategyMonoWriterMultipleReader {
-		isSingle = false
+		deploymentStrategySettings = v1beta1.DeploymentStrategyMonoWriterMultipleReader
 	}
 
-	if isSingle {
-		if err := uninstallLedgerMonoWriterMultipleReader(ctx, stack); err != nil {
-			return err
-		}
+	if err = hasDeploymentStrategyChanged(ctx, stack, ledger, deploymentStrategySettings); err != nil {
+		return
+	}
+
+	switch deploymentStrategySettings {
+	case v1beta1.DeploymentStrategySingle:
 		return installLedgerSingleInstance(ctx, stack, ledger, database, image, isV2)
+	case v1beta1.DeploymentStrategyMonoWriterMultipleReader:
+		return installLedgerMonoWriterMultipleReader(ctx, stack, ledger, database, image, isV2)
+	default:
+		return fmt.Errorf("unknown deployment strategy %s", deploymentStrategySettings)
 	}
-
-	if err := core.DeleteIfExists[*appsv1.Deployment](ctx, core.GetNamespacedResourceName(stack.Name, "ledger")); err != nil {
-		return err
-	}
-	return installLedgerMonoWriterMultipleReader(ctx, stack, ledger, database, image, isV2)
 }
 
 func installLedgerSingleInstance(ctx core.Context, stack *v1beta1.Stack,
