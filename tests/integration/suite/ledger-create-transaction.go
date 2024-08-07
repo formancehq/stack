@@ -27,6 +27,12 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 		})
 		Expect(err).To(BeNil())
 		Expect(createLedgerResponse.StatusCode).To(Equal(http.StatusNoContent))
+
+		createLedgerResponse, err = Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+			Ledger: "test",
+		})
+		Expect(err).To(BeNil())
+		Expect(createLedgerResponse.StatusCode).To(Equal(http.StatusNoContent))
 	})
 	When("creating a transaction on a ledger", func() {
 		var (
@@ -283,6 +289,70 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 				ErrorCode:    shared.V2ErrorsEnumInsufficientFund,
 				ErrorMessage: "running numscript: script execution failed: account(s) @bob had/have insufficient funds",
 			}))
+		})
+	})
+
+	When("creating a transaction on a ledger with an idempotency key and a specific ledger", func() {
+		var (
+			err        error
+			response   *operations.V2CreateTransactionResponse
+			timestamp  = time.Now().Add(-1 * time.Minute).Round(time.Second).UTC()
+			timestamp2 = time.Now().Round(time.Second).UTC()
+		)
+		BeforeEach(func() {
+			// Create a transaction
+			response, err = Client().Ledger.V2CreateTransaction(
+				TestContext(),
+				operations.V2CreateTransactionRequest{
+					IdempotencyKey: pointer.For("foo"),
+					V2PostTransaction: shared.V2PostTransaction{
+						Metadata: map[string]string{},
+						Postings: []shared.V2Posting{
+							{
+								Amount:      big.NewInt(100),
+								Asset:       "USD",
+								Source:      "world",
+								Destination: "alice",
+							},
+						},
+						Timestamp: &timestamp,
+						Reference: pointer.For("foo"),
+					},
+					Ledger: "default",
+				},
+			)
+		})
+		It("should be ok", func() {
+			Expect(err).To(Succeed())
+			Expect(response.V2CreateTransactionResponse.Data.ID).To(Equal(big.NewInt(0)))
+		})
+		Then("creating a ledger transaction with same ik and different ledger", func() {
+			BeforeEach(func() {
+				response, err = Client().Ledger.V2CreateTransaction(
+					TestContext(),
+					operations.V2CreateTransactionRequest{
+						IdempotencyKey: pointer.For("foo"),
+						V2PostTransaction: shared.V2PostTransaction{
+							Metadata: map[string]string{},
+							Postings: []shared.V2Posting{
+								{
+									Amount:      big.NewInt(100),
+									Asset:       "USD",
+									Source:      "world",
+									Destination: "alice",
+								},
+							},
+							Timestamp: &timestamp2,
+							Reference: pointer.For("foo2"),
+						},
+						Ledger: "test",
+					},
+				)
+			})
+			It("should not have an error", func() {
+				Expect(err).To(Succeed())
+				Expect(response.V2CreateTransactionResponse.Data.ID).To(Equal(big.NewInt(0)))
+			})
 		})
 	})
 
