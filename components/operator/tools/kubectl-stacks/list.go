@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
+	"sort"
+	"text/tabwriter"
+	"time"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/spf13/cobra"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
-	"sort"
-	"text/tabwriter"
-	"time"
 )
 
 func NewListCommand(configFlags *genericclioptions.ConfigFlags) *cobra.Command {
@@ -45,15 +46,22 @@ func NewListCommand(configFlags *genericclioptions.ConfigFlags) *cobra.Command {
 			})
 
 			w := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 0, 1, ' ', 0)
-			_, _ = fmt.Fprintln(w, "Name\tCreated at\tReady")
+			_, _ = fmt.Fprintln(w, "Name\tCreated at\tReady\tLocked?")
 			for _, stack := range stacks {
-				_, _ = fmt.Fprintf(w, "%s\t%s\t%s\r\n", stack.Name,
+				_, _ = fmt.Fprintf(w, "%s\t%s\t%s\t%s\r\n", stack.Name,
 					stack.CreationTimestamp.Time.Format(time.RFC3339), func() string {
 						if stack.Status.Ready {
 							return "yes"
 						}
 						return "no"
-					}())
+					}(),
+					func() string {
+						if stack.GetAnnotations()[v1beta1.SkipLabel] == "true" {
+							return "yes"
+						}
+						return ""
+					}(),
+				)
 			}
 			return w.Flush()
 		},
