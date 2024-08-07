@@ -1498,14 +1498,22 @@ components:
         lastStateUpdate: 2000-01-23T04:56:07.000+00:00
         name: name
         lastStatusUpdate: 2000-01-23T04:56:07.000+00:00
-        state: state
-        status: status
+        state: ENABLED
+        status: UNKNOWN
       properties:
         name:
           type: string
         state:
+          enum:
+          - ENABLED
+          - DISABLED
           type: string
         status:
+          enum:
+          - UNKNOWN
+          - PROGRESSING
+          - READY
+          - DELETED
           type: string
         lastStatusUpdate:
           format: date-time
@@ -1526,13 +1534,13 @@ components:
         - lastStateUpdate: 2000-01-23T04:56:07.000+00:00
           name: name
           lastStatusUpdate: 2000-01-23T04:56:07.000+00:00
-          state: state
-          status: status
+          state: ENABLED
+          status: UNKNOWN
         - lastStateUpdate: 2000-01-23T04:56:07.000+00:00
           name: name
           lastStatusUpdate: 2000-01-23T04:56:07.000+00:00
-          state: state
-          status: status
+          state: ENABLED
+          status: UNKNOWN
       properties:
         data:
           items:
@@ -1723,8 +1731,6 @@ components:
           type: string
         expectedStatus:
           enum:
-          - UNKNOWN
-          - PROGRESSING
           - READY
           - DISABLED
           - DELETED

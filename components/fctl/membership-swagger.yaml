@@ -1326,8 +1326,16 @@ components:
           type: string
         state:
           type: string
+          enum:
+            - ENABLED
+            - DISABLED
         status:
           type: string
+          enum:
+            - UNKNOWN
+            - PROGRESSING
+            - READY
+            - DELETED
         lastStatusUpdate:
           type: string
           format: date-time
@@ -1588,8 +1596,6 @@ components:
         expectedStatus:
           type: string
           enum:
-            - UNKNOWN
-            - PROGRESSING
             - READY
             - DISABLED
             - DELETED
