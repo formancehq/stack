@@ -40,6 +40,9 @@ func lockAllStacks(cmd *cobra.Command, client *rest.RESTClient) (*v1beta1.StackL
 	}
 
 	for _, stack := range list.Items {
+		if stack.Spec.Disabled {
+			continue
+		}
 		if err := lockStack(cmd, client, stack.Name); err != nil {
 			return nil, err
 		}
