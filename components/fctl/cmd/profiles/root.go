@@ -7,7 +7,7 @@ import (
 
 func NewCommand() *cobra.Command {
 	return fctl.NewCommand("profiles",
-		fctl.WithAliases("p", "prof"),
+		fctl.WithAliases("p", "prof", "profile"),
 		fctl.WithShortDescription("Profiles management"),
 		fctl.WithChildCommands(
 			NewDeleteCommand(),
