@@ -212,7 +212,7 @@ func (a Application) handleDeployment(ctx core.Context, deploymentLabels map[str
 		mutators = append(mutators,
 			func(t *appsv1.Deployment) error {
 				t.Spec.Strategy = appsv1.DeploymentStrategy{
-					Type: appsv1.RollingUpdateDeploymentStrategyType,
+					Type: appsv1.RecreateDeploymentStrategyType,
 				}
 				return nil
 			})
