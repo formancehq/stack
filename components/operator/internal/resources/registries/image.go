@@ -22,23 +22,23 @@ func NormalizeVersion(version string) string {
 }
 
 func GetImage(ctx core.Context, stack *v1beta1.Stack, name, version string) (string, error) {
-	return TranslateImage(ctx, stack.Name,
+	return TranslateImage(stack.Name, NewImageSettingsOverrider(ctx),
 		fmt.Sprintf("ghcr.io/formancehq/%s:%s", name, NormalizeVersion(version)))
 }
 
 func GetBenthosImage(ctx core.Context, stack *v1beta1.Stack, version string) (string, error) {
-	return TranslateImage(ctx, stack.Name,
+	return TranslateImage(stack.Name, NewImageSettingsOverrider(ctx),
 		fmt.Sprintf("public.ecr.aws/formance-internal/jeffail/benthos:%s", NormalizeVersion(version)))
 }
 
 func GetNatsBoxImage(ctx core.Context, stack *v1beta1.Stack, version string) (string, error) {
-	return TranslateImage(ctx, stack.Name,
+	return TranslateImage(stack.Name, NewImageSettingsOverrider(ctx),
 		fmt.Sprintf("docker.io/natsio/nats-box:%s", NormalizeVersion(version)))
 }
 
 func GetCaddyImage(ctx core.Context, stack *v1beta1.Stack, version string) (string, error) {
 	image := fmt.Sprintf("docker.io/caddy/caddy:%s", NormalizeVersion(version))
-	newCaddyImage, err := TranslateImage(ctx, stack.Name,
+	newCaddyImage, err := TranslateImage(stack.Name, NewImageSettingsOverrider(ctx),
 		image)
 	if err != nil {
 		return "", err
