@@ -9,7 +9,7 @@ import (
 
 func NewCommand() *cobra.Command {
 	return fctl.NewStackCommand("organizations",
-		fctl.WithAliases("org", "o"),
+		fctl.WithAliases("org", "o", "organization"),
 		fctl.WithShortDescription("Organizations management"),
 		fctl.WithChildCommands(
 			NewListCommand(),
