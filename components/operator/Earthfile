@@ -57,6 +57,14 @@ generate:
     SAVE ARTIFACT internal AS LOCAL internal
     SAVE ARTIFACT api AS LOCAL api
 
+generate-mock:
+    FROM core+builder-image
+    DO --pass-args core+GO_INSTALL --package=go.uber.org/mock/mockgen@latest
+    COPY (+sources/*) /src
+    WORKDIR /src/components/operator
+    RUN go generate -run mockgen ./...
+    SAVE ARTIFACT internal AS LOCAL internal
+
 helm-update:
     FROM core+builder-image
     RUN curl -s https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh | bash -s -- 4.5.4 /bin
