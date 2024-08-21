@@ -51,7 +51,7 @@ func NewCreateCommand() *cobra.Command {
 	return fctl.NewMembershipCommand("create [name]",
 		fctl.WithShortDescription("Create a new stack"),
 		fctl.WithAliases("c", "cr"),
-		fctl.WithArgs(cobra.MaximumNArgs(0, 1)),
+		fctl.WithArgs(cobra.RangeArgs(0, 1)),
 		fctl.WithBoolFlag(unprotectFlag, false, "Unprotect stacks (no confirmation on write commands)"),
 		fctl.WithStringFlag(regionFlag, "", "Region on which deploy the stack"),
 		fctl.WithStringFlag(versionFlag, "", "Version of the stack"),
