@@ -2,6 +2,7 @@ package applications
 
 import (
 	"fmt"
+
 	"github.com/formancehq/operator/internal/resources/licence"
 	"github.com/formancehq/operator/internal/resources/settings"
 	v1 "k8s.io/api/policy/v1"
@@ -198,14 +199,23 @@ func (a Application) handleDeployment(ctx core.Context, deploymentLabels map[str
 	})
 
 	if !a.stateful {
-		mutators = append(mutators, func(t *appsv1.Deployment) error {
-			replicas, err := settings.GetInt32(ctx, a.owner.GetStack(), "deployments", a.deploymentTpl.Name, "replicas")
-			if err != nil {
-				return err
-			}
-			t.Spec.Replicas = replicas
-			return nil
-		})
+		mutators = append(mutators,
+			func(t *appsv1.Deployment) error {
+				replicas, err := settings.GetInt32(ctx, a.owner.GetStack(), "deployments", a.deploymentTpl.Name, "replicas")
+				if err != nil {
+					return err
+				}
+				t.Spec.Replicas = replicas
+				return nil
+			})
+	} else {
+		mutators = append(mutators,
+			func(t *appsv1.Deployment) error {
+				t.Spec.Strategy = appsv1.DeploymentStrategy{
+					Type: appsv1.RecreateDeploymentStrategyType,
+				}
+				return nil
+			})
 	}
 
 	if a.isEE {
