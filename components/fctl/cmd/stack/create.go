@@ -51,7 +51,7 @@ func NewCreateCommand() *cobra.Command {
 	return fctl.NewMembershipCommand("create [name]",
 		fctl.WithShortDescription("Create a new stack"),
 		fctl.WithAliases("c", "cr"),
-		fctl.WithArgs(cobra.RangeArgs(0, 1)),
+		fctl.WithArgs(cobra.MaximumNArgs(0, 1)),
 		fctl.WithBoolFlag(unprotectFlag, false, "Unprotect stacks (no confirmation on write commands)"),
 		fctl.WithStringFlag(regionFlag, "", "Region on which deploy the stack"),
 		fctl.WithStringFlag(versionFlag, "", "Version of the stack"),
@@ -100,6 +100,10 @@ func (c *StackCreateController) Run(cmd *cobra.Command, args []string) (fctl.Ren
 				name = region.Name
 			}
 			options = append(options, fmt.Sprintf("%s | %s | %s", region.Id, privacy, name))
+		}
+
+		if len(options) == 0 {
+			return nil, errors.New("no regions available")
 		}
 
 		printer := pterm.DefaultInteractiveSelect.WithOptions(options)
