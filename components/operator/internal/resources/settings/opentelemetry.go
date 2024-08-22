@@ -59,6 +59,7 @@ func otelEnvVars(ctx core.Context, stack string, monitoringType MonitoringType, 
 
 	ret := []v1.EnvVar{
 		core.Env(fmt.Sprintf("%sOTEL_%s", prefix, string(monitoringType)), "true"),
+		core.Env(fmt.Sprintf("%sOTEL_%s_BATCH", prefix, string(monitoringType)), "true"),
 		core.Env(fmt.Sprintf("%sOTEL_%s_EXPORTER", prefix, string(monitoringType)), "otlp"),
 		core.EnvFromBool(fmt.Sprintf("%sOTEL_%s_EXPORTER_OTLP_INSECURE", prefix, string(monitoringType)),
 			IsTrue(otlp.Query().Get("insecure"))),
