@@ -4,10 +4,11 @@ import (
 	"context"
 	"time"
 
+	"github.com/spf13/pflag"
+
 	"github.com/formancehq/stack/libs/go-libs/errorsutils"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"go.uber.org/fx"
 )
 
@@ -19,33 +20,40 @@ const (
 	LicenceExpectedIssuerFlag = "licence-issuer"
 )
 
-func InitCLIFlags(cmd *cobra.Command) {
-	cmd.PersistentFlags().Bool(LicenceEnabled, false, "Enable licence check")
-	cmd.PersistentFlags().String(LicenceTokenFlag, "", "Licence token")
-	cmd.PersistentFlags().Duration(LicenceValidateTickFlag, 2*time.Minute, "Licence validate tick")
-	cmd.PersistentFlags().String(LicenceClusterIDFlag, "", "Licence cluster ID")
-	cmd.PersistentFlags().String(LicenceExpectedIssuerFlag, "", "Licence expected issuer")
+func AddFlags(flags *pflag.FlagSet) {
+	flags.Bool(LicenceEnabled, false, "Enable licence check")
+	flags.String(LicenceTokenFlag, "", "Licence token")
+	flags.Duration(LicenceValidateTickFlag, 2*time.Minute, "Licence validate tick")
+	flags.String(LicenceClusterIDFlag, "", "Licence cluster ID")
+	flags.String(LicenceExpectedIssuerFlag, "", "Licence expected issuer")
 }
 
-func CLIModule(
+func FXModuleFromFlags(
+	cmd *cobra.Command,
 	serviceName string,
 ) fx.Option {
 	options := make([]fx.Option, 0)
 
 	licenceChanError := make(chan error, 1)
 
-	if viper.GetBool(LicenceEnabled) {
+	licenceEnabled, _ := cmd.PersistentFlags().GetBool(LicenceEnabled)
+
+	if licenceEnabled {
+		licenceToken, _ := cmd.PersistentFlags().GetString(LicenceTokenFlag)
+		licenceValidateTick, _ := cmd.PersistentFlags().GetDuration(LicenceValidateTickFlag)
+		licenceClusterID, _ := cmd.PersistentFlags().GetString(LicenceClusterIDFlag)
+		licenceExpectedIssuer, _ := cmd.PersistentFlags().GetString(LicenceExpectedIssuerFlag)
+
 		options = append(options,
 			fx.Provide(func(logger logging.Logger) *Licence {
 				return NewLicence(
 					logger,
-					viper.GetString(LicenceTokenFlag),
-					viper.GetDuration(LicenceValidateTickFlag),
+					licenceToken,
+					licenceValidateTick,
 					serviceName,
-					viper.GetString(LicenceClusterIDFlag),
-					viper.GetString(LicenceExpectedIssuerFlag),
+					licenceClusterID,
+					licenceExpectedIssuer,
 				)
-
 			}),
 			fx.Invoke(func(lc fx.Lifecycle, l *Licence, shutdowner fx.Shutdowner) {
 				lc.Append(fx.Hook{

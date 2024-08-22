@@ -5,12 +5,14 @@ import (
 	"database/sql/driver"
 	"time"
 
+	"github.com/pkg/errors"
+	"github.com/spf13/cobra"
+
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/formancehq/stack/libs/go-libs/aws/iam"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/lib/pq"
 	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
 )
 
 const (
@@ -21,23 +23,20 @@ const (
 	PostgresConnMaxIdleTimeFlag = "postgres-conn-max-idle-time"
 )
 
-func InitFlags(flags *pflag.FlagSet) {
+func AddFlags(flags *pflag.FlagSet) {
 	flags.String(PostgresURIFlag, "", "Postgres URI")
 	flags.Bool(PostgresAWSEnableIAMFlag, false, "Enable AWS IAM authentication")
 	flags.Int(PostgresMaxIdleConnsFlag, 0, "Max Idle connections")
 	flags.Duration(PostgresConnMaxIdleTimeFlag, time.Minute, "Max Idle time for connections")
 	flags.Int(PostgresMaxOpenConnsFlag, 20, "Max opened connections")
-
-	if err := viper.BindPFlags(flags); err != nil {
-		panic(err)
-	}
 }
 
-func ConnectionOptionsFromFlags(ctx context.Context) (*ConnectionOptions, error) {
+func ConnectionOptionsFromFlags(cmd *cobra.Command) (*ConnectionOptions, error) {
 	var connector func(string) (driver.Connector, error)
 
-	if viper.GetBool(PostgresAWSEnableIAMFlag) {
-		cfg, err := config.LoadDefaultConfig(context.Background(), iam.LoadOptionFromViper())
+	awsEnable, _ := cmd.Flags().GetBool(PostgresAWSEnableIAMFlag)
+	if awsEnable {
+		cfg, err := config.LoadDefaultConfig(context.Background(), iam.LoadOptionFromCommand(cmd))
 		if err != nil {
 			return nil, err
 		}
@@ -48,7 +47,7 @@ func ConnectionOptionsFromFlags(ctx context.Context) (*ConnectionOptions, error)
 				driver: &iamDriver{
 					awsConfig: cfg,
 				},
-				logger: logging.FromContext(ctx),
+				logger: logging.FromContext(cmd.Context()),
 			}, nil
 		}
 	} else {
@@ -56,11 +55,20 @@ func ConnectionOptionsFromFlags(ctx context.Context) (*ConnectionOptions, error)
 			return pq.NewConnector(dsn)
 		}
 	}
+
+	postgresUri, _ := cmd.Flags().GetString(PostgresURIFlag)
+	if postgresUri == "" {
+		return nil, errors.New("missing postgres uri")
+	}
+	maxIdleConns, _ := cmd.Flags().GetInt(PostgresMaxIdleConnsFlag)
+	connMaxIdleConns, _ := cmd.Flags().GetDuration(PostgresConnMaxIdleTimeFlag)
+	maxOpenConns, _ := cmd.Flags().GetInt(PostgresMaxOpenConnsFlag)
+
 	return &ConnectionOptions{
-		DatabaseSourceName: viper.GetString(PostgresURIFlag),
-		MaxIdleConns:       viper.GetInt(PostgresMaxIdleConnsFlag),
-		ConnMaxIdleTime:    viper.GetDuration(PostgresConnMaxIdleTimeFlag),
-		MaxOpenConns:       viper.GetInt(PostgresMaxOpenConnsFlag),
+		DatabaseSourceName: postgresUri,
+		MaxIdleConns:       maxIdleConns,
+		ConnMaxIdleTime:    connMaxIdleConns,
+		MaxOpenConns:       maxOpenConns,
 		Connector:          connector,
 	}, nil
 }

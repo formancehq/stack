@@ -52,6 +52,10 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 				response *operations.ListWalletsResponse
 				err      error
 			)
+			BeforeEach(func() {
+				// reset between each test
+				request = operations.ListWalletsRequest{}
+			})
 			JustBeforeEach(func() {
 				Eventually(func(g Gomega) bool {
 					response, err = Client().Wallets.ListWallets(TestContext(), request)

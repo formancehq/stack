@@ -9,10 +9,9 @@ import (
 	"testing"
 
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 )
 
-type logrusLogger struct {
+type LogrusLogger struct {
 	entry interface {
 		Debugf(format string, args ...any)
 		Debug(args ...any)
@@ -26,55 +25,53 @@ type logrusLogger struct {
 	}
 }
 
-func (l *logrusLogger) WithContext(ctx context.Context) Logger {
-	return &logrusLogger{
+func (l *LogrusLogger) WithContext(ctx context.Context) Logger {
+	return &LogrusLogger{
 		l.entry.WithContext(ctx),
 	}
 }
 
-func (l *logrusLogger) Debug(args ...any) {
+func (l *LogrusLogger) Debug(args ...any) {
 	l.entry.Debug(args...)
 }
-func (l *logrusLogger) Debugf(fmt string, args ...any) {
+func (l *LogrusLogger) Debugf(fmt string, args ...any) {
 	l.entry.Debugf(fmt, args...)
 }
-func (l *logrusLogger) Infof(fmt string, args ...any) {
+func (l *LogrusLogger) Infof(fmt string, args ...any) {
 	l.entry.Infof(fmt, args...)
 }
-func (l *logrusLogger) Info(args ...any) {
+func (l *LogrusLogger) Info(args ...any) {
 	l.entry.Info(args...)
 }
-func (l *logrusLogger) Errorf(fmt string, args ...any) {
+func (l *LogrusLogger) Errorf(fmt string, args ...any) {
 	l.entry.Errorf(fmt, args...)
 }
-func (l *logrusLogger) Error(args ...any) {
+func (l *LogrusLogger) Error(args ...any) {
 	l.entry.Error(args...)
 }
-func (l *logrusLogger) WithFields(fields map[string]any) Logger {
-	return &logrusLogger{
+func (l *LogrusLogger) WithFields(fields map[string]any) Logger {
+	return &LogrusLogger{
 		entry: l.entry.WithFields(fields),
 	}
 }
 
-func (l *logrusLogger) WithField(key string, value any) Logger {
+func (l *LogrusLogger) WithField(key string, value any) Logger {
 	return l.WithFields(map[string]any{
 		key: value,
 	})
 }
 
-var _ Logger = &logrusLogger{}
+var _ Logger = &LogrusLogger{}
 
-func NewLogrus(logger *logrus.Logger) *logrusLogger {
-	return &logrusLogger{
+func NewLogrus(logger *logrus.Logger) *LogrusLogger {
+	return &LogrusLogger{
 		entry: logger,
 	}
 }
 
-var (
-	once sync.Once
-)
+var once sync.Once
 
-func Testing() *logrusLogger {
+func Testing() *LogrusLogger {
 	logger := logrus.New()
 	logger.SetOutput(io.Discard)
 	once.Do(flag.Parse)
@@ -92,7 +89,7 @@ func Testing() *logrusLogger {
 	return NewLogrus(logger)
 }
 
-func DefaultLogger(w io.Writer, debug bool) *logrus.Logger {
+func NewDefaultLogger(w io.Writer, debug, formatJSON bool, hooks ...logrus.Hook) *LogrusLogger {
 	l := logrus.New()
 	l.SetOutput(w)
 	if debug {
@@ -100,7 +97,7 @@ func DefaultLogger(w io.Writer, debug bool) *logrus.Logger {
 	}
 
 	var formatter logrus.Formatter
-	if viper.GetBool(JsonFormattingLoggerFlag) {
+	if formatJSON {
 		jsonFormatter := &logrus.JSONFormatter{}
 		formatter = jsonFormatter
 	} else {
@@ -111,5 +108,9 @@ func DefaultLogger(w io.Writer, debug bool) *logrus.Logger {
 
 	l.SetFormatter(formatter)
 
-	return l
+	for _, hook := range hooks {
+		l.AddHook(hook)
+	}
+
+	return NewLogrus(l)
 }

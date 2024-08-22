@@ -33,7 +33,7 @@ func TestModule(t *testing.T) {
 		fx.Supply(api.ServiceInfo{}),
 		fx.Replace(fx.Annotate(backend, fx.As(new(api.Backend)))),
 		fx.NopLogger,
-		api.NewModule(),
+		api.NewModule(testing.Verbose()),
 		v1.NewModule(),
 		v2.NewModule(),
 		fx.Populate(&mux),

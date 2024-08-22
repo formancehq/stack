@@ -13,7 +13,6 @@ import (
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/formancehq/wallets/pkg/api"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"go.uber.org/fx"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
@@ -33,25 +32,38 @@ func newServeCommand() *cobra.Command {
 		Use:     "serve",
 		Aliases: []string{"server"},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			stackClientID, _ := cmd.Flags().GetString(stackClientIDFlag)
+			stackClientSecret, _ := cmd.Flags().GetString(stackClientSecretFlag)
+			stackURL, _ := cmd.Flags().GetString(stackURLFlag)
+			ledgerName, _ := cmd.Flags().GetString(ledgerNameFlag)
+			accountPrefix, _ := cmd.Flags().GetString(accountPrefixFlag)
+			listen, _ := cmd.Flags().GetString(listenFlag)
+
 			options := []fx.Option{
 				fx.Provide(func() (*http.Client, error) {
-					return GetHTTPClient(cmd.Context(), viper.GetString(stackClientIDFlag), viper.GetString(stackClientSecretFlag),
-						viper.GetString(stackURLFlag), viper.GetBool(service.DebugFlag))
+					return GetHTTPClient(
+						cmd.Context(),
+						stackClientID,
+						stackClientSecret,
+						stackURL,
+						service.IsDebug(cmd),
+					)
 				}),
 				wallet.Module(
-					viper.GetString(stackURLFlag),
-					viper.GetString(ledgerNameFlag),
-					viper.GetString(accountPrefixFlag),
+					stackURL,
+					ledgerName,
+					accountPrefix,
 				),
 				api.Module(sharedapi.ServiceInfo{
 					Version: Version,
-				}, viper.GetString(listenFlag)),
-				otlptraces.CLITracesModule(),
-				auth.CLIAuthModule(),
-				licence.CLIModule(ServiceName),
+					Debug:   service.IsDebug(cmd),
+				}, listen),
+				otlptraces.FXModuleFromFlags(cmd),
+				auth.FXModuleFromFlags(cmd),
+				licence.FXModuleFromFlags(cmd, ServiceName),
 			}
 
-			return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
+			return service.New(cmd.OutOrStdout(), options...).Run(cmd)
 		},
 	}
 	cmd.Flags().String(stackClientIDFlag, "", "Client ID")
@@ -60,8 +72,12 @@ func newServeCommand() *cobra.Command {
 	cmd.Flags().String(ledgerNameFlag, "wallets-002", "Target ledger")
 	cmd.Flags().String(accountPrefixFlag, "", "Account prefix flag")
 	cmd.Flags().String(listenFlag, ":8080", "Listen address")
-	service.BindFlags(cmd)
-	licence.InitCLIFlags(cmd)
+
+	service.AddFlags(cmd.Flags())
+	licence.AddFlags(cmd.Flags())
+	auth.AddFlags(cmd.Flags())
+	otlptraces.AddFlags(cmd.Flags())
+
 	return cmd
 }
 

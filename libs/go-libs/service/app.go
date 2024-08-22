@@ -5,7 +5,11 @@ import (
 	"io"
 	"os"
 
-	"github.com/spf13/viper"
+	"github.com/spf13/pflag"
+
+	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
+	"github.com/sirupsen/logrus"
+	"github.com/uptrace/opentelemetry-go-extra/otellogrus"
 
 	"github.com/formancehq/stack/libs/go-libs/errorsutils"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -15,9 +19,9 @@ import (
 
 const DebugFlag = "debug"
 
-func BindFlags(cmd *cobra.Command) {
-	cmd.PersistentFlags().Bool(DebugFlag, false, "Debug mode")
-	cmd.PersistentFlags().Bool(logging.JsonFormattingLoggerFlag, false, "Format logs as json")
+func AddFlags(flags *pflag.FlagSet) {
+	flags.Bool(DebugFlag, false, "Debug mode")
+	flags.Bool(logging.JsonFormattingLoggerFlag, false, "Format logs as json")
 }
 
 type App struct {
@@ -25,8 +29,26 @@ type App struct {
 	output  io.Writer
 }
 
-func (a *App) Run(ctx context.Context) error {
-	logger := GetDefaultLogger(a.output, viper.GetBool(DebugFlag))
+func (a *App) Run(cmd *cobra.Command) error {
+
+	loggerHooks := make([]logrus.Hook, 0)
+	otelTraces, _ := cmd.Flags().GetBool(otlptraces.OtelTracesFlag)
+	if otelTraces {
+		loggerHooks = append(loggerHooks, otellogrus.NewHook(otellogrus.WithLevels(
+			logrus.PanicLevel,
+			logrus.FatalLevel,
+			logrus.ErrorLevel,
+			logrus.WarnLevel,
+		)))
+	}
+
+	jsonFormatting, _ := cmd.Flags().GetBool(logging.JsonFormattingLoggerFlag)
+	logger := logging.NewDefaultLogger(
+		a.output,
+		IsDebug(cmd),
+		jsonFormatting,
+		loggerHooks...,
+	)
 	logger.Infof("Starting application")
 	logger.Debugf("Environment variables")
 	for _, v := range os.Environ() {
@@ -34,7 +56,7 @@ func (a *App) Run(ctx context.Context) error {
 	}
 
 	app := a.newFxApp(logger)
-	if err := app.Start(logging.ContextWithLogger(ctx, logger)); err != nil {
+	if err := app.Start(logging.ContextWithLogger(cmd.Context(), logger)); err != nil {
 		switch {
 		case errorsutils.IsErrorWithExitCode(err):
 			logger.Errorf("Error: %v", err)
@@ -47,7 +69,7 @@ func (a *App) Run(ctx context.Context) error {
 
 	var exitCode int
 	select {
-	case <-ctx.Done():
+	case <-cmd.Context().Done():
 	case shutdownSignal := <-app.Wait():
 		// <-app.Done() is a signals channel, it means we have to call the
 		// app.Stop in order to gracefully shutdown the app
@@ -58,7 +80,7 @@ func (a *App) Run(ctx context.Context) error {
 
 	if err := app.Stop(logging.ContextWithLogger(contextWithLifecycle(
 		context.Background(), // Don't reuse original context as it can have been cancelled, and we really need to properly stop the app
-		lifecycleFromContext(ctx),
+		lifecycleFromContext(cmd.Context()),
 	), logger)); err != nil {
 		return err
 	}

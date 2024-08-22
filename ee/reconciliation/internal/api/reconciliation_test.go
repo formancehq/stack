@@ -320,7 +320,9 @@ func TestReconciliation(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := newRouter(backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
+			router := newRouter(backend, sharedapi.ServiceInfo{
+				Debug: testing.Verbose(),
+			}, auth.NewNoAuth(), nil)
 
 			var body []byte
 			if testCase.invalidBody {
@@ -445,7 +447,9 @@ func TestGetReconciliation(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := newRouter(backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
+			router := newRouter(backend, sharedapi.ServiceInfo{
+				Debug: testing.Verbose(),
+			}, auth.NewNoAuth(), nil)
 
 			req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/reconciliations/%s", testCase.id.String()), nil)
 			rec := httptest.NewRecorder()

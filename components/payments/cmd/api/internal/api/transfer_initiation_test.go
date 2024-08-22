@@ -337,7 +337,9 @@ func TestListTransferInitiations(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{
+				Debug: testing.Verbose(),
+			}, auth.NewNoAuth(), false)
 
 			req := httptest.NewRequest(http.MethodGet, "/transfer-initiations", nil)
 			rec := httptest.NewRecorder()
@@ -651,7 +653,9 @@ func TestGetTransferInitiation(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{
+				Debug: testing.Verbose(),
+			}, auth.NewNoAuth(), false)
 
 			req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/transfer-initiations/%s", testCase.tfID), nil)
 			rec := httptest.NewRecorder()

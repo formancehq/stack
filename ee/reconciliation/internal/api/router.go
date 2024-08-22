@@ -15,7 +15,7 @@ import (
 func newRouter(
 	b backend.Backend,
 	serviceInfo api.ServiceInfo,
-	a auth.Auth,
+	authenticator auth.Authenticator,
 	healthController *health.HealthController) *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(func(handler http.Handler) http.Handler {
@@ -28,8 +28,8 @@ func newRouter(
 	r.Get("/_info", api.InfoHandler(serviceInfo))
 
 	r.Group(func(r chi.Router) {
-		r.Use(auth.Middleware(a))
-		r.Use(service.OTLPMiddleware("reconciliation"))
+		r.Use(auth.Middleware(authenticator))
+		r.Use(service.OTLPMiddleware("reconciliation", serviceInfo.Debug))
 
 		r.Get("/reconciliations/{reconciliationID}", getReconciliationHandler(b))
 		r.Get("/reconciliations", listReconciliationsHandler(b))

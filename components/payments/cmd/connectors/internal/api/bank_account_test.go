@@ -256,7 +256,9 @@ func TestCreateBankAccounts(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
+			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{
+				Debug: testing.Verbose(),
+			}, auth.NewNoAuth(), nil, false)
 
 			var body []byte
 			if testCase.req != nil {
@@ -444,7 +446,9 @@ func TestForwardBankAccountToConnector(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
+			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{
+				Debug: testing.Verbose(),
+			}, auth.NewNoAuth(), nil, false)
 
 			var body []byte
 			if testCase.req != nil {
@@ -595,7 +599,9 @@ func TestUpdateBankAccountMetadata(t *testing.T) {
 					Return(testCase.serviceError)
 			}
 
-			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
+			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{
+				Debug: testing.Verbose(),
+			}, auth.NewNoAuth(), nil, false)
 
 			var body []byte
 			if testCase.req != nil {

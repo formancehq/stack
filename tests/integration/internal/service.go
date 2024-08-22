@@ -3,7 +3,7 @@ package internal
 import (
 	"context"
 	"fmt"
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	"github.com/ory/dockertest/v3"
 	"io"
 	"time"
@@ -130,7 +130,7 @@ func (d *dockerContainerService) load(ctx context.Context, test *Test) error {
 	}
 
 	go func() {
-		reader, _ := test.env.dockerClient.ContainerLogs(TestContext(), d.resource.Container.ID, types.ContainerLogsOptions{
+		reader, _ := test.env.dockerClient.ContainerLogs(TestContext(), d.resource.Container.ID, container.LogsOptions{
 			ShowStdout: true,
 			ShowStderr: true,
 			Follow:     true,

@@ -348,7 +348,9 @@ func TestGetBalances(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{
+				Debug: testing.Verbose(),
+			}, auth.NewNoAuth(), false)
 
 			req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/accounts/%s/balances", testCase.accountID), nil)
 			rec := httptest.NewRecorder()

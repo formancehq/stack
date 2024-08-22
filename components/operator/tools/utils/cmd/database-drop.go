@@ -12,7 +12,7 @@ func NewDatabaseDropCommand() *cobra.Command {
 		Use:   "drop",
 		Short: "Handle database dropping",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd.Context())
+			connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd)
 			if err != nil {
 				return errors.Wrap(err, "resolving connection params")
 			}

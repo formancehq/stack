@@ -32,11 +32,11 @@ func (w *responseWriter) finalize() {
 	}
 }
 
-func OTLPMiddleware(serverName string) func(h http.Handler) http.Handler {
+func OTLPMiddleware(serverName string, debug bool) func(h http.Handler) http.Handler {
 	m := otelchi.Middleware(serverName)
 	return func(h http.Handler) http.Handler {
 		return m(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if IsDebug(r.Context()) {
+			if debug {
 				data, err := httputil.DumpRequest(r, true)
 				if err != nil {
 					panic(err)

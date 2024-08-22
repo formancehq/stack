@@ -7,6 +7,7 @@ import (
 
 type ServiceInfo struct {
 	Version string `json:"version"`
+	Debug   bool   `json:"debug"`
 }
 
 func InfoHandler(info ServiceInfo) http.HandlerFunc {

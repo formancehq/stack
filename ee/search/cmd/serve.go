@@ -20,7 +20,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
-	app "github.com/formancehq/stack/libs/go-libs/service"
+	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/opensearch-project/opensearch-go"
@@ -28,7 +28,6 @@ import (
 	requestsigner "github.com/opensearch-project/opensearch-go/v2/signer/awsv2"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/fx"
@@ -57,30 +56,22 @@ func NewServer() *cobra.Command {
 		Use:          "serve",
 		Short:        "Launch the search server",
 		SilenceUsage: true,
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			return bindFlagsToViper(cmd)
-		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			openSearchServiceHost := viper.GetString(openSearchServiceFlag)
-			if openSearchServiceHost == "" {
-				exitWithError(cmd.Context(), "missing open search service host")
-			}
-
-			esIndex := viper.GetString(esIndicesFlag)
+			esIndex, _ := cmd.Flags().GetString(esIndicesFlag)
 			if esIndex == "" {
 				return errors.New("es index not defined")
 			}
 
-			bind := viper.GetString(bindFlag)
+			bind, _ := cmd.Flags().GetString(bindFlag)
 			if bind == "" {
 				bind = defaultBind
 			}
 
 			options := make([]fx.Option, 0)
-			options = append(options, opensearchClientModule(openSearchServiceHost, !viper.GetBool(esDisableMappingInitFlag), esIndex))
+			options = append(options, opensearchClientModule(cmd))
 			options = append(options,
-				auth.CLIAuthModule(),
+				auth.FXModuleFromFlags(cmd),
 				health.Module(),
 				health.ProvideHealthCheck(func(client *opensearch.Client) health.NamedCheck {
 					return health.NewNamedCheck("elasticsearch connection", health.CheckFn(func(ctx context.Context) error {
@@ -90,13 +81,11 @@ func NewServer() *cobra.Command {
 				}),
 			)
 
-			options = append(options, otlptraces.CLITracesModule())
-			options = append(options, licence.CLIModule(serviceName))
-			options = append(options, apiModule(serviceName, bind, viper.GetString(stackFlag), api.ServiceInfo{
-				Version: Version,
-			}, esIndex))
+			options = append(options, otlptraces.FXModuleFromFlags(cmd))
+			options = append(options, licence.FXModuleFromFlags(cmd, serviceName))
+			options = append(options, apiModule(cmd))
 
-			return app.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
+			return service.New(cmd.OutOrStdout(), options...).Run(cmd)
 		},
 	}
 
@@ -108,12 +97,13 @@ func NewServer() *cobra.Command {
 	cmd.Flags().String(openSearchPasswordFlag, "", "OpenSearch password")
 	cmd.Flags().Bool(esDisableMappingInitFlag, false, "Disable mapping initialization")
 	cmd.Flags().String(stackFlag, "", "Stack id")
-
 	cmd.Flags().Bool(awsIAMEnabledFlag, false, "Use AWS IAM for authentication")
-	iam.InitFlags(cmd.Flags())
-	otlptraces.InitOTLPTracesFlags(cmd.Flags())
-	app.BindFlags(cmd)
-	licence.InitCLIFlags(cmd)
+
+	iam.AddFlags(cmd.Flags())
+	otlptraces.AddFlags(cmd.Flags())
+	service.AddFlags(cmd.Flags())
+	licence.AddFlags(cmd.Flags())
+	auth.AddFlags(cmd.Flags())
 
 	return cmd
 }
@@ -123,14 +113,14 @@ func exitWithError(ctx context.Context, msg string) {
 	os.Exit(1)
 }
 
-func newOpensearchClient(config *opensearch.Config) (*opensearch.Client, error) {
+func newOpensearchClient(cmd *cobra.Command, config *opensearch.Config) (*opensearch.Client, error) {
 	httpTransport := http.DefaultTransport
 	httpTransport.(*http.Transport).TLSClientConfig = &tls.Config{
 		InsecureSkipVerify: true,
 	}
-	httpTransport = otlp.NewRoundTripper(httpTransport, viper.GetBool(app.DebugFlag))
+	httpTransport = otlp.NewRoundTripper(httpTransport, service.IsDebug(cmd))
 
-	if viper.GetBool(app.DebugFlag) {
+	if service.IsDebug(cmd) {
 		httpTransport = httpclient.NewDebugHTTPTransport(httpTransport)
 		config.Logger = &opensearchtransport.JSONLogger{
 			Output:             os.Stdout,
@@ -144,11 +134,18 @@ func newOpensearchClient(config *opensearch.Config) (*opensearch.Client, error) 
 	return opensearch.NewClient(*config)
 }
 
-func newConfig(openSearchServiceHost string) (*opensearch.Config, error) {
-	cfg := opensearch.Config{
-		Addresses: []string{viper.GetString(openSearchSchemeFlag) + "://" + openSearchServiceHost},
+func newConfig(cmd *cobra.Command) (*opensearch.Config, error) {
+	openSearchServiceHost, _ := cmd.Flags().GetString(openSearchServiceFlag)
+	if openSearchServiceHost == "" {
+		exitWithError(cmd.Context(), "missing open search service host")
 	}
-	if viper.GetBool(awsIAMEnabledFlag) {
+	openSearchScheme, _ := cmd.Flags().GetString(openSearchSchemeFlag)
+	awsIAMEnabled, _ := cmd.Flags().GetBool(awsIAMEnabledFlag)
+
+	cfg := opensearch.Config{
+		Addresses: []string{openSearchScheme + "://" + openSearchServiceHost},
+	}
+	if awsIAMEnabled {
 		awsConfig, err := config.LoadDefaultConfig(context.Background())
 		if err != nil {
 			return nil, err
@@ -159,23 +156,29 @@ func newConfig(openSearchServiceHost string) (*opensearch.Config, error) {
 		}
 		cfg.Signer = signer
 	} else {
-		cfg.Username = viper.GetString(openSearchUsernameFlag)
-		cfg.Password = viper.GetString(openSearchPasswordFlag)
+		cfg.Username, _ = cmd.Flags().GetString(openSearchUsernameFlag)
+		cfg.Password, _ = cmd.Flags().GetString(openSearchPasswordFlag)
 	}
 	return &cfg, nil
 }
 
-func opensearchClientModule(openSearchServiceHost string, loadMapping bool, esIndex string) fx.Option {
+func opensearchClientModule(cmd *cobra.Command) fx.Option {
+	esDisableMappingInit, _ := cmd.Flags().GetBool(esDisableMappingInitFlag)
+	openSearchServiceHost, _ := cmd.Flags().GetString(openSearchServiceFlag)
+	if openSearchServiceHost == "" {
+		exitWithError(cmd.Context(), "missing open search service host")
+	}
+	esIndex, _ := cmd.Flags().GetString(esIndicesFlag)
 
 	options := []fx.Option{
 		fx.Provide(func() (*opensearch.Config, error) {
-			return newConfig(openSearchServiceHost)
+			return newConfig(cmd)
 		}),
 		fx.Provide(func(config *opensearch.Config) (*opensearch.Client, error) {
-			return newOpensearchClient(config)
+			return newOpensearchClient(cmd, config)
 		}),
 	}
-	if loadMapping {
+	if !esDisableMappingInit {
 		options = append(options, fx.Invoke(func(lc fx.Lifecycle, client *opensearch.Client) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
@@ -187,13 +190,19 @@ func opensearchClientModule(openSearchServiceHost string, loadMapping bool, esIn
 	return fx.Options(options...)
 }
 
-func apiModule(
-	serviceName, bind, stack string,
-	serviceInfo api.ServiceInfo,
-	esIndex string,
-) fx.Option {
+func apiModule(cmd *cobra.Command) fx.Option {
+
+	serviceInfo := api.ServiceInfo{
+		Version: Version,
+		Debug:   service.IsDebug(cmd),
+	}
+	stack, _ := cmd.Flags().GetString(stackFlag)
+	esIndex, _ := cmd.Flags().GetString(esIndicesFlag)
+	bind, _ := cmd.Flags().GetString(bindFlag)
+	otelTraces, _ := cmd.Flags().GetBool(otlptraces.OtelTracesFlag)
+
 	return fx.Options(
-		fx.Provide(fx.Annotate(func(openSearchClient *opensearch.Client, tp trace.TracerProvider, healthController *health.HealthController, a auth.Auth) (http.Handler, error) {
+		fx.Provide(fx.Annotate(func(openSearchClient *opensearch.Client, tp trace.TracerProvider, healthController *health.HealthController, a auth.Authenticator) (http.Handler, error) {
 			router := mux.NewRouter()
 
 			router.Use(handlers.RecoveryHandler())
@@ -202,7 +211,7 @@ func apiModule(
 
 			routerWithTraces := router.PathPrefix("/").Subrouter()
 			routerWithTraces.Use(auth.Middleware(a))
-			if viper.GetBool(otlptraces.OtelTracesFlag) {
+			if otelTraces {
 				routerWithTraces.Use(otelmux.Middleware(serviceName, otelmux.WithTracerProvider(tp)))
 			}
 			routerWithTraces.PathPrefix("/").Handler(searchhttp.Handler(searchengine.NewDefaultEngine(

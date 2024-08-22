@@ -6,6 +6,9 @@ import (
 	"encoding/pem"
 	"fmt"
 	"net/http"
+	"os"
+
+	"gopkg.in/yaml.v3"
 
 	"github.com/formancehq/stack/libs/go-libs/aws/iam"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
@@ -24,7 +27,6 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	zLogging "github.com/zitadel/logging"
 	"go.uber.org/fx"
 )
@@ -90,11 +92,12 @@ func newServeCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "serve",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if viper.GetString(baseUrlFlag) == "" {
+			baseUrl, _ := cmd.Flags().GetString(baseUrlFlag)
+			if baseUrl == "" {
 				return errors.New("base url must be defined")
 			}
 
-			signingKey := viper.GetString(signingKeyFlag)
+			signingKey, _ := cmd.Flags().GetString(signingKeyFlag)
 			if signingKey == "" {
 				return errors.New("signing key must be defined")
 			}
@@ -109,45 +112,49 @@ func newServeCommand() *cobra.Command {
 				return err
 			}
 
-			if viper.GetString(configFlag) != "" {
-				viper.SetConfigFile(viper.GetString(configFlag))
-				if err := viper.ReadInConfig(); err != nil {
-					return errors.Wrap(err, "reading viper config file")
-				}
-			}
-
 			type configuration struct {
 				Clients []auth.StaticClient `json:"clients" yaml:"clients"`
 			}
 			o := configuration{}
-			if err := viper.Unmarshal(&o); err != nil {
-				return errors.Wrap(err, "unmarshal viper config")
+
+			config, _ := cmd.Flags().GetString(configFlag)
+			if config != "" {
+				configFile, err := os.Open(config)
+				if err != nil {
+					return err
+				}
+				if err := yaml.NewDecoder(configFile).Decode(&o); err != nil {
+					return err
+				}
 			}
 
 			zLogging.SetOutput(cmd.OutOrStdout())
 
-			connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd.Context())
+			connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd)
 			if err != nil {
 				return err
 			}
 
+			listen, _ := cmd.Flags().GetString(listenFlag)
 			options := []fx.Option{
-				otlpHttpClientModule(viper.GetBool(service.DebugFlag)),
+				otlpHttpClientModule(service.IsDebug(cmd)),
 				fx.Supply(fx.Annotate(cmd.Context(), fx.As(new(context.Context)))),
-				sqlstorage.Module(*connectionOptions, key, o.Clients...),
-				oidc.Module(key, viper.GetString(baseUrlFlag), o.Clients...),
-				api.Module(viper.GetString(listenFlag), viper.GetString(baseUrlFlag), sharedapi.ServiceInfo{
+				sqlstorage.Module(*connectionOptions, key, service.IsDebug(cmd), o.Clients...),
+				oidc.Module(key, baseUrl, o.Clients...),
+				api.Module(listen, baseUrl, sharedapi.ServiceInfo{
 					Version: Version,
-				}),
+					Debug:   service.IsDebug(cmd),
+				}, service.IsDebug(cmd)),
 			}
 
-			if delegatedIssuer := viper.GetString(delegatedIssuerFlag); delegatedIssuer != "" {
-				delegatedClientID := viper.GetString(delegatedClientIDFlag)
+			delegatedIssuer, _ := cmd.Flags().GetString(delegatedIssuerFlag)
+			if delegatedIssuer != "" {
+				delegatedClientID, _ := cmd.Flags().GetString(delegatedClientIDFlag)
 				if delegatedClientID == "" {
 					return errors.New("delegated client id must be defined")
 				}
 
-				delegatedClientSecret := viper.GetString(delegatedClientSecretFlag)
+				delegatedClientSecret, _ := cmd.Flags().GetString(delegatedClientSecretFlag)
 				if delegatedClientSecret == "" {
 					return errors.New("delegated client secret must be defined")
 				}
@@ -157,16 +164,16 @@ func newServeCommand() *cobra.Command {
 						Issuer:       delegatedIssuer,
 						ClientID:     delegatedClientID,
 						ClientSecret: delegatedClientSecret,
-						RedirectURL:  fmt.Sprintf("%s/authorize/callback", viper.GetString(baseUrlFlag)),
+						RedirectURL:  fmt.Sprintf("%s/authorize/callback", baseUrl),
 					}),
 					delegatedauth.Module(),
-					licence.CLIModule(serviceName),
+					licence.FXModuleFromFlags(cmd, serviceName),
 				)
 			}
 
-			options = append(options, otlptraces.CLITracesModule())
+			options = append(options, otlptraces.FXModuleFromFlags(cmd))
 
-			return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
+			return service.New(cmd.OutOrStdout(), options...).Run(cmd)
 		},
 	}
 
@@ -177,12 +184,12 @@ func newServeCommand() *cobra.Command {
 	cmd.Flags().String(signingKeyFlag, defaultSigningKey, "Signing key")
 	cmd.Flags().String(listenFlag, ":8080", "Listening address")
 	cmd.Flags().String(configFlag, "", "Config file name without extension")
-	service.BindFlags(cmd)
-	licence.InitCLIFlags(cmd)
 
-	otlptraces.InitOTLPTracesFlags(cmd.Flags())
-	bunconnect.InitFlags(cmd.Flags())
-	iam.InitFlags(cmd.Flags())
+	service.AddFlags(cmd.Flags())
+	licence.AddFlags(cmd.Flags())
+	otlptraces.AddFlags(cmd.Flags())
+	bunconnect.AddFlags(cmd.Flags())
+	iam.AddFlags(cmd.Flags())
 
 	return cmd
 }

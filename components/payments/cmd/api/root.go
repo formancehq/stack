@@ -21,9 +21,6 @@ func NewAPI(
 		Use:               "api",
 		Short:             "api",
 		DisableAutoGenTag: true,
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			return bindFlagsToViper(cmd)
-		},
 	}
 
 	cobra.EnableTraverseRunHooks = true
@@ -36,15 +33,15 @@ func NewAPI(
 	server.Flags().String(configEncryptionKeyFlag, "", "Config encryption key")
 	server.Flags().String(envFlag, "local", "Environment")
 	server.Flags().String(listenFlag, ":8080", "Listen address")
-	service.BindFlags(server)
 
-	otlp.InitOTLPFlags(server.Flags())
-	otlptraces.InitOTLPTracesFlags(server.Flags())
-	otlpmetrics.InitOTLPMetricsFlags(server.Flags())
-	auth.InitAuthFlags(server.Flags())
-	publish.InitCLIFlags(server)
-	bunconnect.InitFlags(server.Flags())
-	iam.InitFlags(server.Flags())
+	service.AddFlags(server.Flags())
+	otlp.AddFlags(server.Flags())
+	otlptraces.AddFlags(server.Flags())
+	otlpmetrics.AddFlags(server.Flags())
+	auth.AddFlags(server.Flags())
+	publish.AddFlags(serviceName, server.Flags())
+	bunconnect.AddFlags(server.Flags())
+	iam.AddFlags(server.Flags())
 
 	return root
 }

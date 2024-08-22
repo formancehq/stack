@@ -4,11 +4,11 @@ import (
 	"net/http"
 )
 
-type Auth interface {
+type Authenticator interface {
 	Authenticate(w http.ResponseWriter, r *http.Request) (bool, error)
 }
 
-func Middleware(ja Auth) func(handler http.Handler) http.Handler {
+func Middleware(ja Authenticator) func(handler http.Handler) http.Handler {
 	return func(handler http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			authenticated, err := ja.Authenticate(w, r)

@@ -15,9 +15,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/go-chi/chi/v5"
-	"github.com/spf13/viper"
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/metric/noop"
 	"go.uber.org/fx"
@@ -32,6 +30,7 @@ func Module(
 	tlsEnabled bool,
 	tlsCACertificate string,
 	tlsInsecureSkipVerify bool,
+	debug bool,
 ) fx.Option {
 	options := make([]fx.Option, 0)
 
@@ -40,7 +39,7 @@ func Module(
 		fx.Provide(controllers.NewStargateController),
 		health.Module(),
 		fx.Invoke(func(lc fx.Lifecycle, h chi.Router, l logging.Logger) {
-			if viper.GetBool(service.DebugFlag) {
+			if debug {
 				wrappedRouter := chi.NewRouter()
 				wrappedRouter.Use(middlewares.Log())
 				wrappedRouter.Mount("/", h)

@@ -17,14 +17,14 @@ var (
 )
 
 const (
-	OtelResourceAttributes = "otel-resource-attributes"
-	OtelServiceName        = "otel-service-name"
+	OtelResourceAttributesFlag = "otel-resource-attributes"
+	OtelServiceNameFlag        = "otel-service-name"
 )
 
-func InitOTLPFlags(flags *flag.FlagSet) {
+func AddFlags(flags *flag.FlagSet) {
 	onceInitOTLPFlags.Do(func() {
-		flags.String(OtelServiceName, "", "OpenTelemetry service name")
-		flags.StringSlice(OtelResourceAttributes, []string{}, "Additional OTLP resource attributes")
+		flags.String(OtelServiceNameFlag, "", "OpenTelemetry service name")
+		flags.StringSlice(OtelResourceAttributesFlag, []string{}, "Additional OTLP resource attributes")
 	})
 }
 

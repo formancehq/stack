@@ -41,7 +41,7 @@ func BenchmarkParallelWrites(b *testing.B) {
 	ledgerName := uuid.NewString()
 
 	backend := backend.NewDefaultBackend(driver, "latest", resolver)
-	router := v2.NewRouter(backend, nil, metrics.NewNoOpRegistry(), auth.NewNoAuth())
+	router := v2.NewRouter(backend, nil, metrics.NewNoOpRegistry(), auth.NewNoAuth(), testing.Verbose())
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := logging.ContextWithLogger(r.Context(), logging.FromContext(ctx))
 		router.ServeHTTP(w, r.WithContext(ctx))

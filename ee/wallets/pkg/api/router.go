@@ -17,7 +17,7 @@ func NewRouter(
 	manager *wallet.Manager,
 	healthController *sharedhealth.HealthController,
 	serviceInfo sharedapi.ServiceInfo,
-	a auth.Auth,
+	authenticator auth.Authenticator,
 ) *chi.Mux {
 	r := chi.NewRouter()
 
@@ -31,8 +31,8 @@ func NewRouter(
 	r.Get("/_healthcheck", healthController.Check)
 	r.Get("/_info", sharedapi.InfoHandler(serviceInfo))
 	r.Group(func(r chi.Router) {
-		r.Use(auth.Middleware(a))
-		r.Use(service.OTLPMiddleware("wallets"))
+		r.Use(auth.Middleware(authenticator))
+		r.Use(service.OTLPMiddleware("wallets", serviceInfo.Debug))
 		r.Use(middleware.AllowContentType("application/json"))
 
 		main := NewMainHandler(manager)

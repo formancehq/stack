@@ -4,21 +4,22 @@ import (
 	"os"
 	"testing"
 
+	"github.com/formancehq/stack/libs/go-libs/testing/docker"
+
+	"github.com/formancehq/stack/libs/go-libs/testing/platform/pgtesting"
+
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/stretchr/testify/require"
 	"github.com/uptrace/bun"
 )
 
 func TestRunMigrate(t *testing.T) {
-	require.NoError(t, pgtesting.CreatePostgresServer())
-	t.Cleanup(func() {
-		require.NoError(t, pgtesting.DestroyPostgresServer())
-	})
+	dockerPool := docker.NewPool(t, logging.Testing())
+	srv := pgtesting.CreatePostgresServer(t, dockerPool)
 
 	connectionOptions := &bunconnect.ConnectionOptions{
-		DatabaseSourceName: pgtesting.Server().GetDatabaseDSN("testing"),
+		DatabaseSourceName: srv.GetDatabaseDSN("testing"),
 	}
 	executor := func(args []string, db *bun.DB) error {
 		return nil

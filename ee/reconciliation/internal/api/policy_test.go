@@ -144,7 +144,9 @@ func TestCreatePolicy(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := newRouter(backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
+			router := newRouter(backend, sharedapi.ServiceInfo{
+				Debug: testing.Verbose(),
+			}, auth.NewNoAuth(), nil)
 
 			var body []byte
 			if testCase.invalidBody {
@@ -241,7 +243,9 @@ func TestDeletePolicy(t *testing.T) {
 					Return(testCase.serviceError)
 			}
 
-			router := newRouter(backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
+			router := newRouter(backend, sharedapi.ServiceInfo{
+				Debug: testing.Verbose(),
+			}, auth.NewNoAuth(), nil)
 
 			req := httptest.NewRequest(http.MethodDelete, "/policies/"+testCase.policyID, nil)
 			rec := httptest.NewRecorder()
@@ -346,7 +350,9 @@ func TestGetPolicy(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := newRouter(backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
+			router := newRouter(backend, sharedapi.ServiceInfo{
+				Debug: testing.Verbose(),
+			}, auth.NewNoAuth(), nil)
 
 			req := httptest.NewRequest(http.MethodGet, "/policies/"+testCase.policyID, nil)
 			rec := httptest.NewRecorder()

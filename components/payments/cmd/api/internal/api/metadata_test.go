@@ -129,7 +129,9 @@ func TestMetadata(t *testing.T) {
 					Return(testCase.serviceError)
 			}
 
-			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{
+				Debug: testing.Verbose(),
+			}, auth.NewNoAuth(), false)
 
 			req := httptest.NewRequest(http.MethodPatch, fmt.Sprintf("/payments/%s/metadata", testCase.paymentID), strings.NewReader(testCase.body))
 			rec := httptest.NewRecorder()

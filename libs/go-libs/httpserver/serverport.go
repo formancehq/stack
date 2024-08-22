@@ -3,6 +3,7 @@ package httpserver
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net"
 	"net/http"
 	"strconv"
@@ -50,6 +51,10 @@ func Port(ctx context.Context) int {
 		return 0
 	}
 	return si.port
+}
+
+func URL(ctx context.Context) string {
+	return fmt.Sprintf("http://127.0.0.1:%d", Port(ctx))
 }
 
 func StartedServer(ctx context.Context, listener net.Listener) {

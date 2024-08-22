@@ -5,7 +5,11 @@ import (
 	"database/sql"
 	"testing"
 
-	"github.com/formancehq/stack/libs/go-libs/pgtesting"
+	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/testing/docker"
+
+	"github.com/formancehq/stack/libs/go-libs/testing/platform/pgtesting"
+
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/require"
 	"github.com/uptrace/bun"
@@ -14,10 +18,8 @@ import (
 )
 
 func TestMigrations(t *testing.T) {
-	require.NoError(t, pgtesting.CreatePostgresServer())
-	t.Cleanup(func() {
-		require.NoError(t, pgtesting.DestroyPostgresServer())
-	})
+	dockerPool := docker.NewPool(t, logging.Testing())
+	srv := pgtesting.CreatePostgresServer(t, dockerPool)
 
 	migrator := NewMigrator()
 	migrator.RegisterMigrations(
@@ -29,7 +31,7 @@ func TestMigrations(t *testing.T) {
 		},
 	)
 
-	db := pgtesting.NewPostgresDatabase(t)
+	db := srv.NewDatabase()
 	sqlDB, err := sql.Open("pgx", db.ConnString())
 	require.NoError(t, err)
 

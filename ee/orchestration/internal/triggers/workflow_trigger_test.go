@@ -6,13 +6,15 @@ import (
 
 	worker "go.temporal.io/sdk/worker"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bundebug"
+	"github.com/uptrace/bun"
+
 	"github.com/formancehq/orchestration/internal/storage"
 	"github.com/formancehq/orchestration/internal/temporalworker"
 	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/formancehq/orchestration/internal/workflow/stages"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"go.temporal.io/sdk/client"
 
 	"github.com/formancehq/stack/libs/go-libs/publish"
@@ -23,10 +25,15 @@ import (
 func TestWorkflow(t *testing.T) {
 	t.Parallel()
 
-	database := pgtesting.NewPostgresDatabase(t)
+	hooks := make([]bun.QueryHook, 0)
+	if testing.Verbose() {
+		hooks = append(hooks, bundebug.NewQueryHook())
+	}
+
+	database := srv.NewDatabase()
 	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: database.ConnString(),
-	})
+	}, hooks...)
 	require.NoError(t, err)
 	t.Cleanup(func() {
 		_ = db.Close()

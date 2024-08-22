@@ -8,7 +8,6 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/gorilla/mux"
-	"github.com/spf13/viper"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
 )
 
@@ -16,13 +15,14 @@ func httpRouter(
 	b backend.Backend,
 	logger logging.Logger,
 	serviceInfo api.ServiceInfo,
-	a auth.Auth,
+	a auth.Authenticator,
+	otelTraces bool,
 ) *mux.Router {
 	rootMux := mux.NewRouter()
 
 	// We have to keep this recovery handler here to ensure that the health
 	// endpoint is not panicking
-	rootMux.Use(recoveryHandler(httpRecoveryFunc))
+	rootMux.Use(recoveryHandler(httpRecoveryFunc(otelTraces)))
 	rootMux.Use(httpCorsHandler())
 	rootMux.Use(httpServeFunc)
 	rootMux.Use(func(handler http.Handler) http.Handler {
@@ -34,11 +34,11 @@ func httpRouter(
 	rootMux.Path("/_health").Handler(healthHandler(b))
 
 	subRouter := rootMux.NewRoute().Subrouter()
-	if viper.GetBool(otelTracesFlag) {
+	if otelTraces {
 		subRouter.Use(otelmux.Middleware(serviceName))
 		// Add a second recovery handler to ensure that the otel middleware
 		// is catching the error in the trace
-		rootMux.Use(recoveryHandler(httpRecoveryFunc))
+		rootMux.Use(recoveryHandler(httpRecoveryFunc(otelTraces)))
 	}
 	subRouter.Path("/_live").Handler(liveHandler())
 	subRouter.Path("/_info").Handler(api.InfoHandler(serviceInfo))

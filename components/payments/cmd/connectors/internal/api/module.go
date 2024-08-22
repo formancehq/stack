@@ -6,6 +6,9 @@ import (
 	"net/http"
 	"runtime/debug"
 
+	"github.com/formancehq/stack/libs/go-libs/auth"
+	"github.com/formancehq/stack/libs/go-libs/logging"
+
 	"github.com/formancehq/payments/cmd/connectors/internal/api/backend"
 	manager "github.com/formancehq/payments/cmd/connectors/internal/api/connectors_manager"
 	"github.com/formancehq/payments/cmd/connectors/internal/api/service"
@@ -26,11 +29,9 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
-	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 	"go.uber.org/fx"
 )
 
@@ -44,7 +45,7 @@ const (
 	ErrValidation           = "VALIDATION"
 )
 
-func HTTPModule(serviceInfo api.ServiceInfo, bind, stackURL string) fx.Option {
+func HTTPModule(serviceInfo api.ServiceInfo, bind, stackURL string, otelTraces bool) fx.Option {
 	return fx.Options(
 		fx.Invoke(func(m *mux.Router, lc fx.Lifecycle) {
 			lc.Append(httpserver.NewHook(m, httpserver.WithAddress(bind)))
@@ -56,7 +57,15 @@ func HTTPModule(serviceInfo api.ServiceInfo, bind, stackURL string) fx.Option {
 		}),
 		fx.Provide(fx.Annotate(service.New, fx.As(new(backend.Service)))),
 		fx.Provide(backend.NewDefaultBackend),
-		fx.Provide(fx.Annotate(httpRouter, fx.ParamTags(``, ``, ``, ``, `group:"connectorHandlers"`))),
+		fx.Provide(fx.Annotate(func(
+			logger logging.Logger,
+			b backend.ServiceBackend,
+			serviceInfo api.ServiceInfo,
+			a auth.Authenticator,
+			connectorHandlers []connectorHandler,
+		) *mux.Router {
+			return httpRouter(logger, b, serviceInfo, a, connectorHandlers, otelTraces)
+		}, fx.ParamTags(``, ``, ``, ``, `group:"connectorHandlers"`))),
 		fx.Provide(func() *messages.Messages {
 			return messages.NewMessages(stackURL)
 		}),
@@ -92,12 +101,14 @@ func connectorsHandlerMap(connectorHandlers []connectorHandler) map[models.Conne
 	return m
 }
 
-func httpRecoveryFunc(ctx context.Context, e interface{}) {
-	if viper.GetBool(otlptraces.OtelTracesFlag) {
-		otlp.RecordAsError(ctx, e)
-	} else {
-		logrus.Errorln(e)
-		debug.PrintStack()
+func httpRecoveryFunc(otelTraces bool) func(context.Context, interface{}) {
+	return func(ctx context.Context, e interface{}) {
+		if otelTraces {
+			otlp.RecordAsError(ctx, e)
+		} else {
+			logrus.Errorln(e)
+			debug.PrintStack()
+		}
 	}
 }
 

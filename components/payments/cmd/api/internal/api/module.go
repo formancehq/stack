@@ -6,6 +6,9 @@ import (
 	"net/http"
 	"runtime/debug"
 
+	"github.com/formancehq/stack/libs/go-libs/auth"
+	"github.com/formancehq/stack/libs/go-libs/logging"
+
 	"github.com/formancehq/payments/cmd/api/internal/api/backend"
 	"github.com/formancehq/payments/cmd/api/internal/api/service"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
@@ -16,7 +19,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 	"go.uber.org/fx"
 )
 
@@ -31,7 +33,7 @@ const (
 	ErrValidation           = "VALIDATION"
 )
 
-func HTTPModule(serviceInfo api.ServiceInfo, bind string, stackURL string) fx.Option {
+func HTTPModule(serviceInfo api.ServiceInfo, bind string, stackURL string, otelTraces bool) fx.Option {
 	return fx.Options(
 		fx.Invoke(func(m *mux.Router, lc fx.Lifecycle) {
 			lc.Append(httpserver.NewHook(m, httpserver.WithAddress(bind)))
@@ -45,16 +47,23 @@ func HTTPModule(serviceInfo api.ServiceInfo, bind string, stackURL string) fx.Op
 		fx.Provide(fx.Annotate(service.New, fx.As(new(backend.Service)))),
 		fx.Provide(backend.NewDefaultBackend),
 		fx.Supply(serviceInfo),
-		fx.Provide(httpRouter),
+		fx.Provide(func(b backend.Backend,
+			logger logging.Logger,
+			serviceInfo api.ServiceInfo,
+			a auth.Authenticator) *mux.Router {
+			return httpRouter(b, logger, serviceInfo, a, otelTraces)
+		}),
 	)
 }
 
-func httpRecoveryFunc(ctx context.Context, e interface{}) {
-	if viper.GetBool(otelTracesFlag) {
-		otlp.RecordAsError(ctx, e)
-	} else {
-		logrus.Errorln(e)
-		debug.PrintStack()
+func httpRecoveryFunc(otelTraces bool) func(context.Context, interface{}) {
+	return func(ctx context.Context, e interface{}) {
+		if otelTraces {
+			otlp.RecordAsError(ctx, e)
+		} else {
+			logrus.Errorln(e)
+			debug.PrintStack()
+		}
 	}
 }
 

@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/spf13/viper"
+	"github.com/spf13/cobra"
 )
 
 type contextKey string
@@ -51,8 +51,12 @@ func ContextWithDebug(ctx context.Context) context.Context {
 	return context.WithValue(ctx, debugKey, true)
 }
 
-func IsDebug(ctx context.Context) bool {
-	return viper.GetBool(DebugFlag)
+func IsDebug(cmd *cobra.Command) bool {
+	ret, err := cmd.Flags().GetBool(DebugFlag)
+	if err != nil {
+		return false
+	}
+	return ret
 }
 
 func markAsAppReady(ctx context.Context) {

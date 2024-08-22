@@ -20,9 +20,6 @@ func NewConnectors(
 		Use:               "connectors",
 		Short:             "connectors",
 		DisableAutoGenTag: true,
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			return bindFlagsToViper(cmd)
-		},
 	}
 
 	cobra.EnableTraverseRunHooks = true
@@ -36,14 +33,14 @@ func NewConnectors(
 	server.Flags().String(configEncryptionKeyFlag, "", "Config encryption key")
 	server.Flags().String(envFlag, "local", "Environment")
 	server.Flags().String(listenFlag, ":8080", "Listen address")
-	service.BindFlags(server)
 
-	otlp.InitOTLPFlags(server.Flags())
-	otlptraces.InitOTLPTracesFlags(server.Flags())
-	otlpmetrics.InitOTLPMetricsFlags(server.Flags())
-	publish.InitCLIFlags(server)
-	iam.InitFlags(server.Flags())
-	auth.InitAuthFlags(server.Flags())
+	service.AddFlags(server.Flags())
+	otlp.AddFlags(server.Flags())
+	otlptraces.AddFlags(server.Flags())
+	otlpmetrics.AddFlags(server.Flags())
+	publish.AddFlags(serviceName, server.Flags())
+	iam.AddFlags(server.Flags())
+	auth.AddFlags(server.Flags())
 
 	return root
 }

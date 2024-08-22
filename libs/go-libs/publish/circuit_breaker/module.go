@@ -10,7 +10,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func Module(schema string, openIntervalDuration time.Duration, storageLimit int) fx.Option {
+func Module(schema string, openIntervalDuration time.Duration, storageLimit int, debug bool) fx.Option {
 	options := make([]fx.Option, 0)
 
 	options = append(options,
@@ -35,7 +35,7 @@ func Module(schema string, openIntervalDuration time.Duration, storageLimit int)
 		}),
 	)
 
-	options = append(options, storage.Module(schema, storageLimit))
+	options = append(options, storage.Module(schema, storageLimit, debug))
 
 	return fx.Options(options...)
 }

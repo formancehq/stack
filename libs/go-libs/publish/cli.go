@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/spf13/pflag"
+
 	"github.com/IBM/sarama"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/stack/libs/go-libs/aws/iam"
@@ -12,7 +14,6 @@ import (
 	topicmapper "github.com/formancehq/stack/libs/go-libs/publish/topic_mapper"
 	"github.com/nats-io/nats.go"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/xdg-go/scram"
 	"go.uber.org/fx"
 )
@@ -20,6 +21,7 @@ import (
 const (
 	// General configuration
 	PublisherTopicMappingFlag = "publisher-topic-mapping"
+	PublisherQueueGroupFlag   = "publisher-queue-group"
 	// Circuit Breaker configuration
 	PublisherCircuitBreakerEnabledFlag              = "publisher-circuit-breaker-enabled"
 	PublisherCircuitBreakerOpenIntervalDurationFlag = "publisher-circuit-breaker-open-interval-duration"
@@ -49,6 +51,7 @@ const (
 
 type ConfigDefault struct {
 	PublisherTopicMapping []string
+	PublisherQueueGroup   string
 	// Circuit Breaker configuration
 	PublisherCircuitBreakerEnabled              bool
 	PublisherCircuitBreakerOpenIntervalDuration time.Duration
@@ -103,59 +106,60 @@ var (
 	}
 )
 
-func InitCLIFlags(cmd *cobra.Command, options ...func(*ConfigDefault)) {
+func AddFlags(serviceName string, flags *pflag.FlagSet, options ...func(*ConfigDefault)) {
 	values := defaultConfigValues
 	for _, option := range options {
 		option(&values)
 	}
+	flags.StringSlice(PublisherTopicMappingFlag, values.PublisherTopicMapping, "Define mapping between internal event types and topics")
+	flags.String(PublisherQueueGroupFlag, serviceName, "Define queue group for consumers")
 
 	// Circuit Breaker
-	cmd.PersistentFlags().Bool(PublisherCircuitBreakerEnabledFlag, values.PublisherCircuitBreakerEnabled, "Enable circuit breaker for publisher")
-	cmd.PersistentFlags().Duration(PublisherCircuitBreakerOpenIntervalDurationFlag, values.PublisherCircuitBreakerOpenIntervalDuration, "Circuit breaker open interval duration")
-	cmd.PersistentFlags().String(PublisherCircuitBreakerSchemaFlag, values.PublisherCircuitBreakerSchema, "Circuit breaker schema")
-	cmd.PersistentFlags().Int(PublisherCircuitBreakerListStorageLimitFlag, values.PublisherCircuitBreakerListStorageLimit, "Circuit breaker list storage limit")
+	flags.Bool(PublisherCircuitBreakerEnabledFlag, values.PublisherCircuitBreakerEnabled, "Enable circuit breaker for publisher")
+	flags.Duration(PublisherCircuitBreakerOpenIntervalDurationFlag, values.PublisherCircuitBreakerOpenIntervalDuration, "Circuit breaker open interval duration")
+	flags.String(PublisherCircuitBreakerSchemaFlag, values.PublisherCircuitBreakerSchema, "Circuit breaker schema")
+	flags.Int(PublisherCircuitBreakerListStorageLimitFlag, values.PublisherCircuitBreakerListStorageLimit, "Circuit breaker list storage limit")
 
 	// HTTP
-	cmd.PersistentFlags().Bool(PublisherHttpEnabledFlag, values.PublisherHttpEnabled, "Sent write event to http endpoint")
+	flags.Bool(PublisherHttpEnabledFlag, values.PublisherHttpEnabled, "Sent write event to http endpoint")
 
 	// KAFKA
-	cmd.PersistentFlags().Bool(PublisherKafkaEnabledFlag, values.PublisherKafkaEnabled, "Publish write events to kafka")
-	cmd.PersistentFlags().StringSlice(PublisherKafkaBrokerFlag, values.PublisherKafkaBroker, "Kafka address is kafka enabled")
-	cmd.PersistentFlags().StringSlice(PublisherTopicMappingFlag, values.PublisherTopicMapping, "Define mapping between internal event types and topics")
-	cmd.PersistentFlags().Bool(PublisherKafkaSASLEnabledFlag, values.PublisherKafkaSASLEnabled, "Enable SASL authentication on kafka publisher")
-	cmd.PersistentFlags().Bool(PublisherKafkaSASLIAMEnabledFlag, values.PublisherKafkaSASLIAMEnabled, "Enable IAM authentication on kafka publisher")
-	cmd.PersistentFlags().String(PublisherKafkaSASLIAMSessionNameFlag, values.PublisherKafkaSASLIAMSessionName, "IAM session name")
-	cmd.PersistentFlags().String(PublisherKafkaSASLUsernameFlag, values.PublisherKafkaSASLUsername, "SASL username")
-	cmd.PersistentFlags().String(PublisherKafkaSASLPasswordFlag, values.PublisherKafkaSASLPassword, "SASL password")
-	cmd.PersistentFlags().String(PublisherKafkaSASLMechanismFlag, values.PublisherKafkaSASLMechanism, "SASL authentication mechanism")
-	cmd.PersistentFlags().Int(PublisherKafkaSASLScramSHASizeFlag, values.PublisherKafkaSASLScramSHASize, "SASL SCRAM SHA size")
-	cmd.PersistentFlags().Bool(PublisherKafkaTLSEnabledFlag, values.PublisherKafkaTLSEnabled, "Enable TLS to connect on kafka")
+	flags.Bool(PublisherKafkaEnabledFlag, values.PublisherKafkaEnabled, "Publish write events to kafka")
+	flags.StringSlice(PublisherKafkaBrokerFlag, values.PublisherKafkaBroker, "Kafka address is kafka enabled")
+	flags.Bool(PublisherKafkaSASLEnabledFlag, values.PublisherKafkaSASLEnabled, "Enable SASL authentication on kafka publisher")
+	flags.Bool(PublisherKafkaSASLIAMEnabledFlag, values.PublisherKafkaSASLIAMEnabled, "Enable IAM authentication on kafka publisher")
+	flags.String(PublisherKafkaSASLIAMSessionNameFlag, values.PublisherKafkaSASLIAMSessionName, "IAM session name")
+	flags.String(PublisherKafkaSASLUsernameFlag, values.PublisherKafkaSASLUsername, "SASL username")
+	flags.String(PublisherKafkaSASLPasswordFlag, values.PublisherKafkaSASLPassword, "SASL password")
+	flags.String(PublisherKafkaSASLMechanismFlag, values.PublisherKafkaSASLMechanism, "SASL authentication mechanism")
+	flags.Int(PublisherKafkaSASLScramSHASizeFlag, values.PublisherKafkaSASLScramSHASize, "SASL SCRAM SHA size")
+	flags.Bool(PublisherKafkaTLSEnabledFlag, values.PublisherKafkaTLSEnabled, "Enable TLS to connect on kafka")
 
 	// NATS
-	InitNatsCLIFlags(cmd, options...)
+	InitNatsCLIFlags(flags, options...)
 }
 
 // DO NOT REMOVE: Used by membership
-func InitNatsCLIFlags(cmd *cobra.Command, options ...func(*ConfigDefault)) {
+func InitNatsCLIFlags(flags *pflag.FlagSet, options ...func(*ConfigDefault)) {
 	values := defaultConfigValues
 	for _, option := range options {
 		option(&values)
 	}
 
-	cmd.PersistentFlags().Bool(PublisherNatsEnabledFlag, values.PublisherNatsEnabled, "Publish write events to nats")
-	cmd.PersistentFlags().String(PublisherNatsClientIDFlag, values.PublisherNatsClientID, "Nats client ID")
-	cmd.PersistentFlags().Int(PublisherNatsMaxReconnectFlag, values.PublisherNatsMaxReconnect, "Nats: set the maximum number of reconnect attempts.")
-	cmd.PersistentFlags().Duration(PublisherNatsReconnectWaitFlag, values.PublisherNatsReconnectWait, "Nats: the wait time between reconnect attempts.")
-	cmd.PersistentFlags().String(PublisherNatsURLFlag, values.PublisherNatsURL, "Nats url")
-	cmd.PersistentFlags().Bool(PublisherNatsAutoProvisionFlag, true, "Auto create streams")
+	flags.Bool(PublisherNatsEnabledFlag, values.PublisherNatsEnabled, "Publish write events to nats")
+	flags.String(PublisherNatsClientIDFlag, values.PublisherNatsClientID, "Nats client ID")
+	flags.Int(PublisherNatsMaxReconnectFlag, values.PublisherNatsMaxReconnect, "Nats: set the maximum number of reconnect attempts.")
+	flags.Duration(PublisherNatsReconnectWaitFlag, values.PublisherNatsReconnectWait, "Nats: the wait time between reconnect attempts.")
+	flags.String(PublisherNatsURLFlag, values.PublisherNatsURL, "Nats url")
+	flags.Bool(PublisherNatsAutoProvisionFlag, true, "Auto create streams")
 }
 
-func CLIPublisherModule(
-	serviceName string,
-) fx.Option {
+func FXModuleFromFlags(cmd *cobra.Command, debug bool) fx.Option {
 	options := make([]fx.Option, 0)
 
-	topics := viper.GetStringSlice(PublisherTopicMappingFlag)
+	topics, _ := cmd.Flags().GetStringSlice(PublisherTopicMappingFlag)
+	queueGroup, _ := cmd.Flags().GetString(PublisherQueueGroupFlag)
+
 	mapping := make(map[string]string)
 	for _, topic := range topics {
 		parts := strings.SplitN(topic, ":", 2)
@@ -167,13 +171,15 @@ func CLIPublisherModule(
 
 	options = append(options, Module(mapping))
 
-	if viper.GetBool(PublisherCircuitBreakerEnabledFlag) {
+	circuitBreakerEnabled, _ := cmd.Flags().GetBool(PublisherCircuitBreakerEnabledFlag)
+	if circuitBreakerEnabled {
+
+		scheme, _ := cmd.Flags().GetString(PublisherCircuitBreakerSchemaFlag)
+		intervalDuration, _ := cmd.Flags().GetDuration(PublisherCircuitBreakerOpenIntervalDurationFlag)
+		storageLimit, _ := cmd.Flags().GetInt(PublisherCircuitBreakerListStorageLimitFlag)
+
 		options = append(options,
-			circuitbreaker.Module(
-				viper.GetString(PublisherCircuitBreakerSchemaFlag),
-				viper.GetDuration(PublisherCircuitBreakerOpenIntervalDurationFlag),
-				viper.GetInt(PublisherCircuitBreakerListStorageLimitFlag),
-			),
+			circuitbreaker.Module(scheme, intervalDuration, storageLimit, debug),
 			fx.Decorate(func(cb *circuitbreaker.CircuitBreaker) message.Publisher {
 				return cb
 			}),
@@ -186,41 +192,54 @@ func CLIPublisherModule(
 		)
 	}
 
+	httpEnabled, _ := cmd.Flags().GetBool(PublisherHttpEnabledFlag)
+	natsEnabled, _ := cmd.Flags().GetBool(PublisherNatsEnabledFlag)
+	kafkaEnabled, _ := cmd.Flags().GetBool(PublisherKafkaEnabledFlag)
+
 	switch {
-	case viper.GetBool(PublisherHttpEnabledFlag):
+	case httpEnabled:
 		// Currently don't expose http listener, so pass addr == ""
 		options = append(options, httpModule(""))
-	case viper.GetBool(PublisherNatsEnabledFlag):
+	case natsEnabled:
+		natsUrl, _ := cmd.Flags().GetString(PublisherNatsURLFlag)
+		autoProvision, _ := cmd.Flags().GetBool(PublisherNatsAutoProvisionFlag)
+		maxReconnect, _ := cmd.Flags().GetInt(PublisherNatsMaxReconnectFlag)
+		maxReconnectWait, _ := cmd.Flags().GetDuration(PublisherNatsReconnectWaitFlag)
+
 		options = append(options, NatsModule(
-			viper.GetString(PublisherNatsURLFlag),
-			serviceName,
-			viper.GetBool(PublisherNatsAutoProvisionFlag),
-			nats.Name(serviceName),
-			nats.MaxReconnects(viper.GetInt(PublisherNatsMaxReconnectFlag)),
-			nats.ReconnectWait(viper.GetDuration(PublisherNatsReconnectWaitFlag)),
+			natsUrl,
+			queueGroup,
+			autoProvision,
+			nats.Name(queueGroup),
+			nats.MaxReconnects(maxReconnect),
+			nats.ReconnectWait(maxReconnectWait),
 		))
-	case viper.GetBool(PublisherKafkaEnabledFlag):
+	case kafkaEnabled:
+		brokers, _ := cmd.Flags().GetStringSlice(PublisherKafkaBrokerFlag)
+
 		options = append(options,
-			kafkaModule(clientId(serviceName), serviceName, viper.GetStringSlice(PublisherKafkaBrokerFlag)...),
+			kafkaModule(clientId(queueGroup), queueGroup, brokers...),
 			ProvideSaramaOption(
 				WithConsumerReturnErrors(),
 				WithProducerReturnSuccess(),
 			),
 		)
-		if viper.GetBool(PublisherKafkaTLSEnabledFlag) {
+		if tlsEnabled, _ := cmd.Flags().GetBool(PublisherKafkaTLSEnabledFlag); tlsEnabled {
 			options = append(options, ProvideSaramaOption(WithTLS()))
 		}
-		if viper.GetBool(PublisherKafkaSASLEnabledFlag) {
+		if saslEnabled, _ := cmd.Flags().GetBool(PublisherKafkaSASLEnabledFlag); saslEnabled {
+			mechanism, _ := cmd.Flags().GetString(PublisherKafkaSASLMechanismFlag)
+			saslUsername, _ := cmd.Flags().GetString(PublisherKafkaSASLUsernameFlag)
+			saslPassword, _ := cmd.Flags().GetString(PublisherKafkaSASLPasswordFlag)
+			saslScramShaSize, _ := cmd.Flags().GetInt(PublisherKafkaSASLScramSHASizeFlag)
+
 			saramaOptions := []SaramaOption{
 				WithSASLEnabled(),
-				WithSASLMechanism(sarama.SASLMechanism(viper.GetString(PublisherKafkaSASLMechanismFlag))),
-				WithSASLCredentials(
-					viper.GetString(PublisherKafkaSASLUsernameFlag),
-					viper.GetString(PublisherKafkaSASLPasswordFlag),
-				),
+				WithSASLMechanism(sarama.SASLMechanism(mechanism)),
+				WithSASLCredentials(saslUsername, saslPassword),
 				WithSASLScramClient(func() sarama.SCRAMClient {
 					var fn scram.HashGeneratorFcn
-					switch viper.GetInt(PublisherKafkaSASLScramSHASizeFlag) {
+					switch saslScramShaSize {
 					case 512:
 						fn = SHA512
 					case 256:
@@ -234,12 +253,17 @@ func CLIPublisherModule(
 				}),
 			}
 
-			if viper.GetBool(PublisherKafkaSASLIAMEnabledFlag) {
+			if awsEnabled, _ := cmd.Flags().GetBool(PublisherKafkaSASLIAMEnabledFlag); awsEnabled {
+
+				region, _ := cmd.Flags().GetString(iam.AWSRegionFlag)
+				roleArn, _ := cmd.Flags().GetString(iam.AWSRoleArnFlag)
+				sessionName, _ := cmd.Flags().GetString(PublisherKafkaSASLIAMSessionNameFlag)
+
 				saramaOptions = append(saramaOptions,
 					WithTokenProvider(&MSKAccessTokenProvider{
-						region:      viper.GetString(iam.AWSRegionFlag),
-						roleArn:     viper.GetString(iam.AWSRoleArnFlag),
-						sessionName: viper.GetString(PublisherKafkaSASLIAMSessionNameFlag),
+						region:      region,
+						roleArn:     roleArn,
+						sessionName: sessionName,
 					}),
 				)
 			}

@@ -1,42 +1,35 @@
 package triggers
 
 import (
-	"log"
-	"os"
 	"testing"
+
+	"github.com/formancehq/stack/libs/go-libs/testing/docker"
+	"github.com/formancehq/stack/libs/go-libs/testing/utils"
+	"github.com/stretchr/testify/require"
 
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.temporal.io/sdk/testsuite"
 
-	"github.com/formancehq/stack/libs/go-libs/pgtesting"
-	flag "github.com/spf13/pflag"
+	"github.com/formancehq/stack/libs/go-libs/testing/platform/pgtesting"
 )
 
 var (
+	srv       *pgtesting.PostgresServer
 	devServer *testsuite.DevServer
 )
 
 func TestMain(m *testing.M) {
-	flag.Parse()
+	utils.WithTestMain(func(t *utils.TestingTForMain) int {
+		srv = pgtesting.CreatePostgresServer(t, docker.NewPool(t, logging.Testing()))
 
-	if err := pgtesting.CreatePostgresServer(); err != nil {
-		log.Fatal(err)
-	}
+		var err error
+		devServer, err = testsuite.StartDevServer(logging.TestingContext(), testsuite.DevServerOptions{})
+		require.NoError(t, err)
 
-	var err error
-	devServer, err = testsuite.StartDevServer(logging.TestingContext(), testsuite.DevServerOptions{
-		LogLevel: "warn",
+		t.Cleanup(func() {
+			require.NoError(t, devServer.Stop())
+		})
+
+		return m.Run()
 	})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	code := m.Run()
-	if err := devServer.Stop(); err != nil {
-		log.Println("unable to stop temporal server", err)
-	}
-	if err := pgtesting.DestroyPostgresServer(); err != nil {
-		log.Println("unable to stop postgres server", err)
-	}
-	os.Exit(code)
 }

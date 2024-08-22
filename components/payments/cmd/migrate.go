@@ -5,7 +5,6 @@ import (
 
 	"github.com/formancehq/payments/internal/storage"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/uptrace/bun"
 
 	// Import the postgres driver.
@@ -24,7 +23,7 @@ func newMigrate() *cobra.Command {
 }
 
 func Migrate(cmd *cobra.Command, args []string, db *bun.DB) error {
-	cfgEncryptionKey := viper.GetString(configEncryptionKeyFlag)
+	cfgEncryptionKey, _ := cmd.Flags().GetString(configEncryptionKeyFlag)
 	if cfgEncryptionKey == "" {
 		cfgEncryptionKey = cmd.Flag(configEncryptionKeyFlag).Value.String()
 	}
