@@ -54,8 +54,9 @@ spec:
             {{- if .Values.operator.disableWebhooks }}
             - --disable-webhooks
             {{- end }}
-            - --utils-version
-            - {{ .Values.image.tag | default .Chart.AppVersion }}
+            {{ if .Values.operator.utils.tag }}
+            - --utils-version={{ .Values.operator.utils.tag }}
+            {{- end }}
             {{- if .Values.operator.dev }}
             - --zap-devel
             - Development
