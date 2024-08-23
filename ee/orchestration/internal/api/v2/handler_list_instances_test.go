@@ -8,7 +8,9 @@ import (
 	"testing"
 	"time"
 
-	sharedapi "github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	sharedapi "github.com/formancehq/stack/libs/go-libs/testing/api"
+
+	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 
 	"github.com/google/uuid"
 
@@ -16,7 +18,6 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/formancehq/orchestration/internal/workflow"
-	"github.com/formancehq/stack/libs/go-libs/api/apitesting"
 	"github.com/stretchr/testify/require"
 	"github.com/uptrace/bun"
 )
@@ -44,8 +45,8 @@ func TestListInstances(t *testing.T) {
 		require.Equal(t, http.StatusOK, rec.Result().StatusCode)
 
 		// Retrieve only running instances
-		instances := sharedapi.Cursor[workflow.Instance]{}
-		apitesting.ReadCursor(t, rec, &instances)
+		instances := bunpaginate.Cursor[workflow.Instance]{}
+		sharedapi.ReadCursor(t, rec, &instances)
 		require.Len(t, instances.Data, 10)
 
 		req = httptest.NewRequest(http.MethodGet, "/instances?running=true", nil)
@@ -54,7 +55,7 @@ func TestListInstances(t *testing.T) {
 		router.ServeHTTP(rec, req)
 
 		require.Equal(t, http.StatusOK, rec.Result().StatusCode)
-		apitesting.ReadCursor(t, rec, &instances)
+		sharedapi.ReadCursor(t, rec, &instances)
 		require.Len(t, instances.Data, 6)
 
 		// Delete the workflow
@@ -72,8 +73,8 @@ func TestListInstances(t *testing.T) {
 		router.ServeHTTP(rec, req)
 
 		require.Equal(t, http.StatusOK, rec.Result().StatusCode)
-		instances = sharedapi.Cursor[workflow.Instance]{}
-		apitesting.ReadCursor(t, rec, &instances)
+		instances = bunpaginate.Cursor[workflow.Instance]{}
+		sharedapi.ReadCursor(t, rec, &instances)
 		require.Len(t, instances.Data, 0)
 
 		// Try to retrieve instances for the deleted workflow
@@ -83,8 +84,8 @@ func TestListInstances(t *testing.T) {
 		router.ServeHTTP(rec, req)
 
 		require.Equal(t, http.StatusOK, rec.Result().StatusCode)
-		instances = sharedapi.Cursor[workflow.Instance]{}
-		apitesting.ReadCursor(t, rec, &instances)
+		instances = bunpaginate.Cursor[workflow.Instance]{}
+		sharedapi.ReadCursor(t, rec, &instances)
 		require.Len(t, instances.Data, 0)
 	})
 }

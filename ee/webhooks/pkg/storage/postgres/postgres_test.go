@@ -24,7 +24,7 @@ func TestStore(t *testing.T) {
 		hooks = append(hooks, bundebug.NewQueryHook())
 	}
 
-	pgDB := srv.NewDatabase()
+	pgDB := srv.NewDatabase(t)
 	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: pgDB.ConnString(),
 	}, hooks...)

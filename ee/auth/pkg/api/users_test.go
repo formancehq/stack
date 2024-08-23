@@ -76,7 +76,7 @@ func withDbAndUserRouter(t *testing.T, callback func(router chi.Router, db *bun.
 		hooks = append(hooks, bundebug.NewQueryHook())
 	}
 
-	pgDatabase := srv.NewDatabase()
+	pgDatabase := srv.NewDatabase(t)
 	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: pgDatabase.ConnString(),
 	}, hooks...)

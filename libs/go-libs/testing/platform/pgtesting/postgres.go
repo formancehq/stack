@@ -8,8 +8,6 @@ import (
 	"strconv"
 	"time"
 
-	dockerlib "github.com/ory/dockertest/v3/docker"
-
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/ory/dockertest/v3"
 
@@ -28,11 +26,11 @@ type TestingT interface {
 }
 
 type Database struct {
-	url string
+	Url string
 }
 
 func (s *Database) ConnString() string {
-	return s.url
+	return s.Url
 }
 
 func (s *Database) ConnectionOptions() bunconnect.ConnectionOptions {
@@ -42,13 +40,12 @@ func (s *Database) ConnectionOptions() bunconnect.ConnectionOptions {
 }
 
 type PostgresServer struct {
-	port   string
-	config config
-	t      TestingT
+	Port   string
+	Config Config
 }
 
 func (s *PostgresServer) GetPort() int {
-	v, err := strconv.ParseInt(s.port, 10, 64)
+	v, err := strconv.ParseInt(s.Port, 10, 64)
 	if err != nil {
 		panic(err)
 	}
@@ -60,39 +57,39 @@ func (s *PostgresServer) GetHost() string {
 }
 
 func (s *PostgresServer) GetUsername() string {
-	return s.config.initialUsername
+	return s.Config.InitialUsername
 }
 
 func (s *PostgresServer) GetPassword() string {
-	return s.config.initialUserPassword
+	return s.Config.InitialUserPassword
 }
 
 func (s *PostgresServer) GetDSN() string {
-	return s.GetDatabaseDSN(s.config.initialDatabaseName)
+	return s.GetDatabaseDSN(s.Config.InitialDatabaseName)
 }
 
 func (s *PostgresServer) GetDatabaseDSN(databaseName string) string {
-	return fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable", s.config.initialUsername,
-		s.config.initialUserPassword, s.GetHost(), s.port, databaseName)
+	return fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable", s.Config.InitialUsername,
+		s.Config.InitialUserPassword, s.GetHost(), s.Port, databaseName)
 }
 
-func (s *PostgresServer) NewDatabase() *Database {
+func (s *PostgresServer) NewDatabase(t TestingT) *Database {
 	db, err := sql.Open("postgres", s.GetDSN())
-	require.NoError(s.t, err)
+	require.NoError(t, err)
 	defer func() {
-		require.Nil(s.t, db.Close())
+		require.Nil(t, db.Close())
 	}()
 
 	databaseName := uuid.NewString()
 	_, err = db.ExecContext(sharedlogging.TestingContext(), fmt.Sprintf(`CREATE DATABASE "%s"`, databaseName))
-	require.NoError(s.t, err)
+	require.NoError(t, err)
 
 	if os.Getenv("NO_CLEANUP") != "true" {
-		s.t.Cleanup(func() {
+		t.Cleanup(func() {
 			db, err := sql.Open("postgres", s.GetDSN())
-			require.NoError(s.t, err)
+			require.NoError(t, err)
 			defer func() {
-				require.Nil(s.t, db.Close())
+				require.Nil(t, db.Close())
 			}()
 
 			_, err = db.ExecContext(sharedlogging.TestingContext(), fmt.Sprintf(`DROP DATABASE "%s"`, databaseName))
@@ -103,72 +100,58 @@ func (s *PostgresServer) NewDatabase() *Database {
 	}
 
 	return &Database{
-		url: s.GetDatabaseDSN(databaseName),
+		Url: s.GetDatabaseDSN(databaseName),
 	}
 }
 
-type config struct {
-	initialDatabaseName string
-	initialUserPassword string
-	initialUsername     string
-	statusCheckInterval time.Duration
-	maximumWaitingTime  time.Duration
-	hostConfigOptions   []func(hostConfig *dockerlib.HostConfig)
-	logger              sharedlogging.Logger
+type Config struct {
+	InitialDatabaseName string
+	InitialUserPassword string
+	InitialUsername     string
+	StatusCheckInterval time.Duration
+	MaximumWaitingTime  time.Duration
 }
 
-func (c config) validate() error {
-	if c.statusCheckInterval == 0 {
+func (c Config) validate() error {
+	if c.StatusCheckInterval == 0 {
 		return errors.New("status check interval must be greater than 0")
 	}
-	if c.initialUsername == "" {
+	if c.InitialUsername == "" {
 		return errors.New("initial username must be defined")
 	}
-	if c.initialUserPassword == "" {
+	if c.InitialUserPassword == "" {
 		return errors.New("initial user password must be defined")
 	}
-	if c.initialDatabaseName == "" {
+	if c.InitialDatabaseName == "" {
 		return errors.New("initial database name must be defined")
 	}
 	return nil
 }
 
-type option func(opts *config)
+type option func(opts *Config)
 
 func WithInitialDatabaseName(name string) option {
-	return func(opts *config) {
-		opts.initialDatabaseName = name
+	return func(opts *Config) {
+		opts.InitialDatabaseName = name
 	}
 }
 
 func WithInitialUser(username, pwd string) option {
-	return func(opts *config) {
-		opts.initialUserPassword = pwd
-		opts.initialUsername = username
+	return func(opts *Config) {
+		opts.InitialUserPassword = pwd
+		opts.InitialUsername = username
 	}
 }
 
 func WithStatusCheckInterval(d time.Duration) option {
-	return func(opts *config) {
-		opts.statusCheckInterval = d
+	return func(opts *Config) {
+		opts.StatusCheckInterval = d
 	}
 }
 
 func WithMaximumWaitingTime(d time.Duration) option {
-	return func(opts *config) {
-		opts.maximumWaitingTime = d
-	}
-}
-
-func WithDockerHostConfigOption(opt func(hostConfig *dockerlib.HostConfig)) option {
-	return func(opts *config) {
-		opts.hostConfigOptions = append(opts.hostConfigOptions, opt)
-	}
-}
-
-func WithLogger(logger sharedlogging.Logger) option {
-	return func(opts *config) {
-		opts.logger = logger
+	return func(opts *Config) {
+		opts.MaximumWaitingTime = d
 	}
 }
 
@@ -177,11 +160,10 @@ var defaultOptions = []option{
 	WithInitialUser("root", "root"),
 	WithMaximumWaitingTime(time.Minute),
 	WithInitialDatabaseName("formance"),
-	WithLogger(sharedlogging.NewDefaultLogger(os.Stdout, false, false)),
 }
 
 func CreatePostgresServer(t TestingT, pool *docker.Pool, opts ...option) *PostgresServer {
-	cfg := config{}
+	cfg := Config{}
 	for _, opt := range append(defaultOptions, opts...) {
 		opt(&cfg)
 	}
@@ -193,9 +175,9 @@ func CreatePostgresServer(t TestingT, pool *docker.Pool, opts ...option) *Postgr
 			Repository: "postgres",
 			Tag:        "15-alpine",
 			Env: []string{
-				fmt.Sprintf("POSTGRES_USER=%s", cfg.initialUsername),
-				fmt.Sprintf("POSTGRES_PASSWORD=%s", cfg.initialUserPassword),
-				fmt.Sprintf("POSTGRES_DB=%s", cfg.initialDatabaseName),
+				fmt.Sprintf("POSTGRES_USER=%s", cfg.InitialUsername),
+				fmt.Sprintf("POSTGRES_PASSWORD=%s", cfg.InitialUserPassword),
+				fmt.Sprintf("POSTGRES_DB=%s", cfg.InitialDatabaseName),
 			},
 			Cmd: []string{
 				"-c", "superuser-reserved-connections=0",
@@ -204,14 +186,13 @@ func CreatePostgresServer(t TestingT, pool *docker.Pool, opts ...option) *Postgr
 				"-c", "enable_partitionwise_aggregate=on",
 			},
 		},
-		HostConfigOptions: cfg.hostConfigOptions,
 		CheckFn: func(ctx context.Context, resource *dockertest.Resource) error {
 			dsn := fmt.Sprintf(
 				"postgresql://%s:%s@127.0.0.1:%s/%s?sslmode=disable",
-				cfg.initialUsername,
-				cfg.initialUserPassword,
+				cfg.InitialUsername,
+				cfg.InitialUserPassword,
 				resource.GetPort("5432/tcp"),
-				cfg.initialDatabaseName,
+				cfg.InitialDatabaseName,
 			)
 			db, err := sql.Open("postgres", dsn)
 			if err != nil {
@@ -230,8 +211,7 @@ func CreatePostgresServer(t TestingT, pool *docker.Pool, opts ...option) *Postgr
 	})
 
 	return &PostgresServer{
-		port:   resource.GetPort("5432/tcp"),
-		config: cfg,
-		t:      t,
+		Port:   resource.GetPort("5432/tcp"),
+		Config: cfg,
 	}
 }

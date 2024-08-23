@@ -1,0 +1,525 @@
+openapi: 3.0.3
+info:
+  title: Formance Simple ingester Service API
+  version: 0.1.0
+servers:
+- url: http://localhost:8080
+paths:
+  /connectors:
+    get:
+      operationId: listConnectors
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listConnectors_200_response'
+          description: Connectors list
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: General error
+      summary: List connectors
+      tags:
+      - Connectors
+    post:
+      operationId: createConnector
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateConnectorRequest'
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createConnector_201_response'
+          description: Created ipeline
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: General error
+      summary: Create connector
+      tags:
+      - Connectors
+  /connectors/{connectorID}:
+    delete:
+      operationId: deleteConnector
+      parameters:
+      - description: The connector id
+        explode: false
+        in: path
+        name: connectorID
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Connector deleted
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: General error
+      summary: Delete connector
+      tags:
+      - Connectors
+    get:
+      operationId: getConnectorState
+      parameters:
+      - description: The connector id
+        explode: false
+        in: path
+        name: connectorID
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createConnector_201_response'
+          description: Connector information
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: General error
+      summary: Get connector state
+      tags:
+      - Connectors
+  /pipelines:
+    get:
+      operationId: listPipelines
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listPipelines_200_response'
+          description: Pipelines list
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: General error
+      summary: List pipelines
+      tags:
+      - Pipelines
+    post:
+      operationId: createPipeline
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePipelineRequest'
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createPipeline_201_response'
+          description: Created ipeline
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: General error
+      summary: Create pipeline
+      tags:
+      - Pipelines
+  /pipelines/{pipelineID}:
+    delete:
+      operationId: deletePipeline
+      parameters:
+      - description: The pipeline id
+        explode: false
+        in: path
+        name: pipelineID
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Pipeline deleted
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: General error
+      summary: Delete pipeline
+      tags:
+      - Pipelines
+    get:
+      operationId: getPipelineState
+      parameters:
+      - description: The pipeline id
+        explode: false
+        in: path
+        name: pipelineID
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createPipeline_201_response'
+          description: Pipeline information
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: General error
+      summary: Get pipeline state
+      tags:
+      - Pipelines
+  /pipelines/{pipelineID}/reset:
+    post:
+      operationId: resetPipeline
+      parameters:
+      - description: The pipeline id
+        explode: false
+        in: path
+        name: pipelineID
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "202":
+          description: Pipeline reset
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: General error
+      summary: Reset pipeline
+      tags:
+      - Pipelines
+  /pipelines/{pipelineID}/pause:
+    post:
+      operationId: pausePipeline
+      parameters:
+      - description: The pipeline id
+        explode: false
+        in: path
+        name: pipelineID
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "202":
+          description: Pipeline pause
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: General error
+      summary: Pause pipeline
+      tags:
+      - Pipelines
+  /pipelines/{pipelineID}/resume:
+    post:
+      operationId: resumePipeline
+      parameters:
+      - description: The pipeline id
+        explode: false
+        in: path
+        name: pipelineID
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "202":
+          description: Pipeline resumed
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: General error
+      summary: Resume pipeline
+      tags:
+      - Pipelines
+  /pipelines/{pipelineID}/start:
+    post:
+      operationId: startPipeline
+      parameters:
+      - description: The pipeline id
+        explode: false
+        in: path
+        name: pipelineID
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "202":
+          description: Pipeline started
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: General error
+      summary: Start pipeline
+      tags:
+      - Pipelines
+  /pipelines/{pipelineID}/stop:
+    post:
+      operationId: stopPipeline
+      parameters:
+      - description: The pipeline id
+        explode: false
+        in: path
+        name: pipelineID
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "202":
+          description: Pipeline stopped
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: General error
+      summary: Stop pipeline
+      tags:
+      - Pipelines
+components:
+  responses:
+    CreatePipelineResponse:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/createPipeline_201_response'
+      description: Created ipeline
+    ListPipelinesResponse:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/listPipelines_200_response'
+      description: Pipelines list
+    GetPipelineStateResponse:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/createPipeline_201_response'
+      description: Pipeline information
+    CreateConnectorResponse:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/createConnector_201_response'
+      description: Created ipeline
+    ListConnectorsResponse:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/listConnectors_200_response'
+      description: Connectors list
+    GetConnectorStateResponse:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/createConnector_201_response'
+      description: Connector information
+    ErrorResponse:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: General error
+  schemas:
+    CreatePipelineRequest:
+      example:
+        connectorID: connectorID
+        module: module
+      properties:
+        module:
+          type: string
+        connectorID:
+          type: string
+      required:
+      - connectorID
+      - module
+    CreateConnectorRequest:
+      $ref: '#/components/schemas/ConnectorConfiguration'
+    PipelineConfiguration:
+      properties:
+        module:
+          type: string
+        connectorID:
+          type: string
+      required:
+      - connectorID
+      - module
+    ConnectorConfiguration:
+      example:
+        driver: driver
+        config:
+          key: ""
+      properties:
+        driver:
+          type: string
+        config:
+          additionalProperties: true
+          type: object
+      required:
+      - config
+      - driver
+    Connector:
+      allOf:
+      - $ref: '#/components/schemas/ConnectorConfiguration'
+      - $ref: '#/components/schemas/Connector_allOf'
+    Pipeline:
+      allOf:
+      - $ref: '#/components/schemas/PipelineConfiguration'
+      - $ref: '#/components/schemas/Pipeline_allOf'
+    State:
+      properties:
+        label:
+          enum:
+          - STOP
+          - PAUSE
+          - INIT
+          - READY
+          type: string
+        cursor:
+          type: string
+        previousState:
+          $ref: '#/components/schemas/State'
+      required:
+      - label
+      type: object
+    Error:
+      properties:
+        errorCode:
+          type: string
+        errorMessage:
+          type: string
+      required:
+      - errorCode
+      - errorMessage
+      type: object
+    Cursor:
+      properties:
+        pageSize:
+          example: 15
+          format: int64
+          maximum: 1000
+          minimum: 1
+          type: integer
+        hasMore:
+          example: false
+          type: boolean
+        previous:
+          example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
+          type: string
+        next:
+          example: ""
+          type: string
+      required:
+      - hasMore
+      - pageSize
+      type: object
+    listConnectors_200_response_cursor_allOf:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Connector'
+          type: array
+    listConnectors_200_response_cursor:
+      allOf:
+      - $ref: '#/components/schemas/Cursor'
+      - $ref: '#/components/schemas/listConnectors_200_response_cursor_allOf'
+    listConnectors_200_response:
+      example:
+        cursor: null
+      properties:
+        cursor:
+          $ref: '#/components/schemas/listConnectors_200_response_cursor'
+    createConnector_201_response:
+      example:
+        data: null
+      properties:
+        data:
+          $ref: '#/components/schemas/Connector'
+      required:
+      - data
+    listPipelines_200_response_cursor_allOf:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Pipeline'
+          type: array
+    listPipelines_200_response_cursor:
+      allOf:
+      - $ref: '#/components/schemas/Cursor'
+      - $ref: '#/components/schemas/listPipelines_200_response_cursor_allOf'
+    listPipelines_200_response:
+      example:
+        cursor: null
+      properties:
+        cursor:
+          $ref: '#/components/schemas/listPipelines_200_response_cursor'
+    createPipeline_201_response:
+      example:
+        data: null
+      properties:
+        data:
+          $ref: '#/components/schemas/Pipeline'
+      required:
+      - data
+    Connector_allOf:
+      properties:
+        id:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+      required:
+      - createdAt
+      - id
+      type: object
+      example: null
+    Pipeline_allOf:
+      properties:
+        id:
+          type: string
+        state:
+          $ref: '#/components/schemas/State'
+        createdAt:
+          format: date-time
+          type: string
+      required:
+      - createdAt
+      - id
+      - state
+      type: object
+      example: null

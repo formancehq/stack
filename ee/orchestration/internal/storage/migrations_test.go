@@ -12,7 +12,7 @@ import (
 )
 
 func TestMigrationsAddTemporalRunIDAsCompoundPrimaryKeyOnStages(t *testing.T) {
-	db := srv.NewDatabase()
+	db := srv.NewDatabase(t)
 
 	hooks := make([]bun.QueryHook, 0)
 	if testing.Verbose() {

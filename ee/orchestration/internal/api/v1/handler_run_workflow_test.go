@@ -7,11 +7,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	sharedapi "github.com/formancehq/stack/libs/go-libs/testing/api"
+
 	"github.com/formancehq/orchestration/internal/api"
 	"github.com/go-chi/chi/v5"
 
 	"github.com/formancehq/orchestration/internal/workflow"
-	"github.com/formancehq/stack/libs/go-libs/api/apitesting"
 	"github.com/stretchr/testify/require"
 	"github.com/uptrace/bun"
 )
@@ -50,6 +51,6 @@ func TestRunWorkflowWaitEvent(t *testing.T) {
 
 		require.Equal(t, http.StatusCreated, rec.Result().StatusCode)
 		instance := &workflow.Instance{}
-		apitesting.ReadResponse(t, rec, instance)
+		sharedapi.ReadResponse(t, rec, instance)
 	})
 }

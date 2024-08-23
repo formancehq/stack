@@ -1,0 +1,143 @@
+VERSION 0.8
+
+IMPORT github.com/formancehq/earthly:v0.14.0 AS core
+IMPORT ../.. AS stack
+IMPORT .. AS components
+
+FROM core+base-image
+
+sources:
+    WORKDIR src
+    COPY (stack+sources/out --LOCATION=libs/go-libs) /src/libs/go-libs
+    WORKDIR /src/ee/ingester
+    COPY go.mod go.sum .
+    COPY --dir internal cmd pkg test .
+    COPY main.go .
+    SAVE ARTIFACT /src
+
+generate:
+    FROM core+builder-image
+    RUN apk update && apk add openjdk11
+    DO --pass-args core+GO_INSTALL --package=go.uber.org/mock/mockgen@latest
+    COPY (+sources/*) /src
+    WORKDIR /src/ee/ingester
+    DO --pass-args core+GO_GENERATE
+    SAVE ARTIFACT internal AS LOCAL internal
+    SAVE ARTIFACT cmd AS LOCAL cmd
+
+compile:
+    FROM core+builder-image
+    COPY (+sources/*) /src
+    WORKDIR /src/ee/ingester
+    ARG VERSION=latest
+    DO --pass-args core+GO_COMPILE --VERSION=$VERSION
+
+build-image:
+    FROM core+final-image
+    ENTRYPOINT ["/bin/ingester"]
+    CMD ["serve"]
+    COPY --pass-args (+compile/main) /bin/ingester
+    ARG REPOSITORY=ghcr.io
+    ARG tag=latest
+    DO --pass-args core+SAVE_IMAGE --COMPONENT=ingester --REPOSITORY=${REPOSITORY} --TAG=$tag
+
+tests:
+    FROM core+builder-image
+    RUN go install github.com/onsi/ginkgo/v2/ginkgo@latest
+
+    COPY (+sources/*) /src
+    WORKDIR /src/ee/ingester
+    COPY --dir --pass-args (+generate/*) .
+
+    ARG includeIntegrationTests="true"
+    ARG coverage=""
+    ARG debug=false
+
+    ENV DEBUG=$debug
+    ENV CGO_ENABLED=1 # required for -race
+    RUN apk add gcc musl-dev
+
+    LET goFlags="-race"
+    IF [ "$coverage" = "true" ]
+        SET goFlags="$goFlags -covermode=atomic"
+        SET goFlags="$goFlags -coverpkg=github.com/formancehq/stack/ee/ingester/internal/..."
+        SET goFlags="$goFlags,github.com/formancehq/stack/ee/ingester/cmd/..."
+        SET goFlags="$goFlags -coverprofile cover.out"
+    END
+    IF [ "$includeIntegrationTests" = "true" ]
+        SET goFlags="$goFlags -tags it"
+        WITH DOCKER \
+            --pull=postgres:15-alpine \
+            --pull=clickhouse/clickhouse-server:head \
+            --pull=elasticsearch:8.14.3
+            RUN --mount type=cache,id=gopkgcache,target=${GOPATH}/pkg/mod \
+                --mount type=cache,id=gobuildcache,target=/root/.cache/go-build \
+                ginkgo -r -p $goFlags
+        END
+    ELSE
+        RUN --mount type=cache,id=gopkgcache,target=${GOPATH}/pkg/mod \
+            --mount type=cache,id=gobuildcache,target=/root/.cache/go-build \
+            ginkgo -r -p $goFlags
+    END
+    IF [ "$coverage" = "true" ]
+        RUN cat cover.out | grep -v "_generated.go" > cover2.out
+        RUN mv cover2.out cover.out
+        SAVE ARTIFACT cover.out AS LOCAL cover.out
+    END
+
+deploy:
+    COPY (+sources/*) /src
+    LET tag=$(tar cf - /src | sha1sum | awk '{print $1}')
+    WAIT
+        BUILD --pass-args +build-image --tag=$tag
+    END
+    FROM --pass-args core+vcluster-deployer-image
+    RUN kubectl patch Versions.formance.com default -p "{\"spec\":{\"ingester\": \"${tag}\"}}" --type=merge
+
+deploy-staging:
+    BUILD --pass-args stack+deployer-module --MODULE=ingester
+
+lint:
+    FROM core+builder-image
+    COPY (+sources/*) /src
+    COPY --pass-args +tidy/go.* .
+    WORKDIR /src/ee/ingester
+    DO --pass-args stack+GO_LINT
+    SAVE ARTIFACT cmd AS LOCAL cmd
+    SAVE ARTIFACT internal AS LOCAL internal
+    SAVE ARTIFACT main.go AS LOCAL main.go
+
+pre-commit:
+    WAIT
+        BUILD --pass-args +generate-sdk
+    END
+    WAIT
+      BUILD --pass-args +tidy
+    END
+    BUILD --pass-args +lint
+
+tidy:
+    FROM core+builder-image
+    COPY --pass-args (+sources/src) /src
+    WORKDIR /src/ee/ingester
+    DO --pass-args stack+GO_TIDY
+
+release:
+    BUILD --pass-args stack+goreleaser --path=ee/ingester
+
+generate-sdk:
+    FROM openapitools/openapi-generator-cli:v6.6.0
+    WORKDIR /src
+    COPY api/openapi.yaml .
+    RUN docker-entrypoint.sh generate \
+        -i ./openapi.yaml \
+        -g go \
+        -o ./client \
+        --git-user-id=formancehq \
+        --git-repo-id=ingester \
+        -p packageVersion=latest \
+        -p isGoSubmodule=true \
+        -p packageName=ingesterclient
+    RUN rm -rf ./client/test
+    RUN ls -lisah
+    SAVE ARTIFACT ./client AS LOCAL pkg/client

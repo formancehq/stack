@@ -59,7 +59,7 @@ func (ctrl *HealthController) Check(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func NewHealthController(checks []NamedCheck) *HealthController {
+func NewHealthController(checks ...NamedCheck) *HealthController {
 	return &HealthController{
 		Checks: checks,
 	}
