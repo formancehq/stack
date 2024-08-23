@@ -30,6 +30,9 @@ operator:
   licence:
     token: ""
     issuer: ""
+  
+  utils:
+    tag: "v2.0.14" 
 
 podAnnotations: {}
 
