@@ -11,6 +11,7 @@ import (
 	"os"
 	"runtime"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -25,7 +26,6 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	"go.uber.org/atomic"
 )
 
 func BenchmarkParallelWrites(b *testing.B) {
@@ -52,7 +52,7 @@ func BenchmarkParallelWrites(b *testing.B) {
 	runtime.GC()
 	b.ResetTimer()
 	startOfBench := time.Now()
-	counter := atomic.NewInt64(0)
+	counter := atomic.Int64{}
 	longestTxLock := sync.Mutex{}
 	longestTransactionID := big.NewInt(0)
 	longestTransactionDuration := time.Duration(0)

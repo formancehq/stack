@@ -15,10 +15,18 @@ import (
 
 var (
 	ctx         context.Context
-	currentEnv  *env
+	currentEnv  *Env
 	currentTest *Test
 	mockOIDC    *mockoidc.MockOIDC
 )
+
+func CurrentEnv() *Env {
+	return currentEnv
+}
+
+func CurrentTest() *Test {
+	return currentTest
+}
 
 func TestContext() context.Context {
 	return ctx

@@ -13,7 +13,7 @@ import (
 	"github.com/ory/dockertest/v3"
 )
 
-type env struct {
+type Env struct {
 	sqlConn      *pgx.Conn
 	writer       io.Writer
 	dockerPool   *dockertest.Pool
@@ -21,7 +21,7 @@ type env struct {
 	workdir      string
 }
 
-func (e *env) Setup(ctx context.Context) error {
+func (e *Env) Setup(ctx context.Context) error {
 
 	var err error
 	e.workdir, err = os.Getwd()
@@ -53,7 +53,7 @@ func (e *env) Setup(ctx context.Context) error {
 	return nil
 }
 
-func (e *env) Teardown(ctx context.Context) error {
+func (e *Env) Teardown(ctx context.Context) error {
 	if e.dockerClient != nil {
 		if err := e.dockerClient.Close(); err != nil {
 			return err
@@ -67,7 +67,11 @@ func (e *env) Teardown(ctx context.Context) error {
 	return nil
 }
 
-func (e *env) newTest() *Test {
+func (e *Env) Database() *pgx.Conn {
+	return e.sqlConn
+}
+
+func (e *Env) newTest() *Test {
 	return &Test{
 		env:             e,
 		id:              uuid.NewString(),
@@ -76,8 +80,8 @@ func (e *env) newTest() *Test {
 	}
 }
 
-func newEnv(w io.Writer) *env {
-	return &env{
+func newEnv(w io.Writer) *Env {
+	return &Env{
 		writer: w,
 	}
 }

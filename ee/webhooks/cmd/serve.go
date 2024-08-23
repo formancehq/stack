@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"strings"
-
 	"github.com/formancehq/stack/libs/go-libs/aws/iam"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
@@ -67,13 +65,6 @@ func serve(cmd *cobra.Command, _ []string) error {
 		maxBackOffDelay, _ := cmd.Flags().GetDuration(flag.MaxBackoffDelay)
 		abortAfter, _ := cmd.Flags().GetDuration(flag.AbortAfter)
 		topics, _ := cmd.Flags().GetStringSlice(flag.KafkaTopics)
-
-		// notes: viper handle env vars as string slice by separating values with ","
-		// whereas cobra use a simple space
-		// this make the compat since the operator use a space
-		if len(topics) == 1 && strings.Contains(topics[0], " ") {
-			topics = strings.Split(topics[0], " ")
-		}
 
 		options = append(options, worker.StartModule(
 			cmd,
