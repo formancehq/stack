@@ -112,7 +112,7 @@ func TestReadConnectors(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
+			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil, false)
 
 			req := httptest.NewRequest(http.MethodGet, "/connectors", nil)
 			rec := httptest.NewRecorder()

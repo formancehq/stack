@@ -1,9 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
-	"strings"
 	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/licence"
@@ -11,7 +8,6 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -21,12 +17,11 @@ var (
 )
 
 func NewRootCommand() *cobra.Command {
-	viper.SetDefault("version", Version)
-
 	root := &cobra.Command{
 		Use:               "stargate",
 		Short:             "stargate",
 		DisableAutoGenTag: true,
+		Version:           Version,
 	}
 
 	version := newVersion()
@@ -53,37 +48,15 @@ func NewRootCommand() *cobra.Command {
 	client.Flags().Bool(TlsEnabledFlag, true, "TLS enabled")
 	client.Flags().String(TlsCACertificateFlag, "", "TLS cert file")
 	client.Flags().Bool(TlsInsecureSkipVerifyFlag, false, "TLS insecure skip verify")
-	service.BindFlags(client)
-	licence.InitCLIFlags(client)
-	if err := bindFlagsToViper(client); err != nil {
-		panic(err)
-	}
 
-	otlptraces.InitOTLPTracesFlags(root.PersistentFlags())
-	otlpmetrics.InitOTLPMetricsFlags(root.PersistentFlags())
-
-	if err := bindFlagsToViper(root); err != nil {
-		panic(err)
-	}
-
-	BindEnv(viper.GetViper())
+	service.AddFlags(client.PersistentFlags())
+	licence.AddFlags(client.PersistentFlags())
+	otlptraces.AddFlags(root.PersistentFlags())
+	otlpmetrics.AddFlags(root.PersistentFlags())
 
 	return root
 }
 
 func Execute() {
-	if err := NewRootCommand().Execute(); err != nil {
-		if _, err = fmt.Fprintln(os.Stderr, err); err != nil {
-			panic(err)
-		}
-
-		os.Exit(1)
-	}
-}
-
-var EnvVarReplacer = strings.NewReplacer(".", "_", "-", "_")
-
-func BindEnv(v *viper.Viper) {
-	v.SetEnvKeyReplacer(EnvVarReplacer)
-	v.AutomaticEnv()
+	service.Execute(NewRootCommand())
 }

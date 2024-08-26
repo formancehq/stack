@@ -4,11 +4,13 @@ import (
 	"context"
 	"testing"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bundebug"
+	"github.com/uptrace/bun"
+
 	"github.com/formancehq/stack/libs/go-libs/logging"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 
-	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/formancehq/webhooks/pkg/storage"
 	"github.com/formancehq/webhooks/pkg/storage/postgres"
@@ -16,10 +18,16 @@ import (
 )
 
 func TestStore(t *testing.T) {
-	pgDB := pgtesting.NewPostgresDatabase(t)
+
+	hooks := make([]bun.QueryHook, 0)
+	if testing.Verbose() {
+		hooks = append(hooks, bundebug.NewQueryHook())
+	}
+
+	pgDB := srv.NewDatabase()
 	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: pgDB.ConnString(),
-	})
+	}, hooks...)
 	require.NoError(t, err)
 	defer func() {
 		_ = db.Close()

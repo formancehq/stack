@@ -3,9 +3,10 @@ package otlpmetrics
 import (
 	"time"
 
+	"github.com/spf13/cobra"
+
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 	flag "github.com/spf13/pflag"
-	"github.com/spf13/viper"
 	"go.uber.org/fx"
 )
 
@@ -20,8 +21,8 @@ const (
 	OtelMetricsExporterOTLPInsecureFlag               = "otel-metrics-exporter-otlp-insecure"
 )
 
-func InitOTLPMetricsFlags(flags *flag.FlagSet) {
-	otlp.InitOTLPFlags(flags)
+func AddFlags(flags *flag.FlagSet) {
+	otlp.AddFlags(flags)
 
 	flags.Bool(OtelMetricsFlag, false, "Enable OpenTelemetry traces support")
 	flags.Duration(OtelMetricsExporterPushIntervalFlag, 10*time.Second, "OpenTelemetry metrics exporter push interval")
@@ -33,21 +34,33 @@ func InitOTLPMetricsFlags(flags *flag.FlagSet) {
 	flags.Bool(OtelMetricsExporterOTLPInsecureFlag, false, "OpenTelemetry traces grpc insecure")
 }
 
-func CLIMetricsModule() fx.Option {
-	if viper.GetBool(OtelMetricsFlag) {
+func FXModuleFromFlags(cmd *cobra.Command) fx.Option {
+	otelMetrics, _ := cmd.Flags().GetBool(OtelMetricsFlag)
+
+	if otelMetrics {
+		otelServiceName, _ := cmd.Flags().GetString(otlp.OtelServiceNameFlag)
+		otelMetricsExporterOTLPEndpoint, _ := cmd.Flags().GetString(OtelMetricsExporterOTLPEndpointFlag)
+		otelMetricsExporterOTLPMode, _ := cmd.Flags().GetString(OtelMetricsExporterOTLPModeFlag)
+		otelMetricsExporterOTLPInsecure, _ := cmd.Flags().GetBool(OtelMetricsExporterOTLPInsecureFlag)
+		otelMetricsExporter, _ := cmd.Flags().GetString(OtelMetricsExporterFlag)
+		otelMetricsRuntime, _ := cmd.Flags().GetBool(OtelMetricsRuntimeFlag)
+		otelMetricsRuntimeMinimumReadMemStatsInterval, _ := cmd.Flags().GetDuration(OtelMetricsRuntimeMinimumReadMemStatsIntervalFlag)
+		otelMetricsExporterPushInterval, _ := cmd.Flags().GetDuration(OtelMetricsExporterPushIntervalFlag)
+		otelResourceAttributes, _ := cmd.Flags().GetStringSlice(otlp.OtelResourceAttributesFlag)
+
 		return MetricsModule(ModuleConfig{
-			ServiceName:    viper.GetString(otlp.OtelServiceName),
+			ServiceName:    otelServiceName,
 			ServiceVersion: "develop",
 			OTLPConfig: &OTLPConfig{
-				Mode:     viper.GetString(OtelMetricsExporterOTLPModeFlag),
-				Endpoint: viper.GetString(OtelMetricsExporterOTLPEndpointFlag),
-				Insecure: viper.GetBool(OtelMetricsExporterOTLPInsecureFlag),
+				Mode:     otelMetricsExporterOTLPMode,
+				Endpoint: otelMetricsExporterOTLPEndpoint,
+				Insecure: otelMetricsExporterOTLPInsecure,
 			},
-			Exporter:                    viper.GetString(OtelMetricsExporterFlag),
-			RuntimeMetrics:              viper.GetBool(OtelMetricsRuntimeFlag),
-			MinimumReadMemStatsInterval: viper.GetDuration(OtelMetricsRuntimeMinimumReadMemStatsIntervalFlag),
-			PushInterval:                viper.GetDuration(OtelMetricsExporterPushIntervalFlag),
-			ResourceAttributes:          viper.GetStringSlice(otlp.OtelResourceAttributes),
+			Exporter:                    otelMetricsExporter,
+			RuntimeMetrics:              otelMetricsRuntime,
+			MinimumReadMemStatsInterval: otelMetricsRuntimeMinimumReadMemStatsInterval,
+			PushInterval:                otelMetricsExporterPushInterval,
+			ResourceAttributes:          otelResourceAttributes,
 		})
 	}
 	return fx.Options()

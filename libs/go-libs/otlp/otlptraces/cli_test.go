@@ -5,12 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"sync"
 	"testing"
 
-	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
@@ -37,16 +34,10 @@ func TestOTLPTracesModule(t *testing.T) {
 	} {
 		t.Run(testCase.name, func(t *testing.T) {
 			cmd := &cobra.Command{
-				PreRunE: func(cmd *cobra.Command, args []string) error {
-					// Since we are doing multiple tests with the same otlp
-					// package, we have to reset the once variables.
-					otlp.OnceLoadResources = sync.Once{}
-					return viper.BindPFlags(cmd.Flags())
-				},
 				RunE: func(cmd *cobra.Command, args []string) error {
 					app := fx.New(
 						fx.NopLogger,
-						CLITracesModule(),
+						FXModuleFromFlags(cmd),
 						fx.Invoke(func(lc fx.Lifecycle, spanExporter tracesdk.SpanExporter) {
 							lc.Append(fx.Hook{
 								OnStart: func(ctx context.Context) error {
@@ -67,7 +58,7 @@ func TestOTLPTracesModule(t *testing.T) {
 					return nil
 				},
 			}
-			InitOTLPTracesFlags(cmd.Flags())
+			AddFlags(cmd.Flags())
 
 			cmd.SetArgs(testCase.args)
 

@@ -35,7 +35,8 @@ func newServerHandler(
 	httpClient *http.Client,
 	logger logging.Logger,
 	info ServiceInfo,
-	a auth.Auth,
+	authenticator auth.Authenticator,
+	debug bool,
 ) http.Handler {
 	h := &serverHandler{
 		Mux:        chi.NewRouter(),
@@ -58,8 +59,8 @@ func newServerHandler(
 	h.Mux.Get(PathInfo, h.getInfo(info))
 
 	h.Mux.Group(func(r chi.Router) {
-		r.Use(auth.Middleware(a))
-		r.Use(service.OTLPMiddleware("webhooks"))
+		r.Use(auth.Middleware(authenticator))
+		r.Use(service.OTLPMiddleware("webhooks", debug))
 
 		r.Get(PathConfigs, h.getManyConfigsHandle)
 		r.Post(PathConfigs, h.insertOneConfigHandle)

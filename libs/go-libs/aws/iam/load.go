@@ -3,10 +3,11 @@ package iam
 import (
 	"context"
 
+	"github.com/spf13/cobra"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
 )
 
 const (
@@ -18,7 +19,7 @@ const (
 	AWSRoleArnFlag         = "aws-role-arn"
 )
 
-func InitFlags(flags *pflag.FlagSet) {
+func AddFlags(flags *pflag.FlagSet) {
 	flags.String(AWSRegionFlag, "", "Specify AWS region")
 	flags.String(AWSAccessKeyIDFlag, "", "AWS access key id")
 	flags.String(AWSSecretAccessKeyFlag, "", "AWS secret access key")
@@ -27,20 +28,26 @@ func InitFlags(flags *pflag.FlagSet) {
 	flags.String(AWSRoleArnFlag, "", "AWS Role ARN")
 }
 
-func LoadOptionFromViper() func(opts *config.LoadOptions) error {
+func LoadOptionFromCommand(cmd *cobra.Command) func(opts *config.LoadOptions) error {
 	return func(opts *config.LoadOptions) error {
-		if viper.GetString(AWSAccessKeyIDFlag) != "" {
+		awsRegion, _ := cmd.Flags().GetString(AWSRegionFlag)
+		awsAccessKeyID, _ := cmd.Flags().GetString(AWSAccessKeyIDFlag)
+		awsSecretAccessKey, _ := cmd.Flags().GetString(AWSSecretAccessKeyFlag)
+		awsSessionToken, _ := cmd.Flags().GetString(AWSSessionTokenFlag)
+		awsProfile, _ := cmd.Flags().GetString(AWSProfileFlag)
+
+		if awsAccessKeyID != "" {
 			opts.Credentials = aws.CredentialsProviderFunc(func(ctx context.Context) (aws.Credentials, error) {
 				return aws.Credentials{
-					AccessKeyID:     viper.GetString(AWSAccessKeyIDFlag),
-					SecretAccessKey: viper.GetString(AWSSecretAccessKeyFlag),
-					SessionToken:    viper.GetString(AWSSessionTokenFlag),
+					AccessKeyID:     awsAccessKeyID,
+					SecretAccessKey: awsSecretAccessKey,
+					SessionToken:    awsSessionToken,
 					Source:          "flags",
 				}, nil
 			})
 		}
-		opts.Region = viper.GetString(AWSRegionFlag)
-		opts.SharedConfigProfile = viper.GetString(AWSProfileFlag)
+		opts.Region = awsRegion
+		opts.SharedConfigProfile = awsProfile
 
 		return nil
 	}

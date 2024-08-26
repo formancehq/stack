@@ -23,6 +23,10 @@ type ErrorResponse struct {
 	Details      string `json:"details,omitempty"`
 }
 
+func (e ErrorResponse) Error() string {
+	return fmt.Sprintf("[%s] %s", e.ErrorCode, e.ErrorMessage)
+}
+
 func FetchAllPaginated[T any](ctx context.Context, client *http.Client, _url string, queryParams url.Values) ([]T, error) {
 	ret := make([]T, 0)
 

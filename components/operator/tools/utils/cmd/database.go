@@ -11,7 +11,7 @@ func NewDatabaseCommand() *cobra.Command {
 		Short: "Handle databases operations",
 	}
 	ret.AddCommand(NewDatabaseCreateCommand(), NewDatabaseDropCommand())
-	bunconnect.InitFlags(ret.PersistentFlags())
+	bunconnect.AddFlags(ret.PersistentFlags())
 
 	return ret
 }

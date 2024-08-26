@@ -2,8 +2,8 @@ package otlptraces
 
 import (
 	"github.com/formancehq/stack/libs/go-libs/otlp"
+	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
-	"github.com/spf13/viper"
 	"go.uber.org/fx"
 )
 
@@ -19,8 +19,8 @@ const (
 	OtelTracesExporterOTLPInsecureFlag   = "otel-traces-exporter-otlp-insecure"
 )
 
-func InitOTLPTracesFlags(flags *flag.FlagSet) {
-	otlp.InitOTLPFlags(flags)
+func AddFlags(flags *flag.FlagSet) {
+	otlp.AddFlags(flags)
 
 	flags.Bool(OtelTracesFlag, false, "Enable OpenTelemetry traces support")
 	flags.Bool(OtelTracesBatchFlag, false, "Use OpenTelemetry batching")
@@ -33,23 +33,33 @@ func InitOTLPTracesFlags(flags *flag.FlagSet) {
 	flags.Bool(OtelTracesExporterOTLPInsecureFlag, false, "OpenTelemetry traces grpc insecure")
 }
 
-func CLITracesModule() fx.Option {
-	if viper.GetBool(OtelTracesFlag) {
+func FXModuleFromFlags(cmd *cobra.Command) fx.Option {
+	otlpEnabled, _ := cmd.Flags().GetBool(OtelTracesFlag)
+	if otlpEnabled {
+		batch, _ := cmd.Flags().GetBool(OtelTracesBatchFlag)
+		exporter, _ := cmd.Flags().GetString(OtelTracesExporterFlag)
+		serviceName, _ := cmd.Flags().GetString(otlp.OtelServiceNameFlag)
+		resourceAttributes, _ := cmd.Flags().GetStringSlice(otlp.OtelResourceAttributesFlag)
+
 		return TracesModule(ModuleConfig{
-			Batch:    viper.GetBool(OtelTracesBatchFlag),
-			Exporter: viper.GetString(OtelTracesExporterFlag),
+			Batch:    batch,
+			Exporter: exporter,
 			OTLPConfig: func() *OTLPConfig {
-				if viper.GetString(OtelTracesExporterFlag) != OTLPExporter {
+				if exporter != OTLPExporter {
 					return nil
 				}
+				mode, _ := cmd.Flags().GetString(OtelTracesExporterOTLPModeFlag)
+				endpoint, _ := cmd.Flags().GetString(OtelTracesExporterOTLPEndpointFlag)
+				insecure, _ := cmd.Flags().GetBool(OtelTracesExporterOTLPInsecureFlag)
+
 				return &OTLPConfig{
-					Mode:     viper.GetString(OtelTracesExporterOTLPModeFlag),
-					Endpoint: viper.GetString(OtelTracesExporterOTLPEndpointFlag),
-					Insecure: viper.GetBool(OtelTracesExporterOTLPInsecureFlag),
+					Mode:     mode,
+					Endpoint: endpoint,
+					Insecure: insecure,
 				}
 			}(),
-			ServiceName:        viper.GetString(otlp.OtelServiceName),
-			ResourceAttributes: viper.GetStringSlice(otlp.OtelResourceAttributes),
+			ServiceName:        serviceName,
+			ResourceAttributes: resourceAttributes,
 		})
 	}
 	return fx.Options()

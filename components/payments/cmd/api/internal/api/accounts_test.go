@@ -300,7 +300,9 @@ func TestCreateAccounts(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{
+				Debug: testing.Verbose(),
+			}, auth.NewNoAuth(), false)
 
 			var body []byte
 			if testCase.req != nil {
@@ -546,7 +548,9 @@ func TestListAccounts(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{
+				Debug: testing.Verbose(),
+			}, auth.NewNoAuth(), false)
 
 			req := httptest.NewRequest(http.MethodGet, "/accounts", nil)
 			rec := httptest.NewRecorder()
@@ -721,7 +725,9 @@ func TestGetAccount(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{
+				Debug: testing.Verbose(),
+			}, auth.NewNoAuth(), false)
 
 			req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/accounts/%s", testCase.accountID), nil)
 			rec := httptest.NewRecorder()

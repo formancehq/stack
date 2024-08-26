@@ -2,16 +2,13 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/formancehq/stack/libs/go-libs/bun/bunmigrate"
+	"github.com/formancehq/stack/libs/go-libs/service"
 
 	_ "github.com/bombsimon/logrusr/v3"
 	"github.com/formancehq/payments/cmd/api"
 	"github.com/formancehq/payments/cmd/connectors"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -21,12 +18,11 @@ var (
 )
 
 func NewRootCommand() *cobra.Command {
-	viper.SetDefault("version", Version)
-
 	root := &cobra.Command{
 		Use:               "payments",
 		Short:             "payments",
 		DisableAutoGenTag: true,
+		Version:           Version,
 	}
 
 	version := newVersion()
@@ -45,19 +41,14 @@ func NewRootCommand() *cobra.Command {
 }
 
 func Execute() {
-	if err := NewRootCommand().Execute(); err != nil {
-		if _, err = fmt.Fprintln(os.Stderr, err); err != nil {
-			panic(err)
-		}
-
-		os.Exit(1)
-	}
+	service.Execute(NewRootCommand())
 }
 
 func addAutoMigrateCommand(cmd *cobra.Command) {
 	cmd.Flags().Bool(autoMigrateFlag, false, "Auto migrate database")
 	cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
-		if viper.GetBool(autoMigrateFlag) {
+		autoMigrate, _ := cmd.Flags().GetBool(autoMigrateFlag)
+		if autoMigrate {
 			return bunmigrate.Run(cmd, args, Migrate)
 		}
 		return nil

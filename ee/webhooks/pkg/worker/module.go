@@ -9,12 +9,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/spf13/cobra"
+
 	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
-
-	"github.com/formancehq/webhooks/cmd/flag"
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/alitto/pond"
@@ -23,19 +23,18 @@ import (
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/formancehq/webhooks/pkg/storage"
 	"github.com/google/uuid"
-	"github.com/spf13/viper"
 	"go.uber.org/fx"
 )
 
 var Tracer = otel.Tracer("listener")
 
-func StartModule(serviceName string, retriesCron time.Duration, retryPolicy webhooks.BackoffPolicy) fx.Option {
+func StartModule(cmd *cobra.Command, retriesCron time.Duration, retryPolicy webhooks.BackoffPolicy, debug bool, topics []string) fx.Option {
 	var options []fx.Option
 
 	options = append(options, fx.Invoke(func(r *message.Router, subscriber message.Subscriber, store storage.Store, httpClient *http.Client) {
-		configureMessageRouter(r, subscriber, viper.GetStringSlice(flag.KafkaTopics), store, httpClient, retryPolicy, pond.New(50, 50))
+		configureMessageRouter(r, subscriber, topics, store, httpClient, retryPolicy, pond.New(50, 50))
 	}))
-	options = append(options, publish.CLIPublisherModule(serviceName))
+	options = append(options, publish.FXModuleFromFlags(cmd, debug))
 	options = append(options, fx.Provide(
 		func() (time.Duration, webhooks.BackoffPolicy) {
 			return retriesCron, retryPolicy

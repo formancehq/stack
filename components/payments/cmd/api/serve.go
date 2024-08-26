@@ -1,8 +1,6 @@
 package api
 
 import (
-	"context"
-
 	"github.com/bombsimon/logrusr/v3"
 	"github.com/formancehq/payments/cmd/api/internal/api"
 	"github.com/formancehq/payments/cmd/api/internal/storage"
@@ -16,7 +14,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/metric/noop"
@@ -46,7 +43,7 @@ func runServer(version string) func(cmd *cobra.Command, args []string) error {
 	return func(cmd *cobra.Command, args []string) error {
 		setLogger()
 
-		databaseOptions, err := prepareDatabaseOptions(cmd.Context())
+		databaseOptions, err := prepareDatabaseOptions(cmd, service.IsDebug(cmd))
 		if err != nil {
 			return err
 		}
@@ -55,17 +52,22 @@ func runServer(version string) func(cmd *cobra.Command, args []string) error {
 
 		options = append(options, databaseOptions)
 		options = append(options,
-			otlptraces.CLITracesModule(),
-			otlpmetrics.CLIMetricsModule(),
-			auth.CLIAuthModule(),
+			otlptraces.FXModuleFromFlags(cmd),
+			otlpmetrics.FXModuleFromFlags(cmd),
+			auth.FXModuleFromFlags(cmd),
 			fx.Provide(fx.Annotate(noop.NewMeterProvider, fx.As(new(metric.MeterProvider)))),
 		)
-		options = append(options, publish.CLIPublisherModule(serviceName))
+		options = append(options, publish.FXModuleFromFlags(cmd, service.IsDebug(cmd)))
+		listen, _ := cmd.Flags().GetString(listenFlag)
+		stackURL, _ := cmd.Flags().GetString(stackURLFlag)
+		otlpTraces, _ := cmd.Flags().GetBool(otlptraces.OtelTracesFlag)
+
 		options = append(options, api.HTTPModule(sharedapi.ServiceInfo{
 			Version: version,
-		}, viper.GetString(listenFlag), viper.GetString(stackURLFlag)))
+			Debug:   service.IsDebug(cmd),
+		}, listen, stackURL, otlpTraces))
 
-		return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
+		return service.New(cmd.OutOrStdout(), options...).Run(cmd)
 	}
 }
 
@@ -74,16 +76,16 @@ func setLogger() {
 	otel.SetLogger(logrusr.New(logrus.New().WithField("component", "otlp")))
 }
 
-func prepareDatabaseOptions(ctx context.Context) (fx.Option, error) {
-	configEncryptionKey := viper.GetString(configEncryptionKeyFlag)
+func prepareDatabaseOptions(cmd *cobra.Command, debug bool) (fx.Option, error) {
+	configEncryptionKey, _ := cmd.Flags().GetString(configEncryptionKeyFlag)
 	if configEncryptionKey == "" {
 		return nil, errors.New("missing config encryption key")
 	}
 
-	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(ctx)
+	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd)
 	if err != nil {
 		return nil, err
 	}
 
-	return storage.Module(*connectionOptions, configEncryptionKey), nil
+	return storage.Module(*connectionOptions, configEncryptionKey, debug), nil
 }

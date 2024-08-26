@@ -87,6 +87,7 @@ func newTestEnv(opts ...Option) *testEnv {
 	manager := wallet.NewManager(ret.ledgerName, ledgerMock, ret.chart)
 	ret.router = NewRouter(manager, &sharedhealth.HealthController{}, sharedapi.ServiceInfo{
 		Version: "latest",
+		Debug:   testing.Verbose(),
 	}, auth.NewNoAuth())
 	return ret
 }

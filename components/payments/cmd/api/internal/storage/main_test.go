@@ -3,12 +3,14 @@ package storage
 import (
 	"context"
 	"crypto/rand"
-	"os"
 	"testing"
+
+	"github.com/formancehq/stack/libs/go-libs/testing/docker"
+	"github.com/formancehq/stack/libs/go-libs/testing/utils"
 
 	migrationstorage "github.com/formancehq/payments/internal/storage"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/pgtesting"
+	"github.com/formancehq/stack/libs/go-libs/testing/platform/pgtesting"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/require"
@@ -16,23 +18,22 @@ import (
 	"github.com/uptrace/bun/dialect/pgdialect"
 )
 
-func TestMain(m *testing.M) {
-	if err := pgtesting.CreatePostgresServer(); err != nil {
-		logging.Error(err)
-		os.Exit(1)
-	}
+var (
+	srv *pgtesting.PostgresServer
+)
 
-	code := m.Run()
-	if err := pgtesting.DestroyPostgresServer(); err != nil {
-		logging.Error(err)
-	}
-	os.Exit(code)
+func TestMain(m *testing.M) {
+	utils.WithTestMain(func(t *utils.TestingTForMain) int {
+		srv = pgtesting.CreatePostgresServer(t, docker.NewPool(t, logging.Testing()))
+
+		return m.Run()
+	})
 }
 
 func newStore(t *testing.T) *Storage {
 	t.Helper()
 
-	pgServer := pgtesting.NewPostgresDatabase(t)
+	pgServer := srv.NewDatabase()
 
 	config, err := pgx.ParseConfig(pgServer.ConnString())
 	require.NoError(t, err)

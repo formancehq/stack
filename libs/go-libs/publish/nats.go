@@ -33,12 +33,21 @@ func NewNatsSubscriberWithConn(conn *nats.Conn, logger watermill.LoggerAdapter, 
 	return wNats.NewSubscriberWithNatsConn(conn, config.GetSubscriberSubscriptionConfig(), logger)
 }
 
-func NatsModule(url, serviceName string, autoProvision bool, natsOptions ...nats.Option) fx.Option {
+func NatsModule(url, group string, autoProvision bool, natsOptions ...nats.Option) fx.Option {
 	jetStreamConfig := wNats.JetStreamConfig{
 		AutoProvision: autoProvision,
 	}
 	return fx.Options(
 		fx.Provide(NewNatsConn),
+		fx.Invoke(func(lc fx.Lifecycle, conn *nats.Conn) {
+			lc.Append(fx.Hook{
+				OnStop: func(ctx context.Context) error {
+					logging.FromContext(ctx).Infof("stopping nats connection")
+					conn.Close()
+					return nil
+				},
+			})
+		}),
 		fx.Provide(NewNatsDefaultCallbacks),
 		fx.Provide(NewNatsPublisherWithConn),
 		fx.Provide(NewNatsSubscriberWithConn),
@@ -58,9 +67,11 @@ func NatsModule(url, serviceName string, autoProvision bool, natsOptions ...nats
 				NatsOptions:       natsOptions,
 				Unmarshaler:       &wNats.NATSMarshaler{},
 				URL:               url,
-				QueueGroupPrefix:  serviceName,
+				QueueGroupPrefix:  group,
 				JetStream:         jetStreamConfig,
 				SubjectCalculator: wNats.DefaultSubjectCalculator,
+				// todo(gfyrag): make configurable
+				SubscribersCount: 100,
 			}
 		}),
 		fx.Provide(func(publisher *wNats.Publisher) message.Publisher {

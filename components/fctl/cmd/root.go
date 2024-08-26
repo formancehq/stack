@@ -66,7 +66,7 @@ func NewRootCommand() *cobra.Command {
 		fctl.WithPersistentBoolFlag(fctl.InsecureTlsFlag, false, "Insecure TLS"),
 		fctl.WithPersistentBoolFlag(fctl.TelemetryFlag, false, "Telemetry enabled"),
 		fctl.WithPersistentPreRunE(func(cmd *cobra.Command, args []string) error {
-			logger := logging.NewLogrus(logging.DefaultLogger(cmd.OutOrStdout(), fctl.GetBool(cmd, fctl.DebugFlag)))
+			logger := logging.NewDefaultLogger(cmd.OutOrStdout(), fctl.GetBool(cmd, fctl.DebugFlag), false)
 			ctx := logging.ContextWithLogger(cmd.Context(), logger)
 			cmd.SetContext(ctx)
 			return nil

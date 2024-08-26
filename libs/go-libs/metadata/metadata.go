@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"reflect"
 
-	"github.com/imdario/mergo"
+	"dario.cat/mergo"
 )
 
 type Metadata map[string]string

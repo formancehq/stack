@@ -9,9 +9,9 @@ import (
 	"go.uber.org/fx"
 )
 
-func NewModule(connectionOptions bunconnect.ConnectionOptions) fx.Option {
+func NewModule(connectionOptions bunconnect.ConnectionOptions, debug bool) fx.Option {
 	return fx.Options(
-		bunconnect.Module(connectionOptions),
+		bunconnect.Module(connectionOptions, debug),
 		fx.Provide(func(db *bun.DB) (storage.Store, error) {
 			return NewStore(db)
 		}),

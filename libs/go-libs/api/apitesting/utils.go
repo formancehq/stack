@@ -2,6 +2,7 @@ package apitesting
 
 import (
 	"encoding/json"
+	"io"
 	"net/http/httptest"
 	"reflect"
 	"testing"
@@ -12,10 +13,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func ReadErrorResponse(t *testing.T, rec *httptest.ResponseRecorder) *api.ErrorResponse {
+func ReadErrorResponse(t *testing.T, r io.Reader) *api.ErrorResponse {
 	t.Helper()
 	ret := &api.ErrorResponse{}
-	require.NoError(t, json.NewDecoder(rec.Body).Decode(ret))
+	require.NoError(t, json.NewDecoder(r).Decode(ret))
 	return ret
 }
 

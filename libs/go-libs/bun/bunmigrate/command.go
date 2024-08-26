@@ -22,6 +22,6 @@ func NewDefaultCommand(executor Executor, options ...func(command *cobra.Command
 	for _, option := range options {
 		option(ret)
 	}
-	bunconnect.InitFlags(ret.Flags())
+	bunconnect.AddFlags(ret.Flags())
 	return ret
 }

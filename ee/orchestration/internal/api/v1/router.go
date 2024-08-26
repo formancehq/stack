@@ -10,12 +10,12 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func newRouter(backend api.Backend, a auth.Auth) *chi.Mux {
+func newRouter(backend api.Backend, authenticator auth.Authenticator, debug bool) *chi.Mux {
 	r := chi.NewRouter()
 	r.Group(func(r chi.Router) {
 		// Plug middleware to handle traces
-		r.Use(auth.Middleware(a))
-		r.Use(service.OTLPMiddleware("orchestration"))
+		r.Use(auth.Middleware(authenticator))
+		r.Use(service.OTLPMiddleware("orchestration", debug))
 		r.Route("/triggers", func(r chi.Router) {
 			r.Get("/", listTriggers(backend))
 			r.Post("/", createTrigger(backend))

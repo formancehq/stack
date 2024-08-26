@@ -215,7 +215,7 @@ func TestReadConfig(t *testing.T) {
 						return nil
 					},
 				},
-			})
+			}, false)
 
 			var endpoint string
 			switch testCase.apiVersion {
@@ -505,7 +505,7 @@ func TestListTasks(t *testing.T) {
 						return nil
 					},
 				},
-			})
+			}, false)
 
 			var endpoint string
 			switch testCase.apiVersion {
@@ -765,7 +765,7 @@ func TestReadTask(t *testing.T) {
 						return nil
 					},
 				},
-			})
+			}, false)
 
 			var endpoint string
 			switch testCase.apiVersion {
@@ -973,7 +973,7 @@ func TestUninstall(t *testing.T) {
 						return nil
 					},
 				},
-			})
+			}, false)
 
 			var endpoint string
 			switch testCase.apiVersion {
@@ -1129,7 +1129,7 @@ func TestInstall(t *testing.T) {
 						return nil
 					},
 				},
-			})
+			}, false)
 
 			req := httptest.NewRequest(http.MethodPost, "/connectors/dummy-pay", bytes.NewReader(testCase.body))
 			rec := httptest.NewRecorder()
@@ -1331,7 +1331,7 @@ func TestReset(t *testing.T) {
 						return nil
 					},
 				},
-			})
+			}, false)
 
 			var endpoint string
 			switch testCase.apiVersion {

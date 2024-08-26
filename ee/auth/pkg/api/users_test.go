@@ -6,6 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bundebug"
+
 	"github.com/go-chi/chi/v5"
 
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -15,7 +17,6 @@ import (
 
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
-	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )
@@ -70,10 +71,15 @@ func TestReadUser(t *testing.T) {
 func withDbAndUserRouter(t *testing.T, callback func(router chi.Router, db *bun.DB)) {
 	t.Parallel()
 
-	pgDatabase := pgtesting.NewPostgresDatabase(t)
+	hooks := make([]bun.QueryHook, 0)
+	if testing.Verbose() {
+		hooks = append(hooks, bundebug.NewQueryHook())
+	}
+
+	pgDatabase := srv.NewDatabase()
 	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: pgDatabase.ConnString(),
-	})
+	}, hooks...)
 	require.NoError(t, err)
 	defer db.Close()
 

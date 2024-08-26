@@ -15,7 +15,6 @@ import (
 	webhooks "github.com/formancehq/webhooks/pkg"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"github.com/spf13/viper"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
@@ -38,10 +37,9 @@ var _ = WithModules([]*Module{modules.Ledger, modules.Webhooks}, func() {
 			defer func() {
 				httpServer.Close()
 			}()
-			//TODO: Remove viper usage
 			sqldb := sql.OpenDB(
 				pgdriver.NewConnector(
-					pgdriver.WithDSN(viper.GetString("postgres-uri"))))
+					pgdriver.WithDSN(CurrentTest().GetDatabaseSourceName("webhooks"))))
 			db := bun.NewDB(sqldb, pgdialect.New())
 			defer func() {
 				_ = db.Close()

@@ -3,6 +3,12 @@ package cmd
 import (
 	"context"
 
+	"github.com/formancehq/stack/libs/go-libs/auth"
+	"github.com/formancehq/stack/libs/go-libs/aws/iam"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+	"github.com/formancehq/stack/libs/go-libs/licence"
+	"github.com/formancehq/stack/libs/go-libs/publish"
+
 	"github.com/formancehq/orchestration/internal/api"
 	v1 "github.com/formancehq/orchestration/internal/api/v1"
 	v2 "github.com/formancehq/orchestration/internal/api/v2"
@@ -13,7 +19,6 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/uptrace/bun"
 	"go.uber.org/fx"
 )
@@ -38,6 +43,8 @@ func newServeCommand() *cobra.Command {
 				return err
 			}
 
+			listen, _ := cmd.Flags().GetString(listenFlag)
+
 			options := []fx.Option{
 				commonOptions,
 				healthCheckModule(),
@@ -55,23 +62,41 @@ func newServeCommand() *cobra.Command {
 						},
 					})
 				}),
-				api.NewModule(),
+				api.NewModule(service.IsDebug(cmd)),
 				fx.Invoke(func(lc fx.Lifecycle, router *chi.Mux) {
-					lc.Append(httpserver.NewHook(router, httpserver.WithAddress(viper.GetString(listenFlag))))
+					lc.Append(httpserver.NewHook(router, httpserver.WithAddress(listen)))
 				}),
 			}
-			if viper.GetBool(workerFlag) {
-				options = append(options, workerOptions())
+			worker, _ := cmd.Flags().GetBool(workerFlag)
+			if worker {
+				options = append(options, workerOptions(cmd))
 			}
 
-			return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
+			return service.New(cmd.OutOrStdout(), options...).Run(cmd)
 		},
 	}
 
 	cmd.Flags().Bool(workerFlag, false, "Enable worker mode")
 	cmd.Flags().String(listenFlag, ":8080", "Listening address")
-	cmd.Flags().Float64(temporalMaxParallelActivities, 10, "Maximum number of parallel activities")
-	service.BindFlags(cmd)
+	cmd.Flags().Float64(temporalMaxParallelActivitiesFlag, 10, "Maximum number of parallel activities")
+	cmd.Flags().String(stackURLFlag, "", "Stack url")
+	cmd.Flags().String(stackClientIDFlag, "", "Stack client ID")
+	cmd.Flags().String(stackClientSecretFlag, "", "Stack client secret")
+	cmd.Flags().String(temporalAddressFlag, "", "Temporal server address")
+	cmd.Flags().String(temporalNamespaceFlag, "default", "Temporal namespace")
+	cmd.Flags().String(temporalSSLClientKeyFlag, "", "Temporal client key")
+	cmd.Flags().String(temporalSSLClientCertFlag, "", "Temporal client cert")
+	cmd.Flags().String(temporalTaskQueueFlag, "default", "Temporal task queue name")
+	cmd.Flags().Bool(temporalInitSearchAttributes, false, "Init temporal search attributes")
+	cmd.Flags().StringSlice(topicsFlag, []string{}, "Topics to listen")
+	cmd.Flags().String(stackFlag, "", "Stack")
+
+	service.AddFlags(cmd.Flags())
+	publish.AddFlags(ServiceName, cmd.Flags())
+	auth.AddFlags(cmd.Flags())
+	bunconnect.AddFlags(cmd.Flags())
+	iam.AddFlags(cmd.Flags())
+	licence.AddFlags(cmd.Flags())
 
 	return cmd
 }

@@ -3,16 +3,23 @@ package storage
 import (
 	"testing"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bundebug"
+	"github.com/uptrace/bun"
+
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/stretchr/testify/require"
 )
 
 func TestMigrationsAddTemporalRunIDAsCompoundPrimaryKeyOnStages(t *testing.T) {
-	db := pgtesting.NewPostgresDatabase(t)
+	db := srv.NewDatabase()
 
-	bunDB, err := bunconnect.OpenSQLDB(logging.TestingContext(), db.ConnectionOptions())
+	hooks := make([]bun.QueryHook, 0)
+	if testing.Verbose() {
+		hooks = append(hooks, bundebug.NewQueryHook())
+	}
+
+	bunDB, err := bunconnect.OpenSQLDB(logging.TestingContext(), db.ConnectionOptions(), hooks...)
 	require.NoError(t, err)
 	defer func() {
 		require.NoError(t, bunDB.Close())

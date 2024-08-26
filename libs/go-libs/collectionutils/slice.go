@@ -97,6 +97,10 @@ func (s Set[T]) ToSlice() []T {
 	return ret
 }
 
+func (s Set[T]) Remove(key T) {
+	delete(s, key)
+}
+
 func NewSet[T comparable]() Set[T] {
 	return make(Set[T], 0)
 }

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/formancehq/stack/libs/go-libs/aws/iam"
+
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 	"github.com/formancehq/stack/libs/go-libs/licence"
 
@@ -18,30 +20,33 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"go.uber.org/fx"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
 
-func stackClientModule() fx.Option {
+func stackClientModule(cmd *cobra.Command) fx.Option {
 	return fx.Options(
 		fx.Provide(func() *sdk.Formance {
+			stackClientID, _ := cmd.Flags().GetString(stackClientIDFlag)
+			stackClientSecret, _ := cmd.Flags().GetString(stackClientSecretFlag)
+			stackURL, _ := cmd.Flags().GetString(stackURLFlag)
+
 			oauthConfig := clientcredentials.Config{
-				ClientID:     viper.GetString(stackClientIDFlag),
-				ClientSecret: viper.GetString(stackClientSecretFlag),
-				TokenURL:     fmt.Sprintf("%s/api/auth/oauth/token", viper.GetString(stackURLFlag)),
+				ClientID:     stackClientID,
+				ClientSecret: stackClientSecret,
+				TokenURL:     fmt.Sprintf("%s/api/auth/oauth/token", stackURL),
 				Scopes:       []string{"openid", "ledger:read", "ledger:write", "payments:read", "payments:write"},
 			}
 			underlyingHTTPClient := &http.Client{
-				Transport: otlp.NewRoundTripper(http.DefaultTransport, viper.GetBool(service.DebugFlag)),
+				Transport: otlp.NewRoundTripper(http.DefaultTransport, service.IsDebug(cmd)),
 			}
 			return sdk.New(
 				sdk.WithClient(
 					oauthConfig.Client(context.WithValue(context.Background(),
 						oauth2.HTTPClient, underlyingHTTPClient)),
 				),
-				sdk.WithServerURL(viper.GetString(stackURLFlag)),
+				sdk.WithServerURL(stackURL),
 			)
 		}),
 	)
@@ -53,6 +58,17 @@ func newServeCommand(version string) *cobra.Command {
 		RunE: runServer(version),
 	}
 	cmd.Flags().String(listenFlag, ":8080", "Listening address")
+	cmd.Flags().String(stackURLFlag, "", "Stack url")
+	cmd.Flags().String(stackClientIDFlag, "", "Stack client ID")
+	cmd.Flags().String(stackClientSecretFlag, "", "Stack client secret")
+
+	otlpmetrics.AddFlags(cmd.Flags())
+	otlptraces.AddFlags(cmd.Flags())
+	auth.AddFlags(cmd.Flags())
+	bunconnect.AddFlags(cmd.Flags())
+	iam.AddFlags(cmd.Flags())
+	service.AddFlags(cmd.Flags())
+	licence.AddFlags(cmd.Flags())
 
 	return cmd
 }
@@ -68,28 +84,30 @@ func runServer(version string) func(cmd *cobra.Command, args []string) error {
 		options = append(options, databaseOptions)
 
 		options = append(options,
-			otlptraces.CLITracesModule(),
-			otlpmetrics.CLIMetricsModule(),
-			auth.CLIAuthModule(),
+			otlptraces.FXModuleFromFlags(cmd),
+			otlpmetrics.FXModuleFromFlags(cmd),
+			auth.FXModuleFromFlags(cmd),
 		)
 
+		listen, _ := cmd.Flags().GetString(listenFlag)
 		options = append(options,
-			stackClientModule(),
+			stackClientModule(cmd),
 			api.HTTPModule(sharedapi.ServiceInfo{
 				Version: version,
-			}, viper.GetString(listenFlag)),
-			licence.CLIModule(ServiceName),
+				Debug:   service.IsDebug(cmd),
+			}, listen),
+			licence.FXModuleFromFlags(cmd, ServiceName),
 		)
 
-		return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
+		return service.New(cmd.OutOrStdout(), options...).Run(cmd)
 	}
 }
 
 func prepareDatabaseOptions(cmd *cobra.Command) (fx.Option, error) {
-	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd.Context())
+	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd)
 	if err != nil {
 		return nil, err
 	}
 
-	return storage.Module(*connectionOptions), nil
+	return storage.Module(*connectionOptions, service.IsDebug(cmd)), nil
 }

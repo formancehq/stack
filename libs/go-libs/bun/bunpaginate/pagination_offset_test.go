@@ -4,21 +4,28 @@ import (
 	"context"
 	"testing"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bundebug"
+	"github.com/uptrace/bun"
+
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 	bunpaginate2 "github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 
-	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/stretchr/testify/require"
 )
 
 func TestOffsetPagination(t *testing.T) {
 	t.Parallel()
 
-	pgServer := pgtesting.NewPostgresDatabase(t)
+	hooks := make([]bun.QueryHook, 0)
+	if testing.Verbose() {
+		hooks = append(hooks, bundebug.NewQueryHook())
+	}
+
+	database := srv.NewDatabase()
 	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
-		DatabaseSourceName: pgServer.ConnString(),
-	})
+		DatabaseSourceName: database.ConnString(),
+	}, hooks...)
 	require.NoError(t, err)
 	t.Cleanup(func() {
 		_ = db.Close()

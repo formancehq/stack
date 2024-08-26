@@ -3,9 +3,9 @@ package cmd
 import (
 	"github.com/formancehq/search/pkg/searchengine"
 	"github.com/formancehq/stack/libs/go-libs/aws/iam"
+	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func NewInitMapping() *cobra.Command {
@@ -13,22 +13,17 @@ func NewInitMapping() *cobra.Command {
 		Use:   "init-mapping",
 		Short: "Init ElasticSearch mapping",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			openSearchServiceHost := viper.GetString(openSearchServiceFlag)
-			if openSearchServiceHost == "" {
-				exitWithError(cmd.Context(), "missing open search service host")
-			}
-
-			config, err := newConfig(openSearchServiceHost)
+			config, err := newConfig(cmd)
 			if err != nil {
 				return err
 			}
 
-			client, err := newOpensearchClient(config)
+			client, err := newOpensearchClient(cmd, config)
 			if err != nil {
 				return err
 			}
 
-			esIndex := viper.GetString(esIndicesFlag)
+			esIndex, _ := cmd.Flags().GetString(esIndicesFlag)
 			if esIndex == "" {
 				return errors.New("es index not defined")
 			}
@@ -37,6 +32,15 @@ func NewInitMapping() *cobra.Command {
 		},
 	}
 	cmd.Flags().Bool(awsIAMEnabledFlag, false, "Enable AWS IAM")
-	iam.InitFlags(cmd.Flags())
+	cmd.Flags().String(esIndicesFlag, "", "ES index to look")
+	cmd.Flags().String(openSearchServiceFlag, "", "Open search service hostname")
+	cmd.Flags().String(openSearchSchemeFlag, "https", "OpenSearch scheme")
+	cmd.Flags().String(openSearchUsernameFlag, "", "OpenSearch username")
+	cmd.Flags().String(openSearchPasswordFlag, "", "OpenSearch password")
+	cmd.Flags().String(stackFlag, "", "Stack id")
+
+	iam.AddFlags(cmd.Flags())
+	service.AddFlags(cmd.Flags())
+
 	return cmd
 }

@@ -8,11 +8,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/formancehq/stack/libs/go-libs/service"
-
 	"github.com/formancehq/stack/libs/go-libs/logging"
 
-	"github.com/formancehq/stack/libs/go-libs/bun/bundebug"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/extra/bunotel"
@@ -59,9 +56,6 @@ func OpenSQLDB(ctx context.Context, options ConnectionOptions, hooks ...bun.Quer
 	}
 
 	db := bun.NewDB(sqldb, pgdialect.New(), bun.WithDiscardUnknownColumns())
-	if service.IsDebug(ctx) {
-		db.AddQueryHook(bundebug.NewQueryHook())
-	}
 	db.AddQueryHook(bunotel.NewQueryHook())
 	for _, hook := range hooks {
 		db.AddQueryHook(hook)

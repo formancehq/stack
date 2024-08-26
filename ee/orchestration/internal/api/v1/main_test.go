@@ -4,8 +4,12 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"os"
 	"testing"
+
+	"github.com/formancehq/stack/libs/go-libs/testing/docker"
+	"github.com/formancehq/stack/libs/go-libs/testing/utils"
+
+	"github.com/formancehq/stack/libs/go-libs/bun/bundebug"
 
 	"go.temporal.io/sdk/worker"
 
@@ -25,7 +29,7 @@ import (
 	"github.com/formancehq/orchestration/internal/storage"
 	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/formancehq/stack/libs/go-libs/auth"
-	"github.com/formancehq/stack/libs/go-libs/pgtesting"
+	"github.com/formancehq/stack/libs/go-libs/testing/platform/pgtesting"
 	flag "github.com/spf13/pflag"
 	"github.com/stretchr/testify/require"
 	"github.com/uptrace/bun"
@@ -34,10 +38,15 @@ import (
 func test(t *testing.T, fn func(router *chi.Mux, backend api.Backend, db *bun.DB)) {
 	t.Parallel()
 
-	database := pgtesting.NewPostgresDatabase(t)
+	hooks := make([]bun.QueryHook, 0)
+	if testing.Verbose() {
+		hooks = append(hooks, bundebug.NewQueryHook())
+	}
+
+	database := srv.NewDatabase()
 	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: database.ConnString(),
-	})
+	}, hooks...)
 	require.NoError(t, err)
 	t.Cleanup(func() {
 		_ = db.Close()
@@ -66,33 +75,31 @@ func test(t *testing.T, fn func(router *chi.Mux, backend api.Backend, db *bun.DB
 	expressionEvaluator := triggers.NewExpressionEvaluator(http.DefaultClient)
 	triggersManager := triggers.NewManager(db, expressionEvaluator)
 	backend := api.NewDefaultBackend(triggersManager, workflowManager)
-	router := newRouter(backend, auth.NewNoAuth())
+	router := newRouter(backend, auth.NewNoAuth(), testing.Verbose())
 	fn(router, backend, db)
 }
 
 var (
+	srv       *pgtesting.PostgresServer
 	devServer *testsuite.DevServer
 )
 
 func TestMain(m *testing.M) {
 	flag.Parse()
 
-	if err := pgtesting.CreatePostgresServer(); err != nil {
-		log.Fatal(err)
-	}
+	utils.WithTestMain(func(t *utils.TestingTForMain) int {
+		srv = pgtesting.CreatePostgresServer(t, docker.NewPool(t, logging.Testing()))
 
-	var err error
-	devServer, err = testsuite.StartDevServer(logging.TestingContext(), testsuite.DevServerOptions{})
-	if err != nil {
-		log.Fatal(err)
-	}
+		var err error
+		devServer, err = testsuite.StartDevServer(logging.TestingContext(), testsuite.DevServerOptions{})
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	code := m.Run()
-	if err := devServer.Stop(); err != nil {
-		log.Println("unable to stop temporal server", err)
-	}
-	if err := pgtesting.DestroyPostgresServer(); err != nil {
-		log.Println("unable to stop postgres server", err)
-	}
-	os.Exit(code)
+		t.Cleanup(func() {
+			require.NoError(t, devServer.Stop())
+		})
+
+		return m.Run()
+	})
 }

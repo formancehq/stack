@@ -17,7 +17,7 @@ type routing struct {
 }
 
 type Test struct {
-	env             *env
+	env             *Env
 	id              string
 	loadedModules   collectionutils.Set[string]
 	servicesToRoute map[string][]routing

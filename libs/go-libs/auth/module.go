@@ -17,14 +17,14 @@ func Module(cfg ModuleConfig) fx.Option {
 	options := make([]fx.Option, 0)
 
 	options = append(options,
-		fx.Provide(func() Auth {
+		fx.Provide(func() Authenticator {
 			return NewNoAuth()
 		}),
 	)
 
 	if cfg.Enabled {
 		options = append(options,
-			fx.Decorate(func(logger logging.Logger) Auth {
+			fx.Decorate(func(logger logging.Logger) Authenticator {
 				return newJWTAuth(
 					logger,
 					cfg.ReadKeySetMaxRetries,

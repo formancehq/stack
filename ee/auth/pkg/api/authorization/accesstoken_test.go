@@ -9,6 +9,9 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bundebug"
+	"github.com/uptrace/bun"
+
 	"github.com/formancehq/stack/libs/go-libs/logging"
 
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
@@ -17,7 +20,6 @@ import (
 	"github.com/formancehq/auth/pkg/delegatedauth"
 	authoidc "github.com/formancehq/auth/pkg/oidc"
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
-	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/oauth2-proxy/mockoidc"
 	"github.com/stretchr/testify/require"
 	"github.com/zitadel/oidc/v2/pkg/client/rp"
@@ -41,11 +43,16 @@ func TestVerifyAccessToken(t *testing.T) {
 	// Compute server url, it will be the "issuer" of our oidc provider
 	serverURL := fmt.Sprintf("http://%s", l.Addr().String())
 
+	hooks := make([]bun.QueryHook, 0)
+	if testing.Verbose() {
+		hooks = append(hooks, bundebug.NewQueryHook())
+	}
+
 	// Construct our storage
-	postgresDB := pgtesting.NewPostgresDatabase(t)
+	postgresDB := srv.NewDatabase()
 	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: postgresDB.ConnString(),
-	})
+	}, hooks...)
 	require.NoError(t, err)
 	defer db.Close()
 

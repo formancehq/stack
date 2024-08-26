@@ -15,6 +15,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/bun/bundebug"
+	"github.com/uptrace/bun"
+
 	"github.com/go-chi/chi/v5"
 
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -25,7 +28,6 @@ import (
 	"github.com/formancehq/auth/pkg/delegatedauth"
 	"github.com/formancehq/auth/pkg/oidc"
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
-	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/golang-jwt/jwt"
 	"github.com/oauth2-proxy/mockoidc"
 	"github.com/stretchr/testify/require"
@@ -79,10 +81,15 @@ func withServer(t *testing.T, fn func(m *mockoidc.MockOIDC, storage *sqlstorage.
 		fmt.Sprintf("%s/authorize/callback", serverUrl), []string{"openid", "email"}, rp.WithHTTPClient(cl))
 	require.NoError(t, err)
 
-	postgresDB := pgtesting.NewPostgresDatabase(t)
+	hooks := make([]bun.QueryHook, 0)
+	if testing.Verbose() {
+		hooks = append(hooks, bundebug.NewQueryHook())
+	}
+
+	postgresDB := srv.NewDatabase()
 	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: postgresDB.ConnString(),
-	})
+	}, hooks...)
 	require.NoError(t, err)
 	defer db.Close()
 

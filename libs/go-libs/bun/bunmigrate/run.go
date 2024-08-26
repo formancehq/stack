@@ -9,12 +9,9 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
-	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/uptrace/bun"
-	"github.com/uptrace/bun/extra/bundebug"
 	"github.com/xo/dburl"
 )
 
@@ -120,15 +117,12 @@ func run(ctx context.Context, output io.Writer, args []string, connectionOptions
 	defer func() {
 		_ = db.Close()
 	}()
-	if viper.GetBool(service.DebugFlag) {
-		db.AddQueryHook(bundebug.NewQueryHook(bundebug.WithWriter(output)))
-	}
 
 	return errors.Wrap(executor(args, db), "executing migration")
 }
 
 func Run(cmd *cobra.Command, args []string, executor Executor) error {
-	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd.Context())
+	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd)
 	if err != nil {
 		return errors.Wrap(err, "evaluating connection options")
 	}

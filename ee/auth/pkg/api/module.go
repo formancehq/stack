@@ -15,9 +15,9 @@ import (
 	"go.uber.org/fx"
 )
 
-func CreateRootRouter(o op.OpenIDProvider, issuer string) chi.Router {
+func CreateRootRouter(o op.OpenIDProvider, issuer string, debug bool) chi.Router {
 	rootRouter := chi.NewRouter()
-	rootRouter.Use(service.OTLPMiddleware("auth"))
+	rootRouter.Use(service.OTLPMiddleware("auth", debug))
 	rootRouter.Use(func(handler http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
@@ -39,12 +39,12 @@ func addInfoRoute(router chi.Router, serviceInfo api.ServiceInfo) {
 	router.Get("/_info", api.InfoHandler(serviceInfo))
 }
 
-func Module(addr, issuer string, serviceInfo api.ServiceInfo) fx.Option {
+func Module(addr, issuer string, serviceInfo api.ServiceInfo, debug bool) fx.Option {
 	return fx.Options(
 		health.Module(),
 		fx.Supply(serviceInfo),
 		fx.Provide(func(o op.OpenIDProvider) chi.Router {
-			return CreateRootRouter(o, issuer)
+			return CreateRootRouter(o, issuer, debug)
 		}),
 		fx.Invoke(
 			addInfoRoute,

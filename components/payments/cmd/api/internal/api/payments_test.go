@@ -448,7 +448,9 @@ func TestCreatePayments(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{
+				Debug: testing.Verbose(),
+			}, auth.NewNoAuth(), false)
 
 			var body []byte
 			if testCase.req != nil {
@@ -731,7 +733,9 @@ func TestPayments(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{
+				Debug: testing.Verbose(),
+			}, auth.NewNoAuth(), false)
 
 			req := httptest.NewRequest(http.MethodGet, "/payments", nil)
 			rec := httptest.NewRecorder()
@@ -943,7 +947,9 @@ func TestGetPayment(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{
+				Debug: testing.Verbose(),
+			}, auth.NewNoAuth(), false)
 
 			req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/payments/%s", testCase.paymentID), nil)
 			rec := httptest.NewRecorder()

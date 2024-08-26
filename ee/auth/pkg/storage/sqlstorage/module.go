@@ -16,9 +16,9 @@ import (
 	"go.uber.org/fx"
 )
 
-func Module(connectionOptions bunconnect.ConnectionOptions, key *rsa.PrivateKey, staticClients ...auth.StaticClient) fx.Option {
+func Module(connectionOptions bunconnect.ConnectionOptions, key *rsa.PrivateKey, debug bool, staticClients ...auth.StaticClient) fx.Option {
 	return fx.Options(
-		bunconnect.Module(connectionOptions),
+		bunconnect.Module(connectionOptions, debug),
 		fx.Invoke(func(lc fx.Lifecycle, db *bun.DB) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {

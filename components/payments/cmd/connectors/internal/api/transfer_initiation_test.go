@@ -380,7 +380,7 @@ func TestCreateTransferInitiations(t *testing.T) {
 					Return(nil, testCase.serviceError)
 			}
 
-			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
+			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil, false)
 
 			var body []byte
 			if testCase.req != nil {
@@ -525,7 +525,7 @@ func TestUpdateTransferInitiationStatus(t *testing.T) {
 					Return(testCase.serviceError)
 			}
 
-			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
+			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil, false)
 
 			var body []byte
 			if testCase.req != nil {
@@ -638,7 +638,7 @@ func TestRetryTransferInitiation(t *testing.T) {
 					Return(testCase.serviceError)
 			}
 
-			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
+			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil, false)
 
 			req := httptest.NewRequest(http.MethodPost, fmt.Sprintf("/transfer-initiations/%s/retry", testCase.transferID), nil)
 			rec := httptest.NewRecorder()
@@ -744,7 +744,7 @@ func TestDeleteTransferInitiation(t *testing.T) {
 					Return(testCase.serviceError)
 			}
 
-			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil)
+			router := httpRouter(logging.Testing(), backend, sharedapi.ServiceInfo{}, auth.NewNoAuth(), nil, false)
 
 			req := httptest.NewRequest(http.MethodDelete, fmt.Sprintf("/transfer-initiations/%s", testCase.transferID), nil)
 			rec := httptest.NewRecorder()

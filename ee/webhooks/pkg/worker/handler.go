@@ -13,9 +13,9 @@ const (
 	PathHealthCheck = "/_healthcheck"
 )
 
-func NewWorkerHandler() http.Handler {
+func NewWorkerHandler(debug bool) http.Handler {
 	h := chi.NewRouter()
-	h.Use(service.OTLPMiddleware("webhooks"))
+	h.Use(service.OTLPMiddleware("webhooks", debug))
 	h.Get(PathHealthCheck, healthCheckHandle)
 
 	return h

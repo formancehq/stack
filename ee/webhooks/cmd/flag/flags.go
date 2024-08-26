@@ -1,12 +1,10 @@
 package flag
 
 import (
-	"strings"
 	"time"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
 )
 
 const (
@@ -48,13 +46,4 @@ func Init(flagSet *pflag.FlagSet) {
 	flagSet.Duration(MinBackoffDelay, time.Minute, "minimum backoff delay")
 	flagSet.Duration(MaxBackoffDelay, time.Hour, "maximum backoff delay")
 	flagSet.Bool(AutoMigrate, false, "auto migrate database")
-}
-
-func LoadEnv(v *viper.Viper) {
-	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
-	v.AutomaticEnv()
-}
-
-func init() {
-	LoadEnv(viper.GetViper())
 }
