@@ -89,6 +89,18 @@ func (store *Store) logsQueryBuilder(q PaginatedQueryOptions[any]) func(*bun.Sel
 }
 
 func (store *Store) InsertLogs(ctx context.Context, activeLogs ...*ledger.ChainedLog) error {
+
+	for _, activeLog := range activeLogs {
+		if activeLog.Type != ledger.NewTransactionLogType {
+			continue
+		}
+		if !activeLog.Data.(ledger.NewTransactionLogPayload).Transaction.Timestamp.IsZero() {
+			continue
+		}
+		activeLog.Data.(ledger.NewTransactionLogPayload).Transaction.Timestamp = time.Now()
+	}
+	//todo: need to hash the logs after any modification
+
 	_, err := store.bucket.db.
 		NewInsert().
 		Model(pointer.For(collectionutils.Map(activeLogs, func(from *ledger.ChainedLog) Logs {

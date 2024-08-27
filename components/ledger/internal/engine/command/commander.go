@@ -76,9 +76,9 @@ func (commander *Commander) exec(ctx context.Context, parameters Parameters, scr
 		return nil, NewErrNoScript()
 	}
 
-	if script.Timestamp.IsZero() {
-		script.Timestamp = time.Now()
-	}
+	//if script.Timestamp.IsZero() {
+	//	script.Timestamp = time.Now()
+	//}
 
 	execContext := newExecutionContext(commander, parameters)
 	return execContext.run(ctx, func(executionContext *executionContext) (*ledger.ChainedLog, error) {
