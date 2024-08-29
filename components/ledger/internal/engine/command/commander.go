@@ -126,16 +126,9 @@ func (commander *Commander) exec(ctx context.Context, parameters Parameters, scr
 			return nil, NewErrCompilationFailed(err)
 		}
 
-		involvedAccounts, involvedSources, err := func() ([]string, []string, error) {
-			involvedAccounts, involvedSources, err := m.ResolveResources(ctx, commander.store)
-			if err != nil {
-				return nil, nil, NewErrCompilationFailed(err)
-			}
-
-			return involvedAccounts, involvedSources, nil
-		}()
+		involvedAccounts, involvedSources, err := m.ResolveResources(ctx, commander.store)
 		if err != nil {
-			return nil, err
+			return nil, NewErrCompilationFailed(err)
 		}
 
 		worldFilter := collectionutils.FilterNot(collectionutils.FilterEq("world"))
