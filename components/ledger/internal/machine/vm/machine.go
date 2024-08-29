@@ -612,7 +612,7 @@ func (m *Machine) ResolveResources(ctx context.Context, store Store) ([]string, 
 	for _, accountAddress := range involvedAccountsMap {
 		involvedAccounts = append(involvedAccounts, accountAddress)
 	}
-	for _, machineAddress := range m.Program.Sources {
+	for _, machineAddress := range m.Program.BoundedSources {
 		involvedSources = append(involvedSources, involvedAccountsMap[machineAddress])
 	}
 

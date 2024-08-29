@@ -924,9 +924,18 @@ func TestNeededBalances(t *testing.T) {
 	}
 	send [GEM 15] (
 		source = {
+			// normal accounts are tracked
 			$a
 			@b
-			@world
+
+			// we don't want to track world, as it is an unbounded account
+			max [GEM 1] from @world
+
+			// we want to lock bounded overdrafts account
+			@bounded allowing overdraft up to [GEM 1]
+
+			// we don't want to lock unbounded overdrafts account
+			@unb allowing unbounded overdraft
 		}
 		destination = @c
 	)`)
@@ -943,8 +952,9 @@ func TestNeededBalances(t *testing.T) {
 	if err != nil {
 		t.Fatalf("did not expect error on SetVars, got: %v", err)
 	}
-	_, _, err = m.ResolveResources(context.Background(), EmptyStore)
+	_, involvedSources, err := m.ResolveResources(context.Background(), EmptyStore)
 	require.NoError(t, err)
+	require.Equal(t, []string{"a", "b", "bounded"}, involvedSources)
 
 	err = m.ResolveBalances(context.Background(), EmptyStore)
 	require.NoError(t, err)

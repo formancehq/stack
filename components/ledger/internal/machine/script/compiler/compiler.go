@@ -26,6 +26,11 @@ type parseVisitor struct {
 	varIdx map[string]machine.Address
 	// needBalances store for each account, the set of assets needed
 	neededBalances map[machine.Address]map[machine.Address]struct{}
+
+	// like `sources`, but for accounts that aren't unbounded
+	// e.g. it doesn't include @world or accounts that appear within a
+	// `@acc allowing unbounded ovedraft` clause
+	boundedSources map[machine.Address]struct{}
 }
 
 // Allocates constants if it hasn't already been,
@@ -680,6 +685,7 @@ func CompileFull(input string) CompileArtifacts {
 		varIdx:         make(map[string]machine.Address),
 		neededBalances: make(map[machine.Address]map[machine.Address]struct{}),
 		sources:        map[machine.Address]struct{}{},
+		boundedSources: map[machine.Address]struct{}{},
 	}
 
 	err := visitor.VisitScript(tree)
@@ -694,11 +700,18 @@ func CompileFull(input string) CompileArtifacts {
 	}
 	sort.Stable(sources)
 
+	boundedSources := make(machine.Addresses, 0)
+	for address := range visitor.boundedSources {
+		boundedSources = append(boundedSources, address)
+	}
+	sort.Stable(boundedSources)
+
 	artifacts.Program = &program.Program{
 		Instructions:   visitor.instructions,
 		Resources:      visitor.resources,
 		NeededBalances: visitor.neededBalances,
 		Sources:        sources,
+		BoundedSources: boundedSources,
 	}
 
 	return artifacts

@@ -156,6 +156,29 @@ func (p *parseVisitor) VisitSource(c parser.ISourceContext, pushAsset func(), is
 				fallback = &f
 			}
 		}
+
+		isUnboundedOverdraft := func() bool {
+			if p.isWorld(*accAddr) {
+				return true
+			}
+
+			if overdraft == nil {
+				return false
+			}
+
+			switch overdraft.(type) {
+			case *parser.SrcAccountOverdraftUnboundedContext:
+				return true
+			case *parser.SrcAccountOverdraftSpecificContext:
+				return false
+			default:
+				panic("[unreachable]")
+			}
+		}()
+		if !isUnboundedOverdraft {
+			p.boundedSources[*accAddr] = struct{}{}
+		}
+
 		neededAccounts[*accAddr] = struct{}{}
 		emptiedAccounts[*accAddr] = struct{}{}
 

@@ -13,6 +13,7 @@ type Program struct {
 	Instructions   []byte
 	Resources      []Resource
 	Sources        []machine.Address
+	BoundedSources []machine.Address
 	NeededBalances map[machine.Address]map[machine.Address]struct{}
 }
 
