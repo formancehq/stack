@@ -20,22 +20,33 @@ type NatsT interface {
 
 type NatsServer struct {
 	URL string
+
+	*nats.Conn
 }
 
 func (s *NatsServer) ClientURL() string {
 	return s.URL
 }
 
-func (s *NatsServer) Client(t require.TestingT) *nats.Conn {
-	conn, err := nats.Connect(s.URL)
+func (s *NatsServer) initClient(t NatsT) {
+	if s.Conn != nil {
+		return
+	}
+	var err error
+	s.Conn, err = nats.Connect(s.URL)
 	require.NoError(t, err)
 
-	return conn
+	t.Cleanup(s.Conn.Close)
 }
 
-func (s *NatsServer) WithJetStream(t require.TestingT, fn func(js nats.JetStreamContext)) {
+func (s *NatsServer) Client(t NatsT) *nats.Conn {
+	s.initClient(t)
+
+	return s.Conn
+}
+
+func (s *NatsServer) WithJetStream(t NatsT, fn func(js nats.JetStreamContext)) {
 	client := s.Client(t)
-	defer client.Close()
 
 	js, err := client.JetStream()
 	require.NoError(t, err)
@@ -43,7 +54,7 @@ func (s *NatsServer) WithJetStream(t require.TestingT, fn func(js nats.JetStream
 	fn(js)
 }
 
-func (s *NatsServer) CreateConsumer(t require.TestingT, stream string, config *nats.ConsumerConfig) (consumer *nats.ConsumerInfo) {
+func (s *NatsServer) CreateConsumer(t NatsT, stream string, config *nats.ConsumerConfig) (consumer *nats.ConsumerInfo) {
 	s.WithJetStream(t, func(js nats.JetStreamContext) {
 		var err error
 		consumer, err = js.AddConsumer(stream, config)
@@ -53,7 +64,7 @@ func (s *NatsServer) CreateConsumer(t require.TestingT, stream string, config *n
 	return consumer
 }
 
-func (s *NatsServer) CreateStream(t require.TestingT, name string) (stream *nats.StreamInfo) {
+func (s *NatsServer) CreateStream(t NatsT, name string) (stream *nats.StreamInfo) {
 	s.WithJetStream(t, func(js nats.JetStreamContext) {
 		var err error
 		stream, err = js.AddStream(&nats.StreamConfig{
@@ -67,14 +78,14 @@ func (s *NatsServer) CreateStream(t require.TestingT, name string) (stream *nats
 	return stream
 }
 
-func (s *NatsServer) Publish(t require.TestingT, stack, module string, bytes []byte) {
+func (s *NatsServer) Publish(t NatsT, stack, module string, bytes []byte) {
 	s.WithJetStream(t, func(js nats.JetStreamContext) {
 		_, err := js.Publish(fmt.Sprintf("%s.%s", stack, module), bytes)
 		require.NoError(t, err)
 	})
 }
 
-func (s *NatsServer) ConsumerInfo(t require.TestingT, stream, consumerName string) (ret *nats.ConsumerInfo) {
+func (s *NatsServer) ConsumerInfo(t NatsT, stream, consumerName string) (ret *nats.ConsumerInfo) {
 	s.WithJetStream(t, func(js nats.JetStreamContext) {
 		var err error
 		ret, err = js.ConsumerInfo(stream, consumerName)
