@@ -960,6 +960,32 @@ func TestNeededBalances(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestNeededBalances2(t *testing.T) {
+	p, err := compiler.Compile(`
+	send [GEM 15] (
+		source = {		
+			// we want to track a balance even if it appears later on
+			// as an unbounded overdraft
+			max [GEM 1] from @a
+			@a allowing unbounded overdraft
+		}
+		destination = @c
+	)`)
+
+	if err != nil {
+		t.Fatalf("did not expect error on Compile, got: %v", err)
+	}
+
+	m := NewMachine(*p)
+	if err != nil {
+		t.Fatalf("did not expect error on SetVars, got: %v", err)
+	}
+	_, involvedSources, err := m.ResolveResources(context.Background(), EmptyStore)
+	require.NoError(t, err)
+	require.Equal(t, []string{"a"}, involvedSources)
+
+}
+
 func TestSetTxMeta(t *testing.T) {
 	p, err := compiler.Compile(`
 	set_tx_meta("aaa", @platform)
