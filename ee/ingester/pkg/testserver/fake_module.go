@@ -14,6 +14,10 @@ import (
 type Publisher interface {
 	Publish(t require.TestingT, stack string, module string, data []byte)
 }
+type PublisherFn func(t require.TestingT, stack string, module string, data []byte)
+func (fn PublisherFn) Publish(t require.TestingT, stack string, module string, data []byte) {
+	fn(t, stack, module, data)
+}
 
 type FakeModule struct {
 	mu        sync.Mutex

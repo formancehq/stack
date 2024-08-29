@@ -67,10 +67,7 @@ func TestPipelineReady(t *testing.T) {
 	pipelineConfiguration := ingester.NewPipelineConfiguration("testing", "testing")
 	pipeline := ingester.NewPipeline(pipelineConfiguration, ingester.NewReadyState())
 
-	p, _ := runPipeline(t, ctx, pipeline, module, connector)
-
-	stateListener, cancel := p.GetActiveState().Listen()
-	t.Cleanup(cancel)
+	_, stateListener := runPipeline(t, ctx, pipeline, module, connector)
 
 	ShouldReceive(t, ingester.NewReadyState(), stateListener)
 
@@ -99,13 +96,9 @@ func TestPipelineRetryFailingState(t *testing.T) {
 
 	pipelineConfiguration := ingester.NewPipelineConfiguration("testing", "testing")
 	pipeline := ingester.NewPipeline(pipelineConfiguration, ingester.NewReadyState())
-	p, _ := runPipeline(t, ctx, pipeline, module, connector)
+	_, stateListener := runPipeline(t, ctx, pipeline, module, connector)
 
-	// Eventually, the state should be completely "reconciled"
-	subscription, cancel := p.GetActiveState().Listen()
-	t.Cleanup(cancel)
-
-	ShouldReceive(t, ingester.NewReadyState(), subscription)
+	ShouldReceive(t, ingester.NewReadyState(), stateListener)
 }
 
 func TestPipelinePause(t *testing.T) {
@@ -120,12 +113,9 @@ func TestPipelinePause(t *testing.T) {
 	pipelineConfiguration := ingester.NewPipelineConfiguration("testing", "testing")
 	pipeline := ingester.NewPipeline(pipelineConfiguration, state)
 
-	p, _ := runPipeline(t, ctx, pipeline, module, connector)
+	_, stateListener := runPipeline(t, ctx, pipeline, module, connector)
 
-	subscription, cancel := p.GetActiveState().Listen()
-	t.Cleanup(cancel)
-
-	ShouldReceive(t, state, subscription)
+	ShouldReceive(t, state, stateListener)
 }
 
 func TestPipelineInit(t *testing.T) {

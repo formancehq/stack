@@ -242,7 +242,7 @@ components:
               - data
                 
     CreateConnectorResponse:
-      description: Created ipeline
+      description: Created pipeline
       content:
         application/json:
           schema:

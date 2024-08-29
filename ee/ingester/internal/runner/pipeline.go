@@ -191,6 +191,15 @@ func (p *PipelineHandler) Run(ctx context.Context) {
 func (p *PipelineHandler) handleFlow(ctx context.Context, ready chan struct{}) error {
 	var messages <-chan *message.Message
 
+	defer func() {
+		if messages != nil {
+			// drain pending messages
+			for m := range messages {
+				m.Nack()
+			}
+		}
+	}()
+
 	subscriptionContext, cancelSubscriptionContext := context.WithCancel(context.Background())
 	defer func() {
 		p.logger.Infof("cancel subscription")

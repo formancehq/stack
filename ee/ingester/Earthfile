@@ -108,6 +108,7 @@ lint:
     SAVE ARTIFACT main.go AS LOCAL main.go
 
 pre-commit:
+    BUILD +openapi-doc
     WAIT
         BUILD --pass-args +generate-sdk
     END
@@ -141,3 +142,10 @@ generate-sdk:
     RUN rm -rf ./client/test
     RUN ls -lisah
     SAVE ARTIFACT ./client AS LOCAL pkg/client
+
+openapi-doc:
+    FROM node:22-alpine
+    RUN npm install -g widdershins
+    COPY api/openapi.yaml .
+    RUN widdershins openapi.yaml --search false --language_tabs 'http:HTTP' -o openapi.md --omitHeader --summary --code --httpsnippet
+    SAVE ARTIFACT openapi.md AS LOCAL api/openapi.md

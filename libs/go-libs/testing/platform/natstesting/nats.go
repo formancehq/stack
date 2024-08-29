@@ -28,19 +28,18 @@ func (s *NatsServer) ClientURL() string {
 	return s.URL
 }
 
-func (s *NatsServer) initClient(t NatsT) {
+func (s *NatsServer) initClient() error {
 	if s.Conn != nil {
-		return
+		return nil
 	}
 	var err error
 	s.Conn, err = nats.Connect(s.URL)
-	require.NoError(t, err)
 
-	t.Cleanup(s.Conn.Close)
+	return err
 }
 
 func (s *NatsServer) Client(t NatsT) *nats.Conn {
-	s.initClient(t)
+	require.NoError(t, s.initClient())
 
 	return s.Conn
 }

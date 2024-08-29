@@ -13,6 +13,7 @@ import (
 	. "github.com/formancehq/stack/libs/go-libs/testing/utils"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"github.com/stretchr/testify/require"
 )
 
 func runTest(stackName *Deferred[string], natsServer *Deferred[*NatsServer], connectorName string, connectorAdapter *Deferred[Connector]) {
@@ -26,7 +27,9 @@ func runTest(stackName *Deferred[string], natsServer *Deferred[*NatsServer], con
 	)
 	BeforeEach(func() {
 		By("creating a new fake module to allow the pull of logs")
-		service = NewFakeModule(GinkgoT(), stackName.GetValue(), module, natsServer.GetValue())
+		service = NewFakeModule(GinkgoT(), stackName.GetValue(), module, PublisherFn(func(_ require.TestingT, stack string, module string, data []byte) {
+			natsServer.GetValue().Publish(GinkgoT(), stack, module, data)
+		}))
 	})
 
 	testServer := UseNewTestServer(func() Configuration {
