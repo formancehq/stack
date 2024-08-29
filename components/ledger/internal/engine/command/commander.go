@@ -141,7 +141,7 @@ func (commander *Commander) exec(ctx context.Context, parameters Parameters, scr
 		worldFilter := collectionutils.FilterNot(collectionutils.FilterEq("world"))
 		lockAccounts := Accounts{
 			Read:  collectionutils.Filter(involvedAccounts, worldFilter),
-			Write: collectionutils.Filter(involvedSources, worldFilter),
+			Write: involvedSources,
 		}
 
 		unlock, err := func() (Unlock, error) {
