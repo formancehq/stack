@@ -70,7 +70,7 @@ func (p *Pool) Run(cfg Configuration) *dockertest.Resource {
 	go p.streamContainerLogs(resource.Container.ID)
 
 	if cfg.Timeout == 0 {
-		cfg.Timeout = 10 * time.Second
+		cfg.Timeout = 20 * time.Second
 	}
 	if cfg.RetryCheckInterval == 0 {
 		cfg.RetryCheckInterval = 500 * time.Millisecond
