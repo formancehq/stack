@@ -1010,8 +1010,11 @@ func TestNeededBalances(t *testing.T) {
 	require.Equalf(t, []string{"c"}, readLockAccounts, "readlock")
 	require.Equalf(t, []string{"a", "b", "bounded"}, writeLockAccounts, "writelock")
 
-	err = m.ResolveBalances(context.Background(), EmptyStore)
+	store := mockStore{}
+	err = m.ResolveBalances(context.Background(), &store)
 	require.NoError(t, err)
+
+	require.Equal(t, []string{"a", "b", "bounded"}, store.RequestedAccounts)
 }
 
 func TestNeededBalances2(t *testing.T) {
@@ -1062,6 +1065,11 @@ send $balance (
 	require.NoError(t, err)
 	require.Equal(t, []string{"a"}, wlAccounts)
 	require.Equal(t, []string{"acc", "b"}, rlAccounts)
+
+	store := mockStore{}
+	err = m.ResolveBalances(context.Background(), &store)
+	require.NoError(t, err)
+	require.Equal(t, []string{"acc", "a"}, store.RequestedAccounts)
 }
 
 func TestSetTxMeta(t *testing.T) {
@@ -2294,4 +2302,17 @@ send [COIN 100] (
 		}},
 	}
 	test(t, tc)
+}
+
+type mockStore struct {
+	RequestedAccounts []string
+}
+
+func (s *mockStore) GetBalance(ctx context.Context, address, asset string) (*big.Int, error) {
+	s.RequestedAccounts = append(s.RequestedAccounts, address)
+	return big.NewInt(0), nil
+}
+
+func (s *mockStore) GetAccount(ctx context.Context, address string) (*ledger.Account, error) {
+	panic("not implemented")
 }
