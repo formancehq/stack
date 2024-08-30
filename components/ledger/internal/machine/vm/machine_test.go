@@ -1034,9 +1034,6 @@ func TestNeededBalances2(t *testing.T) {
 	}
 
 	m := NewMachine(*p)
-	if err != nil {
-		t.Fatalf("did not expect error on SetVars, got: %v", err)
-	}
 	_, involvedSources, err := m.ResolveResources(context.Background(), EmptyStore)
 	require.NoError(t, err)
 	require.Equal(t, []string{"a"}, involvedSources)
@@ -1058,9 +1055,6 @@ send $balance (
 	}
 
 	m := NewMachine(*p)
-	if err != nil {
-		t.Fatalf("did not expect error on SetVars, got: %v", err)
-	}
 	rlAccounts, wlAccounts, err := m.ResolveResources(context.Background(), EmptyStore)
 	require.NoError(t, err)
 	require.Equal(t, []string{"a"}, wlAccounts)
@@ -1070,6 +1064,43 @@ send $balance (
 	err = m.ResolveBalances(context.Background(), &store)
 	require.NoError(t, err)
 	require.Equal(t, []string{"acc", "a"}, store.RequestedAccounts)
+}
+
+func TestNeededBalancesBalanceOfMeta(t *testing.T) {
+	p, err := compiler.Compile(`vars {
+	account $src = meta(@x, "k")
+}
+
+send [COIN 1] (
+	source = $src
+	destination = @dest
+)`)
+
+	if err != nil {
+		t.Fatalf("did not expect error on Compile, got: %v", err)
+	}
+	m := NewMachine(*p)
+
+	staticStore := StaticStore{
+		"x": &AccountWithBalances{
+			Account: ledger.Account{
+				Address: "x",
+				Metadata: metadata.Metadata{
+					"k": "src",
+				},
+			},
+			Balances: map[string]*big.Int{},
+		},
+	}
+	rlAccounts, wlAccounts, err := m.ResolveResources(context.Background(), staticStore)
+	require.NoError(t, err)
+	require.Equal(t, []string{"src"}, wlAccounts)
+	require.Equal(t, []string{"dest"}, rlAccounts)
+
+	store := mockStore{}
+	err = m.ResolveBalances(context.Background(), &store)
+	require.NoError(t, err)
+	require.Equal(t, []string{"src"}, store.RequestedAccounts)
 }
 
 func TestSetTxMeta(t *testing.T) {

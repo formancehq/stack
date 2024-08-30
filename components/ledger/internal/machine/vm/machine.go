@@ -13,6 +13,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"math/big"
+	"slices"
 
 	"github.com/formancehq/ledger/internal/machine"
 
@@ -574,6 +575,9 @@ func (m *Machine) ResolveResources(ctx context.Context, store Store) ([]string, 
 			if err != nil {
 				return nil, nil, err
 			}
+			if val.GetType() == machine.TypeAccount {
+				involvedAccountsMap[machine.Address(idx)] = string(val.(machine.AccountAddress))
+			}
 		case program.VariableAccountBalance:
 			acc, _ := m.getResource(res.Account)
 			address := string((*acc).(machine.AccountAddress))
@@ -617,6 +621,8 @@ func (m *Machine) ResolveResources(ctx context.Context, store Store) ([]string, 
 		writeLockAccounts = append(writeLockAccounts, involvedAccountsMap[machineAddress])
 	}
 
+	slices.Sort(readLockAccounts)
+	slices.Sort(writeLockAccounts)
 	return readLockAccounts, writeLockAccounts, nil
 }
 
