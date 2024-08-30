@@ -991,7 +991,10 @@ func TestNeededBalances(t *testing.T) {
 			// we don't want to lock unbounded overdrafts account
 			@unb allowing unbounded overdraft
 		}
-		destination = @c
+		destination = {
+			max [GEM 1] to @c
+			remaining to @world
+		}
 	)`)
 
 	if err != nil {

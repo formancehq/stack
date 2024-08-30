@@ -32,7 +32,9 @@ func (p *parseVisitor) VisitDestinationRecursive(c parser.IDestinationContext) *
 				errors.New("wrong type: expected account as destination"),
 			)
 		}
-		p.readLockAccounts[*destAddr] = struct{}{}
+		if !p.isWorld(*destAddr) {
+			p.readLockAccounts[*destAddr] = struct{}{}
+		}
 		p.AppendInstruction(program.OP_SEND)
 		return nil
 	case *parser.DestInOrderContext:
