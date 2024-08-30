@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
+	"slices"
 	"sync"
 	"testing"
 
@@ -1014,7 +1015,7 @@ func TestNeededBalances(t *testing.T) {
 	err = m.ResolveBalances(context.Background(), &store)
 	require.NoError(t, err)
 
-	require.Equal(t, []string{"a", "b", "bounded"}, store.RequestedAccounts)
+	require.Equal(t, []string{"a", "b", "bounded"}, store.GetRequestedAccounts())
 }
 
 func TestNeededBalances2(t *testing.T) {
@@ -1063,7 +1064,7 @@ send $balance (
 	store := mockStore{}
 	err = m.ResolveBalances(context.Background(), &store)
 	require.NoError(t, err)
-	require.Equal(t, []string{"acc", "a"}, store.RequestedAccounts)
+	require.Equal(t, []string{"a", "acc"}, store.GetRequestedAccounts())
 }
 
 func TestNeededBalancesBalanceOfMeta(t *testing.T) {
@@ -1100,7 +1101,7 @@ send [COIN 1] (
 	store := mockStore{}
 	err = m.ResolveBalances(context.Background(), &store)
 	require.NoError(t, err)
-	require.Equal(t, []string{"src"}, store.RequestedAccounts)
+	require.Equal(t, []string{"src"}, store.GetRequestedAccounts())
 }
 
 func TestSetTxMeta(t *testing.T) {
@@ -2336,11 +2337,16 @@ send [COIN 100] (
 }
 
 type mockStore struct {
-	RequestedAccounts []string
+	requestedAccounts []string
+}
+
+func (s *mockStore) GetRequestedAccounts() []string {
+	slices.Sort(s.requestedAccounts)
+	return s.requestedAccounts
 }
 
 func (s *mockStore) GetBalance(ctx context.Context, address, asset string) (*big.Int, error) {
-	s.RequestedAccounts = append(s.RequestedAccounts, address)
+	s.requestedAccounts = append(s.requestedAccounts, address)
 	return big.NewInt(0), nil
 }
 
