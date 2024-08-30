@@ -148,7 +148,11 @@ func (p *parseVisitor) VisitSource(c parser.ISourceContext, pushAsset func(), is
 				return nil, nil, nil, LogicError(c, err)
 			}
 			p.AppendInstruction(program.OP_MONETARY_NEW)
-			p.AppendInstruction(program.OP_TAKE_ALL)
+			if p.isWorld(*accAddr) {
+				p.AppendInstruction(program.OP_TAKE_ALWAYS)
+			} else {
+				p.AppendInstruction(program.OP_TAKE_ALL)
+			}
 		} else {
 			if p.isWorld(*accAddr) {
 				return nil, nil, nil, LogicError(c, errors.New("@world is already set to an unbounded overdraft"))
@@ -170,7 +174,7 @@ func (p *parseVisitor) VisitSource(c parser.ISourceContext, pushAsset func(), is
 					return nil, nil, nil, LogicError(c, err)
 				}
 				p.AppendInstruction(program.OP_MONETARY_NEW)
-				p.AppendInstruction(program.OP_TAKE_ALL)
+				p.AppendInstruction(program.OP_TAKE_ALWAYS)
 				f := FallbackAccount(*accAddr)
 				fallback = &f
 			}
@@ -178,10 +182,10 @@ func (p *parseVisitor) VisitSource(c parser.ISourceContext, pushAsset func(), is
 
 		isUnboundedOverdraft := p.isWorld(*accAddr) || p.isOverdraftUnbounded(overdraft)
 		if !isUnboundedOverdraft {
-			p.boundedSources[*accAddr] = struct{}{}
+			p.writeLockAccounts[*accAddr] = struct{}{}
+			neededAccounts[*accAddr] = struct{}{}
 		}
 
-		neededAccounts[*accAddr] = struct{}{}
 		emptiedAccounts[*accAddr] = struct{}{}
 
 		if fallback != nil && isAll {

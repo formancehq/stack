@@ -528,6 +528,59 @@ func TestWorldSource(t *testing.T) {
 	test(t, tc)
 }
 
+func TestUnboundedSourceSimple(t *testing.T) {
+	tc := NewTestCase()
+	tc.compile(t, `send [GEM 15] (
+		source = @unbounded allowing unbounded overdraft
+		destination = @b
+	)`)
+	tc.expected = CaseResult{
+		Printed: []machine.Value{},
+		Postings: []Posting{
+
+			{
+				Asset:       "GEM",
+				Amount:      machine.NewMonetaryInt(15),
+				Source:      "unbounded",
+				Destination: "b",
+			},
+		},
+		Error: nil,
+	}
+	test(t, tc)
+}
+
+func TestUnboundedSourceInorder(t *testing.T) {
+	tc := NewTestCase()
+	tc.compile(t, `send [GEM 15] (
+		source = {
+			@a
+			@unbounded allowing unbounded overdraft
+		}
+		destination = @b
+	)`)
+	tc.setBalance("a", "GEM", 1)
+	tc.expected = CaseResult{
+		Printed: []machine.Value{},
+		Postings: []Posting{
+			{
+				Asset:       "GEM",
+				Amount:      machine.NewMonetaryInt(1),
+				Source:      "a",
+				Destination: "b",
+			},
+			{
+				Asset:       "GEM",
+				Amount:      machine.NewMonetaryInt(14),
+				Source:      "unbounded",
+				Destination: "b",
+			},
+		},
+		Error: nil,
+	}
+	test(t, tc)
+}
+
 func TestNoEmptyPostings(t *testing.T) {
 	tc := NewTestCase()
 	tc.compile(t, `send [GEM 2] (
@@ -952,9 +1005,10 @@ func TestNeededBalances(t *testing.T) {
 	if err != nil {
 		t.Fatalf("did not expect error on SetVars, got: %v", err)
 	}
-	_, involvedSources, err := m.ResolveResources(context.Background(), EmptyStore)
+	readLockAccounts, writeLockAccounts, err := m.ResolveResources(context.Background(), EmptyStore)
 	require.NoError(t, err)
-	require.Equal(t, []string{"a", "b", "bounded"}, involvedSources)
+	require.Equalf(t, []string{"c"}, readLockAccounts, "readlock")
+	require.Equalf(t, []string{"a", "b", "bounded"}, writeLockAccounts, "writelock")
 
 	err = m.ResolveBalances(context.Background(), EmptyStore)
 	require.NoError(t, err)
@@ -984,6 +1038,30 @@ func TestNeededBalances2(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, []string{"a"}, involvedSources)
 
+}
+
+func TestNeededBalancesBalanceFn(t *testing.T) {
+	p, err := compiler.Compile(`vars {
+	monetary $balance = balance(@acc, COIN)
+}
+
+send $balance (
+	source = @a
+	destination = @b
+)`)
+
+	if err != nil {
+		t.Fatalf("did not expect error on Compile, got: %v", err)
+	}
+
+	m := NewMachine(*p)
+	if err != nil {
+		t.Fatalf("did not expect error on SetVars, got: %v", err)
+	}
+	rlAccounts, wlAccounts, err := m.ResolveResources(context.Background(), EmptyStore)
+	require.NoError(t, err)
+	require.Equal(t, []string{"a"}, wlAccounts)
+	require.Equal(t, []string{"acc", "b"}, rlAccounts)
 }
 
 func TestSetTxMeta(t *testing.T) {

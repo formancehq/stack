@@ -23,7 +23,7 @@ func (p *parseVisitor) VisitDestinationRecursive(c parser.IDestinationContext) *
 	case *parser.DestAccountContext:
 		p.AppendInstruction(program.OP_FUNDING_SUM)
 		p.AppendInstruction(program.OP_TAKE)
-		ty, _, err := p.VisitExpr(c.Expression(), true)
+		ty, destAddr, err := p.VisitExpr(c.Expression(), true)
 		if err != nil {
 			return err
 		}
@@ -32,6 +32,7 @@ func (p *parseVisitor) VisitDestinationRecursive(c parser.IDestinationContext) *
 				errors.New("wrong type: expected account as destination"),
 			)
 		}
+		p.readLockAccounts[*destAddr] = struct{}{}
 		p.AppendInstruction(program.OP_SEND)
 		return nil
 	case *parser.DestInOrderContext:

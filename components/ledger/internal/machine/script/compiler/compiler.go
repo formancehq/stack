@@ -27,10 +27,14 @@ type parseVisitor struct {
 	// needBalances store for each account, the set of assets needed
 	neededBalances map[machine.Address]map[machine.Address]struct{}
 
-	// like `sources`, but for accounts that aren't unbounded
-	// e.g. it doesn't include @world or accounts that appear within a
-	// `@acc allowing unbounded ovedraft` clause
-	boundedSources map[machine.Address]struct{}
+	// The sources accounts that aren't unbounded
+	// that is, @world or sources that appear within a
+	// '.. allowing unboundeed overdraft' clause
+	writeLockAccounts map[machine.Address]struct{}
+
+	// all the accounts that appear in either the destination
+	// or in the balance() function
+	readLockAccounts map[machine.Address]struct{}
 }
 
 // Allocates constants if it hasn't already been,
@@ -585,6 +589,7 @@ func (p *parseVisitor) VisitVars(c *parser.VarListDeclContext) *CompileError {
 				Account: *accAddr,
 				Asset:   *assAddr,
 			})
+			p.readLockAccounts[*accAddr] = struct{}{}
 			if err != nil {
 				return LogicError(c, err)
 			}
@@ -679,13 +684,14 @@ func CompileFull(input string) CompileArtifacts {
 	}
 
 	visitor := parseVisitor{
-		errListener:    errListener,
-		instructions:   make([]byte, 0),
-		resources:      make([]program.Resource, 0),
-		varIdx:         make(map[string]machine.Address),
-		neededBalances: make(map[machine.Address]map[machine.Address]struct{}),
-		sources:        map[machine.Address]struct{}{},
-		boundedSources: map[machine.Address]struct{}{},
+		errListener:       errListener,
+		instructions:      make([]byte, 0),
+		resources:         make([]program.Resource, 0),
+		varIdx:            make(map[string]machine.Address),
+		neededBalances:    make(map[machine.Address]map[machine.Address]struct{}),
+		sources:           map[machine.Address]struct{}{},
+		writeLockAccounts: map[machine.Address]struct{}{},
+		readLockAccounts:  map[machine.Address]struct{}{},
 	}
 
 	err := visitor.VisitScript(tree)
@@ -694,24 +700,24 @@ func CompileFull(input string) CompileArtifacts {
 		return artifacts
 	}
 
-	sources := make(machine.Addresses, 0)
-	for address := range visitor.sources {
-		sources = append(sources, address)
+	readLockAccounts := make(machine.Addresses, 0)
+	for address := range visitor.readLockAccounts {
+		readLockAccounts = append(readLockAccounts, address)
 	}
-	sort.Stable(sources)
+	sort.Stable(readLockAccounts)
 
-	boundedSources := make(machine.Addresses, 0)
-	for address := range visitor.boundedSources {
-		boundedSources = append(boundedSources, address)
+	writeLockAccounts := make(machine.Addresses, 0)
+	for address := range visitor.writeLockAccounts {
+		writeLockAccounts = append(writeLockAccounts, address)
 	}
-	sort.Stable(boundedSources)
+	sort.Stable(writeLockAccounts)
 
 	artifacts.Program = &program.Program{
-		Instructions:   visitor.instructions,
-		Resources:      visitor.resources,
-		NeededBalances: visitor.neededBalances,
-		Sources:        sources,
-		BoundedSources: boundedSources,
+		Instructions:      visitor.instructions,
+		Resources:         visitor.resources,
+		NeededBalances:    visitor.neededBalances,
+		ReadLockAccounts:  readLockAccounts,
+		WriteLockAccounts: writeLockAccounts,
 	}
 
 	return artifacts

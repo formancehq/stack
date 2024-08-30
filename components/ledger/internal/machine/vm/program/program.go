@@ -12,9 +12,10 @@ import (
 type Program struct {
 	Instructions   []byte
 	Resources      []Resource
-	Sources        []machine.Address
-	BoundedSources []machine.Address
 	NeededBalances map[machine.Address]map[machine.Address]struct{}
+
+	ReadLockAccounts  []machine.Address
+	WriteLockAccounts []machine.Address
 }
 
 func (p Program) String() string {

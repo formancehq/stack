@@ -139,16 +139,16 @@ func (m *Machine) withdrawAlways(account machine.AccountAddress, mon machine.Mon
 	if accBalance, ok := m.Balances[account]; ok {
 		if balance, ok := accBalance[mon.Asset]; ok {
 			accBalance[mon.Asset] = balance.Sub(mon.Amount)
-			return &machine.Funding{
-				Asset: mon.Asset,
-				Parts: []machine.FundingPart{{
-					Account: account,
-					Amount:  mon.Amount,
-				}},
-			}, nil
 		}
 	}
-	return nil, fmt.Errorf("missing %v balance from %v", mon.Asset, account)
+
+	return &machine.Funding{
+		Asset: mon.Asset,
+		Parts: []machine.FundingPart{{
+			Account: account,
+			Amount:  mon.Amount,
+		}},
+	}, nil
 }
 
 func (m *Machine) credit(account machine.AccountAddress, funding machine.Funding) {
@@ -607,16 +607,17 @@ func (m *Machine) ResolveResources(ctx context.Context, store Store) ([]string, 
 		m.Resources = append(m.Resources, val)
 	}
 
-	involvedAccounts := make([]string, 0)
-	involvedSources := make([]string, 0)
-	for _, accountAddress := range involvedAccountsMap {
-		involvedAccounts = append(involvedAccounts, accountAddress)
-	}
-	for _, machineAddress := range m.Program.BoundedSources {
-		involvedSources = append(involvedSources, involvedAccountsMap[machineAddress])
+	readLockAccounts := make([]string, 0)
+	for _, accountAddress := range m.Program.ReadLockAccounts {
+		readLockAccounts = append(readLockAccounts, involvedAccountsMap[accountAddress])
 	}
 
-	return involvedAccounts, involvedSources, nil
+	writeLockAccounts := make([]string, 0)
+	for _, machineAddress := range m.Program.WriteLockAccounts {
+		writeLockAccounts = append(writeLockAccounts, involvedAccountsMap[machineAddress])
+	}
+
+	return readLockAccounts, writeLockAccounts, nil
 }
 
 func (m *Machine) SetVarsFromJSON(vars map[string]string) error {
