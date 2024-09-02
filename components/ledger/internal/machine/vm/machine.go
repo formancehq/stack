@@ -171,8 +171,16 @@ func (m *Machine) repay(funding machine.Funding) {
 		if part.Account == "world" {
 			continue
 		}
-		balance := m.Balances[part.Account][funding.Asset]
-		m.Balances[part.Account][funding.Asset] = balance.Add(part.Amount)
+		accountBalance, ok := m.Balances[part.Account]
+		if !ok {
+			// no asset: the source has to be an unbounded source
+			// which NEVER appears as bounded
+			// this means we don't need to track it's balance
+			continue
+		}
+
+		balance := accountBalance[funding.Asset]
+		accountBalance[funding.Asset] = balance.Add(part.Amount)
 	}
 }
 

@@ -2339,6 +2339,65 @@ send [COIN 100] (
 	test(t, tc)
 }
 
+func TestRepayUnboundedMinimal(t *testing.T) {
+	tc := NewTestCase()
+
+	tc.compile(t, `
+send [COIN 100](
+    source = @src allowing unbounded overdraft
+    destination = {
+		max [COIN 1] to @d1
+		remaining to @d2
+    }
+ )
+`)
+
+	tc.expected = CaseResult{
+		Printed: []machine.Value{},
+		Postings: []Posting{
+			{"src", "d1", machine.NewMonetaryInt(1), "COIN"},
+			{"src", "d2", machine.NewMonetaryInt(99), "COIN"},
+		},
+	}
+	test(t, tc)
+}
+
+func TestRepayUnboundedComplex(t *testing.T) {
+	tc := NewTestCase()
+
+	tc.compile(t, `
+send [EGP 86640](
+    source = {
+    	max [EGP 86640] from @asset:current_assets allowing unbounded overdraft
+    }
+    destination = {
+		max [EGP 86466] to @liability:client_balances
+		max [EGP 9] to @liability:current_liabilities:1
+		max [EGP 9] to @liability:current_liabilities:2
+		max [EGP 100] to @liability:current_liabilities:3
+		max [EGP 4] to @liability:current_liabilities:4
+		max [EGP 43] to @liability:current_liabilities:checks:5
+		remaining to @liability:current_liabilities:6
+    }
+ )
+
+`)
+
+	tc.expected = CaseResult{
+		Printed: []machine.Value{},
+		Postings: []Posting{
+			{"asset:current_assets", "liability:client_balances", machine.NewMonetaryInt(86466), "EGP"},
+			{"asset:current_assets", "liability:current_liabilities:1", machine.NewMonetaryInt(9), "EGP"},
+			{"asset:current_assets", "liability:current_liabilities:2", machine.NewMonetaryInt(9), "EGP"},
+			{"asset:current_assets", "liability:current_liabilities:3", machine.NewMonetaryInt(100), "EGP"},
+			{"asset:current_assets", "liability:current_liabilities:4", machine.NewMonetaryInt(4), "EGP"},
+			{"asset:current_assets", "liability:current_liabilities:checks:5", machine.NewMonetaryInt(43), "EGP"},
+			{"asset:current_assets", "liability:current_liabilities:6", machine.NewMonetaryInt(9), "EGP"},
+		},
+	}
+	test(t, tc)
+}
+
 type mockStore struct {
 	requestedAccounts []string
 }
