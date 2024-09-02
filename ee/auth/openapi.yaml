@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: auth.v1 API
+  title: Auth API
   contact: {}
   version: "AUTH_VERSION"
 
