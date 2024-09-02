@@ -187,7 +187,7 @@ func TestGetAccountWithEncoded(t *testing.T) {
 		GetAccountWithVolumes(gomock.Any(), ledgerstore.NewGetAccountQuery("foo:bar").WithExpandVolumes()).
 		Return(&account, nil)
 
-	router := v1.NewRouter(backend, nil, metrics.NewNoOpRegistry(), auth.NewNoAuth())
+	router := v1.NewRouter(backend, nil, metrics.NewNoOpRegistry(), auth.NewNoAuth(), testing.Verbose())
 
 	req := httptest.NewRequest(http.MethodGet, "/xxx/accounts/foo%3Abar", nil)
 	rec := httptest.NewRecorder()

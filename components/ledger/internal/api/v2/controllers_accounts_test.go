@@ -235,7 +235,7 @@ func TestGetAccountWithEncoded(t *testing.T) {
 		GetAccountWithVolumes(gomock.Any(), query).
 		Return(&account, nil)
 
-	router := v2.NewRouter(backend, nil, metrics.NewNoOpRegistry(), auth.NewNoAuth())
+	router := v2.NewRouter(backend, nil, metrics.NewNoOpRegistry(), auth.NewNoAuth(), testing.Verbose())
 
 	req := httptest.NewRequest(http.MethodGet, "/xxx/accounts/foo%3Abar?pit="+now.Format(time.RFC3339Nano), nil)
 	rec := httptest.NewRecorder()
