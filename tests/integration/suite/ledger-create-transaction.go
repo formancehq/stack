@@ -28,7 +28,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 		Expect(err).To(BeNil())
 		Expect(createLedgerResponse.StatusCode).To(Equal(http.StatusNoContent))
 
-		createLedgerResponse, err = Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+		createLedgerResponse, err = Client().Ledger.V2.CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 			Ledger: "test",
 		})
 		Expect(err).To(BeNil())
@@ -301,7 +301,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 		)
 		BeforeEach(func() {
 			// Create a transaction
-			response, err = Client().Ledger.V2CreateTransaction(
+			response, err = Client().Ledger.V2.CreateTransaction(
 				TestContext(),
 				operations.V2CreateTransactionRequest{
 					IdempotencyKey: pointer.For("foo"),
@@ -328,7 +328,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 		})
 		Then("creating a ledger transaction with same ik and different ledger", func() {
 			BeforeEach(func() {
-				response, err = Client().Ledger.V2CreateTransaction(
+				response, err = Client().Ledger.V2.CreateTransaction(
 					TestContext(),
 					operations.V2CreateTransactionRequest{
 						IdempotencyKey: pointer.For("foo"),
