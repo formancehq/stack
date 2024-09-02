@@ -137,7 +137,7 @@ func getAccount(w http.ResponseWriter, r *http.Request) {
 
 	param, err := url.PathUnescape(chi.URLParam(r, "address"))
 	if err != nil {
-		sharedapi.InternalServerError(w, r, err)
+		sharedapi.BadRequestWithDetails(w, ErrValidation, err, err.Error())
 		return
 	}
 
@@ -169,7 +169,7 @@ func postAccountMetadata(w http.ResponseWriter, r *http.Request) {
 	l := backend.LedgerFromContext(r.Context())
 	param, err := url.PathUnescape(chi.URLParam(r, "address"))
 	if err != nil {
-		sharedapi.InternalServerError(w, r, err)
+		sharedapi.BadRequestWithDetails(w, ErrValidation, err, err.Error())
 		return
 	}
 
@@ -196,7 +196,7 @@ func postAccountMetadata(w http.ResponseWriter, r *http.Request) {
 func deleteAccountMetadata(w http.ResponseWriter, r *http.Request) {
 	param, err := url.PathUnescape(chi.URLParam(r, "address"))
 	if err != nil {
-		sharedapi.InternalServerError(w, r, err)
+		sharedapi.BadRequestWithDetails(w, ErrValidation, err, err.Error())
 		return
 	}
 
