@@ -46,7 +46,7 @@ func (c *ShowController) GetStore() *ShowStore {
 
 func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	store := fctl.GetStackStore(cmd.Context())
-	response, err := store.Client().Payments.GetPayment(cmd.Context(), operations.GetPaymentRequest{
+	response, err := store.Client().Payments.V1.GetPayment(cmd.Context(), operations.GetPaymentRequest{
 		PaymentID: args[0],
 	})
 	if err != nil {

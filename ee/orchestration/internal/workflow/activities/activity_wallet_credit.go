@@ -28,7 +28,7 @@ type CreditWalletRequestPayload struct {
 }
 
 func (a Activities) CreditWallet(ctx context.Context, request CreditWalletRequest) error {
-	_, err := a.client.Wallets.CreditWallet(
+	_, err := a.client.Wallets.V1.CreditWallet(
 		ctx,
 		operations.CreditWalletRequest{
 			CreditWalletRequest: &shared.CreditWalletRequest{

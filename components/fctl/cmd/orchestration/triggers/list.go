@@ -49,7 +49,7 @@ func (c *TriggersListController) GetStore() *TriggersListStore {
 func (c *TriggersListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	store := fctl.GetStackStore(cmd.Context())
 	var name = fctl.GetString(cmd, c.nameFlag)
-	response, err := store.Client().Orchestration.ListTriggers(cmd.Context(), operations.ListTriggersRequest{
+	response, err := store.Client().Orchestration.V1.ListTriggers(cmd.Context(), operations.ListTriggersRequest{
 		Name: &name,
 	})
 

@@ -16,7 +16,7 @@ type GetAccountRequest struct {
 }
 
 func (a Activities) GetAccount(ctx context.Context, request GetAccountRequest) (*shared.AccountResponse, error) {
-	response, err := a.client.Ledger.GetAccount(
+	response, err := a.client.Ledger.V1.GetAccount(
 		ctx,
 		operations.GetAccountRequest{
 			Address: request.ID,

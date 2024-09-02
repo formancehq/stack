@@ -22,7 +22,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 			err                  error
 		)
 		BeforeEach(func() {
-			createWalletResponse, err = Client().Wallets.CreateWallet(
+			createWalletResponse, err = Client().Wallets.V1.CreateWallet(
 				TestContext(),
 				operations.CreateWalletRequest{
 					CreateWalletRequest: &shared.CreateWalletRequest{
@@ -36,7 +36,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 		})
 		Then("crediting it", func() {
 			BeforeEach(func() {
-				_, err := Client().Wallets.CreditWallet(TestContext(), operations.CreditWalletRequest{
+				_, err := Client().Wallets.V1.CreditWallet(TestContext(), operations.CreditWalletRequest{
 					CreditWalletRequest: &shared.CreditWalletRequest{
 						Amount: shared.Monetary{
 							Amount: big.NewInt(1000),
@@ -51,7 +51,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 			})
 			Then("debiting it", func() {
 				BeforeEach(func() {
-					_, err := Client().Wallets.DebitWallet(TestContext(), operations.DebitWalletRequest{
+					_, err := Client().Wallets.V1.DebitWallet(TestContext(), operations.DebitWalletRequest{
 						DebitWalletRequest: &shared.DebitWalletRequest{
 							Amount: shared.Monetary{
 								Amount: big.NewInt(100),
@@ -68,7 +68,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 			Then("debiting it using timestamp", func() {
 				now := time.Now().Round(time.Microsecond).UTC()
 				BeforeEach(func() {
-					_, err := Client().Wallets.DebitWallet(TestContext(), operations.DebitWalletRequest{
+					_, err := Client().Wallets.V1.DebitWallet(TestContext(), operations.DebitWalletRequest{
 						DebitWalletRequest: &shared.DebitWalletRequest{
 							Amount: shared.Monetary{
 								Amount: big.NewInt(100),
@@ -82,7 +82,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 					Expect(err).To(Succeed())
 				})
 				It("should create the transaction at the specified timestamp", func() {
-					tx, err := Client().Ledger.V2GetTransaction(TestContext(), operations.V2GetTransactionRequest{
+					tx, err := Client().Ledger.V2.GetTransaction(TestContext(), operations.V2GetTransactionRequest{
 						ID:     big.NewInt(1),
 						Ledger: "wallets-002",
 					})
@@ -96,7 +96,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 					ts                  *time.Time
 				)
 				JustBeforeEach(func() {
-					debitWalletResponse, err = Client().Wallets.DebitWallet(TestContext(), operations.DebitWalletRequest{
+					debitWalletResponse, err = Client().Wallets.V1.DebitWallet(TestContext(), operations.DebitWalletRequest{
 						DebitWalletRequest: &shared.DebitWalletRequest{
 							Amount: shared.Monetary{
 								Amount: big.NewInt(100),
@@ -113,7 +113,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 				It("should be ok", func() {})
 				Then("confirm the hold", func() {
 					JustBeforeEach(func() {
-						_, err := Client().Wallets.ConfirmHold(TestContext(), operations.ConfirmHoldRequest{
+						_, err := Client().Wallets.V1.ConfirmHold(TestContext(), operations.ConfirmHoldRequest{
 							HoldID: debitWalletResponse.DebitWalletResponse.Data.ID,
 						})
 						Expect(err).To(Succeed())
@@ -122,7 +122,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 				})
 				Then("void the hold", func() {
 					JustBeforeEach(func() {
-						_, err := Client().Wallets.VoidHold(TestContext(), operations.VoidHoldRequest{
+						_, err := Client().Wallets.V1.VoidHold(TestContext(), operations.VoidHoldRequest{
 							HoldID: debitWalletResponse.DebitWalletResponse.Data.ID,
 						})
 						Expect(err).To(Succeed())
@@ -132,7 +132,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 			})
 			Then("debiting it using invalid destination", func() {
 				It("should fail", func() {
-					_, err := Client().Wallets.DebitWallet(TestContext(), operations.DebitWalletRequest{
+					_, err := Client().Wallets.V1.DebitWallet(TestContext(), operations.DebitWalletRequest{
 						DebitWalletRequest: &shared.DebitWalletRequest{
 							Amount: shared.Monetary{
 								Amount: big.NewInt(100),
@@ -153,7 +153,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 			})
 			Then("debiting it using negative amount", func() {
 				It("should fail", func() {
-					_, err := Client().Wallets.DebitWallet(TestContext(), operations.DebitWalletRequest{
+					_, err := Client().Wallets.V1.DebitWallet(TestContext(), operations.DebitWalletRequest{
 						DebitWalletRequest: &shared.DebitWalletRequest{
 							Amount: shared.Monetary{
 								Amount: big.NewInt(-100),
@@ -171,7 +171,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 			})
 			Then("debiting it using invalid asset", func() {
 				It("should fail", func() {
-					_, err := Client().Wallets.DebitWallet(TestContext(), operations.DebitWalletRequest{
+					_, err := Client().Wallets.V1.DebitWallet(TestContext(), operations.DebitWalletRequest{
 						DebitWalletRequest: &shared.DebitWalletRequest{
 							Amount: shared.Monetary{
 								Amount: big.NewInt(100),

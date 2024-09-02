@@ -38,14 +38,14 @@ var _ = WithModules([]*Module{modules.Auth}, func() {
 				err                  error
 			)
 			BeforeEach(func() {
-				createClientResponse, err = sdkClient.Auth.CreateClient(TestContext(), &shared.CreateClientRequest{
+				createClientResponse, err = sdkClient.Auth.V1.CreateClient(TestContext(), &shared.CreateClientRequest{
 					Name:   "client1",
 					Scopes: []string{"scope1"},
 				})
 				Expect(err).To(Succeed())
 				Expect(createClientResponse.StatusCode).To(Equal(http.StatusCreated))
 
-				createSecretResponse, err = sdkClient.Auth.CreateSecret(TestContext(), operations.CreateSecretRequest{
+				createSecretResponse, err = sdkClient.Auth.V1.CreateSecret(TestContext(), operations.CreateSecretRequest{
 					CreateSecretRequest: &shared.CreateSecretRequest{
 						Name: "secret1",
 					},

@@ -71,7 +71,7 @@ func (c *PaymentsConnectorsBankingCircleController) Run(cmd *cobra.Command, args
 			BankingCircleConfig: &config,
 		},
 	}
-	response, err := store.Client().Payments.InstallConnector(cmd.Context(), request)
+	response, err := store.Client().Payments.V1.InstallConnector(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "installing connector")
 	}

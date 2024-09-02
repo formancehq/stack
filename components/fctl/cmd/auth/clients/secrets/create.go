@@ -60,7 +60,7 @@ func (c *CreateController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 			Metadata: nil,
 		},
 	}
-	response, err := store.Client().Auth.CreateSecret(cmd.Context(), request)
+	response, err := store.Client().Auth.V1.CreateSecret(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}

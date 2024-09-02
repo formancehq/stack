@@ -66,7 +66,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		WalletID: &walletID,
 		Metadata: metadata,
 	}
-	response, err := store.Client().Wallets.GetHolds(cmd.Context(), request)
+	response, err := store.Client().Wallets.V1.GetHolds(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "getting holds")
 	}

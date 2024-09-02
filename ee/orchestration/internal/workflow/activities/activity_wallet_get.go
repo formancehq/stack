@@ -13,7 +13,7 @@ type GetWalletRequest struct {
 }
 
 func (a Activities) GetWallet(ctx context.Context, request GetWalletRequest) (*shared.GetWalletResponse, error) {
-	response, err := a.client.Wallets.GetWallet(
+	response, err := a.client.Wallets.V1.GetWallet(
 		ctx,
 		operations.GetWalletRequest{
 			ID: request.ID,

@@ -72,7 +72,7 @@ func (c *SearchController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		Terms:    terms,
 		Target:   &target,
 	}
-	response, err := store.Client().Search.Search(cmd.Context(), request)
+	response, err := store.Client().Search.V1.Search(cmd.Context(), request)
 	if err != nil {
 		return nil, err
 	}

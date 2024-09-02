@@ -9,6 +9,8 @@ paths:
     get:
       summary: Retrieve OpenID connect well-knowns.
       operationId: getOIDCWellKnowns
+      tags:
+        - auth.v1
       responses:
         200:
           description: |
@@ -20,7 +22,7 @@ paths:
       summary: Get server info
       operationId: getServerInfo
       tags:
-        - Auth
+        - auth.v1
       responses:
         200:
           description: Server information
@@ -32,9 +34,7 @@ paths:
     get:
       summary: List clients
       tags:
-        - Auth
-        - Clients
-      x-speakeasy-group: auth
+        - auth.v1
       operationId: listClients
       responses:
         "200":
@@ -46,9 +46,7 @@ paths:
     post:
       summary: Create client
       tags:
-        - Auth
-        - Clients
-      x-speakeasy-group: auth
+        - auth.v1
       operationId: createClient
       requestBody:
         content:
@@ -66,9 +64,7 @@ paths:
     get:
       summary: Read client
       tags:
-        - Auth
-        - Clients
-      x-speakeasy-group: auth
+        - auth.v1
       operationId: readClient
       parameters:
         - description: Client ID
@@ -87,9 +83,7 @@ paths:
     put:
       summary: Update client
       tags:
-        - Auth
-        - Clients
-      x-speakeasy-group: auth
+        - auth.v1
       operationId: updateClient
       requestBody:
         content:
@@ -113,9 +107,7 @@ paths:
     delete:
       summary: Delete client
       tags:
-        - Auth
-        - Clients
-      x-speakeasy-group: auth
+        - auth.v1
       operationId: deleteClient
       parameters:
         - description: Client ID
@@ -131,9 +123,7 @@ paths:
     post:
       summary: Add a secret to a client
       tags:
-        - Auth
-        - Clients
-      x-speakeasy-group: auth
+        - auth.v1
       operationId: createSecret
       parameters:
         - description: Client ID
@@ -158,9 +148,7 @@ paths:
     delete:
       summary: Delete a secret from a client
       tags:
-        - Auth
-        - Clients
-      x-speakeasy-group: auth
+        - auth.v1
       operationId: deleteSecret
       parameters:
         - description: Client ID
@@ -182,9 +170,7 @@ paths:
     get:
       summary: List users
       tags:
-        - Auth
-        - Users
-      x-speakeasy-group: auth
+        - auth.v1
       description: List users
       operationId: listUsers
       responses:
@@ -198,9 +184,7 @@ paths:
     get:
       summary: Read user
       tags:
-        - Auth
-        - Users
-      x-speakeasy-group: auth
+        - auth.v1
       description: Read user
       operationId: readUser
       parameters:

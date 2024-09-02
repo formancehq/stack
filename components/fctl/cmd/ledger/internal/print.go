@@ -115,6 +115,11 @@ type v2Transaction struct {
 	shared.V2Transaction
 }
 
+func (t v2Transaction) GetID() *big.Int {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (t v2Transaction) GetPostings() []shared.Posting {
 	return collectionutils.Map(t.V2Transaction.GetPostings(), func(from shared.V2Posting) shared.Posting {
 		return shared.Posting{

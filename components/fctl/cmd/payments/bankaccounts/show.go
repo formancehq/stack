@@ -62,7 +62,7 @@ func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 		return nil, fmt.Errorf("bank accounts are only supported in >= v1.0.0")
 	}
 
-	response, err := store.Client().Payments.GetBankAccount(cmd.Context(), operations.GetBankAccountRequest{
+	response, err := store.Client().Payments.V1.GetBankAccount(cmd.Context(), operations.GetBankAccountRequest{
 		BankAccountID: args[0],
 	})
 	if err != nil {

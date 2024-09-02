@@ -10,7 +10,7 @@ paths:
       summary: Get server info
       operationId: getServerInfo
       tags:
-        - Reconciliation
+        - reconciliation.v1
       responses:
         200:
           $ref: '#/components/responses/ServerInfo'
@@ -21,7 +21,7 @@ paths:
     post:
       summary: Create a policy
       tags:
-        - Reconciliation
+        - reconciliation.v1
       operationId: createPolicy
       description: Create a policy
       requestBody:
@@ -35,7 +35,7 @@ paths:
       summary: List policies
       operationId: listPolicies
       tags:
-        - Reconciliation
+        - reconciliation.v1
       parameters:
         - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/Cursor'
@@ -50,7 +50,7 @@ paths:
       summary: Delete a policy
       operationId: deletePolicy
       tags:
-        - Reconciliation
+        - reconciliation.v1
       description: Delete a policy by its id.
       parameters:
         - $ref: '#/components/parameters/PolicyID'
@@ -62,7 +62,7 @@ paths:
     get:
       summary: Get a policy
       tags:
-        - Reconciliation
+        - reconciliation.v1
       operationId: getPolicy
       parameters:
         - $ref: '#/components/parameters/PolicyID'
@@ -76,7 +76,7 @@ paths:
     post:
       summary: Reconcile using a policy
       tags:
-        - Reconciliation
+        - reconciliation.v1
       operationId: reconcile
       description: Reconcile using a policy
       parameters:
@@ -94,7 +94,7 @@ paths:
       summary: List reconciliations
       operationId: listReconciliations
       tags:
-        - Reconciliation
+        - reconciliation.v1
       parameters:
         - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/Cursor'
@@ -108,7 +108,7 @@ paths:
     get:
       summary: Get a reconciliation
       tags:
-        - Reconciliation
+        - reconciliation.v1
       operationId: getReconciliation
       parameters:
         - $ref: '#/components/parameters/ReconciliationID'

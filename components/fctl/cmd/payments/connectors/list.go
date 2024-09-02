@@ -61,7 +61,7 @@ func (c *PaymentsConnectorsListController) Run(cmd *cobra.Command, args []string
 		return nil, err
 	}
 
-	response, err := store.Client().Payments.ListAllConnectors(cmd.Context())
+	response, err := store.Client().Payments.V1.ListAllConnectors(cmd.Context())
 	if err != nil {
 		return nil, err
 	}

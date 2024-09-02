@@ -63,7 +63,7 @@ func (c *RevertController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 			AtEffectiveDate: pointer.For(true),
 		}
 
-		response, err := store.Client().Ledger.V2RevertTransaction(cmd.Context(), request)
+		response, err := store.Client().Ledger.V2.RevertTransaction(cmd.Context(), request)
 		if err != nil {
 			return nil, err
 		}
@@ -75,7 +75,7 @@ func (c *RevertController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 			Txid:   txId,
 		}
 
-		response, err := store.Client().Ledger.RevertTransaction(cmd.Context(), request)
+		response, err := store.Client().Ledger.V1.RevertTransaction(cmd.Context(), request)
 		if err != nil {
 			return nil, err
 		}

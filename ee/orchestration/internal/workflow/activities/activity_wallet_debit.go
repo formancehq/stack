@@ -34,7 +34,7 @@ type DebitWalletRequestPayload struct {
 }
 
 func (a Activities) DebitWallet(ctx context.Context, request DebitWalletRequest) (*shared.DebitWalletResponse, error) {
-	response, err := a.client.Wallets.DebitWallet(
+	response, err := a.client.Wallets.V1.DebitWallet(
 		ctx,
 		operations.DebitWalletRequest{
 			DebitWalletRequest: &shared.DebitWalletRequest{

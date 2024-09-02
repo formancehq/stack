@@ -13,7 +13,7 @@ type GetPaymentRequest struct {
 }
 
 func (a Activities) GetPayment(ctx context.Context, request GetPaymentRequest) (*shared.PaymentResponse, error) {
-	response, err := a.client.Payments.GetPayment(
+	response, err := a.client.Payments.V1.GetPayment(
 		ctx,
 		operations.GetPaymentRequest{
 			PaymentID: request.ID,

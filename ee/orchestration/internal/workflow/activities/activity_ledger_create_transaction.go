@@ -33,7 +33,7 @@ type PostTransaction struct {
 
 func (a Activities) CreateTransaction(ctx context.Context, request CreateTransactionRequest) (*shared.V2CreateTransactionResponse, error) {
 
-	response, err := a.client.Ledger.V2CreateTransaction(
+	response, err := a.client.Ledger.V2.CreateTransaction(
 		ctx,
 		operations.V2CreateTransactionRequest{
 			V2PostTransaction: shared.V2PostTransaction{

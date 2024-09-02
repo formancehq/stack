@@ -31,7 +31,7 @@ var _ = WithModules([]*Module{modules.Payments, modules.Search}, func() {
 
 		paymentsDir := filepath.Join(os.TempDir(), uuid.NewString())
 		Expect(os.MkdirAll(paymentsDir, 0o777)).To(Succeed())
-		response, err := Client().Payments.InstallConnector(
+		response, err := Client().Payments.V1.InstallConnector(
 			TestContext(),
 			operations.InstallConnectorRequest{
 				ConnectorConfig: shared.ConnectorConfig{
@@ -52,7 +52,7 @@ var _ = WithModules([]*Module{modules.Payments, modules.Search}, func() {
 		connectorID = response.ConnectorResponse.Data.ConnectorID
 
 		Eventually(func(g Gomega) bool {
-			response, err := Client().Search.Search(
+			response, err := Client().Search.V1.Search(
 				TestContext(),
 				shared.Query{
 					Target: ptr("PAYMENT"),
@@ -72,7 +72,7 @@ var _ = WithModules([]*Module{modules.Payments, modules.Search}, func() {
 	})
 	When("resetting connector", func() {
 		BeforeEach(func() {
-			response, err := Client().Payments.ResetConnectorV1(
+			response, err := Client().Payments.V1.ResetConnectorV1(
 				TestContext(),
 				operations.ResetConnectorV1Request{
 					Connector:   shared.ConnectorDummyPay,
@@ -99,7 +99,7 @@ var _ = WithModules([]*Module{modules.Payments, modules.Search}, func() {
 		})
 		It("should delete payments on search service", func() {
 			Eventually(func(g Gomega) []map[string]any {
-				response, err := Client().Search.Search(
+				response, err := Client().Search.V1.Search(
 					TestContext(),
 					shared.Query{
 						Target: ptr("PAYMENT"),

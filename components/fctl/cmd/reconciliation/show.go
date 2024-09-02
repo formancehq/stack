@@ -47,7 +47,7 @@ func (c *ShowController) GetStore() *ShowStore {
 func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	store := fctl.GetStackStore(cmd.Context())
 
-	response, err := store.Client().Reconciliation.GetReconciliation(cmd.Context(), operations.GetReconciliationRequest{
+	response, err := store.Client().Reconciliation.V1.GetReconciliation(cmd.Context(), operations.GetReconciliationRequest{
 		ReconciliationID: args[0],
 	})
 	if err != nil {

@@ -19,13 +19,13 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 	When("creating two transactions on a ledger with custom metadata", func() {
 		var firstTransactionsInsertedAt time.Time
 		BeforeEach(func() {
-			response, err := Client().Ledger.V2CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
+			response, err := Client().Ledger.V2.CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 				Ledger: "default",
 			})
 			Expect(err).To(BeNil())
 			Expect(response.StatusCode).To(Equal(http.StatusNoContent))
 
-			_, err = Client().Ledger.V2CreateBulk(TestContext(), operations.V2CreateBulkRequest{
+			_, err = Client().Ledger.V2.CreateBulk(TestContext(), operations.V2CreateBulkRequest{
 				RequestBody: []shared.V2BulkElement{
 					shared.CreateV2BulkElementCreateTransaction(shared.V2BulkElementCreateTransaction{
 						Data: &shared.V2PostTransaction{
@@ -89,7 +89,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			firstTransactionsInsertedAt = time.Now()
 			<-time.After(time.Second)
 
-			_, err = Client().Ledger.V2CreateBulk(TestContext(), operations.V2CreateBulkRequest{
+			_, err = Client().Ledger.V2.CreateBulk(TestContext(), operations.V2CreateBulkRequest{
 				RequestBody: []shared.V2BulkElement{
 					shared.CreateV2BulkElementCreateTransaction(shared.V2BulkElementCreateTransaction{
 						Data: &shared.V2PostTransaction{
@@ -109,7 +109,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(err).To(Succeed())
 		})
 		It("should be ok when aggregating using the metadata", func() {
-			response, err := Client().Ledger.V2GetBalancesAggregated(
+			response, err := Client().Ledger.V2.GetBalancesAggregated(
 				TestContext(),
 				operations.V2GetBalancesAggregatedRequest{
 					RequestBody: map[string]any{
@@ -127,7 +127,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.V2AggregateBalancesResponse.Data["USD/2"]).To(Equal(big.NewInt(400)))
 		})
 		It("should be ok when aggregating using pit on effective date", func() {
-			response, err := Client().Ledger.V2GetBalancesAggregated(
+			response, err := Client().Ledger.V2.GetBalancesAggregated(
 				TestContext(),
 				operations.V2GetBalancesAggregatedRequest{
 					Ledger: "default",
@@ -146,7 +146,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			Expect(response.V2AggregateBalancesResponse.Data["USD/2"]).To(Equal(big.NewInt(100)))
 		})
 		It("should be ok when aggregating using pit on insertion date", func() {
-			response, err := Client().Ledger.V2GetBalancesAggregated(
+			response, err := Client().Ledger.V2.GetBalancesAggregated(
 				TestContext(),
 				operations.V2GetBalancesAggregatedRequest{
 					Ledger:           "default",

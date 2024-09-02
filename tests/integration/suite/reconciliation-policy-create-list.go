@@ -16,7 +16,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Payments, mo
 			policies []shared.Policy
 		)
 		JustBeforeEach(func() {
-			policiesResponse, err := Client().Reconciliation.ListPolicies(
+			policiesResponse, err := Client().Reconciliation.V1.ListPolicies(
 				TestContext(),
 				operations.ListPoliciesRequest{},
 			)
@@ -31,7 +31,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Payments, mo
 	})
 	When("2 - reconciliation create 2 policies", func() {
 		JustBeforeEach(func() {
-			response, err := Client().Reconciliation.CreatePolicy(
+			response, err := Client().Reconciliation.V1.CreatePolicy(
 				TestContext(),
 				shared.PolicyRequest{
 					LedgerName:     "default",
@@ -43,7 +43,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Payments, mo
 			Expect(err).ToNot(HaveOccurred())
 			Expect(response.StatusCode).To(Equal(201))
 
-			response, err = Client().Reconciliation.CreatePolicy(
+			response, err = Client().Reconciliation.V1.CreatePolicy(
 				TestContext(),
 				shared.PolicyRequest{
 					LedgerName:     "default",
@@ -60,7 +60,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Payments, mo
 				policies []shared.Policy
 			)
 			JustBeforeEach(func() {
-				policiesResponse, err := Client().Reconciliation.ListPolicies(
+				policiesResponse, err := Client().Reconciliation.V1.ListPolicies(
 					TestContext(),
 					operations.ListPoliciesRequest{},
 				)

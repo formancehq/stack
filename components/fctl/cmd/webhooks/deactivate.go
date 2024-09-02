@@ -43,7 +43,7 @@ func (c *DesactivateWebhookController) Run(cmd *cobra.Command, args []string) (f
 	request := operations.DeactivateConfigRequest{
 		ID: args[0],
 	}
-	response, err := store.Client().Webhooks.DeactivateConfig(cmd.Context(), request)
+	response, err := store.Client().Webhooks.V1.DeactivateConfig(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "deactivating config")
 	}

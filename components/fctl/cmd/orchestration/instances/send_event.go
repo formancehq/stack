@@ -46,7 +46,7 @@ func (c *InstancesSendEventController) GetStore() *InstancesSendEventStore {
 
 func (c *InstancesSendEventController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	store := fctl.GetStackStore(cmd.Context())
-	_, err := store.Client().Orchestration.SendEvent(cmd.Context(), operations.SendEventRequest{
+	_, err := store.Client().Orchestration.V1.SendEvent(cmd.Context(), operations.SendEventRequest{
 		RequestBody: &operations.SendEventRequestBody{
 			Name: args[1],
 		},

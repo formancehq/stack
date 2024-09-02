@@ -21,7 +21,7 @@ type VersionController interface {
 
 func GetPaymentsVersion(cmd *cobra.Command, args []string, controller VersionController) error {
 	store := fctl.GetStackStore(cmd.Context())
-	response, err := store.Client().Payments.PaymentsgetServerInfo(cmd.Context())
+	response, err := store.Client().Payments.V1.PaymentsgetServerInfo(cmd.Context())
 	if err != nil {
 		return err
 	}

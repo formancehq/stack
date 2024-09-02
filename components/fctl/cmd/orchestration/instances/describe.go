@@ -48,7 +48,7 @@ func (c *InstancesDescribeController) GetStore() *InstancesDescribeStore {
 func (c *InstancesDescribeController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	store := fctl.GetStackStore(cmd.Context())
 
-	response, err := store.Client().Orchestration.GetInstanceHistory(cmd.Context(), operations.GetInstanceHistoryRequest{
+	response, err := store.Client().Orchestration.V1.GetInstanceHistory(cmd.Context(), operations.GetInstanceHistoryRequest{
 		InstanceID: args[0],
 	})
 	if err != nil {
@@ -142,7 +142,7 @@ func printStage(cmd *cobra.Command, i int, client *formance.Formance, id string,
 			stageDestinationName(history.Input.StageSend.Destination))
 		fctl.Println()
 
-		stageResponse, err := client.Orchestration.GetInstanceStageHistory(cmd.Context(), operations.GetInstanceStageHistoryRequest{
+		stageResponse, err := client.Orchestration.V1.GetInstanceStageHistory(cmd.Context(), operations.GetInstanceStageHistoryRequest{
 			InstanceID: id,
 			Number:     int64(i),
 		})

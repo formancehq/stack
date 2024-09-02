@@ -65,7 +65,7 @@ func (c *PaymentsConnectorsCurrencyCloudController) Run(cmd *cobra.Command, args
 		return nil, err
 	}
 
-	response, err := store.Client().Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
+	response, err := store.Client().Payments.V1.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
 		ConnectorConfig: shared.ConnectorConfig{
 			CurrencyCloudConfig: &config,
 		},

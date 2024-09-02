@@ -47,7 +47,7 @@ func (c *ShowController) GetStore() *ShowStore {
 func (c *ShowController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	store := fctl.GetStackStore(cmd.Context())
 
-	response, err := store.Client().Reconciliation.GetPolicy(cmd.Context(), operations.GetPolicyRequest{
+	response, err := store.Client().Reconciliation.V1.GetPolicy(cmd.Context(), operations.GetPolicyRequest{
 		PolicyID: args[0],
 	})
 	if err != nil {

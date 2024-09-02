@@ -48,7 +48,7 @@ func (c *ListController) GetStore() *ListStore {
 func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable, error) {
 	store := fctl.GetStackStore(cmd.Context())
 
-	response, err := store.Client().Ledger.V2ListLedgers(cmd.Context(), operations.V2ListLedgersRequest{})
+	response, err := store.Client().Ledger.V2.ListLedgers(cmd.Context(), operations.V2ListLedgersRequest{})
 	if err != nil {
 		return nil, err
 	}

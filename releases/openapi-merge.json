@@ -16,6 +16,9 @@
       "inputFile": "./../components/ledger/openapi.yaml",
       "pathModification":{
         "prepend": "/api/ledger"
+      },
+      "dispute": {
+        "prefix": "ledger"
       }
     },
     {

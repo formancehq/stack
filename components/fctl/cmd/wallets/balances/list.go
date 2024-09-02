@@ -57,7 +57,7 @@ func (c *ListController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 	request := operations.ListBalancesRequest{
 		ID: walletID,
 	}
-	response, err := store.Client().Wallets.ListBalances(cmd.Context(), request)
+	response, err := store.Client().Wallets.V1.ListBalances(cmd.Context(), request)
 	if err != nil {
 		return nil, errors.Wrap(err, "listing balance")
 	}

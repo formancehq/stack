@@ -20,7 +20,7 @@ const (
 var _ = WithModules([]*Module{modules.Payments}, func() {
 	When("trying to create accounts of an non existent connector", func() {
 		BeforeEach(func() {
-			_, err := Client().Payments.CreateAccount(
+			_, err := Client().Payments.V1.CreateAccount(
 				TestContext(),
 				shared.AccountRequest{
 					AccountName: ptr("test"),
@@ -41,7 +41,7 @@ var _ = WithModules([]*Module{modules.Payments}, func() {
 var _ = WithModules([]*Module{modules.Payments}, func() {
 	When("trying to create payments of an non existent connector", func() {
 		BeforeEach(func() {
-			_, err := Client().Payments.CreatePayment(
+			_, err := Client().Payments.V1.CreatePayment(
 				TestContext(),
 				shared.PaymentRequest{
 					Amount:      big.NewInt(100),
@@ -67,7 +67,7 @@ var _ = WithModules([]*Module{modules.Payments}, func() {
 		connectorID string
 	)
 	BeforeEach(func() {
-		response, err := Client().Payments.InstallConnector(
+		response, err := Client().Payments.V1.InstallConnector(
 			TestContext(),
 			operations.InstallConnectorRequest{
 				ConnectorConfig: shared.ConnectorConfig{
@@ -90,7 +90,7 @@ var _ = WithModules([]*Module{modules.Payments}, func() {
 			accountIDInternal2 string
 		)
 		BeforeEach(func() {
-			createAccountResponse, err := Client().Payments.CreateAccount(
+			createAccountResponse, err := Client().Payments.V1.CreateAccount(
 				TestContext(),
 				shared.AccountRequest{
 					AccountName: ptr("test 1"),
@@ -105,7 +105,7 @@ var _ = WithModules([]*Module{modules.Payments}, func() {
 
 			accountIDInternal1 = createAccountResponse.PaymentsAccountResponse.Data.ID
 
-			createAccountResponse, err = Client().Payments.CreateAccount(
+			createAccountResponse, err = Client().Payments.V1.CreateAccount(
 				TestContext(),
 				shared.AccountRequest{
 					AccountName: ptr("test 2"),
@@ -120,7 +120,7 @@ var _ = WithModules([]*Module{modules.Payments}, func() {
 
 			accountIDInternal2 = createAccountResponse.PaymentsAccountResponse.Data.ID
 
-			createPaymentResponse, err := Client().Payments.CreatePayment(
+			createPaymentResponse, err := Client().Payments.V1.CreatePayment(
 				TestContext(),
 				shared.PaymentRequest{
 					Amount:               big.NewInt(100),
@@ -138,7 +138,7 @@ var _ = WithModules([]*Module{modules.Payments}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(createPaymentResponse.StatusCode).To(Equal(200))
 
-			createPaymentResponse, err = Client().Payments.CreatePayment(
+			createPaymentResponse, err = Client().Payments.V1.CreatePayment(
 				TestContext(),
 				shared.PaymentRequest{
 					Amount:               big.NewInt(200),
@@ -155,7 +155,7 @@ var _ = WithModules([]*Module{modules.Payments}, func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(createPaymentResponse.StatusCode).To(Equal(200))
 
-			createPaymentResponse, err = Client().Payments.CreatePayment(
+			createPaymentResponse, err = Client().Payments.V1.CreatePayment(
 				TestContext(),
 				shared.PaymentRequest{
 					Amount:          big.NewInt(300),
@@ -173,7 +173,7 @@ var _ = WithModules([]*Module{modules.Payments}, func() {
 			Expect(createPaymentResponse.StatusCode).To(Equal(200))
 		})
 		It("should be available on api", func() {
-			listAccountsResponse, err := Client().Payments.PaymentslistAccounts(
+			listAccountsResponse, err := Client().Payments.V1.PaymentslistAccounts(
 				TestContext(),
 				operations.PaymentslistAccountsRequest{},
 			)
@@ -181,7 +181,7 @@ var _ = WithModules([]*Module{modules.Payments}, func() {
 			Expect(listAccountsResponse.StatusCode).To(Equal(200))
 			Expect(listAccountsResponse.AccountsCursor.Cursor.Data).To(HaveLen(2))
 
-			listPaymentsResponse, err := Client().Payments.ListPayments(
+			listPaymentsResponse, err := Client().Payments.V1.ListPayments(
 				TestContext(),
 				operations.ListPaymentsRequest{},
 			)

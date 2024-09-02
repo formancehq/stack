@@ -85,7 +85,7 @@ func (c *SendController) Run(cmd *cobra.Command, args []string) (fctl.Renderable
 
 	reference := fctl.GetString(cmd, c.referenceFlag)
 
-	response, err := store.Client().Ledger.CreateTransaction(cmd.Context(), operations.CreateTransactionRequest{
+	response, err := store.Client().Ledger.V1.CreateTransaction(cmd.Context(), operations.CreateTransactionRequest{
 		PostTransaction: shared.PostTransaction{
 			Metadata: collectionutils.ConvertMap(metadata, collectionutils.ToAny[string]),
 			Postings: []shared.Posting{

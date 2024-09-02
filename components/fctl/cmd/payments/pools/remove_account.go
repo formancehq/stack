@@ -62,7 +62,7 @@ func (c *RemoveAccountController) Run(cmd *cobra.Command, args []string) (fctl.R
 		return nil, fmt.Errorf("pools are only supported in >= v1.0.0")
 	}
 
-	response, err := store.Client().Payments.RemoveAccountFromPool(cmd.Context(), operations.RemoveAccountFromPoolRequest{
+	response, err := store.Client().Payments.V1.RemoveAccountFromPool(cmd.Context(), operations.RemoveAccountFromPoolRequest{
 		PoolID:    args[0],
 		AccountID: args[1],
 	})

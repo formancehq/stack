@@ -52,7 +52,7 @@ func (c *DeleteController) Run(cmd *cobra.Command, args []string) (fctl.Renderab
 		return nil, fctl.ErrMissingApproval
 	}
 
-	response, err := store.Client().Reconciliation.DeletePolicy(
+	response, err := store.Client().Reconciliation.V1.DeletePolicy(
 		cmd.Context(),
 		operations.DeletePolicyRequest{
 			PolicyID: args[0],
