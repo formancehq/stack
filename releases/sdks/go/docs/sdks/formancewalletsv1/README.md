@@ -148,6 +148,7 @@ import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
 	"log"
 )
@@ -158,12 +159,7 @@ func main() {
             Authorization: os.Getenv("AUTHORIZATION"),
         }),
     )
-    var request *shared.CreateWalletRequest = &shared.CreateWalletRequest{
-        Metadata: map[string]string{
-            "key": "<value>",
-        },
-        Name: "<value>",
-    }
+    request := operations.CreateWalletRequest{}
     ctx := context.Background()
     res, err := s.Wallets.V1.CreateWallet(ctx, request)
     if err != nil {
@@ -177,11 +173,11 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                    | Type                                                                         | Required                                                                     | Description                                                                  |
-| ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `ctx`                                                                        | [context.Context](https://pkg.go.dev/context#Context)                        | :heavy_check_mark:                                                           | The context to use for the request.                                          |
-| `request`                                                                    | [shared.CreateWalletRequest](../../pkg/models/shared/createwalletrequest.md) | :heavy_check_mark:                                                           | The request object to use for the request.                                   |
-| `opts`                                                                       | [][operations.Option](../../pkg/models/operations/option.md)                 | :heavy_minus_sign:                                                           | The options for this request.                                                |
+| Parameter                                                                            | Type                                                                                 | Required                                                                             | Description                                                                          |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `ctx`                                                                                | [context.Context](https://pkg.go.dev/context#Context)                                | :heavy_check_mark:                                                                   | The context to use for the request.                                                  |
+| `request`                                                                            | [operations.CreateWalletRequest](../../pkg/models/operations/createwalletrequest.md) | :heavy_check_mark:                                                                   | The request object to use for the request.                                           |
+| `opts`                                                                               | [][operations.Option](../../pkg/models/operations/option.md)                         | :heavy_minus_sign:                                                                   | The options for this request.                                                        |
 
 
 ### Response
