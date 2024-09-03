@@ -18,6 +18,7 @@ While we have some basic types (string, number, bool ...), we also have some com
 | temporal.tls.key                                                                         | string |                                            | Temporal certificate key                                                                                                       |
 | broker.dsn                                                                               | URI    |                                            | Broker URI                                                                                                                     |
 | opentelemetry.traces.dsn                                                                 | URI    |                                            | OpenTelemetry collector URI                                                                                                    |
+| opentelemetry.traces.resource-attributes                                                 | Map | key1=value1,key2=value2 | Opentelemetry additional resource attributes                                                                                   |
 | clear-database                                                                           | bool   | true                                       | Whether to remove databases on stack deletion                                                                                  |
 | ledger.deployment-strategy                                                               | string | single                                     | Ledger deployment type                                                                                                         |
 | ledger.logs.max-batch-size                                                               | Int    | 1024                                       | Ledger logs batching max size                                                                                                  |
@@ -36,6 +37,7 @@ While we have some basic types (string, number, bool ...), we also have some com
 | logging.json                                                                             | bool   |                                            | Configure services to log as json                                                                                              |
 | modules.`<module-name>`.database.connection-pool                                         | Map    | max-idle=10, max-idle-time=10, max-open=10 | Configure database connection pool for each module. See [Golang documentation](https://go.dev/doc/database/manage-connections) |
 | orchestration.max-parallel-activities                                                    | Int    | 10                                         | Configure max parallel temporal activities on orchestration workers                                                            |
+
 
 ### Postgres URI format
 
