@@ -12,6 +12,8 @@ import (
 type V2RevertTransactionRequest struct {
 	// Revert transaction at effective date of the original tx
 	AtEffectiveDate *bool `queryParam:"style=form,explode=true,name=atEffectiveDate"`
+	// Set the dry run mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.
+	DryRun *bool `queryParam:"style=form,explode=true,name=dryRun"`
 	// Force revert
 	Force *bool `queryParam:"style=form,explode=true,name=force"`
 	// Transaction ID.
@@ -36,6 +38,13 @@ func (o *V2RevertTransactionRequest) GetAtEffectiveDate() *bool {
 		return nil
 	}
 	return o.AtEffectiveDate
+}
+
+func (o *V2RevertTransactionRequest) GetDryRun() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.DryRun
 }
 
 func (o *V2RevertTransactionRequest) GetForce() *bool {

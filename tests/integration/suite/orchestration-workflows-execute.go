@@ -261,7 +261,7 @@ var _ = WithModules([]*Module{modules.Orchestration, modules.Auth, modules.Ledge
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Output).To(Equal(&shared.V2WorkflowInstanceHistoryStageOutput{
 								CreateTransaction: &shared.V2ActivityCreateTransactionOutput{
 									Data: []shared.OrchestrationV2Transaction{{
-										Txid:     big.NewInt(0),
+										Txid:     big.NewInt(1),
 										Postings: postings,
 										Metadata: map[string]string{
 											"foo": "bar",

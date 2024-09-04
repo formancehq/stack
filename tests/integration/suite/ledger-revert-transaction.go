@@ -102,7 +102,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 						TestContext(),
 						operations.V2RevertTransactionRequest{
 							Force:  pointer.For(force),
-							ID:     big.NewInt(0),
+							ID:     big.NewInt(1),
 							Ledger: "default",
 						},
 					)

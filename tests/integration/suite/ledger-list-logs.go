@@ -3,6 +3,8 @@ package suite
 import (
 	"fmt"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 	"math/big"
 	"net/http"
 	"sort"
@@ -11,8 +13,6 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	. "github.com/formancehq/stack/tests/integration/internal"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
 )
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {
@@ -131,7 +131,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 
 			// Cannot check the date and the hash since they are changing at
 			// every run
-			Expect(logsCursorResponse.Cursor.Data[0].ID).To(Equal(big.NewInt(2)))
+			Expect(logsCursorResponse.Cursor.Data[0].ID).To(Equal(big.NewInt(3)))
 			Expect(logsCursorResponse.Cursor.Data[0].Type).To(Equal(shared.V2LogTypeSetMetadata))
 			Expect(logsCursorResponse.Cursor.Data[0].Data).To(Equal(map[string]any{
 				"targetType": "ACCOUNT",
@@ -141,7 +141,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				"targetId": "foo:baz",
 			}))
 
-			Expect(logsCursorResponse.Cursor.Data[1].ID).To(Equal(big.NewInt((1))))
+			Expect(logsCursorResponse.Cursor.Data[1].ID).To(Equal(big.NewInt(2)))
 			Expect(logsCursorResponse.Cursor.Data[1].Type).To(Equal(shared.V2LogTypeNewTransaction))
 			// Cannot check date and txid inside Data since they are changing at
 			// every run
@@ -161,7 +161,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				},
 			}))
 
-			Expect(logsCursorResponse.Cursor.Data[2].ID).To(Equal(big.NewInt((0))))
+			Expect(logsCursorResponse.Cursor.Data[2].ID).To(Equal(big.NewInt(1)))
 			Expect(logsCursorResponse.Cursor.Data[2].Type).To(Equal(shared.V2LogTypeNewTransaction))
 			Expect(logsCursorResponse.Cursor.Data[2].Data["accountMetadata"]).To(Equal(map[string]any{}))
 			Expect(logsCursorResponse.Cursor.Data[2].Data["transaction"]).To(BeAssignableToTypeOf(map[string]any{}))
@@ -231,7 +231,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				Expect(response.StatusCode).To(Equal(200))
 
 				expectedLogs = append(expectedLogs, expectedLog{
-					id:  big.NewInt(i),
+					id:  big.NewInt(i + 1),
 					typ: shared.V2LogTypeNewTransaction,
 					postings: []any{
 						map[string]any{

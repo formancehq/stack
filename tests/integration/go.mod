@@ -8,8 +8,8 @@ require (
 	github.com/docker/docker v27.3.1+incompatible
 	github.com/egymgmbh/go-prefix-writer v0.0.0-20180609083313-7326ea162eca
 	github.com/formancehq/auth v0.0.0-00010101000000-000000000000
-	github.com/formancehq/formance-sdk-go/v2 v2.0.0-00010101000000-000000000000
-	github.com/formancehq/go-libs v1.7.1
+	github.com/formancehq/formance-sdk-go/v2 v2.3.1
+	github.com/formancehq/go-libs v1.7.2-0.20240924132015-19831aaf64de
 	github.com/formancehq/ledger v0.0.0-00010101000000-000000000000
 	github.com/formancehq/orchestration v0.0.0-00010101000000-000000000000
 	github.com/formancehq/payments v0.0.0-00010101000000-000000000000
@@ -58,8 +58,8 @@ require (
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
 	github.com/aws/aws-msk-iam-sasl-signer-go v1.0.0 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.31.0 // indirect
-	github.com/aws/aws-sdk-go-v2/config v1.27.36 // indirect
-	github.com/aws/aws-sdk-go-v2/credentials v1.17.34 // indirect
+	github.com/aws/aws-sdk-go-v2/config v1.27.37 // indirect
+	github.com/aws/aws-sdk-go-v2/credentials v1.17.35 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.14 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/rds/auth v1.4.18 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.18 // indirect
@@ -67,9 +67,9 @@ require (
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.11.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.11.20 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sso v1.23.0 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.27.0 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sts v1.31.0 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.23.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.27.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.31.1 // indirect
 	github.com/aws/smithy-go v1.21.0 // indirect
 	github.com/bluele/gcache v0.0.2 // indirect
 	github.com/bombsimon/logrusr/v3 v3.1.0 // indirect
@@ -87,7 +87,7 @@ require (
 	github.com/eapache/go-xerial-snappy v0.0.0-20230731223053-c322873962e3 // indirect
 	github.com/eapache/queue v1.1.0 // indirect
 	github.com/elastic/go-elasticsearch/v7 v7.17.10 // indirect
-	github.com/ericlagergren/decimal v0.0.0-20221120152707-495c53812d05 // indirect
+	github.com/ericlagergren/decimal v0.0.0-20240411145413-00de7ca16731 // indirect
 	github.com/expr-lang/expr v1.16.9 // indirect
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
 	github.com/fatih/color v1.17.0 // indirect
@@ -132,6 +132,8 @@ require (
 	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/gorilla/schema v1.4.1 // indirect
 	github.com/gorilla/securecookie v1.1.2 // indirect
+	github.com/grafana/otel-profiling-go v0.5.1 // indirect
+	github.com/grafana/pyroscope-go/godeltaprof v0.1.8 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.22.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect

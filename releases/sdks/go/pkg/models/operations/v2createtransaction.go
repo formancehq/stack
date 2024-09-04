@@ -17,6 +17,8 @@ type V2CreateTransactionRequest struct {
 	V2PostTransaction shared.V2PostTransaction `request:"mediaType=application/json"`
 	// Set the dryRun mode. dry run mode doesn't add the logs to the database or publish a message to the message broker.
 	DryRun *bool `queryParam:"style=form,explode=true,name=dryRun"`
+	// Disable balances checks
+	Force *bool `queryParam:"style=form,explode=true,name=force"`
 	// Name of the ledger.
 	Ledger string `pathParam:"style=simple,explode=false,name=ledger"`
 }
@@ -40,6 +42,13 @@ func (o *V2CreateTransactionRequest) GetDryRun() *bool {
 		return nil
 	}
 	return o.DryRun
+}
+
+func (o *V2CreateTransactionRequest) GetForce() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.Force
 }
 
 func (o *V2CreateTransactionRequest) GetLedger() string {

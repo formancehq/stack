@@ -5,8 +5,8 @@ go 1.22.0
 toolchain go1.22.7
 
 require (
-	github.com/formancehq/formance-sdk-go/v2 v2.0.0-00010101000000-000000000000
-	github.com/formancehq/go-libs v1.7.1
+	github.com/formancehq/formance-sdk-go/v2 v2.3.1
+	github.com/formancehq/go-libs v1.7.2-0.20240924132015-19831aaf64de
 	github.com/formancehq/ledger v0.0.0-00010101000000-000000000000
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/go-chi/render v1.0.3
@@ -25,7 +25,7 @@ require (
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.3.0 // indirect
-	github.com/ericlagergren/decimal v0.0.0-20221120152707-495c53812d05 // indirect
+	github.com/ericlagergren/decimal v0.0.0-20240411145413-00de7ca16731 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect

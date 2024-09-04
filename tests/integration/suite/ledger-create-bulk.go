@@ -47,20 +47,20 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 								"foo":  "bar",
 								"role": "admin",
 							},
-							TargetID:   shared.CreateV2TargetIDBigint(big.NewInt(0)),
+							TargetID:   shared.CreateV2TargetIDBigint(big.NewInt(1)),
 							TargetType: shared.V2TargetTypeTransaction,
 						},
 					}),
 					shared.CreateV2BulkElementDeleteMetadata(shared.V2BulkElementDeleteMetadata{
 						Data: &shared.V2BulkElementDeleteMetadataData{
 							Key:        "foo",
-							TargetID:   shared.CreateV2TargetIDBigint(big.NewInt(0)),
+							TargetID:   shared.CreateV2TargetIDBigint(big.NewInt(1)),
 							TargetType: shared.V2TargetTypeTransaction,
 						},
 					}),
 					shared.CreateV2BulkElementRevertTransaction(shared.V2BulkElementRevertTransaction{
 						Data: &shared.V2BulkElementRevertTransactionData{
-							ID: big.NewInt(0),
+							ID: big.NewInt(1),
 						},
 					}),
 				},
@@ -70,12 +70,12 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 		})
 		It("should be ok", func() {
 			tx, err := Client().Ledger.V2.GetTransaction(TestContext(), operations.V2GetTransactionRequest{
-				ID:     big.NewInt(0),
+				ID:     big.NewInt(1),
 				Ledger: "default",
 			})
 			Expect(err).To(Succeed())
 			Expect(tx.V2GetTransactionResponse.Data).To(Equal(shared.V2ExpandedTransaction{
-				ID: big.NewInt(0),
+				ID: big.NewInt(1),
 				Metadata: metadata.Metadata{
 					"role": "admin",
 				},
