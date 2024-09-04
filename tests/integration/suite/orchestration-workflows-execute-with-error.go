@@ -116,7 +116,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 								},
 							},
 						},
-						LastFailure:   ptr("running numscript: script execution failed: account(s) @empty:account had/have insufficient funds"),
+						LastFailure:   ptr("failed to execute program: failed to execute machine: account(s) @empty:account had/have insufficient funds"),
 						Attempt:       getWorkflowInstanceHistoryStageResponse.Data[0].Attempt,
 						NextExecution: getWorkflowInstanceHistoryStageResponse.Data[0].NextExecution,
 						StartedAt:     getWorkflowInstanceHistoryStageResponse.Data[0].StartedAt,

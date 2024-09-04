@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: a9ac79e1-e429-4ee3-96c4-ec973f19bec3
 management:
-  docChecksum: 359dd8cb16193447c993d3d336785c37
+  docChecksum: 6ff5f942134f197818dabff6a2a8bbb7
   docVersion: LEDGER_VERSION
   speakeasyVersion: 1.346.0
   generationVersion: 2.379.3
-  releaseVersion: 0.2.0
-  configChecksum: 09df02129c4cf02489fa2f86475a8a45
+  releaseVersion: 0.3.2
+  configChecksum: 85de4d2f5dd9e84ae57c865620810ded
 features:
   go:
     additionalDependencies: 0.1.0
@@ -16,7 +16,6 @@ features:
     downloadStreams: 0.1.1
     envVarSecurityUsage: 0.2.0
     errors: 2.81.9
-    flattening: 2.81.1
     getRequestBodies: 2.81.1
     globalSecurityCallbacks: 0.1.0
     globalServerURLs: 2.82.2

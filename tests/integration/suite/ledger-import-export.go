@@ -60,7 +60,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 					newLedger string
 				)
 				BeforeEach(func() {
-					newLedger = uuid.NewString()
+					newLedger = uuid.NewString()[:8]
 					_, err := Client().Ledger.V2.CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 						Ledger:                newLedger,
 						V2CreateLedgerRequest: &shared.V2CreateLedgerRequest{},
