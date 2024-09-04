@@ -27,7 +27,7 @@ func TestPostgres(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		t.Run(fmt.Sprintf("test%d", i), func(t *testing.T) {
 			t.Parallel()
-			database := srv.NewDatabase()
+			database := srv.NewDatabase(t)
 			conn, err := pgx.Connect(context.Background(), database.ConnString())
 			require.NoError(t, err)
 			require.NoError(t, conn.Close(context.Background()))

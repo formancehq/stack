@@ -86,7 +86,7 @@ func withServer(t *testing.T, fn func(m *mockoidc.MockOIDC, storage *sqlstorage.
 		hooks = append(hooks, bundebug.NewQueryHook())
 	}
 
-	postgresDB := srv.NewDatabase()
+	postgresDB := srv.NewDatabase(t)
 	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: postgresDB.ConnString(),
 	}, hooks...)

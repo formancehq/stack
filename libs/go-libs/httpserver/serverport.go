@@ -145,6 +145,9 @@ func NewHook(handler http.Handler, options ...serverOpts) fx.Hook {
 	return fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			logging.FromContext(ctx).Infof("Start HTTP server")
+			defer func() {
+				logging.FromContext(ctx).Infof("HTTP server started")
+			}()
 			close, err = s.StartServer(ctx, handler, s.httpServerOpts...)
 			return err
 		},
@@ -153,6 +156,9 @@ func NewHook(handler http.Handler, options ...serverOpts) fx.Hook {
 				return nil
 			}
 			logging.FromContext(ctx).Infof("Stop HTTP server")
+			defer func() {
+				logging.FromContext(ctx).Infof("HTTP server stopped")
+			}()
 			return close(ctx)
 		},
 	}

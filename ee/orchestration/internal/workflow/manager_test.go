@@ -28,7 +28,7 @@ func TestConfig(t *testing.T) {
 		hooks = append(hooks, bundebug.NewQueryHook())
 	}
 
-	database := srv.NewDatabase()
+	database := srv.NewDatabase(t)
 	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: database.ConnString(),
 	}, hooks...)

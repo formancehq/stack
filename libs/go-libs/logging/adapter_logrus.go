@@ -2,10 +2,8 @@ package logging
 
 import (
 	"context"
-	"flag"
 	"io"
 	"os"
-	"sync"
 	"testing"
 
 	"github.com/sirupsen/logrus"
@@ -69,12 +67,9 @@ func NewLogrus(logger *logrus.Logger) *LogrusLogger {
 	}
 }
 
-var once sync.Once
-
 func Testing() *LogrusLogger {
 	logger := logrus.New()
 	logger.SetOutput(io.Discard)
-	once.Do(flag.Parse)
 
 	if testing.Verbose() {
 		logger.SetOutput(os.Stderr)

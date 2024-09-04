@@ -2,6 +2,7 @@ package publish
 
 import (
 	"context"
+	"time"
 
 	"github.com/ThreeDotsLabs/watermill"
 	wNats "github.com/ThreeDotsLabs/watermill-nats/v2/pkg/nats"
@@ -35,7 +36,8 @@ func NewNatsSubscriberWithConn(conn *nats.Conn, logger watermill.LoggerAdapter, 
 
 func NatsModule(url, group string, autoProvision bool, natsOptions ...nats.Option) fx.Option {
 	jetStreamConfig := wNats.JetStreamConfig{
-		AutoProvision: autoProvision,
+		AutoProvision:    autoProvision,
+		SubscribeOptions: []nats.SubOpt{nats.ManualAck()},
 	}
 	return fx.Options(
 		fx.Provide(NewNatsConn),
@@ -72,6 +74,7 @@ func NatsModule(url, group string, autoProvision bool, natsOptions ...nats.Optio
 				SubjectCalculator: wNats.DefaultSubjectCalculator,
 				// todo(gfyrag): make configurable
 				SubscribersCount: 100,
+				NakDelay:         wNats.NewStaticDelay(time.Second),
 			}
 		}),
 		fx.Provide(func(publisher *wNats.Publisher) message.Publisher {

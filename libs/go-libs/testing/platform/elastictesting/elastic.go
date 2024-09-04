@@ -2,6 +2,7 @@ package elastictesting
 
 import (
 	"context"
+	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/testing/docker"
 	"github.com/olivere/elastic/v7"
@@ -45,6 +46,7 @@ func CreateServer(pool *docker.Pool) *Server {
 			client.Stop()
 			return nil
 		},
+		Timeout: 30 * time.Second,
 	})
 
 	return &Server{

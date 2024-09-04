@@ -8,13 +8,14 @@ import (
 	"testing"
 	"time"
 
+	sharedapi "github.com/formancehq/stack/libs/go-libs/testing/api"
+
 	"github.com/google/uuid"
 
 	"github.com/formancehq/orchestration/internal/api"
 	"github.com/go-chi/chi/v5"
 
 	"github.com/formancehq/orchestration/internal/workflow"
-	"github.com/formancehq/stack/libs/go-libs/api/apitesting"
 	"github.com/stretchr/testify/require"
 	"github.com/uptrace/bun"
 )
@@ -42,7 +43,7 @@ func TestListInstances(t *testing.T) {
 		require.Equal(t, http.StatusOK, rec.Result().StatusCode)
 
 		instances := make([]workflow.Instance, 0)
-		apitesting.ReadResponse(t, rec, &instances)
+		sharedapi.ReadResponse(t, rec, &instances)
 		require.Len(t, instances, 10)
 
 		// Retrieve only running instances
@@ -52,7 +53,7 @@ func TestListInstances(t *testing.T) {
 		router.ServeHTTP(rec, req)
 
 		require.Equal(t, http.StatusOK, rec.Result().StatusCode)
-		apitesting.ReadResponse(t, rec, &instances)
+		sharedapi.ReadResponse(t, rec, &instances)
 		require.Len(t, instances, 6)
 
 		// Delete the workflow
@@ -71,7 +72,7 @@ func TestListInstances(t *testing.T) {
 
 		require.Equal(t, http.StatusOK, rec.Result().StatusCode)
 		instances = make([]workflow.Instance, 0)
-		apitesting.ReadResponse(t, rec, &instances)
+		sharedapi.ReadResponse(t, rec, &instances)
 		require.Len(t, instances, 0)
 
 		// Try to retrieve instances for the deleted workflow
@@ -82,7 +83,7 @@ func TestListInstances(t *testing.T) {
 
 		require.Equal(t, http.StatusOK, rec.Result().StatusCode)
 		instances = make([]workflow.Instance, 0)
-		apitesting.ReadResponse(t, rec, &instances)
+		sharedapi.ReadResponse(t, rec, &instances)
 		require.Len(t, instances, 0)
 	})
 }

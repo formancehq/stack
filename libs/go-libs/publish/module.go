@@ -3,6 +3,9 @@ package publish
 import (
 	"context"
 
+	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/pkg/errors"
+
 	"sync"
 
 	"github.com/ThreeDotsLabs/watermill"
@@ -61,7 +64,13 @@ func Module(topics map[string]string) fx.Option {
 					return nil
 				},
 				OnStop: func(ctx context.Context) error {
-					return router.Close()
+					logging.FromContext(ctx).Infof("Stopping router...")
+					if err := router.Close(); err != nil {
+						return errors.Wrap(err, "stopping router")
+					}
+					logging.FromContext(ctx).Infof("Router stopped...")
+
+					return nil
 				},
 			})
 			return nil

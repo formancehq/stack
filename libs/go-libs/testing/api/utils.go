@@ -1,4 +1,4 @@
-package apitesting
+package api
 
 import (
 	"encoding/json"
