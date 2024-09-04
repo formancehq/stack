@@ -77,6 +77,9 @@ func (a *App) Run(cmd *cobra.Command) error {
 	}
 
 	logger.Infof("Stopping app...")
+	defer func() {
+		logger.Infof("App stopped!")
+	}()
 
 	if err := app.Stop(logging.ContextWithLogger(contextWithLifecycle(
 		context.Background(), // Don't reuse original context as it can have been cancelled, and we really need to properly stop the app

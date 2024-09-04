@@ -49,7 +49,7 @@ func TestVerifyAccessToken(t *testing.T) {
 	}
 
 	// Construct our storage
-	postgresDB := srv.NewDatabase()
+	postgresDB := srv.NewDatabase(t)
 	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
 		DatabaseSourceName: postgresDB.ConnString(),
 	}, hooks...)

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"slices"
@@ -40,6 +41,8 @@ func (t *TestingTForMain) Close() {
 }
 
 func WithTestMain(fn func(main *TestingTForMain) int) {
+	flag.Parse()
+
 	t := &TestingTForMain{}
 	code := fn(t)
 	t.Close()

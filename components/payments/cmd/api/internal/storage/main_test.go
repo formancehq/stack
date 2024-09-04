@@ -33,7 +33,7 @@ func TestMain(m *testing.M) {
 func newStore(t *testing.T) *Storage {
 	t.Helper()
 
-	pgServer := srv.NewDatabase()
+	pgServer := srv.NewDatabase(t)
 
 	config, err := pgx.ParseConfig(pgServer.ConnString())
 	require.NoError(t, err)

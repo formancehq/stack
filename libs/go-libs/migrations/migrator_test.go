@@ -31,7 +31,7 @@ func TestMigrations(t *testing.T) {
 		},
 	)
 
-	db := srv.NewDatabase()
+	db := srv.NewDatabase(t)
 	sqlDB, err := sql.Open("pgx", db.ConnString())
 	require.NoError(t, err)
 

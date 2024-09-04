@@ -8,8 +8,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	sharedapi "github.com/formancehq/stack/libs/go-libs/testing/api"
+
 	"github.com/formancehq/orchestration/internal/triggers"
-	"github.com/formancehq/stack/libs/go-libs/api/apitesting"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 
 	"github.com/formancehq/orchestration/internal/api"
@@ -114,7 +115,7 @@ func TestTestTrigger(t *testing.T) {
 				require.Equal(t, http.StatusOK, rec.Result().StatusCode)
 
 				result := triggers.TestTriggerResult{}
-				apitesting.ReadResponse(t, rec, &result)
+				sharedapi.ReadResponse(t, rec, &result)
 
 				require.Equal(t, testCase.expected, result)
 			})

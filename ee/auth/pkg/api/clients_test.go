@@ -24,7 +24,7 @@ import (
 func withDbAndClientRouter(t *testing.T, callback func(router chi.Router, db *bun.DB)) {
 	t.Parallel()
 
-	pgDatabase := srv.NewDatabase()
+	pgDatabase := srv.NewDatabase(t)
 
 	hooks := make([]bun.QueryHook, 0)
 	if testing.Verbose() {

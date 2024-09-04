@@ -7,11 +7,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	sharedapi "github.com/formancehq/stack/libs/go-libs/testing/api"
+
 	"github.com/formancehq/orchestration/internal/api"
 	"github.com/go-chi/chi/v5"
 
 	"github.com/formancehq/orchestration/internal/workflow"
-	"github.com/formancehq/stack/libs/go-libs/api/apitesting"
 	"github.com/stretchr/testify/require"
 
 	"github.com/uptrace/bun"
@@ -28,7 +29,7 @@ func TestDeleteWorkflow(t *testing.T) {
 		require.Equal(t, http.StatusCreated, rec.Result().StatusCode)
 
 		workflow := workflow.Workflow{}
-		apitesting.ReadResponse(t, rec, &workflow)
+		sharedapi.ReadResponse(t, rec, &workflow)
 
 		require.NotEmpty(t, workflow.ID)
 
