@@ -2,28 +2,58 @@ package migrations
 
 import (
 	"context"
-	"embed"
+	"io/fs"
 	"path/filepath"
+	"slices"
+	"strconv"
+	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
 )
 
-func CollectMigrationFiles(fs embed.FS) ([]Migration, error) {
-	entries, err := fs.ReadDir("migrations")
+//go:generate mockgen -source collect.go -destination collect_generated.go -package migrations . MigrationFileSystem
+type MigrationFileSystem interface {
+	ReadDir(dir string) ([]fs.DirEntry, error)
+	ReadFile(filename string) ([]byte, error)
+}
+
+func CollectMigrationFiles(fs MigrationFileSystem, rootDir string) ([]Migration, error) {
+	entries, err := fs.ReadDir(rootDir)
 	if err != nil {
 		return nil, errors.Wrap(err, "collecting migration files")
 	}
 
-	ret := make([]Migration, len(entries))
+	filenames := make([]string, len(entries))
 	for i, entry := range entries {
-		fileContent, err := fs.ReadFile(filepath.Join("migrations", entry.Name()))
+		filenames[i] = entry.Name()
+	}
+
+	slices.SortFunc(filenames, func(a, b string) int {
+		fileAVersionAsString := strings.SplitN(a, "-", 2)[0]
+		fileAVersion, err := strconv.ParseInt(fileAVersionAsString, 10, 64)
 		if err != nil {
-			return nil, errors.Wrapf(err, "reading migration file %s", entry.Name())
+			panic(err)
+		}
+
+		fileBVersionAsString := strings.SplitN(b, "-", 2)[0]
+		fileBVersion, err := strconv.ParseInt(fileBVersionAsString, 10, 64)
+		if err != nil {
+			panic(err)
+		}
+
+		return int(fileAVersion - fileBVersion)
+	})
+
+	ret := make([]Migration, len(entries))
+	for i, entry := range filenames {
+		fileContent, err := fs.ReadFile(filepath.Join(rootDir, entry))
+		if err != nil {
+			return nil, errors.Wrapf(err, "reading migration file %s", entry)
 		}
 
 		ret[i] = Migration{
-			Name: entry.Name(),
+			Name: entry,
 			UpWithContext: func(ctx context.Context, tx bun.Tx) error {
 				_, err := tx.ExecContext(ctx, string(fileContent))
 				return err

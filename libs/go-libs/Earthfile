@@ -25,6 +25,17 @@ lint:
     DO --pass-args stack+GO_LINT
     SAVE ARTIFACT * AS LOCAL ./
 
+generate:
+    FROM core+builder-image
+    RUN apk update && apk add openjdk11
+    DO --pass-args core+GO_INSTALL --package=go.uber.org/mock/mockgen@latest
+    COPY (+sources/*) /src
+    WORKDIR /src
+    DO --pass-args core+GO_GENERATE
+    FOR dir IN $(ls -d */)
+        SAVE ARTIFACT $dir AS LOCAL ./
+    END
+
 pre-commit:
     WAIT
       BUILD --pass-args +tidy

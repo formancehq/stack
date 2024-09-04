@@ -62,6 +62,7 @@ require (
 	go.opentelemetry.io/otel/sdk/metric v1.28.0
 	go.opentelemetry.io/otel/trace v1.28.0
 	go.uber.org/fx v1.22.2
+	go.uber.org/mock v0.4.0
 	go.uber.org/zap v1.27.0
 )
 
