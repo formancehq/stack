@@ -128,8 +128,8 @@ func ParseTime(v string) (Time, error) {
 
 type Duration = time.Duration
 
-func Since(t time.Time) Duration {
-	return time.Since(t)
+func Since(t Time) Duration {
+	return time.Since(t.Time)
 }
 
 func ParseDuration(v string) (time.Duration, error) {
