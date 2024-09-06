@@ -519,9 +519,10 @@ func main() {
 ### Response
 
 **[*operations.V2DeleteAccountMetadataResponse](../../pkg/models/operations/v2deleteaccountmetadataresponse.md), error**
-| Error Object       | Status Code        | Content Type       |
-| ------------------ | ------------------ | ------------------ |
-| sdkerrors.SDKError | 4xx-5xx            | */*                |
+| Error Object              | Status Code               | Content Type              |
+| ------------------------- | ------------------------- | ------------------------- |
+| sdkerrors.V2ErrorResponse | default                   | application/json          |
+| sdkerrors.SDKError        | 4xx-5xx                   | */*                       |
 
 ## DeleteLedgerMetadata
 
