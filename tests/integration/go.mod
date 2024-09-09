@@ -8,13 +8,13 @@ require (
 	github.com/docker/docker v27.1.2+incompatible
 	github.com/egymgmbh/go-prefix-writer v0.0.0-20180609083313-7326ea162eca
 	github.com/formancehq/auth v0.0.0-00010101000000-000000000000
-	github.com/formancehq/formance-sdk-go/v2 v2.0.0-00010101000000-000000000000
+	github.com/formancehq/formance-sdk-go/v2 v2.0.0-rc.15
 	github.com/formancehq/ledger v0.0.0-00010101000000-000000000000
 	github.com/formancehq/orchestration v0.0.0-00010101000000-000000000000
 	github.com/formancehq/payments v0.0.0-00010101000000-000000000000
 	github.com/formancehq/reconciliation v0.0.0-00010101000000-000000000000
 	github.com/formancehq/search v0.0.0-00010101000000-000000000000
-	github.com/formancehq/stack/libs/events v0.0.0-00010101000000-000000000000
+	github.com/formancehq/stack/libs/events v0.0.0-20240906114726-f9109bb4b95f
 	github.com/formancehq/stack/libs/go-libs v0.0.0-20240906114726-f9109bb4b95f
 	github.com/formancehq/wallets v0.0.0-00010101000000-000000000000
 	github.com/formancehq/webhooks v0.0.0-00010101000000-000000000000
@@ -23,7 +23,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.6.0
 	github.com/nats-io/nats.go v1.37.0
-	github.com/oauth2-proxy/mockoidc v0.0.0-20220308204021-b9169deeb282
+	github.com/oauth2-proxy/mockoidc v0.0.0-20240214162133-caebfff84d25
 	github.com/onsi/ginkgo/v2 v2.20.2
 	github.com/onsi/gomega v1.34.2
 	github.com/ory/dockertest/v3 v3.11.0
@@ -33,7 +33,7 @@ require (
 	github.com/spf13/cobra v1.8.1
 	github.com/uptrace/bun v1.2.3
 	github.com/uptrace/bun/dialect/pgdialect v1.2.3
-	github.com/uptrace/bun/driver/pgdriver v1.1.14
+	github.com/uptrace/bun/driver/pgdriver v1.1.17
 	github.com/xo/dburl v0.23.2
 	github.com/zitadel/oidc/v2 v2.12.2
 	golang.org/x/oauth2 v0.21.0
@@ -89,20 +89,21 @@ require (
 	github.com/eapache/queue v1.1.0 // indirect
 	github.com/elastic/go-elasticsearch/v7 v7.17.10 // indirect
 	github.com/ericlagergren/decimal v0.0.0-20240411145413-00de7ca16731 // indirect
-	github.com/expr-lang/expr v1.15.6 // indirect
+	github.com/expr-lang/expr v1.15.8 // indirect
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
 	github.com/fatih/color v1.17.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/formancehq/payments/genericclient v0.0.0-00010101000000-000000000000 // indirect
 	github.com/formancehq/stack/libs/core v0.0.0-20240906114726-f9109bb4b95f // indirect
-	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.5 // indirect
 	github.com/get-momo/atlar-v1-go-client v1.2.1 // indirect
 	github.com/gibson042/canonicaljson-go v1.0.3 // indirect
 	github.com/go-chi/chi v4.1.2+incompatible // indirect
 	github.com/go-chi/chi/v5 v5.1.0 // indirect
 	github.com/go-chi/cors v1.2.1 // indirect
 	github.com/go-chi/render v1.0.3 // indirect
+	github.com/go-jose/go-jose/v3 v3.0.3 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
@@ -118,7 +119,7 @@ require (
 	github.com/go-openapi/validate v0.22.6 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.14.0 // indirect
+	github.com/go-playground/validator/v10 v10.14.1 // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/goccy/go-json v0.10.3 // indirect
@@ -132,7 +133,7 @@ require (
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/pprof v0.0.0-20240903155634-a8630aee4ab9 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
-	github.com/gorilla/handlers v1.5.1 // indirect
+	github.com/gorilla/handlers v1.5.2 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/gorilla/schema v1.4.1 // indirect
 	github.com/gorilla/securecookie v1.1.2 // indirect
@@ -192,7 +193,7 @@ require (
 	github.com/opensearch-project/opensearch-go v1.1.0 // indirect
 	github.com/opensearch-project/opensearch-go/v2 v2.3.0 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
-	github.com/perimeterx/marshmallow v1.1.4 // indirect
+	github.com/perimeterx/marshmallow v1.1.5 // indirect
 	github.com/pierrec/lz4/v4 v4.1.21 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
@@ -251,7 +252,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.29.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.3.1 // indirect
 	go.temporal.io/api v1.18.1 // indirect
-	go.temporal.io/sdk v1.21.1 // indirect
+	go.temporal.io/sdk v1.21.2 // indirect
 	go.temporal.io/sdk/contrib/opentelemetry v0.2.0 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/dig v1.18.0 // indirect
@@ -265,7 +266,7 @@ require (
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.24.0 // indirect
 	golang.org/x/text v0.17.0 // indirect
-	golang.org/x/time v0.5.0 // indirect
+	golang.org/x/time v0.6.0 // indirect
 	golang.org/x/tools v0.24.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240903143218-8af14fe29dc1 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240903143218-8af14fe29dc1 // indirect

@@ -19,7 +19,7 @@ require (
 	github.com/spf13/cobra v1.8.1
 	github.com/zitadel/oidc/v2 v2.12.2
 	golang.org/x/mod v0.19.0
-	golang.org/x/oauth2 v0.20.0
+	golang.org/x/oauth2 v0.21.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
