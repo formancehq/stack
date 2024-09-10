@@ -6,7 +6,7 @@ operator:
 
   image:
     repository: "ghcr.io/formancehq/operator"
-    tag: "v2.0.3"
+    tag: "v2.1.0-beta.1"
   operator:
     disableWebhooks: false
     region: "private"
@@ -29,7 +29,7 @@ agent:
   enabled: false
 
   image:
-    tag: "v2.0.3"
+    tag: "v2.1.0-beta.1"
   server:
     address: "app.formance.cloud:443"
     tls:
@@ -84,3 +84,15 @@ versions:
       orchestration: v2.0.3
       reconciliation: v2.0.3
       operator-utils: v2.0.3
+    v2.1:
+      ledger: v2.1.0-beta.1
+      search: v2.1.0-beta.1
+      stargate: v2.1.0-beta.1
+      auth: v2.1.0-beta.1
+      wallets: v2.1.0-beta.1
+      webhooks: v2.1.0-beta.1
+      gateway: v2.1.0-beta.1
+      payments: v2.1.0-beta.1
+      orchestration: v2.1.0-beta.1
+      reconciliation: v2.1.0-beta.1
+      operator-utils: v2.1.0-beta.1
