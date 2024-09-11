@@ -3,7 +3,6 @@ VERSION 0.8
 IMPORT github.com/formancehq/earthly:feat/monorepo AS core
 IMPORT ../.. AS stack
 IMPORT ../../releases AS releases
-
 FROM core+base-image
 
 temporalite-build:
@@ -26,14 +25,14 @@ tests:
     FROM core+builder-image
     WORKDIR /src
     RUN apk update && apk add docker-cli-compose
-    COPY --pass-args (core+sources/out --LOCATION=go.mod) /src/go.mod
-    COPY --pass-args (core+sources/out --LOCATION=go.sum) /src/go.sum
-    COPY --pass-args (core+sources/out --LOCATION=libs) /src/libs
-    COPY --pass-args (core+sources/out --LOCATION=components/ledger) /src/components/ledger
-    COPY --pass-args (core+sources/out --LOCATION=components/payments) /src/components/payments
-    COPY --pass-args (core+sources/out --LOCATION=ee) /src/ee
-    COPY --pass-args (core+build-final-spec/latest.json) /src/releases/build/latest.json
-    DO core+INCLURE_SDK_GO --LOCATION /src/releases/sdks/go
+    COPY --pass-args (stack+sources/out --LOCATION=go.mod) /src/go.mod
+    COPY --pass-args (stack+sources/out --LOCATION=go.sum) /src/go.sum
+    COPY --pass-args (stack+sources/out --LOCATION=libs) /src/libs
+    COPY --pass-args (stack+sources/out --LOCATION=components/ledger) /src/components/ledger
+    COPY --pass-args (stack+sources/out --LOCATION=components/payments) /src/components/payments
+    COPY --pass-args (stack+sources/out --LOCATION=ee) /src/ee
+    COPY --pass-args (stack+build-final-spec/latest.json) /src/releases/build/latest.json
+    COPY --pass-args (releases+sdk-generate/go) /src/releases/sdks/go
     COPY . /src/tests/integration
     WORKDIR /src/tests/integration
     DO --pass-args core+GO_INSTALL --package=github.com/onsi/ginkgo/v2/ginkgo
@@ -62,13 +61,13 @@ tests:
 
 sources:
     WORKDIR src
-    COPY --pass-args (core+sources/out --LOCATION=libs) /src/libs
-    DO core+INCLURE_SDK_GO --LOCATION /src/releases/sdks/go
-    COPY --pass-args (core+sources/out --LOCATION=components/ledger) /src/components/ledger
-    COPY --pass-args (core+sources/out --LOCATION=components/payments) /src/components/payments
-    COPY --pass-args (core+sources/out --LOCATION=ee) /src/ee
-    COPY --pass-args (core+sources/out --LOCATION=go.mod) /src/go.mod
-    COPY --pass-args (core+sources/out --LOCATION=go.sum) /src/go.sum
+    COPY --pass-args (stack+sources/out --LOCATION=libs) /src/libs
+    COPY --pass-args (releases+sdk-generate/go) /src/releases/sdks/go
+    COPY --pass-args (stack+sources/out --LOCATION=components/ledger) /src/components/ledger
+    COPY --pass-args (stack+sources/out --LOCATION=components/payments) /src/components/payments
+    COPY --pass-args (stack+sources/out --LOCATION=ee) /src/ee
+    COPY --pass-args (stack+sources/out --LOCATION=go.mod) /src/go.mod
+    COPY --pass-args (stack+sources/out --LOCATION=go.sum) /src/go.sum
     COPY . /src/tests/integration
     WORKDIR /src/tests/integration
     SAVE ARTIFACT /src
@@ -78,7 +77,7 @@ lint:
     COPY (+sources/*) /src
     COPY --pass-args +tidy/go.* .
     WORKDIR /src/tests/integration
-    DO --pass-args core+GO_LINT
+    DO --pass-args stack+GO_LINT
     SAVE ARTIFACT * AS LOCAL ./
 
 tidy:

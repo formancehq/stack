@@ -22,7 +22,8 @@ lint:
     WORKDIR /src
     COPY --pass-args +tidy/go.* .
     DO --pass-args core+GO_LINT
-    SAVE ARTIFACT * AS LOCAL ./
+    SAVE ARTIFACT accounts AS LOCAL accounts
+    SAVE ARTIFACT assets AS LOCAL assets
 
 pre-commit:
     WAIT
