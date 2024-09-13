@@ -1,15 +1,13 @@
-package temporalworker
+package temporal
 
 import (
 	"context"
 
 	"github.com/formancehq/stack/libs/go-libs/logging"
-
-	temporalworkflow "go.temporal.io/sdk/workflow"
-
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
+	temporalworkflow "go.temporal.io/sdk/workflow"
 	"go.uber.org/fx"
 )
 

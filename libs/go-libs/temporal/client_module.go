@@ -1,13 +1,13 @@
-package temporalclient
+package temporal
 
 import (
 	"context"
 	"crypto/tls"
 	"time"
 
-	"github.com/formancehq/orchestration/internal/triggers"
-	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/spf13/cobra"
+	"go.opentelemetry.io/otel/trace"
 	"go.temporal.io/api/enums/v1"
 	"go.temporal.io/api/operatorservice/v1"
 	"go.temporal.io/api/serviceerror"
@@ -17,7 +17,17 @@ import (
 	"go.uber.org/fx"
 )
 
-func NewModule(address, namespace string, certStr string, key string, initSearchAttributes bool) fx.Option {
+type SearchAttributes struct {
+	SearchAttributes map[string]enums.IndexedValueType
+}
+
+func FXModuleFromFlags(cmd *cobra.Command, tracer trace.Tracer, searchAttributes SearchAttributes) fx.Option {
+	address, _ := cmd.Flags().GetString(TemporalAddressFlag)
+	namespace, _ := cmd.Flags().GetString(TemporalNamespaceFlag)
+	certStr, _ := cmd.Flags().GetString(TemporalSSLClientCertFlag)
+	key, _ := cmd.Flags().GetString(TemporalSSLClientKeyFlag)
+	initSearchAttributes, _ := cmd.Flags().GetBool(TemporalInitSearchAttributesFlag)
+
 	return fx.Options(
 		fx.Provide(func(logger logging.Logger) (client.Options, error) {
 
@@ -31,7 +41,7 @@ func NewModule(address, namespace string, certStr string, key string, initSearch
 			}
 
 			tracingInterceptor, err := opentelemetry.NewTracingInterceptor(opentelemetry.TracerOptions{
-				Tracer: workflow.Tracer,
+				Tracer: tracer,
 			})
 			if err != nil {
 				return client.Options{}, err
@@ -55,7 +65,7 @@ func NewModule(address, namespace string, certStr string, key string, initSearch
 			lifecycle.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
 					if initSearchAttributes {
-						return createSearchAttributes(ctx, c, namespace)
+						return createSearchAttributes(ctx, c, namespace, searchAttributes.SearchAttributes)
 					}
 					return nil
 				},
@@ -68,13 +78,10 @@ func NewModule(address, namespace string, certStr string, key string, initSearch
 	)
 }
 
-func createSearchAttributes(ctx context.Context, c client.Client, namespace string) error {
+func createSearchAttributes(ctx context.Context, c client.Client, namespace string, searchAttributes map[string]enums.IndexedValueType) error {
 	_, err := c.OperatorService().AddSearchAttributes(logging.TestingContext(), &operatorservice.AddSearchAttributesRequest{
-		SearchAttributes: map[string]enums.IndexedValueType{
-			workflow.SearchAttributeWorkflowID: enums.INDEXED_VALUE_TYPE_TEXT,
-			triggers.SearchAttributeTriggerID:  enums.INDEXED_VALUE_TYPE_TEXT,
-		},
-		Namespace: namespace,
+		SearchAttributes: searchAttributes,
+		Namespace:        namespace,
 	})
 	if err != nil {
 		if _, ok := err.(*serviceerror.AlreadyExists); !ok {
@@ -90,8 +97,15 @@ func createSearchAttributes(ctx context.Context, c client.Client, namespace stri
 			panic(err)
 		}
 
-		if ret.CustomAttributes[workflow.SearchAttributeWorkflowID] != enums.INDEXED_VALUE_TYPE_UNSPECIFIED &&
-			ret.CustomAttributes[triggers.SearchAttributeTriggerID] != enums.INDEXED_VALUE_TYPE_UNSPECIFIED {
+		done := true
+		for key := range searchAttributes {
+			if ret.CustomAttributes[key] == enums.INDEXED_VALUE_TYPE_UNSPECIFIED {
+				done = false
+				break
+			}
+		}
+
+		if done {
 			return nil
 		}
 

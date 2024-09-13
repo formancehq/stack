@@ -4,11 +4,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/formancehq/orchestration/internal/temporalworker"
-
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/temporal"
 	"github.com/uptrace/bun"
 	"go.temporal.io/sdk/client"
 	"go.uber.org/fx"
@@ -23,14 +22,14 @@ func NewModule(taskQueue string) fx.Option {
 		fx.Provide(func() *triggerWorkflow {
 			return NewWorkflow(taskQueue, true)
 		}),
-		fx.Provide(fx.Annotate(func(workflow *triggerWorkflow) temporalworker.DefinitionSet {
+		fx.Provide(fx.Annotate(func(workflow *triggerWorkflow) temporal.DefinitionSet {
 			return workflow.DefinitionSet()
 		}, fx.ResultTags(`group:"workflows"`))),
 		fx.Provide(func(db *bun.DB, manager *workflow.WorkflowManager,
 			expressionEvaluator *expressionEvaluator, publisher message.Publisher) Activities {
 			return NewActivities(db, manager, expressionEvaluator, publisher)
 		}),
-		fx.Provide(fx.Annotate(func(activities Activities) temporalworker.DefinitionSet {
+		fx.Provide(fx.Annotate(func(activities Activities) temporal.DefinitionSet {
 			return activities.DefinitionSet()
 		}, fx.ResultTags(`group:"activities"`))),
 	)

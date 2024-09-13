@@ -4,13 +4,12 @@ import (
 	"context"
 	"strings"
 
-	"github.com/formancehq/orchestration/internal/temporalworker"
-
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/formancehq/orchestration/pkg/events"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
+	"github.com/formancehq/stack/libs/go-libs/temporal"
 	"github.com/uptrace/bun"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
@@ -104,21 +103,21 @@ func (a Activities) SendEventForTriggerTermination(ctx context.Context, occurren
 	}
 }
 
-func (a Activities) DefinitionSet() temporalworker.DefinitionSet {
-	return temporalworker.NewDefinitionSet().
-		Append(temporalworker.Definition{
+func (a Activities) DefinitionSet() temporal.DefinitionSet {
+	return temporal.NewDefinitionSet().
+		Append(temporal.Definition{
 			Func: a.EvalTriggerVariables,
 			Name: "EvalTriggerVariables",
 		}).
-		Append(temporalworker.Definition{
+		Append(temporal.Definition{
 			Func: a.InsertTriggerOccurrence,
 			Name: "InsertTriggerOccurrence",
 		}).
-		Append(temporalworker.Definition{
+		Append(temporal.Definition{
 			Func: a.ListTriggers,
 			Name: "ListTriggers",
 		}).
-		Append(temporalworker.Definition{
+		Append(temporal.Definition{
 			Func: a.SendEventForTriggerTermination,
 			Name: "SendEventForTriggerTermination",
 		})

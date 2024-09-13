@@ -3,19 +3,16 @@ package cmd
 import (
 	"net/http"
 
+	sdk "github.com/formancehq/formance-sdk-go/v2"
+	"github.com/formancehq/orchestration/internal/triggers"
 	"github.com/formancehq/stack/libs/go-libs/aws/iam"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
 	"github.com/formancehq/stack/libs/go-libs/licence"
 	"github.com/formancehq/stack/libs/go-libs/publish"
-
-	"go.temporal.io/sdk/worker"
-
-	"github.com/formancehq/orchestration/internal/triggers"
-
-	sdk "github.com/formancehq/formance-sdk-go/v2"
-	"github.com/formancehq/orchestration/internal/temporalworker"
 	"github.com/formancehq/stack/libs/go-libs/service"
+	"github.com/formancehq/stack/libs/go-libs/temporal"
 	"github.com/spf13/cobra"
+	"go.temporal.io/sdk/worker"
 	"go.uber.org/fx"
 )
 
@@ -33,15 +30,14 @@ func stackClientModule(cmd *cobra.Command) fx.Option {
 }
 
 func workerOptions(cmd *cobra.Command) fx.Option {
-
 	stack, _ := cmd.Flags().GetString(stackFlag)
-	temporalTaskQueue, _ := cmd.Flags().GetString(temporalTaskQueueFlag)
-	temporalMaxParallelActivities, _ := cmd.Flags().GetInt(temporalMaxParallelActivitiesFlag)
+	temporalTaskQueue, _ := cmd.Flags().GetString(temporal.TemporalTaskQueueFlag)
+	temporalMaxParallelActivities, _ := cmd.Flags().GetInt(temporal.TemporalMaxParallelActivitiesFlag)
 	topics, _ := cmd.Flags().GetStringSlice(topicsFlag)
 
 	return fx.Options(
 		stackClientModule(cmd),
-		temporalworker.NewWorkerModule(temporalTaskQueue, worker.Options{
+		temporal.NewWorkerModule(temporalTaskQueue, worker.Options{
 			TaskQueueActivitiesPerSecond: float64(temporalMaxParallelActivities),
 		}),
 		triggers.NewListenerModule(
@@ -64,19 +60,13 @@ func newWorkerCommand() *cobra.Command {
 			return service.New(cmd.OutOrStdout(), commonOptions, workerOptions(cmd)).Run(cmd)
 		},
 	}
-	ret.Flags().Float64(temporalMaxParallelActivitiesFlag, 10, "Maximum number of parallel activities")
 	ret.Flags().String(stackURLFlag, "", "Stack url")
 	ret.Flags().String(stackClientIDFlag, "", "Stack client ID")
 	ret.Flags().String(stackClientSecretFlag, "", "Stack client secret")
-	ret.Flags().String(temporalAddressFlag, "", "Temporal server address")
-	ret.Flags().String(temporalNamespaceFlag, "default", "Temporal namespace")
-	ret.Flags().String(temporalSSLClientKeyFlag, "", "Temporal client key")
-	ret.Flags().String(temporalSSLClientCertFlag, "", "Temporal client cert")
-	ret.Flags().String(temporalTaskQueueFlag, "default", "Temporal task queue name")
-	ret.Flags().Bool(temporalInitSearchAttributes, false, "Init temporal search attributes")
 	ret.Flags().StringSlice(topicsFlag, []string{}, "Topics to listen")
 	ret.Flags().String(stackFlag, "", "Stack")
 
+	temporal.AddFlags(ret.Flags())
 	publish.AddFlags(ServiceName, ret.Flags())
 	bunconnect.AddFlags(ret.Flags())
 	iam.AddFlags(ret.Flags())

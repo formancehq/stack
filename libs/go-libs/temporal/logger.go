@@ -1,4 +1,4 @@
-package temporalclient
+package temporal
 
 import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
