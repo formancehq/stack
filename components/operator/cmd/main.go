@@ -39,7 +39,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 
-	stackformancecomv1beta3 "github.com/formancehq/operator/api/stack.formance.com/v1beta3"
 	_ "github.com/formancehq/operator/internal/resources"
 
 	formancecomv1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
@@ -54,7 +53,6 @@ var (
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 	utilruntime.Must(formancev1beta1.AddToScheme(scheme))
-	utilruntime.Must(stackformancecomv1beta3.AddToScheme(scheme))
 	utilruntime.Must(formancecomv1beta1.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme
 }
