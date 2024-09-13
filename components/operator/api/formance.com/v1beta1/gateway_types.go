@@ -60,9 +60,6 @@ type GatewayStatus struct {
 	// Detected http apis. See [GatewayHTTPAPI](#gatewayhttpapi)
 	//+optional
 	SyncHTTPAPIs []string `json:"syncHTTPAPIs"`
-	// +kubebuilder:default:=false
-	// Indicates if a [Auth](#auth) module has been detected.
-	AuthEnabled bool `json:"authEnabled"`
 }
 
 //+kubebuilder:object:root=true
@@ -70,7 +67,6 @@ type GatewayStatus struct {
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:printcolumn:name="Stack",type=string,JSONPath=".spec.stack",description="Stack"
 //+kubebuilder:printcolumn:name="HTTP APIs",type=string,JSONPath=".status.syncHTTPAPIs",description="Synchronized http apis"
-//+kubebuilder:printcolumn:name="Auth enabled",type=string,JSONPath=".status.authEnabled",description="Is authentication enabled"
 //+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
 //+kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
 //+kubebuilder:metadata:labels=formance.com/kind=module

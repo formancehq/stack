@@ -25,10 +25,6 @@ spec:
       jsonPath: .status.syncHTTPAPIs
       name: HTTP APIs
       type: string
-    - description: Is authentication enabled
-      jsonPath: .status.authEnabled
-      name: Auth enabled
-      type: string
     - description: Is ready
       jsonPath: .status.ready
       name: Ready
@@ -119,10 +115,6 @@ spec:
             type: object
           status:
             properties:
-              authEnabled:
-                default: false
-                description: Indicates if a [Auth](#auth) module has been detected.
-                type: boolean
               conditions:
                 items:
                   description: "Condition contains details for one aspect of the current
@@ -202,8 +194,6 @@ spec:
                 items:
                   type: string
                 type: array
-            required:
-            - authEnabled
             type: object
         type: object
     served: true

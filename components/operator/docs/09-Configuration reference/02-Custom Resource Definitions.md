@@ -731,7 +731,6 @@ Gateway is the Schema for the gateways API
 | `ready` _boolean_ | Ready indicates if the resource is seen as completely reconciled |  |  |
 | `info` _string_ | Info can contain any additional like reconciliation errors |  |  |
 | `syncHTTPAPIs` _string array_ | Detected http apis. See [GatewayHTTPAPI](#gatewayhttpapi) |  |  |
-| `authEnabled` _boolean_ | Indicates if a [Auth](#auth) module has been detected. | false |  |
 
 
 #### Ledger

@@ -48,15 +48,6 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, gateway *v1beta1.Gateway, vers
 		return httpAPIs[i].Spec.Name < httpAPIs[j].Spec.Name
 	})
 
-	auth := &v1beta1.Auth{}
-	ok, err := GetIfExists(ctx, stack.Name, auth)
-	if err != nil {
-		return err
-	}
-	if !ok {
-		auth = nil
-	}
-
 	var broker *v1beta1.Broker
 	if t, err := brokertopics.Find(ctx, stack, "gateway"); err != nil {
 		return err
@@ -69,7 +60,7 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, gateway *v1beta1.Gateway, vers
 		}
 	}
 
-	configMap, err := createConfigMap(ctx, stack, gateway, httpAPIs, auth, broker)
+	configMap, err := createConfigMap(ctx, stack, gateway, httpAPIs, broker)
 	if err != nil {
 		return err
 	}
@@ -89,7 +80,6 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, gateway *v1beta1.Gateway, vers
 	gateway.Status.SyncHTTPAPIs = Map(httpAPIs, func(from *v1beta1.GatewayHTTPAPI) string {
 		return from.Spec.Name
 	})
-	gateway.Status.AuthEnabled = auth != nil
 
 	return nil
 }

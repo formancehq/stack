@@ -7,20 +7,6 @@
 	}
 }
 {{- $values := . }}
-{{- if .Auth }}
-(auth) {
-	auth {
-		issuer {{ .Auth.Issuer }}
-
-		read_key_set_max_retries 10
-
-		{{- if .Auth.EnableScopes }}
-		check_scopes yes
-		service {args[0]}
-		{{- end }}
-	}
-}
-{{- end }}
 {{- if .EnableAudit }}
 (audit) {
 	audit {
@@ -58,9 +44,6 @@
 	# those directives are evaluated matters. So the jwtauth directive must be
 	# ordered.
 	# c.f. https://caddyserver.com/docs/caddyfile/directives#directive-order
-	{{- if .Auth }}
-	order auth before basicauth
-	{{- end }}
 	order versions after metrics
 	{{- if .EnableAudit }}
 	order audit after encode
@@ -92,9 +75,6 @@
 		{{- end }}
 		uri strip_prefix /api/{{ $service.Name }}
         import cors
-        {{- if and (not $rule.Secured) $values.Auth }}
-        import auth {{ $service.Name }}
-        {{- end }}
 		reverse_proxy {{ $service.Name }}:8080 {
             header_up Host {upstream_hostport}
         }
