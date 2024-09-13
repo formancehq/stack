@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	_ "embed"
 
 	"github.com/formancehq/stack/libs/go-libs/migrations"
 	"github.com/uptrace/bun"
@@ -13,10 +14,27 @@ import (
 //nolint:gochecknoglobals // This is a global variable by design.
 var EncryptionKey string
 
-func Migrate(ctx context.Context, db *bun.DB) error {
-	migrator := migrations.NewMigrator()
-	registerMigrationsV0(migrator)
-	registerMigrationsV1(ctx, migrator)
+//go:embed migrations/0-init-schema.sql
+var initSchema string
 
-	return migrator.Up(ctx, db)
+func registerMigrations(migrator *migrations.Migrator) {
+	migrator.RegisterMigrations(
+		migrations.Migration{
+			Name: "init schema",
+			UpWithContext: func(ctx context.Context, tx bun.Tx) error {
+				_, err := tx.ExecContext(ctx, initSchema)
+				return err
+			},
+		},
+	)
+}
+
+func getMigrator() *migrations.Migrator {
+	migrator := migrations.NewMigrator()
+	registerMigrations(migrator)
+	return migrator
+}
+
+func Migrate(ctx context.Context, db bun.IDB) error {
+	return getMigrator().Up(ctx, db)
 }
