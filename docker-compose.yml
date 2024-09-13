@@ -13,7 +13,7 @@ services:
   ledger:
     image: "ghcr.io/formancehq/ledger:v2.0.3"
     healthcheck:
-      test: [ "CMD", "wget", "http://127.0.0.1:8080/_info", "-O", "-", "-q" ]
+      test: [ "CMD", "curl", "-f", "http://127.0.0.1:3068/_healthcheck" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -36,7 +36,7 @@ services:
     image: "ghcr.io/formancehq/payments:v2.0.3"
     command: api server
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://127.0.0.1:8080/_healthcheck" ]
+      test: [ "CMD", "curl", "-f", "http://127.0.0.1:8080/_live" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -54,7 +54,7 @@ services:
     image: "ghcr.io/formancehq/payments:v2.0.3"
     command: drivers server
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://127.0.0.1:8080/_healthcheck" ]
+      test: [ "CMD", "curl", "-f", "http://127.0.0.1:8080/_live" ]
       interval: 10s
       timeout: 5s
       retries: 5
