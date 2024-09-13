@@ -1,0 +1,11 @@
+syntax = "proto3";
+package formance.payments.connectors.grpc.proto;
+option go_package = "github.com/formancehq/payments/internal/connectors/grpc/proto";
+
+message Monetary {
+    string asset = 1;
+
+    // Protobuf doesn't have a type for big integers. Therefore,
+    // we need to convert them as bytes.
+    bytes amount = 2;
+}

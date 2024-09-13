@@ -1,0 +1,8 @@
+syntax = "proto3";
+package formance.payments.connectors.grpc.proto;
+option go_package = "github.com/formancehq/payments/internal/connectors/grpc/proto";
+
+message Other {
+    string id = 1;
+    bytes other = 2;
+}
