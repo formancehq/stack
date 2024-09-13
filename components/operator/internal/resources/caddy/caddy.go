@@ -3,9 +3,10 @@ package caddy
 import (
 	"bytes"
 	"fmt"
-	"github.com/formancehq/operator/internal/resources/settings"
 	"strings"
 	"text/template"
+
+	"github.com/formancehq/operator/internal/resources/settings"
 
 	"github.com/formancehq/operator/internal/core"
 

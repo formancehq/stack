@@ -17,51 +17,26 @@ spec:
   - name: v1beta1
     schema:
       openAPIV3Schema:
-        description: |-
-          ResourceReference is a special resources used to refer to externally created resources.
-
-
-          It includes k8s service accounts and secrets.
-
-
-          Why? Because the operator create a namespace by stack, so, a stack does not have access to secrets and service
-          accounts created externally.
-
-
-          A ResourceReference is created by other resource who need to use a specific secret or service account.
-          For example, if you want to use a secret for your database connection (see [Database](#database), you will
-          create a setting indicating a secret name. You will need to create this secret yourself, and you will put this
-          secret inside the namespace you want (`default` maybe).
-
-
-          The Database reconciler will create a ResourceReference looking like that :
-          ```
-          apiVersion: formance.com/v1beta1
-          kind: ResourceReference
-          metadata:
-            name: jqkuffjxcezj-qlii-auth-postgres
-            ownerReferences:
-            - apiVersion: formance.com/v1beta1
-              blockOwnerDeletion: true
-              controller: true
-              kind: Database
-              name: jqkuffjxcezj-qlii-auth
-              uid: 2cc4b788-3ffb-4e3d-8a30-07ed3941c8d2
-          spec:
-            gvk:
-              group: ""
-              kind: Secret
-              version: v1
-            name: postgres
-            stack: jqkuffjxcezj-qlii
-          status:
-            ...
-          ```
-          This reconciler behind this ResourceReference will search, in all namespaces, for a secret named "postgres".
-          The secret must have a label `formance.com/stack` with the value matching either a specific stack or `any` to target any stack.
-
-
-          Once the reconciler has found the secret, it will copy it inside the stack namespace, allowing the ResourceReconciler owner to use it.
+        description: "ResourceReference is a special resources used to refer to externally
+          created resources.\n\n\nIt includes k8s service accounts and secrets.\n\n\nWhy?
+          Because the operator create a namespace by stack, so, a stack does not have
+          access to secrets and service\naccounts created externally.\n\n\nA ResourceReference
+          is created by other resource who need to use a specific secret or service
+          account.\nFor example, if you want to use a secret for your database connection
+          (see [Database](#database), you will\ncreate a setting indicating a secret
+          name. You will need to create this secret yourself, and you will put this\nsecret
+          inside the namespace you want (`default` maybe).\n\n\nThe Database reconciler
+          will create a ResourceReference looking like that :\n```\napiVersion: formance.com/v1beta1\nkind:
+          ResourceReference\nmetadata:\n\n\n\tname: jqkuffjxcezj-qlii-auth-postgres\n\townerReferences:\n\t-
+          apiVersion: formance.com/v1beta1\n\t  blockOwnerDeletion: true\n\t  controller:
+          true\n\t  kind: Database\n\t  name: jqkuffjxcezj-qlii-auth\n\t  uid: 2cc4b788-3ffb-4e3d-8a30-07ed3941c8d2\n\n\nspec:\n\n\n\tgvk:\n\t
+          \ group: \"\"\n\t  kind: Secret\n\t  version: v1\n\tname: postgres\n\tstack:
+          jqkuffjxcezj-qlii\n\n\nstatus:\n\n\n\t...\n\n\n```\nThis reconciler behind
+          this ResourceReference will search, in all namespaces, for a secret named
+          \"postgres\".\nThe secret must have a label `formance.com/stack` with the
+          value matching either a specific stack or `any` to target any stack.\n\n\nOnce
+          the reconciler has found the secret, it will copy it inside the stack namespace,
+          allowing the ResourceReconciler owner to use it."
         properties:
           apiVersion:
             description: |-

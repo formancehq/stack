@@ -46,10 +46,10 @@ spec:
 
 
           Use setting `ledger.deployment-strategy` with either the value :
-          * single : For the single instance mode.
-          * single-writer: For the single writer / multiple reader mode.
-            Under the hood, the operator create two deployments and force the scaling of the writer to stay at 1.
-            Then you can scale the deployment of the reader to the value you want.
+            - single : For the single instance mode.
+            - single-writer: For the single writer / multiple reader mode.
+              Under the hood, the operator create two deployments and force the scaling of the writer to stay at 1.
+              Then you can scale the deployment of the reader to the value you want.
         properties:
           apiVersion:
             description: |-
