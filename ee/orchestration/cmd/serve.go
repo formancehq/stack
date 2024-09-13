@@ -3,21 +3,20 @@ package cmd
 import (
 	"context"
 
-	"github.com/go-chi/chi/v5"
-
 	"github.com/formancehq/go-libs/auth"
 	"github.com/formancehq/go-libs/aws/iam"
 	"github.com/formancehq/go-libs/bun/bunconnect"
-	"github.com/formancehq/go-libs/licence"
-	"github.com/formancehq/go-libs/publish"
-
 	"github.com/formancehq/go-libs/health"
 	"github.com/formancehq/go-libs/httpserver"
+	"github.com/formancehq/go-libs/licence"
+	"github.com/formancehq/go-libs/publish"
 	"github.com/formancehq/go-libs/service"
+	"github.com/formancehq/go-libs/temporal"
 	"github.com/formancehq/orchestration/internal/api"
 	v1 "github.com/formancehq/orchestration/internal/api/v1"
 	v2 "github.com/formancehq/orchestration/internal/api/v2"
 	"github.com/formancehq/orchestration/internal/storage"
+	"github.com/go-chi/chi/v5"
 	"github.com/spf13/cobra"
 	"github.com/uptrace/bun"
 	"go.uber.org/fx"
@@ -78,19 +77,13 @@ func newServeCommand() *cobra.Command {
 
 	cmd.Flags().Bool(workerFlag, false, "Enable worker mode")
 	cmd.Flags().String(listenFlag, ":8080", "Listening address")
-	cmd.Flags().Float64(temporalMaxParallelActivitiesFlag, 10, "Maximum number of parallel activities")
 	cmd.Flags().String(stackURLFlag, "", "Stack url")
 	cmd.Flags().String(stackClientIDFlag, "", "Stack client ID")
 	cmd.Flags().String(stackClientSecretFlag, "", "Stack client secret")
-	cmd.Flags().String(temporalAddressFlag, "", "Temporal server address")
-	cmd.Flags().String(temporalNamespaceFlag, "default", "Temporal namespace")
-	cmd.Flags().String(temporalSSLClientKeyFlag, "", "Temporal client key")
-	cmd.Flags().String(temporalSSLClientCertFlag, "", "Temporal client cert")
-	cmd.Flags().String(temporalTaskQueueFlag, "default", "Temporal task queue name")
-	cmd.Flags().Bool(temporalInitSearchAttributes, false, "Init temporal search attributes")
 	cmd.Flags().StringSlice(topicsFlag, []string{}, "Topics to listen")
 	cmd.Flags().String(stackFlag, "", "Stack")
 
+	temporal.AddFlags(cmd.Flags())
 	service.AddFlags(cmd.Flags())
 	publish.AddFlags(ServiceName, cmd.Flags())
 	auth.AddFlags(cmd.Flags())

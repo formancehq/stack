@@ -1,0 +1,137 @@
+syntax = "proto3";
+package formance.payments.grpc.services;
+option go_package = "github.com/formancehq/payments/internal/connectors/grpc/proto/services";
+
+import "account.proto";
+import "balance.proto";
+import "bank_account.proto";
+import "capability.proto";
+import "other.proto";
+import "payment.proto";
+import "webhook.proto";
+import "workflow.proto";
+
+message InstallRequest {
+    bytes config = 1;
+}
+
+message InstallResponse {
+    repeated formance.payments.connectors.grpc.proto.Capability capabilities = 1;
+    formance.payments.connectors.grpc.proto.Workflow workflow = 2;
+    repeated formance.payments.connectors.grpc.proto.WebhookConfig webhooks_configs = 3;
+}
+
+message UninstallRequest {
+    string connector_id = 1;
+}
+
+message UninstallResponse {}
+
+message FetchNextOthersRequest {
+    string name = 1;
+    bytes from_payload = 2;
+    bytes state = 3;
+    int64 page_size = 4;
+}
+message FetchNextOthersResponse {
+    repeated formance.payments.connectors.grpc.proto.Other others = 1;
+    bytes new_state = 2;
+    bool has_more = 3;
+}
+
+message FetchNextPaymentsRequest {
+    bytes from_payload = 1;
+    bytes state = 2;
+    int64 page_size = 3;
+}
+message FetchNextPaymentsResponse {
+    repeated formance.payments.connectors.grpc.proto.Payment payments = 1;
+    bytes new_state = 2;
+    bool has_more = 3;
+}
+
+message FetchNextAccountsRequest {
+    bytes from_payload = 1;
+    bytes state = 2;
+    int64 page_size = 3;
+}
+message FetchNextAccountsResponse {
+    repeated formance.payments.connectors.grpc.proto.Account accounts = 1;
+    bytes new_state = 2;
+    bool has_more = 3;
+}
+
+message FetchNextExternalAccountsRequest {
+    bytes from_payload = 1;
+    bytes state = 2;
+    int64 page_size = 3;
+}
+
+message FetchNextExternalAccountsResponse {
+    repeated formance.payments.connectors.grpc.proto.Account accounts = 1;
+    bytes new_state = 2;
+    bool has_more = 3;
+}
+
+message FetchNextBalancesRequest {
+    bytes from_payload = 1;
+    bytes state = 2;
+    int64 page_size = 3;
+}
+
+message FetchNextBalancesResponse {
+    repeated formance.payments.connectors.grpc.proto.Balance balances = 1;
+    bytes new_state = 2;
+    bool has_more = 3;
+}
+
+message CreateBankAccountRequest {
+    formance.payments.connectors.grpc.proto.BankAccount bank_account = 1;
+}
+
+message CreateBankAccountResponse {
+    formance.payments.connectors.grpc.proto.Account related_account = 1;
+}
+
+message TranslateWebhookRequest {
+    string name = 1;
+    formance.payments.connectors.grpc.proto.Webhook webhook = 2;
+}
+
+message TranslateWebhookResponse {
+    message Response {
+        string idempotency_key = 1;
+
+        oneof translated {
+            formance.payments.connectors.grpc.proto.Account account = 10;
+            formance.payments.connectors.grpc.proto.Account external_account = 11;
+            formance.payments.connectors.grpc.proto.Payment payment = 12;
+            formance.payments.connectors.grpc.proto.Balance balance = 13;
+        }
+    }
+    
+    repeated Response responses = 1;
+}
+
+message CreateWebhooksRequest {
+    bytes from_payload = 1;
+    string connector_id = 2;
+}
+
+message CreateWebhooksResponse {
+    repeated formance.payments.connectors.grpc.proto.Other others = 1;
+}
+
+service Plugin {
+    rpc Install(InstallRequest) returns (InstallResponse) {}
+    rpc Uninstall(UninstallRequest) returns (UninstallResponse) {}
+    
+    rpc FetchNextOthers(FetchNextOthersRequest) returns (FetchNextOthersResponse) {}
+    rpc FetchNextPayments(FetchNextPaymentsRequest) returns (FetchNextPaymentsResponse) {}
+    rpc FetchNextAccounts(FetchNextAccountsRequest) returns (FetchNextAccountsResponse) {}
+    rpc FetchNextExternalAccounts(FetchNextExternalAccountsRequest) returns (FetchNextExternalAccountsResponse) {}
+    rpc FetchNextBalances(FetchNextBalancesRequest) returns (FetchNextBalancesResponse) {}
+    rpc CreateBankAccount(CreateBankAccountRequest) returns (CreateBankAccountResponse) {}
+    rpc CreateWebhooks(CreateWebhooksRequest) returns (CreateWebhooksResponse) {}
+    rpc TranslateWebhook(TranslateWebhookRequest) returns (TranslateWebhookResponse) {}
+}

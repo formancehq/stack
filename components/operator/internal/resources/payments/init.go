@@ -92,11 +92,13 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, p *v1beta1.Payments, version s
 		}
 	}
 
-	if semver.IsValid(version) && semver.Compare(version, "v1.0.0-alpha") < 0 {
-		if err := createFullDeployment(ctx, stack, p, database, image); err != nil {
+	switch {
+	case semver.IsValid(version) && semver.Compare(version, "v1.0.0-alpha") < 0:
+		if err := createFullDeployment(ctx, stack, p, database, image, false); err != nil {
 			return err
 		}
-	} else {
+	case semver.IsValid(version) && semver.Compare(version, "v1.0.0-alpha") >= 0 &&
+		semver.Compare(version, "v3.0.0") < 0:
 		if err := createReadDeployment(ctx, stack, p, database, image); err != nil {
 			return err
 		}
@@ -105,6 +107,10 @@ func Reconcile(ctx Context, stack *v1beta1.Stack, p *v1beta1.Payments, version s
 			return err
 		}
 		if err := createGateway(ctx, stack, p); err != nil {
+			return err
+		}
+	case !semver.IsValid(version) || semver.Compare(version, "v3.0.0") >= 0:
+		if err := createFullDeployment(ctx, stack, p, database, image, true); err != nil {
 			return err
 		}
 	}

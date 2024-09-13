@@ -5,29 +5,25 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/formancehq/go-libs/auth"
+	"github.com/formancehq/go-libs/bun/bunconnect"
 	"github.com/formancehq/go-libs/bun/bunmigrate"
 	"github.com/formancehq/go-libs/licence"
-	"github.com/formancehq/orchestration/internal/storage"
-	"github.com/uptrace/bun"
-
-	"github.com/formancehq/go-libs/bun/bunconnect"
-
-	"github.com/formancehq/go-libs/auth"
 	"github.com/formancehq/go-libs/otlp"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/clientcredentials"
-
+	"github.com/formancehq/go-libs/otlp/otlptraces"
+	"github.com/formancehq/go-libs/publish"
+	"github.com/formancehq/go-libs/service"
+	"github.com/formancehq/go-libs/temporal"
+	"github.com/formancehq/orchestration/internal/storage"
+	"github.com/formancehq/orchestration/internal/temporalclient"
 	"github.com/formancehq/orchestration/internal/triggers"
 	"github.com/formancehq/orchestration/internal/workflow"
-
-	"github.com/formancehq/go-libs/publish"
-	"github.com/formancehq/orchestration/internal/temporalclient"
-
-	"github.com/formancehq/go-libs/otlp/otlptraces"
-	"github.com/formancehq/go-libs/service"
 	_ "github.com/formancehq/orchestration/internal/workflow/stages/all"
 	"github.com/spf13/cobra"
+	"github.com/uptrace/bun"
 	"go.uber.org/fx"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/clientcredentials"
 )
 
 var (
@@ -38,20 +34,13 @@ var (
 )
 
 const (
-	stackFlag                         = "stack"
-	stackURLFlag                      = "stack-url"
-	stackClientIDFlag                 = "stack-client-id"
-	stackClientSecretFlag             = "stack-client-secret"
-	temporalAddressFlag               = "temporal-address"
-	temporalNamespaceFlag             = "temporal-namespace"
-	temporalSSLClientKeyFlag          = "temporal-ssl-client-key"
-	temporalSSLClientCertFlag         = "temporal-ssl-client-cert"
-	temporalTaskQueueFlag             = "temporal-task-queue"
-	temporalInitSearchAttributes      = "temporal-init-search-attributes"
-	temporalMaxParallelActivitiesFlag = "temporal-max-parallel-activities"
-	topicsFlag                        = "topics"
-	listenFlag                        = "listen"
-	workerFlag                        = "worker"
+	stackFlag             = "stack"
+	stackURLFlag          = "stack-url"
+	stackClientIDFlag     = "stack-client-id"
+	stackClientSecretFlag = "stack-client-secret"
+	topicsFlag            = "topics"
+	listenFlag            = "listen"
+	workerFlag            = "worker"
 )
 
 func NewRootCommand() *cobra.Command {
@@ -82,21 +71,16 @@ func commonOptions(cmd *cobra.Command) (fx.Option, error) {
 		return nil, err
 	}
 
-	temporalAddress, _ := cmd.Flags().GetString(temporalAddressFlag)
-	temporalNamespace, _ := cmd.Flags().GetString(temporalNamespaceFlag)
-	temporalSSLClientKey, _ := cmd.Flags().GetString(temporalSSLClientKeyFlag)
-	temporalSSLClientCert, _ := cmd.Flags().GetString(temporalSSLClientCertFlag)
-	temporalTaskQueue, _ := cmd.Flags().GetString(temporalTaskQueueFlag)
-	temporalInitSearchAttributes, _ := cmd.Flags().GetBool(temporalInitSearchAttributes)
+	temporalTaskQueue, _ := cmd.Flags().GetString(temporal.TemporalTaskQueueFlag)
 
 	return fx.Options(
 		otlptraces.FXModuleFromFlags(cmd),
-		temporalclient.NewModule(
-			temporalAddress,
-			temporalNamespace,
-			temporalSSLClientCert,
-			temporalSSLClientKey,
-			temporalInitSearchAttributes,
+		temporal.FXModuleFromFlags(
+			cmd,
+			workflow.Tracer,
+			temporal.SearchAttributes{
+				SearchAttributes: temporalclient.SearchAttributes,
+			},
 		),
 		bunconnect.Module(*connectionOptions, service.IsDebug(cmd)),
 		publish.FXModuleFromFlags(cmd, service.IsDebug(cmd)),

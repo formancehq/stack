@@ -1,10 +1,15 @@
 package payments
 
 import (
+	"fmt"
+	"strings"
+
+	"github.com/formancehq/go-libs/pointer"
 	"github.com/formancehq/operator/internal/resources/brokers"
 	"github.com/formancehq/operator/internal/resources/brokertopics"
 	"github.com/formancehq/operator/internal/resources/caddy"
 	"github.com/formancehq/operator/internal/resources/registries"
+	"github.com/formancehq/operator/internal/resources/resourcereferences"
 	"github.com/formancehq/operator/internal/resources/settings"
 	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -26,6 +31,58 @@ func getEncryptionKey(ctx core.Context, payments *v1beta1.Payments) (string, err
 		return settings.GetStringOrEmpty(ctx, payments.Spec.Stack, "payments", "encryption-key")
 	}
 	return "", nil
+}
+
+func temporalEnvVars(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Payments) ([]v1.EnvVar, error) {
+
+	temporalURI, err := settings.RequireURL(ctx, stack.Name, "temporal", "dsn")
+	if err != nil {
+		return nil, err
+	}
+
+	if err := validateTemporalURI(temporalURI); err != nil {
+		return nil, err
+	}
+
+	if secret := temporalURI.Query().Get("secret"); secret != "" {
+		_, err = resourcereferences.Create(ctx, payments, "payments-temporal", secret, &v1.Secret{})
+	} else {
+		err = resourcereferences.Delete(ctx, payments, "payments-temporal")
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	env := make([]v1.EnvVar, 0)
+	env = append(env,
+		core.Env("TEMPORAL_TASK_QUEUE", stack.Name),
+		core.Env("TEMPORAL_ADDRESS", temporalURI.Host),
+		core.Env("TEMPORAL_NAMESPACE", temporalURI.Path[1:]),
+	)
+
+	if secret := temporalURI.Query().Get("secret"); secret == "" {
+		temporalTLSCrt, err := settings.GetStringOrEmpty(ctx, stack.Name, "temporal", "tls", "crt")
+		if err != nil {
+			return nil, err
+		}
+
+		temporalTLSKey, err := settings.GetStringOrEmpty(ctx, stack.Name, "temporal", "tls", "key")
+		if err != nil {
+			return nil, err
+		}
+
+		env = append(env,
+			core.Env("TEMPORAL_SSL_CLIENT_KEY", temporalTLSKey),
+			core.Env("TEMPORAL_SSL_CLIENT_CERT", temporalTLSCrt),
+		)
+	} else {
+		env = append(env,
+			core.EnvFromSecret("TEMPORAL_SSL_CLIENT_KEY", secret, "tls.key"),
+			core.EnvFromSecret("TEMPORAL_SSL_CLIENT_CERT", secret, "tls.crt"),
+		)
+	}
+
+	return env, nil
 }
 
 func commonEnvVars(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Payments, database *v1beta1.Database) ([]v1.EnvVar, error) {
@@ -57,13 +114,15 @@ func commonEnvVars(ctx core.Context, stack *v1beta1.Stack, payments *v1beta1.Pay
 	env = append(env,
 		core.Env("POSTGRES_DATABASE_NAME", "$(POSTGRES_DATABASE)"),
 		core.Env("CONFIG_ENCRYPTION_KEY", encryptionKey),
+		core.Env("PLUGIN_DIRECTORY_PATH", "/plugins"),
+		core.Env("PLUGIN_MAGIC_COOKIE", "magic-value"), // TODO(polo): change value
 	)
 
 	return env, nil
 }
 
 func createFullDeployment(ctx core.Context, stack *v1beta1.Stack,
-	payments *v1beta1.Payments, database *v1beta1.Database, image string) error {
+	payments *v1beta1.Payments, database *v1beta1.Database, image string, v3 bool) error {
 
 	env, err := commonEnvVars(ctx, stack, payments, database)
 	if err != nil {
@@ -101,9 +160,23 @@ func createFullDeployment(ctx core.Context, stack *v1beta1.Stack,
 		env = append(env, brokers.GetPublisherEnvVars(stack, broker, "payments", "")...)
 	}
 
+	if v3 {
+		temporalEnvVars, err := temporalEnvVars(ctx, stack, payments)
+		if err != nil {
+			return err
+		}
+
+		env = append(env, temporalEnvVars...)
+	}
+
 	serviceAccountName, err := settings.GetAWSServiceAccount(ctx, stack.Name)
 	if err != nil {
 		return err
+	}
+
+	appOpts := applications.WithProbePath("/_health")
+	if v3 {
+		appOpts = applications.WithProbePath("/_healthcheck")
 	}
 
 	err = applications.
@@ -120,8 +193,12 @@ func createFullDeployment(ctx core.Context, stack *v1beta1.Stack,
 							Args:          []string{"serve"},
 							Env:           env,
 							Image:         image,
-							LivenessProbe: applications.DefaultLiveness("http", applications.WithProbePath("/_health")),
+							LivenessProbe: applications.DefaultLiveness("http", appOpts),
 							Ports:         []v1.ContainerPort{applications.StandardHTTPPort()},
+							// TODO(polo): only for v3
+							SecurityContext: &v1.SecurityContext{
+								ReadOnlyRootFilesystem: pointer.For(false),
+							},
 						}},
 						// Ensure empty
 						InitContainers: []v1.Container{},
@@ -297,4 +374,20 @@ func createGateway(ctx core.Context, stack *v1beta1.Stack, p *v1beta1.Payments) 
 	return applications.
 		New(p, deploymentTemplate).
 		Install(ctx)
+}
+
+func validateTemporalURI(temporalURI *v1beta1.URI) error {
+	if temporalURI.Scheme != "temporal" {
+		return fmt.Errorf("invalid temporal uri: %s", temporalURI.String())
+	}
+
+	if temporalURI.Path == "" {
+		return fmt.Errorf("invalid temporal uri: %s", temporalURI.String())
+	}
+
+	if !strings.HasPrefix(temporalURI.Path, "/") {
+		return fmt.Errorf("invalid temporal uri: %s", temporalURI.String())
+	}
+
+	return nil
 }

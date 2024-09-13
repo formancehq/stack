@@ -1,0 +1,43 @@
+package storage
+
+// func TestMain(m *testing.M) {
+// 	if err := pgtesting.CreatePostgresServer(); err != nil {
+// 		logging.Error(err)
+// 		os.Exit(1)
+// 	}
+
+// 	code := m.Run()
+// 	if err := pgtesting.DestroyPostgresServer(); err != nil {
+// 		logging.Error(err)
+// 	}
+// 	os.Exit(code)
+// }
+
+// func newStore(t *testing.T) Storage {
+// 	t.Helper()
+
+// 	pgServer := pgtesting.NewPostgresDatabase(t)
+
+// 	config, err := pgx.ParseConfig(pgServer.ConnString())
+// 	require.NoError(t, err)
+
+// 	key := make([]byte, 64)
+// 	_, err = rand.Read(key)
+// 	require.NoError(t, err)
+
+// 	db := bun.NewDB(stdlib.OpenDB(*config), pgdialect.New())
+// 	t.Cleanup(func() {
+// 		_ = db.Close()
+// 	})
+
+// 	// TODO(polo): add migrations
+// 	// err = migrationstorage.Migrate(context.Background(), db)
+// 	// require.NoError(t, err)
+
+// 	store := newStorage(
+// 		db,
+// 		string(key),
+// 	)
+
+// 	return store
+// }

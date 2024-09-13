@@ -1,0 +1,17 @@
+{
+    "apiKey": {
+        "dataType": "string",
+        "required": true,
+        "defaultValue": ""
+    },
+    "apiSecret": {
+        "dataType": "string",
+        "required": true,
+        "defaultValue": ""
+    },
+    "endpoint": {
+        "dataType": "string",
+        "required": true,
+        "defaultValue": ""
+    }
+}

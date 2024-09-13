@@ -1,0 +1,17 @@
+{
+    "loginID": {
+        "dataType": "string",
+        "required": true,
+        "defaultValue": ""
+    },
+    "apiKey": {
+        "dataType": "string",
+        "required": true,
+        "defaultValue": ""
+    },
+    "endpoint": {
+        "dataType": "string",
+        "required": true,
+        "defaultValue": ""
+    }
+}

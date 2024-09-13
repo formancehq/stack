@@ -1,25 +1,38 @@
 package models
 
 import (
+	"encoding/base64"
 	"time"
 
+	"github.com/gibson042/canonicaljson-go"
 	"github.com/google/uuid"
-	"github.com/uptrace/bun"
 )
 
-type PoolAccounts struct {
-	bun.BaseModel `bun:"accounts.pool_accounts"`
+type Pool struct {
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"createdAt"`
 
-	PoolID    uuid.UUID `bun:",pk,notnull"`
-	AccountID AccountID `bun:",pk,notnull"`
+	PoolAccounts []PoolAccounts `json:"poolAccounts"`
 }
 
-type Pool struct {
-	bun.BaseModel `bun:"accounts.pools"`
+func (p *Pool) IdempotencyKey() string {
+	relatedAccounts := make([]string, len(p.PoolAccounts))
+	for i := range p.PoolAccounts {
+		relatedAccounts[i] = p.PoolAccounts[i].AccountID.String()
+	}
+	var ik = struct {
+		ID              string
+		RelatedAccounts []string
+	}{
+		ID:              p.ID.String(),
+		RelatedAccounts: relatedAccounts,
+	}
 
-	ID        uuid.UUID `bun:",pk,nullzero"`
-	Name      string
-	CreatedAt time.Time
+	data, err := canonicaljson.Marshal(ik)
+	if err != nil {
+		panic(err)
+	}
 
-	PoolAccounts []*PoolAccounts `bun:"rel:has-many,join:id=pool_id"`
+	return base64.URLEncoding.WithPadding(base64.NoPadding).EncodeToString(data)
 }

@@ -1,0 +1,18 @@
+syntax = "proto3";
+package formance.payments.connectors.grpc.proto;
+option go_package = "github.com/formancehq/payments/internal/connectors/grpc/proto";
+
+enum Capability {
+    CAPABILITY_UNKNOWN = 0;
+
+    CAPABILITY_FETCH_ACCOUNTS = 1;
+    CAPABILITY_FETCH_BALANCES = 2;
+    CAPABILITY_FETCH_EXTERNAL_ACCOUNTS = 3;
+    CAPABILITY_FETCH_PAYMENTS = 4;
+    CAPABILITY_FETCH_OTHERS = 5;
+
+    CAPABILITY_WEBHOOKS = 6;
+
+    CAPABILITY_CREATION_BANK_ACCOUNT = 7;
+    CAPABILITY_CREATION_PAYMENT = 8;
+}
