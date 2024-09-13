@@ -17,10 +17,14 @@
 
     handle {
         method GET
-        reverse_proxy ledger-read:8080
+        reverse_proxy ledger-read:8080{
+          header_up Host {upstream_hostport}
+       }
     }
 
     handle {
-        reverse_proxy ledger-write:8080
+        reverse_proxy ledger-write:8080{
+          header_up Host {upstream_hostport}
+        }
     }
 }

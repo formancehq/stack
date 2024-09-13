@@ -95,7 +95,9 @@
         {{- if and (not $rule.Secured) $values.Auth }}
         import auth {{ $service.Name }}
         {{- end }}
-		reverse_proxy {{ $service.Name }}:8080
+		reverse_proxy {{ $service.Name }}:8080 {
+            header_up Host {upstream_hostport}
+        }
     }
 	{{- end }}
 	{{- end }}

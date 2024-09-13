@@ -31,7 +31,9 @@
 	handle /api/ledger* {
 		uri strip_prefix /api/ledger
         import cors
-		reverse_proxy ledger:8080
+		reverse_proxy ledger:8080 {
+            header_up Host {upstream_hostport}
+        }
     }
 
 	handle /versions {

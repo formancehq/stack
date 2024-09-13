@@ -23,9 +23,9 @@ import (
 
 type DelegatedOIDCServerConfiguration struct {
 	// Issuer is the url of the delegated oidc server
-	Issuer       string `json:"issuer,omitempty"`
+	Issuer string `json:"issuer,omitempty"`
 	// ClientID is the client id to use for authentication
-	ClientID     string `json:"clientID,omitempty"`
+	ClientID string `json:"clientID,omitempty"`
 	// ClientSecret is the client secret to use for authentication
 	ClientSecret string `json:"clientSecret,omitempty"`
 }
@@ -65,14 +65,14 @@ type AuthStatus struct {
 // Creating it for a stack automatically add authentication on all supported modules.
 //
 // The auth service is basically a proxy to another OIDC compliant server.
-//+kubebuilder:object:root=true
-//+kubebuilder:subresource:status
-//+kubebuilder:resource:scope=Cluster
-//+kubebuilder:printcolumn:name="Clients",type=string,JSONPath=".status.clients",description="Synchronized auth clients"
-//+kubebuilder:printcolumn:name="Stack",type=string,JSONPath=".spec.stack",description="Stack"
-//+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
-//+kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
-//+kubebuilder:metadata:labels=formance.com/kind=module
+// +kubebuilder:object:root=true
+// +kubebuilder:subresource:status
+// +kubebuilder:resource:scope=Cluster
+// +kubebuilder:printcolumn:name="Clients",type=string,JSONPath=".status.clients",description="Synchronized auth clients"
+// +kubebuilder:printcolumn:name="Stack",type=string,JSONPath=".spec.stack",description="Stack"
+// +kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
+// +kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
+// +kubebuilder:metadata:labels=formance.com/kind=module
 type Auth struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`

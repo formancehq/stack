@@ -36,13 +36,17 @@
 	handle /api/auth* {
 		uri strip_prefix /api/auth
         import cors
-		reverse_proxy auth:8080
+		reverse_proxy auth:8080 {
+            header_up Host {upstream_hostport}
+        }
     }
 	handle /api/ledger* {
 		uri strip_prefix /api/ledger
         import cors
         import auth ledger
-		reverse_proxy ledger:8080
+		reverse_proxy ledger:8080 {
+            header_up Host {upstream_hostport}
+        }
     }
 
 	handle /versions {

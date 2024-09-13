@@ -18,8 +18,9 @@ package gateways
 
 import (
 	_ "embed"
-	"k8s.io/apimachinery/pkg/types"
 	"sort"
+
+	"k8s.io/apimachinery/pkg/types"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
