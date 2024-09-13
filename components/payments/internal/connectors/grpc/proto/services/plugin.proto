@@ -93,14 +93,18 @@ message TranslateWebhookRequest {
 }
 
 message TranslateWebhookResponse {
-    string idempotency_key = 1;
+    message Response {
+        string idempotency_key = 1;
 
-    oneof translated {
-        formance.payments.connectors.grpc.proto.Account account = 10;
-        formance.payments.connectors.grpc.proto.Account external_account = 11;
-        formance.payments.connectors.grpc.proto.Payment payment = 12;
-        formance.payments.connectors.grpc.proto.Balance balance = 13;
+        oneof translated {
+            formance.payments.connectors.grpc.proto.Account account = 10;
+            formance.payments.connectors.grpc.proto.Account external_account = 11;
+            formance.payments.connectors.grpc.proto.Payment payment = 12;
+            formance.payments.connectors.grpc.proto.Balance balance = 13;
+        }
     }
+    
+    repeated Response responses = 1;
 }
 
 message CreateWebhooksRequest {
