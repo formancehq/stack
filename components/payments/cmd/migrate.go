@@ -1,9 +1,8 @@
 package cmd
 
 import (
-	"github.com/formancehq/stack/libs/go-libs/bun/bunmigrate"
-
 	"github.com/formancehq/payments/internal/storage"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunmigrate"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/uptrace/bun"
@@ -13,8 +12,7 @@ import (
 )
 
 var (
-	configEncryptionKeyFlag = "config-encryption-key"
-	autoMigrateFlag         = "auto-migrate"
+	autoMigrateFlag = "auto-migrate"
 )
 
 func newMigrate() *cobra.Command {
