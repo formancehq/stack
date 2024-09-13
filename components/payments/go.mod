@@ -202,4 +202,4 @@ require (
 
 replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
 
-replace github.com/formancehq/payments/genericclient => ./cmd/connectors/internal/connectors/generic/client/generated
+// replace github.com/formancehq/payments/genericclient => ./cmd/connectors/internal/connectors/generic/client/generated
