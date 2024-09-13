@@ -195,28 +195,35 @@ func (i *impl) TranslateWebhook(ctx context.Context, req models.TranslateWebhook
 		return models.TranslateWebhookResponse{}, err
 	}
 
-	res := models.TranslateWebhookResponse{
-		IdempotencyKey: resp.IdempotencyKey,
-	}
-
-	switch v := resp.Translated.(type) {
-	case *services.TranslateWebhookResponse_Payment:
-		p, err := grpc.TranslateProtoPayment(v.Payment)
-		if err != nil {
-			return models.TranslateWebhookResponse{}, err
+	responses := make([]models.WebhookResponse, 0, len(resp.Responses))
+	for _, response := range resp.Responses {
+		r := models.WebhookResponse{
+			IdempotencyKey: response.IdempotencyKey,
 		}
-		res.Payment = &p
-	case *services.TranslateWebhookResponse_Account:
-		a := grpc.TranslateProtoAccount(v.Account)
-		res.Account = &a
-	case *services.TranslateWebhookResponse_ExternalAccount:
-		a := grpc.TranslateProtoAccount(v.ExternalAccount)
-		res.ExternalAccount = &a
-	default:
-		return models.TranslateWebhookResponse{}, errors.New("unknown translated webhook type")
+
+		switch v := response.Translated.(type) {
+		case *services.TranslateWebhookResponse_Response_Payment:
+			p, err := grpc.TranslateProtoPayment(v.Payment)
+			if err != nil {
+				return models.TranslateWebhookResponse{}, err
+			}
+			r.Payment = &p
+		case *services.TranslateWebhookResponse_Response_Account:
+			a := grpc.TranslateProtoAccount(v.Account)
+			r.Account = &a
+		case *services.TranslateWebhookResponse_Response_ExternalAccount:
+			a := grpc.TranslateProtoAccount(v.ExternalAccount)
+			r.ExternalAccount = &a
+		default:
+			return models.TranslateWebhookResponse{}, errors.New("unknown translated webhook type")
+		}
+
+		responses = append(responses, r)
 	}
 
-	return res, nil
+	return models.TranslateWebhookResponse{
+		Responses: responses,
+	}, nil
 }
 
 var _ models.Plugin = &impl{}

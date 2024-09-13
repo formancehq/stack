@@ -99,10 +99,17 @@ func (p Plugin) TranslateWebhook(ctx context.Context, req models.TranslateWebhoo
 		return models.TranslateWebhookResponse{}, errors.New("unsupported webhook event type")
 	}
 
-	return config.fn(ctx, webhookTranslateRequest{
+	webhookResponse, err := config.fn(ctx, webhookTranslateRequest{
 		req:     req,
 		webhook: webhook,
 	})
+	if err != nil {
+		return models.TranslateWebhookResponse{}, err
+	}
+
+	return models.TranslateWebhookResponse{
+		Responses: []models.WebhookResponse{webhookResponse},
+	}, nil
 }
 
 var _ models.Plugin = &Plugin{}

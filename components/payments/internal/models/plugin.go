@@ -111,9 +111,13 @@ type TranslateWebhookRequest struct {
 	Webhook PSPWebhook
 }
 
-type TranslateWebhookResponse struct {
+type WebhookResponse struct {
 	IdempotencyKey  string
 	Account         *PSPAccount
 	ExternalAccount *PSPAccount
 	Payment         *PSPPayment
+}
+
+type TranslateWebhookResponse struct {
+	Responses []WebhookResponse
 }

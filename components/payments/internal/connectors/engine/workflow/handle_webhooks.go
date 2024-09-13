@@ -42,31 +42,33 @@ func (w Workflow) runHandleWebhooks(
 		return errors.Wrap(err, "failed to translate webhook")
 	}
 
-	if err := workflow.ExecuteChildWorkflow(
-		workflow.WithChildOptions(
-			ctx,
-			workflow.ChildWorkflowOptions{
-				WorkflowID:            fmt.Sprintf("store-webhook-%s-%s", handleWebhooks.ConnectorID.String(), resp.IdempotencyKey),
-				TaskQueue:             handleWebhooks.ConnectorID.Reference,
-				ParentClosePolicy:     enums.PARENT_CLOSE_POLICY_ABANDON,
-				WorkflowIDReusePolicy: enums.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE_FAILED_ONLY,
+	for _, response := range resp.Responses {
+		if err := workflow.ExecuteChildWorkflow(
+			workflow.WithChildOptions(
+				ctx,
+				workflow.ChildWorkflowOptions{
+					WorkflowID:            fmt.Sprintf("store-webhook-%s-%s", handleWebhooks.ConnectorID.String(), response.IdempotencyKey),
+					TaskQueue:             handleWebhooks.ConnectorID.Reference,
+					ParentClosePolicy:     enums.PARENT_CLOSE_POLICY_ABANDON,
+					WorkflowIDReusePolicy: enums.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE_FAILED_ONLY,
+				},
+			),
+			RunStoreWebhookTranslation,
+			StoreWebhookTranslation{
+				ConnectorID:     handleWebhooks.ConnectorID,
+				Account:         response.Account,
+				ExternalAccount: response.ExternalAccount,
+				Payment:         response.Payment,
 			},
-		),
-		RunStoreWebhookTranslation,
-		StoreWebhookTranslation{
-			ConnectorID:     handleWebhooks.ConnectorID,
-			Account:         resp.Account,
-			ExternalAccount: resp.ExternalAccount,
-			Payment:         resp.Payment,
-		},
-	).Get(ctx, nil); err != nil {
-		applicationError := &temporal.ApplicationError{}
-		if errors.As(err, &applicationError) {
-			if applicationError.Type() != "ChildWorkflowExecutionAlreadyStartedError" {
-				return err
+		).Get(ctx, nil); err != nil {
+			applicationError := &temporal.ApplicationError{}
+			if errors.As(err, &applicationError) {
+				if applicationError.Type() != "ChildWorkflowExecutionAlreadyStartedError" {
+					return err
+				}
+			} else {
+				return errors.Wrap(err, "running store workflow")
 			}
-		} else {
-			return errors.Wrap(err, "running store workflow")
 		}
 	}
 

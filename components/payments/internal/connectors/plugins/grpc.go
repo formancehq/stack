@@ -251,29 +251,36 @@ func (i *impl) TranslateWebhook(ctx context.Context, req *services.TranslateWebh
 
 	i.logger.Info("translated webhook succeeded!")
 
-	res := &services.TranslateWebhookResponse{
-		IdempotencyKey: resp.IdempotencyKey,
-	}
-
-	if resp.Account != nil {
-		res.Translated = &services.TranslateWebhookResponse_Account{
-			Account: grpc.TranslateAccount(*resp.Account),
+	responses := make([]*services.TranslateWebhookResponse_Response, 0, len(resp.Responses))
+	for _, response := range resp.Responses {
+		r := &services.TranslateWebhookResponse_Response{
+			IdempotencyKey: response.IdempotencyKey,
 		}
-	}
 
-	if resp.ExternalAccount != nil {
-		res.Translated = &services.TranslateWebhookResponse_ExternalAccount{
-			ExternalAccount: grpc.TranslateAccount(*resp.ExternalAccount),
+		if response.Account != nil {
+			r.Translated = &services.TranslateWebhookResponse_Response_Account{
+				Account: grpc.TranslateAccount(*response.Account),
+			}
 		}
-	}
 
-	if resp.Payment != nil {
-		res.Translated = &services.TranslateWebhookResponse_Payment{
-			Payment: grpc.TranslatePayment(*resp.Payment),
+		if response.ExternalAccount != nil {
+			r.Translated = &services.TranslateWebhookResponse_Response_ExternalAccount{
+				ExternalAccount: grpc.TranslateAccount(*response.ExternalAccount),
+			}
 		}
+
+		if response.Payment != nil {
+			r.Translated = &services.TranslateWebhookResponse_Response_Payment{
+				Payment: grpc.TranslatePayment(*response.Payment),
+			}
+		}
+
+		responses = append(responses, r)
 	}
 
-	return res, nil
+	return &services.TranslateWebhookResponse{
+		Responses: responses,
+	}, nil
 }
 
 var _ grpc.PSP = &impl{}
