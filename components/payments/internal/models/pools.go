@@ -4,22 +4,12 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/uptrace/bun"
 )
 
-type PoolAccounts struct {
-	bun.BaseModel `bun:"accounts.pool_accounts"`
-
-	PoolID    uuid.UUID `bun:",pk,notnull"`
-	AccountID AccountID `bun:",pk,notnull"`
-}
-
 type Pool struct {
-	bun.BaseModel `bun:"accounts.pools"`
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"createdAt"`
 
-	ID        uuid.UUID `bun:",pk,nullzero"`
-	Name      string
-	CreatedAt time.Time
-
-	PoolAccounts []*PoolAccounts `bun:"rel:has-many,join:id=pool_id"`
+	PoolAccounts []PoolAccounts `json:"poolAccounts"`
 }
