@@ -15,8 +15,8 @@ type webhook struct {
 	ConnectorID models.ConnectorID `bun:"connector_id,type:character varying,notnull"`
 
 	// Optional fields
-	Headers     map[string][]string `bun:"headers,type:jsonb"`
-	QueryValues map[string][]string `bun:"query_values,type:jsonb"`
+	Headers     map[string][]string `bun:"headers,type:json"`
+	QueryValues map[string][]string `bun:"query_values,type:json"`
 	Body        []byte              `bun:"payload,type:bytea,nullzero"`
 }
 

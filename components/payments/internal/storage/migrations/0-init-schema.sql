@@ -252,3 +252,37 @@ alter table workflows_instances
     add constraint workflows_instances_connector_id_fk foreign key (connector_id)
     references connectors (id)
     on delete cascade;
+
+-- Webhook configs
+create table if not exists webhooks_configs (
+    -- Mandatory fields
+    name         text not null,
+    connector_id varchar not null,
+    url_path     text not null,
+
+    -- Primary key
+    primary key (name, connector_id)
+);
+alter table webhooks_configs
+    add constraint webhooks_configs_connector_id_fk foreign key (connector_id)
+    references connectors (id)
+    on delete cascade;
+
+-- Webhooks
+create table if not exists webhooks (
+    -- Mandatory fields
+    id text not null,
+    connector_id varchar not null,
+
+    -- Optional fields
+    headers json,
+    query_values json,
+    body bytea,
+
+    -- Primary key
+    primary key (id)
+);
+alter table webhooks
+    add constraint webhooks_connector_id_fk foreign key (connector_id)
+    references connectors (id)
+    on delete cascade;
