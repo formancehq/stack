@@ -6,7 +6,7 @@ import (
 
 	sdk "github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/go-libs/pointer"
-	"github.com/formancehq/orchestration/internal/temporalworker"
+	temporalworker "github.com/formancehq/go-libs/temporal"
 	"github.com/pkg/errors"
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/temporal"

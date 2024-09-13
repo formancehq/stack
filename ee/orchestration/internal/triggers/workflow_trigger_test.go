@@ -4,22 +4,19 @@ import (
 	"testing"
 	"time"
 
-	worker "go.temporal.io/sdk/worker"
-
-	"github.com/formancehq/go-libs/bun/bundebug"
-	"github.com/uptrace/bun"
-
 	"github.com/formancehq/go-libs/bun/bunconnect"
+	"github.com/formancehq/go-libs/bun/bundebug"
 	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/go-libs/publish"
+	"github.com/formancehq/go-libs/temporal"
 	"github.com/formancehq/orchestration/internal/storage"
-	"github.com/formancehq/orchestration/internal/temporalworker"
 	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/formancehq/orchestration/internal/workflow/stages"
-	"go.temporal.io/sdk/client"
-
-	"github.com/formancehq/go-libs/publish"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
+	"github.com/uptrace/bun"
+	"go.temporal.io/sdk/client"
+	worker "go.temporal.io/sdk/worker"
 )
 
 func TestWorkflow(t *testing.T) {
@@ -43,16 +40,16 @@ func TestWorkflow(t *testing.T) {
 	taskQueue := uuid.NewString()
 	workflowManager := workflow.NewManager(db, devServer.Client(), taskQueue, false)
 
-	worker := temporalworker.New(logging.Testing(), devServer.Client(), taskQueue,
-		[]temporalworker.DefinitionSet{
+	worker := temporal.New(logging.Testing(), devServer.Client(), taskQueue,
+		[]temporal.DefinitionSet{
 			NewWorkflow(taskQueue, false).DefinitionSet(),
 			workflow.NewWorkflows(false).DefinitionSet(),
-			temporalworker.NewDefinitionSet().Append(temporalworker.Definition{
+			temporal.NewDefinitionSet().Append(temporal.Definition{
 				Name: "NoOp",
 				Func: (&stages.NoOp{}).GetWorkflow(),
 			}),
 		},
-		[]temporalworker.DefinitionSet{
+		[]temporal.DefinitionSet{
 			workflow.NewActivities(publish.NoOpPublisher, db).DefinitionSet(),
 			NewActivities(db, workflowManager, NewDefaultExpressionEvaluator(), publish.NoOpPublisher).DefinitionSet(),
 		},

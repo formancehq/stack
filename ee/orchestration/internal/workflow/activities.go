@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/ThreeDotsLabs/watermill/message"
-	"github.com/formancehq/orchestration/internal/temporalworker"
 	"github.com/formancehq/orchestration/pkg/events"
+	"github.com/formancehq/stack/libs/go-libs/temporal"
 	"github.com/uptrace/bun"
 	"go.temporal.io/sdk/activity"
 )
@@ -107,30 +107,30 @@ func (a Activities) UpdateStage(ctx context.Context, stage Stage) error {
 	return err
 }
 
-func (a Activities) DefinitionSet() temporalworker.DefinitionSet {
-	return temporalworker.NewDefinitionSet().
-		Append(temporalworker.Definition{
+func (a Activities) DefinitionSet() temporal.DefinitionSet {
+	return temporal.NewDefinitionSet().
+		Append(temporal.Definition{
 			Func: a.InsertNewInstance,
 			Name: "InsertNewInstance",
-		}).Append(temporalworker.Definition{
+		}).Append(temporal.Definition{
 		Func: a.InsertNewStage,
 		Name: "InsertNewStage",
-	}).Append(temporalworker.Definition{
+	}).Append(temporal.Definition{
 		Func: a.SendWorkflowStageStartedEvent,
 		Name: "SendWorkflowStageStartedEvent",
-	}).Append(temporalworker.Definition{
+	}).Append(temporal.Definition{
 		Func: a.SendWorkflowStageTerminationEvent,
 		Name: "SendWorkflowStageTerminationEvent",
-	}).Append(temporalworker.Definition{
+	}).Append(temporal.Definition{
 		Func: a.SendWorkflowStartedEvent,
 		Name: "SendWorkflowStartedEvent",
-	}).Append(temporalworker.Definition{
+	}).Append(temporal.Definition{
 		Func: a.SendWorkflowTerminationEvent,
 		Name: "SendWorkflowTerminationEvent",
-	}).Append(temporalworker.Definition{
+	}).Append(temporal.Definition{
 		Func: a.UpdateStage,
 		Name: "UpdateStage",
-	}).Append(temporalworker.Definition{
+	}).Append(temporal.Definition{
 		Func: a.UpdateInstance,
 		Name: "UpdateInstance",
 	})

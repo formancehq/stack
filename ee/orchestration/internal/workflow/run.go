@@ -3,8 +3,7 @@ package workflow
 import (
 	"time"
 
-	"github.com/formancehq/orchestration/internal/temporalworker"
-
+	"github.com/formancehq/stack/libs/go-libs/temporal"
 	"go.temporal.io/api/enums/v1"
 	"go.temporal.io/sdk/workflow"
 )
@@ -79,12 +78,12 @@ func (w Workflows) Run(ctx workflow.Context, i Input, instance Instance) error {
 	return nil
 }
 
-func (w Workflows) DefinitionSet() temporalworker.DefinitionSet {
-	return temporalworker.NewDefinitionSet().
-		Append(temporalworker.Definition{
+func (w Workflows) DefinitionSet() temporal.DefinitionSet {
+	return temporal.NewDefinitionSet().
+		Append(temporal.Definition{
 			Func: w.Run,
 			Name: "Run",
-		}).Append(temporalworker.Definition{
+		}).Append(temporal.Definition{
 		Func: w.Initiate,
 		Name: "Initiate",
 	})
