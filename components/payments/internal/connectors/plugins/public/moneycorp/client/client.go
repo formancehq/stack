@@ -3,35 +3,41 @@ package client
 import (
 	"net/http"
 	"strings"
-	"time"
 
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 type Client struct {
-	httpClient *http.Client
+	httpClient httpwrapper.Client
 	endpoint   string
 }
 
-func newHTTPClient(clientID, apiKey, endpoint string) *http.Client {
-	return &http.Client{
-		Timeout: 10 * time.Second,
+func New(clientID, apiKey, endpoint string) (*Client, error) {
+	config := &httpwrapper.Config{
 		Transport: &apiTransport{
 			clientID:   clientID,
 			apiKey:     apiKey,
 			endpoint:   endpoint,
 			underlying: otelhttp.NewTransport(http.DefaultTransport),
 		},
-	}
-}
+		HttpErrorCheckerFn: func(statusCode int) error {
+			if statusCode == http.StatusNotFound {
+				return nil
+			}
+			if statusCode >= http.StatusBadRequest {
+				return httpwrapper.ErrStatusCodeUnexpected
+			}
+			return nil
 
-func New(clientID, apiKey, endpoint string) (*Client, error) {
+		},
+	}
 	endpoint = strings.TrimSuffix(endpoint, "/")
 
+	httpClient, err := httpwrapper.NewClient(config)
 	c := &Client{
-		httpClient: newHTTPClient(clientID, apiKey, endpoint),
+		httpClient: httpClient,
 		endpoint:   endpoint,
 	}
-
-	return c, nil
+	return c, err
 }

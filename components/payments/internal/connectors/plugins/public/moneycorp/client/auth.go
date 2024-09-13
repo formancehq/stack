@@ -79,6 +79,7 @@ func (t *apiTransport) login(ctx context.Context) error {
 
 	req.Header.Set("Content-Type", "application/json")
 
+	// TODO: default client doesn't have a timeout, so we should be careful about using it here
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("failed to login: %w", err)
