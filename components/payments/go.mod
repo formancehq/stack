@@ -200,4 +200,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/formancehq/payments/genericclient => ./cmd/connectors/internal/connectors/generic/client/generated
+// replace github.com/formancehq/payments/genericclient => ./cmd/connectors/internal/connectors/generic/client/generated
