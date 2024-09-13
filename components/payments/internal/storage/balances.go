@@ -49,7 +49,7 @@ func (s *store) BalancesUpsert(ctx context.Context, balances []models.Balance) e
 		TableExpr(`
 		(SELECT *
 			FROM cte1
-			WHERE cte1.balance != COALESCE((SELECT balance FROM accounts.balances WHERE account_id = cte1.account_id AND last_updated_at < cte1.last_updated_at AND asset = cte1.asset ORDER BY last_updated_at DESC LIMIT 1), cte1.balance+1)
+			WHERE cte1.balance != COALESCE((SELECT balance FROM balances WHERE account_id = cte1.account_id AND last_updated_at < cte1.last_updated_at AND asset = cte1.asset ORDER BY last_updated_at DESC LIMIT 1), cte1.balance+1)
 		) data`).
 		On("CONFLICT (account_id, created_at, asset) DO NOTHING").
 		Exec(ctx)
@@ -62,7 +62,7 @@ func (s *store) BalancesUpsert(ctx context.Context, balances []models.Balance) e
 		Model((*models.Balance)(nil)).
 		With("cte1", s.db.NewValues(&toInsert)).
 		TableExpr(`
-					(SELECT (SELECT created_at FROM accounts.balances WHERE last_updated_at < cte1.last_updated_at AND account_id = cte1.account_id AND asset = cte1.asset ORDER BY last_updated_at DESC LIMIT 1), cte1.account_id, cte1.asset, cte1.last_updated_at FROM cte1) data
+					(SELECT (SELECT created_at FROM balances WHERE last_updated_at < cte1.last_updated_at AND account_id = cte1.account_id AND asset = cte1.asset ORDER BY last_updated_at DESC LIMIT 1), cte1.account_id, cte1.asset, cte1.last_updated_at FROM cte1) data
 				`).
 		Set("last_updated_at = data.last_updated_at").
 		Where("balance.account_id = data.account_id AND balance.asset = data.asset AND balance.created_at = data.created_at").
