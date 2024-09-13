@@ -1,0 +1,15 @@
+syntax = "proto3";
+package formance.payments.connectors.grpc.proto;
+option go_package = "github.com/formancehq/payments/internal/connectors/grpc/proto";
+
+import "google/protobuf/timestamp.proto";
+
+import "monetary.proto";
+
+message Balance {
+    string account_reference = 1;
+    
+    google.protobuf.Timestamp created_at = 2;
+
+    formance.payments.connectors.grpc.proto.Monetary balance = 3;
+}

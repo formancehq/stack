@@ -1,0 +1,107 @@
+syntax = "proto3";
+package formance.payments.connectors.grpc.proto;
+option go_package = "github.com/formancehq/payments/internal/connectors/grpc/proto";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+import "monetary.proto";
+
+enum PaymentType {
+    PAYMENT_TYPE_UNKNOWN = 0;
+    PAYMENT_TYPE_PAYIN = 1;
+    PAYMENT_TYPE_PAYOUT = 2;
+    PAYMENT_TYPE_TRANSFER = 3;
+    PAYMENT_TYPE_OTHER = 100;
+}
+
+enum PaymentScheme {
+    PAYMENT_SCHEME_UNKNOWN = 0;
+
+    // Scheme cards
+    PAYMENT_SCHEME_CARD_VISA = 1;
+    PAYMENT_SCHEME_CARD_MASTERCARD = 2;
+    PAYMENT_SCHEME_CARD_AMEX = 3;
+    PAYMENT_SCHEME_CARD_DINERS = 4;
+    PAYMENT_SCHEME_CARD_DISCOVER = 5;
+    PAYMENT_SCHEME_CARD_JCB = 6;
+    PAYMENT_SCHEME_CARD_UNION_PAY = 7;
+    PAYMENT_SCHEME_CARD_ALIPAY = 8;
+    PAYMENT_SCHEME_CARD_CUP = 9;
+
+    PAYMENT_SCHEME_SEPA_DEBIT = 10;
+    PAYMENT_SCHEME_SEPA_CREDIT = 11;
+    PAYMENT_SCHEME_SEPA = 12;
+
+    PAYMENT_SCHEME_GOOGLE_PAY = 13;
+    PAYMENT_SCHEME_APPLE_PAY = 14;
+
+    PAYMENT_SCHEME_DOKU = 15;
+    PAYMENT_SCHEME_DRAGON_PAY = 16;
+    PAYMENT_SCHEME_MAESTRO = 17;
+    PAYMENT_SCHEME_MOL_PAY = 18;
+    PAYMENT_SCHEME_A2A = 19;
+    PAYMENT_SCHEME_ACH_DEBIT = 20;
+    PAYMENT_SCHEME_ACH = 21;
+    PAYMENT_SCHEME_RTP = 22;
+
+
+    PAYMENT_SCHEME_OTHER = 100;
+}
+
+enum PaymentStatus {
+    PAYMENT_STATUS_UNKNOWN = 0;
+
+    PAYMENT_STATUS_PENDING = 1;
+
+    PAYMENT_STATUS_SUCCEEDED = 2;
+
+    PAYMENT_STATUS_CANCELLED = 3;
+    PAYMENT_STATUS_FAILED = 4;
+    PAYMENT_STATUS_EXPIRED = 5;
+
+    PAYMENT_STATUS_REFUNDED = 6;
+    PAYMENT_STATUS_REFUNDED_FAILURE = 7;
+
+    PAYMENT_STATUS_DISPUTE = 8;
+    PAYMENT_STATUS_DISPUTE_WON = 9;
+    PAYMENT_STATUS_DISPUTE_LOST = 10;
+
+    PAYMENT_STATUS_OTHER = 100;
+}
+
+// Represent a payment/transaction in Formance platform
+message Payment {
+    // PSP reference of the payment
+    string reference = 1;
+
+    // Payment's creation date
+    google.protobuf.Timestamp created_at = 2;
+    google.protobuf.Timestamp synced_at = 4;
+
+    // Payment Type, can be payin, payout, transfer or other
+    PaymentType payment_type = 5;
+
+    // amount
+    formance.payments.connectors.grpc.proto.Monetary amount = 6;
+
+    // Payment scheme, for example when you pay via visa card etc...
+    PaymentScheme scheme = 7;
+
+    // Payment status, for example pending, succeeded, failed etc...
+    PaymentStatus status = 8;
+
+    // Nullable string, we can have or not a source account id depending
+    // on the payment type
+    google.protobuf.StringValue source_account_reference = 9;
+
+    // Nullable string, we can have or not a destination account id depending
+    // on the payment type
+    google.protobuf.StringValue destination_account_reference = 10;
+
+    // Additional metadata
+    map<string, string> metadata = 11;
+
+    // The PSP raw message
+    bytes raw = 12;
+}
