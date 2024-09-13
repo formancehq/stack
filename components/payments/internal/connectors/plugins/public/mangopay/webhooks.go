@@ -21,7 +21,7 @@ type webhookTranslateRequest struct {
 
 type webhookConfig struct {
 	urlPath string
-	fn      func(context.Context, webhookTranslateRequest) (models.TranslateWebhookResponse, error)
+	fn      func(context.Context, webhookTranslateRequest) (models.WebhookResponse, error)
 }
 
 var webhookConfigs map[client.EventType]webhookConfig
@@ -159,15 +159,15 @@ func (p Plugin) getActiveHooks(ctx context.Context) (map[client.EventType]*clien
 	return activeHooks, nil
 }
 
-func (p Plugin) translateTransfer(ctx context.Context, req webhookTranslateRequest) (models.TranslateWebhookResponse, error) {
+func (p Plugin) translateTransfer(ctx context.Context, req webhookTranslateRequest) (models.WebhookResponse, error) {
 	transfer, err := p.client.GetWalletTransfer(ctx, req.webhook.ResourceID)
 	if err != nil {
-		return models.TranslateWebhookResponse{}, err
+		return models.WebhookResponse{}, err
 	}
 
 	raw, err := json.Marshal(transfer)
 	if err != nil {
-		return models.TranslateWebhookResponse{}, fmt.Errorf("failed to marshal transfer: %w", err)
+		return models.WebhookResponse{}, fmt.Errorf("failed to marshal transfer: %w", err)
 	}
 
 	paymentStatus := matchPaymentStatus(transfer.Status)
@@ -175,7 +175,7 @@ func (p Plugin) translateTransfer(ctx context.Context, req webhookTranslateReque
 	var amount big.Int
 	_, ok := amount.SetString(transfer.DebitedFunds.Amount.String(), 10)
 	if !ok {
-		return models.TranslateWebhookResponse{}, fmt.Errorf("failed to parse amount %s", transfer.DebitedFunds.Amount.String())
+		return models.WebhookResponse{}, fmt.Errorf("failed to parse amount %s", transfer.DebitedFunds.Amount.String())
 	}
 
 	payment := models.PSPPayment{
@@ -197,21 +197,21 @@ func (p Plugin) translateTransfer(ctx context.Context, req webhookTranslateReque
 		payment.DestinationAccountReference = &transfer.CreditedWalletID
 	}
 
-	return models.TranslateWebhookResponse{
+	return models.WebhookResponse{
 		IdempotencyKey: fmt.Sprintf("%s-%s-%d", req.webhook.ResourceID, string(req.webhook.EventType), req.webhook.Date),
 		Payment:        &payment,
 	}, nil
 }
 
-func (p Plugin) translatePayout(ctx context.Context, req webhookTranslateRequest) (models.TranslateWebhookResponse, error) {
+func (p Plugin) translatePayout(ctx context.Context, req webhookTranslateRequest) (models.WebhookResponse, error) {
 	payout, err := p.client.GetPayout(ctx, req.webhook.ResourceID)
 	if err != nil {
-		return models.TranslateWebhookResponse{}, err
+		return models.WebhookResponse{}, err
 	}
 
 	raw, err := json.Marshal(payout)
 	if err != nil {
-		return models.TranslateWebhookResponse{}, fmt.Errorf("failed to marshal transfer: %w", err)
+		return models.WebhookResponse{}, fmt.Errorf("failed to marshal transfer: %w", err)
 	}
 
 	paymentStatus := matchPaymentStatus(payout.Status)
@@ -219,7 +219,7 @@ func (p Plugin) translatePayout(ctx context.Context, req webhookTranslateRequest
 	var amount big.Int
 	_, ok := amount.SetString(payout.DebitedFunds.Amount.String(), 10)
 	if !ok {
-		return models.TranslateWebhookResponse{}, fmt.Errorf("failed to parse amount %s", payout.DebitedFunds.Amount.String())
+		return models.WebhookResponse{}, fmt.Errorf("failed to parse amount %s", payout.DebitedFunds.Amount.String())
 	}
 
 	payment := models.PSPPayment{
@@ -237,21 +237,21 @@ func (p Plugin) translatePayout(ctx context.Context, req webhookTranslateRequest
 		payment.DestinationAccountReference = &payout.DebitedWalletID
 	}
 
-	return models.TranslateWebhookResponse{
+	return models.WebhookResponse{
 		IdempotencyKey: fmt.Sprintf("%s-%s-%d", req.webhook.ResourceID, string(req.webhook.EventType), req.webhook.Date),
 		Payment:        &payment,
 	}, nil
 }
 
-func (p Plugin) translatePayin(ctx context.Context, req webhookTranslateRequest) (models.TranslateWebhookResponse, error) {
+func (p Plugin) translatePayin(ctx context.Context, req webhookTranslateRequest) (models.WebhookResponse, error) {
 	payin, err := p.client.GetPayin(ctx, req.webhook.ResourceID)
 	if err != nil {
-		return models.TranslateWebhookResponse{}, err
+		return models.WebhookResponse{}, err
 	}
 
 	raw, err := json.Marshal(payin)
 	if err != nil {
-		return models.TranslateWebhookResponse{}, fmt.Errorf("failed to marshal transfer: %w", err)
+		return models.WebhookResponse{}, fmt.Errorf("failed to marshal transfer: %w", err)
 	}
 
 	paymentStatus := matchPaymentStatus(payin.Status)
@@ -259,7 +259,7 @@ func (p Plugin) translatePayin(ctx context.Context, req webhookTranslateRequest)
 	var amount big.Int
 	_, ok := amount.SetString(payin.DebitedFunds.Amount.String(), 10)
 	if !ok {
-		return models.TranslateWebhookResponse{}, fmt.Errorf("failed to parse amount %s", payin.DebitedFunds.Amount.String())
+		return models.WebhookResponse{}, fmt.Errorf("failed to parse amount %s", payin.DebitedFunds.Amount.String())
 	}
 
 	payment := models.PSPPayment{
@@ -277,21 +277,21 @@ func (p Plugin) translatePayin(ctx context.Context, req webhookTranslateRequest)
 		payment.DestinationAccountReference = &payin.CreditedWalletID
 	}
 
-	return models.TranslateWebhookResponse{
+	return models.WebhookResponse{
 		IdempotencyKey: fmt.Sprintf("%s-%s-%d", req.webhook.ResourceID, string(req.webhook.EventType), req.webhook.Date),
 		Payment:        &payment,
 	}, nil
 }
 
-func (p Plugin) translateRefund(ctx context.Context, req webhookTranslateRequest) (models.TranslateWebhookResponse, error) {
+func (p Plugin) translateRefund(ctx context.Context, req webhookTranslateRequest) (models.WebhookResponse, error) {
 	refund, err := p.client.GetRefund(ctx, req.webhook.ResourceID)
 	if err != nil {
-		return models.TranslateWebhookResponse{}, err
+		return models.WebhookResponse{}, err
 	}
 
 	raw, err := json.Marshal(refund)
 	if err != nil {
-		return models.TranslateWebhookResponse{}, fmt.Errorf("failed to marshal transfer: %w", err)
+		return models.WebhookResponse{}, fmt.Errorf("failed to marshal transfer: %w", err)
 	}
 
 	paymentType := matchPaymentType(refund.InitialTransactionType)
@@ -299,7 +299,7 @@ func (p Plugin) translateRefund(ctx context.Context, req webhookTranslateRequest
 	var amountRefunded big.Int
 	_, ok := amountRefunded.SetString(refund.DebitedFunds.Amount.String(), 10)
 	if !ok {
-		return models.TranslateWebhookResponse{}, fmt.Errorf("failed to parse amount %s", refund.DebitedFunds.Amount.String())
+		return models.WebhookResponse{}, fmt.Errorf("failed to parse amount %s", refund.DebitedFunds.Amount.String())
 	}
 
 	payment := models.PSPPayment{
@@ -313,7 +313,7 @@ func (p Plugin) translateRefund(ctx context.Context, req webhookTranslateRequest
 		Raw:       raw,
 	}
 
-	return models.TranslateWebhookResponse{
+	return models.WebhookResponse{
 		IdempotencyKey: fmt.Sprintf("%s-%s-%d", req.webhook.ResourceID, string(req.webhook.EventType), req.webhook.Date),
 		Payment:        &payment,
 	}, nil

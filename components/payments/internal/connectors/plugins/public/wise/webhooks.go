@@ -18,7 +18,7 @@ import (
 type webhookConfig struct {
 	triggerOn string
 	urlPath   string
-	fn        func(context.Context, models.TranslateWebhookRequest) (models.TranslateWebhookResponse, error)
+	fn        func(context.Context, models.TranslateWebhookRequest) (models.WebhookResponse, error)
 }
 
 var webhookConfigs map[string]webhookConfig
@@ -50,18 +50,18 @@ func (p Plugin) createWebhooks(ctx context.Context, req models.CreateWebhooksReq
 	return nil
 }
 
-func (p Plugin) translateTransferStateChangedWebhook(ctx context.Context, req models.TranslateWebhookRequest) (models.TranslateWebhookResponse, error) {
+func (p Plugin) translateTransferStateChangedWebhook(ctx context.Context, req models.TranslateWebhookRequest) (models.WebhookResponse, error) {
 	transfer, err := p.client.TranslateTransferStateChangedWebhook(ctx, req.Webhook.Body)
 	if err != nil {
-		return models.TranslateWebhookResponse{}, err
+		return models.WebhookResponse{}, err
 	}
 
 	payment, err := fromTransferToPayment(transfer)
 	if err != nil {
-		return models.TranslateWebhookResponse{}, err
+		return models.WebhookResponse{}, err
 	}
 
-	return models.TranslateWebhookResponse{
+	return models.WebhookResponse{
 		Payment: payment,
 	}, nil
 }
