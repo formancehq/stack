@@ -1,6 +1,6 @@
 VERSION 0.8
 
-IMPORT github.com/formancehq/earthly:tags/v0.12.0 AS core
+IMPORT github.com/formancehq/earthly:tags/v0.14.0 AS core
 IMPORT ../.. AS stack
 IMPORT .. AS components
 
@@ -72,7 +72,6 @@ lint:
     DO --pass-args stack+GO_LINT
     SAVE ARTIFACT cmd AS LOCAL cmd
     SAVE ARTIFACT internal AS LOCAL internal
-    SAVE ARTIFACT pkg AS LOCAL pkg
     SAVE ARTIFACT main.go AS LOCAL main.go
 
 pre-commit:

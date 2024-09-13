@@ -1,7 +1,7 @@
 VERSION 0.8
 PROJECT FormanceHQ/stack
 
-IMPORT github.com/formancehq/earthly:tags/v0.12.0 AS core
+IMPORT github.com/formancehq/earthly:tags/v0.14.0 AS core
 
 sources:
     FROM core+base-image
