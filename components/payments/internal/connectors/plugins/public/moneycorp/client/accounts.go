@@ -2,10 +2,11 @@ package client
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type accountsResponse struct {
@@ -20,7 +21,8 @@ type Account struct {
 }
 
 func (c *Client) GetAccounts(ctx context.Context, page int, pageSize int) ([]*Account, error) {
-	// TODO(polo): metrics
+	// TODO(polo, crimson): metrics
+	// metrics can also be embedded in wrapper
 	// f := connectors.ClientMetrics(ctx, "moneycorp", "list_accounts")
 	// now := time.Now()
 	// defer f(ctx, now)
@@ -31,6 +33,7 @@ func (c *Client) GetAccounts(ctx context.Context, page int, pageSize int) ([]*Ac
 		return nil, fmt.Errorf("failed to create accounts request: %w", err)
 	}
 
+	// TODO generic headers can be set in wrapper
 	req.Header.Set("Content-Type", "application/json")
 
 	q := req.URL.Query()
@@ -39,33 +42,15 @@ func (c *Client) GetAccounts(ctx context.Context, page int, pageSize int) ([]*Ac
 	q.Add("sortBy", "id.asc")
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get accounts: %w", err)
-	}
-
-	defer func() {
-		err = resp.Body.Close()
-		if err != nil {
-			// TODO(polo): log error
-			// c.logger.Error(err)
-			_ = err
-		}
-	}()
-
-	if resp.StatusCode == http.StatusNotFound {
-		return []*Account{}, nil
-	}
-
-	if resp.StatusCode != http.StatusOK {
+	accounts := accountsResponse{Accounts: make([]*Account, 0)}
+	var errRes moneycorpError
+	_, err = c.httpClient.Do(req, &accounts, &errRes)
+	switch err {
+	case nil:
+		return accounts.Accounts, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
 		// TODO(polo): retryable errors
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
+		return nil, errRes.Error()
 	}
-
-	var accounts accountsResponse
-	if err := json.NewDecoder(resp.Body).Decode(&accounts); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal accounts response body: %w", err)
-	}
-
-	return accounts.Accounts, nil
+	return nil, fmt.Errorf("failed to get accounts: %w", err)
 }

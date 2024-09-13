@@ -2,10 +2,11 @@ package client
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type recipientsResponse struct {
@@ -41,33 +42,15 @@ func (c *Client) GetRecipients(ctx context.Context, accountID string, page int, 
 	q.Add("sortBy", "createdAt.asc")
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get accounts: %w", err)
-	}
-
-	defer func() {
-		err = resp.Body.Close()
-		if err != nil {
-			// TODO(polo): log error
-			// c.logger.Error(err)
-			_ = err
-		}
-	}()
-
-	if resp.StatusCode == http.StatusNotFound {
-		return []*Recipient{}, nil
-	}
-
-	if resp.StatusCode != http.StatusOK {
+	recipients := recipientsResponse{Recipients: make([]*Recipient, 0)}
+	var errRes moneycorpError
+	_, err = c.httpClient.Do(req, &recipients, &errRes)
+	switch err {
+	case nil:
+		return recipients.Recipients, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
 		// TODO(polo): retryable errors
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
+		return nil, errRes.Error()
 	}
-
-	var recipients recipientsResponse
-	if err := json.NewDecoder(resp.Body).Decode(&recipients); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal recipients response body: %w", err)
-	}
-
-	return recipients.Recipients, nil
+	return nil, fmt.Errorf("failed to get recipients %w", err)
 }

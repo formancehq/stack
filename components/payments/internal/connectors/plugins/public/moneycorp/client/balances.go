@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type balancesResponse struct {
@@ -36,32 +38,16 @@ func (c *Client) GetAccountBalances(ctx context.Context, accountID string) ([]*B
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get account balances: %w", err)
+	balances := balancesResponse{Balances: make([]*Balance, 0)}
+	var errRes moneycorpError
+
+	_, err = c.httpClient.Do(req, &balances, &errRes)
+	switch err {
+	case nil:
+		return balances.Balances, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, errRes.Error()
 	}
-
-	defer func() {
-		err = resp.Body.Close()
-		if err != nil {
-			// TODO(polo): log error
-			// c.logger.Error(err)
-			_ = err
-		}
-	}()
-
-	if resp.StatusCode == http.StatusNotFound {
-		return []*Balance{}, nil
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
-	}
-
-	var balances balancesResponse
-	if err := json.NewDecoder(resp.Body).Decode(&balances); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal balances response body: %w", err)
-	}
-
-	return balances.Balances, nil
+	return nil, fmt.Errorf("failed to get account balances: %w", err)
 }
