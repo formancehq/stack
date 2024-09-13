@@ -51,18 +51,20 @@ func (w Workflow) runInstallConnector(
 		return errors.Wrap(err, "failed to store tasks tree")
 	}
 
-	configs := make([]models.WebhookConfig, 0, len(installResponse.WebhooksConfigs))
-	for _, webhookConfig := range installResponse.WebhooksConfigs {
-		configs = append(configs, models.WebhookConfig{
-			Name:        webhookConfig.Name,
-			ConnectorID: installConnector.ConnectorID,
-			URLPath:     webhookConfig.URLPath,
-		})
-	}
-	// TODO(polo): store the capabilities
-	err = activities.StorageWebhooksConfigsStore(infiniteRetryContext(ctx), configs)
-	if err != nil {
-		return errors.Wrap(err, "failed to store webhooks configs")
+	if len(installResponse.WebhooksConfigs) > 0 {
+		configs := make([]models.WebhookConfig, 0, len(installResponse.WebhooksConfigs))
+		for _, webhookConfig := range installResponse.WebhooksConfigs {
+			configs = append(configs, models.WebhookConfig{
+				Name:        webhookConfig.Name,
+				ConnectorID: installConnector.ConnectorID,
+				URLPath:     webhookConfig.URLPath,
+			})
+		}
+		// TODO(polo): store the capabilities
+		err = activities.StorageWebhooksConfigsStore(infiniteRetryContext(ctx), configs)
+		if err != nil {
+			return errors.Wrap(err, "failed to store webhooks configs")
+		}
 	}
 
 	var config models.Config
