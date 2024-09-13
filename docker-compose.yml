@@ -52,7 +52,7 @@ services:
 
   payments-connectors:
     image: "ghcr.io/formancehq/payments:v2.0.3"
-    command: drivers server
+    command: connectors server
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://127.0.0.1:8080/_live" ]
       interval: 10s
