@@ -182,40 +182,6 @@ var _ = Describe("GatewayController", func() {
 					MatchGoldenFile("gateway-controller", "configmap-with-ledger-and-another-service.yaml"))
 			})
 		})
-		Context("Then creating a Auth object", func() {
-			var (
-				databaseSettings *v1beta1.Settings
-				auth             *v1beta1.Auth
-			)
-			BeforeEach(func() {
-				auth = &v1beta1.Auth{
-					ObjectMeta: RandObjectMeta(),
-					Spec: v1beta1.AuthSpec{
-						StackDependency: v1beta1.StackDependency{
-							Stack: stack.Name,
-						},
-					},
-				}
-				databaseSettings = settings.New(uuid.NewString(), "postgres.*.uri", "postgresql://localhost", stack.Name)
-
-				Expect(Create(databaseSettings)).To(Succeed())
-				Expect(Create(auth)).To(Succeed())
-			})
-			AfterEach(func() {
-				Expect(Delete(auth)).To(Succeed())
-				Expect(Delete(databaseSettings)).To(Succeed())
-			})
-			It("Should redeploy the gateway with auth configuration", func() {
-				Eventually(func(g Gomega) []string {
-					g.Expect(LoadResource("", gateway.Name, gateway))
-					return gateway.Status.SyncHTTPAPIs
-				}).Should(ContainElements("ledger", "auth"))
-				cm := &corev1.ConfigMap{}
-				Expect(LoadResource(stack.Name, "gateway", cm)).To(Succeed())
-				Expect(cm.Data["Caddyfile"]).To(
-					MatchGoldenFile("gateway-controller", "configmap-with-ledger-and-auth.yaml"))
-			})
-		})
 		Context("With audit enabled", func() {
 			var (
 				brokerNatsDSNSettings *v1beta1.Settings
