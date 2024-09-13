@@ -78,7 +78,7 @@ func newRouter(backend backend.Backend, a auth.Auth) *chi.Mux {
 			// Connectors
 			r.Route("/connectors", func(r chi.Router) {
 				r.Get("/", connectorsList(backend))
-				r.Post("/", connectorsInstall(backend))
+				r.Post("/install/{connector}", connectorsInstall(backend))
 
 				r.Get("/configs", connectorsConfigs(backend))
 
@@ -98,6 +98,10 @@ func newRouter(backend backend.Backend, a auth.Auth) *chi.Mux {
 	})
 
 	return r
+}
+
+func connector(r *http.Request) string {
+	return chi.URLParam(r, "connector")
 }
 
 func connectorID(r *http.Request) string {

@@ -28,7 +28,6 @@ type payment struct {
 	Amount        *big.Int             `bun:"amount,type:numeric,notnull"`
 	Asset         string               `bun:"asset,type:text,notnull"`
 	Scheme        models.PaymentScheme `bun:"scheme,type:text,notnull"`
-	Status        models.PaymentStatus `bun:"status,type:text,notnull"`
 
 	// Optional fields
 	// c.f.: https://bun.uptrace.dev/guide/models.html#nulls
@@ -276,7 +275,6 @@ func fromPaymentModels(from models.Payment) payment {
 		Amount:               from.Amount,
 		Asset:                from.Asset,
 		Scheme:               from.Scheme,
-		Status:               from.Status,
 		SourceAccountID:      from.SourceAccountID,
 		DestinationAccountID: from.DestinationAccountID,
 		Metadata:             from.Metadata,
@@ -294,7 +292,6 @@ func toPaymentModels(payment payment) models.Payment {
 		Amount:               payment.Amount,
 		Asset:                payment.Asset,
 		Scheme:               payment.Scheme,
-		Status:               payment.Status,
 		SourceAccountID:      payment.SourceAccountID,
 		DestinationAccountID: payment.DestinationAccountID,
 		Metadata:             payment.Metadata,
