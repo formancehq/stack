@@ -10,7 +10,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
-	"github.com/formancehq/operator/api/stack.formance.com/v1beta3"
 	"github.com/formancehq/operator/internal/core"
 	_ "github.com/formancehq/operator/internal/resources"
 	. "github.com/onsi/ginkgo/v2"
@@ -73,7 +72,6 @@ var _ = BeforeSuite(func() {
 	Expect(restConfig).NotTo(BeNil())
 
 	Expect(v1beta1.AddToScheme(scheme.Scheme)).To(Succeed())
-	Expect(v1beta3.AddToScheme(scheme.Scheme)).To(Succeed())
 
 	k8sClient, err = client.New(restConfig, client.Options{
 		Scheme: scheme.Scheme,

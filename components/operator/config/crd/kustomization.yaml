@@ -2,10 +2,6 @@
 # since it depends on service name and namespace that are out of this kustomize package.
 # It should be run by config/default
 resources:
-  - bases/stack.formance.com_stacks.yaml
-  - bases/stack.formance.com_configurations.yaml
-  - bases/stack.formance.com_versions.yaml
-  - bases/stack.formance.com_migrations.yaml
   - bases/formance.com_databases.yaml
   - bases/formance.com_stacks.yaml
   - bases/formance.com_brokertopics.yaml
