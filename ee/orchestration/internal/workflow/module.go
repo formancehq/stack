@@ -1,9 +1,9 @@
 package workflow
 
 import (
-	"github.com/formancehq/orchestration/internal/temporalworker"
 	"github.com/formancehq/orchestration/internal/workflow/activities"
 	"github.com/formancehq/orchestration/internal/workflow/stages"
+	"github.com/formancehq/stack/libs/go-libs/temporal"
 	"github.com/iancoleman/strcase"
 	"github.com/uptrace/bun"
 	"go.temporal.io/sdk/client"
@@ -20,20 +20,20 @@ func NewModule(taskQueue string) fx.Option {
 		}),
 		fx.Provide(activities.New),
 		fx.Provide(NewActivities),
-		fx.Provide(fx.Annotate(func(a activities.Activities) temporalworker.DefinitionSet {
+		fx.Provide(fx.Annotate(func(a activities.Activities) temporal.DefinitionSet {
 			return a.DefinitionSet()
 		}, fx.ResultTags(`group:"activities"`))),
-		fx.Provide(fx.Annotate(func(a Activities) temporalworker.DefinitionSet {
+		fx.Provide(fx.Annotate(func(a Activities) temporal.DefinitionSet {
 			return a.DefinitionSet()
 		}, fx.ResultTags(`group:"activities"`))),
-		fx.Provide(fx.Annotate(func(workflow *Workflows) temporalworker.DefinitionSet {
+		fx.Provide(fx.Annotate(func(workflow *Workflows) temporal.DefinitionSet {
 			return workflow.DefinitionSet()
 		}, fx.ResultTags(`group:"workflows"`))),
 	}
 
-	set := temporalworker.NewDefinitionSet()
+	set := temporal.NewDefinitionSet()
 	for name, schema := range stages.All() {
-		set = set.Append(temporalworker.Definition{
+		set = set.Append(temporal.Definition{
 			Name: "Run" + strcase.ToCamel(name),
 			Func: schema.GetWorkflow(),
 		})

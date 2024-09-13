@@ -3,15 +3,13 @@ package cmd
 import (
 	"net/http"
 
-	"go.temporal.io/sdk/worker"
-
-	"github.com/formancehq/orchestration/internal/triggers"
-
 	sdk "github.com/formancehq/formance-sdk-go/v2"
-	"github.com/formancehq/orchestration/internal/temporalworker"
+	"github.com/formancehq/orchestration/internal/triggers"
 	"github.com/formancehq/stack/libs/go-libs/service"
+	"github.com/formancehq/stack/libs/go-libs/temporal"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"go.temporal.io/sdk/worker"
 	"go.uber.org/fx"
 )
 
@@ -29,12 +27,12 @@ func stackClientModule() fx.Option {
 func workerOptions() fx.Option {
 	return fx.Options(
 		stackClientModule(),
-		temporalworker.NewWorkerModule(viper.GetString(temporalTaskQueueFlag), worker.Options{
-			TaskQueueActivitiesPerSecond: viper.GetFloat64(temporalMaxParallelActivities),
+		temporal.NewWorkerModule(viper.GetString(temporal.TemporalTaskQueueFlag), worker.Options{
+			TaskQueueActivitiesPerSecond: viper.GetFloat64(temporal.TemporalMaxParallelActivities),
 		}),
 		triggers.NewListenerModule(
 			viper.GetString(stackFlag),
-			viper.GetString(temporalTaskQueueFlag),
+			viper.GetString(temporal.TemporalTaskQueueFlag),
 			viper.GetStringSlice(topicsFlag),
 		),
 	)

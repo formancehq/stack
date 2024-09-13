@@ -3,14 +3,11 @@ package triggers
 import (
 	"time"
 
-	"github.com/formancehq/orchestration/internal/temporalworker"
-
-	"go.temporal.io/api/enums/v1"
-
 	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
-
 	"github.com/formancehq/stack/libs/go-libs/publish"
+	"github.com/formancehq/stack/libs/go-libs/temporal"
+	"go.temporal.io/api/enums/v1"
 	temporalworkflow "go.temporal.io/sdk/workflow"
 )
 
@@ -117,13 +114,13 @@ func (w triggerWorkflow) ExecuteTrigger(ctx temporalworkflow.Context, req Proces
 	return nil
 }
 
-func (w triggerWorkflow) DefinitionSet() temporalworker.DefinitionSet {
-	return temporalworker.NewDefinitionSet().
-		Append(temporalworker.Definition{
+func (w triggerWorkflow) DefinitionSet() temporal.DefinitionSet {
+	return temporal.NewDefinitionSet().
+		Append(temporal.Definition{
 			Func: w.RunTrigger,
 			Name: "RunTrigger",
 		}).
-		Append(temporalworker.Definition{
+		Append(temporal.Definition{
 			Func: w.ExecuteTrigger,
 			Name: "ExecuteTrigger",
 		})
