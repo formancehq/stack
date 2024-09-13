@@ -1,0 +1,30 @@
+syntax = "proto3";
+package formance.payments.connectors.grpc.proto;
+option go_package = "github.com/formancehq/payments/internal/connectors/grpc/proto";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+// Represents a bank account created on the formance platform
+message BankAccount {
+    // ID of the bank account. Must be an uuid.
+    string id = 1;
+
+    // Bank Account's creation date
+    google.protobuf.Timestamp created_at = 2;
+
+    // Bank Account's name
+    string name = 3;
+
+    // Optional: Account number of the bank account
+    google.protobuf.StringValue account_number = 4;
+    // Optional: iban of the bank account
+    google.protobuf.StringValue iban = 5;
+    // Optional: swift code of the bank account
+    google.protobuf.StringValue swift_bic_code = 6;
+    // Optional: country of the bank account
+    google.protobuf.StringValue country = 7;
+
+    // Additional metadata
+    map<string, string> metadata = 8;
+}

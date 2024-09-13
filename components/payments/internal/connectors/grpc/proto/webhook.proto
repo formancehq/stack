@@ -1,0 +1,17 @@
+syntax = "proto3";
+package formance.payments.connectors.grpc.proto;
+option go_package = "github.com/formancehq/payments/internal/connectors/grpc/proto";
+
+message WebhookConfig {
+    string name = 1;
+    string url_path = 2;
+}
+
+message Webhook {
+    message Values {
+        repeated string values = 1;
+    }
+    map<string, Values> headers = 1;
+    map<string, Values> query_values = 2;
+    bytes body = 3;
+}
