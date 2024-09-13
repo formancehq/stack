@@ -108,7 +108,6 @@ lint:
     DO --pass-args stack+GO_LINT --ADDITIONAL_ARGUMENTS="--build-tags it"
     SAVE ARTIFACT cmd AS LOCAL cmd
     SAVE ARTIFACT internal AS LOCAL internal
-    SAVE ARTIFACT pkg AS LOCAL pkg
     SAVE ARTIFACT main.go AS LOCAL main.go
 
 pre-commit:
