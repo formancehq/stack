@@ -33,9 +33,9 @@ services:
     environment:
       POSTGRES_URI: postgres://payments:payments@postgres:${POSTGRES_PORT:-5432}/payments?sslmode=disable
 
-  payments-api:
+  payments:
     image: golang:1.22.4-alpine3.19
-    command: go run ./ api server
+    command: go run ./ server
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://127.0.0.1:8080/_healthcheck" ]
       interval: 10s
@@ -57,26 +57,4 @@ services:
       POSTGRES_URI: postgres://payments:payments@postgres:${POSTGRES_PORT:-5432}/payments?sslmode=disable
       CONFIG_ENCRYPTION_KEY: mysuperencryptionkey
 
-  payments-connectors:
-    image: golang:1.22.4-alpine3.19
-    command: go run ./ connectors server
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://127.0.0.1:8081/_healthcheck" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    depends_on:
-      postgres:
-        condition: service_healthy
-      payments-migrate:
-        condition: service_completed_successfully
-    ports:
-      - "8081:8080"
-    volumes:
-       - .:/app/components/payments
-       - ../../libs:/app/libs
-    working_dir: /app/components/payments
-    environment:
-      DEBUG: ${DEBUG:-"true"}
-      POSTGRES_URI: postgres://payments:payments@postgres:${POSTGRES_PORT:-5432}/payments?sslmode=disable
-      CONFIG_ENCRYPTION_KEY: mysuperencryptionkey
+# TODO(polo): add temporal

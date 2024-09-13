@@ -1,9 +1,8 @@
 package cmd
 
 import (
-	"github.com/formancehq/stack/libs/go-libs/bun/bunmigrate"
-
 	"github.com/formancehq/payments/internal/storage"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunmigrate"
 	"github.com/spf13/cobra"
 	"github.com/uptrace/bun"
 
@@ -12,14 +11,17 @@ import (
 )
 
 var (
-	configEncryptionKeyFlag = "config-encryption-key"
-	autoMigrateFlag         = "auto-migrate"
+	autoMigrateFlag = "auto-migrate"
 )
 
 func newMigrate() *cobra.Command {
-	return bunmigrate.NewDefaultCommand(Migrate, func(cmd *cobra.Command) {
+	cmd := bunmigrate.NewDefaultCommand(Migrate, func(cmd *cobra.Command) {
 		cmd.Flags().String(configEncryptionKeyFlag, "", "Config encryption key")
 	})
+
+	bunconnect.AddFlags(cmd.Flags())
+
+	return cmd
 }
 
 func Migrate(cmd *cobra.Command, args []string, db *bun.DB) error {
