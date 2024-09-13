@@ -2,10 +2,11 @@ package brokers
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/formancehq/operator/internal/resources/settings"
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"k8s.io/apimachinery/pkg/types"
-	"strings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"

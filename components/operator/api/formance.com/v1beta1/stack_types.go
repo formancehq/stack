@@ -45,7 +45,7 @@ type StackSpec struct {
 }
 
 type StackStatus struct {
-	Status  `json:",inline"`
+	Status `json:",inline"`
 	// Modules register detected modules
 	Modules []string `json:"modules,omitempty"`
 }

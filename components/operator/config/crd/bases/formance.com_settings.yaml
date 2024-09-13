@@ -26,131 +26,49 @@ spec:
     name: v1beta1
     schema:
       openAPIV3Schema:
-        description: |-
-          Settings represents a configurable piece of the stacks.
-
-
-          The purpose of this resource is to be able to configure some common settings between a set of stacks.
-
-
-          Example :
-          ```yaml
-          apiVersion: formance.com/v1beta1
-          kind: Settings
-          metadata:
-            name: postgres-uri
-          spec:
-            key: postgres.ledger.uri
-            stacks:
-            - stack0
-            value: postgresql://postgresql.formance.svc.cluster.local:5432
-          ```
-
-
-          This example create a setting named `postgres-uri` targeting the stack named `stack0` and the service `ledger` (see the key `postgres.ledger.uri`).
-
-
-          Therefore, a [Database](#database) created for the stack `stack0` and the service named 'ledger' will use the uri `postgresql://postgresql.formance.svc.cluster.local:5432`.
-
-
-          Settings allow to use wildcards in keys and in stacks list.
-
-
-          For example, if you want to use the same database server for all the modules of a specific stack, you can write :
-          ```yaml
-          apiVersion: formance.com/v1beta1
-          kind: Settings
-          metadata:
-            name: postgres-uri
-          spec:
-            key: postgres.*.uri # There, we use a wildcard to indicate we want to use that setting of all services of the stack `stack0`
-            stacks:
-            - stack0
-            value: postgresql://postgresql.formance.svc.cluster.local:5432
-          ```
-
-
-          Also, we could use that setting for all of our stacks using :
-          ```yaml
-          apiVersion: formance.com/v1beta1
-          kind: Settings
-          metadata:
-            name: postgres-uri
-          spec:
-            key: postgres.*.uri # There, we use a wildcard to indicate we want to use that setting for all services of all stacks
-            stacks:
-            - * # There we select all the stacks
-            value: postgresql://postgresql.formance.svc.cluster.local:5432
-          ```
-
-
-          Some settings are really global, while some are used by specific module.
-
-
-          Refer to the documentation of each module and resource to discover available Settings.
-
-
-          ##### Global settings
-          ###### AWS account
-
-
-          A stack can use an AWS account for authentication.
-
-
-          It can be used to connect to any AWS service we could use.
-
-
-          It includes RDS, OpenSearch and MSK. To do so, you can create the following setting:
-          ```yaml
-          apiVersion: formance.com/v1beta1
-          kind: Settings
-          metadata:
-            name: aws-service-account
-          spec:
-            key: aws.service-account
-            stacks:
-            - '*'
-            value: aws-access
-          ```
-          This setting instruct the operator than there is somewhere on the cluster a service account named `aws-access`.
-
-
-          So, each time a service has the capability to use AWS, the operator will use this service account.
-
-
-          The service account could look like that :
-          ```yaml
-          apiVersion: v1
-          kind: ServiceAccount
-          metadata:
-            annotations:
-              eks.amazonaws.com/role-arn: arn:aws:iam::************:role/staging-eu-west-1-hosting-stack-access
-            labels:
-              formance.com/stack: any
-            name: aws-access
-          ```
-          You can note two things :
-          1. We have an annotation indicating the role arn used to connect to AWS. Refer to the AWS documentation to create this role
-          2. We have a label `formance.com/stack=any` indicating we are targeting all stacks.
-             Refer to the documentation of [ResourceReference](#resourcereference) for further information.
-
-
-          ###### JSON logging
-
-
-          You can use the setting `logging.json` with the value `true` to configure elligible service to log as json.
-          Example:
-          ```yaml
-          apiVersion: formance.com/v1beta1
-          kind: Settings
-          metadata:
-            name: json-logging
-          spec:
-            key: logging.json
-            stacks:
-            - '*'
-            value: "true"
-          ```
+        description: "Settings represents a configurable piece of the stacks.\n\n\nThe
+          purpose of this resource is to be able to configure some common settings
+          between a set of stacks.\n\n\nExample :\n```yaml\napiVersion: formance.com/v1beta1\nkind:
+          Settings\nmetadata:\n\n\n\tname: postgres-uri\n\n\nspec:\n\n\n\tkey: postgres.ledger.uri\n\tstacks:\n\t-
+          stack0\n\tvalue: postgresql://postgresql.formance.svc.cluster.local:5432\n\n\n```\n\n\nThis
+          example create a setting named `postgres-uri` targeting the stack named
+          `stack0` and the service `ledger` (see the key `postgres.ledger.uri`).\n\n\nTherefore,
+          a [Database](#database) created for the stack `stack0` and the service named
+          'ledger' will use the uri `postgresql://postgresql.formance.svc.cluster.local:5432`.\n\n\nSettings
+          allow to use wildcards in keys and in stacks list.\n\n\nFor example, if
+          you want to use the same database server for all the modules of a specific
+          stack, you can write :\n```yaml\napiVersion: formance.com/v1beta1\nkind:
+          Settings\nmetadata:\n\n\n\tname: postgres-uri\n\n\nspec:\n\n\n\tkey: postgres.*.uri
+          # There, we use a wildcard to indicate we want to use that setting of all
+          services of the stack `stack0`\n\tstacks:\n\t- stack0\n\tvalue: postgresql://postgresql.formance.svc.cluster.local:5432\n\n\n```\n\n\nAlso,
+          we could use that setting for all of our stacks using :\n```yaml\napiVersion:
+          formance.com/v1beta1\nkind: Settings\nmetadata:\n\n\n\tname: postgres-uri\n\n\nspec:\n\n\n\tkey:
+          postgres.*.uri # There, we use a wildcard to indicate we want to use that
+          setting for all services of all stacks\n\tstacks:\n\t- * # There we select
+          all the stacks\n\tvalue: postgresql://postgresql.formance.svc.cluster.local:5432\n\n\n```\n\n\nSome
+          settings are really global, while some are used by specific module.\n\n\nRefer
+          to the documentation of each module and resource to discover available Settings.\n\n\n#####
+          Global settings\n###### AWS account\n\n\nA stack can use an AWS account
+          for authentication.\n\n\nIt can be used to connect to any AWS service we
+          could use.\n\n\nIt includes RDS, OpenSearch and MSK. To do so, you can create
+          the following setting:\n```yaml\napiVersion: formance.com/v1beta1\nkind:
+          Settings\nmetadata:\n\n\n\tname: aws-service-account\n\n\nspec:\n\n\n\tkey:
+          aws.service-account\n\tstacks:\n\t- '*'\n\tvalue: aws-access\n\n\n```\nThis
+          setting instruct the operator than there is somewhere on the cluster a service
+          account named `aws-access`.\n\n\nSo, each time a service has the capability
+          to use AWS, the operator will use this service account.\n\n\nThe service
+          account could look like that :\n```yaml\napiVersion: v1\nkind: ServiceAccount\nmetadata:\n\n\n\tannotations:\n\t
+          \ eks.amazonaws.com/role-arn: arn:aws:iam::************:role/staging-eu-west-1-hosting-stack-access\n\tlabels:\n\t
+          \ formance.com/stack: any\n\tname: aws-access\n\n\n```\nYou can note two
+          things :\n 1. We have an annotation indicating the role arn used to connect
+          to AWS. Refer to the AWS documentation to create this role\n 2. We have
+          a label `formance.com/stack=any` indicating we are targeting all stacks.\n
+          \   Refer to the documentation of [ResourceReference](#resourcereference)
+          for further information.\n\n\n###### JSON logging\n\n\nYou can use the setting
+          `logging.json` with the value `true` to configure elligible service to log
+          as json.\nExample:\n```yaml\napiVersion: formance.com/v1beta1\nkind: Settings\nmetadata:\n\n\n\tname:
+          json-logging\n\n\nspec:\n\n\n\tkey: logging.json\n\tstacks:\n\t- '*'\n\tvalue:
+          \"true\"\n\n\n```"
         properties:
           apiVersion:
             description: |-

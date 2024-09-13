@@ -2,6 +2,8 @@ package brokers
 
 import (
 	"fmt"
+	"sort"
+
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/jobs"
@@ -14,7 +16,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sort"
 )
 
 func Reconcile(ctx core.Context, stack *v1beta1.Stack, broker *v1beta1.Broker) error {

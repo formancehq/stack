@@ -2,6 +2,7 @@ package applications
 
 import (
 	"fmt"
+
 	"github.com/formancehq/operator/internal/resources/licence"
 	"github.com/formancehq/operator/internal/resources/settings"
 	v1 "k8s.io/api/policy/v1"

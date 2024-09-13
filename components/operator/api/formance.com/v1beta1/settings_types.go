@@ -25,9 +25,9 @@ type SettingsSpec struct {
 	// Stacks on which the setting is applied. Can contain `*` to indicate a wildcard.
 	Stacks []string `json:"stacks,omitempty"`
 	// The setting Key. See the documentation of each module or [global settings](#global-settings) to discover them.
-	Key    string   `json:"key"`
+	Key string `json:"key"`
 	// The value. It must have a specific format following the Key.
-	Value  string   `json:"value"`
+	Value string `json:"value"`
 }
 
 // Settings represents a configurable piece of the stacks.
@@ -39,12 +39,16 @@ type SettingsSpec struct {
 // apiVersion: formance.com/v1beta1
 // kind: Settings
 // metadata:
-//   name: postgres-uri
+//
+//	name: postgres-uri
+//
 // spec:
-//   key: postgres.ledger.uri
-//   stacks:
-//   - stack0
-//   value: postgresql://postgresql.formance.svc.cluster.local:5432
+//
+//	key: postgres.ledger.uri
+//	stacks:
+//	- stack0
+//	value: postgresql://postgresql.formance.svc.cluster.local:5432
+//
 // ```
 //
 // This example create a setting named `postgres-uri` targeting the stack named `stack0` and the service `ledger` (see the key `postgres.ledger.uri`).
@@ -58,12 +62,16 @@ type SettingsSpec struct {
 // apiVersion: formance.com/v1beta1
 // kind: Settings
 // metadata:
-//   name: postgres-uri
+//
+//	name: postgres-uri
+//
 // spec:
-//   key: postgres.*.uri # There, we use a wildcard to indicate we want to use that setting of all services of the stack `stack0`
-//   stacks:
-//   - stack0
-//   value: postgresql://postgresql.formance.svc.cluster.local:5432
+//
+//	key: postgres.*.uri # There, we use a wildcard to indicate we want to use that setting of all services of the stack `stack0`
+//	stacks:
+//	- stack0
+//	value: postgresql://postgresql.formance.svc.cluster.local:5432
+//
 // ```
 //
 // Also, we could use that setting for all of our stacks using :
@@ -71,12 +79,16 @@ type SettingsSpec struct {
 // apiVersion: formance.com/v1beta1
 // kind: Settings
 // metadata:
-//   name: postgres-uri
+//
+//	name: postgres-uri
+//
 // spec:
-//   key: postgres.*.uri # There, we use a wildcard to indicate we want to use that setting for all services of all stacks
-//   stacks:
-//   - * # There we select all the stacks
-//   value: postgresql://postgresql.formance.svc.cluster.local:5432
+//
+//	key: postgres.*.uri # There, we use a wildcard to indicate we want to use that setting for all services of all stacks
+//	stacks:
+//	- * # There we select all the stacks
+//	value: postgresql://postgresql.formance.svc.cluster.local:5432
+//
 // ```
 //
 // Some settings are really global, while some are used by specific module.
@@ -95,12 +107,16 @@ type SettingsSpec struct {
 // apiVersion: formance.com/v1beta1
 // kind: Settings
 // metadata:
-//   name: aws-service-account
+//
+//	name: aws-service-account
+//
 // spec:
-//   key: aws.service-account
-//   stacks:
-//   - '*'
-//   value: aws-access
+//
+//	key: aws.service-account
+//	stacks:
+//	- '*'
+//	value: aws-access
+//
 // ```
 // This setting instruct the operator than there is somewhere on the cluster a service account named `aws-access`.
 //
@@ -111,16 +127,18 @@ type SettingsSpec struct {
 // apiVersion: v1
 // kind: ServiceAccount
 // metadata:
-//   annotations:
-//     eks.amazonaws.com/role-arn: arn:aws:iam::************:role/staging-eu-west-1-hosting-stack-access
-//   labels:
-//     formance.com/stack: any
-//   name: aws-access
+//
+//	annotations:
+//	  eks.amazonaws.com/role-arn: arn:aws:iam::************:role/staging-eu-west-1-hosting-stack-access
+//	labels:
+//	  formance.com/stack: any
+//	name: aws-access
+//
 // ```
 // You can note two things :
-// 1. We have an annotation indicating the role arn used to connect to AWS. Refer to the AWS documentation to create this role
-// 2. We have a label `formance.com/stack=any` indicating we are targeting all stacks.
-//    Refer to the documentation of [ResourceReference](#resourcereference) for further information.
+//  1. We have an annotation indicating the role arn used to connect to AWS. Refer to the AWS documentation to create this role
+//  2. We have a label `formance.com/stack=any` indicating we are targeting all stacks.
+//     Refer to the documentation of [ResourceReference](#resourcereference) for further information.
 //
 // ###### JSON logging
 //
@@ -130,23 +148,27 @@ type SettingsSpec struct {
 // apiVersion: formance.com/v1beta1
 // kind: Settings
 // metadata:
-//   name: json-logging
+//
+//	name: json-logging
+//
 // spec:
-//   key: logging.json
-//   stacks:
-//   - '*'
-//   value: "true"
+//
+//	key: logging.json
+//	stacks:
+//	- '*'
+//	value: "true"
+//
 // ```
-//+kubebuilder:object:root=true
-//+kubebuilder:subresource:status
-//+kubebuilder:resource:scope=Cluster
-//+kubebuilder:printcolumn:name="Key",type=string,JSONPath=".spec.key",description="Key"
-//+kubebuilder:printcolumn:name="Value",type=string,JSONPath=".spec.value",description="Value"
+// +kubebuilder:object:root=true
+// +kubebuilder:subresource:status
+// +kubebuilder:resource:scope=Cluster
+// +kubebuilder:printcolumn:name="Key",type=string,JSONPath=".spec.key",description="Key"
+// +kubebuilder:printcolumn:name="Value",type=string,JSONPath=".spec.value",description="Value"
 type Settings struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   SettingsSpec   `json:"spec,omitempty"`
+	Spec SettingsSpec `json:"spec,omitempty"`
 }
 
 func (in *Settings) GetStacks() []string {

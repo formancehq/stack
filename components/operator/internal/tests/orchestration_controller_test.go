@@ -2,6 +2,7 @@ package tests_test
 
 import (
 	"fmt"
+
 	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/operator/internal/tests/internal"
 	"github.com/google/uuid"

@@ -51,31 +51,37 @@ type ResourceReferenceStatus struct {
 // apiVersion: formance.com/v1beta1
 // kind: ResourceReference
 // metadata:
-//   name: jqkuffjxcezj-qlii-auth-postgres
-//   ownerReferences:
-//   - apiVersion: formance.com/v1beta1
-//     blockOwnerDeletion: true
-//     controller: true
-//     kind: Database
-//     name: jqkuffjxcezj-qlii-auth
-//     uid: 2cc4b788-3ffb-4e3d-8a30-07ed3941c8d2
+//
+//	name: jqkuffjxcezj-qlii-auth-postgres
+//	ownerReferences:
+//	- apiVersion: formance.com/v1beta1
+//	  blockOwnerDeletion: true
+//	  controller: true
+//	  kind: Database
+//	  name: jqkuffjxcezj-qlii-auth
+//	  uid: 2cc4b788-3ffb-4e3d-8a30-07ed3941c8d2
+//
 // spec:
-//   gvk:
-//     group: ""
-//     kind: Secret
-//     version: v1
-//   name: postgres
-//   stack: jqkuffjxcezj-qlii
+//
+//	gvk:
+//	  group: ""
+//	  kind: Secret
+//	  version: v1
+//	name: postgres
+//	stack: jqkuffjxcezj-qlii
+//
 // status:
-//   ...
+//
+//	...
+//
 // ```
 // This reconciler behind this ResourceReference will search, in all namespaces, for a secret named "postgres".
 // The secret must have a label `formance.com/stack` with the value matching either a specific stack or `any` to target any stack.
 //
 // Once the reconciler has found the secret, it will copy it inside the stack namespace, allowing the ResourceReconciler owner to use it.
-//+kubebuilder:object:root=true
-//+kubebuilder:subresource:status
-//+kubebuilder:resource:scope=Cluster
+// +kubebuilder:object:root=true
+// +kubebuilder:subresource:status
+// +kubebuilder:resource:scope=Cluster
 type ResourceReference struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`

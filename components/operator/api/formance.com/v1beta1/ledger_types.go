@@ -81,17 +81,18 @@ type LedgerStatus struct {
 // * single writer / multiple reader: In this mode, we will have a single writer and multiple readers if needed.
 //
 // Use setting `ledger.deployment-strategy` with either the value :
-// * single : For the single instance mode.
-// * single-writer: For the single writer / multiple reader mode.
-//   Under the hood, the operator create two deployments and force the scaling of the writer to stay at 1.
-//   Then you can scale the deployment of the reader to the value you want.
-//+kubebuilder:object:root=true
-//+kubebuilder:subresource:status
-//+kubebuilder:resource:scope=Cluster
-//+kubebuilder:printcolumn:name="Stack",type=string,JSONPath=".spec.stack",description="Stack"
-//+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
-//+kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
-//+kubebuilder:metadata:labels=formance.com/kind=module
+//   - single : For the single instance mode.
+//   - single-writer: For the single writer / multiple reader mode.
+//     Under the hood, the operator create two deployments and force the scaling of the writer to stay at 1.
+//     Then you can scale the deployment of the reader to the value you want.
+//
+// +kubebuilder:object:root=true
+// +kubebuilder:subresource:status
+// +kubebuilder:resource:scope=Cluster
+// +kubebuilder:printcolumn:name="Stack",type=string,JSONPath=".spec.stack",description="Stack"
+// +kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Is ready"
+// +kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
+// +kubebuilder:metadata:labels=formance.com/kind=module
 type Ledger struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`

@@ -25,7 +25,7 @@ type DatabaseSpec struct {
 	// Service is a discriminator for the created database.
 	// Actually, it will be the module name (ledger, payments...).
 	// Therefore, the created database will be named `<stack-name><service>`
-	Service         string `json:"service"`
+	Service string `json:"service"`
 	// +kubebuilder:default:=false
 	Debug bool `json:"debug,omitempty"`
 }
@@ -63,13 +63,13 @@ type DatabaseStatus struct {
 //
 // Therefore, to switch to a new server, you must change the setting value, then drop the Database object.
 // It will be recreated with correct uri.
-//+kubebuilder:object:root=true
-//+kubebuilder:subresource:status
-//+kubebuilder:resource:scope=Cluster
-//+kubebuilder:printcolumn:name="Stack",type=string,JSONPath=".spec.stack",description="Stack"
-//+kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Ready"
-//+kubebuilder:printcolumn:name="Out of sync",type=string,JSONPath=".status.outOfSync",description="Is the databse configuration out of sync"
-//+kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
+// +kubebuilder:object:root=true
+// +kubebuilder:subresource:status
+// +kubebuilder:resource:scope=Cluster
+// +kubebuilder:printcolumn:name="Stack",type=string,JSONPath=".spec.stack",description="Stack"
+// +kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Ready"
+// +kubebuilder:printcolumn:name="Out of sync",type=string,JSONPath=".status.outOfSync",description="Is the databse configuration out of sync"
+// +kubebuilder:printcolumn:name="Info",type=string,JSONPath=".status.info",description="Info"
 type Database struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`

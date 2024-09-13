@@ -2,11 +2,12 @@ package orchestrations
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/formancehq/operator/internal/resources/brokers"
 	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
-	"strings"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	. "github.com/formancehq/operator/internal/core"
