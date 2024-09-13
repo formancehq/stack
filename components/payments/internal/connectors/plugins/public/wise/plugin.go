@@ -132,7 +132,9 @@ func (p Plugin) TranslateWebhook(ctx context.Context, req models.TranslateWebhoo
 
 	res.IdempotencyKey = v[0]
 
-	return res, nil
+	return models.TranslateWebhookResponse{
+		Responses: []models.WebhookResponse{res},
+	}, nil
 }
 
 var _ models.Plugin = &Plugin{}
