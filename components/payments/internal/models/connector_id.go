@@ -7,16 +7,17 @@ import (
 	"fmt"
 
 	"github.com/gibson042/canonicaljson-go"
+	"github.com/google/uuid"
 )
 
 // TODO(polo): change reference to uuid for temporal purpose
 type ConnectorID struct {
-	Reference string
+	Reference uuid.UUID
 	Provider  string
 }
 
 func (cid *ConnectorID) String() string {
-	if cid == nil || cid.Reference == "" {
+	if cid == nil || cid.Reference == uuid.Nil {
 		return ""
 	}
 

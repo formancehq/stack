@@ -31,18 +31,18 @@ type connector struct {
 }
 
 func (s *store) ConnectorsInstall(ctx context.Context, c models.Connector) error {
+	tx, err := s.db.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		return errors.Wrap(err, "cannot begin transaction")
+	}
+	defer tx.Rollback()
+
 	toInsert := connector{
 		ID:        c.ID,
 		Name:      c.Name,
 		CreatedAt: c.CreatedAt,
 		Provider:  c.Provider,
 	}
-
-	tx, err := s.db.BeginTx(ctx, &sql.TxOptions{})
-	if err != nil {
-		return errors.Wrap(err, "cannot begin transaction")
-	}
-	defer tx.Rollback()
 
 	_, err = tx.NewInsert().
 		Model(&toInsert).

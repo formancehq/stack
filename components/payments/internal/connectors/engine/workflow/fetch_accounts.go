@@ -75,18 +75,8 @@ func (w Workflow) fetchAccounts(
 			}
 		}
 
-		state.State = accountsResponse.NewState
-		err = activities.StorageStatesStore(
-			infiniteRetryContext(ctx),
-			*state,
-		)
-		if err != nil {
-			return errors.Wrap(err, "storing state")
-		}
-
 		// TODO(polo): send event
-		// TODO(polo): events with IK to avoir duplicates
-
+		// TODO(polo): events with IK to avoid duplicates
 		for _, account := range accountsResponse.Accounts {
 			payload, err := json.Marshal(account)
 			if err != nil {
@@ -97,7 +87,7 @@ func (w Workflow) fetchAccounts(
 				workflow.WithChildOptions(
 					ctx,
 					workflow.ChildWorkflowOptions{
-						TaskQueue:         fetchNextAccount.ConnectorID.Reference,
+						TaskQueue:         fetchNextAccount.ConnectorID.String(),
 						ParentClosePolicy: enums.PARENT_CLOSE_POLICY_ABANDON,
 					},
 				),
@@ -112,6 +102,15 @@ func (w Workflow) fetchAccounts(
 			).Get(ctx, nil); err != nil {
 				return errors.Wrap(err, "running next workflow")
 			}
+		}
+
+		state.State = accountsResponse.NewState
+		err = activities.StorageStatesStore(
+			infiniteRetryContext(ctx),
+			*state,
+		)
+		if err != nil {
+			return errors.Wrap(err, "storing state")
 		}
 
 		hasMore = accountsResponse.HasMore

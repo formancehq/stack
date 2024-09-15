@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/formancehq/payments/internal/connectors/engine/plugins"
 	"github.com/formancehq/payments/internal/connectors/engine/webhooks"
@@ -54,17 +55,27 @@ func (e *engine) InstallConnector(ctx context.Context, provider string, rawConfi
 		return models.ConnectorID{}, errors.Wrap(ErrValidation, err.Error())
 	}
 
-	connectorID := models.ConnectorID{
-		Reference: config.Name,
+	connector := models.Connector{
+		ID: models.ConnectorID{
+			Reference: uuid.New(),
+			Provider:  provider,
+		},
+		Name:      config.Name,
+		CreatedAt: time.Now().UTC(),
 		Provider:  provider,
+		Config:    rawConfig,
 	}
 
-	err := e.plugins.RegisterPlugin(connectorID)
+	if err := e.storage.ConnectorsInstall(ctx, connector); err != nil {
+		return models.ConnectorID{}, err
+	}
+
+	err := e.plugins.RegisterPlugin(connector.ID)
 	if err != nil {
 		return models.ConnectorID{}, handlePluginError(err)
 	}
 
-	err = e.workers.AddWorker(connectorID)
+	err = e.workers.AddWorker(connector.ID)
 	if err != nil {
 		return models.ConnectorID{}, err
 	}
@@ -73,15 +84,16 @@ func (e *engine) InstallConnector(ctx context.Context, provider string, rawConfi
 	run, err := e.temporalClient.ExecuteWorkflow(
 		ctx,
 		client.StartWorkflowOptions{
-			ID:                                       fmt.Sprintf("install-%s", connectorID.String()),
-			TaskQueue:                                connectorID.Reference,
+			ID:                                       fmt.Sprintf("install-%s", connector.ID.String()),
+			TaskQueue:                                connector.ID.String(),
 			WorkflowIDReusePolicy:                    enums.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE,
 			WorkflowExecutionErrorWhenAlreadyStarted: false,
 		},
 		workflow.RunInstallConnector,
 		workflow.InstallConnector{
-			ConnectorID: connectorID,
+			ConnectorID: connector.ID,
 			RawConfig:   rawConfig,
+			Config:      config,
 		},
 	)
 	if err != nil {
@@ -93,7 +105,7 @@ func (e *engine) InstallConnector(ctx context.Context, provider string, rawConfi
 		return models.ConnectorID{}, err
 	}
 
-	return connectorID, nil
+	return connector.ID, nil
 }
 
 func (e *engine) UninstallConnector(ctx context.Context, connectorID models.ConnectorID) error {
@@ -101,7 +113,7 @@ func (e *engine) UninstallConnector(ctx context.Context, connectorID models.Conn
 		ctx,
 		client.StartWorkflowOptions{
 			ID:                                       fmt.Sprintf("uninstall-%s", connectorID.String()),
-			TaskQueue:                                connectorID.Reference,
+			TaskQueue:                                connectorID.String(),
 			WorkflowIDReusePolicy:                    enums.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE_FAILED_ONLY,
 			WorkflowExecutionErrorWhenAlreadyStarted: false,
 		},
@@ -135,7 +147,7 @@ func (e *engine) CreateBankAccount(ctx context.Context, bankAccountID uuid.UUID,
 		ctx,
 		client.StartWorkflowOptions{
 			ID:                                       fmt.Sprintf("create-bank-account-%s-%s", connectorID.String(), bankAccountID.String()),
-			TaskQueue:                                connectorID.Reference,
+			TaskQueue:                                connectorID.String(),
 			WorkflowIDReusePolicy:                    enums.WORKFLOW_ID_REUSE_POLICY_REJECT_DUPLICATE,
 			WorkflowExecutionErrorWhenAlreadyStarted: false,
 		},
@@ -203,12 +215,17 @@ func (e *engine) onStartPlugin(ctx context.Context, connector models.Connector) 
 		return err
 	}
 
+	config := models.DefaultConfig()
+	if err := json.Unmarshal(connector.Config, &config); err != nil {
+		return err
+	}
+
 	// Launch the workflow
 	_, err = e.temporalClient.ExecuteWorkflow(
 		ctx,
 		client.StartWorkflowOptions{
 			ID:                                       fmt.Sprintf("install-%s", connector.ID.String()),
-			TaskQueue:                                connector.ID.Reference,
+			TaskQueue:                                connector.ID.String(),
 			WorkflowIDReusePolicy:                    enums.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE,
 			WorkflowExecutionErrorWhenAlreadyStarted: false,
 		},
@@ -216,6 +233,7 @@ func (e *engine) onStartPlugin(ctx context.Context, connector models.Connector) 
 		workflow.InstallConnector{
 			ConnectorID: connector.ID,
 			RawConfig:   connector.Config,
+			Config:      config,
 		},
 	)
 	if err != nil {

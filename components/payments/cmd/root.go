@@ -26,6 +26,8 @@ import (
 	"go.uber.org/fx"
 )
 
+// TODO(polo/crimson): add profiling
+
 var (
 	ServiceName = "payments"
 	Version     = "develop"
