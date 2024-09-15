@@ -10,6 +10,10 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
+var (
+	errNotFromSchedule = errors.New("not from schedule")
+)
+
 func (w Workflow) createInstance(
 	ctx workflow.Context,
 	connectorID models.ConnectorID,
@@ -18,6 +22,9 @@ func (w Workflow) createInstance(
 
 	scheduleID, err := getPaymentScheduleID(ctx, info)
 	if err != nil {
+		if errors.Is(err, errNotFromSchedule) {
+			return nil
+		}
 		return err
 	}
 
@@ -42,6 +49,9 @@ func (w Workflow) terminateInstance(
 
 	scheduleID, err := getPaymentScheduleID(ctx, info)
 	if err != nil {
+		if errors.Is(err, errNotFromSchedule) {
+			return nil
+		}
 		return err
 	}
 
@@ -71,7 +81,7 @@ func getPaymentScheduleID(
 ) (string, error) {
 	attributes := info.SearchAttributes.GetIndexedFields()
 	if attributes == nil {
-		return "", errors.New("missing search attributes")
+		return "", errNotFromSchedule
 	}
 
 	v, ok := attributes[SearchAttributeScheduleID]

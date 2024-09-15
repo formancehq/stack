@@ -34,9 +34,9 @@ func (w Workflow) fetchBalances(
 	fetchNextBalances FetchNextBalances,
 	nextTasks []models.TaskTree,
 ) error {
-	stateReference := fmt.Sprintf("%s", models.CAPABILITY_FETCH_ACCOUNTS.String())
+	stateReference := fmt.Sprintf("%s", models.CAPABILITY_FETCH_BALANCES.String())
 	if fetchNextBalances.FromPayload != nil {
-		stateReference = fmt.Sprintf("%s-%s", models.CAPABILITY_FETCH_ACCOUNTS.String(), fetchNextBalances.FromPayload.ID)
+		stateReference = fmt.Sprintf("%s-%s", models.CAPABILITY_FETCH_BALANCES.String(), fetchNextBalances.FromPayload.ID)
 	}
 
 	stateID := models.StateID{
@@ -74,15 +74,6 @@ func (w Workflow) fetchBalances(
 			}
 		}
 
-		state.State = balancesResponse.NewState
-		err = activities.StorageStatesStore(
-			infiniteRetryContext(ctx),
-			*state,
-		)
-		if err != nil {
-			return errors.Wrap(err, "storing state")
-		}
-
 		// TODO(polo): send event
 
 		for _, balance := range balancesResponse.Balances {
@@ -95,7 +86,7 @@ func (w Workflow) fetchBalances(
 				workflow.WithChildOptions(
 					ctx,
 					workflow.ChildWorkflowOptions{
-						TaskQueue:         fetchNextBalances.ConnectorID.Reference,
+						TaskQueue:         fetchNextBalances.ConnectorID.String(),
 						ParentClosePolicy: enums.PARENT_CLOSE_POLICY_ABANDON,
 					},
 				),
@@ -110,6 +101,15 @@ func (w Workflow) fetchBalances(
 			).Get(ctx, nil); err != nil {
 				return errors.Wrap(err, "running next workflow")
 			}
+		}
+
+		state.State = balancesResponse.NewState
+		err = activities.StorageStatesStore(
+			infiniteRetryContext(ctx),
+			*state,
+		)
+		if err != nil {
+			return errors.Wrap(err, "storing state")
 		}
 
 		hasMore = balancesResponse.HasMore

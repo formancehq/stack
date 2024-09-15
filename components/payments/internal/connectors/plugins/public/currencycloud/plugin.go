@@ -2,7 +2,6 @@ package currencycloud
 
 import (
 	"context"
-	"errors"
 
 	"github.com/formancehq/payments/internal/connectors/plugins"
 	"github.com/formancehq/payments/internal/connectors/plugins/public/currencycloud/client"
@@ -60,12 +59,7 @@ func (p Plugin) FetchNextPayments(ctx context.Context, req models.FetchNextPayme
 }
 
 func (p Plugin) FetchNextOthers(ctx context.Context, req models.FetchNextOthersRequest) (models.FetchNextOthersResponse, error) {
-	switch req.Name {
-	case fetchContactID:
-		return p.fetchContactID(ctx, req)
-	default:
-		return models.FetchNextOthersResponse{}, errors.New("unknown fetch others name")
-	}
+	return models.FetchNextOthersResponse{}, plugins.ErrNotImplemented
 }
 
 func (p Plugin) CreateBankAccount(ctx context.Context, req models.CreateBankAccountRequest) (models.CreateBankAccountResponse, error) {

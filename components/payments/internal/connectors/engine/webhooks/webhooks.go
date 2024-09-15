@@ -70,7 +70,7 @@ func (w *webhooks) HandleWebhook(
 			ctx,
 			client.StartWorkflowOptions{
 				ID:                                       fmt.Sprintf("webhook-%s-%s", webhook.ConnectorID.String(), webhook.ID),
-				TaskQueue:                                webhook.ConnectorID.Reference,
+				TaskQueue:                                webhook.ConnectorID.String(),
 				WorkflowIDReusePolicy:                    enums.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE,
 				WorkflowExecutionErrorWhenAlreadyStarted: false,
 			},

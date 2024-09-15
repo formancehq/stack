@@ -118,7 +118,7 @@ func (w Workflow) run(
 						request,
 						task.NextTasks,
 					},
-					TaskQueue: connectorID.Reference,
+					TaskQueue: connectorID.String(),
 					// Search attributes are used to query workflows
 					SearchAttributes: map[string]any{
 						SearchAttributeScheduleID: scheduleID,
@@ -150,14 +150,14 @@ func (w Workflow) run(
 				workflow.WithChildOptions(
 					ctx,
 					workflow.ChildWorkflowOptions{
-						TaskQueue:         connectorID.Reference,
+						TaskQueue:         connectorID.String(),
 						ParentClosePolicy: enums.PARENT_CLOSE_POLICY_ABANDON,
 					},
 				),
 				nextWorkflow,
 				request,
 				task.NextTasks,
-			).Get(ctx, nil); err != nil {
+			).GetChildWorkflowExecution().Get(ctx, nil); err != nil {
 				return errors.Wrap(err, "running next workflow")
 			}
 		}
