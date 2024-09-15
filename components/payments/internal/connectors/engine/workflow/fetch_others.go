@@ -63,15 +63,6 @@ func (w Workflow) fetchNextOthers(
 			return errors.Wrap(err, "fetching next others")
 		}
 
-		state.State = othersResponse.NewState
-		err = activities.StorageStatesStore(
-			infiniteRetryContext(ctx),
-			*state,
-		)
-		if err != nil {
-			return errors.Wrap(err, "storing state")
-		}
-
 		// TODO(polo): send event for others ? store others ?
 
 		for _, other := range othersResponse.Others {
@@ -84,7 +75,7 @@ func (w Workflow) fetchNextOthers(
 				workflow.WithChildOptions(
 					ctx,
 					workflow.ChildWorkflowOptions{
-						TaskQueue:         fetchNextOthers.ConnectorID.Reference,
+						TaskQueue:         fetchNextOthers.ConnectorID.String(),
 						ParentClosePolicy: enums.PARENT_CLOSE_POLICY_ABANDON,
 					},
 				),
@@ -99,6 +90,15 @@ func (w Workflow) fetchNextOthers(
 			).Get(ctx, nil); err != nil {
 				return errors.Wrap(err, "running next workflow")
 			}
+		}
+
+		state.State = othersResponse.NewState
+		err = activities.StorageStatesStore(
+			infiniteRetryContext(ctx),
+			*state,
+		)
+		if err != nil {
+			return errors.Wrap(err, "storing state")
 		}
 
 		hasMore = othersResponse.HasMore

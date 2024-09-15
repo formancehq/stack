@@ -19,11 +19,10 @@ func (p Plugin) fetchNextExternalAccounts(ctx context.Context, req models.FetchN
 		if err := json.Unmarshal(req.State, &oldState); err != nil {
 			return models.FetchNextExternalAccountsResponse{}, err
 		}
-	} else {
-		oldState = externalAccountsState{
-			// Currencycloud pages start at 1
-			LastPage: 1,
-		}
+	}
+
+	if oldState.LastPage == 0 {
+		oldState.LastPage = 1
 	}
 
 	newState := externalAccountsState{

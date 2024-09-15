@@ -14,6 +14,7 @@ import (
 
 type InstallConnector struct {
 	ConnectorID models.ConnectorID
+	Config      models.Config
 	RawConfig   json.RawMessage
 }
 
@@ -21,19 +22,6 @@ func (w Workflow) runInstallConnector(
 	ctx workflow.Context,
 	installConnector InstallConnector,
 ) error {
-	// First step: store the connector inside the database
-	connector := models.Connector{
-		ID:        installConnector.ConnectorID,
-		Name:      installConnector.ConnectorID.Reference,
-		CreatedAt: workflow.Now(ctx).UTC(),
-		Provider:  installConnector.ConnectorID.Provider,
-		Config:    installConnector.RawConfig,
-	}
-	err := activities.StorageConnectorsStore(infiniteRetryContext(ctx), connector)
-	if err != nil {
-		return errors.Wrap(err, "failed to store connector")
-	}
-
 	// Second step: install the connector via the plugin and get the list of
 	// capabilities and the workflow of polling data
 	installResponse, err := activities.PluginInstallConnector(
@@ -67,11 +55,6 @@ func (w Workflow) runInstallConnector(
 		}
 	}
 
-	var config models.Config
-	if err := json.Unmarshal(installConnector.RawConfig, &config); err != nil {
-		return errors.Wrap(err, "failed to unmarshal config")
-	}
-
 	// Fourth step: launch the workflow tree
 	if err := workflow.ExecuteChildWorkflow(
 		workflow.WithChildOptions(
@@ -79,12 +62,12 @@ func (w Workflow) runInstallConnector(
 			workflow.ChildWorkflowOptions{
 				WorkflowID:            fmt.Sprintf("run-tasks-%s", installConnector.ConnectorID.String()),
 				WorkflowIDReusePolicy: enums.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE_FAILED_ONLY,
-				TaskQueue:             installConnector.ConnectorID.Reference,
+				TaskQueue:             installConnector.ConnectorID.String(),
 				ParentClosePolicy:     enums.PARENT_CLOSE_POLICY_ABANDON,
 			},
 		),
 		Run,
-		config,
+		installConnector.Config,
 		installConnector.ConnectorID,
 		nil,
 		[]models.TaskTree(installResponse.Workflow),

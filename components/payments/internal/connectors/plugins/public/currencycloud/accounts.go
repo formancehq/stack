@@ -19,11 +19,10 @@ func (p Plugin) fetchNextAccounts(ctx context.Context, req models.FetchNextAccou
 		if err := json.Unmarshal(req.State, &oldState); err != nil {
 			return models.FetchNextAccountsResponse{}, err
 		}
-	} else {
-		oldState = accountsState{
-			// Currencycloud pages start at 1
-			LastPage: 1,
-		}
+	}
+
+	if oldState.LastPage == 0 {
+		oldState.LastPage = 1
 	}
 
 	newState := accountsState{

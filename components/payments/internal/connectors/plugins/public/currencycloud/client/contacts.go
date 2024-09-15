@@ -22,7 +22,7 @@ func (c *Client) GetContactID(ctx context.Context, accountID string) (*Contact, 
 	form := url.Values{}
 	form.Set("account_id", accountID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost,
-		c.buildEndpoint("/v2/contacts/find"), strings.NewReader(form.Encode()))
+		c.buildEndpoint("v2/contacts/find"), strings.NewReader(form.Encode()))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
