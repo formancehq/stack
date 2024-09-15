@@ -29,6 +29,9 @@ type payment struct {
 	Asset         string               `bun:"asset,type:text,notnull"`
 	Scheme        models.PaymentScheme `bun:"scheme,type:text,notnull"`
 
+	// Scan only fields
+	Status models.PaymentStatus `bun:"status,type:text,notnull,scanonly"`
+
 	// Optional fields
 	// c.f.: https://bun.uptrace.dev/guide/models.html#nulls
 	SourceAccountID      *models.AccountID `bun:"source_account_id,type:character varying,nullzero"`
@@ -146,6 +149,7 @@ func (s *store) PaymentsGet(ctx context.Context, id models.PaymentID) (*models.P
 	err = s.db.NewSelect().
 		Model(&ajs).
 		Where("payment_id = ?", id).
+		Order("created_at DESC").
 		Scan(ctx)
 	if err != nil {
 		return nil, e("failed to get payment adjustments", err)
@@ -156,7 +160,7 @@ func (s *store) PaymentsGet(ctx context.Context, id models.PaymentID) (*models.P
 		adjustments = append(adjustments, toPaymentAdjustmentModels(a))
 	}
 
-	res := toPaymentModels(payment)
+	res := toPaymentModels(payment, adjustments[len(adjustments)-1].Status)
 	res.Adjustments = adjustments
 	return &res, nil
 }
@@ -240,6 +244,15 @@ func (s *store) PaymentsList(ctx context.Context, q ListPaymentsQuery) (*bunpagi
 				query = query.Where(where, args...)
 			}
 
+			query.Column("payment.*", "apd.status").
+				Join(`join lateral (
+				select status
+				from payment_adjustments apd
+				where payment_id = payment.id
+				order by created_at desc
+				limit 1
+			) apd on true`)
+
 			// TODO(polo): sorter ?
 			query = query.Order("created_at DESC")
 
@@ -252,7 +265,7 @@ func (s *store) PaymentsList(ctx context.Context, q ListPaymentsQuery) (*bunpagi
 
 	payments := make([]models.Payment, 0, len(cursor.Data))
 	for _, p := range cursor.Data {
-		payments = append(payments, toPaymentModels(p))
+		payments = append(payments, toPaymentModels(p, p.Status))
 	}
 
 	return &bunpaginate.Cursor[models.Payment]{
@@ -281,7 +294,7 @@ func fromPaymentModels(from models.Payment) payment {
 	}
 }
 
-func toPaymentModels(payment payment) models.Payment {
+func toPaymentModels(payment payment, status models.PaymentStatus) models.Payment {
 	return models.Payment{
 		ID:                   payment.ID,
 		ConnectorID:          payment.ConnectorID,
@@ -292,6 +305,7 @@ func toPaymentModels(payment payment) models.Payment {
 		Amount:               payment.Amount,
 		Asset:                payment.Asset,
 		Scheme:               payment.Scheme,
+		Status:               status,
 		SourceAccountID:      payment.SourceAccountID,
 		DestinationAccountID: payment.DestinationAccountID,
 		Metadata:             payment.Metadata,

@@ -60,7 +60,7 @@ func (w *Workers) AddWorker(connectorID models.ConnectorID) error {
 		return nil
 	}
 
-	worker := worker.New(w.temporalClient, connectorID.Reference, w.options)
+	worker := worker.New(w.temporalClient, connectorID.String(), w.options)
 
 	for _, set := range w.workflows {
 		for _, workflow := range set {

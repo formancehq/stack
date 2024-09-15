@@ -10,6 +10,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// TODO(polo/crimson): add profiling
+
 var (
 	ServiceName = "payments"
 	Version     = "develop"

@@ -74,15 +74,6 @@ func (w Workflow) fetchNextPayments(
 			}
 		}
 
-		state.State = paymentsResponse.NewState
-		err = activities.StorageStatesStore(
-			infiniteRetryContext(ctx),
-			*state,
-		)
-		if err != nil {
-			return errors.Wrap(err, "storing state")
-		}
-
 		// TODO(polo): send events
 
 		for _, payment := range paymentsResponse.Payments {
@@ -95,7 +86,7 @@ func (w Workflow) fetchNextPayments(
 				workflow.WithChildOptions(
 					ctx,
 					workflow.ChildWorkflowOptions{
-						TaskQueue:         fetchNextPayments.ConnectorID.Reference,
+						TaskQueue:         fetchNextPayments.ConnectorID.String(),
 						ParentClosePolicy: enums.PARENT_CLOSE_POLICY_ABANDON,
 					},
 				),
@@ -110,6 +101,15 @@ func (w Workflow) fetchNextPayments(
 			).Get(ctx, nil); err != nil {
 				return errors.Wrap(err, "running next workflow")
 			}
+		}
+
+		state.State = paymentsResponse.NewState
+		err = activities.StorageStatesStore(
+			infiniteRetryContext(ctx),
+			*state,
+		)
+		if err != nil {
+			return errors.Wrap(err, "storing state")
 		}
 
 		hasMore = paymentsResponse.HasMore
