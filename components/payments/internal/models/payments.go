@@ -199,7 +199,7 @@ func (c *Payment) UnmarshalJSON(data []byte) error {
 }
 
 func FromPSPPaymentToPayment(from PSPPayment, connectorID ConnectorID) Payment {
-	return Payment{
+	p := Payment{
 		ID: PaymentID{
 			PaymentReference: PaymentReference{
 				Reference: from.Reference,
@@ -236,6 +236,14 @@ func FromPSPPaymentToPayment(from PSPPayment, connectorID ConnectorID) Payment {
 		}(),
 		Metadata: from.Metadata,
 	}
+
+	switch from.Status {
+	case PAYMENT_STATUS_AUTHORISATION:
+		// Will increase later when captured
+		p.Amount = big.NewInt(0)
+	}
+
+	return p
 }
 
 func FromPSPPayments(from []PSPPayment, connectorID ConnectorID) []Payment {

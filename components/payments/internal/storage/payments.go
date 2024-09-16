@@ -65,11 +65,22 @@ type paymentAdjustment struct {
 func (s *store) PaymentsUpsert(ctx context.Context, payments []models.Payment) error {
 	paymentsToInsert := make([]payment, 0, len(payments))
 	adjustmentsToInsert := make([]paymentAdjustment, 0)
+	paymentsInitialAmountToAdjust := make([]payment, 0)
+	paymentsRefunded := make([]payment, 0)
+	paymentsCaptured := make([]payment, 0)
 	for _, p := range payments {
 		paymentsToInsert = append(paymentsToInsert, fromPaymentModels(p))
 
 		for _, a := range p.Adjustments {
 			adjustmentsToInsert = append(adjustmentsToInsert, fromPaymentAdjustmentModels(a))
+			switch a.Status {
+			case models.PAYMENT_STATUS_AMOUNT_ADJUSTEMENT:
+				paymentsInitialAmountToAdjust = append(paymentsInitialAmountToAdjust, fromPaymentModels(p))
+			case models.PAYMENT_STATUS_REFUNDED:
+				paymentsRefunded = append(paymentsRefunded, fromPaymentModels(p))
+			case models.PAYMENT_STATUS_CAPTURE, models.PAYMENT_STATUS_REFUND_REVERSED:
+				paymentsCaptured = append(paymentsCaptured, fromPaymentModels(p))
+			}
 		}
 	}
 
@@ -78,20 +89,58 @@ func (s *store) PaymentsUpsert(ctx context.Context, payments []models.Payment) e
 		return errors.Wrap(err, "failed to create transaction")
 	}
 
-	_, err = tx.NewInsert().
-		Model(&paymentsToInsert).
-		On("CONFLICT (id) DO NOTHING").
-		Exec(ctx)
-	if err != nil {
-		return e("failed to insert payments", err)
+	if len(paymentsToInsert) == 0 {
+		_, err = tx.NewInsert().
+			Model(&paymentsToInsert).
+			On("CONFLICT (id) DO NOTHING").
+			Exec(ctx)
+		if err != nil {
+			return e("failed to insert payments", err)
+		}
 	}
 
-	_, err = tx.NewInsert().
-		Model(&adjustmentsToInsert).
-		On("CONFLICT (id) DO NOTHING").
-		Exec(ctx)
-	if err != nil {
-		return e("failed to insert adjustments", err)
+	if len(paymentsInitialAmountToAdjust) > 0 {
+		_, err = tx.NewInsert().
+			Model(&paymentsInitialAmountToAdjust).
+			On("CONFLICT (id) DO UPDATE").
+			Set("amount = EXCLUDED.amount").
+			Set("initial_amount = EXCLUDED.amount").
+			Exec(ctx)
+		if err != nil {
+			return e("failed to update payment", err)
+		}
+	}
+
+	if len(paymentsRefunded) > 0 {
+		_, err = tx.NewInsert().
+			Model(&paymentsRefunded).
+			On("CONFLICT (id) DO UPDATE").
+			Set("amount = amount - EXCLUDED.amount").
+			Exec(ctx)
+		if err != nil {
+			return e("failed to update payment", err)
+		}
+	}
+
+	if len(paymentsCaptured) > 0 {
+		_, err = tx.NewInsert().
+			Model(&paymentsCaptured).
+			On("CONFLICT (id) DO UPDATE").
+			Set("amount = amount + EXCLUDED.amount").
+			Exec(ctx)
+		if err != nil {
+			return e("failed to update payment", err)
+		}
+	}
+
+	if len(adjustmentsToInsert) == 0 {
+		_, err = tx.NewInsert().
+			Model(&adjustmentsToInsert).
+			On("CONFLICT (id) DO NOTHING").
+			Exec(ctx)
+		if err != nil {
+			return e("failed to insert adjustments", err)
+		}
 	}
 
 	return e("failed to commit transactions", tx.Commit())

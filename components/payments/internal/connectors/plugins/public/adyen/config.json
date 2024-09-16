@@ -1,0 +1,22 @@
+{
+    "apiKey": {
+        "dataType": "string",
+        "required": true,
+        "defaultValue": ""
+    },
+    "webhookUsername": {
+        "dataType": "string",
+        "required": true,
+        "defaultValue": ""
+    },
+    "webhookPassword": {
+        "dataType": "string",
+        "required": true,
+        "defaultValue": ""
+    },
+    "liveEndpointPrefix": {
+        "dataType": "string",
+        "required": true,
+        "defaultValue": ""
+    }
+}
