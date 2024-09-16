@@ -7,6 +7,7 @@ toolchain go1.21.5
 require (
 	github.com/adyen/adyen-go-api-library/v7 v7.3.1
 	github.com/bombsimon/logrusr/v3 v3.1.0
+	github.com/formancehq/payments/genericclient v0.0.0-00010101000000-000000000000
 	github.com/formancehq/stack/libs/go-libs v0.0.0-00010101000000-000000000000
 	github.com/gibson042/canonicaljson-go v1.0.3
 	github.com/go-chi/chi/v5 v5.0.12
@@ -181,4 +182,4 @@ require (
 
 replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
 
-// replace github.com/formancehq/payments/genericclient => ./cmd/connectors/internal/connectors/generic/client/generated
+replace github.com/formancehq/payments/genericclient => ./internal/connectors/plugins/public/generic/client/generated
