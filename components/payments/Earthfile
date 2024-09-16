@@ -33,6 +33,7 @@ compile-configs:
 compile-plugins:
     FROM core+builder-image
     COPY (+sources/*) /src
+    COPY (+compile-configs/configs.json) /src/components/payments/internal/connectors/plugins/configs.json
     WORKDIR /src/components/payments/internal/connectors/plugins/public
     FOR c IN $(ls -d */ | sed 's#/##')
         WORKDIR /src/components/payments/internal/connectors/plugins/public/$c/cmd
@@ -45,7 +46,6 @@ compile:
     FROM core+builder-image
     COPY (+sources/*) /src
     COPY (+compile-configs/configs.json) /src/components/payments/internal/connectors/plugins/configs.json
-    RUN cat /src/components/payments/internal/connectors/plugins/configs.json
     WORKDIR /src/components/payments
     ARG VERSION=latest
     DO --pass-args core+GO_COMPILE --VERSION=$VERSION
