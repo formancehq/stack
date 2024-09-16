@@ -26,13 +26,17 @@ operator:
   probeAddr: ":8081"
   # Enable leader election for controller manager. Enabling this will ensure there is only one active controller manager.
   enableLeaderElection: true
-  # Licence related configuration
+
+  # Licence secret must have the label formance.com/stack: any to be referenced by the operator on any stack namespace
+  # Have a `token` and `issuer` key
   licence:
+    create: true
+    secretName: ""
     token: ""
     issuer: ""
-  
+
   utils:
-    tag: "v2.0.14" 
+    tag: "v2.0.14"
 
 podAnnotations: {}
 

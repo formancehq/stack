@@ -14,8 +14,14 @@ operator:
     metricsAddr: ":8080"
     probeAddr: ":8081"
     enableLeaderElection: true
+    # Licence secret must have the label formance.com/stack: any to be selected by the operator
+    # Have a `token` and `issuer` key
+    licence:
+      create: true
+      secretName: ""
+      token: ""
+      issuer: ""
 
-  # Warning: This is a sensitive value
   # Only Helm Release are impacted on first install.
   # Use `components/operator/helm/crds` to install crds separately
   # Deprecated: operator-crds, will be removed in a future release,
