@@ -1,0 +1,12 @@
+{
+    "apiKey": {
+        "dataType": "string",
+        "required": true,
+        "defaultValue": ""
+    },
+    "webhookPublicKey": {
+        "dataType": "string",
+        "required": true,
+        "defaultValue": ""
+    }
+}

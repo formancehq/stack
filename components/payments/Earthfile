@@ -16,9 +16,23 @@ sources:
     COPY main.go .
     SAVE ARTIFACT /src
 
+compile-configs:
+    FROM core+builder-image
+    COPY (+sources/*) /src
+    WORKDIR /src/components/payments/internal/connectors/plugins/public
+    FOR c IN $(ls -d */ | sed 's#/##')
+        RUN echo "{\"$c\":" >> raw_configs.json
+        RUN cat /src/components/payments/internal/connectors/plugins/public/$c/config.json >> raw_configs.json
+        RUN echo "}" >> raw_configs.json
+    END
+    RUN cat raw_configs.json
+    RUN jq --slurp 'add' raw_configs.json > configs.json
+    SAVE ARTIFACT /src/components/payments/internal/connectors/plugins/public/configs.json /configs.json
+
 compile-plugins:
     FROM core+builder-image
     COPY (+sources/*) /src
+    COPY (+compile-configs/configs.json) /src/components/payments/internal/connectors/plugins/configs.json
     WORKDIR /src/components/payments/internal/connectors/plugins/public
     FOR c IN $(ls -d */ | sed 's#/##')
         WORKDIR /src/components/payments/internal/connectors/plugins/public/$c/cmd
@@ -30,6 +44,7 @@ compile-plugins:
 compile:
     FROM core+builder-image
     COPY (+sources/*) /src
+    COPY (+compile-configs/configs.json) /src/components/payments/internal/connectors/plugins/configs.json
     WORKDIR /src/components/payments
     ARG VERSION=latest
     DO --pass-args core+GO_COMPILE --VERSION=$VERSION
