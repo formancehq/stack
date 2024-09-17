@@ -19,8 +19,6 @@ func newMigrate() *cobra.Command {
 		cmd.Flags().String(configEncryptionKeyFlag, "", "Config encryption key")
 	})
 
-	bunconnect.AddFlags(cmd.Flags())
-
 	return cmd
 }
 
