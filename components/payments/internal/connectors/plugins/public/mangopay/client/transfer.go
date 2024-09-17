@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type Funds struct {
@@ -51,27 +53,14 @@ func (c *Client) GetWalletTransfer(ctx context.Context, transferID string) (Tran
 		return TransferResponse{}, fmt.Errorf("failed to create login request: %w", err)
 	}
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return TransferResponse{}, fmt.Errorf("failed to get wallets: %w", err)
-	}
-
-	defer func() {
-		err = resp.Body.Close()
-		if err != nil {
-			// TODO(polo): log error
-			_ = err
-		}
-	}()
-
-	if resp.StatusCode != http.StatusOK {
-		return TransferResponse{}, unmarshalError(resp.StatusCode, resp.Body).Error()
-	}
-
 	var transfer TransferResponse
-	if err := json.NewDecoder(resp.Body).Decode(&transfer); err != nil {
-		return transfer, fmt.Errorf("failed to unmarshal wallets response body: %w", err)
+	_, err = c.httpClient.Do(req, &transfer, nil)
+	switch err {
+	case nil:
+		return transfer, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return transfer, err
 	}
-
-	return transfer, nil
+	return transfer, fmt.Errorf("failed to get transfer response: %w", err)
 }

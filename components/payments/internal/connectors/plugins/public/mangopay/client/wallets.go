@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type Wallet struct {
@@ -38,29 +40,17 @@ func (c *Client) GetWallets(ctx context.Context, userID string, page, pageSize i
 	q.Add("Sort", "CreationDate:ASC")
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get wallets: %w", err)
-	}
-
-	defer func() {
-		err = resp.Body.Close()
-		if err != nil {
-			// TODO(polo): log error
-			_ = err
-		}
-	}()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
-	}
-
 	var wallets []Wallet
-	if err := json.NewDecoder(resp.Body).Decode(&wallets); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal wallets response body: %w", err)
+	var errRes mangopayError
+	_, err = c.httpClient.Do(req, &wallets, errRes)
+	switch err {
+	case nil:
+		return wallets, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, errRes.Error()
 	}
-
-	return wallets, nil
+	return nil, fmt.Errorf("failed to get wallets %w", err)
 }
 
 func (c *Client) GetWallet(ctx context.Context, walletID string) (*Wallet, error) {
@@ -75,27 +65,15 @@ func (c *Client) GetWallet(ctx context.Context, walletID string) (*Wallet, error
 		return nil, fmt.Errorf("failed to create wallet request: %w", err)
 	}
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get wallet: %w", err)
-	}
-
-	defer func() {
-		err = resp.Body.Close()
-		if err != nil {
-			// TODO(polo): log error
-			_ = err
-		}
-	}()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
-	}
-
 	var wallet Wallet
-	if err := json.NewDecoder(resp.Body).Decode(&wallet); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal wallet response body: %w", err)
+	var errRes mangopayError
+	_, err = c.httpClient.Do(req, &wallet, errRes)
+	switch err {
+	case nil:
+		return &wallet, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, errRes.Error()
 	}
-
-	return &wallet, nil
+	return nil, fmt.Errorf("failed to get wallet %w", err)
 }

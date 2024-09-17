@@ -1,47 +1,37 @@
 package client
 
 import (
-	"context"
-	"net/http"
 	"strings"
-	"time"
 
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 	"golang.org/x/oauth2/clientcredentials"
 )
 
 // TODO(polo): Fetch Client wallets (FEES, ...) in the future
 type Client struct {
-	httpClient *http.Client
+	httpClient httpwrapper.Client
 
 	clientID string
 	endpoint string
 }
 
-func newHTTPClient(clientID, apiKey, endpoint string) *http.Client {
-	config := clientcredentials.Config{
-		ClientID:     clientID,
-		ClientSecret: apiKey,
-		TokenURL:     endpoint + "/v2.01/oauth/token",
-	}
-
-	httpClient := config.Client(context.Background())
-
-	return &http.Client{
-		Timeout:   10 * time.Second,
-		Transport: otelhttp.NewTransport(httpClient.Transport),
-	}
-}
-
 func New(clientID, apiKey, endpoint string) (*Client, error) {
 	endpoint = strings.TrimSuffix(endpoint, "/")
 
+	config := &httpwrapper.Config{
+		OAuthConfig: &clientcredentials.Config{
+			ClientID:     clientID,
+			ClientSecret: apiKey,
+			TokenURL:     endpoint + "/v2.01/oauth/token",
+		},
+	}
+	httpClient, err := httpwrapper.NewClient(config)
+
 	c := &Client{
-		httpClient: newHTTPClient(clientID, apiKey, endpoint),
+		httpClient: httpClient,
 
 		clientID: clientID,
 		endpoint: endpoint,
 	}
-
-	return c, nil
+	return c, err
 }
