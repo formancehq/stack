@@ -2,10 +2,6 @@ package currencycloud
 
 import "github.com/formancehq/payments/internal/models"
 
-const (
-	fetchContactID = "fetch_contact_id"
-)
-
 func workflow() models.Tasks {
 	return []models.TaskTree{
 		{

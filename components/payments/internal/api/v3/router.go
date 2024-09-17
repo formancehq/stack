@@ -9,11 +9,11 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func newRouter(backend backend.Backend, a auth.Auth) *chi.Mux {
+func newRouter(backend backend.Backend, a auth.Authenticator, debug bool) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Group(func(r chi.Router) {
-		r.Use(service.OTLPMiddleware("payments"))
+		r.Use(service.OTLPMiddleware("payments", debug))
 
 		// Public routes
 		r.Group(func(r chi.Router) {

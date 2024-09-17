@@ -1,10 +1,6 @@
 VERSION 0.8
 
-<<<<<<< HEAD
 IMPORT github.com/formancehq/earthly:tags/v0.15.0 AS core
-=======
-IMPORT github.com/formancehq/earthly:tags/v0.14.0 AS core
->>>>>>> 7d379b77c (fix(*): go mod and sum)
 
 IMPORT ../.. AS stack
 
