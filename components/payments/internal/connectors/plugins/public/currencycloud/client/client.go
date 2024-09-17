@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
@@ -21,7 +22,7 @@ func (t *apiTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 }
 
 type Client struct {
-	httpClient *http.Client
+	httpClient httpwrapper.Client
 	endpoint   string
 	loginID    string
 	apiKey     string
@@ -33,15 +34,6 @@ func (c *Client) buildEndpoint(path string, args ...interface{}) string {
 
 const DevAPIEndpoint = "https://devapi.currencycloud.com"
 
-func newAuthenticatedHTTPClient(authToken string) *http.Client {
-	return &http.Client{
-		Transport: &apiTransport{
-			authToken:  authToken,
-			underlying: otelhttp.NewTransport(http.DefaultTransport),
-		},
-	}
-}
-
 func newHTTPClient() *http.Client {
 	return &http.Client{
 		Transport: otelhttp.NewTransport(http.DefaultTransport),
@@ -49,30 +41,38 @@ func newHTTPClient() *http.Client {
 }
 
 // New creates a new client for the CurrencyCloud API.
-func New(loginID, apiKey, endpoint string) (*Client, error) {
+func New(ctx context.Context, loginID, apiKey, endpoint string) (*Client, error) {
 	if endpoint == "" {
 		endpoint = DevAPIEndpoint
 	}
 
-	c := &Client{
-		httpClient: newHTTPClient(),
-		endpoint:   endpoint,
-		loginID:    loginID,
-		apiKey:     apiKey,
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
+
+	c := &Client{
+		endpoint: endpoint,
+		loginID:  loginID,
+		apiKey:   apiKey,
+	}
 
 	// Tokens expire after 30 minutes of inactivity which should not be the case
 	// for us since we're polling the API frequently.
 	// TODO(polo): add refreh
-	authToken, err := c.authenticate(ctx)
+	authToken, err := c.authenticate(ctx, newHTTPClient())
 	if err != nil {
 		return nil, err
 	}
 
-	c.httpClient = newAuthenticatedHTTPClient(authToken)
-
+	config := &httpwrapper.Config{
+		Transport: &apiTransport{
+			authToken:  authToken,
+			underlying: otelhttp.NewTransport(http.DefaultTransport),
+		},
+	}
+	httpClient, err := httpwrapper.NewClient(config)
+	if err != nil {
+		return nil, err
+	}
+	c.httpClient = httpClient
 	return c, nil
 }

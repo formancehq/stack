@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func (c *Client) authenticate(ctx context.Context) (string, error) {
+func (c *Client) authenticate(ctx context.Context, httpClient *http.Client) (string, error) {
 	// TODO(polo): metrics
 	// f := connectors.ClientMetrics(ctx, "currencycloud", "authenticate")
 	// now := time.Now()
@@ -29,7 +29,7 @@ func (c *Client) authenticate(ctx context.Context) (string, error) {
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Add("Accept", "application/json")
 
-	resp, err := c.httpClient.Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return "", fmt.Errorf("failed to do get request: %w", err)
 	}

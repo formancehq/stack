@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 //nolint:tagliatelle // allow different styled tags in client
@@ -50,17 +52,6 @@ func (c *Client) GetTransactions(ctx context.Context, page int, pageSize int, up
 
 	req.Header.Add("Accept", "application/json")
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, 0, unmarshalError(resp.StatusCode, resp.Body).Error()
-	}
-
 	//nolint:tagliatelle // allow for client code
 	type response struct {
 		Transactions []Transaction `json:"transactions"`
@@ -69,10 +60,15 @@ func (c *Client) GetTransactions(ctx context.Context, page int, pageSize int, up
 		} `json:"pagination"`
 	}
 
-	var res response
-	if err = json.NewDecoder(resp.Body).Decode(&res); err != nil {
-		return nil, 0, err
+	res := response{Transactions: make([]Transaction, 0)}
+	var errRes currencyCloudError
+	_, err = c.httpClient.Do(req, &res, nil)
+	switch err {
+	case nil:
+		return res.Transactions, res.Pagination.NextPage, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, 0, errRes.Error()
 	}
-
-	return res.Transactions, res.Pagination.NextPage, nil
+	return nil, 0, fmt.Errorf("failed to get transactions %w", err)
 }
