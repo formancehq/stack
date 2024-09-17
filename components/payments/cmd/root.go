@@ -1,13 +1,26 @@
 package cmd
 
 import (
-	"github.com/formancehq/stack/libs/go-libs/bun/bunmigrate"
-	"github.com/formancehq/stack/libs/go-libs/service"
+	"errors"
+	"os"
 
 	_ "github.com/bombsimon/logrusr/v3"
-	"github.com/formancehq/payments/cmd/api"
-	"github.com/formancehq/payments/cmd/connectors"
+	"github.com/formancehq/payments/internal/api"
+	v2 "github.com/formancehq/payments/internal/api/v2"
+	v3 "github.com/formancehq/payments/internal/api/v3"
+	"github.com/formancehq/payments/internal/connectors/engine"
+	"github.com/formancehq/payments/internal/storage"
+	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/auth"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+	"github.com/formancehq/stack/libs/go-libs/bun/bunmigrate"
+	"github.com/formancehq/stack/libs/go-libs/health"
+	"github.com/formancehq/stack/libs/go-libs/licence"
+	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
+	"github.com/formancehq/stack/libs/go-libs/service"
+	"github.com/formancehq/stack/libs/go-libs/temporal"
 	"github.com/spf13/cobra"
+	"go.uber.org/fx"
 )
 
 // TODO(polo/crimson): add profiling
@@ -66,20 +79,23 @@ func addAutoMigrateCommand(cmd *cobra.Command) {
 }
 
 func commonOptions(cmd *cobra.Command) (fx.Option, error) {
-	configEncryptionKey := viper.GetString(configEncryptionKeyFlag)
+	configEncryptionKey, _ := cmd.Flags().GetString(configEncryptionKeyFlag)
 	if configEncryptionKey == "" {
 		return nil, errors.New("missing config encryption key")
 	}
 
-	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd.Context())
+	connectionOptions, err := bunconnect.ConnectionOptionsFromFlags(cmd)
 	if err != nil {
 		return nil, err
 	}
 
-	pluginPaths, err := getPluginsMap(viper.GetString(pluginsDirectoryPathFlag))
+	path, _ := cmd.Flags().GetString(pluginsDirectoryPathFlag)
+	pluginPaths, err := getPluginsMap(path)
 	if err != nil {
 		return nil, err
 	}
+
+	listen, _ := cmd.Flags().GetString(listenFlag)
 
 	return fx.Options(
 		fx.Provide(func() *bunconnect.ConnectionOptions {
@@ -101,8 +117,8 @@ func commonOptions(cmd *cobra.Command) (fx.Option, error) {
 		auth.FXModuleFromFlags(cmd),
 		health.Module(),
 		licence.FXModuleFromFlags(cmd, ServiceName),
-		storage.Module(*connectionOptions, configEncryptionKey),
-		api.NewModule(viper.GetString(listenFlag)),
+		storage.Module(cmd, *connectionOptions, configEncryptionKey),
+		api.NewModule(listen, service.IsDebug(cmd)),
 		engine.Module(pluginPaths),
 		v2.NewModule(),
 		v3.NewModule(),
