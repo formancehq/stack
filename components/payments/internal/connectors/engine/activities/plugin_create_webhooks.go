@@ -9,7 +9,7 @@ import (
 
 type CreateWebhooksRequest struct {
 	ConnectorID models.ConnectorID
-	req         models.CreateWebhooksRequest
+	Req         models.CreateWebhooksRequest
 }
 
 func (a Activities) PluginCreateWebhooks(ctx context.Context, request CreateWebhooksRequest) (*models.CreateWebhooksResponse, error) {
@@ -18,7 +18,7 @@ func (a Activities) PluginCreateWebhooks(ctx context.Context, request CreateWebh
 		return nil, err
 	}
 
-	resp, err := plugin.CreateWebhooks(ctx, request.req)
+	resp, err := plugin.CreateWebhooks(ctx, request.Req)
 	if err != nil {
 		// TODO(polo): temporal errors
 		return nil, err
@@ -32,7 +32,7 @@ func PluginCreateWebhooks(ctx workflow.Context, connectorID models.ConnectorID, 
 	ret := models.CreateWebhooksResponse{}
 	if err := executeActivity(ctx, PluginCreateWebhooksActivity, &ret, CreateWebhooksRequest{
 		ConnectorID: connectorID,
-		req:         request,
+		Req:         request,
 	}); err != nil {
 		return nil, err
 	}
