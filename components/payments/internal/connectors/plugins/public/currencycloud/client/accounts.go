@@ -2,10 +2,11 @@ package client
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type Account struct {
@@ -36,16 +37,6 @@ func (c *Client) GetAccounts(ctx context.Context, page int, pageSize int) ([]*Ac
 
 	req.Header.Add("Accept", "application/json")
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, 0, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, 0, unmarshalError(resp.StatusCode, resp.Body).Error()
-	}
-
 	//nolint:tagliatelle // allow for client code
 	type response struct {
 		Accounts   []*Account `json:"accounts"`
@@ -54,10 +45,15 @@ func (c *Client) GetAccounts(ctx context.Context, page int, pageSize int) ([]*Ac
 		} `json:"pagination"`
 	}
 
-	var res response
-	if err = json.NewDecoder(resp.Body).Decode(&res); err != nil {
-		return nil, 0, err
+	res := response{Accounts: make([]*Account, 0)}
+	var errRes currencyCloudError
+	_, err = c.httpClient.Do(req, &res, &errRes)
+	switch err {
+	case nil:
+		return res.Accounts, res.Pagination.NextPage, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, 0, errRes.Error()
 	}
-
-	return res.Accounts, res.Pagination.NextPage, nil
+	return nil, 0, fmt.Errorf("failed to get accounts: %w", err)
 }

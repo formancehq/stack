@@ -18,7 +18,7 @@ func (p *Plugin) Install(ctx context.Context, req models.InstallRequest) (models
 		return models.InstallResponse{}, err
 	}
 
-	client, err := client.New(config.LoginID, config.APIKey, config.Endpoint)
+	client, err := client.New(ctx, config.LoginID, config.APIKey, config.Endpoint)
 	if err != nil {
 		return models.InstallResponse{}, err
 	}
