@@ -15,7 +15,8 @@ type webhookSubscription struct {
 	Name      string `json:"name"`
 	TriggerOn string `json:"trigger_on"`
 	Delivery  struct {
-		URL string `json:"url"`
+		Version string `json:"version"`
+		URL     string `json:"url"`
 	} `json:"delivery"`
 }
 
@@ -24,9 +25,11 @@ func (w *Client) CreateWebhook(ctx context.Context, profileID uint64, name, trig
 		Name:      name,
 		TriggerOn: triggerOn,
 		Delivery: struct {
-			URL string "json:\"url\""
+			Version string `json:"version"`
+			URL     string `json:"url"`
 		}{
-			URL: url,
+			Version: "2.0.0",
+			URL:     url,
 		},
 	})
 	if err != nil {

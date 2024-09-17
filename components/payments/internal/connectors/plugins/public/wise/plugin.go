@@ -105,6 +105,13 @@ func (p Plugin) TranslateWebhook(ctx context.Context, req models.TranslateWebhoo
 		return models.TranslateWebhookResponse{}, plugins.ErrNotYetInstalled
 	}
 
+	testNotif, ok := req.Webhook.Headers["X-Test-Notification"]
+	if ok && len(testNotif) > 0 {
+		if testNotif[0] == "true" {
+			return models.TranslateWebhookResponse{}, nil
+		}
+	}
+
 	v, ok := req.Webhook.Headers["X-Delivery-Id"]
 	if !ok || len(v) == 0 {
 		return models.TranslateWebhookResponse{}, errors.New("missing X-Delivery-Id header")
@@ -115,7 +122,7 @@ func (p Plugin) TranslateWebhook(ctx context.Context, req models.TranslateWebhoo
 		return models.TranslateWebhookResponse{}, errors.New("missing X-Signature-SHA256 header")
 	}
 
-	err := p.verifySignature(ctx, req.Webhook.Body, signatures[0])
+	err := p.verifySignature(req.Webhook.Body, signatures[0])
 	if err != nil {
 		return models.TranslateWebhookResponse{}, err
 	}

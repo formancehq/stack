@@ -38,7 +38,7 @@ func (p Plugin) createWebhooks(ctx context.Context, req models.CreateWebhooksReq
 		return err
 	}
 
-	webhookURL := fmt.Sprintf("%s/api/payments/connectors/webhooks/%s", stackPublicURL, req.ConnectorID)
+	webhookURL := fmt.Sprintf("%s/api/payments/v3/connectors/webhooks/%s", stackPublicURL, req.ConnectorID)
 
 	for name, config := range webhookConfigs {
 		url := fmt.Sprintf("%s%s", webhookURL, config.urlPath)
@@ -66,7 +66,7 @@ func (p Plugin) translateTransferStateChangedWebhook(ctx context.Context, req mo
 	}, nil
 }
 
-func (p Plugin) verifySignature(ctx context.Context, payload []byte, signature string) error {
+func (p Plugin) verifySignature(payload []byte, signature string) error {
 	msgHash := sha256.New()
 	_, err := msgHash.Write(payload)
 	if err != nil {
