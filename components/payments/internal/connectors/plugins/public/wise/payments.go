@@ -26,7 +26,7 @@ func (p Plugin) fetchNextPayments(ctx context.Context, req models.FetchNextPayme
 
 	var from client.Profile
 	if req.FromPayload == nil {
-		return models.FetchNextPaymentsResponse{}, errors.New("missing from payload when fetching accounts")
+		return models.FetchNextPaymentsResponse{}, errors.New("missing from payload when fetching payments")
 	}
 	if err := json.Unmarshal(req.FromPayload, &from); err != nil {
 		return models.FetchNextPaymentsResponse{}, err

@@ -4,6 +4,8 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/json"
+	"encoding/pem"
+	"fmt"
 
 	"github.com/formancehq/payments/internal/models"
 	"github.com/pkg/errors"
@@ -25,11 +27,22 @@ func (c *Config) validate() error {
 		return errors.Wrap(models.ErrInvalidConfig, "missing webhook public key in config")
 	}
 
-	publicKey, err := x509.ParsePKCS1PublicKey([]byte(c.WebhookPublicKey))
-	if err != nil {
+	p, _ := pem.Decode([]byte(c.WebhookPublicKey))
+	if p == nil {
 		return errors.Wrap(models.ErrInvalidConfig, "invalid webhook public key in config")
 	}
-	c.webhookPublicKey = publicKey
+
+	publicKey, err := x509.ParsePKIXPublicKey(p.Bytes)
+	if err != nil {
+		return errors.Wrap(models.ErrInvalidConfig, fmt.Sprintf("invalid webhook public key in config: %v", err))
+	}
+
+	switch pub := publicKey.(type) {
+	case *rsa.PublicKey:
+		c.webhookPublicKey = pub
+	default:
+		return errors.Wrap(models.ErrInvalidConfig, "invalid webhook public key in config")
+	}
 
 	return nil
 }
