@@ -1,0 +1,32 @@
+{
+    "username": {
+        "dataType": "string",
+        "required": true,
+        "defaultValue": ""
+    },
+	"password": {
+        "dataType": "string",
+        "required": true,
+        "defaultValue": ""
+    },
+	"endpoint": {
+        "dataType": "string",
+        "required": true,
+        "defaultValue": ""
+    },
+    "authorizationEndpoint": {
+        "dataType": "string",
+        "required": true,
+        "defaultValue": ""
+    },
+	"userCertificate": {
+        "dataType": "string",
+        "required": true,
+        "defaultValue": ""
+    },
+	"userCertificateKey": {
+        "dataType": "string",
+        "required": true,
+        "defaultValue": ""
+    }
+}
