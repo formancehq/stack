@@ -24,14 +24,13 @@ func AddFlags(flags *flag.FlagSet) {
 
 func FXModuleFromFlags(cmd *cobra.Command) fx.Option {
 	authEnabled, _ := cmd.Flags().GetBool(AuthEnabledFlag)
-	_ = authEnabled
 	authIssuer, _ := cmd.Flags().GetString(AuthIssuerFlag)
 	authReadKeySetMaxRetries, _ := cmd.Flags().GetInt(AuthReadKeySetMaxRetriesFlag)
 	authCheckScopes, _ := cmd.Flags().GetBool(AuthCheckScopesFlag)
 	authService, _ := cmd.Flags().GetString(AuthServiceFlag)
 
 	return Module(ModuleConfig{
-		Enabled:              false,
+		Enabled:              authEnabled,
 		Issuer:               authIssuer,
 		ReadKeySetMaxRetries: authReadKeySetMaxRetries,
 		CheckScopes:          authCheckScopes,
