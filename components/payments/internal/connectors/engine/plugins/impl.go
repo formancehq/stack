@@ -178,6 +178,7 @@ func (i *impl) CreateBankAccount(ctx context.Context, req models.CreateBankAccou
 
 func (i *impl) CreateWebhooks(ctx context.Context, req models.CreateWebhooksRequest) (models.CreateWebhooksResponse, error) {
 	_, err := i.pluginClient.CreateWebhooks(ctx, &services.CreateWebhooksRequest{
+		ConnectorId: req.ConnectorID,
 		FromPayload: req.FromPayload,
 	})
 	if err != nil {

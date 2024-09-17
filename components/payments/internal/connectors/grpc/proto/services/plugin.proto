@@ -109,6 +109,7 @@ message TranslateWebhookResponse {
 
 message CreateWebhooksRequest {
     bytes from_payload = 1;
+    string connector_id = 2;
 }
 
 message CreateWebhooksResponse {}

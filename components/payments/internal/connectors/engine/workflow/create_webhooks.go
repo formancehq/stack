@@ -30,9 +30,10 @@ func (w Workflow) createWebhooks(
 	nextTasks []models.TaskTree,
 ) error {
 	_, err := activities.PluginCreateWebhooks(
-		ctx,
+		infiniteRetryContext(ctx),
 		createWebhooks.ConnectorID,
 		models.CreateWebhooksRequest{
+			ConnectorID: createWebhooks.ConnectorID.String(),
 			FromPayload: createWebhooks.FromPayload.GetPayload(),
 		},
 	)

@@ -26,7 +26,7 @@ var webhookConfigs map[string]webhookConfig
 func (p Plugin) createWebhooks(ctx context.Context, req models.CreateWebhooksRequest) error {
 	var from client.Profile
 	if req.FromPayload == nil {
-		return errors.New("missing from payload when fetching accounts")
+		return errors.New("missing from payload when creating webhooks")
 	}
 	if err := json.Unmarshal(req.FromPayload, &from); err != nil {
 		return err

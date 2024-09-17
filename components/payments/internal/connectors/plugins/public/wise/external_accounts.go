@@ -27,7 +27,7 @@ func (p Plugin) fetchExternalAccounts(ctx context.Context, req models.FetchNextE
 
 	var from client.Profile
 	if req.FromPayload == nil {
-		return models.FetchNextExternalAccountsResponse{}, errors.New("missing from payload when fetching accounts")
+		return models.FetchNextExternalAccountsResponse{}, errors.New("missing from payload when fetching external accounts")
 	}
 	if err := json.Unmarshal(req.FromPayload, &from); err != nil {
 		return models.FetchNextExternalAccountsResponse{}, err

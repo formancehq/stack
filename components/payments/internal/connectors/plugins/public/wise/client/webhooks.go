@@ -5,6 +5,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"log"
 	"net/http"
 	"time"
 )
@@ -42,29 +44,14 @@ func (w *Client) CreateWebhook(ctx context.Context, profileID uint64, name, trig
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(res.Body)
+		log.Println(string(body))
 		return fmt.Errorf("unexpected status code: %d", res.StatusCode)
 	}
 
 	return nil
 }
 
-//	{
-//		"data": {
-//		  "resource": {
-//			"type": "transfer",
-//			"id": 111,
-//			"profile_id": 222,
-//			"account_id": 333
-//		  },
-//		  "current_state": "processing",
-//		  "previous_state": "incoming_payment_waiting",
-//		  "occurred_at": "2020-01-01T12:34:56Z"
-//		},
-//		"subscription_id": "01234567-89ab-cdef-0123-456789abcdef",
-//		"event_type": "transfers#state-change",
-//		"schema_version": "2.0.0",
-//		"sent_at": "2020-01-01T12:34:56Z"
-//	  }
 type transferStateChangedWebhookPayload struct {
 	Data struct {
 		Resource struct {
