@@ -5,14 +5,13 @@ import (
 	"crypto/rsa"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
-
-	"gopkg.in/square/go-jose.v2"
+	"github.com/go-jose/go-jose/v4"
 
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/delegatedauth"
-	"github.com/zitadel/oidc/v2/pkg/client/rp"
-	"github.com/zitadel/oidc/v2/pkg/op"
+	"github.com/go-chi/chi/v5"
+	"github.com/zitadel/oidc/v3/pkg/client/rp"
+	"github.com/zitadel/oidc/v3/pkg/op"
 	"go.uber.org/fx"
 )
 

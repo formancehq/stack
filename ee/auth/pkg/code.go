@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"github.com/zitadel/oidc/v2/pkg/oidc"
+	"github.com/zitadel/oidc/v3/pkg/oidc"
 )
 
 type OIDCCodeChallenge struct {

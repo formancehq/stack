@@ -8,9 +8,9 @@ import (
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/delegatedauth"
 	"github.com/google/uuid"
-	"github.com/zitadel/oidc/v2/pkg/client/rp"
-	"github.com/zitadel/oidc/v2/pkg/oidc"
-	"github.com/zitadel/oidc/v2/pkg/op"
+	"github.com/zitadel/oidc/v3/pkg/client/rp"
+	"github.com/zitadel/oidc/v3/pkg/oidc"
+	"github.com/zitadel/oidc/v3/pkg/op"
 )
 
 //go:embed templates
@@ -52,7 +52,7 @@ func authorizeCallbackHandler(
 			panic(err)
 		}
 
-		userInfos, err := rp.Userinfo(tokens.AccessToken, "Bearer", tokens.IDTokenClaims.GetSubject(), relyingParty)
+		userInfos, err := rp.Userinfo[*oidc.UserInfo](r.Context(), tokens.AccessToken, "Bearer", tokens.IDTokenClaims.GetSubject(), relyingParty)
 		if err != nil {
 			panic(err)
 		}

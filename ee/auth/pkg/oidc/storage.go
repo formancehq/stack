@@ -7,15 +7,16 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-jose/go-jose/v4"
+
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/storage"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
-	"github.com/zitadel/oidc/v2/pkg/client/rp"
-	"github.com/zitadel/oidc/v2/pkg/oidc"
-	"github.com/zitadel/oidc/v2/pkg/op"
+	"github.com/zitadel/oidc/v3/pkg/client/rp"
+	"github.com/zitadel/oidc/v3/pkg/oidc"
+	"github.com/zitadel/oidc/v3/pkg/op"
 	"golang.org/x/text/language"
-	"gopkg.in/square/go-jose.v2"
 )
 
 const (
