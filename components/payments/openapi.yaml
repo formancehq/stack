@@ -1,9 +1,7 @@
 openapi: 3.0.3
 info:
   title: Payments API
-  version: "PAYMENTS_VERSION"
-
-# ---------------------- PATHS ----------------------
+  version: PAYMENTS_VERSION
 paths:
   /_info:
     get:
@@ -11,32 +9,34 @@ paths:
       operationId: getServerInfo
       tags:
         - payments.v1
-      
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/ServerInfo'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:read
   /payments:
     post:
       summary: Create a payment
       tags:
         - payments.v1
-      
       operationId: createPayment
       description: Create a payment
       requestBody:
         $ref: '#/components/requestBodies/Payment'
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/Payment'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
+      security:
+        - Authorization:
+            - payments:write
     get:
       summary: List payments
       operationId: listPayments
-      
       tags:
         - payments.v1
       parameters:
@@ -45,48 +45,51 @@ paths:
         - $ref: '#/components/parameters/Sort'
         - $ref: '#/components/parameters/Query'
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/Payments'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:read
   /payments/{paymentId}:
     get:
       summary: Get a payment
       tags:
         - payments.v1
       operationId: getPayment
-      
       parameters:
         - $ref: '#/components/parameters/PaymentId'
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/Payment'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:read
   /payments/{paymentId}/metadata:
     patch:
       summary: Update metadata
       tags:
         - payments.v1
       operationId: updateMetadata
-      
       parameters:
         - $ref: '#/components/parameters/PaymentId'
       requestBody:
         $ref: '#/components/requestBodies/UpdateMetadata'
       responses:
-        "204":
+        '204':
           $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:write
   /transfer-initiations:
     get:
       summary: List Transfer Initiations
       operationId: listTransferInitiations
-      
       tags:
         - payments.v1
       parameters:
@@ -95,111 +98,120 @@ paths:
         - $ref: '#/components/parameters/Sort'
         - $ref: '#/components/parameters/Query'
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/TransferInitiations'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
+      security:
+        - Authorization:
+            - payments:read
     post:
       summary: Create a TransferInitiation
       tags:
         - payments.v1
       operationId: createTransferInitiation
-      
       description: Create a transfer initiation
       requestBody:
         $ref: '#/components/requestBodies/TransferInitiation'
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/TransferInitiation'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:write
   /transfer-initiations/{transferId}:
     get:
       summary: Get a transfer initiation
       tags:
         - payments.v1
       operationId: getTransferInitiation
-      
       parameters:
         - $ref: '#/components/parameters/TransferId'
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/TransferInitiation'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
+      security:
+        - Authorization:
+            - payments:read
     delete:
       summary: Delete a transfer initiation
       operationId: deleteTransferInitiation
-      
       tags:
         - payments.v1
       description: Delete a transfer initiation by its id.
       parameters:
         - $ref: '#/components/parameters/TransferId'
       responses:
-        "204":
+        '204':
           $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:write
   /transfer-initiations/{transferId}/status:
     post:
       summary: Update the status of a transfer initiation
       tags:
         - payments.v1
       operationId: udpateTransferInitiationStatus
-      
       description: Update a transfer initiation status
       parameters:
         - $ref: '#/components/parameters/TransferId'
       requestBody:
         $ref: '#/components/requestBodies/UpdateTransferInitiationStatus'
       responses:
-        "204":
+        '204':
           $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-  
+      security:
+        - Authorization:
+            - payments:write
   /transfer-initiations/{transferId}/reverse:
     post:
       summary: Reverse a transfer initiation
       tags:
         - payments.v1
       operationId: reverseTransferInitiation
-      
       description: Reverse transfer initiation
       parameters:
         - $ref: '#/components/parameters/TransferId'
       requestBody:
         $ref: '#/components/requestBodies/ReverseTransferInitiation'
       responses:
-        "204":
+        '204':
           $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:write
   /transfer-initiations/{transferId}/retry:
     post:
       summary: Retry a failed transfer initiation
       tags:
         - payments.v1
       operationId: retryTransferInitiation
-      
       description: Retry a failed transfer initiation
       parameters:
         - $ref: '#/components/parameters/TransferId'
       responses:
-        "204":
+        '204':
           $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:write
   /pools:
     get:
       summary: List Pools
       operationId: listPools
-      
       tags:
         - payments.v1
       parameters:
@@ -208,74 +220,84 @@ paths:
         - $ref: '#/components/parameters/Sort'
         - $ref: '#/components/parameters/Query'
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/Pools'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
+      security:
+        - Authorization:
+            - payments:read
     post:
       summary: Create a Pool
       tags:
         - payments.v1
       operationId: createPool
-      
       description: Create a Pool
       requestBody:
         $ref: '#/components/requestBodies/Pool'
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/Pool'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
+      security:
+        - Authorization:
+            - payments:write
   /pools/{poolId}:
     get:
       summary: Get a Pool
       tags:
         - payments.v1
       operationId: getPool
-      
       parameters:
         - $ref: '#/components/parameters/PoolId'
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/Pool'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
+      security:
+        - Authorization:
+            - payments:read
     delete:
       summary: Delete a Pool
       operationId: deletePool
-      
       tags:
         - payments.v1
       description: Delete a pool by its id.
       parameters:
         - $ref: '#/components/parameters/PoolId'
       responses:
-        "204":
+        '204':
           $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
+      security:
+        - Authorization:
+            - payments:write
   /pools/{poolId}/accounts:
     post:
       summary: Add an account to a pool
       tags:
         - payments.v1
       operationId: addAccountToPool
-      
       description: Add an account to a pool
       parameters:
         - $ref: '#/components/parameters/PoolId'
       requestBody:
         $ref: '#/components/requestBodies/AddAccountToPool'
       responses:
-        "204":
+        '204':
           $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
+      security:
+        - Authorization:
+            - payments:write
   /pools/{poolId}/accounts/{accountId}:
     delete:
       summary: Remove an account from a pool
       operationId: removeAccountFromPool
-      
       tags:
         - payments.v1
       description: Remove an account from a pool by its id.
@@ -283,15 +305,17 @@ paths:
         - $ref: '#/components/parameters/PoolId'
         - $ref: '#/components/parameters/AccountId'
       responses:
-        "204":
+        '204':
           $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
+      security:
+        - Authorization:
+            - payments:write
   /pools/{poolId}/balances:
     get:
       summary: Get pool balances
       operationId: getPoolBalances
-      
       tags:
         - payments.v1
       parameters:
@@ -305,30 +329,33 @@ paths:
             type: string
             format: date-time
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/PoolBalances'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:read
   /accounts:
     post:
       summary: Create an account
       tags:
         - payments.v1
       operationId: createAccount
-      
       description: Create an account
       requestBody:
         $ref: '#/components/requestBodies/Account'
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/Account'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
+      security:
+        - Authorization:
+            - payments:write
     get:
       summary: List accounts
       operationId: listAccounts
-      
       tags:
         - payments.v1
       parameters:
@@ -343,31 +370,33 @@ paths:
               type: object
               additionalProperties: true
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/Accounts'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:read
   /accounts/{accountId}:
     get:
       summary: Get an account
       tags:
         - payments.v1
       operationId: getAccount
-      
       parameters:
         - $ref: '#/components/parameters/AccountId'
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/Account'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:read
   /accounts/{accountId}/balances:
     get:
       summary: Get account balances
       operationId: getAccountBalances
-      
       tags:
         - payments.v1
       parameters:
@@ -409,30 +438,33 @@ paths:
         - $ref: '#/components/parameters/Cursor'
         - $ref: '#/components/parameters/Sort'
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/AccountBalances'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:read
   /bank-accounts:
     post:
       summary: Create a BankAccount in Payments and on the PSP
       tags:
         - payments.v1
       operationId: createBankAccount
-      
       description: Create a bank account in Payments and on the PSP.
       requestBody:
         $ref: '#/components/requestBodies/BankAccount'
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/BankAccount'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
+      security:
+        - Authorization:
+            - payments:write
     get:
       summary: List bank accounts created by user on Formance
       operationId: listBankAccounts
-      
       tags:
         - payments.v1
       parameters:
@@ -441,125 +473,135 @@ paths:
         - $ref: '#/components/parameters/Sort'
       description: List all bank accounts created by user on Formance.
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/BankAccounts'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:read
   /bank-accounts/{bankAccountId}:
     get:
       summary: Get a bank account created by user on Formance
       tags:
         - payments.v1
       operationId: getBankAccount
-      
       parameters:
         - $ref: '#/components/parameters/BankAccountId'
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/BankAccount'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:read
   /bank-accounts/{bankAccountId}/forward:
     post:
       summary: Forward a bank account to a connector
       tags:
         - payments.v1
       operationId: forwardBankAccount
-      
       parameters:
         - $ref: '#/components/parameters/BankAccountId'
       requestBody:
         $ref: '#/components/requestBodies/ForwardBankAccount'
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/BankAccount'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:write
   /bank-accounts/{bankAccountId}/metadata:
     patch:
       summary: Update metadata of a bank account
       tags:
         - payments.v1
       operationId: updateBankAccountMetadata
-      
       parameters:
         - $ref: '#/components/parameters/BankAccountId'
       requestBody:
         $ref: '#/components/requestBodies/UpdateBankAccountMetadata'
       responses:
-        "204":
+        '204':
           $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:write
   /connectors:
     get:
       summary: List all installed connectors
       operationId: listAllConnectors
-      
       tags:
         - payments.v1
       description: List all installed connectors.
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/Connectors'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:read
   /connectors/configs:
     get:
       summary: List the configs of each available connector
       operationId: listConfigsAvailableConnectors
-      
       tags:
         - payments.v1
       description: List the configs of each available connector.
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/ConnectorsConfigs'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:read
   /connectors/{connector}:
     post:
       summary: Install a connector
       tags:
         - payments.v1
       operationId: installConnector
-      
       description: Install a connector by its name and config.
       parameters:
         - $ref: '#/components/parameters/Connector'
       requestBody:
         $ref: '#/components/requestBodies/ConnectorConfig'
       responses:
-        "201":
+        '201':
           $ref: '#/components/responses/ConnectorInstalled'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
+      security:
+        - Authorization:
+            - payments:write
     delete:
       summary: Uninstall a connector
       deprecated: true
       operationId: uninstallConnector
-      
       tags:
         - payments.v1
       description: Uninstall a connector by its name.
       parameters:
         - $ref: '#/components/parameters/Connector'
       responses:
-        "204":
+        '204':
           $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
+      security:
+        - Authorization:
+            - payments:write
   /connectors/{connector}/{connectorId}:
     delete:
       summary: Uninstall a connector
       operationId: uninstallConnectorV1
-      
       tags:
         - payments.v1
       description: Uninstall a connector by its name.
@@ -567,33 +609,35 @@ paths:
         - $ref: '#/components/parameters/Connector'
         - $ref: '#/components/parameters/ConnectorID'
       responses:
-        "204":
+        '204':
           $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:write
   /connectors/{connector}/config:
     get:
       summary: Read the config of a connector
       deprecated: true
       operationId: readConnectorConfig
-      
       tags:
         - payments.v1
       description: Read connector config
       parameters:
         - $ref: '#/components/parameters/Connector'
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/ConnectorConfig'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:read
   /connectors/{connector}/{connectorId}/config:
     post:
       summary: Update the config of a connector
       operationId: updateConnectorConfigV1
-      
       tags:
         - payments.v1
       description: Update connector config
@@ -603,14 +647,16 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/ConnectorConfig'
       responses:
-        "204":
+        '204':
           $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
+      security:
+        - Authorization:
+            - payments:write
     get:
       summary: Read the config of a connector
       operationId: readConnectorConfigV1
-      
       tags:
         - payments.v1
       description: Read connector config
@@ -618,17 +664,18 @@ paths:
         - $ref: '#/components/parameters/Connector'
         - $ref: '#/components/parameters/ConnectorID'
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/ConnectorConfig'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:read
   /connectors/{connector}/reset:
     post:
       summary: Reset a connector
       deprecated: true
       operationId: resetConnector
-      
       tags:
         - payments.v1
       description: |
@@ -637,15 +684,17 @@ paths:
       parameters:
         - $ref: '#/components/parameters/Connector'
       responses:
-        "204":
+        '204':
           $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
+      security:
+        - Authorization:
+            - payments:write
   /connectors/{connector}/{connectorId}/reset:
     post:
       summary: Reset a connector
       operationId: resetConnectorV1
-      
       tags:
         - payments.v1
       description: |
@@ -655,11 +704,13 @@ paths:
         - $ref: '#/components/parameters/Connector'
         - $ref: '#/components/parameters/ConnectorID'
       responses:
-        "204":
+        '204':
           $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-  
+      security:
+        - Authorization:
+            - payments:write
   /connectors/{connector}/tasks:
     get:
       summary: List tasks from a connector
@@ -667,25 +718,25 @@ paths:
       tags:
         - payments.v1
       operationId: listConnectorTasks
-      
       description: List all tasks associated with this connector.
       parameters:
         - $ref: '#/components/parameters/Connector'
         - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/Cursor'
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/Tasks'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:read
   /connectors/{connector}/{connectorId}/tasks:
     get:
       summary: List tasks from a connector
       tags:
         - payments.v1
       operationId: listConnectorTasksV1
-      
       description: List all tasks associated with this connector.
       parameters:
         - $ref: '#/components/parameters/Connector'
@@ -693,11 +744,13 @@ paths:
         - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/Cursor'
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/Tasks'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:read
   /connectors/{connector}/tasks/{taskId}:
     get:
       summary: Read a specific task of the connector
@@ -705,56 +758,57 @@ paths:
       tags:
         - payments.v1
       operationId: getConnectorTask
-      
       description: Get a specific task associated to the connector.
       parameters:
         - $ref: '#/components/parameters/Connector'
         - $ref: '#/components/parameters/TaskId'
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/Task'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:read
   /connectors/{connector}/{connectorId}/tasks/{taskId}:
     get:
       summary: Read a specific task of the connector
       tags:
         - payments.v1
       operationId: getConnectorTaskV1
-      
       description: Get a specific task associated to the connector.
       parameters:
         - $ref: '#/components/parameters/Connector'
         - $ref: '#/components/parameters/ConnectorID'
         - $ref: '#/components/parameters/TaskId'
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/Task'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-
+      security:
+        - Authorization:
+            - payments:read
   /connectors/{connector}/transfers:
     post:
       summary: Transfer funds between Connector accounts
       tags:
         - payments.v1
       operationId: connectorsTransfer
-      
       description: Execute a transfer between two accounts.
       parameters:
         - $ref: '#/components/parameters/Connector'
       requestBody:
         $ref: '#/components/requestBodies/Transfer'
       responses:
-        "200":
+        '200':
           $ref: '#/components/responses/Transfer'
         default:
           $ref: '#/components/responses/PaymentsErrorResponse'
-  
-# ---------------------- COMPONENTS ----------------------
+      security:
+        - Authorization:
+            - payments:write
 components:
-  # ---------------------- PARAMETERS ----------------------
   parameters:
     Query:
       name: query
@@ -796,8 +850,8 @@ components:
           type: string
       description: Fields used to sort payments (default is date:desc).
       example:
-      - date:asc
-      - status:desc
+        - date:asc
+        - status:desc
     PaymentId:
       name: paymentId
       in: path
@@ -861,8 +915,6 @@ components:
       schema:
         type: string
       required: true
-
-  # ---------------------- RESPONSES ----------------------
   responses:
     NoContent:
       description: No content
@@ -992,13 +1044,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/TransferResponse'
-    Transfers:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/TransfersResponse'
-  # ---------------------- REQUESTS ----------------------
   requestBodies:
     ConnectorConfig:
       required: true
@@ -1077,11 +1122,8 @@ components:
       content:
         application/json:
           schema:
-              $ref: '#/components/schemas/TransferRequest'
-
-  # ---------------------- SCHEMAS ----------------------
+            $ref: '#/components/schemas/TransferRequest'
   schemas:
-    # ---------------------- CURSORS ----------------------
     CursorBase:
       type: object
       required:
@@ -1100,10 +1142,10 @@ components:
           example: false
         previous:
           type: string
-          example: "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+          example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
         next:
           type: string
-          example: ""
+          example: ''
     PaymentsCursor:
       type: object
       required:
@@ -1224,8 +1266,6 @@ components:
                       - $ref: '#/components/schemas/TaskBankingCircle'
                       - $ref: '#/components/schemas/TaskMangoPay'
                       - $ref: '#/components/schemas/TaskMoneycorp'
-
-    # ---------------------- RESPONSES ----------------------
     ConnectorConfigResponse:
       type: object
       required:
@@ -1337,7 +1377,7 @@ components:
     TaskResponse:
       type: object
       required:
-          - data
+        - data
       properties:
         data:
           oneOf:
@@ -1354,33 +1394,6 @@ components:
       properties:
         id:
           type: string
-    TransfersResponse:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-              amount:
-                type: integer
-                format: bigint
-                minimum: 0
-              asset:
-                type: string
-              destination:
-                type: string
-              source:
-                type: string
-              currency:
-                type: string
-              status:
-                type: string
-              error:
-                type: string
-    # ---------------------- DATA MODELS ----------------------
     Connector:
       type: string
       enum:
@@ -1431,13 +1444,14 @@ components:
       properties:
         name:
           type: string
-          example: 'My Stripe Account'
+          example: My Stripe Account
         pollingPeriod:
           type: string
-          example: '60s'
-          description: |
-            The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
-          default: '120s'
+          example: 60s
+          description: >
+            The frequency at which the connector will try to fetch new
+            BalanceTransaction objects from Stripe API.
+          default: 120s
         apiKey:
           type: string
           example: XXX
@@ -1457,15 +1471,17 @@ components:
       properties:
         name:
           type: string
-          example: 'My DummyPay Account'
+          example: My DummyPay Account
         filePollingPeriod:
           type: string
-          example: '60s'
-          description: The frequency at which the connector will try to fetch new payment objects from the directory
-          default: '10s'
+          example: 60s
+          description: >-
+            The frequency at which the connector will try to fetch new payment
+            objects from the directory
+          default: 10s
         directory:
           type: string
-          example: '/tmp/dummypay'
+          example: /tmp/dummypay
         prefixFileToIngest:
           type: string
         numberOfAccountsPreGenerated:
@@ -1482,41 +1498,43 @@ components:
       properties:
         name:
           type: string
-          example: 'My Wise Account'
+          example: My Wise Account
         apiKey:
           type: string
-          example: 'XXX'
+          example: XXX
         pollingPeriod:
           type: string
-          example: '60s'
-          description: |
-            The frequency at which the connector will try to fetch new BalanceTransaction objects from Wise API.
-          default: '120s'
+          example: 60s
+          description: >
+            The frequency at which the connector will try to fetch new
+            BalanceTransaction objects from Wise API.
+          default: 120s
     ModulrConfig:
       type: object
       required:
-      - name
-      - apiKey
-      - apiSecret
+        - name
+        - apiKey
+        - apiSecret
       properties:
         name:
           type: string
-          example: 'My Modulr Account'
+          example: My Modulr Account
         apiKey:
           type: string
-          example: 'XXX'
+          example: XXX
         apiSecret:
           type: string
-          example: 'XXX'
+          example: XXX
         endpoint:
           type: string
-          example: 'XXX'
+          example: XXX
         pollingPeriod:
           type: string
-          example: '60s'
-          description: |
-            The frequency at which the connector will try to fetch new BalanceTransaction objects from Modulr API.
-          default: '120s'
+          example: 60s
+          description: >
+            The frequency at which the connector will try to fetch new
+            BalanceTransaction objects from Modulr API.
+          default: 120s
     BankingCircleConfig:
       type: object
       required:
@@ -1530,31 +1548,32 @@ components:
       properties:
         name:
           type: string
-          example: 'My Banking Circle Account'
+          example: My Banking Circle Account
         username:
           type: string
-          example: 'XXX'
+          example: XXX
         password:
           type: string
-          example: 'XXX'
+          example: XXX
         endpoint:
           type: string
-          example: 'XXX'
+          example: XXX
         authorizationEndpoint:
           type: string
-          example: 'XXX'
+          example: XXX
         userCertificate:
           type: string
-          example: 'XXX'
+          example: XXX
         userCertificateKey:
           type: string
-          example: 'XXX'
+          example: XXX
         pollingPeriod:
           type: string
-          example: '60s'
-          description: |
-            The frequency at which the connector will try to fetch new BalanceTransaction objects from Banking Circle API.
-          default: '120s'
+          example: 60s
+          description: >
+            The frequency at which the connector will try to fetch new
+            BalanceTransaction objects from Banking Circle API.
+          default: 120s
     GenericConfig:
       type: object
       required:
@@ -1564,19 +1583,20 @@ components:
       properties:
         name:
           type: string
-          example: 'My Generic Account'
+          example: My Generic Account
         apiKey:
           type: string
-          example: 'XXX'
+          example: XXX
         endpoint:
           type: string
-          example: 'XXX'
+          example: XXX
         pollingPeriod:
           type: string
-          example: '60s'
-          description: |
-            The frequency at which the connector will try to fetch new BalanceTransaction objects from the API.
-          default: '120s'
+          example: 60s
+          description: >
+            The frequency at which the connector will try to fetch new
+            BalanceTransaction objects from the API.
+          default: 120s
     MangoPayConfig:
       type: object
       required:
@@ -1587,22 +1607,23 @@ components:
       properties:
         name:
           type: string
-          example: 'My MangoPay Account'
+          example: My MangoPay Account
         pollingPeriod:
           type: string
-          example: '60s'
-          description: |
-            The frequency at which the connector will try to fetch new BalanceTransaction objects from MangoPay API.
-          default: '120s'
+          example: 60s
+          description: >
+            The frequency at which the connector will try to fetch new
+            BalanceTransaction objects from MangoPay API.
+          default: 120s
         clientID:
           type: string
-          example: 'XXX'
+          example: XXX
         apiKey:
           type: string
-          example: 'XXX'
+          example: XXX
         endpoint:
           type: string
-          example: 'XXX'
+          example: XXX
     MoneycorpConfig:
       type: object
       required:
@@ -1613,22 +1634,23 @@ components:
       properties:
         name:
           type: string
-          example: 'My Moneycorp Account'
+          example: My Moneycorp Account
         clientID:
           type: string
-          example: 'XXX'
+          example: XXX
         apiKey:
           type: string
-          example: 'XXX'
+          example: XXX
         endpoint:
           type: string
-          example: 'XXX'
+          example: XXX
         pollingPeriod:
           type: string
-          example: '60s'
-          description: |
-            The frequency at which the connector will try to fetch new BalanceTransaction objects from MoneyCorp API.
-          default: '120s'
+          example: 60s
+          description: >
+            The frequency at which the connector will try to fetch new
+            BalanceTransaction objects from MoneyCorp API.
+          default: 120s
     CurrencyCloudConfig:
       type: object
       required:
@@ -1638,23 +1660,25 @@ components:
       properties:
         name:
           type: string
-          example: 'My CurrencyCloud Account'
+          example: My CurrencyCloud Account
         apiKey:
           type: string
-          example: 'XXX'
+          example: XXX
         loginID:
           type: string
-          example: 'XXX'
-          description: 'Username of the API Key holder'
+          example: XXX
+          description: Username of the API Key holder
         pollingPeriod:
           type: string
-          example: '60s'
+          example: 60s
           description: The frequency at which the connector will fetch transactions
-          default: '120s'
+          default: 120s
         endpoint:
           type: string
-          example: 'XXX'
-          description: 'The endpoint to use for the API. Defaults to https://devapi.currencycloud.com'
+          example: XXX
+          description: >-
+            The endpoint to use for the API. Defaults to
+            https://devapi.currencycloud.com
     AdyenConfig:
       type: object
       required:
@@ -1664,22 +1688,23 @@ components:
       properties:
         name:
           type: string
-          example: 'My Adyen Account'
+          example: My Adyen Account
         apiKey:
           type: string
-          example: 'XXX'
+          example: XXX
         hmacKey:
           type: string
-          example: 'XXX'
+          example: XXX
         liveEndpointPrefix:
           type: string
-          example: 'XXX'
+          example: XXX
         pollingPeriod:
           type: string
-          example: '60s'
-          description: |
-            The frequency at which the connector will try to fetch new BalanceTransaction objects from Adyen API.
-          default: '120s'
+          example: 60s
+          description: >
+            The frequency at which the connector will try to fetch new
+            BalanceTransaction objects from Adyen API.
+          default: 120s
     AtlarConfig:
       type: object
       required:
@@ -1689,37 +1714,46 @@ components:
       properties:
         name:
           type: string
-          example: 'My Atlar Account'
+          example: My Atlar Account
         baseUrl:
           type: string
           example: https://api.example.com
           default: https://api.atlar.com
-          description: |
-            The base URL the client uses for making requests towards the Atlar API.
+          description: >
+            The base URL the client uses for making requests towards the Atlar
+            API.
         pollingPeriod:
           type: string
-          example: '60s'
-          description: |
-            The frequency at which the connector tries to fetch new Transaction objects from the Atlar API.
-          default: '120s'
+          example: 60s
+          description: >
+            The frequency at which the connector tries to fetch new Transaction
+            objects from the Atlar API.
+          default: 120s
         transferInitiationStatusPollingPeriod:
           type: string
-          example: '60s'
-          description: |
-            The frequency at which the connector tries to fetch the status of payment initiations from the Atlar API.
-          default: '120s'
+          example: 60s
+          description: >
+            The frequency at which the connector tries to fetch the status of
+            payment initiations from the Atlar API.
+          default: 120s
         accessKey:
           type: string
           example: XXX
-          description: |
-            The access key used by the connector for authorizing requests to the Atlar API.
-            You can obtain it along with the associated secret from the Atlar dashboard.
+          description: >
+            The access key used by the connector for authorizing requests to the
+            Atlar API.
+
+            You can obtain it along with the associated secret from the Atlar
+            dashboard.
         secret:
           type: string
           example: XXX
-          description: |
-            The secret used by the connector for authorizing requests to the Atlar API.
-            You can obtain it along with the associated access key from the Atlar dashboard.
+          description: >
+            The secret used by the connector for authorizing requests to the
+            Atlar API.
+
+            You can obtain it along with the associated access key from the
+            Atlar dashboard.
         pageSize:
           type: integer
           format: int64
@@ -1960,28 +1994,28 @@ components:
         metadata:
           $ref: '#/components/schemas/PaymentMetadata'
     PaymentAdjustment:
-        type: object
-        required:
-          - reference
-          - createdAt
-          - amount
-          - status
-          - raw
-        properties:
-          reference:
-            type: string
-          createdAt:
-            type: string
-            format: date-time
-          status:
-            $ref: '#/components/schemas/PaymentStatus'
-          amount:
-            type: integer
-            format: bigint
-            minimum: 0
-            example: 100
-          raw:
-            type: object
+      type: object
+      required:
+        - reference
+        - createdAt
+        - amount
+        - status
+        - raw
+      properties:
+        reference:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        amount:
+          type: integer
+          format: bigint
+          minimum: 0
+          example: 100
+        raw:
+          type: object
     PaymentMetadata:
       type: object
       additionalProperties:
@@ -2303,7 +2337,7 @@ components:
           type: string
         name:
           type: string
-          example: 'My account'
+          example: My account
         accountNumber:
           type: string
         iban:
@@ -2534,7 +2568,7 @@ components:
     ServerInfo:
       type: object
       required:
-      - version
+        - version
       properties:
         version:
           type: string
@@ -2548,7 +2582,7 @@ components:
           $ref: '#/components/schemas/PaymentsErrorsEnum'
         errorMessage:
           type: string
-          example: "[VALIDATION] missing reference"
+          example: '[VALIDATION] missing reference'
     PaymentsErrorsEnum:
       type: string
       enum:

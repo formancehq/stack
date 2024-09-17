@@ -1,8 +1,7 @@
 openapi: 3.0.3
 info:
   title: Webhooks
-  version: "WEBHOOKS_VERSION"
-
+  version: WEBHOOKS_VERSION
 paths:
   /configs:
     get:
@@ -27,30 +26,37 @@ paths:
             type: string
             example: https://example.com
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConfigsResponse'
-
         default:
           description: Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
+      security:
+        - Authorization:
+            - webhooks:read
     post:
       summary: Insert a new config
-      description: |
+      description: >
         Insert a new webhooks config.
+
 
         The endpoint should be a valid https URL and be unique.
 
+
         The secret is the endpoint's verification secret.
+
         If not passed or empty, a secret is automatically generated.
-        The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
+
+        The format is a random string of bytes of size 24, base64 encoded.
+        (larger size after encoding)
+
 
         All eventTypes are converted to lower-case when inserted.
       operationId: insertConfig
@@ -63,20 +69,21 @@ paths:
               $ref: '#/components/schemas/ConfigUser'
         required: true
       responses:
-        "200":
+        '200':
           description: Config created successfully.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConfigResponse'
-
         default:
           description: Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
+      security:
+        - Authorization:
+            - webhooks:write
   /configs/{id}:
     delete:
       summary: Delete one config
@@ -93,16 +100,17 @@ paths:
             type: string
             example: 4997257d-dfb6-445b-929c-cbe2ab182818
       responses:
-        "200":
+        '200':
           description: Config successfully deleted.
-
         default:
           description: Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
+      security:
+        - Authorization:
+            - webhooks:write
   /configs/{id}/test:
     get:
       summary: Test one config
@@ -119,24 +127,27 @@ paths:
             type: string
             example: 4997257d-dfb6-445b-929c-cbe2ab182818
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AttemptResponse'
-
         default:
           description: Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
+      security:
+        - Authorization:
+            - webhooks:read
   /configs/{id}/activate:
     put:
       summary: Activate one config
-      description: Activate a webhooks config by ID, to start receiving webhooks to its endpoint.
+      description: >-
+        Activate a webhooks config by ID, to start receiving webhooks to its
+        endpoint.
       operationId: activateConfig
       tags:
         - webhooks.v1
@@ -149,24 +160,27 @@ paths:
             type: string
             example: 4997257d-dfb6-445b-929c-cbe2ab182818
       responses:
-        "200":
+        '200':
           description: Config successfully activated.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConfigResponse'
-
         default:
           description: Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
+      security:
+        - Authorization:
+            - webhooks:write
   /configs/{id}/deactivate:
     put:
       summary: Deactivate one config
-      description: Deactivate a webhooks config by ID, to stop receiving webhooks to its endpoint.
+      description: >-
+        Deactivate a webhooks config by ID, to stop receiving webhooks to its
+        endpoint.
       operationId: deactivateConfig
       tags:
         - webhooks.v1
@@ -179,28 +193,32 @@ paths:
             type: string
             example: 4997257d-dfb6-445b-929c-cbe2ab182818
       responses:
-        "200":
+        '200':
           description: Config successfully deactivated.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConfigResponse'
-
         default:
           description: Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
+      security:
+        - Authorization:
+            - webhooks:write
   /configs/{id}/secret/change:
     put:
       summary: Change the signing secret of a config
-      description: |
+      description: >
         Change the signing secret of the endpoint of a webhooks config.
 
+
         If not passed or empty, a secret is automatically generated.
-        The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
+
+        The format is a random string of bytes of size 24, base64 encoded.
+        (larger size after encoding)
       operationId: changeConfigSecret
       tags:
         - webhooks.v1
@@ -218,20 +236,21 @@ paths:
             type: string
             example: 4997257d-dfb6-445b-929c-cbe2ab182818
       responses:
-        "200":
+        '200':
           description: Secret successfully changed.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConfigResponse'
-
         default:
           description: Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
+      security:
+        - Authorization:
+            - webhooks:write
 components:
   schemas:
     ConfigUser:
@@ -242,20 +261,21 @@ components:
       properties:
         name:
           type: string
-          example: "customer_payment"
+          example: customer_payment
         endpoint:
           type: string
-          example: "https://example.com"
+          example: https://example.com
         secret:
           type: string
-          example: "V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"
+          example: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
         eventTypes:
           type: array
           items:
             type: string
-            example: "TYPE1"
-          example: ["TYPE1", "TYPE2"]
-
+            example: TYPE1
+          example:
+            - TYPE1
+            - TYPE2
     ConfigsResponse:
       type: object
       required:
@@ -272,7 +292,6 @@ components:
               type: object
               required:
                 - data
-
     Cursor:
       type: object
       required:
@@ -286,7 +305,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/WebhooksConfig'
-
     ConfigResponse:
       type: object
       required:
@@ -294,7 +312,6 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/WebhooksConfig'
-
     WebhooksConfig:
       properties:
         id:
@@ -302,16 +319,18 @@ components:
           format: uuid
         endpoint:
           type: string
-          example: "https://example.com"
+          example: https://example.com
         secret:
           type: string
-          example: "V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"
+          example: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
         eventTypes:
           type: array
           items:
             type: string
-            example: "TYPE1"
-          example: ["TYPE1", "TYPE2"]
+            example: TYPE1
+          example:
+            - TYPE1
+            - TYPE2
         active:
           type: boolean
           example: true
@@ -329,16 +348,14 @@ components:
         - active
         - createdAt
         - updatedAt
-
     ConfigChangeSecret:
       type: object
       properties:
         secret:
           type: string
-          example: "V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"
+          example: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
       required:
         - secret
-
     AttemptResponse:
       type: object
       required:
@@ -346,7 +363,6 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/Attempt'
-
     Attempt:
       properties:
         id:
@@ -388,7 +404,6 @@ components:
         - statusCode
         - retryAttempt
         - status
-
     ErrorResponse:
       type: object
       required:
@@ -399,11 +414,11 @@ components:
           $ref: '#/components/schemas/ErrorsEnum'
         errorMessage:
           type: string
-          example: "[VALIDATION] invalid 'cursor' query param"
+          example: '[VALIDATION] invalid ''cursor'' query param'
         details:
           type: string
-          example: "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9"
-
+          example: >-
+            https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9
     ErrorsEnum:
       type: string
       enum:

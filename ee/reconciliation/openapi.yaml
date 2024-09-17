@@ -1,9 +1,7 @@
 openapi: 3.0.3
 info:
   title: Reconciliation API
-  version: "RECONCILIATION_VERSION"
-
-# ---------------------- PATHS ----------------------
+  version: RECONCILIATION_VERSION
 paths:
   /_info:
     get:
@@ -12,11 +10,13 @@ paths:
       tags:
         - reconciliation.v1
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/ServerInfo'
         default:
           $ref: '#/components/responses/ErrorResponse'
-
+      security:
+        - Authorization:
+            - reconciliation:read
   /policies:
     post:
       summary: Create a policy
@@ -27,10 +27,13 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/Policy'
       responses:
-        201:
+        '201':
           $ref: '#/components/responses/Policy'
         default:
           $ref: '#/components/responses/ErrorResponse'
+      security:
+        - Authorization:
+            - reconciliation:write
     get:
       summary: List policies
       operationId: listPolicies
@@ -40,11 +43,13 @@ paths:
         - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/Cursor'
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/Policies'
         default:
           $ref: '#/components/responses/ErrorResponse'
-
+      security:
+        - Authorization:
+            - reconciliation:read
   /policies/{policyID}:
     delete:
       summary: Delete a policy
@@ -55,10 +60,13 @@ paths:
       parameters:
         - $ref: '#/components/parameters/PolicyID'
       responses:
-        204:
+        '204':
           $ref: '#/components/responses/NoContent'
         default:
           $ref: '#/components/responses/ErrorResponse'
+      security:
+        - Authorization:
+            - reconciliation:write
     get:
       summary: Get a policy
       tags:
@@ -67,11 +75,13 @@ paths:
       parameters:
         - $ref: '#/components/parameters/PolicyID'
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/Policy'
         default:
           $ref: '#/components/responses/ErrorResponse'
-
+      security:
+        - Authorization:
+            - reconciliation:read
   /policies/{policyID}/reconciliation:
     post:
       summary: Reconcile using a policy
@@ -84,11 +94,13 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/Reconciliation'
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/Reconciliation'
         default:
           $ref: '#/components/responses/ErrorResponse'
-
+      security:
+        - Authorization:
+            - reconciliation:write
   /reconciliations:
     get:
       summary: List reconciliations
@@ -99,11 +111,13 @@ paths:
         - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/Cursor'
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/Reconciliations'
         default:
           $ref: '#/components/responses/ErrorResponse'
-
+      security:
+        - Authorization:
+            - reconciliation:read
   /reconciliations/{reconciliationID}:
     get:
       summary: Get a reconciliation
@@ -113,20 +127,20 @@ paths:
       parameters:
         - $ref: '#/components/parameters/ReconciliationID'
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/Reconciliation'
         default:
           $ref: '#/components/responses/ErrorResponse'
-
-# ---------------------- COMPONENTS ----------------------
+      security:
+        - Authorization:
+            - reconciliation:read
 components:
-  # ---------------------- PARAMETERS ----------------------
   parameters:
     PageSize:
       name: pageSize
       in: query
       description: |
-            The maximum number of results to return per page.
+        The maximum number of results to return per page.
       example: 100
       schema:
         type: integer
@@ -160,8 +174,6 @@ components:
       description: The reconciliation ID.
       example: XXX
       required: true
-
-  # ---------------------- RESPONSES ----------------------
   responses:
     NoContent:
       description: No content
@@ -201,7 +213,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
-  # ---------------------- REQUESTS ----------------------
   requestBodies:
     Policy:
       required: true
@@ -215,10 +226,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ReconciliationRequest'
-  
-  # ---------------------- SCHEMAS ----------------------
   schemas:
-    # ---------------------- CURSORS ----------------------
     PoliciesCursorResponse:
       type: object
       required:
@@ -242,10 +250,10 @@ components:
               example: false
             previous:
               type: string
-              example: "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+              example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
             next:
               type: string
-              example: ""
+              example: ''
             data:
               type: array
               items:
@@ -273,19 +281,18 @@ components:
               example: false
             previous:
               type: string
-              example: "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+              example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
             next:
               type: string
-              example: ""
+              example: ''
             data:
               type: array
               items:
                 $ref: '#/components/schemas/Reconciliation'
-    # ---------------------- RESPONSES ----------------------
     ServerInfo:
       type: object
       required:
-      - version
+        - version
       properties:
         version:
           type: string
@@ -299,16 +306,16 @@ components:
       properties:
         name:
           type: string
-          example: "XXX"
+          example: XXX
         ledgerName:
           type: string
-          example: "default"
+          example: default
         ledgerQuery:
           type: object
           additionalProperties: true
         paymentsPoolID:
           type: string
-          example: "XXX"
+          example: XXX
     PolicyResponse:
       type: object
       required:
@@ -325,11 +332,11 @@ components:
         reconciledAtLedger:
           type: string
           format: date-time
-          example: "2021-01-01T00:00:00.000Z"
+          example: '2021-01-01T00:00:00.000Z'
         reconciledAtPayments:
           type: string
           format: date-time
-          example: "2021-01-01T00:00:00.000Z"
+          example: '2021-01-01T00:00:00.000Z'
     ReconciliationResponse:
       type: object
       required:
@@ -349,23 +356,23 @@ components:
       properties:
         id:
           type: string
-          example: "XXX"
+          example: XXX
         name:
           type: string
-          example: "XXX"
+          example: XXX
         createdAt:
           type: string
           format: date-time
-          example: "2021-01-01T00:00:00.000Z"
+          example: '2021-01-01T00:00:00.000Z'
         ledgerName:
           type: string
-          example: "default"
+          example: default
         ledgerQuery:
           type: object
           additionalProperties: true
         paymentsPoolID:
           type: string
-          example: "XXX"
+          example: XXX
     Reconciliation:
       type: object
       required:
@@ -381,25 +388,25 @@ components:
       properties:
         id:
           type: string
-          example: "XXX"
+          example: XXX
         policyID:
           type: string
-          example: "XXX"
+          example: XXX
         createdAt:
           type: string
           format: date-time
-          example: "2021-01-01T00:00:00.000Z"
+          example: '2021-01-01T00:00:00.000Z'
         reconciledAtLedger:
           type: string
           format: date-time
-          example: "2021-01-01T00:00:00.000Z"
+          example: '2021-01-01T00:00:00.000Z'
         reconciledAtPayments:
           type: string
           format: date-time
-          example: "2021-01-01T00:00:00.000Z"
+          example: '2021-01-01T00:00:00.000Z'
         status:
           type: string
-          example: "COMPLETED"
+          example: COMPLETED
         paymentsBalances:
           type: object
           additionalProperties:
@@ -425,7 +432,7 @@ components:
       properties:
         errorCode:
           type: string
-          example: "VALIDATION"
+          example: VALIDATION
         errorMessage:
           type: string
         details:

@@ -1,9 +1,7 @@
 openapi: 3.0.3
-
 info:
   title: Formance Simple orchestration Service API
   version: 0.1.0
-
 paths:
   /v2/_info:
     get:
@@ -11,9 +9,9 @@ paths:
       operationId: v2GetServerInfo
       x-speakeasy-name-override: GetServerInfo
       tags:
-      - orchestration.v2
+        - orchestration.v2
       responses:
-        200:
+        '200':
           description: Server information
           content:
             application/json:
@@ -21,6 +19,9 @@ paths:
                 $ref: '#/components/schemas/V2ServerInfo'
         default:
           $ref: '#/components/responses/V2ErrorResponse'
+      security:
+        - Authorization:
+            - orchestration:read
   /v2/triggers:
     get:
       summary: List triggers
@@ -28,7 +29,7 @@ paths:
       description: List triggers
       x-speakeasy-name-override: ListTriggers
       tags:
-      - orchestration.v2
+        - orchestration.v2
       parameters:
         - $ref: '#/components/parameters/Cursor'
         - $ref: '#/components/parameters/PageSize'
@@ -39,7 +40,7 @@ paths:
           schema:
             type: string
       responses:
-        200:
+        '200':
           description: List of triggers
           content:
             application/json:
@@ -47,20 +48,23 @@ paths:
                 $ref: '#/components/schemas/V2ListTriggersResponse'
         default:
           $ref: '#/components/responses/V2ErrorResponse'
+      security:
+        - Authorization:
+            - orchestration:read
     post:
       summary: Create trigger
       operationId: v2CreateTrigger
       description: Create trigger
       x-speakeasy-name-override: CreateTrigger
       tags:
-      - orchestration.v2
+        - orchestration.v2
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/V2TriggerData'
       responses:
-        201:
+        '201':
           description: Created trigger
           content:
             application/json:
@@ -68,7 +72,9 @@ paths:
                 $ref: '#/components/schemas/V2CreateTriggerResponse'
         default:
           $ref: '#/components/responses/V2ErrorResponse'
-
+      security:
+        - Authorization:
+            - orchestration:write
   /v2/triggers/{triggerID}:
     parameters:
       - name: triggerID
@@ -85,7 +91,7 @@ paths:
       tags:
         - orchestration.v2
       responses:
-        200:
+        '200':
           description: A specific trigger
           content:
             application/json:
@@ -93,20 +99,24 @@ paths:
                 $ref: '#/components/schemas/V2ReadTriggerResponse'
         default:
           $ref: '#/components/responses/V2ErrorResponse'
+      security:
+        - Authorization:
+            - orchestration:read
     delete:
       summary: Delete trigger
       operationId: v2DeleteTrigger
       description: Read trigger
       x-speakeasy-name-override: DeleteTrigger
       tags:
-      - orchestration.v2
+        - orchestration.v2
       responses:
-        204:
+        '204':
           description: Trigger deleted
-
         default:
           $ref: '#/components/responses/V2ErrorResponse'
-
+      security:
+        - Authorization:
+            - orchestration:write
   /v2/triggers/{triggerID}/test:
     parameters:
       - name: triggerID
@@ -129,7 +139,7 @@ paths:
               type: object
               additionalProperties: true
       responses:
-        "200":
+        '200':
           description: Test a trigger
           content:
             application/json:
@@ -137,7 +147,9 @@ paths:
                 $ref: '#/components/schemas/V2TestTriggerResponse'
         default:
           $ref: '#/components/responses/V2ErrorResponse'
-
+      security:
+        - Authorization:
+            - orchestration:write
   /v2/triggers/{triggerID}/occurrences:
     parameters:
       - name: triggerID
@@ -157,7 +169,7 @@ paths:
         - $ref: '#/components/parameters/Cursor'
         - $ref: '#/components/parameters/PageSize'
       responses:
-        200:
+        '200':
           description: List of triggers occurrences
           content:
             application/json:
@@ -165,6 +177,9 @@ paths:
                 $ref: '#/components/schemas/V2ListTriggersOccurrencesResponse'
         default:
           $ref: '#/components/responses/V2ErrorResponse'
+      security:
+        - Authorization:
+            - orchestration:read
   /v2/workflows:
     get:
       summary: List registered workflows
@@ -172,12 +187,12 @@ paths:
       description: List registered workflows
       x-speakeasy-name-override: ListWorkflows
       tags:
-      - orchestration.v2
+        - orchestration.v2
       parameters:
         - $ref: '#/components/parameters/Cursor'
         - $ref: '#/components/parameters/PageSize'
       responses:
-        200:
+        '200':
           description: List of workflows
           content:
             application/json:
@@ -185,20 +200,23 @@ paths:
                 $ref: '#/components/schemas/V2ListWorkflowsResponse'
         default:
           $ref: '#/components/responses/V2ErrorResponse'
+      security:
+        - Authorization:
+            - orchestration:read
     post:
       summary: Create workflow
       operationId: v2CreateWorkflow
       description: Create a workflow
       x-speakeasy-name-override: CreateWorkflow
       tags:
-      - orchestration.v2
+        - orchestration.v2
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/V2CreateWorkflowRequest'
       responses:
-        201:
+        '201':
           description: Created workflow
           content:
             application/json:
@@ -206,84 +224,92 @@ paths:
                 $ref: '#/components/schemas/V2CreateWorkflowResponse'
         default:
           $ref: '#/components/responses/V2ErrorResponse'
-
+      security:
+        - Authorization:
+            - orchestration:write
   /v2/workflows/{flowId}:
     parameters:
-    - in: path
-      description: The flow id
-      name: flowId
-      schema:
-        type: string
-      example: xxx
-      required: true
+      - in: path
+        description: The flow id
+        name: flowId
+        schema:
+          type: string
+        example: xxx
+        required: true
     get:
       summary: Get a flow by id
       tags:
-      - orchestration.v2
+        - orchestration.v2
       description: Get a flow by id
       operationId: v2GetWorkflow
       x-speakeasy-name-override: GetWorkflow
       responses:
-        default:
-          $ref: '#/components/responses/V2ErrorResponse'
-        200:
+        '200':
           description: The workflow
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/V2GetWorkflowResponse'
+        default:
+          $ref: '#/components/responses/V2ErrorResponse'
+      security:
+        - Authorization:
+            - orchestration:read
     delete:
       summary: Delete a flow by id
       tags:
-      - orchestration.v2
+        - orchestration.v2
       description: Delete a flow by id
       operationId: v2DeleteWorkflow
       x-speakeasy-name-override: DeleteWorkflow
       responses:
+        '204':
+          description: No content
         default:
           $ref: '#/components/responses/V2ErrorResponse'
-
-        204:
-          description: No content
-
+      security:
+        - Authorization:
+            - orchestration:write
   /v2/workflows/{workflowID}/instances:
     parameters:
-    - in: path
-      description: The flow id
-      name: workflowID
-      schema:
-        type: string
-      example: xxx
-      required: true
+      - in: path
+        description: The flow id
+        name: workflowID
+        schema:
+          type: string
+        example: xxx
+        required: true
     post:
       description: Run workflow
       summary: Run workflow
       operationId: v2RunWorkflow
       x-speakeasy-name-override: RunWorkflow
       parameters:
-      - in: query
-        name: wait
-        required: false
-        description: Wait end of the workflow before return
-        schema:
-          type: boolean
+        - in: query
+          name: wait
+          required: false
+          description: Wait end of the workflow before return
+          schema:
+            type: boolean
       tags:
-      - orchestration.v2
+        - orchestration.v2
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/V2RunWorkflowRequest'
       responses:
-        default:
-          $ref: '#/components/responses/V2ErrorResponse'
-        201:
+        '201':
           description: The workflow instance
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/V2RunWorkflowResponse'
-
+        default:
+          $ref: '#/components/responses/V2ErrorResponse'
+      security:
+        - Authorization:
+            - orchestration:write
   /v2/instances:
     get:
       description: List instances of a workflow
@@ -291,26 +317,26 @@ paths:
       operationId: v2ListInstances
       x-speakeasy-name-override: ListInstances
       parameters:
-      - $ref: '#/components/parameters/Cursor'
-      - $ref: '#/components/parameters/PageSize'
-      - in: query
-        description: A workflow id
-        name: workflowID
-        schema:
-          type: string
-        example: xxx
-        required: false
-      - in: query
-        description: Filter running instances
-        name: running
-        schema:
-          type: boolean
-        example: true
-        required: false
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/PageSize'
+        - in: query
+          description: A workflow id
+          name: workflowID
+          schema:
+            type: string
+          example: xxx
+          required: false
+        - in: query
+          description: Filter running instances
+          name: running
+          schema:
+            type: boolean
+          example: true
+          required: false
       tags:
-      - orchestration.v2
+        - orchestration.v2
       responses:
-        200:
+        '200':
           description: List of workflow instances
           content:
             application/json:
@@ -318,146 +344,158 @@ paths:
                 $ref: '#/components/schemas/V2ListRunsResponse'
         default:
           $ref: '#/components/responses/V2ErrorResponse'
-
+      security:
+        - Authorization:
+            - orchestration:read
   /v2/instances/{instanceID}:
     parameters:
-    - in: path
-      description: The instance id
-      name: instanceID
-      schema:
-        type: string
-      example: xxx
-      required: true
+      - in: path
+        description: The instance id
+        name: instanceID
+        schema:
+          type: string
+        example: xxx
+        required: true
     get:
       summary: Get a workflow instance by id
       description: Get a workflow instance by id
       operationId: v2GetInstance
       x-speakeasy-name-override: GetInstance
       tags:
-      - orchestration.v2
+        - orchestration.v2
       responses:
-        default:
-          $ref: '#/components/responses/V2ErrorResponse'
-        200:
+        '200':
           description: The workflow instance
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/V2GetWorkflowInstanceResponse'
-
+        default:
+          $ref: '#/components/responses/V2ErrorResponse'
+      security:
+        - Authorization:
+            - orchestration:read
   /v2/instances/{instanceID}/events:
     parameters:
-    - in: path
-      description: The instance id
-      name: instanceID
-      schema:
-        type: string
-      example: xxx
-      required: true
+      - in: path
+        description: The instance id
+        name: instanceID
+        schema:
+          type: string
+        example: xxx
+        required: true
     post:
       summary: Send an event to a running workflow
       description: Send an event to a running workflow
       operationId: v2SendEvent
       x-speakeasy-name-override: SendEvent
       tags:
-      - orchestration.v2
+        - orchestration.v2
       requestBody:
         content:
           application/json:
             schema:
               type: object
               required:
-              - name
+                - name
               properties:
                 name:
                   type: string
       responses:
+        '204':
+          description: No content
         default:
           $ref: '#/components/responses/V2ErrorResponse'
-        204:
-          description: No content
-
+      security:
+        - Authorization:
+            - orchestration:write
   /v2/instances/{instanceID}/abort:
     parameters:
-    - in: path
-      description: The instance id
-      name: instanceID
-      schema:
-        type: string
-      example: xxx
-      required: true
+      - in: path
+        description: The instance id
+        name: instanceID
+        schema:
+          type: string
+        example: xxx
+        required: true
     put:
       summary: Cancel a running workflow
       description: Cancel a running workflow
       operationId: v2CancelEvent
       x-speakeasy-name-override: CancelEvent
       tags:
-      - orchestration.v2
+        - orchestration.v2
       responses:
+        '204':
+          description: No content
         default:
           $ref: '#/components/responses/V2ErrorResponse'
-        204:
-          description: No content
-
+      security:
+        - Authorization:
+            - orchestration:write
   /v2/instances/{instanceID}/history:
     parameters:
-    - in: path
-      description: The instance id
-      name: instanceID
-      schema:
-        type: string
-      example: xxx
-      required: true
+      - in: path
+        description: The instance id
+        name: instanceID
+        schema:
+          type: string
+        example: xxx
+        required: true
     get:
       summary: Get a workflow instance history by id
       description: Get a workflow instance history by id
       operationId: v2GetInstanceHistory
       x-speakeasy-name-override: GetInstanceHistory
       tags:
-      - orchestration.v2
+        - orchestration.v2
       responses:
-        default:
-          $ref: '#/components/responses/V2ErrorResponse'
-        200:
+        '200':
           description: The workflow instance history
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/V2GetWorkflowInstanceHistoryResponse'
-
+        default:
+          $ref: '#/components/responses/V2ErrorResponse'
+      security:
+        - Authorization:
+            - orchestration:read
   /v2/instances/{instanceID}/stages/{number}/history:
     parameters:
-    - in: path
-      description: The instance id
-      name: instanceID
-      schema:
-        type: string
-      example: xxx
-      required: true
-    - in: path
-      description: The stage number
-      name: number
-      schema:
-        type: integer
-      example: 0
-      required: true
+      - in: path
+        description: The instance id
+        name: instanceID
+        schema:
+          type: string
+        example: xxx
+        required: true
+      - in: path
+        description: The stage number
+        name: number
+        schema:
+          type: integer
+        example: 0
+        required: true
     get:
       summary: Get a workflow instance stage history
       description: Get a workflow instance stage history
       operationId: v2GetInstanceStageHistory
       x-speakeasy-name-override: GetInstanceStageHistory
       tags:
-      - orchestration.v2
+        - orchestration.v2
       responses:
-        default:
-          $ref: '#/components/responses/V2ErrorResponse'
-        200:
+        '200':
           description: The workflow instance stage history
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/V2GetWorkflowInstanceHistoryStageResponse'
-
+        default:
+          $ref: '#/components/responses/V2ErrorResponse'
+      security:
+        - Authorization:
+            - orchestration:read
 components:
   parameters:
     Cursor:
@@ -486,28 +524,28 @@ components:
     V2ServerInfo:
       type: object
       required:
-      - version
+        - version
       properties:
         version:
           type: string
     V2Error:
       type: object
       required:
-      - errorCode
-      - errorMessage
+        - errorCode
+        - errorMessage
       properties:
         errorCode:
           type: string
           enum:
-          - VALIDATION
-          - NOT_FOUND
-          - INTERNAL
+            - VALIDATION
+            - NOT_FOUND
+            - INTERNAL
         errorMessage:
           type: string
     V2WorkflowConfig:
       type: object
       required:
-      - stages
+        - stages
       properties:
         name:
           type: string
@@ -515,14 +553,14 @@ components:
           type: array
           items:
             type: object
-            additionalProperties: { }
+            additionalProperties: {}
     V2Workflow:
       type: object
       required:
-      - config
-      - createdAt
-      - updatedAt
-      - id
+        - config
+        - createdAt
+        - updatedAt
+        - id
       properties:
         config:
           $ref: '#/components/schemas/V2WorkflowConfig'
@@ -537,9 +575,9 @@ components:
     V2StageStatus:
       type: object
       required:
-      - stage
-      - instanceID
-      - startedAt
+        - stage
+        - instanceID
+        - startedAt
       properties:
         stage:
           type: number
@@ -556,11 +594,11 @@ components:
     V2WorkflowInstance:
       type: object
       required:
-      - workflowID
-      - id
-      - createdAt
-      - updatedAt
-      - terminated
+        - workflowID
+        - id
+        - createdAt
+        - updatedAt
+        - terminated
       properties:
         workflowID:
           type: string
@@ -586,11 +624,11 @@ components:
     V2WorkflowInstanceHistoryStage:
       type: object
       required:
-      - name
-      - input
-      - startedAt
-      - terminated
-      - attempt
+        - name
+        - input
+        - startedAt
+        - terminated
+        - attempt
       properties:
         name:
           type: string
@@ -618,10 +656,10 @@ components:
     V2WorkflowInstanceHistory:
       type: object
       required:
-      - name
-      - input
-      - terminated
-      - startedAt
+        - name
+        - input
+        - terminated
+        - startedAt
       properties:
         name:
           type: string
@@ -666,10 +704,10 @@ components:
               example: false
             previous:
               type: string
-              example: "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+              example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
             next:
               type: string
-              example: ""
+              example: ''
             data:
               type: array
               items:
@@ -695,17 +733,17 @@ components:
           type: string
     V2Trigger:
       allOf:
-      - $ref: '#/components/schemas/V2TriggerData'
-      - type: object
-        required:
-          - id
-          - createdAt
-        properties:
-          id:
-            type: string
-          createdAt:
-            type: string
-            format: date-time
+        - $ref: '#/components/schemas/V2TriggerData'
+        - type: object
+          required:
+            - id
+            - createdAt
+          properties:
+            id:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
     V2TriggerOccurrence:
       type: object
       required:
@@ -748,10 +786,10 @@ components:
               example: false
             previous:
               type: string
-              example: "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+              example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
             next:
               type: string
-              example: ""
+              example: ''
             data:
               type: array
               items:
@@ -779,29 +817,22 @@ components:
               example: false
             previous:
               type: string
-              example: "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+              example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
             next:
               type: string
-              example: ""
+              example: ''
             data:
               type: array
               items:
                 $ref: '#/components/schemas/V2Trigger'
       required:
         - cursor
-    V2ReadWorkflowResponse:
-      type: object
-      required:
-      - data
-      properties:
-        data:
-          $ref: '#/components/schemas/V2Workflow'
     V2CreateWorkflowRequest:
       $ref: '#/components/schemas/V2WorkflowConfig'
     V2CreateWorkflowResponse:
       type: object
       required:
-      - data
+        - data
       properties:
         data:
           $ref: '#/components/schemas/V2Workflow'
@@ -819,7 +850,7 @@ components:
     V2RunWorkflowResponse:
       type: object
       required:
-      - data
+        - data
       properties:
         data:
           $ref: '#/components/schemas/V2WorkflowInstance'
@@ -844,10 +875,10 @@ components:
               example: false
             previous:
               type: string
-              example: "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+              example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
             next:
               type: string
-              example: ""
+              example: ''
             data:
               type: array
               items:
@@ -857,35 +888,35 @@ components:
     V2GetWorkflowResponse:
       type: object
       required:
-      - data
+        - data
       properties:
         data:
           $ref: '#/components/schemas/V2Workflow'
     V2GetWorkflowInstanceResponse:
       type: object
       required:
-      - data
+        - data
       properties:
         data:
           $ref: '#/components/schemas/V2WorkflowInstance'
     V2GetWorkflowInstanceHistoryResponse:
       type: object
       required:
-      - data
+        - data
       properties:
         data:
           $ref: '#/components/schemas/V2WorkflowInstanceHistoryList'
     V2GetWorkflowInstanceHistoryStageResponse:
       type: object
       required:
-      - data
+        - data
       properties:
         data:
           $ref: '#/components/schemas/V2WorkflowInstanceHistoryStageList'
     V2StageSendSourceWallet:
       type: object
       required:
-      - id
+        - id
       properties:
         id:
           type: string
@@ -896,7 +927,7 @@ components:
     V2StageSendSourceAccount:
       type: object
       required:
-      - id
+        - id
       properties:
         id:
           type: string
@@ -907,14 +938,14 @@ components:
     V2StageSendSourcePayment:
       type: object
       required:
-      - id
+        - id
       properties:
         id:
           type: string
     V2StageSendDestinationPayment:
       type: object
       required:
-      - psp
+        - psp
       properties:
         psp:
           type: string
@@ -963,7 +994,7 @@ components:
     V2StageWaitEvent:
       type: object
       required:
-      - event
+        - event
       properties:
         event:
           type: string
@@ -989,10 +1020,10 @@ components:
           $ref: '#/components/schemas/V2UpdateAccount'
     V2Stage:
       anyOf:
-      - $ref: '#/components/schemas/V2StageSend'
-      - $ref: '#/components/schemas/V2StageDelay'
-      - $ref: '#/components/schemas/V2StageWaitEvent'
-      - $ref: '#/components/schemas/V2Update'
+        - $ref: '#/components/schemas/V2StageSend'
+        - $ref: '#/components/schemas/V2StageDelay'
+        - $ref: '#/components/schemas/V2StageWaitEvent'
+        - $ref: '#/components/schemas/V2Update'
     V2StripeTransferRequest:
       type: object
       properties:
@@ -1015,9 +1046,11 @@ components:
           default: false
         metadata:
           type: object
-          description: |
+          description: >
             A set of key/value pairs that you can attach to a transfer object.
-            It can be useful for storing additional information about the transfer in a structured format.
+
+            It can be useful for storing additional information about the
+            transfer in a structured format.
           example:
             order_id: '6735'
     V2ActivityStripeTransfer:
@@ -1027,8 +1060,6 @@ components:
       properties:
         name:
           type: string
-    V2ActivityListWalletsOutput:
-      $ref: '#/components/schemas/V2ListWalletsResponse'
     V2ListWalletsResponse:
       type: object
       required:
@@ -1086,15 +1117,15 @@ components:
           example: false
         previous:
           type: string
-          example: "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+          example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
         next:
           type: string
-          example: ""
+          example: ''
     V2ActivityGetAccount:
       type: object
       required:
-      - id
-      - ledger
+        - id
+        - ledger
       properties:
         id:
           type: string
@@ -1125,14 +1156,14 @@ components:
     V2ActivityGetPayment:
       type: object
       required:
-      - id
+        - id
       properties:
         id:
           type: string
     V2ActivityConfirmHold:
       type: object
       required:
-      - id
+        - id
       properties:
         id:
           type: string
@@ -1143,7 +1174,6 @@ components:
           type: string
         data:
           $ref: '#/components/schemas/V2CreditWalletRequest'
-
     V2CreditWalletRequest:
       type: object
       required:
@@ -1175,8 +1205,8 @@ components:
           asset: USD/2
           amount: 100
         metadata:
-          key: ""
-        sources: [ ]
+          key: ''
+        sources: []
     V2LedgerAccountSubject:
       type: object
       required:
@@ -1208,7 +1238,6 @@ components:
       oneOf:
         - $ref: '#/components/schemas/V2LedgerAccountSubject'
         - $ref: '#/components/schemas/V2WalletSubject'
-
     V2ActivityDebitWallet:
       type: object
       properties:
@@ -1216,7 +1245,6 @@ components:
           type: string
         data:
           $ref: '#/components/schemas/V2DebitWalletRequest'
-
     V2DebitWalletRequest:
       type: object
       required:
@@ -1227,7 +1255,9 @@ components:
           $ref: '#/components/schemas/V2Monetary'
         pending:
           type: boolean
-          description: Set to true to create a pending hold. If false, the wallet will be debited immediately.
+          description: >-
+            Set to true to create a pending hold. If false, the wallet will be
+            debited immediately.
         metadata:
           type: object
           additionalProperties:
@@ -1251,20 +1281,19 @@ components:
           asset: USD/2
           amount: 100
         metadata:
-          key: ""
+          key: ''
         pending: true
-
     V2ActivityGetWallet:
       type: object
       required:
-      - id
+        - id
       properties:
         id:
           type: string
     V2ActivityVoidHold:
       type: object
       required:
-      - id
+        - id
       properties:
         id:
           type: string
@@ -1272,7 +1301,6 @@ components:
       $ref: '#/components/schemas/V2AccountResponse'
     V2ActivityCreateTransactionOutput:
       $ref: '#/components/schemas/V2CreateTransactionResponse'
-
     V2CreateTransactionResponse:
       properties:
         data:
@@ -1282,7 +1310,6 @@ components:
       type: object
       required:
         - data
-
     V2Transaction:
       type: object
       properties:
@@ -1307,10 +1334,8 @@ components:
         - timestamp
         - txid
         - metadata
-
     V2ActivityGetPaymentOutput:
       $ref: '#/components/schemas/V2PaymentResponse'
-
     V2PaymentResponse:
       type: object
       required:
@@ -1399,7 +1424,6 @@ components:
             $ref: '#/components/schemas/V2PaymentAdjustment'
         metadata:
           $ref: '#/components/schemas/V2PaymentMetadata'
-
     V2Connector:
       type: string
       enum:
@@ -1411,7 +1435,6 @@ components:
         - BANKING-CIRCLE
         - MANGOPAY
         - MONEYCORP
-
     V2PaymentAdjustment:
       type: object
       required:
@@ -1435,7 +1458,6 @@ components:
           type: object
         absolute:
           type: boolean
-
     V2PaymentStatus:
       type: string
       enum:
@@ -1445,17 +1467,14 @@ components:
         - FAILED
         - SUCCEEDED
         - CANCELLED
-
     V2PaymentMetadata:
       type: object
       properties:
         key:
           type: string
       nullable: true
-
     V2ActivityDebitWalletOutput:
       $ref: '#/components/schemas/V2DebitWalletResponse'
-
     V2DebitWalletResponse:
       type: object
       required:
@@ -1463,7 +1482,6 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/V2Hold'
-
     V2Hold:
       type: object
       required:
@@ -1488,10 +1506,8 @@ components:
           type: string
         destination:
           $ref: '#/components/schemas/V2Subject'
-
     V2ActivityGetWalletOutput:
       $ref: '#/components/schemas/V2GetWalletResponse'
-
     V2GetWalletResponse:
       type: object
       required:
@@ -1499,7 +1515,6 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/V2WalletWithBalances'
-
     V2WalletWithBalances:
       type: object
       required:
@@ -1533,7 +1548,6 @@ components:
               $ref: '#/components/schemas/V2AssetHolder'
         ledger:
           type: string
-
     V2AssetHolder:
       type: object
       required:
@@ -1544,7 +1558,6 @@ components:
           additionalProperties:
             type: integer
             format: bigint
-
     V2WorkflowInstanceHistoryStageInput:
       type: object
       properties:
@@ -1585,7 +1598,6 @@ components:
           $ref: '#/components/schemas/V2ActivityGetWalletOutput'
         ListWallets:
           $ref: '#/components/schemas/V2ListWalletsResponse'
-
     V2Monetary:
       type: object
       required:
@@ -1599,7 +1611,6 @@ components:
           type: integer
           format: bigint
           description: The amount of the monetary value.
-
     V2PostTransaction:
       type: object
       required:
@@ -1620,11 +1631,10 @@ components:
               example: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\tdestination = $user\n)\n"
             vars:
               type: object
-              properties: { }
+              properties: {}
               additionalProperties: true
-              example: {
-                "user": "users:042"
-              }
+              example:
+                user: users:042
           required:
             - plain
         reference:
@@ -1632,13 +1642,12 @@ components:
           example: ref:001
         metadata:
           $ref: '#/components/schemas/V2Metadata'
-
     V2Metadata:
       type: object
       additionalProperties:
         type: string
-      example: { admin: "true" }
-
+      example:
+        admin: 'true'
     V2Posting:
       type: object
       properties:
@@ -1661,7 +1670,6 @@ components:
         - asset
         - destination
         - source
-
     V2AccountResponse:
       type: object
       required:
@@ -1669,7 +1677,6 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/V2Account'
-
     V2ReadTriggerResponse:
       type: object
       required:
@@ -1677,7 +1684,6 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/V2Trigger'
-
     V2Account:
       type: object
       required:
@@ -1689,15 +1695,15 @@ components:
           example: users:001
         metadata:
           type: object
-          properties: { }
+          properties: {}
           additionalProperties:
             type: string
-          example: { admin: "true" }
+          example:
+            admin: 'true'
         volumes:
           $ref: '#/components/schemas/V2Volumes'
         effectiveVolumes:
           $ref: '#/components/schemas/V2Volumes'
-
     V2Volume:
       type: object
       properties:
@@ -1717,7 +1723,6 @@ components:
         input: 100
         output: 20
         balance: 80
-
     V2Volumes:
       type: object
       additionalProperties:
@@ -1731,7 +1736,6 @@ components:
           input: 100
           output: 10
           balance: 90
-
     V2TestTriggerResponse:
       type: object
       required:
@@ -1739,7 +1743,6 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/V2TriggerTest'
-
     V2TriggerTest:
       type: object
       properties:
@@ -1759,7 +1762,6 @@ components:
                 type: string
               error:
                 type: string
-
   responses:
     V2ErrorResponse:
       description: General error
