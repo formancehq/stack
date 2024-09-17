@@ -3,13 +3,15 @@ package oidc
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
-	httphelper "github.com/zitadel/oidc/v2/pkg/http"
-	"github.com/zitadel/oidc/v2/pkg/oidc"
-	"github.com/zitadel/oidc/v2/pkg/op"
-	"gopkg.in/square/go-jose.v2"
+	"github.com/go-jose/go-jose/v4"
+
+	httphelper "github.com/zitadel/oidc/v3/pkg/http"
+	"github.com/zitadel/oidc/v3/pkg/oidc"
+	"github.com/zitadel/oidc/v3/pkg/op"
 )
 
 type openIDKeySet struct {
@@ -60,7 +62,8 @@ func VerifyJWTAssertion(ctx context.Context, assertion string, v JWTProfileVerif
 }
 
 type JWTProfileVerifier interface {
-	oidc.Verifier
+	Issuer() string
+	Offset() time.Duration
 	DelegatedIssuer() string
 	JSONWebKeySet() jose.JSONWebKeySet
 }
@@ -74,7 +77,7 @@ func grantTypeBearer(issuer string, p JWTAuthorizationGrantExchanger) http.Handl
 	return func(w http.ResponseWriter, r *http.Request) {
 		profileRequest, err := op.ParseJWTProfileGrantRequest(r, p.Decoder())
 		if err != nil {
-			op.RequestError(w, r, err)
+			op.RequestError(w, r, err, slog.Default())
 			return
 		}
 
@@ -83,13 +86,13 @@ func grantTypeBearer(issuer string, p JWTAuthorizationGrantExchanger) http.Handl
 		if ok {
 			c, err := p.Storage().GetClientByClientID(r.Context(), clientID)
 			if err != nil {
-				op.RequestError(w, r, err)
+				op.RequestError(w, r, err, slog.Default())
 				return
 			}
 			client = c.(*clientFacade)
 			if !client.Client.IsPublic() {
 				if err := client.Client.ValidateSecret(clientSecret); err != nil {
-					op.RequestError(w, r, err)
+					op.RequestError(w, r, err, slog.Default())
 					return
 				}
 			}
@@ -97,19 +100,19 @@ func grantTypeBearer(issuer string, p JWTAuthorizationGrantExchanger) http.Handl
 
 		tokenRequest, err := VerifyJWTAssertion(r.Context(), profileRequest.Assertion, p.JWTProfileVerifier())
 		if err != nil {
-			op.RequestError(w, r, err)
+			op.RequestError(w, r, err, slog.Default())
 			return
 		}
 
 		tokenRequest.Scopes, err = p.Storage().ValidateJWTProfileScopes(r.Context(), tokenRequest.Issuer, profileRequest.Scope)
 		if err != nil {
-			op.RequestError(w, r, err)
+			op.RequestError(w, r, err, slog.Default())
 			return
 		}
 
 		tokens, err := ParseAssertion(profileRequest.Assertion)
 		if err != nil {
-			op.RequestError(w, r, err)
+			op.RequestError(w, r, err, slog.Default())
 			return
 		}
 
@@ -117,7 +120,7 @@ func grantTypeBearer(issuer string, p JWTAuthorizationGrantExchanger) http.Handl
 
 		resp, err := CreateJWTTokenResponse(r.Context(), issuer, tokenRequest, p, client)
 		if err != nil {
-			op.RequestError(w, r, err)
+			op.RequestError(w, r, err, slog.Default())
 			return
 		}
 

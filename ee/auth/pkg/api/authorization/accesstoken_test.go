@@ -22,14 +22,15 @@ import (
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
 	"github.com/oauth2-proxy/mockoidc"
 	"github.com/stretchr/testify/require"
-	"github.com/zitadel/oidc/v2/pkg/client/rp"
-	"github.com/zitadel/oidc/v2/pkg/oidc"
-	"github.com/zitadel/oidc/v2/pkg/op"
+	"github.com/zitadel/oidc/v3/pkg/client/rp"
+	"github.com/zitadel/oidc/v3/pkg/oidc"
+	"github.com/zitadel/oidc/v3/pkg/op"
 )
 
 func TestVerifyAccessToken(t *testing.T) {
 	t.Parallel()
 
+	ctx := logging.TestingContext()
 	mockOIDC, err := mockoidc.Run()
 	require.NoError(t, err)
 	defer func() {
@@ -50,7 +51,7 @@ func TestVerifyAccessToken(t *testing.T) {
 
 	// Construct our storage
 	postgresDB := srv.NewDatabase(t)
-	db, err := bunconnect.OpenSQLDB(logging.TestingContext(), bunconnect.ConnectionOptions{
+	db, err := bunconnect.OpenSQLDB(ctx, bunconnect.ConnectionOptions{
 		DatabaseSourceName: postgresDB.ConnString(),
 	}, hooks...)
 	require.NoError(t, err)
@@ -60,8 +61,14 @@ func TestVerifyAccessToken(t *testing.T) {
 
 	storage := sqlstorage.New(db)
 
-	serverRelyingParty, err := rp.NewRelyingPartyOIDC(mockOIDC.Issuer(), mockOIDC.ClientID, mockOIDC.ClientSecret,
-		fmt.Sprintf("%s/authorize/callback", serverURL), []string{"openid", "email"})
+	serverRelyingParty, err := rp.NewRelyingPartyOIDC(
+		ctx,
+		mockOIDC.Issuer(),
+		mockOIDC.ClientID,
+		mockOIDC.ClientSecret,
+		fmt.Sprintf("%s/authorize/callback", serverURL),
+		[]string{"openid", "email"},
+	)
 	require.NoError(t, err)
 
 	key, _ := rsa.GenerateKey(rand.Reader, 2048)
@@ -78,7 +85,7 @@ func TestVerifyAccessToken(t *testing.T) {
 	}}
 	storageFacade := authoidc.NewStorageFacade(storage, serverRelyingParty, key, staticClients...)
 
-	keySet, err := authoidc.ReadKeySet(http.DefaultClient, context.Background(), delegatedauth.Config{
+	keySet, err := authoidc.ReadKeySet(http.DefaultClient, ctx, delegatedauth.Config{
 		Issuer:       mockOIDC.Issuer(),
 		ClientID:     mockOIDC.ClientID,
 		ClientSecret: mockOIDC.ClientSecret,
@@ -91,19 +98,19 @@ func TestVerifyAccessToken(t *testing.T) {
 	ar := &oidc.AuthRequest{
 		ClientID: staticClients[0].Id,
 	}
-	authReq, err := provider.Storage().CreateAuthRequest(context.Background(), ar, "")
+	authReq, err := provider.Storage().CreateAuthRequest(ctx, ar, "")
 	require.NoError(t, err)
 
-	client, err := provider.Storage().GetClientByClientID(context.Background(), authReq.GetClientID())
+	client, err := provider.Storage().GetClientByClientID(ctx, authReq.GetClientID())
 	require.NoError(t, err)
 
-	tokenResponse, err := op.CreateTokenResponse(context.Background(), authReq, client, provider, true, "", "")
+	tokenResponse, err := op.CreateTokenResponse(ctx, authReq, client, provider, true, "", "")
 	require.NoError(t, err)
 
 	t.Run("unprotected route", func(t *testing.T) {
 		t.Parallel()
 
-		req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "/any", nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/any", nil)
 		require.NoError(t, err)
 		require.NoError(t, verifyAccessToken(req, provider))
 	})
@@ -117,7 +124,7 @@ func TestVerifyAccessToken(t *testing.T) {
 			t.Run("no token", func(t *testing.T) {
 				t.Parallel()
 
-				req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, route, nil)
+				req, err := http.NewRequestWithContext(ctx, http.MethodGet, route, nil)
 				require.NoError(t, err)
 
 				err = verifyAccessToken(req, provider)
@@ -128,7 +135,7 @@ func TestVerifyAccessToken(t *testing.T) {
 			t.Run("malformed token", func(t *testing.T) {
 				t.Parallel()
 
-				req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, route, nil)
+				req, err := http.NewRequestWithContext(ctx, http.MethodGet, route, nil)
 				require.NoError(t, err)
 
 				req.Header.Set("Authorization", "malformed")
@@ -140,7 +147,7 @@ func TestVerifyAccessToken(t *testing.T) {
 			t.Run("unverified token", func(t *testing.T) {
 				t.Parallel()
 
-				req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, route, nil)
+				req, err := http.NewRequestWithContext(ctx, http.MethodGet, route, nil)
 				require.NoError(t, err)
 
 				req.Header.Set("Authorization", oidc.PrefixBearer+"unverified")
@@ -152,7 +159,7 @@ func TestVerifyAccessToken(t *testing.T) {
 			t.Run("verified token", func(t *testing.T) {
 				t.Parallel()
 
-				req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, route, nil)
+				req, err := http.NewRequestWithContext(ctx, http.MethodGet, route, nil)
 				require.NoError(t, err)
 
 				req.Header.Set("Authorization", oidc.PrefixBearer+tokenResponse.AccessToken)

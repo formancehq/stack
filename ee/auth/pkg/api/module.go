@@ -11,7 +11,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/go-chi/chi/v5"
-	"github.com/zitadel/oidc/v2/pkg/op"
+	"github.com/zitadel/oidc/v3/pkg/op"
 	"go.uber.org/fx"
 )
 

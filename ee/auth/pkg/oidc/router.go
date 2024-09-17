@@ -7,8 +7,8 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
-	"github.com/zitadel/oidc/v2/pkg/client/rp"
-	"github.com/zitadel/oidc/v2/pkg/op"
+	"github.com/zitadel/oidc/v3/pkg/client/rp"
+	"github.com/zitadel/oidc/v3/pkg/op"
 )
 
 const AuthorizeCallbackPath = "/authorize/callback"
