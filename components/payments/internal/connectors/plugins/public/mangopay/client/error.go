@@ -1,9 +1,7 @@
 package client
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 )
 
 type mangopayError struct {
@@ -30,13 +28,4 @@ func (me *mangopayError) Error() error {
 	}
 
 	return err
-}
-
-func unmarshalError(statusCode int, body io.ReadCloser) *mangopayError {
-	var ce mangopayError
-	_ = json.NewDecoder(body).Decode(&ce)
-
-	ce.StatusCode = statusCode
-
-	return &ce
 }

@@ -1,6 +1,7 @@
 package httpwrapper
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -9,6 +10,7 @@ import (
 	"time"
 
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"golang.org/x/oauth2"
 )
 
 var (
@@ -39,8 +41,20 @@ func NewClient(config *Config) (Client, error) {
 	if config.Timeout == 0 {
 		config.Timeout = 10 * time.Second
 	}
-	if config.Transport == nil {
+	if config.Transport != nil {
+		config.Transport = otelhttp.NewTransport(config.Transport)
+	} else {
 		config.Transport = http.DefaultTransport.(*http.Transport).Clone()
+	}
+
+	httpClient := &http.Client{
+		Timeout:   config.Timeout,
+		Transport: config.Transport,
+	}
+	if config.OAuthConfig != nil {
+		// pass a pre-configured http client to oauth lib via the context
+		ctx := context.WithValue(context.Background(), oauth2.HTTPClient, httpClient)
+		httpClient = config.OAuthConfig.Client(ctx)
 	}
 
 	if config.HttpErrorCheckerFn == nil {
@@ -49,10 +63,7 @@ func NewClient(config *Config) (Client, error) {
 
 	return &client{
 		httpErrorCheckerFn: config.HttpErrorCheckerFn,
-		httpClient: &http.Client{
-			Timeout:   config.Timeout,
-			Transport: otelhttp.NewTransport(config.Transport),
-		},
+		httpClient:         httpClient,
 	}, nil
 }
 
@@ -64,7 +75,7 @@ func (c *client) Do(req *http.Request, expectedBody, errorBody any) (int, error)
 
 	reqErr := c.httpErrorCheckerFn(resp.StatusCode)
 	// the caller doesn't care about the response body so we return early
-	if resp.Body == nil || reqErr != nil && errorBody == nil {
+	if resp.Body == nil || (reqErr == nil && expectedBody == nil) || (reqErr != nil && errorBody == nil) {
 		return resp.StatusCode, reqErr
 	}
 

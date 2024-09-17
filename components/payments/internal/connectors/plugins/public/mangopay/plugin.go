@@ -13,7 +13,7 @@ type Plugin struct {
 	client *client.Client
 }
 
-func (p *Plugin) Install(ctx context.Context, req models.InstallRequest) (models.InstallResponse, error) {
+func (p *Plugin) Install(_ context.Context, req models.InstallRequest) (models.InstallResponse, error) {
 	config, err := unmarshalAndValidateConfig(req.Config)
 	if err != nil {
 		return models.InstallResponse{}, err
