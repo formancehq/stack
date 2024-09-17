@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/formancehq/payments/internal/connectors/engine/plugins"
@@ -12,6 +13,7 @@ import (
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/storage"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"go.temporal.io/api/enums/v1"
@@ -38,12 +40,13 @@ type engine struct {
 	stack string
 }
 
-func New(temporalClient client.Client, workers *Workers, plugins plugins.Plugins, storage storage.Storage, stack string) Engine {
+func New(temporalClient client.Client, workers *Workers, plugins plugins.Plugins, storage storage.Storage, webhooks webhooks.Webhooks, stack string) Engine {
 	return &engine{
 		temporalClient: temporalClient,
 		workers:        workers,
 		plugins:        plugins,
 		storage:        storage,
+		webhooks:       webhooks,
 	}
 }
 
@@ -182,7 +185,45 @@ func (e *engine) CreateBankAccount(ctx context.Context, bankAccountID uuid.UUID,
 }
 
 func (e *engine) HandleWebhook(ctx context.Context, urlPath string, webhook models.Webhook) error {
-	return e.webhooks.HandleWebhook(ctx, urlPath, webhook)
+	configs, err := e.webhooks.GetConfigs(webhook.ConnectorID, urlPath)
+	if err != nil {
+		return err
+	}
+
+	var config *models.WebhookConfig
+	for _, c := range configs {
+		if !strings.Contains(urlPath, c.URLPath) {
+			continue
+		}
+
+		config = &c
+		break
+	}
+
+	if config == nil {
+		return errors.New("webhook config not found")
+	}
+
+	ctx, _ = contextutil.Detached(ctx)
+	if _, err := e.temporalClient.ExecuteWorkflow(
+		ctx,
+		client.StartWorkflowOptions{
+			ID:                                       fmt.Sprintf("webhook-%s-%s", webhook.ConnectorID.String(), webhook.ID),
+			TaskQueue:                                webhook.ConnectorID.String(),
+			WorkflowIDReusePolicy:                    enums.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE,
+			WorkflowExecutionErrorWhenAlreadyStarted: false,
+		},
+		workflow.RunHandleWebhooks,
+		workflow.HandleWebhooks{
+			ConnectorID:   webhook.ConnectorID,
+			WebhookConfig: *config,
+			Webhook:       webhook,
+		},
+	); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (e *engine) OnStart(ctx context.Context) error {

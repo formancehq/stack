@@ -53,6 +53,8 @@ func (w Workflow) runInstallConnector(
 		if err != nil {
 			return errors.Wrap(err, "failed to store webhooks configs")
 		}
+
+		w.webhooks.RegisterWebhooks(installConnector.ConnectorID, configs)
 	}
 
 	// Fourth step: launch the workflow tree

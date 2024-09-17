@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/formancehq/payments/internal/connectors/engine/plugins"
+	"github.com/formancehq/payments/internal/connectors/engine/webhooks"
 	temporalworker "github.com/formancehq/stack/libs/go-libs/temporal"
 	"go.temporal.io/sdk/client"
 )
@@ -29,15 +30,17 @@ func (f *FromPayload) GetPayload() json.RawMessage {
 type Workflow struct {
 	temporalClient client.Client
 
-	plugins plugins.Plugins
+	plugins  plugins.Plugins
+	webhooks webhooks.Webhooks
 
 	stack string
 }
 
-func New(temporalClient client.Client, plugins plugins.Plugins, stack string) Workflow {
+func New(temporalClient client.Client, plugins plugins.Plugins, webhooks webhooks.Webhooks, stack string) Workflow {
 	return Workflow{
 		temporalClient: temporalClient,
 		plugins:        plugins,
+		webhooks:       webhooks,
 		stack:          stack,
 	}
 }
