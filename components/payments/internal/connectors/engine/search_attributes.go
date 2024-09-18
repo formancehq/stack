@@ -9,5 +9,6 @@ var (
 	SearchAttributes = map[string]enums.IndexedValueType{
 		workflow.SearchAttributeWorkflowID: enums.INDEXED_VALUE_TYPE_KEYWORD,
 		workflow.SearchAttributeScheduleID: enums.INDEXED_VALUE_TYPE_KEYWORD,
+		workflow.SearchAttributeStack:      enums.INDEXED_VALUE_TYPE_KEYWORD,
 	}
 )

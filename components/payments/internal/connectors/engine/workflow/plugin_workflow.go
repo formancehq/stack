@@ -122,12 +122,14 @@ func (w Workflow) run(
 					// Search attributes are used to query workflows
 					SearchAttributes: map[string]any{
 						SearchAttributeScheduleID: scheduleID,
+						SearchAttributeStack:      w.stack,
 					},
 				},
 				Overlap:            enums.SCHEDULE_OVERLAP_POLICY_SKIP,
 				TriggerImmediately: true,
 				SearchAttributes: map[string]any{
 					SearchAttributeScheduleID: scheduleID,
+					SearchAttributeStack:      w.stack,
 				},
 			})
 			if err != nil {
@@ -152,6 +154,9 @@ func (w Workflow) run(
 					workflow.ChildWorkflowOptions{
 						TaskQueue:         connectorID.String(),
 						ParentClosePolicy: enums.PARENT_CLOSE_POLICY_ABANDON,
+						SearchAttributes: map[string]interface{}{
+							SearchAttributeStack: w.stack,
+						},
 					},
 				),
 				nextWorkflow,

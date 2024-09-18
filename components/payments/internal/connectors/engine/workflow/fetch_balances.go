@@ -88,6 +88,9 @@ func (w Workflow) fetchBalances(
 					workflow.ChildWorkflowOptions{
 						TaskQueue:         fetchNextBalances.ConnectorID.String(),
 						ParentClosePolicy: enums.PARENT_CLOSE_POLICY_ABANDON,
+						SearchAttributes: map[string]interface{}{
+							SearchAttributeStack: w.stack,
+						},
 					},
 				),
 				Run,

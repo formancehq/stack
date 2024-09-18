@@ -36,6 +36,7 @@ const (
 	pluginsDirectoryPathFlag = "plugin-directory-path"
 	configEncryptionKeyFlag  = "config-encryption-key"
 	listenFlag               = "listen"
+	stackFlag                = "stack"
 )
 
 func NewRootCommand() *cobra.Command {
@@ -58,6 +59,7 @@ func NewRootCommand() *cobra.Command {
 	addAutoMigrateCommand(server)
 	server.Flags().String(listenFlag, ":8080", "Listen address")
 	server.Flags().String(pluginsDirectoryPathFlag, "", "Plugin directory path")
+	server.Flags().String(stackFlag, "", "Stack name")
 	root.AddCommand(server)
 
 	return root
@@ -96,6 +98,7 @@ func commonOptions(cmd *cobra.Command) (fx.Option, error) {
 	}
 
 	listen, _ := cmd.Flags().GetString(listenFlag)
+	stack, _ := cmd.Flags().GetString(stackFlag)
 
 	return fx.Options(
 		fx.Provide(func() *bunconnect.ConnectionOptions {
@@ -119,7 +122,7 @@ func commonOptions(cmd *cobra.Command) (fx.Option, error) {
 		licence.FXModuleFromFlags(cmd, ServiceName),
 		storage.Module(cmd, *connectionOptions, configEncryptionKey),
 		api.NewModule(listen, service.IsDebug(cmd)),
-		engine.Module(pluginPaths),
+		engine.Module(pluginPaths, stack),
 		v2.NewModule(),
 		v3.NewModule(),
 	), nil

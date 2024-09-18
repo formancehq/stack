@@ -51,6 +51,9 @@ func (w Workflow) runHandleWebhooks(
 					TaskQueue:             handleWebhooks.ConnectorID.String(),
 					ParentClosePolicy:     enums.PARENT_CLOSE_POLICY_ABANDON,
 					WorkflowIDReusePolicy: enums.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE_FAILED_ONLY,
+					SearchAttributes: map[string]interface{}{
+						SearchAttributeStack: w.stack,
+					},
 				},
 			),
 			RunStoreWebhookTranslation,
