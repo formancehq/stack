@@ -23,6 +23,10 @@ func (a Activities) DefinitionSet() temporalworker.DefinitionSet {
 			Func: a.PluginInstallConnector,
 		}).
 		Append(temporalworker.Definition{
+			Name: "PluginUninstallConnector",
+			Func: a.PluginUninstallConnector,
+		}).
+		Append(temporalworker.Definition{
 			Name: "PluginFetchNextAccounts",
 			Func: a.PluginFetchNextAccounts,
 		}).

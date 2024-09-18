@@ -47,6 +47,10 @@ func (p *Plugin) Install(ctx context.Context, req models.InstallRequest) (models
 	}, nil
 }
 
+func (p Plugin) Uninstall(ctx context.Context, req models.UninstallRequest) (models.UninstallResponse, error) {
+	return p.uninstall(ctx, req)
+}
+
 func (p Plugin) FetchNextAccounts(ctx context.Context, req models.FetchNextAccountsRequest) (models.FetchNextAccountsResponse, error) {
 	if p.client == nil {
 		return models.FetchNextAccountsResponse{}, plugins.ErrNotYetInstalled
