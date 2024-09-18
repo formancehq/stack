@@ -225,7 +225,7 @@ func (i *impl) CreateBankAccount(ctx context.Context, req *services.CreateBankAc
 func (i *impl) CreateWebhooks(ctx context.Context, req *services.CreateWebhooksRequest) (*services.CreateWebhooksResponse, error) {
 	i.logger.Info("creating webhooks...")
 
-	_, err := i.plugin.CreateWebhooks(ctx, models.CreateWebhooksRequest{
+	resp, err := i.plugin.CreateWebhooks(ctx, models.CreateWebhooksRequest{
 		ConnectorID: req.ConnectorId,
 		FromPayload: req.FromPayload,
 	})
@@ -236,7 +236,17 @@ func (i *impl) CreateWebhooks(ctx context.Context, req *services.CreateWebhooksR
 
 	i.logger.Info("created webhooks succeeded!")
 
-	return &services.CreateWebhooksResponse{}, nil
+	others := make([]*proto.Other, 0, len(resp.Others))
+	for _, other := range resp.Others {
+		others = append(others, &proto.Other{
+			Id:    other.ID,
+			Other: other.Other,
+		})
+	}
+
+	return &services.CreateWebhooksResponse{
+		Others: others,
+	}, nil
 }
 
 func (i *impl) TranslateWebhook(ctx context.Context, req *services.TranslateWebhookRequest) (*services.TranslateWebhookResponse, error) {

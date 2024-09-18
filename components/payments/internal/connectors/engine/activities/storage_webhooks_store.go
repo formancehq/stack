@@ -8,11 +8,11 @@ import (
 )
 
 func (a Activities) StorageWebhooksStore(ctx context.Context, webhook models.Webhook) error {
-	return a.StorageWebhooksStore(ctx, webhook)
+	return a.storage.WebhooksInsert(ctx, webhook)
 }
 
 var StorageWebhooksStoreActivity = Activities{}.StorageWebhooksStore
 
 func StorageWebhooksStore(ctx workflow.Context, webhook models.Webhook) error {
-	return executeActivity(ctx, StorageWebhooksStoreActivity, webhook)
+	return executeActivity(ctx, StorageWebhooksStoreActivity, nil, webhook)
 }

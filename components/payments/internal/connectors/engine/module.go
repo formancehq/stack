@@ -5,6 +5,7 @@ import (
 
 	"github.com/formancehq/payments/internal/connectors/engine/activities"
 	"github.com/formancehq/payments/internal/connectors/engine/plugins"
+	"github.com/formancehq/payments/internal/connectors/engine/webhooks"
 	"github.com/formancehq/payments/internal/connectors/engine/workflow"
 	"github.com/formancehq/payments/internal/storage"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -22,14 +23,18 @@ func Module(pluginPath map[string]string, stack string) fx.Option {
 			workers *Workers,
 			plugins plugins.Plugins,
 			storage storage.Storage,
+			webhooks webhooks.Webhooks,
 		) Engine {
-			return New(temporalClient, workers, plugins, storage, stack)
+			return New(temporalClient, workers, plugins, storage, webhooks, stack)
 		}),
 		fx.Provide(func() plugins.Plugins {
 			return plugins.New(pluginPath)
 		}),
-		fx.Provide(func(temporalClient client.Client, plugins plugins.Plugins) workflow.Workflow {
-			return workflow.New(temporalClient, plugins, stack)
+		fx.Provide(func() webhooks.Webhooks {
+			return webhooks.New()
+		}),
+		fx.Provide(func(temporalClient client.Client, plugins plugins.Plugins, webhooks webhooks.Webhooks) workflow.Workflow {
+			return workflow.New(temporalClient, plugins, webhooks, stack)
 		}),
 		fx.Provide(func(storage storage.Storage, plugins plugins.Plugins) activities.Activities {
 			return activities.New(storage, plugins)

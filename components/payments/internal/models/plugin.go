@@ -104,7 +104,9 @@ type CreateWebhooksRequest struct {
 	ConnectorID string
 }
 
-type CreateWebhooksResponse struct{}
+type CreateWebhooksResponse struct {
+	Others []PSPOther
+}
 
 type TranslateWebhookRequest struct {
 	Name    string

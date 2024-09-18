@@ -114,7 +114,7 @@ func (p Plugin) createWebhooks(ctx context.Context, req models.CreateWebhooksReq
 		return err
 	}
 
-	webhookURL := fmt.Sprintf("%s/api/payments/connectors/webhooks/%s", stackPublicURL, req.ConnectorID)
+	webhookURL := fmt.Sprintf("%s/api/payments/v3/connectors/webhooks/%s", stackPublicURL, req.ConnectorID)
 	for eventType, config := range webhookConfigs {
 		if v, ok := activeHooks[eventType]; ok {
 			// Already created, continue
