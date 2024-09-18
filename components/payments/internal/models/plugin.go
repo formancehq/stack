@@ -7,6 +7,7 @@ import (
 
 type Plugin interface {
 	Install(context.Context, InstallRequest) (InstallResponse, error)
+	Uninstall(context.Context, UninstallRequest) (UninstallResponse, error)
 
 	FetchNextAccounts(context.Context, FetchNextAccountsRequest) (FetchNextAccountsResponse, error)
 	FetchNextPayments(context.Context, FetchNextPaymentsRequest) (FetchNextPaymentsResponse, error)
@@ -29,6 +30,12 @@ type InstallResponse struct {
 	Workflow        Tasks
 	WebhooksConfigs []PSPWebhookConfig
 }
+
+type UninstallRequest struct {
+	ConnectorID string
+}
+
+type UninstallResponse struct{}
 
 type FetchNextAccountsRequest struct {
 	FromPayload json.RawMessage

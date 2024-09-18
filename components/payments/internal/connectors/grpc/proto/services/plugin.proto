@@ -21,6 +21,12 @@ message InstallResponse {
     repeated formance.payments.connectors.grpc.proto.WebhookConfig webhooks_configs = 3;
 }
 
+message UninstallRequest {
+    string connector_id = 1;
+}
+
+message UninstallResponse {}
+
 message FetchNextOthersRequest {
     string name = 1;
     bytes from_payload = 2;
@@ -118,6 +124,7 @@ message CreateWebhooksResponse {
 
 service Plugin {
     rpc Install(InstallRequest) returns (InstallResponse) {}
+    rpc Uninstall(UninstallRequest) returns (UninstallResponse) {}
     
     rpc FetchNextOthers(FetchNextOthersRequest) returns (FetchNextOthersResponse) {}
     rpc FetchNextPayments(FetchNextPaymentsRequest) returns (FetchNextPaymentsResponse) {}

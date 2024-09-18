@@ -11,6 +11,7 @@ import (
 
 type PSP interface {
 	Install(ctx context.Context, in *services.InstallRequest) (*services.InstallResponse, error)
+	Uninstall(ctx context.Context, in *services.UninstallRequest) (*services.UninstallResponse, error)
 
 	FetchNextOthers(ctx context.Context, in *services.FetchNextOthersRequest) (*services.FetchNextOthersResponse, error)
 	FetchNextPayments(ctx context.Context, in *services.FetchNextPaymentsRequest) (*services.FetchNextPaymentsResponse, error)

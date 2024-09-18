@@ -14,6 +14,10 @@ func (c *GRPCClient) Install(ctx context.Context, req *services.InstallRequest) 
 	return c.client.Install(ctx, req)
 }
 
+func (c *GRPCClient) Uninstall(ctx context.Context, req *services.UninstallRequest) (*services.UninstallResponse, error) {
+	return c.client.Uninstall(ctx, req)
+}
+
 func (c *GRPCClient) FetchNextAccounts(ctx context.Context, req *services.FetchNextAccountsRequest) (*services.FetchNextAccountsResponse, error) {
 	return c.client.FetchNextAccounts(ctx, req)
 }
