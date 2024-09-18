@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/golang:1.19 AS builder
+FROM golang:1.19 AS builder
 
 RUN mkdir -p ${GOPATH:-/go}/src/temporalite && \
     git clone https://github.com/temporalio/temporalite.git ${GOPATH:-/go}/src/temporalite && \
@@ -8,7 +8,7 @@ RUN mkdir -p ${GOPATH:-/go}/src/temporalite && \
     go get -d -v ./... && \
     go build -o ${GOPATH:-/go}/bin/ ${GOPATH:-/go}/src/temporalite/cmd/temporalite
 
-FROM public.ecr.aws/debian/debian:stable-slim
+FROM debian:stable-slim
 
 COPY --from=builder ${GOPATH:-/go}/bin/temporalite /bin
 EXPOSE 7233 8233
