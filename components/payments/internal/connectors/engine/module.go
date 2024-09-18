@@ -14,21 +14,34 @@ import (
 	"go.uber.org/fx"
 )
 
-func Module(pluginPath map[string]string) fx.Option {
+func Module(pluginPath map[string]string, stack string) fx.Option {
 	ret := []fx.Option{
 		fx.Supply(worker.Options{}),
-		fx.Provide(New),
+		fx.Provide(func(
+			temporalClient client.Client,
+			workers *Workers,
+			plugins plugins.Plugins,
+			storage storage.Storage,
+		) Engine {
+			return New(temporalClient, workers, plugins, storage, stack)
+		}),
 		fx.Provide(func() plugins.Plugins {
 			return plugins.New(pluginPath)
 		}),
 		fx.Provide(func(temporalClient client.Client, plugins plugins.Plugins) workflow.Workflow {
-			return workflow.New(temporalClient, plugins)
+			return workflow.New(temporalClient, plugins, stack)
 		}),
 		fx.Provide(func(storage storage.Storage, plugins plugins.Plugins) activities.Activities {
 			return activities.New(storage, plugins)
 		}),
 		fx.Provide(
-			fx.Annotate(func(logger logging.Logger, temporalClient client.Client, workflows, activities []temporal.DefinitionSet, options worker.Options) *Workers {
+			fx.Annotate(func(
+				logger logging.Logger,
+				temporalClient client.Client,
+				workflows,
+				activities []temporal.DefinitionSet,
+				options worker.Options,
+			) *Workers {
 				return NewWorkers(logger, temporalClient, workflows, activities, options)
 			}, fx.ParamTags(``, ``, `group:"workflows"`, `group:"activities"`, ``)),
 		),
