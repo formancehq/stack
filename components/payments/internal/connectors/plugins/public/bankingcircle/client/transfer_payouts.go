@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type PaymentAccount struct {
@@ -56,27 +58,14 @@ func (c *Client) InitiateTransferOrPayouts(ctx context.Context, transferRequest 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+c.accessToken)
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to make transfer: %w", err)
+	var res PaymentResponse
+	statusCode, err := c.httpClient.Do(req, &res, nil)
+	switch err {
+	case nil:
+		return &res, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, fmt.Errorf("received status code %d for make payout", statusCode)
 	}
-
-	defer func() {
-		err = resp.Body.Close()
-		if err != nil {
-			_ = err
-			// TODO(polo): log error
-		}
-	}()
-
-	if resp.StatusCode != http.StatusCreated {
-		return nil, fmt.Errorf("failed to make transfer: %w", err)
-	}
-
-	var transferResponse PaymentResponse
-	if err := json.NewDecoder(resp.Body).Decode(&transferResponse); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal wallets response body: %w", err)
-	}
-
-	return &transferResponse, nil
+	return nil, fmt.Errorf("failed to make payout: %w", err)
 }

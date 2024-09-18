@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"time"
 
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type Client struct {
-	httpClient *http.Client
+	httpClient httpwrapper.Client
 
 	username string
 	password string
@@ -21,8 +21,12 @@ type Client struct {
 	accessTokenExpiresAt time.Time
 }
 
-func newHTTPClient(userCertificate, userCertificateKey string) (*http.Client, error) {
-	cert, err := tls.X509KeyPair([]byte(userCertificate), []byte(userCertificateKey))
+func New(
+	username, password,
+	endpoint, authorizationEndpoint,
+	uCertificate, uCertificateKey string,
+) (*Client, error) {
+	cert, err := tls.X509KeyPair([]byte(uCertificate), []byte(uCertificateKey))
 	if err != nil {
 		return nil, err
 	}
@@ -32,18 +36,10 @@ func newHTTPClient(userCertificate, userCertificateKey string) (*http.Client, er
 		Certificates: []tls.Certificate{cert},
 	}
 
-	return &http.Client{
-		Timeout:   10 * time.Second,
-		Transport: otelhttp.NewTransport(tr),
-	}, nil
-}
-
-func New(
-	username, password,
-	endpoint, authorizationEndpoint,
-	uCertificate, uCertificateKey string,
-) (*Client, error) {
-	httpClient, err := newHTTPClient(uCertificate, uCertificateKey)
+	config := &httpwrapper.Config{
+		Transport: tr,
+	}
+	httpClient, err := httpwrapper.NewClient(config)
 	if err != nil {
 		return nil, err
 	}

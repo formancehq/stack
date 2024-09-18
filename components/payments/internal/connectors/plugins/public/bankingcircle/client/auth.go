@@ -2,12 +2,12 @@ package client
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 func (c *Client) login(ctx context.Context) error {
@@ -24,60 +24,36 @@ func (c *Client) login(ctx context.Context) error {
 
 	req.SetBasicAuth(c.username, c.password)
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return fmt.Errorf("failed to login: %w", err)
-	}
-
-	defer func() {
-		err = resp.Body.Close()
-		if err != nil {
-			_ = err
-			// TODO(polo): log error
-		}
-	}()
-
-	responseBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return fmt.Errorf("failed to read login response body: %w", err)
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		type responseError struct {
-			ErrorCode string `json:"errorCode"`
-			ErrorText string `json:"errorText"`
-		}
-		var errors []responseError
-		if err = json.Unmarshal(responseBody, &errors); err != nil {
-			return fmt.Errorf("failed to unmarshal login response: %w", err)
-		}
-		if len(errors) > 0 {
-			return fmt.Errorf("failed to login: %s %s", errors[0].ErrorCode, errors[0].ErrorText)
-		}
-		return fmt.Errorf("failed to login: %s", resp.Status)
-	}
-
 	//nolint:tagliatelle // allow for client-side structures
 	type response struct {
 		AccessToken string `json:"access_token"`
 		ExpiresIn   string `json:"expires_in"`
 	}
-
-	var res response
-
-	if err = json.Unmarshal(responseBody, &res); err != nil {
-		return fmt.Errorf("failed to unmarshal login response: %w", err)
+	type responseError struct {
+		ErrorCode string `json:"errorCode"`
+		ErrorText string `json:"errorText"`
 	}
 
-	c.accessToken = res.AccessToken
+	var res response
+	var errors []responseError
+	statusCode, err := c.httpClient.Do(req, &res, &errors)
+	switch err {
+	case nil:
+		// fallthrough
+	case httpwrapper.ErrStatusCodeUnexpected:
+		if len(errors) > 0 {
+			return fmt.Errorf("failed to login: %s %s", errors[0].ErrorCode, errors[0].ErrorText)
+		}
+		return fmt.Errorf("failed to login: %d", statusCode)
+	}
+	return fmt.Errorf("failed make login request: %w", err)
 
+	c.accessToken = res.AccessToken
 	expiresIn, err := strconv.Atoi(res.ExpiresIn)
 	if err != nil {
 		return fmt.Errorf("failed to convert expires_in to int: %w", err)
 	}
-
 	c.accessTokenExpiresAt = time.Now().Add(time.Duration(expiresIn) * time.Second)
-
 	return nil
 }
 
