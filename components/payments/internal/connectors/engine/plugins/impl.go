@@ -177,7 +177,7 @@ func (i *impl) CreateBankAccount(ctx context.Context, req models.CreateBankAccou
 }
 
 func (i *impl) CreateWebhooks(ctx context.Context, req models.CreateWebhooksRequest) (models.CreateWebhooksResponse, error) {
-	_, err := i.pluginClient.CreateWebhooks(ctx, &services.CreateWebhooksRequest{
+	resp, err := i.pluginClient.CreateWebhooks(ctx, &services.CreateWebhooksRequest{
 		ConnectorId: req.ConnectorID,
 		FromPayload: req.FromPayload,
 	})
@@ -185,7 +185,17 @@ func (i *impl) CreateWebhooks(ctx context.Context, req models.CreateWebhooksRequ
 		return models.CreateWebhooksResponse{}, err
 	}
 
-	return models.CreateWebhooksResponse{}, nil
+	others := make([]models.PSPOther, 0, len(resp.Others))
+	for _, other := range resp.Others {
+		others = append(others, models.PSPOther{
+			ID:    other.Id,
+			Other: other.Other,
+		})
+	}
+
+	return models.CreateWebhooksResponse{
+		Others: others,
+	}, nil
 }
 
 func (i *impl) TranslateWebhook(ctx context.Context, req models.TranslateWebhookRequest) (models.TranslateWebhookResponse, error) {

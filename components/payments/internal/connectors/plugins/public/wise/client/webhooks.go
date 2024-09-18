@@ -5,8 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
-	"log"
 	"net/http"
 	"time"
 )
@@ -15,22 +13,43 @@ type webhookSubscription struct {
 	Name      string `json:"name"`
 	TriggerOn string `json:"trigger_on"`
 	Delivery  struct {
-		URL string `json:"url"`
+		Version string `json:"version"`
+		URL     string `json:"url"`
 	} `json:"delivery"`
 }
 
-func (w *Client) CreateWebhook(ctx context.Context, profileID uint64, name, triggerOn, url string) error {
+type webhookSubscriptionResponse struct {
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	Delivery struct {
+		Version string `json:"version"`
+		URL     string `json:"url"`
+	} `json:"delivery"`
+	TriggerOn string `json:"trigger_on"`
+	Scope     struct {
+		Domain string `json:"domain"`
+	} `json:"scope"`
+	CreatedBy struct {
+		Type string `json:"type"`
+		ID   string `json:"id"`
+	} `json:"created_by"`
+	CreatedAt string `json:"created_at"`
+}
+
+func (w *Client) CreateWebhook(ctx context.Context, profileID uint64, name, triggerOn, url string) (*webhookSubscriptionResponse, error) {
 	req, err := json.Marshal(webhookSubscription{
 		Name:      name,
 		TriggerOn: triggerOn,
 		Delivery: struct {
-			URL string "json:\"url\""
+			Version string `json:"version"`
+			URL     string `json:"url"`
 		}{
-			URL: url,
+			Version: "2.0.0",
+			URL:     url,
 		},
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	res, err := w.httpClient.Post(
@@ -39,17 +58,21 @@ func (w *Client) CreateWebhook(ctx context.Context, profileID uint64, name, trig
 		bytes.NewBuffer(req),
 	)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer res.Body.Close()
 
-	if res.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(res.Body)
-		log.Println(string(body))
-		return fmt.Errorf("unexpected status code: %d", res.StatusCode)
+	if res.StatusCode != http.StatusCreated {
+		return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
 	}
 
-	return nil
+	var response webhookSubscriptionResponse
+	err = json.NewDecoder(res.Body).Decode(&response)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
+	}
+
+	return &response, nil
 }
 
 type transferStateChangedWebhookPayload struct {
