@@ -41,6 +41,13 @@ func (w Workflow) runUninstallConnector(
 	wg.Add(1)
 	workflow.Go(ctx, func(ctx workflow.Context) {
 		defer wg.Done()
+		_, err := activities.PluginUninstallConnector(infiniteRetryContext(ctx), uninstallConnector.ConnectorID)
+		errChan <- err
+	})
+
+	wg.Add(1)
+	workflow.Go(ctx, func(ctx workflow.Context) {
+		defer wg.Done()
 		err := activities.StorageSchedulesDelete(infiniteRetryContext(ctx), uninstallConnector.ConnectorID)
 		errChan <- err
 	})

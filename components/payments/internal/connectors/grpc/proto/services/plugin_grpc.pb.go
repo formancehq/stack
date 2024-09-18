@@ -19,6 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PluginClient interface {
 	Install(ctx context.Context, in *InstallRequest, opts ...grpc.CallOption) (*InstallResponse, error)
+	Uninstall(ctx context.Context, in *UninstallRequest, opts ...grpc.CallOption) (*UninstallResponse, error)
 	FetchNextOthers(ctx context.Context, in *FetchNextOthersRequest, opts ...grpc.CallOption) (*FetchNextOthersResponse, error)
 	FetchNextPayments(ctx context.Context, in *FetchNextPaymentsRequest, opts ...grpc.CallOption) (*FetchNextPaymentsResponse, error)
 	FetchNextAccounts(ctx context.Context, in *FetchNextAccountsRequest, opts ...grpc.CallOption) (*FetchNextAccountsResponse, error)
@@ -40,6 +41,15 @@ func NewPluginClient(cc grpc.ClientConnInterface) PluginClient {
 func (c *pluginClient) Install(ctx context.Context, in *InstallRequest, opts ...grpc.CallOption) (*InstallResponse, error) {
 	out := new(InstallResponse)
 	err := c.cc.Invoke(ctx, "/formance.payments.grpc.services.Plugin/Install", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pluginClient) Uninstall(ctx context.Context, in *UninstallRequest, opts ...grpc.CallOption) (*UninstallResponse, error) {
+	out := new(UninstallResponse)
+	err := c.cc.Invoke(ctx, "/formance.payments.grpc.services.Plugin/Uninstall", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -123,6 +133,7 @@ func (c *pluginClient) TranslateWebhook(ctx context.Context, in *TranslateWebhoo
 // for forward compatibility
 type PluginServer interface {
 	Install(context.Context, *InstallRequest) (*InstallResponse, error)
+	Uninstall(context.Context, *UninstallRequest) (*UninstallResponse, error)
 	FetchNextOthers(context.Context, *FetchNextOthersRequest) (*FetchNextOthersResponse, error)
 	FetchNextPayments(context.Context, *FetchNextPaymentsRequest) (*FetchNextPaymentsResponse, error)
 	FetchNextAccounts(context.Context, *FetchNextAccountsRequest) (*FetchNextAccountsResponse, error)
@@ -140,6 +151,9 @@ type UnimplementedPluginServer struct {
 
 func (UnimplementedPluginServer) Install(context.Context, *InstallRequest) (*InstallResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Install not implemented")
+}
+func (UnimplementedPluginServer) Uninstall(context.Context, *UninstallRequest) (*UninstallResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Uninstall not implemented")
 }
 func (UnimplementedPluginServer) FetchNextOthers(context.Context, *FetchNextOthersRequest) (*FetchNextOthersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FetchNextOthers not implemented")
@@ -192,6 +206,24 @@ func _Plugin_Install_Handler(srv interface{}, ctx context.Context, dec func(inte
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PluginServer).Install(ctx, req.(*InstallRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Plugin_Uninstall_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UninstallRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PluginServer).Uninstall(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/formance.payments.grpc.services.Plugin/Uninstall",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PluginServer).Uninstall(ctx, req.(*UninstallRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -350,6 +382,10 @@ var Plugin_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Install",
 			Handler:    _Plugin_Install_Handler,
+		},
+		{
+			MethodName: "Uninstall",
+			Handler:    _Plugin_Uninstall_Handler,
 		},
 		{
 			MethodName: "FetchNextOthers",

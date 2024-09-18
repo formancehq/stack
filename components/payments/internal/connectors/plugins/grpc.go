@@ -65,6 +65,22 @@ func (i *impl) Install(ctx context.Context, req *services.InstallRequest) (*serv
 	}, nil
 }
 
+func (i *impl) Uninstall(ctx context.Context, req *services.UninstallRequest) (*services.UninstallResponse, error) {
+	i.logger.Info("uninstalling...")
+
+	_, err := i.plugin.Uninstall(ctx, models.UninstallRequest{
+		ConnectorID: req.ConnectorId,
+	})
+	if err != nil {
+		i.logger.Error("uninstall failed: ", err)
+		return nil, translateErrorToGRPC(err)
+	}
+
+	i.logger.Info("uninstalled!")
+
+	return &services.UninstallResponse{}, nil
+}
+
 func (i *impl) FetchNextAccounts(ctx context.Context, req *services.FetchNextAccountsRequest) (*services.FetchNextAccountsResponse, error) {
 	i.logger.Info("fetching next accounts...")
 

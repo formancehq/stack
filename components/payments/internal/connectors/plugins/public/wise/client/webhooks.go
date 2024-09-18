@@ -75,6 +75,52 @@ func (w *Client) CreateWebhook(ctx context.Context, profileID uint64, name, trig
 	return &response, nil
 }
 
+func (w *Client) ListWebhooksSubscription(ctx context.Context, profileID uint64) ([]webhookSubscriptionResponse, error) {
+	req, err := http.NewRequestWithContext(ctx,
+		http.MethodGet, w.endpoint(fmt.Sprintf("/v3/profiles/%d/subscriptions", profileID)), http.NoBody)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := w.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
+	}
+
+	var response []webhookSubscriptionResponse
+	err = json.NewDecoder(res.Body).Decode(&response)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
+	}
+
+	return response, nil
+}
+
+func (w *Client) DeleteWebhooks(ctx context.Context, profileID uint64, subscriptionID string) error {
+	req, err := http.NewRequestWithContext(ctx,
+		http.MethodDelete, w.endpoint(fmt.Sprintf("/v3/profiles/%d/subscriptions/%s", profileID, subscriptionID)), http.NoBody)
+	if err != nil {
+		return err
+	}
+
+	res, err := w.httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("unexpected status code: %d", res.StatusCode)
+	}
+
+	return nil
+}
+
 type transferStateChangedWebhookPayload struct {
 	Data struct {
 		Resource struct {

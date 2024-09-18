@@ -41,6 +41,17 @@ func (i *impl) Install(ctx context.Context, req models.InstallRequest) (models.I
 	}, nil
 }
 
+func (i *impl) Uninstall(ctx context.Context, req models.UninstallRequest) (models.UninstallResponse, error) {
+	_, err := i.pluginClient.Uninstall(ctx, &services.UninstallRequest{
+		ConnectorId: req.ConnectorID,
+	})
+	if err != nil {
+		return models.UninstallResponse{}, err
+	}
+
+	return models.UninstallResponse{}, nil
+}
+
 func (i *impl) FetchNextAccounts(ctx context.Context, req models.FetchNextAccountsRequest) (models.FetchNextAccountsResponse, error) {
 	resp, err := i.pluginClient.FetchNextAccounts(ctx, &services.FetchNextAccountsRequest{
 		FromPayload: req.FromPayload,
