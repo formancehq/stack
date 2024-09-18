@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"encoding/json"
 	"errors"
+	"sync"
 )
 
 //go:embed configs.json
@@ -48,21 +49,23 @@ var (
 	configs Configs
 )
 
-func init() {
-	if err := json.Unmarshal(configsFile, &configs); err != nil {
-		panic(err)
-	}
-
-	for key := range configs {
-		for paramName, param := range defaultParameters {
-			if _, ok := configs[key][paramName]; !ok {
-				configs[key][paramName] = param
-			}
-		}
-	}
-}
+var once sync.Once
 
 func GetConfigs() Configs {
+	once.Do(func() {
+		if err := json.Unmarshal(configsFile, &configs); err != nil {
+			panic(err)
+		}
+
+		for key := range configs {
+			for paramName, param := range defaultParameters {
+				if _, ok := configs[key][paramName]; !ok {
+					configs[key][paramName] = param
+				}
+			}
+		}
+	})
+
 	return configs
 }
 
