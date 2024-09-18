@@ -36,7 +36,7 @@ func (t *TestingTForMain) callCleanup() {
 	}
 }
 
-func (t *TestingTForMain) Close() {
+func (t *TestingTForMain) close() {
 	t.callCleanup()
 }
 
@@ -45,7 +45,7 @@ func WithTestMain(fn func(main *TestingTForMain) int) {
 
 	t := &TestingTForMain{}
 	code := fn(t)
-	t.Close()
+	t.close()
 
 	os.Exit(code)
 }
