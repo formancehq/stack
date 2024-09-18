@@ -212,6 +212,9 @@ func (e *engine) HandleWebhook(ctx context.Context, urlPath string, webhook mode
 			TaskQueue:                                webhook.ConnectorID.String(),
 			WorkflowIDReusePolicy:                    enums.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE,
 			WorkflowExecutionErrorWhenAlreadyStarted: false,
+			SearchAttributes: map[string]interface{}{
+				workflow.SearchAttributeStack: e.stack,
+			},
 		},
 		workflow.RunHandleWebhooks,
 		workflow.HandleWebhooks{

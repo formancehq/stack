@@ -1,7 +1,6 @@
 package workflow
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/formancehq/payments/internal/connectors/engine/activities"
@@ -66,11 +65,6 @@ func (w Workflow) fetchNextOthers(
 		// TODO(polo): send event for others ? store others ?
 
 		for _, other := range othersResponse.Others {
-			payload, err := json.Marshal(other.Other)
-			if err != nil {
-				return errors.Wrap(err, "marshalling other")
-			}
-
 			if err := workflow.ExecuteChildWorkflow(
 				workflow.WithChildOptions(
 					ctx,
@@ -87,7 +81,7 @@ func (w Workflow) fetchNextOthers(
 				fetchNextOthers.ConnectorID,
 				&FromPayload{
 					ID:      other.ID,
-					Payload: payload,
+					Payload: other.Other,
 				},
 				nextTasks,
 			).Get(ctx, nil); err != nil {

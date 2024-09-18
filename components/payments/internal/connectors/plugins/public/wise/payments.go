@@ -62,6 +62,10 @@ func (p Plugin) fetchNextPayments(ctx context.Context, req models.FetchNextPayme
 			}
 		}
 
+		if len(pagedTransfers) < req.PageSize {
+			break
+		}
+
 		if len(payments) >= req.PageSize {
 			hasMore = true
 			break

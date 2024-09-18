@@ -96,8 +96,7 @@ func (p Plugin) CreateWebhooks(ctx context.Context, req models.CreateWebhooksReq
 	if p.client == nil {
 		return models.CreateWebhooksResponse{}, plugins.ErrNotYetInstalled
 	}
-	err := p.createWebhooks(ctx, req)
-	return models.CreateWebhooksResponse{}, err
+	return p.createWebhooks(ctx, req)
 }
 
 func (p Plugin) TranslateWebhook(ctx context.Context, req models.TranslateWebhookRequest) (models.TranslateWebhookResponse, error) {

@@ -82,6 +82,7 @@ func (w Workflow) run(
 
 		case models.TASK_CREATE_WEBHOOKS:
 			req := CreateWebhooks{
+				Config:      config,
 				ConnectorID: connectorID,
 				FromPayload: fromPayload,
 			}

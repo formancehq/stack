@@ -17,7 +17,7 @@ type webhook struct {
 	// Optional fields
 	Headers     map[string][]string `bun:"headers,type:json"`
 	QueryValues map[string][]string `bun:"query_values,type:json"`
-	Body        []byte              `bun:"payload,type:bytea,nullzero"`
+	Body        []byte              `bun:"body,type:bytea,nullzero"`
 }
 
 func (s *store) WebhooksInsert(ctx context.Context, webhook models.Webhook) error {

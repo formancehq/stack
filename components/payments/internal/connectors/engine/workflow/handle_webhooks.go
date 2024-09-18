@@ -21,13 +21,13 @@ func (w Workflow) runHandleWebhooks(
 	ctx workflow.Context,
 	handleWebhooks HandleWebhooks,
 ) error {
-	err := activities.StorageWebhooksStore(ctx, handleWebhooks.Webhook)
+	err := activities.StorageWebhooksStore(infiniteRetryContext(ctx), handleWebhooks.Webhook)
 	if err != nil {
 		return errors.Wrap(err, "failed to store webhook")
 	}
 
 	resp, err := activities.PluginTranslateWebhook(
-		ctx,
+		infiniteRetryContext(ctx),
 		handleWebhooks.ConnectorID,
 		models.TranslateWebhookRequest{
 			Name: handleWebhooks.WebhookConfig.Name,

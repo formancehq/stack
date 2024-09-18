@@ -112,7 +112,9 @@ message CreateWebhooksRequest {
     string connector_id = 2;
 }
 
-message CreateWebhooksResponse {}
+message CreateWebhooksResponse {
+    repeated formance.payments.connectors.grpc.proto.Other others = 1;
+}
 
 service Plugin {
     rpc Install(InstallRequest) returns (InstallResponse) {}

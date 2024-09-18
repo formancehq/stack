@@ -20,7 +20,7 @@ func (w Workflow) createInstance(
 ) error {
 	info := workflow.GetInfo(ctx)
 
-	scheduleID, err := getPaymentScheduleID(ctx, info)
+	scheduleID, err := getPaymentScheduleID(info)
 	if err != nil {
 		if errors.Is(err, errNotFromSchedule) {
 			return nil
@@ -47,7 +47,7 @@ func (w Workflow) terminateInstance(
 ) error {
 	info := workflow.GetInfo(ctx)
 
-	scheduleID, err := getPaymentScheduleID(ctx, info)
+	scheduleID, err := getPaymentScheduleID(info)
 	if err != nil {
 		if errors.Is(err, errNotFromSchedule) {
 			return nil
@@ -76,7 +76,6 @@ func (w Workflow) terminateInstance(
 }
 
 func getPaymentScheduleID(
-	ctx workflow.Context,
 	info *workflow.Info,
 ) (string, error) {
 	attributes := info.SearchAttributes.GetIndexedFields()
@@ -86,7 +85,7 @@ func getPaymentScheduleID(
 
 	v, ok := attributes[SearchAttributeScheduleID]
 	if !ok || v == nil {
-		return "", errors.New("missing schedule ID")
+		return "", errNotFromSchedule
 	}
 
 	var scheduleID string
