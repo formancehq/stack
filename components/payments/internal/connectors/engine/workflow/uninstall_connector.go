@@ -22,6 +22,9 @@ func (w Workflow) runUninstallConnector(
 			workflow.ChildWorkflowOptions{
 				TaskQueue:         uninstallConnector.ConnectorID.String(),
 				ParentClosePolicy: enums.PARENT_CLOSE_POLICY_ABANDON,
+				SearchAttributes: map[string]interface{}{
+					SearchAttributeStack: w.stack,
+				},
 			},
 		),
 		RunTerminateSchedules,

@@ -11,6 +11,7 @@ import (
 const (
 	SearchAttributeWorkflowID = "PaymentWorkflowID"
 	SearchAttributeScheduleID = "PaymentScheduleID"
+	SearchAttributeStack      = "Stack"
 )
 
 type FromPayload struct {
@@ -29,12 +30,15 @@ type Workflow struct {
 	temporalClient client.Client
 
 	plugins plugins.Plugins
+
+	stack string
 }
 
-func New(temporalClient client.Client, plugins plugins.Plugins) Workflow {
+func New(temporalClient client.Client, plugins plugins.Plugins, stack string) Workflow {
 	return Workflow{
 		temporalClient: temporalClient,
 		plugins:        plugins,
+		stack:          stack,
 	}
 }
 

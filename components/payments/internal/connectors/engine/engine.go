@@ -34,9 +34,11 @@ type engine struct {
 	plugins  plugins.Plugins
 	storage  storage.Storage
 	webhooks webhooks.Webhooks
+
+	stack string
 }
 
-func New(temporalClient client.Client, workers *Workers, plugins plugins.Plugins, storage storage.Storage) Engine {
+func New(temporalClient client.Client, workers *Workers, plugins plugins.Plugins, storage storage.Storage, stack string) Engine {
 	return &engine{
 		temporalClient: temporalClient,
 		workers:        workers,
@@ -88,6 +90,9 @@ func (e *engine) InstallConnector(ctx context.Context, provider string, rawConfi
 			TaskQueue:                                connector.ID.String(),
 			WorkflowIDReusePolicy:                    enums.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE,
 			WorkflowExecutionErrorWhenAlreadyStarted: false,
+			SearchAttributes: map[string]interface{}{
+				workflow.SearchAttributeStack: e.stack,
+			},
 		},
 		workflow.RunInstallConnector,
 		workflow.InstallConnector{
@@ -116,6 +121,9 @@ func (e *engine) UninstallConnector(ctx context.Context, connectorID models.Conn
 			TaskQueue:                                connectorID.String(),
 			WorkflowIDReusePolicy:                    enums.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE_FAILED_ONLY,
 			WorkflowExecutionErrorWhenAlreadyStarted: false,
+			SearchAttributes: map[string]interface{}{
+				workflow.SearchAttributeStack: e.stack,
+			},
 		},
 		workflow.RunUninstallConnector,
 		workflow.UninstallConnector{
@@ -150,6 +158,9 @@ func (e *engine) CreateBankAccount(ctx context.Context, bankAccountID uuid.UUID,
 			TaskQueue:                                connectorID.String(),
 			WorkflowIDReusePolicy:                    enums.WORKFLOW_ID_REUSE_POLICY_REJECT_DUPLICATE,
 			WorkflowExecutionErrorWhenAlreadyStarted: false,
+			SearchAttributes: map[string]interface{}{
+				workflow.SearchAttributeStack: e.stack,
+			},
 		},
 		workflow.RunCreateBankAccount,
 		workflow.CreateBankAccount{
@@ -228,6 +239,9 @@ func (e *engine) onStartPlugin(ctx context.Context, connector models.Connector) 
 			TaskQueue:                                connector.ID.String(),
 			WorkflowIDReusePolicy:                    enums.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE,
 			WorkflowExecutionErrorWhenAlreadyStarted: false,
+			SearchAttributes: map[string]interface{}{
+				workflow.SearchAttributeStack: e.stack,
+			},
 		},
 		workflow.RunInstallConnector,
 		workflow.InstallConnector{

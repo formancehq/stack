@@ -77,6 +77,9 @@ func (w Workflow) fetchNextOthers(
 					workflow.ChildWorkflowOptions{
 						TaskQueue:         fetchNextOthers.ConnectorID.String(),
 						ParentClosePolicy: enums.PARENT_CLOSE_POLICY_ABANDON,
+						SearchAttributes: map[string]interface{}{
+							SearchAttributeStack: w.stack,
+						},
 					},
 				),
 				Run,

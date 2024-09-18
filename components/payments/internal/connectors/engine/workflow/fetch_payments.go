@@ -88,6 +88,9 @@ func (w Workflow) fetchNextPayments(
 					workflow.ChildWorkflowOptions{
 						TaskQueue:         fetchNextPayments.ConnectorID.String(),
 						ParentClosePolicy: enums.PARENT_CLOSE_POLICY_ABANDON,
+						SearchAttributes: map[string]interface{}{
+							SearchAttributeStack: w.stack,
+						},
 					},
 				),
 				Run,

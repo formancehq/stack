@@ -64,6 +64,9 @@ func (w Workflow) runInstallConnector(
 				WorkflowIDReusePolicy: enums.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE_FAILED_ONLY,
 				TaskQueue:             installConnector.ConnectorID.String(),
 				ParentClosePolicy:     enums.PARENT_CLOSE_POLICY_ABANDON,
+				SearchAttributes: map[string]interface{}{
+					SearchAttributeStack: w.stack,
+				},
 			},
 		),
 		Run,
