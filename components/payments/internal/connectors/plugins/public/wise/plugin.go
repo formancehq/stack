@@ -29,6 +29,13 @@ func (p *Plugin) Install(ctx context.Context, req models.InstallRequest) (models
 			triggerOn: "transfers#state-change",
 			urlPath:   "/transferstatechanged",
 			fn:        p.translateTransferStateChangedWebhook,
+			version:   "2.0.0",
+		},
+		"balance_update": {
+			triggerOn: "balances#update",
+			urlPath:   "/balanceupdate",
+			fn:        p.translateBalanceUpdateWebhook,
+			version:   "2.2.0",
 		},
 	}
 
@@ -120,9 +127,9 @@ func (p Plugin) TranslateWebhook(ctx context.Context, req models.TranslateWebhoo
 		return models.TranslateWebhookResponse{}, errors.New("missing X-Delivery-Id header")
 	}
 
-	signatures, ok := req.Webhook.Headers["X-Signature-SHA256"]
+	signatures, ok := req.Webhook.Headers["X-Signature-Sha256"]
 	if !ok || len(signatures) == 0 {
-		return models.TranslateWebhookResponse{}, errors.New("missing X-Signature-SHA256 header")
+		return models.TranslateWebhookResponse{}, errors.New("missing X-Signature-Sha256 header")
 	}
 
 	err := p.verifySignature(req.Webhook.Body, signatures[0])

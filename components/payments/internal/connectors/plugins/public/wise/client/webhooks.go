@@ -36,7 +36,7 @@ type webhookSubscriptionResponse struct {
 	CreatedAt string `json:"created_at"`
 }
 
-func (w *Client) CreateWebhook(ctx context.Context, profileID uint64, name, triggerOn, url string) (*webhookSubscriptionResponse, error) {
+func (w *Client) CreateWebhook(ctx context.Context, profileID uint64, name, triggerOn, url, version string) (*webhookSubscriptionResponse, error) {
 	req, err := json.Marshal(webhookSubscription{
 		Name:      name,
 		TriggerOn: triggerOn,
@@ -44,7 +44,7 @@ func (w *Client) CreateWebhook(ctx context.Context, profileID uint64, name, trig
 			Version string `json:"version"`
 			URL     string `json:"url"`
 		}{
-			Version: "2.0.0",
+			Version: version,
 			URL:     url,
 		},
 	})
@@ -158,4 +158,35 @@ func (w *Client) TranslateTransferStateChangedWebhook(ctx context.Context, paylo
 	}
 
 	return *transfer, nil
+}
+
+type balanceUpdateWebhookPayload struct {
+	Data struct {
+		Resource struct {
+			ID        uint64 `json:"id"`
+			ProfileID uint64 `json:"profile_id"`
+			Type      string `json:"type"`
+		} `json:"resource"`
+		Amount            json.Number `json:"amount"`
+		BalanceID         uint64      `json:"balance_id"`
+		Currency          string      `json:"currency"`
+		TransactionType   string      `json:"transaction_type"`
+		OccurredAt        string      `json:"occurred_at"`
+		TransferReference string      `json:"transfer_reference"`
+		ChannelName       string      `json:"channel_name"`
+	} `json:"data"`
+	SubscriptionID string `json:"subscription_id"`
+	EventType      string `json:"event_type"`
+	SchemaVersion  string `json:"schema_version"`
+	SentAt         string `json:"sent_at"`
+}
+
+func (w *Client) TranslateBalanceUpdateWebhook(ctx context.Context, payload []byte) (balanceUpdateWebhookPayload, error) {
+	var balanceUpdateEvent balanceUpdateWebhookPayload
+	err := json.Unmarshal(payload, &balanceUpdateEvent)
+	if err != nil {
+		return balanceUpdateWebhookPayload{}, err
+	}
+
+	return balanceUpdateEvent, nil
 }
