@@ -16,9 +16,10 @@ import (
 var _ = Describe("PaymentsController", func() {
 	Context("When creating a Payments object", func() {
 		var (
-			stack            *v1beta1.Stack
-			payments         *v1beta1.Payments
-			databaseSettings *v1beta1.Settings
+			stack               *v1beta1.Stack
+			payments            *v1beta1.Payments
+			databaseSettings    *v1beta1.Settings
+			temporalDSNSettings *v1beta1.Settings
 		)
 		BeforeEach(func() {
 			stack = &v1beta1.Stack{
@@ -34,10 +35,12 @@ var _ = Describe("PaymentsController", func() {
 				},
 			}
 			databaseSettings = settings.New(uuid.NewString(), "postgres.*.uri", "postgresql://localhost", stack.Name)
+			temporalDSNSettings = settings.New(uuid.NewString(), "temporal.dsn", "temporal://localhost/namespace", stack.Name)
 		})
 		JustBeforeEach(func() {
 			Expect(Create(stack)).To(Succeed())
 			Expect(Create(databaseSettings)).To(Succeed())
+			Expect(Create(temporalDSNSettings)).To(Succeed())
 			Expect(Create(payments)).To(Succeed())
 		})
 		AfterEach(func() {
