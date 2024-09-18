@@ -10,7 +10,6 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
-	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -55,44 +54,12 @@ var _ = Describe("PaymentsController", func() {
 					return reference
 				}).Should(BeTrue())
 			})
-			By("Should create a read deployment with a service", func() {
-				deployment := &appsv1.Deployment{}
-				Eventually(func() error {
-					return LoadResource(stack.Name, "payments-read", deployment)
-				}).Should(Succeed())
-				Expect(deployment).To(BeControlledBy(payments))
-
-				service := &corev1.Service{}
-				Eventually(func() error {
-					return LoadResource(stack.Name, "payments-read", service)
-				}).Should(Succeed())
-				Expect(service).To(BeControlledBy(payments))
-			})
-			By("Should create a connectors deployment with a service", func() {
-				deployment := &appsv1.Deployment{}
-				Eventually(func() error {
-					return LoadResource(stack.Name, "payments-connectors", deployment)
-				}).Should(Succeed())
-				Expect(deployment).To(BeControlledBy(payments))
-
-				service := &corev1.Service{}
-				Eventually(func() error {
-					return LoadResource(stack.Name, "payments-connectors", service)
-				}).Should(Succeed())
-				Expect(service).To(BeControlledBy(payments))
-			})
-			By("Should create a gateway", func() {
+			By("Should create a deployment", func() {
 				deployment := &appsv1.Deployment{}
 				Eventually(func() error {
 					return LoadResource(stack.Name, "payments", deployment)
 				}).Should(Succeed())
 				Expect(deployment).To(BeControlledBy(payments))
-			})
-			By("Should create a new GatewayHTTPAPI object", func() {
-				httpService := &v1beta1.GatewayHTTPAPI{}
-				Eventually(func() error {
-					return LoadResource("", core.GetObjectName(stack.Name, "payments"), httpService)
-				}).Should(Succeed())
 			})
 		})
 		Context("With Search enabled", func() {
