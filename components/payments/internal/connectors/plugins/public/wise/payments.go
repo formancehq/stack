@@ -97,7 +97,7 @@ func fromTransferToPayment(from client.Transfer) (*models.PSPPayment, error) {
 	}
 
 	p := models.PSPPayment{
-		Reference: fmt.Sprintf("%s", from.ID),
+		Reference: fmt.Sprintf("%d", from.ID),
 		CreatedAt: from.CreatedAt,
 		Type:      models.PAYMENT_TYPE_TRANSFER,
 		Amount:    amount,
