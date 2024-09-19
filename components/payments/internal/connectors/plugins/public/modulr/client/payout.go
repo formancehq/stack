@@ -4,7 +4,10 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type PayoutRequest struct {
@@ -39,23 +42,23 @@ func (c *Client) InitiatePayout(ctx context.Context, payoutRequest *PayoutReques
 		return nil, err
 	}
 
-	resp, err := c.httpClient.Post(c.buildEndpoint("payments"), "application/json", bytes.NewBuffer(body))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.buildEndpoint("payments"), bytes.NewBuffer(body))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create payout request: %w", err)
 	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusCreated {
-		// TODO(polo): retryable errors
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
-	}
+	req.Header.Set("Content-Type", "application/json")
 
 	var res PayoutResponse
-	if err = json.NewDecoder(resp.Body).Decode(&res); err != nil {
-		return nil, err
+	var errRes modulrError
+	_, err = c.httpClient.Do(req, &res, &errRes)
+	switch err {
+	case nil:
+		return &res, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, errRes.Error()
 	}
-
-	return &res, nil
+	return nil, fmt.Errorf("failed to create payout %w", err)
 }
 
 func (c *Client) GetPayout(ctx context.Context, payoutID string) (PayoutResponse, error) {
@@ -64,20 +67,20 @@ func (c *Client) GetPayout(ctx context.Context, payoutID string) (PayoutResponse
 	// now := time.Now()
 	// defer f(ctx, now)
 
-	resp, err := c.httpClient.Get(c.buildEndpoint("payments?id=%s", payoutID))
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.buildEndpoint("payments?id=%s", payoutID), nil)
 	if err != nil {
-		return PayoutResponse{}, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return PayoutResponse{}, unmarshalError(resp.StatusCode, resp.Body).Error()
+		return PayoutResponse{}, fmt.Errorf("failed to create get payout request: %w", err)
 	}
 
 	var res PayoutResponse
-	if err = json.NewDecoder(resp.Body).Decode(&res); err != nil {
-		return PayoutResponse{}, err
+	var errRes modulrError
+	_, err = c.httpClient.Do(req, &res, &errRes)
+	switch err {
+	case nil:
+		return res, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return PayoutResponse{}, errRes.Error()
 	}
-
-	return res, nil
+	return PayoutResponse{}, fmt.Errorf("failed to get payout %w", err)
 }

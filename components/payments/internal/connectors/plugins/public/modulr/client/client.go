@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 	"github.com/formancehq/payments/internal/connectors/plugins/public/modulr/client/hmac"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
@@ -30,7 +31,7 @@ type responseWrapper[t any] struct {
 }
 
 type Client struct {
-	httpClient *http.Client
+	httpClient httpwrapper.Client
 	endpoint   string
 }
 
@@ -50,16 +51,21 @@ func New(apiKey, apiSecret, endpoint string) (*Client, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate headers: %w", err)
 	}
+	config := &httpwrapper.Config{
+		Transport: &apiTransport{
+			headers:    headers,
+			apiKey:     apiKey,
+			underlying: otelhttp.NewTransport(http.DefaultTransport),
+		},
+	}
+	httpClient, err := httpwrapper.NewClient(config)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create modulr client: %w", err)
+	}
 
 	return &Client{
-		httpClient: &http.Client{
-			Transport: &apiTransport{
-				headers:    headers,
-				apiKey:     apiKey,
-				underlying: otelhttp.NewTransport(http.DefaultTransport),
-			},
-		},
-		endpoint: endpoint,
+		httpClient: httpClient,
+		endpoint:   endpoint,
 	}, nil
 }
 
