@@ -3,6 +3,7 @@ package wise
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/formancehq/payments/internal/connectors/plugins"
 	"github.com/formancehq/payments/internal/connectors/plugins/public/wise/client"
@@ -20,7 +21,10 @@ func (p *Plugin) Install(ctx context.Context, req models.InstallRequest) (models
 		return models.InstallResponse{}, err
 	}
 
-	client := client.New(config.APIKey)
+	client, err := client.New(config.APIKey)
+	if err != nil {
+		return models.InstallResponse{}, fmt.Errorf("failed to install wise plugin %w", err)
+	}
 	p.client = client
 	p.config = config
 

@@ -5,9 +5,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"time"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type Transfer struct {
@@ -60,14 +61,14 @@ func (t *Transfer) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (w *Client) GetTransfers(ctx context.Context, profileID uint64, offset int, limit int) ([]Transfer, error) {
+func (c *Client) GetTransfers(ctx context.Context, profileID uint64, offset int, limit int) ([]Transfer, error) {
 	// TODO(polo): metrics
 	// f := connectors.ClientMetrics(ctx, "wise", "list_transfers")
 	// now := time.Now()
 	// defer f(ctx, now)
 
 	req, err := http.NewRequestWithContext(ctx,
-		http.MethodGet, w.endpoint("v1/transfers"), http.NoBody)
+		http.MethodGet, c.endpoint("v1/transfers"), http.NoBody)
 	if err != nil {
 		return nil, err
 	}
@@ -78,32 +79,23 @@ func (w *Client) GetTransfers(ctx context.Context, profileID uint64, offset int,
 	q.Add("offset", fmt.Sprintf("%d", offset))
 	req.URL.RawQuery = q.Encode()
 
-	res, err := w.httpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		return nil, unmarshalError(res.StatusCode, res.Body).Error()
-	}
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read response body: %w", err)
-	}
-
 	var transfers []Transfer
-
-	err = json.Unmarshal(body, &transfers)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal transfers: %w", err)
+	var errRes wiseErrors
+	statusCode, err := c.httpClient.Do(req, &transfers, &errRes)
+	switch err {
+	case nil:
+		// fallthrough
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return transfers, errRes.Error(statusCode).Error()
+	default:
+		return transfers, fmt.Errorf("failed to get transfers: %w", err)
 	}
 
 	for i, transfer := range transfers {
 		var sourceProfileID, targetProfileID uint64
 		if transfer.SourceAccount != 0 {
-			recipientAccount, err := w.GetRecipientAccount(ctx, transfer.SourceAccount)
+			recipientAccount, err := c.GetRecipientAccount(ctx, transfer.SourceAccount)
 			if err != nil {
 				return nil, fmt.Errorf("failed to get source profile id: %w", err)
 			}
@@ -112,7 +104,7 @@ func (w *Client) GetTransfers(ctx context.Context, profileID uint64, offset int,
 		}
 
 		if transfer.TargetAccount != 0 {
-			recipientAccount, err := w.GetRecipientAccount(ctx, transfer.TargetAccount)
+			recipientAccount, err := c.GetRecipientAccount(ctx, transfer.TargetAccount)
 			if err != nil {
 				return nil, fmt.Errorf("failed to get target profile id: %w", err)
 			}
@@ -129,7 +121,7 @@ func (w *Client) GetTransfers(ctx context.Context, profileID uint64, offset int,
 			// Do nothing
 		case sourceProfileID == targetProfileID && sourceProfileID != 0:
 			// Same profile id for target and source
-			balances, err := w.GetBalances(ctx, sourceProfileID)
+			balances, err := c.GetBalances(ctx, sourceProfileID)
 			if err != nil {
 				return nil, fmt.Errorf("failed to get balances: %w", err)
 			}
@@ -144,7 +136,7 @@ func (w *Client) GetTransfers(ctx context.Context, profileID uint64, offset int,
 			}
 		default:
 			if sourceProfileID != 0 {
-				balances, err := w.GetBalances(ctx, sourceProfileID)
+				balances, err := c.GetBalances(ctx, sourceProfileID)
 				if err != nil {
 					return nil, fmt.Errorf("failed to get balances: %w", err)
 				}
@@ -156,7 +148,7 @@ func (w *Client) GetTransfers(ctx context.Context, profileID uint64, offset int,
 			}
 
 			if targetProfileID != 0 {
-				balances, err := w.GetBalances(ctx, targetProfileID)
+				balances, err := c.GetBalances(ctx, targetProfileID)
 				if err != nil {
 					return nil, fmt.Errorf("failed to get balances: %w", err)
 				}
@@ -169,55 +161,42 @@ func (w *Client) GetTransfers(ctx context.Context, profileID uint64, offset int,
 
 		}
 	}
-
 	return transfers, nil
 }
 
-func (w *Client) GetTransfer(ctx context.Context, transferID string) (*Transfer, error) {
+func (c *Client) GetTransfer(ctx context.Context, transferID string) (*Transfer, error) {
 	// TODO(polo): metrics
 	// f := connectors.ClientMetrics(ctx, "wise", "get_transfer")
 	// now := time.Now()
 	// defer f(ctx, now)
 
 	req, err := http.NewRequestWithContext(ctx,
-		http.MethodGet, w.endpoint("v1/transfers/"+transferID), http.NoBody)
+		http.MethodGet, c.endpoint("v1/transfers/"+transferID), http.NoBody)
 	if err != nil {
 		return nil, err
-	}
-
-	res, err := w.httpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		res.Body.Close()
-
-		return nil, fmt.Errorf("failed to read response body: %w", err)
-	}
-
-	if err = res.Body.Close(); err != nil {
-		return nil, fmt.Errorf("failed to close response body: %w", err)
 	}
 
 	var transfer Transfer
-	err = json.Unmarshal(body, &transfer)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal transfer: %w", err)
+	var errRes wiseErrors
+	statusCode, err := c.httpClient.Do(req, &transfer, &errRes)
+	switch err {
+	case nil:
+		return &transfer, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, errRes.Error(statusCode).Error()
 	}
-
-	return &transfer, nil
+	return nil, fmt.Errorf("failed to get transfer: %w", err)
 }
 
-func (w *Client) CreateTransfer(ctx context.Context, quote Quote, targetAccount uint64, transactionID string) (*Transfer, error) {
+func (c *Client) CreateTransfer(ctx context.Context, quote Quote, targetAccount uint64, transactionID string) (*Transfer, error) {
 	// TODO(polo): metrics
 	// metrics.GetMetricsRegistry().ConnectorPSPCalls().Add(ctx, 1, metric.WithAttributes([]attribute.KeyValue{
 	// 	attribute.String("connector", "wise"),
 	// 	attribute.String("operation", "initiate_transfer"),
 	// }...))
 
-	req, err := json.Marshal(map[string]interface{}{
+	reqBody, err := json.Marshal(map[string]interface{}{
 		"targetAccount":         targetAccount,
 		"quoteUuid":             quote.ID.String(),
 		"customerTransactionId": transactionID,
@@ -226,22 +205,21 @@ func (w *Client) CreateTransfer(ctx context.Context, quote Quote, targetAccount 
 		return nil, err
 	}
 
-	res, err := w.httpClient.Post(w.endpoint("v1/transfers"), "application/json", bytes.NewBuffer(req))
+	req, err := http.NewRequestWithContext(ctx,
+		http.MethodPost, c.endpoint("v1/transfers"), bytes.NewBuffer(reqBody))
 	if err != nil {
 		return nil, err
 	}
 
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
+	var transfer Transfer
+	var errRes wiseErrors
+	statusCode, err := c.httpClient.Do(req, &transfer, &errRes)
+	switch err {
+	case nil:
+		return &transfer, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, errRes.Error(statusCode).Error()
 	}
-
-	var response Transfer
-	err = json.NewDecoder(res.Body).Decode(&response)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get response from transfer: %w", err)
-	}
-
-	return &response, nil
+	return nil, fmt.Errorf("failed to create transfer: %w", err)
 }

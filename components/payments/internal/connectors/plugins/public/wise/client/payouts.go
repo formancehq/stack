@@ -5,9 +5,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"time"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type Payout struct {
@@ -60,49 +61,38 @@ func (t *Payout) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (w *Client) GetPayout(ctx context.Context, payoutID string) (*Payout, error) {
+func (c *Client) GetPayout(ctx context.Context, payoutID string) (*Payout, error) {
 	// TODO(polo): metrics
 	// f := connectors.ClientMetrics(ctx, "wise", "get_payout")
 	// now := time.Now()
 	// defer f(ctx, now)
 
 	req, err := http.NewRequestWithContext(ctx,
-		http.MethodGet, w.endpoint("v1/transfers/"+payoutID), http.NoBody)
+		http.MethodGet, c.endpoint("v1/transfers/"+payoutID), http.NoBody)
 	if err != nil {
 		return nil, err
-	}
-
-	res, err := w.httpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		return nil, unmarshalError(res.StatusCode, res.Body).Error()
-	}
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
 
 	var payout Payout
-	err = json.Unmarshal(body, &payout)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal transfer: %w", err)
+	var errRes wiseErrors
+	statusCode, err := c.httpClient.Do(req, &payout, &errRes)
+	switch err {
+	case nil:
+		return &payout, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, errRes.Error(statusCode).Error()
 	}
-
-	return &payout, nil
+	return nil, fmt.Errorf("failed to get payout: %w", err)
 }
 
-func (w *Client) CreatePayout(ctx context.Context, quote Quote, targetAccount uint64, transactionID string) (*Payout, error) {
+func (c *Client) CreatePayout(ctx context.Context, quote Quote, targetAccount uint64, transactionID string) (*Payout, error) {
 	// TODO(polo): metrics
 	// f := connectors.ClientMetrics(ctx, "wise", "initiate_payout")
 	// now := time.Now()
 	// defer f(ctx, now)
 
-	req, err := json.Marshal(map[string]interface{}{
+	reqBody, err := json.Marshal(map[string]interface{}{
 		"targetAccount":         targetAccount,
 		"quoteUuid":             quote.ID.String(),
 		"customerTransactionId": transactionID,
@@ -111,21 +101,21 @@ func (w *Client) CreatePayout(ctx context.Context, quote Quote, targetAccount ui
 		return nil, err
 	}
 
-	res, err := w.httpClient.Post(w.endpoint("v1/transfers"), "application/json", bytes.NewBuffer(req))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.endpoint("v1/transfers"), bytes.NewBuffer(reqBody))
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
+	req.Header.Set("Content-Type", "application/json")
 
-	if res.StatusCode != http.StatusOK {
-		return nil, unmarshalError(res.StatusCode, res.Body).Error()
+	var payout Payout
+	var errRes wiseErrors
+	statusCode, err := c.httpClient.Do(req, &payout, &errRes)
+	switch err {
+	case nil:
+		return &payout, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, errRes.Error(statusCode).Error()
 	}
-
-	var response Payout
-	err = json.NewDecoder(res.Body).Decode(&response)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get response from transfer: %w", err)
-	}
-
-	return &response, nil
+	return nil, fmt.Errorf("failed to make payout: %w", err)
 }
