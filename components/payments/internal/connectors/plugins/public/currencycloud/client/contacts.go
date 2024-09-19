@@ -2,11 +2,12 @@ package client
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type Contact struct {
@@ -28,28 +29,22 @@ func (c *Client) GetContactID(ctx context.Context, accountID string) (*Contact, 
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
-	}
-
 	type Contacts struct {
 		Contacts []*Contact `json:"contacts"`
 	}
 
-	var res Contacts
-	if err = json.NewDecoder(resp.Body).Decode(&res); err != nil {
-		return nil, err
+	res := Contacts{Contacts: make([]*Contact, 0)}
+	var errRes currencyCloudError
+	_, err = c.httpClient.Do(req, &res, nil)
+	switch err {
+	case nil:
+		if len(res.Contacts) == 0 {
+			return nil, fmt.Errorf("no contact found for account %s", accountID)
+		}
+		return res.Contacts[0], nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, errRes.Error()
 	}
-
-	if len(res.Contacts) == 0 {
-		return nil, fmt.Errorf("no contact found for account %s", accountID)
-	}
-
-	return res.Contacts[0], nil
+	return nil, fmt.Errorf("failed to get contacts %w", err)
 }

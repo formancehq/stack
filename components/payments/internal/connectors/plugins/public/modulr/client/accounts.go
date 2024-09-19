@@ -2,11 +2,12 @@ package client
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 //nolint:tagliatelle // allow for clients
@@ -47,23 +48,17 @@ func (c *Client) GetAccounts(ctx context.Context, page, pageSize int, fromCreate
 	}
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		// TODO(polo): retryable errors
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
-	}
-
 	var res responseWrapper[[]Account]
-	if err = json.NewDecoder(resp.Body).Decode(&res); err != nil {
-		return nil, err
+	var errRes modulrError
+	_, err = c.httpClient.Do(req, &res, &errRes)
+	switch err {
+	case nil:
+		return &res, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, errRes.Error()
 	}
-
-	return &res, nil
+	return nil, fmt.Errorf("failed to get accounts: %w", err)
 }
 
 func (c *Client) GetAccount(ctx context.Context, accountID string) (*Account, error) {
@@ -77,21 +72,15 @@ func (c *Client) GetAccount(ctx context.Context, accountID string) (*Account, er
 		return nil, fmt.Errorf("failed to create accounts request: %w", err)
 	}
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		// TODO(polo): retryable errors
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
-	}
-
 	var res Account
-	if err = json.NewDecoder(resp.Body).Decode(&res); err != nil {
-		return nil, err
+	var errRes modulrError
+	_, err = c.httpClient.Do(req, &res, &errRes)
+	switch err {
+	case nil:
+		return &res, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, errRes.Error()
 	}
-
-	return &res, nil
+	return nil, fmt.Errorf("failed to get account: %w", err)
 }

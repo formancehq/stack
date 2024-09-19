@@ -2,9 +2,10 @@ package client
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type Refund struct {
@@ -40,27 +41,14 @@ func (c *Client) GetRefund(ctx context.Context, refundID string) (*Refund, error
 		return nil, fmt.Errorf("failed to create get refund request: %w", err)
 	}
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get refund: %w", err)
-	}
-
-	defer func() {
-		err = resp.Body.Close()
-		if err != nil {
-			// TODO(polo): log error
-			_ = err
-		}
-	}()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
-	}
-
 	var refund Refund
-	if err := json.NewDecoder(resp.Body).Decode(&refund); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal refund response body: %w", err)
+	_, err = c.httpClient.Do(req, &refund, nil)
+	switch err {
+	case nil:
+		return &refund, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, err
 	}
-
-	return &refund, nil
+	return nil, fmt.Errorf("failed to get refund: %w", err)
 }

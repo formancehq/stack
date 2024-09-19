@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 //nolint:tagliatelle // allow different styled tags in client
@@ -23,13 +25,13 @@ type Transaction struct {
 	AdditionalInfo  interface{} `json:"additionalInfo"`
 }
 
-func (m *Client) GetTransactions(ctx context.Context, accountID string, page, pageSize int, fromTransactionDate time.Time) (*responseWrapper[[]Transaction], error) {
+func (c *Client) GetTransactions(ctx context.Context, accountID string, page, pageSize int, fromTransactionDate time.Time) (*responseWrapper[[]Transaction], error) {
 	// TODO(polo): add metrics
 	// f := connectors.ClientMetrics(ctx, "modulr", "list_transactions")
 	// now := time.Now()
 	// defer f(ctx, now)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, m.buildEndpoint("accounts/%s/transactions", accountID), http.NoBody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.buildEndpoint("accounts/%s/transactions", accountID), http.NoBody)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create accounts request: %w", err)
 	}
@@ -42,22 +44,15 @@ func (m *Client) GetTransactions(ctx context.Context, accountID string, page, pa
 	}
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := m.httpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		// TODO(polo): retryable errors
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
-	}
-
 	var res responseWrapper[[]Transaction]
-	if err = json.NewDecoder(resp.Body).Decode(&res); err != nil {
-		return nil, err
+	var errRes modulrError
+	_, err = c.httpClient.Do(req, &res, &errRes)
+	switch err {
+	case nil:
+		return &res, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, errRes.Error()
 	}
-
-	return &res, nil
+	return nil, fmt.Errorf("failed to get transactions %w", err)
 }

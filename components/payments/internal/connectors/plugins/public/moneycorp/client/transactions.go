@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type transactionsResponse struct {
@@ -84,33 +86,15 @@ func (c *Client) GetTransactions(ctx context.Context, accountID string, page, pa
 	q.Add("sortBy", "createdAt.asc")
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get transactions: %w", err)
-	}
-
-	defer func() {
-		err = resp.Body.Close()
-		if err != nil {
-			// TODO(polo): log error
-			// c.logger.Error(err)
-			_ = err
-		}
-	}()
-
-	if resp.StatusCode == http.StatusNotFound {
-		return []*Transaction{}, nil
-	}
-
-	if resp.StatusCode != http.StatusOK {
+	transactions := transactionsResponse{Transactions: make([]*Transaction, 0)}
+	var errRes moneycorpError
+	_, err = c.httpClient.Do(req, &transactions, &errRes)
+	switch err {
+	case nil:
+		return transactions.Transactions, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
 		// TODO(polo): retryable errors
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
+		return nil, errRes.Error()
 	}
-
-	var transactions transactionsResponse
-	if err := json.NewDecoder(resp.Body).Decode(&transactions); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal transactions response body: %w", err)
-	}
-
-	return transactions.Transactions, nil
+	return nil, fmt.Errorf("failed to get transactions %w", err)
 }

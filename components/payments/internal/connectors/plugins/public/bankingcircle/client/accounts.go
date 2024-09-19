@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"time"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type Account struct {
@@ -58,24 +59,6 @@ func (c *Client) GetAccounts(ctx context.Context, page int, pageSize int, fromOp
 
 	req.Header.Set("Authorization", "Bearer "+c.accessToken)
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get accounts: %w", err)
-	}
-
-	defer func() {
-		err = resp.Body.Close()
-		if err != nil {
-			_ = err
-			// TODO(polo): log error
-		}
-	}()
-
-	responseBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read accounts response body: %w", err)
-	}
-
 	type response struct {
 		Result   []Account `json:"result"`
 		PageInfo struct {
@@ -84,13 +67,16 @@ func (c *Client) GetAccounts(ctx context.Context, page int, pageSize int, fromOp
 		} `json:"pageInfo"`
 	}
 
-	var res response
-
-	if err = json.Unmarshal(responseBody, &res); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal accounts response: %w", err)
+	res := response{Result: make([]Account, 0)}
+	statusCode, err := c.httpClient.Do(req, &res, nil)
+	switch err {
+	case nil:
+		return res.Result, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, fmt.Errorf("received status code %d for get accounts", statusCode)
 	}
-
-	return res.Result, nil
+	return nil, fmt.Errorf("failed to get accounts: %w", err)
 }
 
 func (c *Client) GetAccount(ctx context.Context, accountID string) (*Account, error) {
@@ -109,27 +95,14 @@ func (c *Client) GetAccount(ctx context.Context, accountID string) (*Account, er
 	}
 	req.Header.Set("Authorization", "Bearer "+c.accessToken)
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get accounts: %w", err)
-	}
-
-	defer func() {
-		err = resp.Body.Close()
-		if err != nil {
-			_ = err
-			// TODO(polo): log error
-		}
-	}()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("wrong status code: %d", resp.StatusCode)
-	}
-
 	var account Account
-	if err := json.NewDecoder(resp.Body).Decode(&account); err != nil {
-		return nil, fmt.Errorf("failed to decode account response: %w", err)
+	statusCode, err := c.httpClient.Do(req, &account, nil)
+	switch err {
+	case nil:
+		return &account, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, fmt.Errorf("received status code %d for get account", statusCode)
 	}
-
-	return &account, nil
+	return nil, fmt.Errorf("failed to get account: %w", err)
 }

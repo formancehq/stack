@@ -2,9 +2,10 @@ package client
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type PayinResponse struct {
@@ -39,27 +40,14 @@ func (c *Client) GetPayin(ctx context.Context, payinID string) (*PayinResponse, 
 		return nil, fmt.Errorf("failed to create get payin request: %w", err)
 	}
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get payin: %w", err)
-	}
-
-	defer func() {
-		err = resp.Body.Close()
-		if err != nil {
-			// TODO(polo): log error
-			_ = err
-		}
-	}()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
-	}
-
 	var payinResponse PayinResponse
-	if err := json.NewDecoder(resp.Body).Decode(&payinResponse); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal payin response body: %w", err)
+	_, err = c.httpClient.Do(req, &payinResponse, nil)
+	switch err {
+	case nil:
+		return &payinResponse, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, err
 	}
-
-	return &payinResponse, nil
+	return nil, fmt.Errorf("failed to get payin response: %w", err)
 }

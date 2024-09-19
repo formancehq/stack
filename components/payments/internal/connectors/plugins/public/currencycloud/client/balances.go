@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type Balance struct {
@@ -38,16 +40,6 @@ func (c *Client) GetBalances(ctx context.Context, page int, pageSize int) ([]*Ba
 
 	req.Header.Add("Accept", "application/json")
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, 0, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, 0, unmarshalError(resp.StatusCode, resp.Body).Error()
-	}
-
 	//nolint:tagliatelle // allow for client code
 	type response struct {
 		Balances   []*Balance `json:"balances"`
@@ -56,10 +48,15 @@ func (c *Client) GetBalances(ctx context.Context, page int, pageSize int) ([]*Ba
 		} `json:"pagination"`
 	}
 
-	var res response
-	if err = json.NewDecoder(resp.Body).Decode(&res); err != nil {
-		return nil, 0, err
+	res := response{Balances: make([]*Balance, 0)}
+	var errRes currencyCloudError
+	_, err = c.httpClient.Do(req, &res, nil)
+	switch err {
+	case nil:
+		return res.Balances, res.Pagination.NextPage, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, 0, errRes.Error()
 	}
-
-	return res.Balances, res.Pagination.NextPage, nil
+	return nil, 0, fmt.Errorf("failed to get balances %w", err)
 }

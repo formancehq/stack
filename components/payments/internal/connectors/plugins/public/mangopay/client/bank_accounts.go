@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type OwnerAddress struct {
@@ -127,31 +129,17 @@ func (c *Client) createBankAccount(ctx context.Context, endpoint string, req any
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
 
-	resp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create bank account: %w", err)
-	}
-
-	defer func() {
-		err = resp.Body.Close()
-		if err != nil {
-			// TODO: log error
-			_ = err
-		}
-	}()
-
-	if resp.StatusCode != http.StatusOK {
+	var bankAccount BankAccount
+	_, err = c.httpClient.Do(httpReq, &bankAccount, nil)
+	switch err {
+	case nil:
+		return &bankAccount, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
 		// Never retry bank account creation
 		// TODO(polo): retry ?
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
+		return nil, err
 	}
-
-	var bankAccount BankAccount
-	if err := json.NewDecoder(resp.Body).Decode(&bankAccount); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal bank account response body: %w", err)
-	}
-
-	return &bankAccount, nil
+	return nil, fmt.Errorf("failed to create bank account: %w", err)
 }
 
 type BankAccount struct {
@@ -178,27 +166,14 @@ func (c *Client) GetBankAccounts(ctx context.Context, userID string, page, pageS
 	q.Add("Sort", "CreationDate:ASC")
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get wallets: %w", err)
-	}
-
-	defer func() {
-		err = resp.Body.Close()
-		if err != nil {
-			// TODO(polo): log error
-			_ = err
-		}
-	}()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
-	}
-
 	var bankAccounts []BankAccount
-	if err := json.NewDecoder(resp.Body).Decode(&bankAccounts); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal wallets response body: %w", err)
+	_, err = c.httpClient.Do(req, &bankAccounts, nil)
+	switch err {
+	case nil:
+		return bankAccounts, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, err
 	}
-
-	return bankAccounts, nil
+	return nil, fmt.Errorf("failed to get bank accounts: %w", err)
 }

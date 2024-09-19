@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type webhookSubscription struct {
@@ -36,8 +38,8 @@ type webhookSubscriptionResponse struct {
 	CreatedAt string `json:"created_at"`
 }
 
-func (w *Client) CreateWebhook(ctx context.Context, profileID uint64, name, triggerOn, url, version string) (*webhookSubscriptionResponse, error) {
-	req, err := json.Marshal(webhookSubscription{
+func (c *Client) CreateWebhook(ctx context.Context, profileID uint64, name, triggerOn, url, version string) (*webhookSubscriptionResponse, error) {
+	reqBody, err := json.Marshal(webhookSubscription{
 		Name:      name,
 		TriggerOn: triggerOn,
 		Delivery: struct {
@@ -52,73 +54,65 @@ func (w *Client) CreateWebhook(ctx context.Context, profileID uint64, name, trig
 		return nil, err
 	}
 
-	res, err := w.httpClient.Post(
-		w.endpoint(fmt.Sprintf("/v3/profiles/%d/subscriptions", profileID)),
-		"application/json",
-		bytes.NewBuffer(req),
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost,
+		c.endpoint(fmt.Sprintf("/v3/profiles/%d/subscriptions", profileID)),
+		bytes.NewBuffer(reqBody),
 	)
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
+	req.Header.Set("Content-Type", "application/json")
 
-	if res.StatusCode != http.StatusCreated {
-		return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
+	var res webhookSubscriptionResponse
+	var errRes wiseErrors
+	statusCode, err := c.httpClient.Do(req, &res, &errRes)
+	switch err {
+	case nil:
+		return &res, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, errRes.Error(statusCode).Error()
 	}
-
-	var response webhookSubscriptionResponse
-	err = json.NewDecoder(res.Body).Decode(&response)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
-	}
-
-	return &response, nil
+	return nil, fmt.Errorf("failed to create subscription: %w", err)
 }
 
-func (w *Client) ListWebhooksSubscription(ctx context.Context, profileID uint64) ([]webhookSubscriptionResponse, error) {
+func (c *Client) ListWebhooksSubscription(ctx context.Context, profileID uint64) ([]webhookSubscriptionResponse, error) {
 	req, err := http.NewRequestWithContext(ctx,
-		http.MethodGet, w.endpoint(fmt.Sprintf("/v3/profiles/%d/subscriptions", profileID)), http.NoBody)
+		http.MethodGet, c.endpoint(fmt.Sprintf("/v3/profiles/%d/subscriptions", profileID)), http.NoBody)
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := w.httpClient.Do(req)
-	if err != nil {
-		return nil, err
+	var res []webhookSubscriptionResponse
+	var errRes wiseErrors
+	statusCode, err := c.httpClient.Do(req, &res, &errRes)
+	switch err {
+	case nil:
+		return res, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return res, errRes.Error(statusCode).Error()
 	}
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
-	}
-
-	var response []webhookSubscriptionResponse
-	err = json.NewDecoder(res.Body).Decode(&response)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
-	}
-
-	return response, nil
+	return res, fmt.Errorf("failed to get subscription: %w", err)
 }
 
-func (w *Client) DeleteWebhooks(ctx context.Context, profileID uint64, subscriptionID string) error {
+func (c *Client) DeleteWebhooks(ctx context.Context, profileID uint64, subscriptionID string) error {
 	req, err := http.NewRequestWithContext(ctx,
-		http.MethodDelete, w.endpoint(fmt.Sprintf("/v3/profiles/%d/subscriptions/%s", profileID, subscriptionID)), http.NoBody)
+		http.MethodDelete, c.endpoint(fmt.Sprintf("/v3/profiles/%d/subscriptions/%s", profileID, subscriptionID)), http.NoBody)
 	if err != nil {
 		return err
 	}
 
-	res, err := w.httpClient.Do(req)
-	if err != nil {
-		return err
+	var errRes wiseErrors
+	statusCode, err := c.httpClient.Do(req, nil, &errRes)
+	switch err {
+	case nil:
+		return nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return errRes.Error(statusCode).Error()
 	}
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusNoContent {
-		return fmt.Errorf("unexpected status code: %d", res.StatusCode)
-	}
-
-	return nil
+	return fmt.Errorf("failed to get subscription: %w", err)
 }
 
 type transferStateChangedWebhookPayload struct {
@@ -139,14 +133,14 @@ type transferStateChangedWebhookPayload struct {
 	SentAt         string `json:"sent_at"`
 }
 
-func (w *Client) TranslateTransferStateChangedWebhook(ctx context.Context, payload []byte) (Transfer, error) {
+func (c *Client) TranslateTransferStateChangedWebhook(ctx context.Context, payload []byte) (Transfer, error) {
 	var transferStatedChangedEvent transferStateChangedWebhookPayload
 	err := json.Unmarshal(payload, &transferStatedChangedEvent)
 	if err != nil {
 		return Transfer{}, err
 	}
 
-	transfer, err := w.GetTransfer(ctx, fmt.Sprint(transferStatedChangedEvent.Data.Resource.ID))
+	transfer, err := c.GetTransfer(ctx, fmt.Sprint(transferStatedChangedEvent.Data.Resource.ID))
 	if err != nil {
 		return Transfer{}, err
 	}
@@ -181,7 +175,7 @@ type balanceUpdateWebhookPayload struct {
 	SentAt         string `json:"sent_at"`
 }
 
-func (w *Client) TranslateBalanceUpdateWebhook(ctx context.Context, payload []byte) (balanceUpdateWebhookPayload, error) {
+func (c *Client) TranslateBalanceUpdateWebhook(ctx context.Context, payload []byte) (balanceUpdateWebhookPayload, error) {
 	var balanceUpdateEvent balanceUpdateWebhookPayload
 	err := json.Unmarshal(payload, &balanceUpdateEvent)
 	if err != nil {

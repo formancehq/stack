@@ -5,9 +5,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 	"github.com/google/uuid"
 )
 
@@ -15,42 +15,42 @@ type Quote struct {
 	ID uuid.UUID `json:"id"`
 }
 
-func (w *Client) CreateQuote(ctx context.Context, profileID, currency string, amount json.Number) (Quote, error) {
+func (c *Client) CreateQuote(ctx context.Context, profileID, currency string, amount json.Number) (Quote, error) {
 	// TODO(polo): metrics
 	// f := connectors.ClientMetrics(ctx, "wise", "create_quote")
 	// now := time.Now()
 	// defer f(ctx, now)
 
-	var response Quote
+	var quote Quote
 
-	req, err := json.Marshal(map[string]interface{}{
+	reqBody, err := json.Marshal(map[string]interface{}{
 		"sourceCurrency": currency,
 		"targetCurrency": currency,
 		"sourceAmount":   amount,
 	})
 	if err != nil {
-		return response, err
+		return quote, err
 	}
 
-	res, err := w.httpClient.Post(w.endpoint("v3/profiles/"+profileID+"/quotes"), "application/json", bytes.NewBuffer(req))
+	req, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodPost,
+		c.endpoint("v3/profiles/"+profileID+"/quotes"),
+		bytes.NewBuffer(reqBody),
+	)
 	if err != nil {
-		return response, err
+		return quote, err
 	}
-	defer res.Body.Close()
+	req.Header.Set("Content-Type", "application/json")
 
-	if res.StatusCode != http.StatusOK {
-		return response, unmarshalError(res.StatusCode, res.Body).Error()
+	var errRes wiseErrors
+	statusCode, err := c.httpClient.Do(req, &quote, &errRes)
+	switch err {
+	case nil:
+		return quote, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return quote, errRes.Error(statusCode).Error()
 	}
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return response, fmt.Errorf("failed to read response body: %w", err)
-	}
-
-	err = json.Unmarshal(body, &response)
-	if err != nil {
-		return response, fmt.Errorf("failed to get response from quote: %w", err)
-	}
-
-	return response, nil
+	return quote, fmt.Errorf("failed to get response from quote: %w", err)
 }

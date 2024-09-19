@@ -2,10 +2,11 @@ package client
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type User struct {
@@ -31,27 +32,14 @@ func (c *Client) GetUsers(ctx context.Context, page int, pageSize int) ([]User, 
 	q.Add("Sort", "CreationDate:ASC")
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get users: %w", err)
-	}
-
-	defer func() {
-		err = resp.Body.Close()
-		if err != nil {
-			// TODO(polo): log error
-			_ = err
-		}
-	}()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
-	}
-
 	var users []User
-	if err := json.NewDecoder(resp.Body).Decode(&users); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal users response body: %w", err)
+	_, err = c.httpClient.Do(req, &users, nil)
+	switch err {
+	case nil:
+		return users, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, err
 	}
-
-	return users, nil
+	return nil, fmt.Errorf("failed to get user response: %w", err)
 }

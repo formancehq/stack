@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"time"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 //nolint:tagliatelle // allow for client-side structures
@@ -102,24 +103,6 @@ func (c *Client) GetPayments(ctx context.Context, page int, pageSize int) ([]Pay
 
 	req.Header.Set("Authorization", "Bearer "+c.accessToken)
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get payments: %w", err)
-	}
-
-	defer func() {
-		err = resp.Body.Close()
-		if err != nil {
-			_ = err
-			// TODO(polo): log error
-		}
-	}()
-
-	responseBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read payments response body: %w", err)
-	}
-
 	type response struct {
 		Result   []Payment `json:"result"`
 		PageInfo struct {
@@ -128,13 +111,16 @@ func (c *Client) GetPayments(ctx context.Context, page int, pageSize int) ([]Pay
 		} `json:"pageInfo"`
 	}
 
-	var res response
-
-	if err = json.Unmarshal(responseBody, &res); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal payments response: %w", err)
+	res := response{Result: make([]Payment, 0)}
+	statusCode, err := c.httpClient.Do(req, &res, nil)
+	switch err {
+	case nil:
+		return res.Result, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, fmt.Errorf("received status code %d for get payments", statusCode)
 	}
-
-	return res.Result, nil
+	return nil, fmt.Errorf("failed to get payments: %w", err)
 }
 
 type StatusResponse struct {
@@ -157,28 +143,14 @@ func (c *Client) GetPaymentStatus(ctx context.Context, paymentID string) (*Statu
 	}
 	req.Header.Set("Authorization", "Bearer "+c.accessToken)
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get payments: %w", err)
-	}
-
-	defer func() {
-		err = resp.Body.Close()
-		if err != nil {
-			_ = err
-			// TODO(polo): log error
-		}
-	}()
-
-	responseBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read payments response body: %w", err)
-	}
-
 	var res StatusResponse
-	if err = json.Unmarshal(responseBody, &res); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal payments response: %w", err)
+	statusCode, err := c.httpClient.Do(req, &res, nil)
+	switch err {
+	case nil:
+		return &res, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, fmt.Errorf("received status code %d for get payment status", statusCode)
 	}
-
-	return &res, nil
+	return nil, fmt.Errorf("failed to get payments status: %w", err)
 }
