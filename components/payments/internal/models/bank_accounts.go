@@ -33,6 +33,10 @@ type BankAccount struct {
 	RelatedAccounts []BankAccountRelatedAccount `json:"relatedAccounts"`
 }
 
+func (b *BankAccount) IdempotemcyKey() string {
+	return b.ID.String()
+}
+
 func (a *BankAccount) Offuscate() error {
 	if a.IBAN != nil {
 		length := len(*a.IBAN)

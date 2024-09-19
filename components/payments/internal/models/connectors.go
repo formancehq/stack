@@ -19,6 +19,10 @@ type Connector struct {
 	Config json.RawMessage `json:"config"`
 }
 
+func (c *Connector) IdempotencyKey() string {
+	return c.ID.String()
+}
+
 func (c Connector) MarshalJSON() ([]byte, error) {
 	return json.Marshal(&struct {
 		ID        string          `json:"id"`

@@ -43,7 +43,7 @@ func (w Workflow) createInstance(
 func (w Workflow) terminateInstance(
 	ctx workflow.Context,
 	connectorID models.ConnectorID,
-	err error,
+	terminateError error,
 ) error {
 	info := workflow.GetInfo(ctx)
 
@@ -56,8 +56,8 @@ func (w Workflow) terminateInstance(
 	}
 
 	var errMessage *string
-	if err != nil {
-		errMessage = pointer.For(err.Error())
+	if terminateError != nil {
+		errMessage = pointer.For(terminateError.Error())
 	}
 
 	now := workflow.Now(ctx).UTC()

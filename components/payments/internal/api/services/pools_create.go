@@ -7,5 +7,6 @@ import (
 )
 
 func (s *Service) PoolsCreate(ctx context.Context, pool models.Pool) error {
-	return s.storage.PoolsUpsert(ctx, pool)
+	err := s.engine.CreatePool(ctx, pool)
+	return handleEngineErrors(err)
 }

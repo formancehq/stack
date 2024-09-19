@@ -8,6 +8,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/licence"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
+	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/formancehq/stack/libs/go-libs/temporal"
 	"github.com/sirupsen/logrus"
@@ -28,6 +29,7 @@ func newServer() *cobra.Command {
 	otlpmetrics.AddFlags(cmd.Flags())
 	otlptraces.AddFlags(cmd.Flags())
 	auth.AddFlags(cmd.Flags())
+	publish.AddFlags(ServiceName, cmd.Flags())
 	bunconnect.AddFlags(cmd.Flags())
 	iam.AddFlags(cmd.Flags())
 	temporal.AddFlags(cmd.Flags())

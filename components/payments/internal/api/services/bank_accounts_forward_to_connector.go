@@ -8,5 +8,5 @@ import (
 )
 
 func (s *Service) BankAccountsForwardToConnector(ctx context.Context, bankAccountID uuid.UUID, connectorID models.ConnectorID) (*models.BankAccount, error) {
-	return s.engine.CreateBankAccount(ctx, bankAccountID, connectorID)
+	return s.engine.ForwartBankAccount(ctx, bankAccountID, connectorID)
 }

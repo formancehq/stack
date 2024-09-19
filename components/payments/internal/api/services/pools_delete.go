@@ -7,5 +7,6 @@ import (
 )
 
 func (s *Service) PoolsDelete(ctx context.Context, id uuid.UUID) error {
-	return s.storage.PoolsDelete(ctx, id)
+	err := s.engine.DeletePool(ctx, id)
+	return handleEngineErrors(err)
 }
