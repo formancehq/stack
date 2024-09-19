@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 	lru "github.com/hashicorp/golang-lru/v2"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
@@ -22,7 +23,7 @@ func (t *apiTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 }
 
 type Client struct {
-	httpClient *http.Client
+	httpClient httpwrapper.Client
 
 	recipientAccountsCache *lru.Cache[uint64, *RecipientAccount]
 }
@@ -31,17 +32,18 @@ func (w *Client) endpoint(path string) string {
 	return fmt.Sprintf("%s/%s", apiEndpoint, path)
 }
 
-func New(apiKey string) *Client {
+func New(apiKey string) (*Client, error) {
 	recipientsCache, _ := lru.New[uint64, *RecipientAccount](2048)
-	httpClient := &http.Client{
+	config := &httpwrapper.Config{
 		Transport: &apiTransport{
 			APIKey:     apiKey,
 			underlying: otelhttp.NewTransport(http.DefaultTransport),
 		},
 	}
 
+	httpClient, err := httpwrapper.NewClient(config)
 	return &Client{
 		httpClient:             httpClient,
 		recipientAccountsCache: recipientsCache,
-	}
+	}, err
 }

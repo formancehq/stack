@@ -2,10 +2,10 @@ package client
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type RecipientAccountsResponse struct {
@@ -24,14 +24,14 @@ type RecipientAccount struct {
 	} `json:"name"`
 }
 
-func (w *Client) GetRecipientAccounts(ctx context.Context, profileID uint64, pageSize int, seekPositionForNext uint64) (*RecipientAccountsResponse, error) {
+func (c *Client) GetRecipientAccounts(ctx context.Context, profileID uint64, pageSize int, seekPositionForNext uint64) (*RecipientAccountsResponse, error) {
 	// TODO(polo): metrics
 	// f := connectors.ClientMetrics(ctx, "wise", "list_recipient_accounts")
 	// now := time.Now()
 	// defer f(ctx, now)
 
 	req, err := http.NewRequestWithContext(ctx,
-		http.MethodGet, w.endpoint("v2/accounts"), http.NoBody)
+		http.MethodGet, c.endpoint("v2/accounts"), http.NoBody)
 	if err != nil {
 		return nil, err
 	}
@@ -45,87 +45,51 @@ func (w *Client) GetRecipientAccounts(ctx context.Context, profileID uint64, pag
 	}
 	req.URL.RawQuery = q.Encode()
 
-	res, err := w.httpClient.Do(req)
-	if err != nil {
-		return nil, err
+	var accounts RecipientAccountsResponse
+	var errRes wiseErrors
+	statusCode, err := c.httpClient.Do(req, &accounts, &errRes)
+	switch err {
+	case nil:
+		return &accounts, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, errRes.Error(statusCode).Error()
 	}
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		return nil, unmarshalError(res.StatusCode, res.Body).Error()
-	}
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read response body: %w", err)
-	}
-
-	var recipientAccounts *RecipientAccountsResponse
-	err = json.Unmarshal(body, &recipientAccounts)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal transfers: %w", err)
-	}
-
-	return recipientAccounts, nil
+	return nil, fmt.Errorf("failed to get recipient accounts: %w", err)
 }
 
-func (w *Client) GetRecipientAccount(ctx context.Context, accountID uint64) (*RecipientAccount, error) {
+func (c *Client) GetRecipientAccount(ctx context.Context, accountID uint64) (*RecipientAccount, error) {
 	// TODO(polo): metrics
 	// f := connectors.ClientMetrics(ctx, "wise", "get_recipient_account")
 	// now := time.Now()
 	// defer f(ctx, now)
 
-	if rc, ok := w.recipientAccountsCache.Get(accountID); ok {
+	if rc, ok := c.recipientAccountsCache.Get(accountID); ok {
 		return rc, nil
 	}
 
 	req, err := http.NewRequestWithContext(ctx,
-		http.MethodGet, w.endpoint(fmt.Sprintf("v1/accounts/%d", accountID)), http.NoBody)
+		http.MethodGet, c.endpoint(fmt.Sprintf("v1/accounts/%d", accountID)), http.NoBody)
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := w.httpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		type errorResponse struct {
-			Errors []struct {
-				Code    string `json:"code"`
-				Message string `json:"message"`
-			}
-		}
-
-		var e errorResponse
-		err = json.NewDecoder(res.Body).Decode(&e)
-		if err != nil {
-			return nil, fmt.Errorf("failed to decode error response: %w", err)
-		}
-
-		if len(e.Errors) == 0 {
-			return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
-		}
-
-		switch e.Errors[0].Code {
-		case "RECIPIENT_MISSING":
+	var res RecipientAccount
+	var errRes wiseErrors
+	statusCode, err := c.httpClient.Do(req, &res, &errRes)
+	switch err {
+	case nil:
+		c.recipientAccountsCache.Add(accountID, &res)
+		return &res, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		e := errRes.Error(statusCode)
+		if e.Code == "RECIPIENT_MISSING" {
 			// This is a valid response, we just don't have the account amoungs
 			// our recipients.
 			return &RecipientAccount{}, nil
 		}
-
-		return nil, fmt.Errorf("unexpected status code: %d with err: %v", res.StatusCode, e)
+		return nil, e.Error()
 	}
-
-	var account RecipientAccount
-	err = json.NewDecoder(res.Body).Decode(&account)
-	if err != nil {
-		return nil, fmt.Errorf("failed to decode account: %w", err)
-	}
-
-	w.recipientAccountsCache.Add(accountID, &account)
-
-	return &account, nil
+	return nil, fmt.Errorf("failed to get recipient account: %w", err)
 }

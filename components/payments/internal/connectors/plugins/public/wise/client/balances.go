@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type Balance struct {
@@ -34,64 +36,52 @@ type Balance struct {
 	Visible          bool      `json:"visible"`
 }
 
-func (w *Client) GetBalances(ctx context.Context, profileID uint64) ([]Balance, error) {
+func (c *Client) GetBalances(ctx context.Context, profileID uint64) ([]Balance, error) {
 	// TODO(polo): metrics
 	// f := connectors.ClientMetrics(ctx, "wise", "list_balances")
 	// now := time.Now()
 	// defer f(ctx, now)
 
 	req, err := http.NewRequestWithContext(ctx,
-		http.MethodGet, w.endpoint(fmt.Sprintf("v4/profiles/%d/balances?types=STANDARD", profileID)), http.NoBody)
+		http.MethodGet, c.endpoint(fmt.Sprintf("v4/profiles/%d/balances?types=STANDARD", profileID)), http.NoBody)
 	if err != nil {
 		return nil, err
-	}
-
-	res, err := w.httpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		return nil, unmarshalError(res.StatusCode, res.Body).Error()
 	}
 
 	var balances []Balance
-	err = json.NewDecoder(res.Body).Decode(&balances)
-	if err != nil {
-		return nil, fmt.Errorf("failed to decode account: %w", err)
+	var errRes wiseErrors
+	statusCode, err := c.httpClient.Do(req, &balances, &errRes)
+	switch err {
+	case nil:
+		return balances, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return balances, errRes.Error(statusCode).Error()
 	}
-
-	return balances, nil
+	return balances, fmt.Errorf("failed to get balances: %w", err)
 }
 
-func (w *Client) GetBalance(ctx context.Context, profileID uint64, balanceID uint64) (*Balance, error) {
+func (c *Client) GetBalance(ctx context.Context, profileID uint64, balanceID uint64) (*Balance, error) {
 	// TODO(polo): metrics
 	// f := connectors.ClientMetrics(ctx, "wise", "list_balances")
 	// now := time.Now()
 	// defer f(ctx, now)
 
 	req, err := http.NewRequestWithContext(ctx,
-		http.MethodGet, w.endpoint(fmt.Sprintf("v4/profiles/%d/balances/%d", profileID, balanceID)), http.NoBody)
+		http.MethodGet, c.endpoint(fmt.Sprintf("v4/profiles/%d/balances/%d", profileID, balanceID)), http.NoBody)
 	if err != nil {
 		return nil, err
-	}
-
-	res, err := w.httpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		return nil, unmarshalError(res.StatusCode, res.Body).Error()
 	}
 
 	var balance Balance
-	err = json.NewDecoder(res.Body).Decode(&balance)
-	if err != nil {
-		return nil, fmt.Errorf("failed to decode account: %w", err)
+	var errRes wiseErrors
+	statusCode, err := c.httpClient.Do(req, &balance, &errRes)
+	switch err {
+	case nil:
+		return &balance, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, errRes.Error(statusCode).Error()
 	}
-
-	return &balance, nil
+	return nil, fmt.Errorf("failed to get balances: %w", err)
 }

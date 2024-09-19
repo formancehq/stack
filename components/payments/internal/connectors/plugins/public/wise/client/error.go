@@ -1,13 +1,19 @@
 package client
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 )
 
 type wiseErrors struct {
 	Errors []*wiseError `json:"errors"`
+}
+
+func (we *wiseErrors) Error(statusCode int) *wiseError {
+	if len(we.Errors) == 0 {
+		return &wiseError{StatusCode: statusCode}
+	}
+	we.Errors[0].StatusCode = statusCode
+	return we.Errors[0]
 }
 
 type wiseError struct {
@@ -22,21 +28,4 @@ func (me *wiseError) Error() error {
 	}
 
 	return fmt.Errorf("%s: %s", me.Code, me.Message)
-}
-
-func unmarshalError(statusCode int, body io.ReadCloser) *wiseError {
-	var ces wiseErrors
-	_ = json.NewDecoder(body).Decode(&ces)
-
-	if len(ces.Errors) == 0 {
-		return &wiseError{
-			StatusCode: statusCode,
-		}
-	}
-
-	return &wiseError{
-		StatusCode: statusCode,
-		Code:       ces.Errors[0].Code,
-		Message:    ces.Errors[0].Message,
-	}
 }

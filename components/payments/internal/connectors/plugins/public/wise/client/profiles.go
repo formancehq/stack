@@ -2,10 +2,10 @@ package client
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type Profile struct {
@@ -13,34 +13,26 @@ type Profile struct {
 	Type string `json:"type"`
 }
 
-func (w *Client) GetProfiles(ctx context.Context) ([]Profile, error) {
+func (c *Client) GetProfiles(ctx context.Context) ([]Profile, error) {
 	// TODO(polo): metrics
 	// f := connectors.ClientMetrics(ctx, "wise", "list_profiles")
 	// now := time.Now()
 	// defer f(ctx, now)
 
 	var profiles []Profile
-
-	res, err := w.httpClient.Get(w.endpoint("v2/profiles"))
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.endpoint("v2/profiles"), http.NoBody)
 	if err != nil {
 		return profiles, err
 	}
 
-	defer res.Body.Close()
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read response body: %w", err)
+	var errRes wiseErrors
+	statusCode, err := c.httpClient.Do(req, &profiles, &errRes)
+	switch err {
+	case nil:
+		return profiles, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return profiles, errRes.Error(statusCode).Error()
 	}
-
-	if res.StatusCode != http.StatusOK {
-		return nil, unmarshalError(res.StatusCode, res.Body).Error()
-	}
-
-	err = json.Unmarshal(body, &profiles)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal profiles: %w", err)
-	}
-
-	return profiles, nil
+	return profiles, fmt.Errorf("failed to get profiles: %w", err)
 }
