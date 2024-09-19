@@ -269,6 +269,7 @@ func (i *impl) TranslateWebhook(ctx context.Context, req *services.TranslateWebh
 	i.logger.Info("translating webhook...")
 
 	resp, err := i.plugin.TranslateWebhook(ctx, models.TranslateWebhookRequest{
+		Name:    req.Name,
 		Webhook: grpc.TranslateProtoWebhook(req.Webhook),
 	})
 	if err != nil {
