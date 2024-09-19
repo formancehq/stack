@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type DestinationType string
@@ -60,23 +62,17 @@ func (c *Client) InitiateTransfer(ctx context.Context, transferRequest *Transfer
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to initiate transfer: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusCreated {
-		// TODO(polo): retryable errors
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
-	}
-
 	var res TransferResponse
-	if err = json.NewDecoder(resp.Body).Decode(&res); err != nil {
-		return nil, err
+	var errRes modulrError
+	_, err = c.httpClient.Do(req, &res, &errRes)
+	switch err {
+	case nil:
+		return &res, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, errRes.Error()
 	}
-
-	return &res, nil
+	return nil, fmt.Errorf("failed to initiate transfer: %w", err)
 }
 
 func (c *Client) GetTransfer(ctx context.Context, transferID string) (TransferResponse, error) {
@@ -85,25 +81,23 @@ func (c *Client) GetTransfer(ctx context.Context, transferID string) (TransferRe
 	// now := time.Now()
 	// defer f(ctx, now)
 
-	resp, err := c.httpClient.Get(c.buildEndpoint("payments?id=%s", transferID))
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.buildEndpoint("payments?id=%s", transferID), nil)
 	if err != nil {
-		return TransferResponse{}, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		// TODO(polo): retryable errors
-		return TransferResponse{}, unmarshalError(resp.StatusCode, resp.Body).Error()
+		return TransferResponse{}, fmt.Errorf("failed to create get transfer request: %w", err)
 	}
 
 	var res getTransferResponse
-	if err = json.NewDecoder(resp.Body).Decode(&res); err != nil {
-		return TransferResponse{}, err
+	var errRes modulrError
+	_, err = c.httpClient.Do(req, &res, &errRes)
+	switch err {
+	case nil:
+		if len(res.Content) == 0 {
+			return TransferResponse{}, fmt.Errorf("transfer not found")
+		}
+		return res.Content[0], nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return TransferResponse{}, errRes.Error()
 	}
-
-	if len(res.Content) == 0 {
-		return TransferResponse{}, fmt.Errorf("transfer not found")
-	}
-
-	return res.Content[0], nil
+	return TransferResponse{}, fmt.Errorf("failed to get transactions %w", err)
 }

@@ -2,11 +2,12 @@ package client
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/formancehq/payments/internal/connectors/httpwrapper"
 )
 
 type Beneficiary struct {
@@ -15,13 +16,13 @@ type Beneficiary struct {
 	Created string `json:"created"`
 }
 
-func (m *Client) GetBeneficiaries(ctx context.Context, page, pageSize int, modifiedSince time.Time) (*responseWrapper[[]Beneficiary], error) {
+func (c *Client) GetBeneficiaries(ctx context.Context, page, pageSize int, modifiedSince time.Time) (*responseWrapper[[]Beneficiary], error) {
 	// TODO(polo): add metrics
 	// f := connectors.ClientMetrics(ctx, "modulr", "list_beneficiaries")
 	// now := time.Now()
 	// defer f(ctx, now)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, m.buildEndpoint("beneficiaries"), http.NoBody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.buildEndpoint("beneficiaries"), http.NoBody)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create accounts request: %w", err)
 	}
@@ -34,22 +35,15 @@ func (m *Client) GetBeneficiaries(ctx context.Context, page, pageSize int, modif
 	}
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := m.httpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		// TODO(polo): retryable errors
-		return nil, unmarshalError(resp.StatusCode, resp.Body).Error()
-	}
-
 	var res responseWrapper[[]Beneficiary]
-	if err = json.NewDecoder(resp.Body).Decode(&res); err != nil {
-		return nil, err
+	var errRes modulrError
+	_, err = c.httpClient.Do(req, &res, &errRes)
+	switch err {
+	case nil:
+		return &res, nil
+	case httpwrapper.ErrStatusCodeUnexpected:
+		// TODO(polo): retryable errors
+		return nil, errRes.Error()
 	}
-
-	return &res, nil
+	return nil, fmt.Errorf("failed to get beneficiaries %w", err)
 }

@@ -1,9 +1,7 @@
 package client
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 )
 
 type modulrError struct {
@@ -24,24 +22,4 @@ func (me *modulrError) Error() error {
 	}
 
 	return err
-}
-
-func unmarshalError(statusCode int, body io.ReadCloser) *modulrError {
-	var ces []modulrError
-	_ = json.NewDecoder(body).Decode(&ces)
-
-	if len(ces) == 0 {
-		return &modulrError{
-			StatusCode: statusCode,
-		}
-	}
-
-	return &modulrError{
-		StatusCode:    statusCode,
-		Field:         ces[0].Field,
-		Code:          ces[0].Code,
-		Message:       ces[0].Message,
-		ErrorCode:     ces[0].ErrorCode,
-		SourceService: ces[0].SourceService,
-	}
 }
