@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	. "github.com/formancehq/go-libs/collectionutils"
+	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/stretchr/testify/require"
 )
 
