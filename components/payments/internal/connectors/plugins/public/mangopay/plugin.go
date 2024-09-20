@@ -3,6 +3,7 @@ package mangopay
 import (
 	"context"
 	"errors"
+	"strconv"
 
 	"github.com/formancehq/payments/internal/connectors/plugins"
 	"github.com/formancehq/payments/internal/connectors/plugins/public/mangopay/client"
@@ -26,9 +27,18 @@ func (p *Plugin) Install(_ context.Context, req models.InstallRequest) (models.I
 	p.client = client
 	p.initWebhookConfig()
 
+	configs := make([]models.PSPWebhookConfig, 0, len(webhookConfigs))
+	for name, config := range webhookConfigs {
+		configs = append(configs, models.PSPWebhookConfig{
+			Name:    string(name),
+			URLPath: config.urlPath,
+		})
+	}
+
 	return models.InstallResponse{
-		Capabilities: capabilities,
-		Workflow:     workflow(),
+		Capabilities:    capabilities,
+		WebhooksConfigs: configs,
+		Workflow:        workflow(),
 	}, nil
 }
 
@@ -93,9 +103,29 @@ func (p Plugin) CreateWebhooks(ctx context.Context, req models.CreateWebhooksReq
 }
 
 func (p Plugin) TranslateWebhook(ctx context.Context, req models.TranslateWebhookRequest) (models.TranslateWebhookResponse, error) {
-	webhook, err := p.client.UnmarshalWebhooks(string(req.Webhook.Body))
+	// Mangopay does not send us the event inside the body, but using
+	// URL query.
+	eventType, ok := req.Webhook.QueryValues["EventType"]
+	if !ok || len(eventType) == 0 {
+		return models.TranslateWebhookResponse{}, errors.New("missing EventType query parameter")
+	}
+	resourceID, ok := req.Webhook.QueryValues["RessourceId"]
+	if !ok || len(resourceID) == 0 {
+		return models.TranslateWebhookResponse{}, errors.New("missing RessourceId query parameter")
+	}
+	v, ok := req.Webhook.QueryValues["Date"]
+	if !ok || len(v) == 0 {
+		return models.TranslateWebhookResponse{}, errors.New("missing Date query parameter")
+	}
+	date, err := strconv.ParseInt(v[0], 10, 64)
 	if err != nil {
-		return models.TranslateWebhookResponse{}, err
+		return models.TranslateWebhookResponse{}, errors.New("invalid Date query parameter")
+	}
+
+	webhook := client.Webhook{
+		ResourceID: resourceID[0],
+		Date:       date,
+		EventType:  client.EventType(eventType[0]),
 	}
 
 	config, ok := webhookConfigs[webhook.EventType]
@@ -105,7 +135,7 @@ func (p Plugin) TranslateWebhook(ctx context.Context, req models.TranslateWebhoo
 
 	webhookResponse, err := config.fn(ctx, webhookTranslateRequest{
 		req:     req,
-		webhook: webhook,
+		webhook: &webhook,
 	})
 	if err != nil {
 		return models.TranslateWebhookResponse{}, err

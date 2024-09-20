@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"net/url"
 	"os"
 	"time"
 
@@ -116,7 +117,11 @@ func (p Plugin) createWebhooks(ctx context.Context, req models.CreateWebhooksReq
 
 	webhookURL := fmt.Sprintf("%s/api/payments/v3/connectors/webhooks/%s", stackPublicURL, req.ConnectorID)
 	for eventType, config := range webhookConfigs {
-		url := fmt.Sprintf("%s%s", webhookURL, config.urlPath)
+		url, err := url.JoinPath(webhookURL, config.urlPath)
+		if err != nil {
+			return err
+		}
+
 		if v, ok := activeHooks[eventType]; ok {
 			// Already created, continue
 
@@ -132,7 +137,7 @@ func (p Plugin) createWebhooks(ctx context.Context, req models.CreateWebhooksReq
 		}
 
 		// Otherwise, create it
-		err := p.client.CreateHook(ctx, eventType, url)
+		err = p.client.CreateHook(ctx, eventType, url)
 		if err != nil {
 			return err
 		}

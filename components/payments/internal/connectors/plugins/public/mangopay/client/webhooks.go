@@ -73,15 +73,6 @@ type Webhook struct {
 	EventType  EventType `json:"EventType"`
 }
 
-func (c *Client) UnmarshalWebhooks(req string) (*Webhook, error) {
-	res := Webhook{}
-	err := json.Unmarshal([]byte(req), &res)
-	if err != nil {
-		return nil, err
-	}
-	return &res, nil
-}
-
 type Hook struct {
 	ID        string    `json:"Id"`
 	URL       string    `json:"Url"`
@@ -146,7 +137,6 @@ func (c *Client) CreateHook(ctx context.Context, eventType EventType, URL string
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	return nil
 	var errRes mangopayError
 	_, err = c.httpClient.Do(req, nil, &errRes)
 	if err != nil {
