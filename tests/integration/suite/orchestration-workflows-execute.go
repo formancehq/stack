@@ -5,6 +5,7 @@ import (
 	orchestrationevents "github.com/formancehq/orchestration/pkg/events"
 	"github.com/formancehq/stack/libs/events"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
+	"github.com/nats-io/nats.go"
 	"math/big"
 	"net/http"
 	"time"
@@ -13,6 +14,8 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/go-libs/metadata"
 	. "github.com/formancehq/stack/tests/integration/internal"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 	"github.com/pborman/uuid"
 )
 

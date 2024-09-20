@@ -8,13 +8,16 @@ import (
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"github.com/formancehq/go-libs/api"
-	"github.com/formancehq/go-libs/publish"
 	orchestrationevents "github.com/formancehq/orchestration/pkg/events"
 	paymentsevents "github.com/formancehq/payments/pkg/events"
+	"github.com/formancehq/go-libs/api"
+	"github.com/formancehq/go-libs/publish"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"github.com/google/uuid"
+	"github.com/nats-io/nats.go"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 )
 
 var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledger}, func() {
