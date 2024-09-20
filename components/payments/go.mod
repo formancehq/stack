@@ -24,6 +24,7 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.9.0
+	github.com/stripe/stripe-go/v79 v79.12.0
 	github.com/uptrace/bun v1.2.3
 	github.com/uptrace/bun/dialect/pgdialect v1.2.3
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.55.0
@@ -32,6 +33,7 @@ require (
 	go.temporal.io/api v1.39.0
 	go.temporal.io/sdk v1.29.1
 	go.uber.org/fx v1.22.2
+	go.uber.org/mock v0.4.0
 	golang.org/x/oauth2 v0.23.0
 	google.golang.org/grpc v1.67.0
 	google.golang.org/protobuf v1.34.2
@@ -188,7 +190,6 @@ require (
 	go.opentelemetry.io/proto/otlp v1.3.1 // indirect
 	go.temporal.io/sdk/contrib/opentelemetry v0.6.0 // indirect
 	go.uber.org/dig v1.18.0 // indirect
-	go.uber.org/mock v0.4.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/crypto v0.27.0 // indirect

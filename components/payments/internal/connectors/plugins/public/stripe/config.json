@@ -1,0 +1,7 @@
+{
+    "apiKey": {
+        "dataType": "string",
+        "required": true,
+        "defaultValue": ""
+    }
+}
