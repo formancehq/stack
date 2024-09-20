@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/formancehq/go-libs/collectionutils"
 
 	"github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"

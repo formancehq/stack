@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/formancehq/go-libs/metadata"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
 )
 
 const (

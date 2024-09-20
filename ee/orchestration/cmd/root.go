@@ -5,27 +5,27 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/formancehq/go-libs/bun/bunmigrate"
+	"github.com/formancehq/go-libs/licence"
 	"github.com/formancehq/orchestration/internal/storage"
-	"github.com/formancehq/stack/libs/go-libs/bun/bunmigrate"
-	"github.com/formancehq/stack/libs/go-libs/licence"
 	"github.com/uptrace/bun"
 
-	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+	"github.com/formancehq/go-libs/bun/bunconnect"
 
-	"github.com/formancehq/stack/libs/go-libs/auth"
-	"github.com/formancehq/stack/libs/go-libs/otlp"
+	"github.com/formancehq/go-libs/auth"
+	"github.com/formancehq/go-libs/otlp"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 
 	"github.com/formancehq/orchestration/internal/triggers"
 	"github.com/formancehq/orchestration/internal/workflow"
 
+	"github.com/formancehq/go-libs/publish"
 	"github.com/formancehq/orchestration/internal/temporalclient"
-	"github.com/formancehq/stack/libs/go-libs/publish"
 
+	"github.com/formancehq/go-libs/otlp/otlptraces"
+	"github.com/formancehq/go-libs/service"
 	_ "github.com/formancehq/orchestration/internal/workflow/stages/all"
-	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
-	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 )

@@ -3,18 +3,18 @@ package cmd
 import (
 	"net/http"
 
-	"github.com/formancehq/stack/libs/go-libs/aws/iam"
-	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
-	"github.com/formancehq/stack/libs/go-libs/licence"
-	"github.com/formancehq/stack/libs/go-libs/publish"
+	"github.com/formancehq/go-libs/aws/iam"
+	"github.com/formancehq/go-libs/bun/bunconnect"
+	"github.com/formancehq/go-libs/licence"
+	"github.com/formancehq/go-libs/publish"
 
 	"go.temporal.io/sdk/worker"
 
 	"github.com/formancehq/orchestration/internal/triggers"
 
 	sdk "github.com/formancehq/formance-sdk-go/v2"
+	"github.com/formancehq/go-libs/service"
 	"github.com/formancehq/orchestration/internal/temporalworker"
-	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 )

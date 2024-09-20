@@ -3,8 +3,8 @@ package internal
 import (
 	"context"
 
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/go-libs/collectionutils"
+	"github.com/formancehq/go-libs/logging"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"

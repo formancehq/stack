@@ -1,8 +1,8 @@
 package settings
 
 import (
+	"github.com/formancehq/go-libs/collectionutils"
 	"github.com/formancehq/operator/internal/core"
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 )

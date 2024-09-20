@@ -16,7 +16,6 @@ import (
 	"github.com/formancehq/operator/internal/resources/gateways"
 	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/settings"
-	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
 	v1 "k8s.io/api/core/v1"
 )

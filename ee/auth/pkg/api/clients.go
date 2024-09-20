@@ -3,12 +3,10 @@ package api
 import (
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
-
 	"github.com/uptrace/bun"
 
 	auth "github.com/formancehq/auth/pkg"
-	_ "github.com/formancehq/stack/libs/go-libs/api"
+	_ "github.com/formancehq/go-libs/api"
 )
 
 func addClientRoutes(db *bun.DB, r chi.Router) {

@@ -6,12 +6,12 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/formancehq/stack/libs/go-libs/auth"
+	"github.com/formancehq/go-libs/auth"
 	"github.com/formancehq/webhooks/pkg/storage"
 
-	"github.com/formancehq/stack/libs/go-libs/httpserver"
-	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
+	"github.com/formancehq/go-libs/httpserver"
+	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/go-libs/otlp/otlptraces"
 	"go.uber.org/fx"
 )
 

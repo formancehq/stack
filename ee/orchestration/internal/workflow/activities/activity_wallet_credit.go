@@ -4,7 +4,7 @@ import (
 	"context"
 	stdtime "time"
 
-	"github.com/formancehq/stack/libs/go-libs/time"
+	"github.com/formancehq/go-libs/time"
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"

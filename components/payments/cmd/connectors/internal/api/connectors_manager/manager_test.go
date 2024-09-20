@@ -4,12 +4,12 @@ import (
 	"context"
 	"testing"
 
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/messages"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"

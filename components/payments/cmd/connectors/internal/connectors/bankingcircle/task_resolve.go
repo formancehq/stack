@@ -3,9 +3,9 @@ package bankingcircle
 import (
 	"fmt"
 
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/bankingcircle/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/google/uuid"
 )
 

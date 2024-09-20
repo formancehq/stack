@@ -4,7 +4,7 @@ import (
 	"embed"
 	"fmt"
 
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/formancehq/go-libs/collectionutils"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"

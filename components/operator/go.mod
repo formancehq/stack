@@ -6,7 +6,7 @@ toolchain go1.22.6
 
 require (
 	github.com/formancehq/search v0.0.0-00010101000000-000000000000
-	github.com/formancehq/stack/libs/go-libs v0.0.0-20231226162118-70cd9916b2b2
+	github.com/formancehq/go-libs v0.0.0-20231226162118-70cd9916b2b2
 	github.com/go-logr/logr v1.4.2
 	github.com/google/go-cmp v0.6.0
 	github.com/google/uuid v1.6.0
@@ -82,6 +82,6 @@ require (
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
-replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
+replace github.com/formancehq/go-libs => ../../libs/go-libs
 
 replace github.com/formancehq/search => ../../ee/search

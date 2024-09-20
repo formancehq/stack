@@ -6,12 +6,10 @@ import (
 	"net/http"
 	"reflect"
 
-	"github.com/go-chi/chi/v5"
-
 	"github.com/uptrace/bun"
 
-	"github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/go-libs/api"
+	"github.com/formancehq/go-libs/logging"
 	"go.opentelemetry.io/otel/trace"
 )
 

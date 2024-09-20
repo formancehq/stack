@@ -3,10 +3,10 @@ package api
 import (
 	"net/http"
 
+	"github.com/formancehq/go-libs/api"
+	"github.com/formancehq/go-libs/auth"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/cmd/api/internal/api/backend"
-	"github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/auth"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/gorilla/mux"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
 )

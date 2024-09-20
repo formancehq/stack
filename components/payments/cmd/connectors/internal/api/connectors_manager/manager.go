@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	"github.com/formancehq/go-libs/bun/bunpaginate"
 
 	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/formancehq/go-libs/contextutil"
+	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/go-libs/publish"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
@@ -15,9 +18,6 @@ import (
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/payments/pkg/events"
-	"github.com/formancehq/stack/libs/go-libs/contextutil"
-	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"

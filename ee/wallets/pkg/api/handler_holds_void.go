@@ -4,10 +4,9 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/go-libs/api"
 
 	wallet "github.com/formancehq/wallets/pkg"
-	"github.com/go-chi/chi/v5"
 )
 
 func (m *MainHandler) voidHoldHandler(w http.ResponseWriter, r *http.Request) {

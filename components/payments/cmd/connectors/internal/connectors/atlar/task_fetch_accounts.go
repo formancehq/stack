@@ -8,6 +8,7 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/formancehq/go-libs/contextutil"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/atlar/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
@@ -15,7 +16,6 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
-	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/get-momo/atlar-v1-go-client/client/accounts"
 	"github.com/get-momo/atlar-v1-go-client/client/external_accounts"
 	"go.opentelemetry.io/otel/attribute"

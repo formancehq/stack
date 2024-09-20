@@ -5,7 +5,7 @@ import (
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 
-	"github.com/formancehq/stack/libs/go-libs/metadata"
+	"github.com/formancehq/go-libs/metadata"
 	"github.com/google/uuid"
 )
 

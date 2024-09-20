@@ -3,8 +3,8 @@ package storage
 import (
 	"context"
 
-	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
-	"github.com/formancehq/stack/libs/go-libs/query"
+	"github.com/formancehq/go-libs/bun/bunpaginate"
+	"github.com/formancehq/go-libs/query"
 	"github.com/uptrace/bun"
 )
 

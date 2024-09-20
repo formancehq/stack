@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 
+	"github.com/formancehq/go-libs/contextutil"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/contextutil"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
 const name = models.ConnectorProviderStripe

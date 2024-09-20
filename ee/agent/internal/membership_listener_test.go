@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/components/agent/internal/generated"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"k8s.io/apimachinery/pkg/api/meta"

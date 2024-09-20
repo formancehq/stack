@@ -14,7 +14,7 @@ import (
 
 	triggers "github.com/formancehq/orchestration/internal/triggers"
 	workflow "github.com/formancehq/orchestration/internal/workflow"
-	bunpaginate "github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	bunpaginate "github.com/formancehq/go-libs/bun/bunpaginate"
 	gomock "go.uber.org/mock/gomock"
 )
 

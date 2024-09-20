@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	"github.com/formancehq/go-libs/bun/bunpaginate"
 
 	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/pkg/errors"

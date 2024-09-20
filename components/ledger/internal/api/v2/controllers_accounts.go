@@ -8,18 +8,16 @@ import (
 
 	storageerrors "github.com/formancehq/ledger/internal/storage/sqlutils"
 
+	"github.com/formancehq/go-libs/pointer"
 	"github.com/formancehq/stack/libs/core/accounts"
-	"github.com/formancehq/stack/libs/go-libs/pointer"
 
-	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
-	"github.com/go-chi/chi/v5"
-
+	sharedapi "github.com/formancehq/go-libs/api"
+	"github.com/formancehq/go-libs/bun/bunpaginate"
+	"github.com/formancehq/go-libs/collectionutils"
+	"github.com/formancehq/go-libs/metadata"
 	ledger "github.com/formancehq/ledger/internal"
 	"github.com/formancehq/ledger/internal/api/backend"
 	"github.com/formancehq/ledger/internal/storage/ledgerstore"
-	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/pkg/errors"
 )
 

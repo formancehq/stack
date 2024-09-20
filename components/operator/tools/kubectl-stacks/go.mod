@@ -6,7 +6,7 @@ toolchain go1.22.6
 
 require (
 	github.com/formancehq/operator v0.0.0-00010101000000-000000000000
-	github.com/formancehq/stack/libs/go-libs v0.0.0-20231226162118-70cd9916b2b2
+	github.com/formancehq/go-libs v0.0.0-20231226162118-70cd9916b2b2
 	github.com/pterm/pterm v0.12.79
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/pflag v1.0.5

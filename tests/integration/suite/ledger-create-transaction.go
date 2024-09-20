@@ -10,14 +10,11 @@ import (
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/go-libs/metadata"
+	"github.com/formancehq/go-libs/pointer"
 	ledgerevents "github.com/formancehq/ledger/pkg/events"
 	"github.com/formancehq/stack/libs/events"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
-	"github.com/formancehq/stack/libs/go-libs/pointer"
 	. "github.com/formancehq/stack/tests/integration/internal"
-	"github.com/nats-io/nats.go"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
 )
 
 var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {

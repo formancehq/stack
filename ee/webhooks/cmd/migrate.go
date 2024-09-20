@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/formancehq/stack/libs/go-libs/bun/bunmigrate"
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/go-libs/bun/bunmigrate"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/uptrace/bun"
 
 	"github.com/formancehq/webhooks/cmd/flag"

@@ -26,8 +26,8 @@ import (
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
-	"github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/go-libs/api"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )

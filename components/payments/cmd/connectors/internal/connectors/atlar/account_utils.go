@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/formancehq/go-libs/metadata"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
 	atlar_models "github.com/get-momo/atlar-v1-go-client/models"
 )
 

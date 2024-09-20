@@ -3,9 +3,9 @@ package jobs
 import (
 	"fmt"
 
+	"github.com/formancehq/go-libs/pointer"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
-	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/pkg/errors"
 	batchv1 "k8s.io/api/batch/v1"
 	v1 "k8s.io/api/core/v1"

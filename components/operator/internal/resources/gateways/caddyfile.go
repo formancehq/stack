@@ -1,10 +1,10 @@
 package gateways
 
 import (
+	"github.com/formancehq/go-libs/collectionutils"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/caddy"
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 )
 
 func CreateCaddyfile(ctx core.Context, stack *v1beta1.Stack,

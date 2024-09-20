@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	sharedapi "github.com/formancehq/go-libs/api"
 	"github.com/formancehq/orchestration/internal/api"
-	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/go-chi/chi/v5"
 )
 
 func testTrigger(backend api.Backend) http.HandlerFunc {

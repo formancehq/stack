@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/formancehq/go-libs/api"
 	"github.com/formancehq/payments/cmd/connectors/internal/api/backend"
 	"github.com/formancehq/payments/cmd/connectors/internal/api/service"
 	"github.com/formancehq/payments/internal/otel"
-	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 )

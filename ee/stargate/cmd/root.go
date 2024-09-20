@@ -3,10 +3,10 @@ package cmd
 import (
 	"time"
 
-	"github.com/formancehq/stack/libs/go-libs/licence"
-	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
-	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
-	"github.com/formancehq/stack/libs/go-libs/service"
+	"github.com/formancehq/go-libs/licence"
+	"github.com/formancehq/go-libs/otlp/otlpmetrics"
+	"github.com/formancehq/go-libs/otlp/otlptraces"
+	"github.com/formancehq/go-libs/service"
 	"github.com/spf13/cobra"
 )
 

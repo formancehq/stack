@@ -3,13 +3,12 @@ package api
 import (
 	"net/http"
 
-	"github.com/formancehq/stack/libs/go-libs/service"
+	"github.com/formancehq/go-libs/service"
 
-	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/auth"
-	sharedhealth "github.com/formancehq/stack/libs/go-libs/health"
+	sharedapi "github.com/formancehq/go-libs/api"
+	"github.com/formancehq/go-libs/auth"
+	sharedhealth "github.com/formancehq/go-libs/health"
 	wallet "github.com/formancehq/wallets/pkg"
-	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
 

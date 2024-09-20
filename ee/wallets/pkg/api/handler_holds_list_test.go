@@ -8,11 +8,11 @@ import (
 	"strconv"
 	"testing"
 
-	sharedapi "github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	sharedapi "github.com/formancehq/go-libs/bun/bunpaginate"
 
-	"github.com/formancehq/stack/libs/go-libs/pointer"
+	"github.com/formancehq/go-libs/pointer"
 
-	"github.com/formancehq/stack/libs/go-libs/metadata"
+	"github.com/formancehq/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"

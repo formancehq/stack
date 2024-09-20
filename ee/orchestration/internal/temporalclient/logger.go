@@ -1,7 +1,7 @@
 package temporalclient
 
 import (
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/go-libs/logging"
 	"go.temporal.io/sdk/log"
 )
 

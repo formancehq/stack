@@ -1,13 +1,13 @@
 package cmd
 
 import (
+	"github.com/formancehq/go-libs/licence"
+	"github.com/formancehq/go-libs/otlp/otlpmetrics"
+	"github.com/formancehq/go-libs/otlp/otlptraces"
+	app "github.com/formancehq/go-libs/service"
 	"github.com/formancehq/stack/ee/stargate/internal/client"
 	"github.com/formancehq/stack/ee/stargate/internal/client/controllers"
 	"github.com/formancehq/stack/ee/stargate/internal/client/interceptors"
-	"github.com/formancehq/stack/libs/go-libs/licence"
-	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
-	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
-	app "github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 )

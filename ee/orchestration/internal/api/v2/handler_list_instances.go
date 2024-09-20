@@ -3,12 +3,12 @@ package v2
 import (
 	"net/http"
 
+	"github.com/formancehq/go-libs/bun/bunpaginate"
 	"github.com/formancehq/orchestration/internal/workflow"
-	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 
 	api "github.com/formancehq/orchestration/internal/api"
 
-	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	sharedapi "github.com/formancehq/go-libs/api"
 )
 
 func listInstances(backend api.Backend) http.HandlerFunc {

@@ -3,11 +3,11 @@ package postgres_test
 import (
 	"testing"
 
-	"github.com/formancehq/stack/libs/go-libs/testing/docker"
-	"github.com/formancehq/stack/libs/go-libs/testing/utils"
+	"github.com/formancehq/go-libs/testing/docker"
+	"github.com/formancehq/go-libs/testing/utils"
 
-	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/testing/platform/pgtesting"
+	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/go-libs/testing/platform/pgtesting"
 )
 
 var srv *pgtesting.PostgresServer

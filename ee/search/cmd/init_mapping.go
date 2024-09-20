@@ -1,9 +1,9 @@
 package cmd
 
 import (
+	"github.com/formancehq/go-libs/aws/iam"
+	"github.com/formancehq/go-libs/service"
 	"github.com/formancehq/search/pkg/searchengine"
-	"github.com/formancehq/stack/libs/go-libs/aws/iam"
-	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )

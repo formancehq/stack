@@ -3,11 +3,10 @@ package v2
 import (
 	"net/http"
 
-	"github.com/formancehq/stack/libs/go-libs/service"
+	"github.com/formancehq/go-libs/service"
 
+	"github.com/formancehq/go-libs/auth"
 	"github.com/formancehq/orchestration/internal/api"
-	"github.com/formancehq/stack/libs/go-libs/auth"
-	"github.com/go-chi/chi/v5"
 )
 
 func newRouter(backend api.Backend, authenticator auth.Authenticator, debug bool) *chi.Mux {

@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
-	"github.com/formancehq/stack/libs/go-libs/bun/bunmigrate"
+	"github.com/formancehq/go-libs/bun/bunconnect"
+	"github.com/formancehq/go-libs/bun/bunmigrate"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )

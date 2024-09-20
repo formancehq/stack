@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/formancehq/go-libs/collectionutils"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/jobs"
 	"github.com/formancehq/operator/internal/resources/registries"
 	"github.com/formancehq/operator/internal/resources/settings"
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/pkg/errors"
 	"golang.org/x/mod/semver"
 	batchv1 "k8s.io/api/batch/v1"

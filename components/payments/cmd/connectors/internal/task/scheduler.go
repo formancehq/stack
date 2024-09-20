@@ -8,13 +8,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	"github.com/formancehq/go-libs/bun/bunpaginate"
 
 	"github.com/alitto/pond"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/cmd/connectors/internal/metrics"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"go.uber.org/dig"

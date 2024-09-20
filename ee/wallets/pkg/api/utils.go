@@ -7,10 +7,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	"github.com/formancehq/go-libs/bun/bunpaginate"
 
-	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
-	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
+	sharedapi "github.com/formancehq/go-libs/api"
+	sharedlogging "github.com/formancehq/go-libs/logging"
 	wallet "github.com/formancehq/wallets/pkg"
 )
 

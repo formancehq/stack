@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
-	"github.com/formancehq/stack/libs/go-libs/publish"
+	"github.com/formancehq/go-libs/bun/bunpaginate"
+	"github.com/formancehq/go-libs/publish"
 
 	"github.com/formancehq/payments/cmd/api/internal/storage"
 	"github.com/formancehq/payments/internal/models"

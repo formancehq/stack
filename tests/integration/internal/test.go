@@ -3,8 +3,8 @@ package internal
 import (
 	"context"
 	"fmt"
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
-	"github.com/formancehq/stack/libs/go-libs/httpclient"
+	"github.com/formancehq/go-libs/collectionutils"
+	"github.com/formancehq/go-libs/httpclient"
 	"github.com/xo/dburl"
 	"net/http"
 	"net/http/httptest"

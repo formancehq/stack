@@ -7,10 +7,10 @@ import (
 	"github.com/formancehq/orchestration/internal/temporalworker"
 
 	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/formancehq/go-libs/collectionutils"
+	"github.com/formancehq/go-libs/pointer"
 	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/formancehq/orchestration/pkg/events"
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
-	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/uptrace/bun"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"

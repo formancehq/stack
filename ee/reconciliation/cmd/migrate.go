@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/formancehq/stack/libs/go-libs/bun/bunmigrate"
+	"github.com/formancehq/go-libs/bun/bunmigrate"
 
 	storage "github.com/formancehq/reconciliation/internal/storage/migrations"
 	"github.com/spf13/cobra"

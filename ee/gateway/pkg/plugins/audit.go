@@ -14,18 +14,16 @@ import (
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill-kafka/v3/pkg/kafka"
 	wNats "github.com/ThreeDotsLabs/watermill-nats/v2/pkg/nats"
-	"github.com/nats-io/nats.go"
 	"github.com/pkg/errors"
 	"github.com/xdg-go/scram"
 
 	"github.com/ThreeDotsLabs/watermill/message"
-	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
 	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
+	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/go-libs/publish"
 	"github.com/formancehq/stack/components/gateway/internal/audit/messages"
-	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/publish"
 
 	"go.uber.org/zap"
 )

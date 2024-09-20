@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"slices"
 
-	"github.com/formancehq/stack/libs/go-libs/pointer"
+	"github.com/formancehq/go-libs/pointer"
 	"golang.org/x/mod/semver"
 	"k8s.io/apimachinery/pkg/api/equality"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

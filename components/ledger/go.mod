@@ -6,7 +6,7 @@ toolchain go1.22.6
 
 replace github.com/formancehq/stack/ledger/client => ./pkg/client
 
-replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
+replace github.com/formancehq/go-libs => ../../libs/go-libs
 
 replace github.com/formancehq/stack/libs/core => ../../libs/core
 
@@ -17,7 +17,7 @@ require (
 	github.com/bluele/gcache v0.0.2
 	github.com/formancehq/stack/ledger/client v0.0.0-00010101000000-000000000000
 	github.com/formancehq/stack/libs/core v0.0.0-00010101000000-000000000000
-	github.com/formancehq/stack/libs/go-libs v0.0.0-00010101000000-000000000000
+	github.com/formancehq/go-libs v0.0.0-00010101000000-000000000000
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/go-chi/cors v1.2.1
 	github.com/google/go-cmp v0.6.0

@@ -3,7 +3,7 @@ package client
 import (
 	"github.com/adyen/adyen-go-api-library/v7/src/adyen"
 	"github.com/adyen/adyen-go-api-library/v7/src/common"
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/go-libs/logging"
 )
 
 type Client struct {

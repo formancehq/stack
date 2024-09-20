@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/formancehq/stack/libs/go-libs/time"
+	"github.com/formancehq/go-libs/time"
 
 	"github.com/formancehq/orchestration/internal/workflow/stages"
 	"github.com/pkg/errors"

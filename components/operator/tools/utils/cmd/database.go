@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+	"github.com/formancehq/go-libs/bun/bunconnect"
 	"github.com/spf13/cobra"
 )
 

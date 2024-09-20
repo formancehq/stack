@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/formancehq/fctl/membershipclient"
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/formancehq/go-libs/collectionutils"
 	"github.com/spf13/cobra"
 	"golang.org/x/mod/semver"
 )

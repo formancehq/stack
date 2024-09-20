@@ -16,7 +16,6 @@ import (
 	"k8s.io/client-go/util/workqueue"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
-	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"sigs.k8s.io/controller-runtime/pkg/builder"

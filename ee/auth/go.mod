@@ -5,7 +5,7 @@ go 1.22
 toolchain go1.22.6
 
 require (
-	github.com/formancehq/stack/libs/go-libs v0.0.0-00010101000000-000000000000
+	github.com/formancehq/go-libs v0.0.0-00010101000000-000000000000
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.6.0
@@ -134,4 +134,4 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
-replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
+replace github.com/formancehq/go-libs => ../../libs/go-libs

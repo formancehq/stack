@@ -6,8 +6,8 @@ import (
 
 	"github.com/formancehq/orchestration/internal/api"
 
+	sharedapi "github.com/formancehq/go-libs/api"
 	"github.com/formancehq/orchestration/internal/triggers"
-	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/pkg/errors"
 )
 

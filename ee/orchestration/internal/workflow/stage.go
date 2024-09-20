@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/formancehq/stack/libs/go-libs/pointer"
+	"github.com/formancehq/go-libs/pointer"
 
 	"github.com/uptrace/bun"
 )

@@ -1,13 +1,13 @@
 package connectors
 
 import (
-	"github.com/formancehq/stack/libs/go-libs/auth"
-	"github.com/formancehq/stack/libs/go-libs/aws/iam"
-	"github.com/formancehq/stack/libs/go-libs/otlp"
-	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
-	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
-	"github.com/formancehq/stack/libs/go-libs/publish"
-	"github.com/formancehq/stack/libs/go-libs/service"
+	"github.com/formancehq/go-libs/auth"
+	"github.com/formancehq/go-libs/aws/iam"
+	"github.com/formancehq/go-libs/otlp"
+	"github.com/formancehq/go-libs/otlp/otlpmetrics"
+	"github.com/formancehq/go-libs/otlp/otlptraces"
+	"github.com/formancehq/go-libs/publish"
+	"github.com/formancehq/go-libs/service"
 	"github.com/spf13/cobra"
 )
 

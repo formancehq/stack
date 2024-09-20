@@ -6,7 +6,7 @@ import (
 
 	"github.com/formancehq/fctl/membershipclient"
 	formance "github.com/formancehq/formance-sdk-go/v2"
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/spf13/cobra"
 )
 

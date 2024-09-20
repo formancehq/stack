@@ -3,11 +3,8 @@
 package test_suite
 
 import (
-	. "github.com/formancehq/ledger/pkg/testserver"
-	"github.com/formancehq/stack/libs/go-libs/logging"
-	. "github.com/formancehq/stack/libs/go-libs/testing/platform/pgtesting"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
+	"github.com/formancehq/go-libs/logging"
+	. "github.com/formancehq/go-libs/testing/platform/pgtesting"
 )
 
 var _ = Context("Ledger integration tests", func() {

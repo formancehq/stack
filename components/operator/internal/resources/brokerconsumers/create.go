@@ -5,7 +5,6 @@ import (
 	"sort"
 	"strings"
 
-	. "github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"

@@ -8,13 +8,11 @@ import (
 	"net/http"
 	"os"
 
-	"gopkg.in/yaml.v3"
+	"github.com/formancehq/go-libs/aws/iam"
+	"github.com/formancehq/go-libs/bun/bunconnect"
+	"github.com/formancehq/go-libs/licence"
 
-	"github.com/formancehq/stack/libs/go-libs/aws/iam"
-	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
-	"github.com/formancehq/stack/libs/go-libs/licence"
-
-	"github.com/formancehq/stack/libs/go-libs/otlp"
+	"github.com/formancehq/go-libs/otlp"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
 	auth "github.com/formancehq/auth/pkg"
@@ -22,9 +20,9 @@ import (
 	"github.com/formancehq/auth/pkg/delegatedauth"
 	"github.com/formancehq/auth/pkg/oidc"
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
-	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
-	"github.com/formancehq/stack/libs/go-libs/service"
+	sharedapi "github.com/formancehq/go-libs/api"
+	"github.com/formancehq/go-libs/otlp/otlptraces"
+	"github.com/formancehq/go-libs/service"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	zLogging "github.com/zitadel/logging"

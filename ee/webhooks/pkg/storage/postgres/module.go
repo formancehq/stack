@@ -3,7 +3,7 @@ package postgres
 import (
 	"github.com/uptrace/bun"
 
-	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+	"github.com/formancehq/go-libs/bun/bunconnect"
 
 	"github.com/formancehq/webhooks/pkg/storage"
 	"go.uber.org/fx"

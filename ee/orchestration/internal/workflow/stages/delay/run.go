@@ -1,7 +1,7 @@
 package delay
 
 import (
-	"github.com/formancehq/stack/libs/go-libs/time"
+	"github.com/formancehq/go-libs/time"
 	"go.temporal.io/sdk/workflow"
 )
 

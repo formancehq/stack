@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/formancehq/stack/libs/go-libs/time"
+	"github.com/formancehq/go-libs/time"
 
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/google/uuid"

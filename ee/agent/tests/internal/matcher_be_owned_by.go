@@ -5,7 +5,7 @@ import (
 	"k8s.io/client-go/kubernetes/scheme"
 	"reflect"
 
-	"github.com/formancehq/stack/libs/go-libs/pointer"
+	"github.com/formancehq/go-libs/pointer"
 	gomegaTypes "github.com/onsi/gomega/types"
 	"github.com/pkg/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

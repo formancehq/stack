@@ -3,8 +3,8 @@ package api
 import (
 	"net/http"
 
+	"github.com/formancehq/go-libs/api"
 	"github.com/formancehq/payments/cmd/api/internal/api/backend"
-	"github.com/formancehq/stack/libs/go-libs/api"
 )
 
 func healthHandler(b backend.Backend) http.HandlerFunc {

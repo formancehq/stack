@@ -11,7 +11,7 @@ import (
 	service "github.com/formancehq/payments/cmd/api/internal/api/service"
 	storage "github.com/formancehq/payments/cmd/api/internal/storage"
 	models "github.com/formancehq/payments/internal/models"
-	bunpaginate "github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	bunpaginate "github.com/formancehq/go-libs/bun/bunpaginate"
 	gomock "github.com/golang/mock/gomock"
 	uuid "github.com/google/uuid"
 )

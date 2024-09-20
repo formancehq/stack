@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/formancehq/fctl/membershipclient"
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/golang-jwt/jwt"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"

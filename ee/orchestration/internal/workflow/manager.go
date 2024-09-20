@@ -10,7 +10,7 @@ import (
 	enums "go.temporal.io/api/enums/v1"
 	history "go.temporal.io/api/history/v1"
 
-	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	"github.com/formancehq/go-libs/bun/bunpaginate"
 
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"

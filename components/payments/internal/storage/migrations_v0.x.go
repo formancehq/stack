@@ -3,7 +3,7 @@ package storage
 import (
 	"fmt"
 
-	"github.com/formancehq/stack/libs/go-libs/migrations"
+	"github.com/formancehq/go-libs/migrations"
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
 )

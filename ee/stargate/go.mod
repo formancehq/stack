@@ -6,7 +6,7 @@ toolchain go1.22.6
 
 require (
 	github.com/alitto/pond v1.8.3
-	github.com/formancehq/stack/libs/go-libs v0.0.0-00010101000000-000000000000
+	github.com/formancehq/go-libs v0.0.0-00010101000000-000000000000
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/go-chi/cors v1.2.1
 	github.com/pkg/errors v0.9.1
@@ -84,4 +84,4 @@ require (
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 )
 
-replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
+replace github.com/formancehq/go-libs => ../../libs/go-libs

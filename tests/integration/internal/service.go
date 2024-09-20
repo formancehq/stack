@@ -4,13 +4,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/docker/docker/api/types/container"
-	"github.com/ory/dockertest/v3"
 	"io"
 	"time"
 
 	"github.com/egymgmbh/go-prefix-writer/prefixer"
-	"github.com/formancehq/stack/libs/go-libs/httpserver"
-	serviceutils "github.com/formancehq/stack/libs/go-libs/service"
+	"github.com/formancehq/go-libs/httpserver"
+	serviceutils "github.com/formancehq/go-libs/service"
 	"github.com/spf13/cobra"
 )
 

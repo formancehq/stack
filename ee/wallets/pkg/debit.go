@@ -6,9 +6,9 @@ import (
 
 	"github.com/formancehq/stack/libs/core/assets"
 
-	"github.com/formancehq/stack/libs/go-libs/time"
+	"github.com/formancehq/go-libs/time"
 
-	"github.com/formancehq/stack/libs/go-libs/metadata"
+	"github.com/formancehq/go-libs/metadata"
 )
 
 var DefaultDebitDest = NewLedgerAccountSubject("world")

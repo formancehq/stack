@@ -6,7 +6,7 @@ import (
 	"github.com/formancehq/fctl/cmd/stack/store"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/stack/libs/go-libs/pointer"
+	"github.com/formancehq/go-libs/pointer"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
