@@ -1,0 +1,13 @@
+# TriggerOccurrence
+
+
+## Fields
+
+| Field                                                                      | Type                                                                       | Required                                                                   | Description                                                                |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `Date`                                                                     | [time.Time](https://pkg.go.dev/time#Time)                                  | :heavy_check_mark:                                                         | N/A                                                                        |
+| `Error`                                                                    | **string*                                                                  | :heavy_minus_sign:                                                         | N/A                                                                        |
+| `Event`                                                                    | map[string]*any*                                                           | :heavy_check_mark:                                                         | N/A                                                                        |
+| `TriggerID`                                                                | *string*                                                                   | :heavy_check_mark:                                                         | N/A                                                                        |
+| `WorkflowInstance`                                                         | [*shared.WorkflowInstance](../../../pkg/models/shared/workflowinstance.md) | :heavy_minus_sign:                                                         | N/A                                                                        |
+| `WorkflowInstanceID`                                                       | **string*                                                                  | :heavy_minus_sign:                                                         | N/A                                                                        |

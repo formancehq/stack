@@ -1,0 +1,10 @@
+# UpdateWalletRequest
+
+
+## Fields
+
+| Field                                                                                            | Type                                                                                             | Required                                                                                         | Description                                                                                      |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `IdempotencyKey`                                                                                 | **string*                                                                                        | :heavy_minus_sign:                                                                               | Use an idempotency key                                                                           |
+| `RequestBody`                                                                                    | [*operations.UpdateWalletRequestBody](../../../pkg/models/operations/updatewalletrequestbody.md) | :heavy_minus_sign:                                                                               | N/A                                                                                              |
+| `ID`                                                                                             | *string*                                                                                         | :heavy_check_mark:                                                                               | N/A                                                                                              |

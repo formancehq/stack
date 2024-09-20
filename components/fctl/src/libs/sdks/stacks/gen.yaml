@@ -1,0 +1,33 @@
+configVersion: 2.0.0
+generation:
+  sdkClassName: Formance
+  usageSnippets:
+    optionalPropertyRendering: withExample
+  fixes:
+    nameResolutionDec2023: false
+    parameterOrderingFeb2024: false
+    requestResponseComponentNamesFeb2024: false
+  auth:
+    oAuth2ClientCredentialsEnabled: false
+  telemetryEnabled: false
+go:
+  version: v0.0.0
+  additionalDependencies: {}
+  allowUnknownFieldsInWeakUnions: false
+  author: Formance
+  clientServerStatusCodesAsErrors: true
+  flattenGlobalSecurity: false
+  imports:
+    option: openapi
+    paths:
+      callbacks: pkg/models/callbacks
+      errors: pkg/models/sdkerrors
+      operations: pkg/models/operations
+      shared: pkg/models/shared
+      webhooks: pkg/models/webhooks
+  inputModelSuffix: input
+  maxMethodParams: 0
+  methodArguments: require-security-and-request
+  outputModelSuffix: output
+  packageName: github.com/formancehq/formance-sdk-go/v2
+  responseFormat: envelope

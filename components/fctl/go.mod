@@ -73,10 +73,10 @@ require (
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 )
 
+replace github.com/formancehq/formance-sdk-go/v2 => ./libs/sdks/stacks
+
+replace github.com/formancehq/fctl/membershipclient => ./libs/sdks/membership
+
 replace github.com/zitadel/oidc/v2 v2.6.1 => github.com/formancehq/oidc/v2 v2.6.2-0.20230526075055-93dc5ecb0149
 
-replace github.com/formancehq/fctl/membershipclient => ./membershipclient
-
 replace github.com/spf13/cobra => github.com/formancehq/cobra v0.0.0-20240315111924-ca456bf9cac9
-
-replace github.com/formancehq/formance-sdk-go/v2 => ../../releases/sdks/go

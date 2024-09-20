@@ -18,19 +18,18 @@ deploy-staging:
     RUN echo "not implemented"
 
 sources:
-    WORKDIR src
-    DO core+INCLURE_SDK_GO --LOCATION /src/releases/sdks/go
-    WORKDIR /src/components/fctl
+    WORKDIR /src
+    DO core+INCLURE_SDK_GO --LOCATION /src/libs/sdks/stacks
+    COPY (+generate-membership-client/*) /src/libs/sdks/membership
     COPY go.* .
-    COPY --dir cmd pkg membershipclient .
+    COPY --dir cmd pkg .
     COPY main.go .
     SAVE ARTIFACT /src
 
 lint:
     FROM core+builder-image
-    COPY (+sources/*) /src
-    COPY --pass-args +tidy/go.* .
-    WORKDIR /src/components/fctl
+    WORKDIR /src
+    COPY --dir (+tidy/src/*) /src
     DO --pass-args core+GO_LINT
     SAVE ARTIFACT cmd AS LOCAL cmd
     SAVE ARTIFACT pkg AS LOCAL pkg
@@ -45,8 +44,8 @@ pre-commit:
 
 completions:
     FROM core+builder-image
-    COPY --pass-args (+sources/src) /src
-    WORKDIR /src/components/fctl
+    WORKDIR /src
+    COPY --dir (+sources/src/*) /src
     RUN mkdir -p ./completions
     RUN go run main.go completion bash > "./completions/fctl.bash"
     RUN go run main.go completion zsh > "./completions/fctl.zsh"
@@ -58,9 +57,10 @@ openapi:
 
 tidy:
     FROM core+builder-image
-    COPY --pass-args (+sources/src) /src
-    WORKDIR /src/components/fctl
+    WORKDIR /src
+    COPY --dir (+sources/*) /src
     DO --pass-args core+GO_TIDY
+    SAVE ARTIFACT /src AS LOCAL ./
 
 membership-openapi:
     FROM core+base-image
@@ -75,17 +75,17 @@ generate-membership-client:
     RUN docker-entrypoint.sh generate \
         -i ./openapi.yaml \
         -g go \
-        -o ./membershipclient \
+        -o ./ \
         --git-user-id=formancehq \
         --git-repo-id=fctl \
         -p packageVersion=latest \
         -p isGoSubmodule=true \
         -p packageName=membershipclient
-    RUN rm -rf ./membershipclient/test
-    SAVE ARTIFACT ./membershipclient AS LOCAL membershipclient
+    RUN rm -rf ./test ./openapi.yaml
+    SAVE ARTIFACT /src
 
 release:
     FROM core+builder-image
     ARG mode=local
-    COPY . /src
+    COPY --dir . /src
     DO core+GORELEASER --mode=$mode
