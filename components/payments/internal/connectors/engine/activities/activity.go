@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/formancehq/payments/internal/connectors/engine/plugins"
+	"github.com/formancehq/payments/internal/events"
 	"github.com/formancehq/payments/internal/storage"
 	temporalworker "github.com/formancehq/stack/libs/go-libs/temporal"
 	"go.temporal.io/sdk/temporal"
@@ -12,6 +13,7 @@ import (
 
 type Activities struct {
 	storage storage.Storage
+	events  *events.Events
 
 	plugins plugins.Plugins
 }
@@ -161,13 +163,42 @@ func (a Activities) DefinitionSet() temporalworker.DefinitionSet {
 		Append(temporalworker.Definition{
 			Name: "StorageWebhooksDelete",
 			Func: a.StorageWebhooksDelete,
+		}).
+		Append(temporalworker.Definition{
+			Name: "EventsSendAccount",
+			Func: a.EventsSendAccount,
+		}).
+		Append(temporalworker.Definition{
+			Name: "EventsSendBalance",
+			Func: a.EventsSendBalance,
+		}).
+		Append(temporalworker.Definition{
+			Name: "EventsSendBankAccount",
+			Func: a.EventsSendBankAccount,
+		}).
+		Append(temporalworker.Definition{
+			Name: "EventsSendConnectorReset",
+			Func: a.EventsSendConnectorReset,
+		}).
+		Append(temporalworker.Definition{
+			Name: "EventsSendPayment",
+			Func: a.EventsSendPayment,
+		}).
+		Append(temporalworker.Definition{
+			Name: "EventsSendPoolCreation",
+			Func: a.EventsSendPoolCreation,
+		}).
+		Append(temporalworker.Definition{
+			Name: "EventsSendPoolDeletion",
+			Func: a.EventsSendPoolDeletion,
 		})
 }
 
-func New(storage storage.Storage, plugins plugins.Plugins) Activities {
+func New(storage storage.Storage, events *events.Events, plugins plugins.Plugins) Activities {
 	return Activities{
 		storage: storage,
 		plugins: plugins,
+		events:  events,
 	}
 }
 

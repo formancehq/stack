@@ -34,7 +34,7 @@ func (w Workflow) fetchNextOthers(
 	fetchNextOthers FetchNextOthers,
 	nextTasks []models.TaskTree,
 ) error {
-	stateReference := fmt.Sprintf("%s", models.CAPABILITY_FETCH_OTHERS.String())
+	stateReference := models.CAPABILITY_FETCH_OTHERS.String()
 	if fetchNextOthers.FromPayload != nil {
 		stateReference = fmt.Sprintf("%s-%s", models.CAPABILITY_FETCH_OTHERS.String(), fetchNextOthers.FromPayload.ID)
 	}
@@ -62,30 +62,45 @@ func (w Workflow) fetchNextOthers(
 			return errors.Wrap(err, "fetching next others")
 		}
 
-		// TODO(polo): send event for others ? store others ?
-
+		wg := workflow.NewWaitGroup(ctx)
+		errChan := make(chan error, len(othersResponse.Others))
 		for _, other := range othersResponse.Others {
-			if err := workflow.ExecuteChildWorkflow(
-				workflow.WithChildOptions(
-					ctx,
-					workflow.ChildWorkflowOptions{
-						TaskQueue:         fetchNextOthers.ConnectorID.String(),
-						ParentClosePolicy: enums.PARENT_CLOSE_POLICY_ABANDON,
-						SearchAttributes: map[string]interface{}{
-							SearchAttributeStack: w.stack,
+			o := other
+
+			wg.Add(1)
+			workflow.Go(ctx, func(ctx workflow.Context) {
+				defer wg.Done()
+
+				if err := workflow.ExecuteChildWorkflow(
+					workflow.WithChildOptions(
+						ctx,
+						workflow.ChildWorkflowOptions{
+							TaskQueue:         fetchNextOthers.ConnectorID.String(),
+							ParentClosePolicy: enums.PARENT_CLOSE_POLICY_ABANDON,
+							SearchAttributes: map[string]interface{}{
+								SearchAttributeStack: w.stack,
+							},
 						},
+					),
+					Run,
+					fetchNextOthers.Config,
+					fetchNextOthers.ConnectorID,
+					&FromPayload{
+						ID:      o.ID,
+						Payload: o.Other,
 					},
-				),
-				Run,
-				fetchNextOthers.Config,
-				fetchNextOthers.ConnectorID,
-				&FromPayload{
-					ID:      other.ID,
-					Payload: other.Other,
-				},
-				nextTasks,
-			).Get(ctx, nil); err != nil {
-				return errors.Wrap(err, "running next workflow")
+					nextTasks,
+				).Get(ctx, nil); err != nil {
+					errChan <- errors.Wrap(err, "running next workflow")
+				}
+			})
+		}
+
+		wg.Wait(ctx)
+		close(errChan)
+		for err := range errChan {
+			if err != nil {
+				return err
 			}
 		}
 

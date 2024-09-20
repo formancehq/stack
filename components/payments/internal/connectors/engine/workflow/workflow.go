@@ -98,5 +98,9 @@ func (w Workflow) DefinitionSet() temporalworker.DefinitionSet {
 		Append(temporalworker.Definition{
 			Name: "RunStoreWebhookTranslation",
 			Func: w.runStoreWebhookTranslation,
+		}).
+		Append(temporalworker.Definition{
+			Name: "RunSendEvents",
+			Func: w.runSendEvents,
 		})
 }

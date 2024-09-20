@@ -116,12 +116,13 @@ func (p Plugin) createWebhooks(ctx context.Context, req models.CreateWebhooksReq
 
 	webhookURL := fmt.Sprintf("%s/api/payments/v3/connectors/webhooks/%s", stackPublicURL, req.ConnectorID)
 	for eventType, config := range webhookConfigs {
+		url := fmt.Sprintf("%s%s", webhookURL, config.urlPath)
 		if v, ok := activeHooks[eventType]; ok {
 			// Already created, continue
 
 			if v.URL != webhookURL {
 				// If the URL is different, update it
-				err := p.client.UpdateHook(ctx, v.ID, webhookURL)
+				err := p.client.UpdateHook(ctx, v.ID, url)
 				if err != nil {
 					return err
 				}
@@ -129,8 +130,6 @@ func (p Plugin) createWebhooks(ctx context.Context, req models.CreateWebhooksReq
 
 			continue
 		}
-
-		url := fmt.Sprintf("%s%s", webhookURL, config.urlPath)
 
 		// Otherwise, create it
 		err := p.client.CreateHook(ctx, eventType, url)

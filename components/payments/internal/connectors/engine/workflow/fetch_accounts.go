@@ -34,7 +34,7 @@ func (w Workflow) fetchAccounts(
 	fetchNextAccount FetchNextAccounts,
 	nextTasks []models.TaskTree,
 ) error {
-	stateReference := fmt.Sprintf("%s", models.CAPABILITY_FETCH_ACCOUNTS.String())
+	stateReference := models.CAPABILITY_FETCH_ACCOUNTS.String()
 	if fetchNextAccount.FromPayload != nil {
 		stateReference = fmt.Sprintf("%s-%s", models.CAPABILITY_FETCH_ACCOUNTS.String(), fetchNextAccount.FromPayload.ID)
 	}
@@ -61,49 +61,94 @@ func (w Workflow) fetchAccounts(
 			return errors.Wrap(err, "fetching next accounts")
 		}
 
+		accounts := models.FromPSPAccounts(
+			accountsResponse.Accounts,
+			models.ACCOUNT_TYPE_INTERNAL,
+			fetchNextAccount.ConnectorID,
+		)
+
 		if len(accountsResponse.Accounts) > 0 {
 			err = activities.StorageAccountsStore(
 				infiniteRetryContext(ctx),
-				models.FromPSPAccounts(
-					accountsResponse.Accounts,
-					models.ACCOUNT_TYPE_INTERNAL,
-					fetchNextAccount.ConnectorID,
-				),
+				accounts,
 			)
 			if err != nil {
 				return errors.Wrap(err, "storing next accounts")
 			}
 		}
 
-		// TODO(polo): send event
-		// TODO(polo): events with IK to avoid duplicates
-		for _, account := range accountsResponse.Accounts {
-			payload, err := json.Marshal(account)
-			if err != nil {
-				return errors.Wrap(err, "marshalling account")
-			}
+		wg := workflow.NewWaitGroup(ctx)
+		errChan := make(chan error, len(accountsResponse.Accounts)*2)
+		for _, account := range accounts {
+			acc := account
 
-			if err := workflow.ExecuteChildWorkflow(
-				workflow.WithChildOptions(
-					ctx,
-					workflow.ChildWorkflowOptions{
-						TaskQueue:         fetchNextAccount.ConnectorID.String(),
-						ParentClosePolicy: enums.PARENT_CLOSE_POLICY_ABANDON,
-						SearchAttributes: map[string]interface{}{
-							SearchAttributeStack: w.stack,
+			wg.Add(1)
+			workflow.Go(ctx, func(ctx workflow.Context) {
+				defer wg.Done()
+
+				if err := workflow.ExecuteChildWorkflow(
+					workflow.WithChildOptions(
+						ctx,
+						workflow.ChildWorkflowOptions{
+							TaskQueue:         fetchNextAccount.ConnectorID.String(),
+							ParentClosePolicy: enums.PARENT_CLOSE_POLICY_ABANDON,
+							SearchAttributes: map[string]interface{}{
+								SearchAttributeStack: w.stack,
+							},
 						},
+					),
+					RunSendEvents,
+					SendEvents{
+						Account: &acc,
 					},
-				),
-				Run,
-				fetchNextAccount.Config,
-				fetchNextAccount.ConnectorID,
-				&FromPayload{
-					ID:      account.Reference,
-					Payload: payload,
-				},
-				nextTasks,
-			).Get(ctx, nil); err != nil {
-				return errors.Wrap(err, "running next workflow")
+				).Get(ctx, nil); err != nil {
+					errChan <- errors.Wrap(err, "sending events")
+				}
+			})
+		}
+
+		for _, account := range accountsResponse.Accounts {
+			acc := account
+
+			wg.Add(1)
+			workflow.Go(ctx, func(ctx workflow.Context) {
+				defer wg.Done()
+
+				payload, err := json.Marshal(acc)
+				if err != nil {
+					errChan <- errors.Wrap(err, "marshalling account")
+				}
+
+				if err := workflow.ExecuteChildWorkflow(
+					workflow.WithChildOptions(
+						ctx,
+						workflow.ChildWorkflowOptions{
+							TaskQueue:         fetchNextAccount.ConnectorID.String(),
+							ParentClosePolicy: enums.PARENT_CLOSE_POLICY_ABANDON,
+							SearchAttributes: map[string]interface{}{
+								SearchAttributeStack: w.stack,
+							},
+						},
+					),
+					Run,
+					fetchNextAccount.Config,
+					fetchNextAccount.ConnectorID,
+					&FromPayload{
+						ID:      acc.Reference,
+						Payload: payload,
+					},
+					nextTasks,
+				).Get(ctx, nil); err != nil {
+					errChan <- errors.Wrap(err, "running next workflow")
+				}
+			})
+		}
+
+		wg.Wait(ctx)
+		close(errChan)
+		for err := range errChan {
+			if err != nil {
+				return err
 			}
 		}
 

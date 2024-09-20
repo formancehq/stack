@@ -3,13 +3,16 @@ package engine
 import (
 	"sync"
 
-	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/temporal"
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 	temporalworkflow "go.temporal.io/sdk/workflow"
+)
+
+const (
+	defaultWorkerName = "default"
 )
 
 type Workers struct {
@@ -31,7 +34,7 @@ type Worker struct {
 }
 
 func NewWorkers(logger logging.Logger, temporalClient client.Client, workflows, activities []temporal.DefinitionSet, options worker.Options) *Workers {
-	return &Workers{
+	workers := &Workers{
 		logger:         logger,
 		temporalClient: temporalClient,
 		workers:        make(map[string]Worker),
@@ -39,6 +42,11 @@ func NewWorkers(logger logging.Logger, temporalClient client.Client, workflows, 
 		activities:     activities,
 		options:        options,
 	}
+
+	// For all operation outside of connectors handlers
+	workers.AddWorker(defaultWorkerName)
+
+	return workers
 }
 
 // Close is called when app is terminated
@@ -52,15 +60,16 @@ func (w *Workers) Close() {
 }
 
 // Installing a new connector lauches a new worker
-func (w *Workers) AddWorker(connectorID models.ConnectorID) error {
+// A default one is instantiated when the workers struct is created
+func (w *Workers) AddWorker(name string) error {
 	w.rwMutex.Lock()
 	defer w.rwMutex.Unlock()
 
-	if _, ok := w.workers[connectorID.String()]; ok {
+	if _, ok := w.workers[name]; ok {
 		return nil
 	}
 
-	worker := worker.New(w.temporalClient, connectorID.String(), w.options)
+	worker := worker.New(w.temporalClient, name, w.options)
 
 	for _, set := range w.workflows {
 		for _, workflow := range set {
@@ -85,30 +94,30 @@ func (w *Workers) AddWorker(connectorID models.ConnectorID) error {
 		}
 	}()
 
-	w.workers[connectorID.String()] = Worker{
+	w.workers[name] = Worker{
 		worker: worker,
 	}
 
-	w.logger.Infof("worker for connector %s started", connectorID.String())
+	w.logger.Infof("worker for connector %s started", name)
 
 	return nil
 }
 
 // Uninstalling a connector stops the worker
-func (w *Workers) RemoveWorker(connectorID models.ConnectorID) error {
+func (w *Workers) RemoveWorker(name string) error {
 	w.rwMutex.Lock()
 	defer w.rwMutex.Unlock()
 
-	worker, ok := w.workers[connectorID.String()]
+	worker, ok := w.workers[name]
 	if !ok {
 		return nil
 	}
 
 	worker.worker.Stop()
 
-	delete(w.workers, connectorID.String())
+	delete(w.workers, name)
 
-	w.logger.Infof("worker for connector %s removed", connectorID.String())
+	w.logger.Infof("worker for connector %s removed", name)
 
 	return nil
 }

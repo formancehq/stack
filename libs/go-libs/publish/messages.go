@@ -38,11 +38,12 @@ func NewMessage(ctx context.Context, m EventMessage) *message.Message {
 }
 
 type EventMessage struct {
-	Date    time.Time `json:"date"`
-	App     string    `json:"app"`
-	Version string    `json:"version"`
-	Type    string    `json:"type"`
-	Payload any       `json:"payload"`
+	IdempotemcyKey string    `json:"idempotency_key"`
+	Date           time.Time `json:"date"`
+	App            string    `json:"app"`
+	Version        string    `json:"version"`
+	Type           string    `json:"type"`
+	Payload        any       `json:"payload"`
 }
 
 func UnmarshalMessage(msg *message.Message) (trace.Span, *EventMessage, error) {

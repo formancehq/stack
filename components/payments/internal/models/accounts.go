@@ -78,6 +78,10 @@ func (a Account) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (a *Account) IdempotemcyKey() string {
+	return a.ID.String()
+}
+
 func (a *Account) UnmarshalJSON(data []byte) error {
 	var aux struct {
 		ID           string            `json:"id"`

@@ -8,5 +8,6 @@ import (
 )
 
 func (s *Service) PoolsRemoveAccount(ctx context.Context, id uuid.UUID, accountID models.AccountID) error {
-	return s.storage.PoolsRemoveAccount(ctx, id, accountID)
+	err := s.engine.RemoveAccountFromPool(ctx, id, accountID)
+	return handleEngineErrors(err)
 }

@@ -23,8 +23,13 @@ import (
 type Engine interface {
 	InstallConnector(ctx context.Context, provider string, rawConfig json.RawMessage) (models.ConnectorID, error)
 	UninstallConnector(ctx context.Context, connectorID models.ConnectorID) error
-	CreateBankAccount(ctx context.Context, bankAccountID uuid.UUID, connectorID models.ConnectorID) (*models.BankAccount, error)
+	ResetConnector(ctx context.Context, connectorID models.ConnectorID) error
+	ForwardBankAccount(ctx context.Context, bankAccountID uuid.UUID, connectorID models.ConnectorID) (*models.BankAccount, error)
 	HandleWebhook(ctx context.Context, urlPath string, webhook models.Webhook) error
+	CreatePool(ctx context.Context, pool models.Pool) error
+	AddAccountToPool(ctx context.Context, id uuid.UUID, accountID models.AccountID) error
+	RemoveAccountFromPool(ctx context.Context, id uuid.UUID, accountID models.AccountID) error
+	DeletePool(ctx context.Context, poolID uuid.UUID) error
 
 	OnStart(ctx context.Context) error
 }
@@ -80,7 +85,7 @@ func (e *engine) InstallConnector(ctx context.Context, provider string, rawConfi
 		return models.ConnectorID{}, handlePluginError(err)
 	}
 
-	err = e.workers.AddWorker(connector.ID)
+	err = e.workers.AddWorker(connector.ID.String())
 	if err != nil {
 		return models.ConnectorID{}, err
 	}
@@ -142,7 +147,7 @@ func (e *engine) UninstallConnector(ctx context.Context, connectorID models.Conn
 		return err
 	}
 
-	if err := e.workers.RemoveWorker(connectorID); err != nil {
+	if err := e.workers.RemoveWorker(connectorID.String()); err != nil {
 		return err
 	}
 
@@ -153,7 +158,51 @@ func (e *engine) UninstallConnector(ctx context.Context, connectorID models.Conn
 	return nil
 }
 
-func (e *engine) CreateBankAccount(ctx context.Context, bankAccountID uuid.UUID, connectorID models.ConnectorID) (*models.BankAccount, error) {
+func (e *engine) ResetConnector(ctx context.Context, connectorID models.ConnectorID) error {
+	connector, err := e.storage.ConnectorsGet(ctx, connectorID)
+	if err != nil {
+		return err
+	}
+
+	// Detached the context to avoid being in a weird state if request is
+	// cancelled in the middle of the operation.
+	ctx, _ = contextutil.Detached(ctx)
+	if err := e.UninstallConnector(ctx, connectorID); err != nil {
+		return err
+	}
+
+	_, err = e.InstallConnector(ctx, connectorID.Provider, connector.Config)
+	if err != nil {
+		return err
+	}
+
+	run, err := e.temporalClient.ExecuteWorkflow(
+		ctx,
+		client.StartWorkflowOptions{
+			ID:                    fmt.Sprintf("reset-%s", connectorID.String()),
+			TaskQueue:             connectorID.String(),
+			WorkflowIDReusePolicy: enums.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE_FAILED_ONLY,
+			SearchAttributes: map[string]interface{}{
+				workflow.SearchAttributeStack: e.stack,
+			},
+		},
+		workflow.RunSendEvents,
+		workflow.SendEvents{
+			ConnectorReset: &connectorID,
+		},
+	)
+	if err != nil {
+		return err
+	}
+
+	if err := run.Get(ctx, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (e *engine) ForwardBankAccount(ctx context.Context, bankAccountID uuid.UUID, connectorID models.ConnectorID) (*models.BankAccount, error) {
 	run, err := e.temporalClient.ExecuteWorkflow(
 		ctx,
 		client.StartWorkflowOptions{
@@ -229,6 +278,147 @@ func (e *engine) HandleWebhook(ctx context.Context, urlPath string, webhook mode
 	return nil
 }
 
+func (e *engine) CreatePool(ctx context.Context, pool models.Pool) error {
+	if err := e.storage.PoolsUpsert(ctx, pool); err != nil {
+		return err
+	}
+
+	ctx, _ = contextutil.Detached(ctx)
+	run, err := e.temporalClient.ExecuteWorkflow(
+		ctx,
+		client.StartWorkflowOptions{
+			ID:                                       fmt.Sprintf("pools-creation-%s", pool.IdempotemcyKey()),
+			TaskQueue:                                defaultWorkerName,
+			WorkflowIDReusePolicy:                    enums.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE,
+			WorkflowExecutionErrorWhenAlreadyStarted: false,
+			SearchAttributes: map[string]interface{}{
+				workflow.SearchAttributeStack: e.stack,
+			},
+		},
+		workflow.RunSendEvents,
+		workflow.SendEvents{
+			PoolsCreation: &pool,
+		},
+	)
+	if err != nil {
+		return err
+	}
+
+	if err := run.Get(ctx, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (e *engine) AddAccountToPool(ctx context.Context, id uuid.UUID, accountID models.AccountID) error {
+	if err := e.storage.PoolsAddAccount(ctx, id, accountID); err != nil {
+		return err
+	}
+
+	ctx, _ = contextutil.Detached(ctx)
+	pool, err := e.storage.PoolsGet(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	run, err := e.temporalClient.ExecuteWorkflow(
+		ctx,
+		client.StartWorkflowOptions{
+			ID:                                       fmt.Sprintf("pools-add-account-%s", pool.IdempotemcyKey()),
+			TaskQueue:                                defaultWorkerName,
+			WorkflowIDReusePolicy:                    enums.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE,
+			WorkflowExecutionErrorWhenAlreadyStarted: false,
+			SearchAttributes: map[string]interface{}{
+				workflow.SearchAttributeStack: e.stack,
+			},
+		},
+		workflow.RunSendEvents,
+		workflow.SendEvents{
+			PoolsCreation: pool,
+		},
+	)
+	if err != nil {
+		return err
+	}
+
+	if err := run.Get(ctx, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (e *engine) RemoveAccountFromPool(ctx context.Context, id uuid.UUID, accountID models.AccountID) error {
+	if err := e.storage.PoolsRemoveAccount(ctx, id, accountID); err != nil {
+		return err
+	}
+
+	ctx, _ = contextutil.Detached(ctx)
+	pool, err := e.storage.PoolsGet(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	run, err := e.temporalClient.ExecuteWorkflow(
+		ctx,
+		client.StartWorkflowOptions{
+			ID:                                       fmt.Sprintf("pools-remove-account-%s", pool.IdempotemcyKey()),
+			TaskQueue:                                defaultWorkerName,
+			WorkflowIDReusePolicy:                    enums.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE,
+			WorkflowExecutionErrorWhenAlreadyStarted: false,
+			SearchAttributes: map[string]interface{}{
+				workflow.SearchAttributeStack: e.stack,
+			},
+		},
+		workflow.RunSendEvents,
+		workflow.SendEvents{
+			PoolsCreation: pool,
+		},
+	)
+	if err != nil {
+		return err
+	}
+
+	if err := run.Get(ctx, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (e *engine) DeletePool(ctx context.Context, poolID uuid.UUID) error {
+	if err := e.storage.PoolsDelete(ctx, poolID); err != nil {
+		return err
+	}
+	ctx, _ = contextutil.Detached(ctx)
+	run, err := e.temporalClient.ExecuteWorkflow(
+		ctx,
+		client.StartWorkflowOptions{
+			ID:                                       fmt.Sprintf("pools-deletion-%s", poolID.String()),
+			TaskQueue:                                defaultWorkerName,
+			WorkflowIDReusePolicy:                    enums.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE,
+			WorkflowExecutionErrorWhenAlreadyStarted: false,
+			SearchAttributes: map[string]interface{}{
+				workflow.SearchAttributeStack: e.stack,
+			},
+		},
+		workflow.RunSendEvents,
+		workflow.SendEvents{
+			PoolsDeletion: &poolID,
+		},
+	)
+	if err != nil {
+		return err
+	}
+
+	if err := run.Get(ctx, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (e *engine) OnStart(ctx context.Context) error {
 	query := storage.NewListConnectorsQuery(
 		bunpaginate.NewPaginatedQueryOptions(storage.ConnectorQuery{}).
@@ -265,7 +455,7 @@ func (e *engine) onStartPlugin(ctx context.Context, connector models.Connector) 
 		return err
 	}
 
-	err = e.workers.AddWorker(connector.ID)
+	err = e.workers.AddWorker(connector.ID.String())
 	if err != nil {
 		return err
 	}

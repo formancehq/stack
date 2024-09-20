@@ -8,5 +8,6 @@ import (
 )
 
 func (s *Service) PoolsAddAccount(ctx context.Context, id uuid.UUID, accountID models.AccountID) error {
-	return s.storage.PoolsAddAccount(ctx, id, accountID)
+	err := s.engine.AddAccountToPool(ctx, id, accountID)
+	return handleEngineErrors(err)
 }

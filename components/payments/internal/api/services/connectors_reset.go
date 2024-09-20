@@ -7,15 +7,6 @@ import (
 )
 
 func (s *Service) ConnectorsReset(ctx context.Context, connectorID models.ConnectorID) error {
-	config, err := s.ConnectorsConfig(ctx, connectorID)
-	if err != nil {
-		return err
-	}
-
-	if err := s.engine.UninstallConnector(ctx, connectorID); err != nil {
-		return err
-	}
-
-	_, err = s.engine.InstallConnector(ctx, connectorID.Provider, config)
-	return err
+	err := s.engine.ResetConnector(ctx, connectorID)
+	return handleEngineErrors(err)
 }
