@@ -8,7 +8,7 @@ require (
 	github.com/ThreeDotsLabs/watermill v1.3.5
 	github.com/expr-lang/expr v1.15.6
 	github.com/formancehq/formance-sdk-go/v2 v2.0.0-00010101000000-000000000000
-	github.com/formancehq/go-libs v1.6.0
+	github.com/formancehq/go-libs v1.6.1-0.20240920230052-f54f79cf50aa
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/go-playground/validator/v10 v10.11.2
 	github.com/google/uuid v1.6.0

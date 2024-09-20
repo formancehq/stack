@@ -25,7 +25,6 @@ compile-configs:
         RUN cat /src/components/payments/internal/connectors/plugins/public/$c/config.json >> raw_configs.json
         RUN echo "}" >> raw_configs.json
     END
-    RUN cat raw_configs.json
     RUN jq --slurp 'add' raw_configs.json > configs.json
     SAVE ARTIFACT /src/components/payments/internal/connectors/plugins/public/configs.json /configs.json
 

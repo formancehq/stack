@@ -37,7 +37,7 @@ func workerOptions(cmd *cobra.Command) fx.Option {
 
 	return fx.Options(
 		stackClientModule(cmd),
-		temporal.NewWorkerModule(temporalTaskQueue, worker.Options{
+		temporal.NewWorkerModule(cmd.Context(), temporalTaskQueue, worker.Options{
 			TaskQueueActivitiesPerSecond: float64(temporalMaxParallelActivities),
 		}),
 		triggers.NewListenerModule(
