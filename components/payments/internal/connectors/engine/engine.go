@@ -24,7 +24,7 @@ type Engine interface {
 	InstallConnector(ctx context.Context, provider string, rawConfig json.RawMessage) (models.ConnectorID, error)
 	UninstallConnector(ctx context.Context, connectorID models.ConnectorID) error
 	ResetConnector(ctx context.Context, connectorID models.ConnectorID) error
-	ForwartBankAccount(ctx context.Context, bankAccountID uuid.UUID, connectorID models.ConnectorID) (*models.BankAccount, error)
+	ForwardBankAccount(ctx context.Context, bankAccountID uuid.UUID, connectorID models.ConnectorID) (*models.BankAccount, error)
 	HandleWebhook(ctx context.Context, urlPath string, webhook models.Webhook) error
 	CreatePool(ctx context.Context, pool models.Pool) error
 	AddAccountToPool(ctx context.Context, id uuid.UUID, accountID models.AccountID) error
@@ -202,7 +202,7 @@ func (e *engine) ResetConnector(ctx context.Context, connectorID models.Connecto
 	return nil
 }
 
-func (e *engine) ForwartBankAccount(ctx context.Context, bankAccountID uuid.UUID, connectorID models.ConnectorID) (*models.BankAccount, error) {
+func (e *engine) ForwardBankAccount(ctx context.Context, bankAccountID uuid.UUID, connectorID models.ConnectorID) (*models.BankAccount, error) {
 	run, err := e.temporalClient.ExecuteWorkflow(
 		ctx,
 		client.StartWorkflowOptions{
