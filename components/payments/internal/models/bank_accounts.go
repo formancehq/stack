@@ -33,7 +33,7 @@ type BankAccount struct {
 	RelatedAccounts []BankAccountRelatedAccount `json:"relatedAccounts"`
 }
 
-func (b *BankAccount) IdempotemcyKey() string {
+func (b *BankAccount) IdempotencyKey() string {
 	return b.ID.String()
 }
 

@@ -5,6 +5,7 @@ import (
 	"os"
 
 	_ "github.com/bombsimon/logrusr/v3"
+	sharedapi "github.com/formancehq/go-libs/api"
 	"github.com/formancehq/go-libs/auth"
 	"github.com/formancehq/go-libs/bun/bunconnect"
 	"github.com/formancehq/go-libs/bun/bunmigrate"
@@ -19,7 +20,6 @@ import (
 	v3 "github.com/formancehq/payments/internal/api/v3"
 	"github.com/formancehq/payments/internal/connectors/engine"
 	"github.com/formancehq/payments/internal/storage"
-	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 )

@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/formancehq/go-libs/pointer"
 	"github.com/formancehq/payments/internal/connectors/plugins/public/mangopay/client"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/pointer"
 )
 
 func (p Plugin) createBankAccount(ctx context.Context, req models.CreateBankAccountRequest) (models.CreateBankAccountResponse, error) {

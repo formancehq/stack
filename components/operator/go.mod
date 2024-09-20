@@ -5,7 +5,7 @@ go 1.22
 toolchain go1.22.6
 
 require (
-	github.com/formancehq/go-libs v1.5.0
+	github.com/formancehq/go-libs v1.6.0
 	github.com/formancehq/search v0.0.0-00010101000000-000000000000
 	github.com/go-logr/logr v1.4.2
 	github.com/google/go-cmp v0.6.0

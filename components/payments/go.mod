@@ -7,7 +7,7 @@ toolchain go1.22.6
 require (
 	github.com/ThreeDotsLabs/watermill v1.3.5
 	github.com/bombsimon/logrusr/v3 v3.1.0
-	github.com/formancehq/go-libs v1.6.0
+	github.com/formancehq/go-libs v1.6.1-0.20240920194725-4f8b15d1f708
 	github.com/gibson042/canonicaljson-go v1.0.3
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/golang/mock v1.6.0

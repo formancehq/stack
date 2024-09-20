@@ -78,7 +78,7 @@ func (a Account) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func (a *Account) IdempotemcyKey() string {
+func (a *Account) IdempotencyKey() string {
 	return a.ID.String()
 }
 

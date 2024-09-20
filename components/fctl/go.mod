@@ -9,7 +9,7 @@ require (
 	github.com/c-bata/go-prompt v0.2.6
 	github.com/formancehq/fctl/membershipclient v0.0.0-20230109152136-5d4c9193a44c
 	github.com/formancehq/formance-sdk-go/v2 v2.1.0
-	github.com/formancehq/go-libs v1.5.0
+	github.com/formancehq/go-libs v1.6.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/iancoleman/strcase v0.3.0
 	github.com/mattn/go-shellwords v1.0.12

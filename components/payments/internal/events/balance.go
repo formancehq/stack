@@ -4,9 +4,9 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/formancehq/go-libs/publish"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
-	"github.com/formancehq/stack/libs/go-libs/publish"
 )
 
 type balanceMessagePayload struct {
@@ -31,7 +31,7 @@ func (e Events) NewEventSavedBalances(balance models.Balance) publish.EventMessa
 	}
 
 	return publish.EventMessage{
-		IdempotemcyKey: balance.IdempotencyKey(),
+		IdempotencyKey: balance.IdempotencyKey(),
 		Date:           time.Now().UTC(),
 		App:            events.EventApp,
 		Version:        events.EventVersion,

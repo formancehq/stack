@@ -5,9 +5,9 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/formancehq/go-libs/pointer"
 	"github.com/formancehq/payments/internal/connectors/grpc/proto"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/protobuf/types/known/wrapperspb"

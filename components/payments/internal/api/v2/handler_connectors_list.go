@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/formancehq/go-libs/api"
+	"github.com/formancehq/go-libs/bun/bunpaginate"
 	"github.com/formancehq/payments/internal/api/backend"
 	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/payments/internal/storage"
-	"github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 )
 
 // NOTE: in order to maintain previous version compatibility, we need to keep the

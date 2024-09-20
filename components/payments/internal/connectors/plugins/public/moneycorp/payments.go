@@ -8,10 +8,10 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/formancehq/go-libs/pointer"
 	"github.com/formancehq/payments/internal/connectors/plugins/currency"
 	"github.com/formancehq/payments/internal/connectors/plugins/public/moneycorp/client"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/pointer"
 )
 
 type paymentsState struct {

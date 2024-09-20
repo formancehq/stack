@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/formancehq/go-libs/api"
 	"github.com/formancehq/payments/internal/api/backend"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
-	"github.com/formancehq/stack/libs/go-libs/api"
 )
 
 func tasksGet(backend backend.Backend) http.HandlerFunc {

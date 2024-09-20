@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/formancehq/go-libs/api"
+	"github.com/formancehq/go-libs/contextutil"
 	"github.com/formancehq/payments/internal/api/backend"
 	"github.com/formancehq/payments/internal/otel"
-	"github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/contextutil"
 )
 
 func connectorsInstall(backend backend.Backend) http.HandlerFunc {

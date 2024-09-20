@@ -5,7 +5,7 @@ go 1.22
 toolchain go1.22.6
 
 require (
-	github.com/formancehq/go-libs v1.5.0
+	github.com/formancehq/go-libs v1.6.0
 	github.com/formancehq/operator v0.0.0-00010101000000-000000000000
 	github.com/pterm/pterm v0.12.79
 	github.com/spf13/cobra v1.8.1

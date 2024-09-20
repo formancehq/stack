@@ -16,7 +16,7 @@ type Pool struct {
 	PoolAccounts []PoolAccounts `json:"poolAccounts"`
 }
 
-func (p *Pool) IdempotemcyKey() string {
+func (p *Pool) IdempotencyKey() string {
 	relatedAccounts := make([]string, len(p.PoolAccounts))
 	for i := range p.PoolAccounts {
 		relatedAccounts[i] = p.PoolAccounts[i].AccountID.String()

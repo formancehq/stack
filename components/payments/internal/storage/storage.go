@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/formancehq/go-libs/bun/bunpaginate"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )

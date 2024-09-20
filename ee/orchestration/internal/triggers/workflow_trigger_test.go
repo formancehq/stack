@@ -1,6 +1,7 @@
 package triggers
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -40,7 +41,7 @@ func TestWorkflow(t *testing.T) {
 	taskQueue := uuid.NewString()
 	workflowManager := workflow.NewManager(db, devServer.Client(), taskQueue, false)
 
-	worker := temporal.New(logging.Testing(), devServer.Client(), taskQueue,
+	worker := temporal.New(context.Background(), logging.Testing(), devServer.Client(), taskQueue,
 		[]temporal.DefinitionSet{
 			NewWorkflow(taskQueue, false).DefinitionSet(),
 			workflow.NewWorkflows(false).DefinitionSet(),

@@ -13,7 +13,7 @@ import (
 	plugins "github.com/formancehq/payments/internal/connectors/plugins"
 	models "github.com/formancehq/payments/internal/models"
 	storage "github.com/formancehq/payments/internal/storage"
-	bunpaginate "github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	bunpaginate "github.com/formancehq/go-libs/bun/bunpaginate"
 	gomock "github.com/golang/mock/gomock"
 	uuid "github.com/google/uuid"
 )

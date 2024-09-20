@@ -3,9 +3,9 @@ package workflow
 import (
 	"encoding/json"
 
+	temporalworker "github.com/formancehq/go-libs/temporal"
 	"github.com/formancehq/payments/internal/connectors/engine/plugins"
 	"github.com/formancehq/payments/internal/connectors/engine/webhooks"
-	temporalworker "github.com/formancehq/stack/libs/go-libs/temporal"
 	"go.temporal.io/sdk/client"
 )
 

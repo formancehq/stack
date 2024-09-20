@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/formancehq/go-libs/temporal"
 	"github.com/formancehq/orchestration/pkg/events"
-	"github.com/formancehq/stack/libs/go-libs/temporal"
 	"github.com/uptrace/bun"
 	"go.temporal.io/sdk/activity"
 )

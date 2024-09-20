@@ -1,14 +1,14 @@
 package api
 
 import (
+	"github.com/formancehq/go-libs/api"
+	"github.com/formancehq/go-libs/auth"
+	"github.com/formancehq/go-libs/health"
+	"github.com/formancehq/go-libs/httpserver"
 	"github.com/formancehq/payments/internal/api/backend"
 	"github.com/formancehq/payments/internal/api/services"
 	"github.com/formancehq/payments/internal/connectors/engine"
 	"github.com/formancehq/payments/internal/storage"
-	"github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/auth"
-	"github.com/formancehq/stack/libs/go-libs/health"
-	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/fx"
 )

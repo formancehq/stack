@@ -1,6 +1,7 @@
 package workflow
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -36,7 +37,7 @@ func TestConfig(t *testing.T) {
 	require.NoError(t, storage.Migrate(logging.TestingContext(), db))
 
 	taskQueue := uuid.NewString()
-	worker := temporal.New(logging.Testing(), devServer.Client(), taskQueue,
+	worker := temporal.New(context.Background(), logging.Testing(), devServer.Client(), taskQueue,
 		[]temporal.DefinitionSet{
 			NewWorkflows(false).DefinitionSet(),
 			temporal.NewDefinitionSet().Append(temporal.Definition{

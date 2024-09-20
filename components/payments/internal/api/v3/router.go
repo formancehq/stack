@@ -3,9 +3,9 @@ package v3
 import (
 	"net/http"
 
+	"github.com/formancehq/go-libs/auth"
+	"github.com/formancehq/go-libs/service"
 	"github.com/formancehq/payments/internal/api/backend"
-	"github.com/formancehq/stack/libs/go-libs/auth"
-	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/go-chi/chi/v5"
 )
 

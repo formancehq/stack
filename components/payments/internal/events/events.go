@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/formancehq/go-libs/publish"
 	eventsdef "github.com/formancehq/payments/pkg/events"
-	"github.com/formancehq/stack/libs/go-libs/publish"
 )
 
 type Events struct {

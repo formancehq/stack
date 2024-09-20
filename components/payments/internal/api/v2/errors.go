@@ -4,9 +4,9 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/formancehq/go-libs/api"
 	"github.com/formancehq/payments/internal/api/services"
 	"github.com/formancehq/payments/internal/storage"
-	"github.com/formancehq/stack/libs/go-libs/api"
 )
 
 const (

@@ -47,7 +47,7 @@ func test(t *testing.T, fn func(router *chi.Mux, backend api.Backend, db *bun.DB
 	})
 
 	taskQueue := uuid.NewString()
-	worker := temporal.New(logging.Testing(), devServer.Client(), taskQueue,
+	worker := temporal.New(context.Background(), logging.Testing(), devServer.Client(), taskQueue,
 		[]temporal.DefinitionSet{
 			workflow.NewWorkflows(false).DefinitionSet(),
 			temporal.NewDefinitionSet().Append(temporal.Definition{

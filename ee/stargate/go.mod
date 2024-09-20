@@ -6,7 +6,7 @@ toolchain go1.22.6
 
 require (
 	github.com/alitto/pond v1.8.3
-	github.com/formancehq/go-libs v1.5.0
+	github.com/formancehq/go-libs v1.6.0
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/go-chi/cors v1.2.1
 	github.com/pkg/errors v0.9.1

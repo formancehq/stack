@@ -3,9 +3,9 @@ package events
 import (
 	"time"
 
+	"github.com/formancehq/go-libs/publish"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
-	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/google/uuid"
 )
 
@@ -29,7 +29,7 @@ func (e Events) NewEventSavedPool(pool models.Pool) publish.EventMessage {
 	}
 
 	return publish.EventMessage{
-		IdempotemcyKey: pool.IdempotemcyKey(),
+		IdempotencyKey: pool.IdempotencyKey(),
 		Date:           time.Now().UTC(),
 		App:            events.EventApp,
 		Version:        events.EventVersion,
@@ -45,7 +45,7 @@ type deletePoolMessagePayload struct {
 
 func (e Events) NewEventDeletePool(id uuid.UUID) publish.EventMessage {
 	return publish.EventMessage{
-		IdempotemcyKey: id.String(),
+		IdempotencyKey: id.String(),
 		Date:           time.Now().UTC(),
 		App:            events.EventApp,
 		Version:        events.EventVersion,

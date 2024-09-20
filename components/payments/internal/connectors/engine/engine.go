@@ -7,13 +7,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/formancehq/go-libs/bun/bunpaginate"
+	"github.com/formancehq/go-libs/contextutil"
 	"github.com/formancehq/payments/internal/connectors/engine/plugins"
 	"github.com/formancehq/payments/internal/connectors/engine/webhooks"
 	"github.com/formancehq/payments/internal/connectors/engine/workflow"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/storage"
-	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
-	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"go.temporal.io/api/enums/v1"
@@ -287,7 +287,7 @@ func (e *engine) CreatePool(ctx context.Context, pool models.Pool) error {
 	run, err := e.temporalClient.ExecuteWorkflow(
 		ctx,
 		client.StartWorkflowOptions{
-			ID:                                       fmt.Sprintf("pools-creation-%s", pool.IdempotemcyKey()),
+			ID:                                       fmt.Sprintf("pools-creation-%s", pool.IdempotencyKey()),
 			TaskQueue:                                defaultWorkerName,
 			WorkflowIDReusePolicy:                    enums.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE,
 			WorkflowExecutionErrorWhenAlreadyStarted: false,
@@ -325,7 +325,7 @@ func (e *engine) AddAccountToPool(ctx context.Context, id uuid.UUID, accountID m
 	run, err := e.temporalClient.ExecuteWorkflow(
 		ctx,
 		client.StartWorkflowOptions{
-			ID:                                       fmt.Sprintf("pools-add-account-%s", pool.IdempotemcyKey()),
+			ID:                                       fmt.Sprintf("pools-add-account-%s", pool.IdempotencyKey()),
 			TaskQueue:                                defaultWorkerName,
 			WorkflowIDReusePolicy:                    enums.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE,
 			WorkflowExecutionErrorWhenAlreadyStarted: false,
@@ -363,7 +363,7 @@ func (e *engine) RemoveAccountFromPool(ctx context.Context, id uuid.UUID, accoun
 	run, err := e.temporalClient.ExecuteWorkflow(
 		ctx,
 		client.StartWorkflowOptions{
-			ID:                                       fmt.Sprintf("pools-remove-account-%s", pool.IdempotemcyKey()),
+			ID:                                       fmt.Sprintf("pools-remove-account-%s", pool.IdempotencyKey()),
 			TaskQueue:                                defaultWorkerName,
 			WorkflowIDReusePolicy:                    enums.WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE,
 			WorkflowExecutionErrorWhenAlreadyStarted: false,

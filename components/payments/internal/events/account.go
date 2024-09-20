@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/formancehq/go-libs/publish"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
-	"github.com/formancehq/stack/libs/go-libs/publish"
 )
 
 type accountMessagePayload struct {
@@ -43,7 +43,7 @@ func (e Events) NewEventSavedAccounts(account models.Account) publish.EventMessa
 	}
 
 	return publish.EventMessage{
-		IdempotemcyKey: account.IdempotemcyKey(),
+		IdempotencyKey: account.IdempotencyKey(),
 		Date:           time.Now().UTC(),
 		App:            events.EventApp,
 		Version:        events.EventVersion,

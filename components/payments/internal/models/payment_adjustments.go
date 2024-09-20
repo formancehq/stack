@@ -31,7 +31,7 @@ type PaymentAdjustment struct {
 	Raw json.RawMessage `json:"raw"`
 }
 
-func (p *PaymentAdjustment) IdempotemcyKey() string {
+func (p *PaymentAdjustment) IdempotencyKey() string {
 	return p.ID.String()
 }
 

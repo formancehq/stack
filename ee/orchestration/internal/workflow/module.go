@@ -1,9 +1,9 @@
 package workflow
 
 import (
+	"github.com/formancehq/go-libs/temporal"
 	"github.com/formancehq/orchestration/internal/workflow/activities"
 	"github.com/formancehq/orchestration/internal/workflow/stages"
-	"github.com/formancehq/stack/libs/go-libs/temporal"
 	"github.com/iancoleman/strcase"
 	"github.com/uptrace/bun"
 	"go.temporal.io/sdk/client"

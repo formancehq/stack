@@ -3,9 +3,9 @@ package events
 import (
 	"time"
 
+	"github.com/formancehq/go-libs/publish"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
-	"github.com/formancehq/stack/libs/go-libs/publish"
 )
 
 type bankAccountMessagePayload struct {
@@ -63,7 +63,7 @@ func (e Events) NewEventSavedBankAccounts(bankAccount models.BankAccount) publis
 	}
 
 	return publish.EventMessage{
-		IdempotemcyKey: bankAccount.IdempotemcyKey(),
+		IdempotencyKey: bankAccount.IdempotencyKey(),
 		Date:           time.Now().UTC(),
 		App:            events.EventApp,
 		Version:        events.EventVersion,

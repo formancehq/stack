@@ -3,7 +3,7 @@ package workflow
 import (
 	"time"
 
-	"github.com/formancehq/stack/libs/go-libs/temporal"
+	"github.com/formancehq/go-libs/temporal"
 	"go.temporal.io/api/enums/v1"
 	"go.temporal.io/sdk/workflow"
 )
