@@ -10,7 +10,6 @@ sources:
     FROM core+builder-image
     WORKDIR /src
     COPY (stack+sources/out --LOCATION=ee/search) ee/search
-    COPY (stack+sources/out --LOCATION=libs/go-libs) libs/go-libs
     WORKDIR /src/components/operator
     COPY --dir api internal pkg cmd .
     COPY go.* .

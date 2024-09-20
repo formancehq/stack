@@ -201,11 +201,6 @@ HELM_PUBLISH:
         RUN helm push ${path} oci://ghcr.io/formancehq/helm
     END
 
-INCLUDE_GO_LIBS:
-    FUNCTION
-    ARG --required LOCATION
-    COPY (+sources/out --LOCATION=libs/go-libs) ${LOCATION}
-
 GO_LINT:
     FUNCTION
     COPY (+sources/out --LOCATION=.golangci.yml) .golangci.yml

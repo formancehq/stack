@@ -10,7 +10,6 @@ FROM core+base-image
 
 sources:
     WORKDIR src
-    DO stack+INCLUDE_GO_LIBS --LOCATION libs/go-libs
     COPY (../../components/operator+sources/*) /src
     WORKDIR /src/ee/agent
     COPY go.* .

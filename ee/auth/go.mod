@@ -5,7 +5,7 @@ go 1.22
 toolchain go1.22.6
 
 require (
-	github.com/formancehq/go-libs v0.0.0-00010101000000-000000000000
+	github.com/formancehq/go-libs v1.5.0
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.6.0
@@ -23,7 +23,6 @@ require (
 	golang.org/x/oauth2 v0.20.0
 	golang.org/x/text v0.17.0
 	gopkg.in/square/go-jose.v2 v2.6.0
-	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -132,6 +131,5 @@ require (
 	google.golang.org/grpc v1.64.1 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace github.com/formancehq/go-libs => ../../libs/go-libs

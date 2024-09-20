@@ -6,8 +6,8 @@ toolchain go1.22.6
 
 require (
 	github.com/alitto/pond v1.8.3
+	github.com/formancehq/go-libs v1.5.0
 	github.com/formancehq/operator v0.0.0-00010101000000-000000000000
-	github.com/formancehq/go-libs v0.0.0-20231226162118-70cd9916b2b2
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
 	github.com/onsi/ginkgo/v2 v2.20.0
@@ -120,7 +120,6 @@ replace (
 	github.com/formancehq/membership-api/client => ./client
 	github.com/formancehq/operator => ./../../components/operator
 	github.com/formancehq/payments => ../../components/payments
-	github.com/formancehq/go-libs => ../../libs/go-libs
 	github.com/zitadel/oidc/v2 => github.com/formancehq/oidc/v2 v2.0.0-20230524073911-09bdd1dca291
 	k8s.io/client-go v0.26.0 => k8s.io/client-go v0.25.4
 )

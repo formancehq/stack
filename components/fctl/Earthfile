@@ -22,7 +22,6 @@ deploy-staging:
 sources:
     WORKDIR src
     COPY --pass-args (releases+sdk-generate/go) /src/releases/sdks/go
-    DO stack+INCLUDE_GO_LIBS --LOCATION libs/go-libs
     WORKDIR /src/components/fctl
     COPY go.* .
     COPY --dir cmd pkg membershipclient .

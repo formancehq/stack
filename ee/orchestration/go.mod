@@ -8,7 +8,7 @@ require (
 	github.com/ThreeDotsLabs/watermill v1.3.5
 	github.com/expr-lang/expr v1.15.6
 	github.com/formancehq/formance-sdk-go/v2 v2.0.0-00010101000000-000000000000
-	github.com/formancehq/go-libs v0.0.0-20230221161632-e6dc6a89a85e
+	github.com/formancehq/go-libs v1.5.0
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/go-playground/validator/v10 v10.11.2
 	github.com/google/uuid v1.6.0
@@ -26,7 +26,6 @@ require (
 	go.uber.org/fx v1.22.2
 	go.uber.org/mock v0.4.0
 	golang.org/x/oauth2 v0.20.0
-	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -181,8 +180,7 @@ require (
 	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace github.com/formancehq/go-libs => ../../libs/go-libs
 
 replace github.com/formancehq/formance-sdk-go/v2 => ../../releases/sdks/go

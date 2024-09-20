@@ -9,7 +9,6 @@ FROM core+base-image
 sources:
     FROM core+builder-image
     WORKDIR /src
-    COPY (stack+sources/out --LOCATION=libs/go-libs) libs/go-libs
     COPY (stack+sources/out --LOCATION=components/operator) components/operator
     WORKDIR /src/components/operator/tools/kubectl-stacks
     COPY go.* *.go .

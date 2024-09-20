@@ -9,19 +9,18 @@ require (
 	github.com/egymgmbh/go-prefix-writer v0.0.0-20180609083313-7326ea162eca
 	github.com/formancehq/auth v0.0.0-00010101000000-000000000000
 	github.com/formancehq/formance-sdk-go/v2 v2.0.0-00010101000000-000000000000
+	github.com/formancehq/go-libs v1.5.0
 	github.com/formancehq/ledger v0.0.0-00010101000000-000000000000
 	github.com/formancehq/orchestration v0.0.0-00010101000000-000000000000
 	github.com/formancehq/payments v0.0.0-00010101000000-000000000000
 	github.com/formancehq/reconciliation v0.0.0-00010101000000-000000000000
 	github.com/formancehq/search v0.0.0-00010101000000-000000000000
 	github.com/formancehq/stack/libs/events v0.0.0-00010101000000-000000000000
-	github.com/formancehq/go-libs v0.0.0-20230221161632-e6dc6a89a85e
 	github.com/formancehq/wallets v0.0.0-00010101000000-000000000000
 	github.com/formancehq/webhooks v0.0.0-00010101000000-000000000000
 	github.com/getkin/kin-openapi v0.114.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.6.0
-	github.com/jackc/pgx/v5 v5.6.0
 	github.com/nats-io/nats.go v1.37.0
 	github.com/oauth2-proxy/mockoidc v0.0.0-20220308204021-b9169deeb282
 	github.com/onsi/ginkgo/v2 v2.20.2
@@ -153,6 +152,7 @@ require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgproto3/v2 v2.3.3 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
+	github.com/jackc/pgx/v5 v5.6.0 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jcmturner/aescts/v2 v2.0.0 // indirect
 	github.com/jcmturner/dnsutils/v2 v2.0.0 // indirect
@@ -287,7 +287,6 @@ replace (
 	github.com/formancehq/search => ../../ee/search
 	github.com/formancehq/stack/libs/core => ../../libs/core
 	github.com/formancehq/stack/libs/events => ../../libs/events
-	github.com/formancehq/go-libs => ../../libs/go-libs
 	github.com/formancehq/wallets => ../../ee/wallets
 	github.com/formancehq/webhooks => ../../ee/webhooks
 	github.com/zitadel/oidc => github.com/formancehq/oidc v0.0.0-20220923202448-e2960a99b71c
