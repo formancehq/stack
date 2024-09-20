@@ -3,6 +3,8 @@ package v2
 import (
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
+
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
