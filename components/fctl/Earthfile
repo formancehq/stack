@@ -35,6 +35,13 @@ lint:
     SAVE ARTIFACT pkg AS LOCAL pkg
     SAVE ARTIFACT main.go AS LOCAL main.go
 
+tidy:
+    FROM core+builder-image
+    WORKDIR /src
+    COPY --dir (+sources/src/*) /src
+    DO --pass-args core+GO_TIDY
+    SAVE ARTIFACT ./* AS LOCAL ./
+
 pre-commit:
     WAIT
         BUILD --pass-args +tidy
@@ -54,13 +61,6 @@ completions:
 
 openapi:
     RUN echo "not implemented"
-
-tidy:
-    FROM core+builder-image
-    WORKDIR /src
-    COPY --dir (+sources/*) /src
-    DO --pass-args core+GO_TIDY
-    SAVE ARTIFACT /src AS LOCAL ./
 
 membership-openapi:
     FROM core+base-image
