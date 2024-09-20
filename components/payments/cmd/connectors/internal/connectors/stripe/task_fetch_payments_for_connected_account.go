@@ -10,6 +10,7 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
+	"github.com/stripe/stripe-go/v72"
 	"go.opentelemetry.io/otel/attribute"
 )
 

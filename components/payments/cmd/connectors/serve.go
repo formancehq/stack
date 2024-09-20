@@ -1,6 +1,7 @@
 package connectors
 
 import (
+	"github.com/bombsimon/logrusr/v3"
 	sharedapi "github.com/formancehq/go-libs/api"
 	"github.com/formancehq/go-libs/auth"
 	"github.com/formancehq/go-libs/bun/bunconnect"

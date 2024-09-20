@@ -8,6 +8,7 @@ import (
 
 	"github.com/formancehq/go-libs/logging"
 	"github.com/stretchr/testify/require"
+	"github.com/stripe/stripe-go/v72"
 )
 
 func TestTimelineTrigger(t *testing.T) {

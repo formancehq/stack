@@ -12,6 +12,7 @@ import (
 	"github.com/formancehq/go-libs/testing/platform/pgtesting"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
 	migrationstorage "github.com/formancehq/payments/internal/storage"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/require"
 	"github.com/uptrace/bun"

@@ -14,6 +14,7 @@ import (
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
 	"github.com/pkg/errors"
+	"github.com/stripe/stripe-go/v72"
 	"go.opentelemetry.io/otel/attribute"
 )
 

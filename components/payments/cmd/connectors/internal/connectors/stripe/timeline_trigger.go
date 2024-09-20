@@ -5,6 +5,7 @@ import (
 
 	"github.com/formancehq/go-libs/logging"
 	"github.com/pkg/errors"
+	"github.com/stripe/stripe-go/v72"
 	"golang.org/x/sync/semaphore"
 )
 
