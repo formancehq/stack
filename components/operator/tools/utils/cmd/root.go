@@ -2,10 +2,10 @@ package cmd
 
 import (
 	"fmt"
-	logging "github.com/formancehq/stack/libs/go-libs/logging"
+	logging "github.com/formancehq/go-libs/logging"
 	"os"
 
-	"github.com/formancehq/stack/libs/go-libs/service"
+	"github.com/formancehq/go-libs/service"
 
 	"github.com/spf13/cobra"
 )

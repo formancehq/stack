@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
-	"github.com/formancehq/stack/libs/go-libs/pointer"
+	"github.com/formancehq/go-libs/collectionutils"
+	"github.com/formancehq/go-libs/pointer"
 	"github.com/pkg/errors"
 
 	internal "github.com/formancehq/fctl/cmd/ledger/internal"

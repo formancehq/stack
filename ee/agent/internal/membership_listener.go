@@ -17,10 +17,10 @@ import (
 	"k8s.io/apimachinery/pkg/selection"
 
 	"github.com/alitto/pond"
+	"github.com/formancehq/go-libs/collectionutils"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/components/agent/internal/generated"
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/api/equality"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"

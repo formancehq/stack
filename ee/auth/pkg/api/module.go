@@ -3,14 +3,15 @@ package api
 import (
 	"net/http"
 
-	"github.com/formancehq/stack/libs/go-libs/service"
+	"github.com/go-chi/chi/v5"
+
+	"github.com/formancehq/go-libs/service"
 
 	"github.com/formancehq/auth/pkg/api/authorization"
 
-	"github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/health"
-	"github.com/formancehq/stack/libs/go-libs/httpserver"
-	"github.com/go-chi/chi/v5"
+	"github.com/formancehq/go-libs/api"
+	"github.com/formancehq/go-libs/health"
+	"github.com/formancehq/go-libs/httpserver"
 	"github.com/zitadel/oidc/v2/pkg/op"
 	"go.uber.org/fx"
 )

@@ -2,8 +2,8 @@
 package cmd
 
 import (
-	"github.com/formancehq/stack/libs/go-libs/bun/bunmigrate"
-	"github.com/formancehq/stack/libs/go-libs/service"
+	"github.com/formancehq/go-libs/bun/bunmigrate"
+	"github.com/formancehq/go-libs/service"
 
 	_ "github.com/bombsimon/logrusr/v3"
 	"github.com/formancehq/payments/cmd/api"

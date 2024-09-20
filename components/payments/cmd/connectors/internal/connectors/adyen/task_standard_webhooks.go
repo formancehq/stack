@@ -10,6 +10,8 @@ import (
 
 	"github.com/adyen/adyen-go-api-library/v7/src/hmacvalidator"
 	"github.com/adyen/adyen-go-api-library/v7/src/webhook"
+	"github.com/formancehq/go-libs/api"
+	"github.com/formancehq/go-libs/contextutil"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/adyen/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
@@ -18,8 +20,6 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
-	"github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/google/uuid"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"

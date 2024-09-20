@@ -1,11 +1,11 @@
 package tests_test
 
 import (
+	"github.com/formancehq/go-libs/collectionutils"
 	v1beta1 "github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
 	"github.com/formancehq/operator/internal/resources/settings"
 	. "github.com/formancehq/operator/internal/tests/internal"
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"

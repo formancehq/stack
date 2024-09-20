@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	sdk "github.com/formancehq/formance-sdk-go/v2"
+	"github.com/formancehq/go-libs/pointer"
 	"github.com/formancehq/orchestration/internal/temporalworker"
-	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/pkg/errors"
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/temporal"

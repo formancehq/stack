@@ -3,14 +3,14 @@ package triggers
 import (
 	"time"
 
-	"github.com/formancehq/orchestration/internal/temporalworker"
-
 	"go.temporal.io/api/enums/v1"
 
-	"github.com/formancehq/orchestration/internal/workflow"
-	"github.com/formancehq/stack/libs/go-libs/pointer"
+	"github.com/formancehq/orchestration/internal/temporalworker"
 
-	"github.com/formancehq/stack/libs/go-libs/publish"
+	"github.com/formancehq/go-libs/pointer"
+	"github.com/formancehq/orchestration/internal/workflow"
+
+	"github.com/formancehq/go-libs/publish"
 	temporalworkflow "go.temporal.io/sdk/workflow"
 )
 

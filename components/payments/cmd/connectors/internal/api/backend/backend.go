@@ -3,7 +3,7 @@ package backend
 import (
 	"context"
 
-	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	"github.com/formancehq/go-libs/bun/bunpaginate"
 
 	manager "github.com/formancehq/payments/cmd/connectors/internal/api/connectors_manager"
 	"github.com/formancehq/payments/cmd/connectors/internal/api/service"

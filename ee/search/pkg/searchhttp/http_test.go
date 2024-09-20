@@ -9,13 +9,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	"github.com/formancehq/go-libs/bun/bunpaginate"
 
 	"github.com/aquasecurity/esquery"
+	"github.com/formancehq/go-libs/api"
 	search "github.com/formancehq/search/pkg"
 	"github.com/formancehq/search/pkg/es"
 	"github.com/formancehq/search/pkg/searchengine"
-	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/stretchr/testify/require"
 )
 

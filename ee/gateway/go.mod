@@ -121,7 +121,7 @@ require (
 	github.com/dlclark/regexp2 v1.11.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
-	github.com/formancehq/stack/libs/go-libs v0.0.0-20231106160418-27b3ecfa2ea0
+	github.com/formancehq/go-libs v1.5.0
 	github.com/fxamacker/cbor/v2 v2.6.0 // indirect
 	github.com/go-chi/chi v4.1.2+incompatible // indirect
 	github.com/go-kit/kit v0.13.0 // indirect
@@ -212,5 +212,3 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	howett.net/plist v1.0.0 // indirect
 )
-
-replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs

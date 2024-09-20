@@ -11,7 +11,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
+	"github.com/formancehq/go-libs/collectionutils"
 	"github.com/pkg/errors"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"

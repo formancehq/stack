@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/formancehq/go-libs/api"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/adyen"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/atlar"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/bankingcircle"
@@ -16,7 +17,6 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/moneycorp"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/stripe"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/wise"
-	"github.com/formancehq/stack/libs/go-libs/api"
 )
 
 func connectorConfigsHandler() http.HandlerFunc {

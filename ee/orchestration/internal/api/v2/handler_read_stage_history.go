@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/formancehq/orchestration/internal/api"
 	"github.com/go-chi/chi/v5"
 
+	sharedapi "github.com/formancehq/go-libs/api"
+	"github.com/formancehq/orchestration/internal/api"
 	"github.com/formancehq/orchestration/internal/workflow"
-	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/pkg/errors"
 )
 

@@ -1,8 +1,8 @@
 package api
 
 import (
-	"github.com/formancehq/stack/libs/go-libs/auth"
-	"github.com/formancehq/stack/libs/go-libs/health"
+	"github.com/formancehq/go-libs/auth"
+	"github.com/formancehq/go-libs/health"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/fx"
 )

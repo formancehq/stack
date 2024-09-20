@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/formancehq/go-libs/migrations"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/migrations"
 	"github.com/gibson042/canonicaljson-go"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"

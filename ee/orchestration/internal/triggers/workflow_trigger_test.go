@@ -6,18 +6,18 @@ import (
 
 	worker "go.temporal.io/sdk/worker"
 
-	"github.com/formancehq/stack/libs/go-libs/bun/bundebug"
+	"github.com/formancehq/go-libs/bun/bundebug"
 	"github.com/uptrace/bun"
 
+	"github.com/formancehq/go-libs/bun/bunconnect"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/orchestration/internal/storage"
 	"github.com/formancehq/orchestration/internal/temporalworker"
 	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/formancehq/orchestration/internal/workflow/stages"
-	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.temporal.io/sdk/client"
 
-	"github.com/formancehq/stack/libs/go-libs/publish"
+	"github.com/formancehq/go-libs/publish"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )

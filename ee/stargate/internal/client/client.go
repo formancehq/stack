@@ -9,10 +9,10 @@ import (
 	"time"
 
 	"github.com/alitto/pond"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/stack/ee/stargate/internal/generated"
 	metrics "github.com/formancehq/stack/ee/stargate/internal/grpcmetrics"
 	"github.com/formancehq/stack/ee/stargate/internal/opentelemetry"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/propagation"

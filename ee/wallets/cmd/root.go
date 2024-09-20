@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/formancehq/stack/libs/go-libs/service"
+	"github.com/formancehq/go-libs/service"
 
 	"github.com/spf13/cobra"
 )

@@ -3,10 +3,11 @@ package worker
 import (
 	"net/http"
 
-	"github.com/formancehq/stack/libs/go-libs/service"
-
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/go-chi/chi/v5"
+
+	"github.com/formancehq/go-libs/service"
+
+	"github.com/formancehq/go-libs/logging"
 )
 
 const (

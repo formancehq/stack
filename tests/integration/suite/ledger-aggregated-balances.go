@@ -1,7 +1,7 @@
 package suite
 
 import (
-	"github.com/formancehq/stack/libs/go-libs/pointer"
+	"github.com/formancehq/go-libs/pointer"
 	"math/big"
 	"net/http"
 	"time"

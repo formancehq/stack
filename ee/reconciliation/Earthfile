@@ -9,7 +9,6 @@ FROM core+base-image
 
 sources:
     WORKDIR src
-    DO stack+INCLUDE_GO_LIBS --LOCATION libs/go-libs
     COPY --pass-args (releases+sdk-generate/go) /src/releases/sdks/go
     WORKDIR /src/ee/reconciliation
     COPY go.* .

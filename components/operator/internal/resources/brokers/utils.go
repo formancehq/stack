@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/formancehq/go-libs/collectionutils"
 	"github.com/formancehq/operator/internal/resources/settings"
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"k8s.io/apimachinery/pkg/types"
 
 	"github.com/formancehq/operator/api/formance.com/v1beta1"

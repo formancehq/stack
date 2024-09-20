@@ -3,19 +3,19 @@ package cmd
 import (
 	"net/http"
 
-	"github.com/formancehq/stack/libs/go-libs/auth"
-	"github.com/formancehq/stack/libs/go-libs/aws/iam"
-	"github.com/formancehq/stack/libs/go-libs/publish"
+	"github.com/formancehq/go-libs/auth"
+	"github.com/formancehq/go-libs/aws/iam"
+	"github.com/formancehq/go-libs/publish"
 
 	"github.com/formancehq/webhooks/pkg/storage/postgres"
 
-	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
-	"github.com/formancehq/stack/libs/go-libs/licence"
+	"github.com/formancehq/go-libs/bun/bunconnect"
+	"github.com/formancehq/go-libs/licence"
 
-	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
+	"github.com/formancehq/go-libs/otlp/otlptraces"
 
-	"github.com/formancehq/stack/libs/go-libs/httpserver"
-	"github.com/formancehq/stack/libs/go-libs/service"
+	"github.com/formancehq/go-libs/httpserver"
+	"github.com/formancehq/go-libs/service"
 	"github.com/formancehq/webhooks/cmd/flag"
 	"github.com/formancehq/webhooks/pkg/backoff"
 	"github.com/formancehq/webhooks/pkg/otlp"

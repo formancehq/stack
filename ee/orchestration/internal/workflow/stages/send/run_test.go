@@ -4,12 +4,12 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/formancehq/stack/libs/go-libs/time"
+	"github.com/formancehq/go-libs/time"
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"github.com/formancehq/go-libs/pointer"
 	"github.com/formancehq/orchestration/internal/workflow/activities"
 	"github.com/formancehq/orchestration/internal/workflow/stages/internal/stagestesting"
-	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/stretchr/testify/mock"
 	"go.temporal.io/sdk/temporal"
 )

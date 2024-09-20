@@ -6,7 +6,7 @@ package backend
 
 import (
 	context "context"
-	api "github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	api "github.com/formancehq/go-libs/bun/bunpaginate"
 	reflect "reflect"
 
 	service "github.com/formancehq/reconciliation/internal/api/service"

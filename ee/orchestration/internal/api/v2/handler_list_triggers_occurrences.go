@@ -3,13 +3,13 @@ package v2
 import (
 	"net/http"
 
-	"github.com/formancehq/orchestration/internal/triggers"
-	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
-
-	"github.com/formancehq/orchestration/internal/api"
 	"github.com/go-chi/chi/v5"
 
-	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/go-libs/bun/bunpaginate"
+	"github.com/formancehq/orchestration/internal/triggers"
+
+	sharedapi "github.com/formancehq/go-libs/api"
+	"github.com/formancehq/orchestration/internal/api"
 )
 
 func listTriggersOccurrences(backend api.Backend) func(writer http.ResponseWriter, request *http.Request) {

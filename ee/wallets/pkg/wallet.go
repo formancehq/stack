@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/formancehq/stack/libs/go-libs/metadata"
+	"github.com/formancehq/go-libs/metadata"
 	"github.com/google/uuid"
 )
 

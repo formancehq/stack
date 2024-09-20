@@ -9,7 +9,7 @@ require (
 	github.com/c-bata/go-prompt v0.2.6
 	github.com/formancehq/fctl/membershipclient v0.0.0-20230109152136-5d4c9193a44c
 	github.com/formancehq/formance-sdk-go/v2 v2.1.0
-	github.com/formancehq/stack/libs/go-libs v0.0.0-20240426110706-1d95d58467f6
+	github.com/formancehq/go-libs v1.5.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/iancoleman/strcase v0.3.0
 	github.com/mattn/go-shellwords v1.0.12
@@ -72,8 +72,6 @@ require (
 	golang.org/x/text v0.17.0 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 )
-
-replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
 
 replace github.com/zitadel/oidc/v2 v2.6.1 => github.com/formancehq/oidc/v2 v2.6.2-0.20230526075055-93dc5ecb0149
 

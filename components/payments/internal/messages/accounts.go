@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/formancehq/stack/libs/go-libs/publish"
+	"github.com/formancehq/go-libs/publish"
 
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"

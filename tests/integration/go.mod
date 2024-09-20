@@ -9,13 +9,13 @@ require (
 	github.com/egymgmbh/go-prefix-writer v0.0.0-20180609083313-7326ea162eca
 	github.com/formancehq/auth v0.0.0-00010101000000-000000000000
 	github.com/formancehq/formance-sdk-go/v2 v2.0.0-00010101000000-000000000000
+	github.com/formancehq/go-libs v1.5.0
 	github.com/formancehq/ledger v0.0.0-00010101000000-000000000000
 	github.com/formancehq/orchestration v0.0.0-00010101000000-000000000000
 	github.com/formancehq/payments v0.0.0-00010101000000-000000000000
 	github.com/formancehq/reconciliation v0.0.0-00010101000000-000000000000
 	github.com/formancehq/search v0.0.0-00010101000000-000000000000
 	github.com/formancehq/stack/libs/events v0.0.0-00010101000000-000000000000
-	github.com/formancehq/stack/libs/go-libs v0.0.0-20230221161632-e6dc6a89a85e
 	github.com/formancehq/wallets v0.0.0-00010101000000-000000000000
 	github.com/formancehq/webhooks v0.0.0-00010101000000-000000000000
 	github.com/getkin/kin-openapi v0.114.0
@@ -287,7 +287,6 @@ replace (
 	github.com/formancehq/search => ../../ee/search
 	github.com/formancehq/stack/libs/core => ../../libs/core
 	github.com/formancehq/stack/libs/events => ../../libs/events
-	github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
 	github.com/formancehq/wallets => ../../ee/wallets
 	github.com/formancehq/webhooks => ../../ee/webhooks
 	github.com/zitadel/oidc => github.com/formancehq/oidc v0.0.0-20220923202448-e2960a99b71c

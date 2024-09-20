@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/mangopay/client"
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/google/uuid"
 )
 

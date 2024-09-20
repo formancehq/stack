@@ -4,9 +4,9 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/formancehq/go-libs/pointer"
+	"github.com/formancehq/go-libs/query"
 	"github.com/formancehq/reconciliation/internal/storage"
-	"github.com/formancehq/stack/libs/go-libs/pointer"
-	"github.com/formancehq/stack/libs/go-libs/query"
 )
 
 func getQueryBuilder(r *http.Request) (query.Builder, error) {

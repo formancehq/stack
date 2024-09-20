@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/webhooks/pkg/security"
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"

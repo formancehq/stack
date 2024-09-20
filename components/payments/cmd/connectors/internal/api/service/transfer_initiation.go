@@ -6,10 +6,10 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/formancehq/go-libs/publish"
 	manager "github.com/formancehq/payments/cmd/connectors/internal/api/connectors_manager"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
-	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 )

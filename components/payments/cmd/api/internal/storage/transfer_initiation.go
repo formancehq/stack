@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/formancehq/go-libs/bun/bunpaginate"
+	"github.com/formancehq/go-libs/query"
 	"github.com/formancehq/payments/internal/models"
-	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
-	"github.com/formancehq/stack/libs/go-libs/query"
 	"github.com/uptrace/bun"
 )
 

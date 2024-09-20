@@ -3,14 +3,14 @@ package triggers
 import (
 	"testing"
 
-	"github.com/formancehq/stack/libs/go-libs/testing/docker"
-	"github.com/formancehq/stack/libs/go-libs/testing/utils"
+	"github.com/formancehq/go-libs/testing/docker"
+	"github.com/formancehq/go-libs/testing/utils"
 	"github.com/stretchr/testify/require"
 
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/go-libs/logging"
 	"go.temporal.io/sdk/testsuite"
 
-	"github.com/formancehq/stack/libs/go-libs/testing/platform/pgtesting"
+	"github.com/formancehq/go-libs/testing/platform/pgtesting"
 )
 
 var (

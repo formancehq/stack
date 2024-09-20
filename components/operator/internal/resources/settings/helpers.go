@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/formancehq/go-libs/pointer"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/operator/internal/core"
-	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/pkg/errors"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )

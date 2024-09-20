@@ -5,8 +5,8 @@ import (
 	"io"
 	"time"
 
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/stack/components/agent/internal/generated"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"

@@ -6,9 +6,9 @@ import (
 	"github.com/formancehq/payments/internal/models"
 	"github.com/gorilla/mux"
 
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/storage"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
 type Loader struct{}

@@ -3,12 +3,13 @@ package server
 import (
 	"net/http"
 
-	"github.com/formancehq/stack/libs/go-libs/service"
-
-	"github.com/formancehq/stack/libs/go-libs/auth"
-	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/webhooks/pkg/storage"
 	"github.com/go-chi/chi/v5"
+
+	"github.com/formancehq/go-libs/service"
+
+	"github.com/formancehq/go-libs/auth"
+	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/webhooks/pkg/storage"
 )
 
 const (

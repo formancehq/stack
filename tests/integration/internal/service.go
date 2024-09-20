@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/egymgmbh/go-prefix-writer/prefixer"
-	"github.com/formancehq/stack/libs/go-libs/httpserver"
-	serviceutils "github.com/formancehq/stack/libs/go-libs/service"
+	"github.com/formancehq/go-libs/httpserver"
+	serviceutils "github.com/formancehq/go-libs/service"
 	"github.com/spf13/cobra"
 )
 

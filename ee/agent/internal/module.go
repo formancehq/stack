@@ -6,9 +6,9 @@ import (
 	"sort"
 	"time"
 
+	"github.com/formancehq/go-libs/collectionutils"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
 	"go.uber.org/fx"
 	"google.golang.org/grpc"

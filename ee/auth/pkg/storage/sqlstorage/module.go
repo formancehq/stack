@@ -4,14 +4,14 @@ import (
 	"context"
 	"crypto/rsa"
 
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/uptrace/bun"
 
-	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
+	"github.com/formancehq/go-libs/bun/bunconnect"
 
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/oidc"
-	"github.com/formancehq/stack/libs/go-libs/health"
+	"github.com/formancehq/go-libs/health"
 	"github.com/zitadel/oidc/v2/pkg/op"
 	"go.uber.org/fx"
 )

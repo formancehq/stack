@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/formancehq/stack/libs/events"
-	"github.com/formancehq/stack/libs/go-libs/publish"
+	"github.com/formancehq/go-libs/publish"
 	"github.com/nats-io/nats.go"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/types"

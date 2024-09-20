@@ -5,19 +5,19 @@ import (
 	"fmt"
 	"runtime/debug"
 
+	"go.temporal.io/api/enums/v1"
+
 	"github.com/formancehq/orchestration/internal/workflow"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
-	"go.temporal.io/api/enums/v1"
-
-	"github.com/formancehq/stack/libs/go-libs/pointer"
+	"github.com/formancehq/go-libs/pointer"
 	"go.temporal.io/api/serviceerror"
 
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/go-libs/logging"
 
 	"github.com/ThreeDotsLabs/watermill/message"
-	"github.com/formancehq/stack/libs/go-libs/publish"
+	"github.com/formancehq/go-libs/publish"
 	"github.com/pkg/errors"
 	"go.temporal.io/sdk/client"
 )

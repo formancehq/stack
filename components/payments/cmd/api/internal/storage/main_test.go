@@ -5,12 +5,12 @@ import (
 	"crypto/rand"
 	"testing"
 
-	"github.com/formancehq/stack/libs/go-libs/testing/docker"
-	"github.com/formancehq/stack/libs/go-libs/testing/utils"
+	"github.com/formancehq/go-libs/testing/docker"
+	"github.com/formancehq/go-libs/testing/utils"
 
+	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/go-libs/testing/platform/pgtesting"
 	migrationstorage "github.com/formancehq/payments/internal/storage"
-	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/testing/platform/pgtesting"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/require"

@@ -3,21 +3,21 @@ package cmd
 import (
 	"context"
 
-	"github.com/formancehq/stack/libs/go-libs/auth"
-	"github.com/formancehq/stack/libs/go-libs/aws/iam"
-	"github.com/formancehq/stack/libs/go-libs/bun/bunconnect"
-	"github.com/formancehq/stack/libs/go-libs/licence"
-	"github.com/formancehq/stack/libs/go-libs/publish"
+	"github.com/go-chi/chi/v5"
 
+	"github.com/formancehq/go-libs/auth"
+	"github.com/formancehq/go-libs/aws/iam"
+	"github.com/formancehq/go-libs/bun/bunconnect"
+	"github.com/formancehq/go-libs/licence"
+	"github.com/formancehq/go-libs/publish"
+
+	"github.com/formancehq/go-libs/health"
+	"github.com/formancehq/go-libs/httpserver"
+	"github.com/formancehq/go-libs/service"
 	"github.com/formancehq/orchestration/internal/api"
 	v1 "github.com/formancehq/orchestration/internal/api/v1"
 	v2 "github.com/formancehq/orchestration/internal/api/v2"
-	"github.com/go-chi/chi/v5"
-
 	"github.com/formancehq/orchestration/internal/storage"
-	"github.com/formancehq/stack/libs/go-libs/health"
-	"github.com/formancehq/stack/libs/go-libs/httpserver"
-	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
 	"github.com/uptrace/bun"
 	"go.uber.org/fx"

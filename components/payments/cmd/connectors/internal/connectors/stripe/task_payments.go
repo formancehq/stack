@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/formancehq/go-libs/contextutil"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/stripe/client"
@@ -14,7 +15,6 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
-	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"github.com/stripe/stripe-go/v72"
 	"go.opentelemetry.io/otel/attribute"
 )

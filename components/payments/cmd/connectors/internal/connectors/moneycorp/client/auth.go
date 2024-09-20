@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 

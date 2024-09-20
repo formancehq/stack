@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/formancehq/go-libs/contextutil"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/currency"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/mangopay/client"
@@ -15,7 +16,6 @@ import (
 	"github.com/formancehq/payments/cmd/connectors/internal/task"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/internal/otel"
-	"github.com/formancehq/stack/libs/go-libs/contextutil"
 	"go.opentelemetry.io/otel/attribute"
 )
 

@@ -5,7 +5,7 @@ go 1.22
 toolchain go1.22.6
 
 require (
-	github.com/formancehq/stack/libs/go-libs v0.0.0-00010101000000-000000000000
+	github.com/formancehq/go-libs v1.5.0
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.8.1
 )
@@ -77,5 +77,3 @@ require (
 	google.golang.org/grpc v1.64.1 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 )
-
-replace github.com/formancehq/stack/libs/go-libs => ./../../../../libs/go-libs

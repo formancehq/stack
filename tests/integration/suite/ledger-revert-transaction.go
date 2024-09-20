@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
-	"github.com/formancehq/stack/libs/go-libs/pointer"
+	"github.com/formancehq/go-libs/pointer"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"github.com/nats-io/nats.go"
 	. "github.com/onsi/ginkgo/v2"

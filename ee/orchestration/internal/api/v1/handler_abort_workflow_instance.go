@@ -5,7 +5,7 @@ import (
 
 	api2 "github.com/formancehq/orchestration/internal/api"
 
-	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/go-libs/api"
 )
 
 func abortWorkflowInstance(backend api2.Backend) http.HandlerFunc {

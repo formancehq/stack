@@ -4,9 +4,9 @@ import (
 	"context"
 	"math/big"
 
+	"github.com/formancehq/go-libs/publish"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/formancehq/payments/pkg/events"
-	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/google/uuid"
 )
 

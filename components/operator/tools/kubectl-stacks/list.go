@@ -6,8 +6,8 @@ import (
 	"text/tabwriter"
 	"time"
 
+	"github.com/formancehq/go-libs/collectionutils"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
-	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/spf13/cobra"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 )

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/genericclient"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 

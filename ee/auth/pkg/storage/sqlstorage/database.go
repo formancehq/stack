@@ -4,7 +4,7 @@ import (
 	"context"
 
 	auth "github.com/formancehq/auth/pkg"
-	"github.com/formancehq/stack/libs/go-libs/migrations"
+	"github.com/formancehq/go-libs/migrations"
 	"github.com/uptrace/bun"
 )
 

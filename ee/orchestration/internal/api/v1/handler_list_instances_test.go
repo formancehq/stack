@@ -8,13 +8,13 @@ import (
 	"testing"
 	"time"
 
-	sharedapi "github.com/formancehq/stack/libs/go-libs/testing/api"
+	"github.com/go-chi/chi/v5"
+
+	sharedapi "github.com/formancehq/go-libs/testing/api"
 
 	"github.com/google/uuid"
 
 	"github.com/formancehq/orchestration/internal/api"
-	"github.com/go-chi/chi/v5"
-
 	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/stretchr/testify/require"
 	"github.com/uptrace/bun"

@@ -5,13 +5,14 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
+
+	"github.com/formancehq/go-libs/api"
+	"github.com/formancehq/go-libs/health"
+	"github.com/formancehq/go-libs/httpserver"
 	"github.com/formancehq/reconciliation/internal/api/backend"
 	"github.com/formancehq/reconciliation/internal/api/service"
 	"github.com/formancehq/reconciliation/internal/storage"
-	"github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/health"
-	"github.com/formancehq/stack/libs/go-libs/httpserver"
-	"github.com/go-chi/chi/v5"
 	"go.uber.org/fx"
 )
 

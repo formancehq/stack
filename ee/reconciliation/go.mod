@@ -6,7 +6,7 @@ toolchain go1.22.6
 
 require (
 	github.com/formancehq/formance-sdk-go/v2 v2.0.0-00010101000000-000000000000
-	github.com/formancehq/stack/libs/go-libs v0.0.0-00010101000000-000000000000
+	github.com/formancehq/go-libs v1.5.0
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.6.0
@@ -128,7 +128,5 @@ require (
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
 
 replace github.com/formancehq/formance-sdk-go/v2 => ../../releases/sdks/go

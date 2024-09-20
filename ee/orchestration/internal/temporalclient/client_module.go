@@ -5,11 +5,12 @@ import (
 	"crypto/tls"
 	"time"
 
-	"github.com/formancehq/orchestration/internal/triggers"
-	"github.com/formancehq/orchestration/internal/workflow"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.temporal.io/api/enums/v1"
 	"go.temporal.io/api/operatorservice/v1"
+
+	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/orchestration/internal/triggers"
+	"github.com/formancehq/orchestration/internal/workflow"
 	"go.temporal.io/api/serviceerror"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/contrib/opentelemetry"

@@ -5,8 +5,8 @@ go 1.22
 toolchain go1.22.6
 
 require (
+	github.com/formancehq/go-libs v1.5.0
 	github.com/formancehq/search v0.0.0-00010101000000-000000000000
-	github.com/formancehq/stack/libs/go-libs v0.0.0-20231226162118-70cd9916b2b2
 	github.com/go-logr/logr v1.4.2
 	github.com/google/go-cmp v0.6.0
 	github.com/google/uuid v1.6.0
@@ -15,7 +15,7 @@ require (
 	github.com/onsi/ginkgo/v2 v2.20.0
 	github.com/onsi/gomega v1.34.1
 	github.com/pkg/errors v0.9.1
-	github.com/stoewer/go-strcase v1.3.0
+	github.com/stoewer/go-strcase v1.2.0
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/mod v0.20.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -81,7 +81,5 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
-
-replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
 
 replace github.com/formancehq/search => ../../ee/search

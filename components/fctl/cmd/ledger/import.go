@@ -5,7 +5,7 @@ import (
 
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
-	"github.com/formancehq/stack/libs/go-libs/pointer"
+	"github.com/formancehq/go-libs/pointer"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )

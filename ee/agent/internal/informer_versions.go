@@ -3,9 +3,9 @@ package internal
 import (
 	"reflect"
 
+	sharedlogging "github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/operator/api/formance.com/v1beta1"
 	"github.com/formancehq/stack/components/agent/internal/generated"
-	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/tools/cache"

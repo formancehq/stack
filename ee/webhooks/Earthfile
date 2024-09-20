@@ -8,7 +8,6 @@ FROM core+base-image
 
 sources:
     WORKDIR src
-    DO stack+INCLUDE_GO_LIBS --LOCATION libs/go-libs
     WORKDIR /src/ee/webhooks
     COPY go.* .
     COPY --dir pkg cmd .

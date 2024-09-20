@@ -5,16 +5,17 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	sharedapi "github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	"github.com/go-chi/chi/v5"
 
-	"github.com/formancehq/stack/libs/go-libs/auth"
+	sharedapi "github.com/formancehq/go-libs/bun/bunpaginate"
 
+	"github.com/formancehq/go-libs/auth"
+
+	"github.com/formancehq/go-libs/health"
 	"github.com/formancehq/orchestration/internal/api"
 	v1 "github.com/formancehq/orchestration/internal/api/v1"
 	v2 "github.com/formancehq/orchestration/internal/api/v2"
 	"github.com/formancehq/orchestration/internal/workflow"
-	"github.com/formancehq/stack/libs/go-libs/health"
-	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxtest"

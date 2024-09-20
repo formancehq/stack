@@ -7,7 +7,7 @@ toolchain go1.22.6
 require (
 	github.com/aquasecurity/esquery v0.2.0
 	github.com/bombsimon/logrusr/v3 v3.1.0
-	github.com/formancehq/stack/libs/go-libs v0.0.0-20230221161632-e6dc6a89a85e
+	github.com/formancehq/go-libs v1.5.0
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	github.com/opensearch-project/opensearch-go v1.1.0
@@ -108,7 +108,5 @@ require (
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
 
 replace github.com/formancehq/ledger => ../../components/ledger

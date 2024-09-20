@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/formancehq/go-libs/api"
 	"github.com/formancehq/payments/cmd/connectors/internal/api/backend"
 	"github.com/formancehq/payments/cmd/connectors/internal/api/service"
 	"github.com/formancehq/payments/internal/otel"
-	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"

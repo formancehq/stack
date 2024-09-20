@@ -10,15 +10,16 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
+	"github.com/go-chi/chi/v5"
+
+	"github.com/formancehq/go-libs/bun/bunpaginate"
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 
-	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/auth"
-	sharedhealth "github.com/formancehq/stack/libs/go-libs/health"
+	sharedapi "github.com/formancehq/go-libs/api"
+	"github.com/formancehq/go-libs/auth"
+	sharedhealth "github.com/formancehq/go-libs/health"
 	wallet "github.com/formancehq/wallets/pkg"
-	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/require"
 )
 

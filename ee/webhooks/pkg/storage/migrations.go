@@ -6,7 +6,7 @@ import (
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/pkg/errors"
 
-	"github.com/formancehq/stack/libs/go-libs/migrations"
+	"github.com/formancehq/go-libs/migrations"
 	"github.com/uptrace/bun"
 )
 
