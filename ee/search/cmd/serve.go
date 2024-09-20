@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/opensearch-project/opensearch-go"
+
 	"github.com/aws/aws-sdk-go-v2/config"
 
 	"github.com/formancehq/go-libs/api"

@@ -10,6 +10,8 @@ import (
 	"github.com/formancehq/stack/components/agent/internal"
 	"github.com/formancehq/stack/components/agent/internal/generated"
 	"github.com/google/uuid"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/dynamic"

@@ -19,6 +19,7 @@ import (
 	"github.com/uptrace/bun"
 
 	"github.com/formancehq/go-libs/logging"
+	"github.com/go-chi/chi/v5"
 
 	"github.com/formancehq/go-libs/bun/bunconnect"
 

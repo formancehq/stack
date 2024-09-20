@@ -5,6 +5,9 @@ import (
 	"crypto/tls"
 	"time"
 
+	"go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/operatorservice/v1"
+
 	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/orchestration/internal/triggers"
 	"github.com/formancehq/orchestration/internal/workflow"

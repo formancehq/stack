@@ -10,6 +10,8 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/formancehq/go-libs/bun/bunpaginate"
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"

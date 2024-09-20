@@ -3,6 +3,8 @@ package api
 import (
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/uptrace/bun"
 
 	auth "github.com/formancehq/auth/pkg"

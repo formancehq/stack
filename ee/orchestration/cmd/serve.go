@@ -3,6 +3,8 @@ package cmd
 import (
 	"context"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/formancehq/go-libs/auth"
 	"github.com/formancehq/go-libs/aws/iam"
 	"github.com/formancehq/go-libs/bun/bunconnect"

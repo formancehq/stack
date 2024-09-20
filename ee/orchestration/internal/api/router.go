@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"sort"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/formancehq/go-libs/auth"
 	"github.com/formancehq/go-libs/health"
 	"github.com/go-chi/chi/v5/middleware"

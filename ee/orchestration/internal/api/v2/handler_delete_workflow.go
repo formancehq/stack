@@ -4,6 +4,8 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
+
 	"github.com/formancehq/go-libs/api"
 	api2 "github.com/formancehq/orchestration/internal/api"
 	"github.com/formancehq/orchestration/internal/workflow"

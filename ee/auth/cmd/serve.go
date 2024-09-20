@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"os"
 
+	"gopkg.in/yaml.v3"
+
 	"github.com/formancehq/go-libs/aws/iam"
 	"github.com/formancehq/go-libs/bun/bunconnect"
 	"github.com/formancehq/go-libs/licence"

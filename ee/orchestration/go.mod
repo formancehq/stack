@@ -26,6 +26,7 @@ require (
 	go.uber.org/fx v1.22.2
 	go.uber.org/mock v0.4.0
 	golang.org/x/oauth2 v0.20.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -180,7 +181,6 @@ require (
 	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 replace github.com/formancehq/formance-sdk-go/v2 => ../../releases/sdks/go

@@ -14,10 +14,12 @@ import (
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill-kafka/v3/pkg/kafka"
 	wNats "github.com/ThreeDotsLabs/watermill-nats/v2/pkg/nats"
+	"github.com/nats-io/nats.go"
 	"github.com/pkg/errors"
 	"github.com/xdg-go/scram"
 
 	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
 	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"

@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/formancehq/go-libs/api"
 	"github.com/formancehq/go-libs/logging"
 	webhooks "github.com/formancehq/webhooks/pkg"

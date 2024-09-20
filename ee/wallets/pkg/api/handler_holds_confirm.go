@@ -5,6 +5,8 @@ import (
 	"math/big"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/formancehq/go-libs/api"
 
 	wallet "github.com/formancehq/wallets/pkg"

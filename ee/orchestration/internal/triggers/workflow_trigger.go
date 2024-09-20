@@ -3,6 +3,8 @@ package triggers
 import (
 	"time"
 
+	"go.temporal.io/api/enums/v1"
+
 	"github.com/formancehq/orchestration/internal/temporalworker"
 
 	"github.com/formancehq/go-libs/pointer"

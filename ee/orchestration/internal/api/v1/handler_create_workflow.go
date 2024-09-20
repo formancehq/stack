@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"gopkg.in/yaml.v3"
+
 	"github.com/formancehq/go-libs/api"
 	api2 "github.com/formancehq/orchestration/internal/api"
 	"github.com/formancehq/orchestration/internal/workflow"

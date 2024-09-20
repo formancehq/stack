@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
+
 	"github.com/formancehq/go-libs/publish"
 	"github.com/google/uuid"
 	"go.uber.org/zap"

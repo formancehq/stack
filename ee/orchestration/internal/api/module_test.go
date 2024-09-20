@@ -5,6 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/go-chi/chi/v5"
+
 	sharedapi "github.com/formancehq/go-libs/bun/bunpaginate"
 
 	"github.com/formancehq/go-libs/auth"

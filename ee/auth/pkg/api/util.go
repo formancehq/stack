@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"reflect"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/uptrace/bun"
 
 	"github.com/formancehq/go-libs/api"

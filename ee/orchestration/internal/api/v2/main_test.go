@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/formancehq/go-libs/testing/docker"
 	"github.com/formancehq/go-libs/testing/utils"
 

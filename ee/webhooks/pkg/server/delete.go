@@ -3,6 +3,8 @@ package server
 import (
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/webhooks/pkg/server/apierrors"
 	"github.com/formancehq/webhooks/pkg/storage"

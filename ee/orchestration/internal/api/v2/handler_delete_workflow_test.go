@@ -7,6 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/go-chi/chi/v5"
+
 	sharedapi "github.com/formancehq/go-libs/testing/api"
 
 	"github.com/formancehq/orchestration/internal/api"

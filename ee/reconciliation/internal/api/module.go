@@ -5,6 +5,8 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/formancehq/go-libs/api"
 	"github.com/formancehq/go-libs/health"
 	"github.com/formancehq/go-libs/httpserver"

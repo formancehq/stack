@@ -3,6 +3,8 @@ package api
 import (
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/formancehq/go-libs/service"
 
 	"github.com/formancehq/go-libs/api"

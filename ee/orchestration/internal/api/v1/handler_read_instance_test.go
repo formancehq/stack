@@ -8,6 +8,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-chi/chi/v5"
+
 	sharedapi "github.com/formancehq/go-libs/testing/api"
 
 	"github.com/formancehq/go-libs/logging"

@@ -8,6 +8,7 @@ require (
 	github.com/ThreeDotsLabs/watermill v1.3.5
 	github.com/alitto/pond v1.8.3
 	github.com/formancehq/go-libs v1.5.0
+	github.com/go-chi/chi/v5 v5.1.0
 	github.com/google/uuid v1.6.0
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.3
@@ -61,7 +62,6 @@ require (
 	github.com/eapache/queue v1.1.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-chi/chi v4.1.2+incompatible // indirect
-	github.com/go-chi/chi/v5 v5.1.0 // indirect
 	github.com/go-chi/render v1.0.2 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect

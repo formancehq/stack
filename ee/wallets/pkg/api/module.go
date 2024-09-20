@@ -4,6 +4,7 @@ import (
 	sharedapi "github.com/formancehq/go-libs/api"
 	sharedhealth "github.com/formancehq/go-libs/health"
 	"github.com/formancehq/go-libs/httpserver"
+	"github.com/go-chi/chi/v5"
 	"go.uber.org/fx"
 )
 

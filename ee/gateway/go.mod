@@ -10,6 +10,8 @@ require (
 	github.com/ThreeDotsLabs/watermill-kafka/v3 v3.0.1
 	github.com/ThreeDotsLabs/watermill-nats/v2 v2.0.2
 	github.com/caddyserver/caddy/v2 v2.8.4
+	github.com/golang-jwt/jwt/v5 v5.2.1
+	github.com/nats-io/nats.go v1.37.0
 	github.com/xdg-go/scram v1.1.2
 	go.uber.org/zap v1.27.0
 	golang.org/x/sync v0.8.0
@@ -59,7 +61,6 @@ require (
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/lithammer/shortuuid/v3 v3.0.7 // indirect
 	github.com/mholt/acmez/v2 v2.0.1 // indirect
-	github.com/nats-io/nats.go v1.37.0 // indirect
 	github.com/nats-io/nkeys v0.4.7 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect

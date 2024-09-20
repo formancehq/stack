@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"runtime/debug"
 
+	"go.temporal.io/api/enums/v1"
+
 	"github.com/formancehq/orchestration/internal/workflow"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
