@@ -10,8 +10,6 @@ import (
 	"github.com/formancehq/go-libs/pointer"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
 )
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {

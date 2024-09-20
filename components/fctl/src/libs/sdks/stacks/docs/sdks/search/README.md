@@ -1,5 +1,0 @@
-# Search
-(*Search*)
-
-### Available Operations
-

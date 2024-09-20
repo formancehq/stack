@@ -1,5 +1,0 @@
-# Wallets
-(*Wallets*)
-
-### Available Operations
-

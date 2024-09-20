@@ -1,5 +1,0 @@
-# Webhooks
-(*Webhooks*)
-
-### Available Operations
-

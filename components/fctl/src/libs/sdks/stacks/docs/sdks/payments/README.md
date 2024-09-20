@@ -1,5 +1,0 @@
-# Payments
-(*Payments*)
-
-### Available Operations
-

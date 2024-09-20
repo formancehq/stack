@@ -10,8 +10,6 @@ import (
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"github.com/google/uuid"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
 )
 
 var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, func() {

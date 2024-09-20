@@ -15,8 +15,6 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/go-libs/metadata"
 	. "github.com/formancehq/stack/tests/integration/internal"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
 )
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {

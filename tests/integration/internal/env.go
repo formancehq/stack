@@ -9,8 +9,6 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/formancehq/go-libs/collectionutils"
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5"
-	"github.com/ory/dockertest/v3"
 )
 
 type Env struct {
