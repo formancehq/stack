@@ -34,7 +34,7 @@ func (w Workflow) fetchBalances(
 	fetchNextBalances FetchNextBalances,
 	nextTasks []models.TaskTree,
 ) error {
-	stateReference := fmt.Sprintf("%s", models.CAPABILITY_FETCH_BALANCES.String())
+	stateReference := models.CAPABILITY_FETCH_BALANCES.String()
 	if fetchNextBalances.FromPayload != nil {
 		stateReference = fmt.Sprintf("%s-%s", models.CAPABILITY_FETCH_BALANCES.String(), fetchNextBalances.FromPayload.ID)
 	}
@@ -61,48 +61,92 @@ func (w Workflow) fetchBalances(
 			return errors.Wrap(err, "fetching next accounts")
 		}
 
+		balances := models.FromPSPBalances(
+			balancesResponse.Balances,
+			fetchNextBalances.ConnectorID,
+		)
 		if len(balancesResponse.Balances) > 0 {
 			err = activities.StorageBalancesStore(
 				infiniteRetryContext(ctx),
-				models.FromPSPBalances(
-					balancesResponse.Balances,
-					fetchNextBalances.ConnectorID,
-				),
+				balances,
 			)
 			if err != nil {
 				return errors.Wrap(err, "storing next accounts")
 			}
 		}
 
-		// TODO(polo): send event
+		wg := workflow.NewWaitGroup(ctx)
+		errChan := make(chan error, len(balancesResponse.Balances)*2)
+		for _, balance := range balances {
+			b := balance
+
+			wg.Add(1)
+			workflow.Go(ctx, func(ctx workflow.Context) {
+				defer wg.Done()
+
+				if err := workflow.ExecuteChildWorkflow(
+					workflow.WithChildOptions(
+						ctx,
+						workflow.ChildWorkflowOptions{
+							TaskQueue:         fetchNextBalances.ConnectorID.String(),
+							ParentClosePolicy: enums.PARENT_CLOSE_POLICY_ABANDON,
+							SearchAttributes: map[string]interface{}{
+								SearchAttributeStack: w.stack,
+							},
+						},
+					),
+					RunSendEvents,
+					SendEvents{
+						Balance: &b,
+					},
+				).Get(ctx, nil); err != nil {
+					errChan <- errors.Wrap(err, "sending events")
+				}
+			})
+		}
 
 		for _, balance := range balancesResponse.Balances {
-			payload, err := json.Marshal(balance)
-			if err != nil {
-				return errors.Wrap(err, "marshalling account")
-			}
+			b := balance
 
-			if err := workflow.ExecuteChildWorkflow(
-				workflow.WithChildOptions(
-					ctx,
-					workflow.ChildWorkflowOptions{
-						TaskQueue:         fetchNextBalances.ConnectorID.String(),
-						ParentClosePolicy: enums.PARENT_CLOSE_POLICY_ABANDON,
-						SearchAttributes: map[string]interface{}{
-							SearchAttributeStack: w.stack,
+			wg.Add(1)
+			workflow.Go(ctx, func(ctx workflow.Context) {
+				defer wg.Done()
+
+				payload, err := json.Marshal(b)
+				if err != nil {
+					errChan <- errors.Wrap(err, "marshalling account")
+				}
+
+				if err := workflow.ExecuteChildWorkflow(
+					workflow.WithChildOptions(
+						ctx,
+						workflow.ChildWorkflowOptions{
+							TaskQueue:         fetchNextBalances.ConnectorID.String(),
+							ParentClosePolicy: enums.PARENT_CLOSE_POLICY_ABANDON,
+							SearchAttributes: map[string]interface{}{
+								SearchAttributeStack: w.stack,
+							},
 						},
+					),
+					Run,
+					fetchNextBalances.Config,
+					fetchNextBalances.ConnectorID,
+					&FromPayload{
+						ID:      fmt.Sprintf("%s-balances", b.AccountReference),
+						Payload: payload,
 					},
-				),
-				Run,
-				fetchNextBalances.Config,
-				fetchNextBalances.ConnectorID,
-				&FromPayload{
-					ID:      fmt.Sprintf("%s-balances", balance.AccountReference),
-					Payload: payload,
-				},
-				nextTasks,
-			).Get(ctx, nil); err != nil {
-				return errors.Wrap(err, "running next workflow")
+					nextTasks,
+				).Get(ctx, nil); err != nil {
+					errChan <- errors.Wrap(err, "running next workflow")
+				}
+			})
+		}
+
+		wg.Wait(ctx)
+		close(errChan)
+		for err := range errChan {
+			if err != nil {
+				return err
 			}
 		}
 

@@ -31,6 +31,10 @@ type PaymentAdjustment struct {
 	Raw json.RawMessage `json:"raw"`
 }
 
+func (p *PaymentAdjustment) IdempotemcyKey() string {
+	return p.ID.String()
+}
+
 func (c PaymentAdjustment) MarshalJSON() ([]byte, error) {
 	return json.Marshal(&struct {
 		ID        string            `json:"id"`

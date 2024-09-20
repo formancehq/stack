@@ -1,9 +1,12 @@
 package models
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"math/big"
 	"time"
+
+	"github.com/gibson042/canonicaljson-go"
 )
 
 type PSPBalance struct {
@@ -33,6 +36,25 @@ type Balance struct {
 	Asset string `json:"asset"`
 	// Balance amount.
 	Balance *big.Int `json:"balance"`
+}
+
+func (b *Balance) IdempotencyKey() string {
+	var ik = struct {
+		AccountID     string
+		CreatedAt     int64
+		LastUpdatedAt int64
+	}{
+		AccountID:     b.AccountID.String(),
+		CreatedAt:     b.CreatedAt.UnixNano(),
+		LastUpdatedAt: b.LastUpdatedAt.UnixNano(),
+	}
+
+	data, err := canonicaljson.Marshal(ik)
+	if err != nil {
+		panic(err)
+	}
+
+	return base64.URLEncoding.WithPadding(base64.NoPadding).EncodeToString(data)
 }
 
 func (b Balance) MarshalJSON() ([]byte, error) {

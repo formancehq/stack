@@ -34,7 +34,7 @@ func (w Workflow) fetchExternalAccounts(
 	fetchNextExternalAccount FetchNextExternalAccounts,
 	nextTasks []models.TaskTree,
 ) error {
-	stateReference := fmt.Sprintf("%s", models.CAPABILITY_FETCH_EXTERNAL_ACCOUNTS.String())
+	stateReference := models.CAPABILITY_FETCH_EXTERNAL_ACCOUNTS.String()
 	if fetchNextExternalAccount.FromPayload != nil {
 		stateReference = fmt.Sprintf("%s-%s", models.CAPABILITY_FETCH_EXTERNAL_ACCOUNTS.String(), fetchNextExternalAccount.FromPayload.ID)
 	}
@@ -61,49 +61,93 @@ func (w Workflow) fetchExternalAccounts(
 			return errors.Wrap(err, "fetching next accounts")
 		}
 
+		accounts := models.FromPSPAccounts(
+			externalAccountsResponse.ExternalAccounts,
+			models.ACCOUNT_TYPE_EXTERNAL,
+			fetchNextExternalAccount.ConnectorID,
+		)
+
 		if len(externalAccountsResponse.ExternalAccounts) > 0 {
 			err = activities.StorageAccountsStore(
 				infiniteRetryContext(ctx),
-				models.FromPSPAccounts(
-					externalAccountsResponse.ExternalAccounts,
-					models.ACCOUNT_TYPE_EXTERNAL,
-					fetchNextExternalAccount.ConnectorID,
-				),
+				accounts,
 			)
 			if err != nil {
 				return errors.Wrap(err, "storing next accounts")
 			}
 		}
 
-		// TODO(polo): send event
+		wg := workflow.NewWaitGroup(ctx)
+		errChan := make(chan error, len(externalAccountsResponse.ExternalAccounts)*2)
+		for _, externalAccount := range accounts {
+			acc := externalAccount
+			wg.Add(1)
+			workflow.Go(ctx, func(ctx workflow.Context) {
+				defer wg.Done()
+
+				if err := workflow.ExecuteChildWorkflow(
+					workflow.WithChildOptions(
+						ctx,
+						workflow.ChildWorkflowOptions{
+							TaskQueue:         fetchNextExternalAccount.ConnectorID.String(),
+							ParentClosePolicy: enums.PARENT_CLOSE_POLICY_ABANDON,
+							SearchAttributes: map[string]interface{}{
+								SearchAttributeStack: w.stack,
+							},
+						},
+					),
+					RunSendEvents,
+					SendEvents{
+						Account: &acc,
+					},
+				).Get(ctx, nil); err != nil {
+					errChan <- errors.Wrap(err, "sending events")
+				}
+			})
+		}
 
 		for _, externalAccount := range externalAccountsResponse.ExternalAccounts {
-			payload, err := json.Marshal(externalAccount)
-			if err != nil {
-				return errors.Wrap(err, "marshalling external account")
-			}
+			acc := externalAccount
 
-			if err := workflow.ExecuteChildWorkflow(
-				workflow.WithChildOptions(
-					ctx,
-					workflow.ChildWorkflowOptions{
-						TaskQueue:         fetchNextExternalAccount.ConnectorID.String(),
-						ParentClosePolicy: enums.PARENT_CLOSE_POLICY_ABANDON,
-						SearchAttributes: map[string]interface{}{
-							SearchAttributeStack: w.stack,
+			wg.Add(1)
+			workflow.Go(ctx, func(ctx workflow.Context) {
+				defer wg.Done()
+
+				payload, err := json.Marshal(acc)
+				if err != nil {
+					errChan <- errors.Wrap(err, "marshalling external account")
+				}
+
+				if err := workflow.ExecuteChildWorkflow(
+					workflow.WithChildOptions(
+						ctx,
+						workflow.ChildWorkflowOptions{
+							TaskQueue:         fetchNextExternalAccount.ConnectorID.String(),
+							ParentClosePolicy: enums.PARENT_CLOSE_POLICY_ABANDON,
+							SearchAttributes: map[string]interface{}{
+								SearchAttributeStack: w.stack,
+							},
 						},
+					),
+					Run,
+					fetchNextExternalAccount.Config,
+					fetchNextExternalAccount.ConnectorID,
+					&FromPayload{
+						ID:      acc.Reference,
+						Payload: payload,
 					},
-				),
-				Run,
-				fetchNextExternalAccount.Config,
-				fetchNextExternalAccount.ConnectorID,
-				&FromPayload{
-					ID:      externalAccount.Reference,
-					Payload: payload,
-				},
-				nextTasks,
-			).Get(ctx, nil); err != nil {
-				return errors.Wrap(err, "running next workflow")
+					nextTasks,
+				).Get(ctx, nil); err != nil {
+					errChan <- errors.Wrap(err, "running next workflow")
+				}
+			})
+		}
+
+		wg.Wait(ctx)
+		close(errChan)
+		for err := range errChan {
+			if err != nil {
+				return err
 			}
 		}
 

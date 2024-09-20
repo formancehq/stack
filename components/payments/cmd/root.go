@@ -11,6 +11,7 @@ import (
 	"github.com/formancehq/go-libs/health"
 	"github.com/formancehq/go-libs/licence"
 	"github.com/formancehq/go-libs/otlp/otlptraces"
+	"github.com/formancehq/go-libs/publish"
 	"github.com/formancehq/go-libs/service"
 	"github.com/formancehq/go-libs/temporal"
 	"github.com/formancehq/payments/internal/api"
@@ -37,6 +38,7 @@ const (
 	configEncryptionKeyFlag  = "config-encryption-key"
 	listenFlag               = "listen"
 	stackFlag                = "stack"
+	stackPublicURLFlag       = "stack-public-url"
 )
 
 func NewRootCommand() *cobra.Command {
@@ -99,6 +101,7 @@ func commonOptions(cmd *cobra.Command) (fx.Option, error) {
 
 	listen, _ := cmd.Flags().GetString(listenFlag)
 	stack, _ := cmd.Flags().GetString(stackFlag)
+	stackPublicURL, _ := cmd.Flags().GetString(stackPublicURLFlag)
 
 	return fx.Options(
 		fx.Provide(func() *bunconnect.ConnectionOptions {
@@ -119,10 +122,11 @@ func commonOptions(cmd *cobra.Command) (fx.Option, error) {
 		),
 		auth.FXModuleFromFlags(cmd),
 		health.Module(),
+		publish.FXModuleFromFlags(cmd, service.IsDebug(cmd)),
 		licence.FXModuleFromFlags(cmd, ServiceName),
 		storage.Module(cmd, *connectionOptions, configEncryptionKey),
 		api.NewModule(listen, service.IsDebug(cmd)),
-		engine.Module(pluginPaths, stack),
+		engine.Module(pluginPaths, stack, stackPublicURL),
 		v2.NewModule(),
 		v3.NewModule(),
 	), nil

@@ -3,10 +3,12 @@ package engine
 import (
 	"context"
 
+	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/payments/internal/connectors/engine/activities"
 	"github.com/formancehq/payments/internal/connectors/engine/plugins"
 	"github.com/formancehq/payments/internal/connectors/engine/webhooks"
 	"github.com/formancehq/payments/internal/connectors/engine/workflow"
+	"github.com/formancehq/payments/internal/events"
 	"github.com/formancehq/payments/internal/storage"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/temporal"
@@ -15,7 +17,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func Module(pluginPath map[string]string, stack string) fx.Option {
+func Module(pluginPath map[string]string, stack, stackURL string) fx.Option {
 	ret := []fx.Option{
 		fx.Supply(worker.Options{}),
 		fx.Provide(func(
@@ -27,6 +29,9 @@ func Module(pluginPath map[string]string, stack string) fx.Option {
 		) Engine {
 			return New(temporalClient, workers, plugins, storage, webhooks, stack)
 		}),
+		fx.Provide(func(publisher message.Publisher) *events.Events {
+			return events.New(publisher, stackURL)
+		}),
 		fx.Provide(func() plugins.Plugins {
 			return plugins.New(pluginPath)
 		}),
@@ -36,8 +41,8 @@ func Module(pluginPath map[string]string, stack string) fx.Option {
 		fx.Provide(func(temporalClient client.Client, plugins plugins.Plugins, webhooks webhooks.Webhooks) workflow.Workflow {
 			return workflow.New(temporalClient, plugins, webhooks, stack)
 		}),
-		fx.Provide(func(storage storage.Storage, plugins plugins.Plugins) activities.Activities {
-			return activities.New(storage, plugins)
+		fx.Provide(func(storage storage.Storage, events *events.Events, plugins plugins.Plugins) activities.Activities {
+			return activities.New(storage, events, plugins)
 		}),
 		fx.Provide(
 			fx.Annotate(func(
