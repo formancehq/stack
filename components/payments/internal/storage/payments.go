@@ -65,11 +65,18 @@ type paymentAdjustment struct {
 func (s *store) PaymentsUpsert(ctx context.Context, payments []models.Payment) error {
 	paymentsToInsert := make([]payment, 0, len(payments))
 	adjustmentsToInsert := make([]paymentAdjustment, 0)
+	paymentsRefunded := make([]payment, 0)
 	for _, p := range payments {
 		paymentsToInsert = append(paymentsToInsert, fromPaymentModels(p))
 
 		for _, a := range p.Adjustments {
 			adjustmentsToInsert = append(adjustmentsToInsert, fromPaymentAdjustmentModels(a))
+			switch a.Status {
+			case models.PAYMENT_STATUS_REFUNDED:
+				res := fromPaymentModels(p)
+				res.Amount = a.Amount
+				paymentsRefunded = append(paymentsRefunded, res)
+			}
 		}
 	}
 
@@ -77,21 +84,37 @@ func (s *store) PaymentsUpsert(ctx context.Context, payments []models.Payment) e
 	if err != nil {
 		return errors.Wrap(err, "failed to create transaction")
 	}
+	defer tx.Rollback()
 
-	_, err = tx.NewInsert().
-		Model(&paymentsToInsert).
-		On("CONFLICT (id) DO NOTHING").
-		Exec(ctx)
-	if err != nil {
-		return e("failed to insert payments", err)
+	if len(paymentsToInsert) > 0 {
+		_, err = tx.NewInsert().
+			Model(&paymentsToInsert).
+			On("CONFLICT (id) DO NOTHING").
+			Exec(ctx)
+		if err != nil {
+			return e("failed to insert payments", err)
+		}
 	}
 
-	_, err = tx.NewInsert().
-		Model(&adjustmentsToInsert).
-		On("CONFLICT (id) DO NOTHING").
-		Exec(ctx)
-	if err != nil {
-		return e("failed to insert adjustments", err)
+	if len(paymentsRefunded) > 0 {
+		_, err = tx.NewInsert().
+			Model(&paymentsRefunded).
+			On("CONFLICT (id) DO UPDATE").
+			Set("amount = payment.amount - EXCLUDED.amount").
+			Exec(ctx)
+		if err != nil {
+			return e("failed to update payment", err)
+		}
+	}
+
+	if len(adjustmentsToInsert) > 0 {
+		_, err = tx.NewInsert().
+			Model(&adjustmentsToInsert).
+			On("CONFLICT (id) DO NOTHING").
+			Exec(ctx)
+		if err != nil {
+			return e("failed to insert adjustments", err)
+		}
 	}
 
 	return e("failed to commit transactions", tx.Commit())
@@ -160,7 +183,11 @@ func (s *store) PaymentsGet(ctx context.Context, id models.PaymentID) (*models.P
 		adjustments = append(adjustments, toPaymentAdjustmentModels(a))
 	}
 
-	res := toPaymentModels(payment, adjustments[len(adjustments)-1].Status)
+	status := models.PAYMENT_STATUS_PENDING
+	if len(adjustments) > 0 {
+		status = adjustments[len(adjustments)-1].Status
+	}
+	res := toPaymentModels(payment, status)
 	res.Adjustments = adjustments
 	return &res, nil
 }
@@ -282,7 +309,7 @@ func fromPaymentModels(from models.Payment) payment {
 		ID:                   from.ID,
 		ConnectorID:          from.ConnectorID,
 		Reference:            from.Reference,
-		CreatedAt:            from.CreatedAt,
+		CreatedAt:            from.CreatedAt.UTC(),
 		Type:                 from.Type,
 		InitialAmount:        from.InitialAmount,
 		Amount:               from.Amount,
@@ -300,7 +327,7 @@ func toPaymentModels(payment payment, status models.PaymentStatus) models.Paymen
 		ConnectorID:          payment.ConnectorID,
 		InitialAmount:        payment.InitialAmount,
 		Reference:            payment.Reference,
-		CreatedAt:            payment.CreatedAt,
+		CreatedAt:            payment.CreatedAt.UTC(),
 		Type:                 payment.Type,
 		Amount:               payment.Amount,
 		Asset:                payment.Asset,
@@ -316,7 +343,7 @@ func fromPaymentAdjustmentModels(from models.PaymentAdjustment) paymentAdjustmen
 	return paymentAdjustment{
 		ID:        from.ID,
 		PaymentID: from.PaymentID,
-		CreatedAt: from.CreatedAt,
+		CreatedAt: from.CreatedAt.UTC(),
 		Status:    from.Status,
 		Amount:    from.Amount,
 		Asset:     from.Asset,
@@ -329,7 +356,7 @@ func toPaymentAdjustmentModels(from paymentAdjustment) models.PaymentAdjustment 
 	return models.PaymentAdjustment{
 		ID:        from.ID,
 		PaymentID: from.PaymentID,
-		CreatedAt: from.CreatedAt,
+		CreatedAt: from.CreatedAt.UTC(),
 		Status:    from.Status,
 		Amount:    from.Amount,
 		Asset:     from.Asset,

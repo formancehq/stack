@@ -8,7 +8,7 @@ import (
 )
 
 func (a Activities) StorageBalancesDelete(ctx context.Context, connectorID models.ConnectorID) error {
-	return a.storage.BalancesDeleteForConnectorID(ctx, connectorID)
+	return a.storage.BalancesDeleteFromConnectorID(ctx, connectorID)
 }
 
 var StorageBalancesDeleteActivity = Activities{}.StorageBalancesDelete

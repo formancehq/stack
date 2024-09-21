@@ -34,6 +34,19 @@ func (s *store) WebhooksInsert(ctx context.Context, webhook models.Webhook) erro
 	return nil
 }
 
+func (s *store) WebhooksGet(ctx context.Context, id string) (models.Webhook, error) {
+	var w webhook
+	err := s.db.NewSelect().
+		Model(&w).
+		Where("id = ?", id).
+		Scan(ctx)
+	if err != nil {
+		return models.Webhook{}, e("get webhook", err)
+	}
+
+	return toWebhookModels(w), nil
+}
+
 func (s *store) WebhooksDeleteFromConnectorID(ctx context.Context, connectorID models.ConnectorID) error {
 	_, err := s.db.NewDelete().
 		Model((*webhook)(nil)).
@@ -48,6 +61,16 @@ func (s *store) WebhooksDeleteFromConnectorID(ctx context.Context, connectorID m
 
 func fromWebhookModels(from models.Webhook) webhook {
 	return webhook{
+		ID:          from.ID,
+		ConnectorID: from.ConnectorID,
+		Headers:     from.Headers,
+		QueryValues: from.QueryValues,
+		Body:        from.Body,
+	}
+}
+
+func toWebhookModels(from webhook) models.Webhook {
+	return models.Webhook{
 		ID:          from.ID,
 		ConnectorID: from.ConnectorID,
 		Headers:     from.Headers,

@@ -203,7 +203,7 @@ func fromPoolModel(from models.Pool) (pool, []poolAccounts) {
 	p := pool{
 		ID:        from.ID,
 		Name:      from.Name,
-		CreatedAt: from.CreatedAt,
+		CreatedAt: from.CreatedAt.UTC(),
 	}
 
 	var accounts []poolAccounts
@@ -229,7 +229,7 @@ func toPoolModel(from pool) models.Pool {
 	return models.Pool{
 		ID:           from.ID,
 		Name:         from.Name,
-		CreatedAt:    from.CreatedAt,
+		CreatedAt:    from.CreatedAt.UTC(),
 		PoolAccounts: accounts,
 	}
 }

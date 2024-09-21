@@ -11,6 +11,9 @@ import (
 )
 
 type Storage interface {
+	// Close closes the storage.
+	Close() error
+
 	// Accounts
 	AccountsUpsert(ctx context.Context, accounts []models.Account) error
 	AccountsGet(ctx context.Context, id models.AccountID) (*models.Account, error)
@@ -19,7 +22,7 @@ type Storage interface {
 
 	// Balances
 	BalancesUpsert(ctx context.Context, balances []models.Balance) error
-	BalancesDeleteForConnectorID(ctx context.Context, connectorID models.ConnectorID) error
+	BalancesDeleteFromConnectorID(ctx context.Context, connectorID models.ConnectorID) error
 	BalancesList(ctx context.Context, q ListBalancesQuery) (*bunpaginate.Cursor[models.Balance], error)
 	BalancesGetAt(ctx context.Context, accountID models.AccountID, at time.Time) ([]*models.Balance, error)
 
@@ -70,15 +73,18 @@ type Storage interface {
 
 	// Webhooks Configs
 	WebhooksConfigsUpsert(ctx context.Context, webhooksConfigs []models.WebhookConfig) error
+	WebhooksConfigsGet(ctx context.Context, name string, connectorID models.ConnectorID) (*models.WebhookConfig, error)
 	WebhooksConfigsDeleteFromConnectorID(ctx context.Context, connectorID models.ConnectorID) error
 
 	// Webhooks
 	WebhooksInsert(ctx context.Context, webhook models.Webhook) error
+	WebhooksGet(ctx context.Context, id string) (models.Webhook, error)
 	WebhooksDeleteFromConnectorID(ctx context.Context, connectorID models.ConnectorID) error
 
 	// Workflow Instances
 	InstancesUpsert(ctx context.Context, instance models.Instance) error
 	InstancesUpdate(ctx context.Context, instance models.Instance) error
+	InstancesGet(ctx context.Context, id string, scheduleID string, connectorID models.ConnectorID) (*models.Instance, error)
 	InstancesList(ctx context.Context, q ListInstancesQuery) (*bunpaginate.Cursor[models.Instance], error)
 	InstancesDeleteFromConnectorID(ctx context.Context, connectorID models.ConnectorID) error
 }
@@ -92,4 +98,8 @@ type store struct {
 
 func newStorage(db *bun.DB, configEncryptionKey string) Storage {
 	return &store{db: db, configEncryptionKey: configEncryptionKey}
+}
+
+func (s *store) Close() error {
+	return s.db.Close()
 }
