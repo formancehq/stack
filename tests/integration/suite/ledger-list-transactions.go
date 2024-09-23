@@ -3,6 +3,8 @@ package suite
 import (
 	"fmt"
 	"github.com/formancehq/go-libs/bun/bunpaginate"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 	"math/big"
 	"net/http"
 	"sort"
@@ -16,8 +18,6 @@ import (
 	"github.com/formancehq/go-libs/metadata"
 	"github.com/formancehq/go-libs/pointer"
 	. "github.com/formancehq/stack/tests/integration/internal"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
 )
 
 var _ = WithModules([]*Module{modules.Ledger}, func() {

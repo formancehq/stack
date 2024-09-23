@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/formancehq/go-libs/pointer"
+
 	enums "go.temporal.io/api/enums/v1"
 	history "go.temporal.io/api/history/v1"
 
@@ -223,7 +225,7 @@ func (m *WorkflowManager) ReadInstanceHistory(ctx context.Context, instanceID st
 			stageHistory := StageHistory{
 				Name:      attributes.StartChildWorkflowExecutionInitiatedEventAttributes.WorkflowType.Name,
 				Input:     input,
-				StartedAt: *event.EventTime,
+				StartedAt: event.EventTime.AsTime(),
 			}
 
 			for historyIterator.HasNext() {
@@ -245,7 +247,7 @@ func (m *WorkflowManager) ReadInstanceHistory(ctx context.Context, instanceID st
 				default:
 					continue
 				}
-				stageHistory.TerminatedAt = event.EventTime
+				stageHistory.TerminatedAt = pointer.For(event.EventTime.AsTime())
 				stageHistory.Terminated = true
 				break
 			}
@@ -299,7 +301,7 @@ func (m *WorkflowManager) ReadStageHistory(ctx context.Context, instanceID strin
 				Input: map[string]any{
 					activityTaskScheduledEventAttributes.ActivityType.Name: input,
 				},
-				StartedAt: *event.EventTime,
+				StartedAt: event.EventTime.AsTime(),
 				Attempt:   1,
 			}
 
@@ -312,7 +314,7 @@ func (m *WorkflowManager) ReadStageHistory(ctx context.Context, instanceID strin
 					activityHistory.LastFailure = pendingActivity.LastFailure.Message
 				}
 				activityHistory.Attempt = int(pendingActivity.Attempt)
-				activityHistory.NextExecution = pendingActivity.ScheduledTime
+				activityHistory.NextExecution = pointer.For(pendingActivity.ScheduledTime.AsTime())
 				return ret, nil
 			}
 
@@ -356,7 +358,7 @@ func (m *WorkflowManager) ReadStageHistory(ctx context.Context, instanceID strin
 				default:
 					continue
 				}
-				activityHistory.TerminatedAt = event.EventTime
+				activityHistory.TerminatedAt = pointer.For(event.EventTime.AsTime())
 				activityHistory.Terminated = true
 				break
 			}
