@@ -1052,8 +1052,6 @@ func fixExpandingChangelogs(ctx context.Context, tx bun.Tx) error {
 			return err
 		}
 
-		fmt.Println("Processing", len(metadata), "metadata")
-
 		if len(metadata) == 0 {
 			break
 		}

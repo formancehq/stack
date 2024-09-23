@@ -4,8 +4,7 @@ import (
 	"math/big"
 	"net/http"
 
-	"github.com/formancehq/stack/libs/core/assets"
-
+	"github.com/formancehq/ledger/pkg/core/assets"
 	"github.com/formancehq/go-libs/time"
 
 	"github.com/formancehq/go-libs/metadata"

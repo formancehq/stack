@@ -6,5 +6,4 @@ IMPORT .. AS stack
 run:
   LOCALLY
   ARG --required TARGET
-  BUILD ./core+$TARGET
   BUILD ./events+$TARGET

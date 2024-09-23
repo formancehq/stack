@@ -94,7 +94,6 @@ require (
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/formancehq/payments/genericclient v0.0.0-00010101000000-000000000000 // indirect
-	github.com/formancehq/stack/libs/core v0.0.0-00010101000000-000000000000 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/get-momo/atlar-v1-go-client v1.2.1 // indirect
 	github.com/gibson042/canonicaljson-go v1.0.3 // indirect
@@ -280,7 +279,6 @@ replace (
 	github.com/formancehq/payments/genericclient => ../../components/payments/cmd/connectors/internal/connectors/generic/client/generated
 	github.com/formancehq/reconciliation => ../../ee/reconciliation
 	github.com/formancehq/search => ../../ee/search
-	github.com/formancehq/stack/libs/core => ../../libs/core
 	github.com/formancehq/stack/libs/events => ../../libs/events
 	github.com/formancehq/wallets => ../../ee/wallets
 	github.com/formancehq/webhooks => ../../ee/webhooks
