@@ -40,6 +40,21 @@ func (m *MockClient) EXPECT() *MockClientMockRecorder {
 	return m.recorder
 }
 
+// GetAccountBalances mocks base method.
+func (m *MockClient) GetAccountBalances(ctx context.Context, accountID *string) (*stripe.Balance, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAccountBalances", ctx, accountID)
+	ret0, _ := ret[0].(*stripe.Balance)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAccountBalances indicates an expected call of GetAccountBalances.
+func (mr *MockClientMockRecorder) GetAccountBalances(ctx, accountID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAccountBalances", reflect.TypeOf((*MockClient)(nil).GetAccountBalances), ctx, accountID)
+}
+
 // GetAccounts mocks base method.
 func (m *MockClient) GetAccounts(ctx context.Context, lastID *string, pageSize int64) ([]*stripe.Account, bool, error) {
 	m.ctrl.T.Helper()
