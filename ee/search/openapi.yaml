@@ -2,7 +2,6 @@ openapi: 3.0.3
 info:
   title: Search API
   version: latest
-
 paths:
   /_info:
     get:
@@ -11,12 +10,15 @@ paths:
       tags:
         - search.v1
       responses:
-        "200":
+        '200':
           description: Server information
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServerInfo'
+      security:
+        - Authorization:
+            - search:read
   /:
     post:
       summary: search.v1
@@ -31,7 +33,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Query'
       responses:
-        "200":
+        '200':
           description: Success
           content:
             application/json:
@@ -40,7 +42,9 @@ paths:
         default:
           description: Error
           content: {}
-
+      security:
+        - Authorization:
+            - search:write
 components:
   schemas:
     ServerInfo:
@@ -50,7 +54,6 @@ components:
       properties:
         version:
           type: string
-
     Query:
       type: object
       properties:
@@ -58,12 +61,12 @@ components:
           type: array
           items:
             type: string
-            example: "quickstart"
+            example: quickstart
         after:
           type: array
           items:
             type: string
-            example: "users:002"
+            example: users:002
         pageSize:
           type: integer
           format: int64
@@ -72,22 +75,23 @@ components:
           type: array
           items:
             type: string
-            example: "destination=central_bank1"
+            example: destination=central_bank1
         sort:
           type: string
-          example: "id:asc"
+          example: id:asc
         policy:
           type: string
-          example: "OR"
+          example: OR
         target:
           type: string
         cursor:
           type: string
-          example: "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+          example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
         raw:
           type: object
-          example: {"query": {"match_all": {}}}
-
+          example:
+            query:
+              match_all: {}
     Response:
       type: object
       properties:
@@ -116,16 +120,16 @@ components:
                   example: 1
                 relation:
                   type: string
-                  example: "eq"
+                  example: eq
             next:
               type: string
-              example: "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+              example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
             previous:
               type: string
-              example: "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+              example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
             data:
               type: array
               items:
                 allOf:
-                - type: object
-                  additionalProperties: true
+                  - type: object
+                    additionalProperties: true

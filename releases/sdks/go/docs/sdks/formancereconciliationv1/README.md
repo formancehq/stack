@@ -32,7 +32,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := shared.PolicyRequest{
@@ -92,7 +92,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.DeletePolicyRequest{
@@ -147,7 +147,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.GetPolicyRequest{
@@ -202,7 +202,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.GetReconciliationRequest{
@@ -257,7 +257,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.ListPoliciesRequest{
@@ -313,7 +313,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.ListReconciliationsRequest{
@@ -370,7 +370,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.ReconcileRequest{
@@ -428,7 +428,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
 

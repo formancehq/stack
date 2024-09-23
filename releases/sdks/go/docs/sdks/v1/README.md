@@ -35,7 +35,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     var request *shared.CreateClientRequest = &shared.CreateClientRequest{
@@ -89,7 +89,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.CreateSecretRequest{
@@ -143,7 +143,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.DeleteClientRequest{
@@ -197,7 +197,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.DeleteSecretRequest{
@@ -251,7 +251,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
 
@@ -301,7 +301,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
 
@@ -351,7 +351,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
 
@@ -401,7 +401,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
 
@@ -452,7 +452,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.ReadClientRequest{
@@ -506,7 +506,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.ReadUserRequest{
@@ -560,7 +560,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.UpdateClientRequest{

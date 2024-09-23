@@ -52,16 +52,9 @@ build-final-spec:
     SAVE ARTIFACT build/latest.json
 
 openapi:
-    FROM core+base-image
-    COPY . /src
-    WORKDIR /src
-    FOR component IN $(cd ./components && ls -d */)
-        COPY (./components/$component+openapi/src/components/$component) /src/components/$component
-    END
-    FOR component IN $(cd ./ee && ls -d */)
-        COPY (./ee/$component+openapi/src/ee/$component) /src/ee/$component
-    END
-    SAVE ARTIFACT /src
+    LOCALLY
+    BUILD ./components+run --TARGET=openapi
+    BUILD ./ee+run --TARGET=openapi
 
 goreleaser:
     FROM core+builder-image
@@ -101,12 +94,8 @@ all-ci-goreleaser:
 
 build-all:
     LOCALLY
-    FOR component IN $(cd ./components && ls -d */)
-        BUILD --pass-args ./components/${component}+build-image
-    END
-    FOR component IN $(cd ./ee && ls -d */)
-        BUILD --pass-args ./ee/${component}+build-image
-    END
+    BUILD ./components+run --TARGET=build-image
+    BUILD ./ee+run --TARGET=build-image
 
 deploy-all:
     LOCALLY
@@ -118,9 +107,7 @@ deploy-all:
             BUILD --pass-args ./components/+deploy --components=$component
         END
     END
-    FOR component IN $(cd ./ee && ls -d */)
-        BUILD --pass-args ./ee/+deploy --components=$component
-    END
+    BUILD ./ee+run --TARGET=build-image
 
 deployer-module:
     FROM --pass-args core+base-image

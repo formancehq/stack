@@ -32,7 +32,7 @@ func (s *FormanceWalletsV1) ConfirmHold(ctx context.Context, request operations.
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "confirmHold",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "wallets:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -207,7 +207,7 @@ func (s *FormanceWalletsV1) CreateBalance(ctx context.Context, request operation
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createBalance",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "wallets:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -393,7 +393,7 @@ func (s *FormanceWalletsV1) CreateWallet(ctx context.Context, request operations
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createWallet",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "wallets:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -579,7 +579,7 @@ func (s *FormanceWalletsV1) CreditWallet(ctx context.Context, request operations
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "creditWallet",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "wallets:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -754,7 +754,7 @@ func (s *FormanceWalletsV1) DebitWallet(ctx context.Context, request operations.
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "debitWallet",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "wallets:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -941,7 +941,7 @@ func (s *FormanceWalletsV1) GetBalance(ctx context.Context, request operations.G
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getBalance",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "wallets:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1119,7 +1119,7 @@ func (s *FormanceWalletsV1) GetHold(ctx context.Context, request operations.GetH
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getHold",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "wallets:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1297,7 +1297,7 @@ func (s *FormanceWalletsV1) GetHolds(ctx context.Context, request operations.Get
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getHolds",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "wallets:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1478,7 +1478,7 @@ func (s *FormanceWalletsV1) GetTransactions(ctx context.Context, request operati
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getTransactions",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "wallets:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1660,7 +1660,7 @@ func (s *FormanceWalletsV1) GetWallet(ctx context.Context, request operations.Ge
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getWallet",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "wallets:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1839,7 +1839,7 @@ func (s *FormanceWalletsV1) GetWalletSummary(ctx context.Context, request operat
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getWalletSummary",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "wallets:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2018,7 +2018,7 @@ func (s *FormanceWalletsV1) ListBalances(ctx context.Context, request operations
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listBalances",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "wallets:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2186,7 +2186,7 @@ func (s *FormanceWalletsV1) ListWallets(ctx context.Context, request operations.
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listWallets",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "wallets:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2368,7 +2368,7 @@ func (s *FormanceWalletsV1) UpdateWallet(ctx context.Context, request operations
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "updateWallet",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "wallets:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2543,7 +2543,7 @@ func (s *FormanceWalletsV1) VoidHold(ctx context.Context, request operations.Voi
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "voidHold",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "wallets:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2712,7 +2712,7 @@ func (s *FormanceWalletsV1) WalletsgetServerInfo(ctx context.Context, opts ...op
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "walletsgetServerInfo",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "wallets:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 

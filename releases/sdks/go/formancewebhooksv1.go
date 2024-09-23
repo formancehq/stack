@@ -33,7 +33,7 @@ func (s *FormanceWebhooksV1) ActivateConfig(ctx context.Context, request operati
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "activateConfig",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "webhooks:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -215,7 +215,7 @@ func (s *FormanceWebhooksV1) ChangeConfigSecret(ctx context.Context, request ope
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "changeConfigSecret",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "webhooks:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -400,7 +400,7 @@ func (s *FormanceWebhooksV1) DeactivateConfig(ctx context.Context, request opera
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "deactivateConfig",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "webhooks:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -579,7 +579,7 @@ func (s *FormanceWebhooksV1) DeleteConfig(ctx context.Context, request operation
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "deleteConfig",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "webhooks:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -747,7 +747,7 @@ func (s *FormanceWebhooksV1) GetManyConfigs(ctx context.Context, request operati
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getManyConfigs",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "webhooks:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -938,7 +938,7 @@ func (s *FormanceWebhooksV1) InsertConfig(ctx context.Context, request shared.Co
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "insertConfig",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "webhooks:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1123,7 +1123,7 @@ func (s *FormanceWebhooksV1) TestConfig(ctx context.Context, request operations.
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "testConfig",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "webhooks:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 

@@ -46,7 +46,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.CreateTransactionsRequest{
@@ -117,7 +117,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.AddMetadataOnTransactionRequest{
@@ -173,7 +173,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.AddMetadataToAccountRequest{
@@ -232,7 +232,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.CountAccountsRequest{
@@ -340,7 +340,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.CountTransactionsRequest{
@@ -401,7 +401,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.CreateTransactionRequest{
@@ -481,7 +481,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.GetAccountRequest{
@@ -537,7 +537,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.GetBalancesRequest{
@@ -595,7 +595,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.GetBalancesAggregatedRequest{
@@ -650,7 +650,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
 
@@ -702,7 +702,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.GetLedgerInfoRequest{
@@ -757,7 +757,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.GetMappingRequest{
@@ -813,7 +813,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.GetTransactionRequest{
@@ -869,7 +869,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.ListAccountsRequest{
@@ -981,7 +981,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.ListLogsRequest{
@@ -1039,7 +1039,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.ListTransactionsRequest{
@@ -1102,7 +1102,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.ReadStatsRequest{
@@ -1158,7 +1158,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.RevertTransactionRequest{
@@ -1217,7 +1217,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.RunScriptRequest{
@@ -1286,7 +1286,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.UpdateMappingRequest{

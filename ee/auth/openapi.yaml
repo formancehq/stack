@@ -2,8 +2,7 @@ openapi: 3.0.3
 info:
   title: Auth API
   contact: {}
-  version: "AUTH_VERSION"
-
+  version: AUTH_VERSION
 paths:
   /.well-known/openid-configuration:
     get:
@@ -12,11 +11,16 @@ paths:
       tags:
         - auth.v1
       responses:
-        200:
-          description: |
+        '200':
+          description: >
             OpenID provider configuration.
-            See https://swagger.io/docs/specification/authentication/openid-connect-discovery/ for details
 
+            See
+            https://swagger.io/docs/specification/authentication/openid-connect-discovery/
+            for details
+      security:
+        - Authorization:
+            - auth:read
   /_info:
     get:
       summary: Get server info
@@ -24,12 +28,15 @@ paths:
       tags:
         - auth.v1
       responses:
-        200:
+        '200':
           description: Server information
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServerInfo'
+      security:
+        - Authorization:
+            - auth:read
   /clients:
     get:
       summary: List clients
@@ -37,12 +44,15 @@ paths:
         - auth.v1
       operationId: listClients
       responses:
-        "200":
+        '200':
           description: List of clients
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListClientsResponse'
+      security:
+        - Authorization:
+            - auth:read
     post:
       summary: Create client
       tags:
@@ -54,12 +64,15 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateClientRequest'
       responses:
-        "201":
+        '201':
           description: Client created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateClientResponse'
+      security:
+        - Authorization:
+            - auth:write
   /clients/{clientId}:
     get:
       summary: Read client
@@ -74,12 +87,15 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: Retrieved client
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReadClientResponse'
+      security:
+        - Authorization:
+            - auth:read
     put:
       summary: Update client
       tags:
@@ -98,12 +114,15 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: Updated client
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UpdateClientResponse'
+      security:
+        - Authorization:
+            - auth:write
     delete:
       summary: Delete client
       tags:
@@ -117,8 +136,11 @@ paths:
           schema:
             type: string
       responses:
-        "204":
+        '204':
           description: Client deleted
+      security:
+        - Authorization:
+            - auth:write
   /clients/{clientId}/secrets:
     post:
       summary: Add a secret to a client
@@ -138,12 +160,15 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateSecretRequest'
       responses:
-        200:
+        '200':
           description: Created secret
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateSecretResponse'
+      security:
+        - Authorization:
+            - auth:write
   /clients/{clientId}/secrets/{secretId}:
     delete:
       summary: Delete a secret from a client
@@ -164,8 +189,11 @@ paths:
           schema:
             type: string
       responses:
-        204:
+        '204':
           description: Secret deleted
+      security:
+        - Authorization:
+            - auth:write
   /users:
     get:
       summary: List users
@@ -174,12 +202,15 @@ paths:
       description: List users
       operationId: listUsers
       responses:
-        200:
+        '200':
           description: List of users
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListUsersResponse'
+      security:
+        - Authorization:
+            - auth:read
   /users/{userId}:
     get:
       summary: Read user
@@ -195,12 +226,15 @@ paths:
           schema:
             type: string
       responses:
-        200:
+        '200':
           description: Retrieved user
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReadUserResponse'
+      security:
+        - Authorization:
+            - auth:read
 components:
   schemas:
     Metadata:
@@ -342,26 +376,6 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/Client'
-    ListScopesResponse:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Scope'
-    CreateScopeRequest:
-      $ref: '#/components/schemas/ScopeOptions'
-    CreateScopeResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/Scope'
-    ReadScopeResponse:
-      $ref: '#/components/schemas/CreateScopeResponse'
-    UpdateScopeRequest:
-      $ref: '#/components/schemas/ScopeOptions'
-    UpdateScopeResponse:
-      $ref: '#/components/schemas/CreateScopeResponse'
     CreateSecretRequest:
       $ref: '#/components/schemas/SecretOptions'
     CreateSecretResponse:
@@ -384,7 +398,7 @@ components:
     ServerInfo:
       type: object
       required:
-      - version
+        - version
       properties:
         version:
           type: string

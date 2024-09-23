@@ -25,9 +25,23 @@ info:
 servers:
 - url: http://localhost
   description: local server
+- url: https://{stack}.sandbox.formance.cloud
+  description: sandbox server
 
-security:
-  - Authorization: []
+#security: {}
+#  - Authorization: []
+
+tags:
+  - name: ledger.v1
+  - name: ledger.v2
+  - name: payments.v1
+  - name: auth.v1
+  - name: orchestration.v1
+  - name: orchestration.v2
+  - name: reconciliation.v1
+  - name: search.v1
+  - name: webhooks.v1
+  - name: wallets.v1
 
 components:
   securitySchemes:

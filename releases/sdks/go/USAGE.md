@@ -13,7 +13,7 @@ import (
 func main() {
 	s := v2.New(
 		v2.WithSecurity(shared.Security{
-			Authorization: os.Getenv("AUTHORIZATION"),
+			ClientID: v2.String(os.Getenv("CLIENT_ID")),
 		}),
 	)
 

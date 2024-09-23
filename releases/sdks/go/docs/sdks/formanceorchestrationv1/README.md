@@ -42,7 +42,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.CancelEventRequest{
@@ -96,7 +96,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     var request *shared.TriggerData = &shared.TriggerData{
@@ -151,7 +151,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     var request *shared.CreateWorkflowRequest = &shared.CreateWorkflowRequest{
@@ -210,7 +210,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.DeleteTriggerRequest{
@@ -265,7 +265,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.DeleteWorkflowRequest{
@@ -320,7 +320,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.GetInstanceRequest{
@@ -375,7 +375,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.GetInstanceHistoryRequest{
@@ -430,7 +430,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.GetInstanceStageHistoryRequest{
@@ -486,7 +486,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.GetWorkflowRequest{
@@ -541,7 +541,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.ListInstancesRequest{
@@ -597,7 +597,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.ListTriggersRequest{}
@@ -650,7 +650,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.ListTriggersOccurrencesRequest{
@@ -704,7 +704,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
 
@@ -755,7 +755,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
 
@@ -807,7 +807,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.ReadTriggerRequest{
@@ -862,7 +862,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.RunWorkflowRequest{
@@ -917,7 +917,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            Authorization: os.Getenv("AUTHORIZATION"),
+            ClientID: v2.String(os.Getenv("CLIENT_ID")),
         }),
     )
     request := operations.SendEventRequest{

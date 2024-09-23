@@ -23,6 +23,8 @@ import (
 var ServerList = []string{
 	// local server
 	"http://localhost",
+	// sandbox server
+	"https://{stack}.sandbox.formance.cloud",
 }
 
 // HTTPClient provides an interface for suplying the SDK with a custom HTTP client
@@ -215,7 +217,7 @@ func (s *Formance) GetVersions(ctx context.Context, opts ...operations.Option) (
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getVersions",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 

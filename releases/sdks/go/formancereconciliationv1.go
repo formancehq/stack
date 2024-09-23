@@ -33,7 +33,7 @@ func (s *FormanceReconciliationV1) CreatePolicy(ctx context.Context, request sha
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createPolicy",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "reconciliation:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -218,7 +218,7 @@ func (s *FormanceReconciliationV1) DeletePolicy(ctx context.Context, request ope
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "deletePolicy",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "reconciliation:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -385,7 +385,7 @@ func (s *FormanceReconciliationV1) GetPolicy(ctx context.Context, request operat
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getPolicy",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "reconciliation:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -563,7 +563,7 @@ func (s *FormanceReconciliationV1) GetReconciliation(ctx context.Context, reques
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getReconciliation",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "reconciliation:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -741,7 +741,7 @@ func (s *FormanceReconciliationV1) ListPolicies(ctx context.Context, request ope
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listPolicies",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "reconciliation:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -923,7 +923,7 @@ func (s *FormanceReconciliationV1) ListReconciliations(ctx context.Context, requ
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listReconciliations",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "reconciliation:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1106,7 +1106,7 @@ func (s *FormanceReconciliationV1) Reconcile(ctx context.Context, request operat
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "reconcile",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "reconciliation:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1290,7 +1290,7 @@ func (s *FormanceReconciliationV1) ReconciliationgetServerInfo(ctx context.Conte
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "reconciliationgetServerInfo",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "reconciliation:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 

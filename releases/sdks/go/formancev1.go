@@ -32,7 +32,7 @@ func (s *FormanceV1) CreateTransactions(ctx context.Context, request operations.
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "CreateTransactions",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "ledger:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -216,7 +216,7 @@ func (s *FormanceV1) AddMetadataOnTransaction(ctx context.Context, request opera
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "addMetadataOnTransaction",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "ledger:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -389,7 +389,7 @@ func (s *FormanceV1) AddMetadataToAccount(ctx context.Context, request operation
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "addMetadataToAccount",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "ledger:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -562,7 +562,7 @@ func (s *FormanceV1) CountAccounts(ctx context.Context, request operations.Count
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "countAccounts",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "ledger:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -735,7 +735,7 @@ func (s *FormanceV1) CountTransactions(ctx context.Context, request operations.C
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "countTransactions",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "ledger:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -908,7 +908,7 @@ func (s *FormanceV1) CreateTransaction(ctx context.Context, request operations.C
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createTransaction",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "ledger:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1096,7 +1096,7 @@ func (s *FormanceV1) GetAccount(ctx context.Context, request operations.GetAccou
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getAccount",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "ledger:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1274,7 +1274,7 @@ func (s *FormanceV1) GetBalances(ctx context.Context, request operations.GetBala
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getBalances",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "ledger:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1456,7 +1456,7 @@ func (s *FormanceV1) GetBalancesAggregated(ctx context.Context, request operatio
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getBalancesAggregated",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "ledger:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1638,7 +1638,7 @@ func (s *FormanceV1) GetInfo(ctx context.Context, opts ...operations.Option) (*o
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getInfo",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "ledger:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1816,7 +1816,7 @@ func (s *FormanceV1) GetLedgerInfo(ctx context.Context, request operations.GetLe
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getLedgerInfo",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "ledger:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1994,7 +1994,7 @@ func (s *FormanceV1) GetMapping(ctx context.Context, request operations.GetMappi
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getMapping",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "ledger:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2172,7 +2172,7 @@ func (s *FormanceV1) GetTransaction(ctx context.Context, request operations.GetT
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getTransaction",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "ledger:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2351,7 +2351,7 @@ func (s *FormanceV1) ListAccounts(ctx context.Context, request operations.ListAc
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listAccounts",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "ledger:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2546,7 +2546,7 @@ func (s *FormanceV1) ListLogs(ctx context.Context, request operations.ListLogsRe
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listLogs",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "ledger:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2729,7 +2729,7 @@ func (s *FormanceV1) ListTransactions(ctx context.Context, request operations.Li
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listTransactions",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "ledger:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2912,7 +2912,7 @@ func (s *FormanceV1) ReadStats(ctx context.Context, request operations.ReadStats
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "readStats",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "ledger:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3090,7 +3090,7 @@ func (s *FormanceV1) RevertTransaction(ctx context.Context, request operations.R
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "revertTransaction",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "ledger:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3275,7 +3275,7 @@ func (s *FormanceV1) RunScript(ctx context.Context, request operations.RunScript
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "runScript",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "ledger:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3453,7 +3453,7 @@ func (s *FormanceV1) UpdateMapping(ctx context.Context, request operations.Updat
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "updateMapping",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "ledger:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 

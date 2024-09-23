@@ -32,7 +32,7 @@ func (s *V1) CreateClient(ctx context.Context, request *shared.CreateClientReque
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createClient",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "auth:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -206,7 +206,7 @@ func (s *V1) CreateSecret(ctx context.Context, request operations.CreateSecretRe
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createSecret",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "auth:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -380,7 +380,7 @@ func (s *V1) DeleteClient(ctx context.Context, request operations.DeleteClientRe
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "deleteClient",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "auth:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -537,7 +537,7 @@ func (s *V1) DeleteSecret(ctx context.Context, request operations.DeleteSecretRe
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "deleteSecret",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "auth:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -694,7 +694,7 @@ func (s *V1) GetOIDCWellKnowns(ctx context.Context, opts ...operations.Option) (
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getOIDCWellKnowns",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "auth:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -851,7 +851,7 @@ func (s *V1) GetServerInfo(ctx context.Context, opts ...operations.Option) (*ope
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getServerInfo",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "auth:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1019,7 +1019,7 @@ func (s *V1) ListClients(ctx context.Context, opts ...operations.Option) (*opera
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listClients",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "auth:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1188,7 +1188,7 @@ func (s *V1) ListUsers(ctx context.Context, opts ...operations.Option) (*operati
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listUsers",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "auth:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1356,7 +1356,7 @@ func (s *V1) ReadClient(ctx context.Context, request operations.ReadClientReques
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "readClient",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "auth:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1525,7 +1525,7 @@ func (s *V1) ReadUser(ctx context.Context, request operations.ReadUserRequest, o
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "readUser",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "auth:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1693,7 +1693,7 @@ func (s *V1) UpdateClient(ctx context.Context, request operations.UpdateClientRe
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "updateClient",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "auth:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 

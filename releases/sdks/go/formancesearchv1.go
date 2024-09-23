@@ -33,7 +33,7 @@ func (s *FormanceSearchV1) Search(ctx context.Context, request shared.Query, opt
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "search",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "search:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -207,7 +207,7 @@ func (s *FormanceSearchV1) SearchgetServerInfo(ctx context.Context, opts ...oper
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "searchgetServerInfo",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "search:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 

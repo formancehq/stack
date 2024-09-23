@@ -38,14 +38,13 @@ func Client(options ...formance.SDKOption) *formance.Formance {
 		panic(err)
 	}
 
-	httpTransport, err := newOpenapiCheckerTransport(ctx, currentTest.httpTransport)
 	Expect(err).To(BeNil())
 
 	options = append([]formance.SDKOption{
 		formance.WithServerURL(gatewayUrl.String()),
 		formance.WithClient(
 			&http.Client{
-				Transport: httpTransport,
+				Transport: currentTest.httpTransport,
 			},
 		),
 	}, options...)
