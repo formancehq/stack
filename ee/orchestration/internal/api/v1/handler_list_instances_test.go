@@ -1,12 +1,13 @@
 package v1
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/formancehq/go-libs/logging"
 
 	"github.com/go-chi/chi/v5"
 
@@ -21,10 +22,12 @@ import (
 )
 
 func TestListInstances(t *testing.T) {
+	ctx := logging.TestingContext()
+
 	test(t, func(router *chi.Mux, m api.Backend, db *bun.DB) {
 		// Create a workflow with 10 instances
 		w := workflow.New(workflow.Config{})
-		_, err := db.NewInsert().Model(&w).Exec(context.TODO())
+		_, err := db.NewInsert().Model(&w).Exec(ctx)
 		require.NoError(t, err)
 
 		for i := 0; i < 10; i++ {
@@ -32,7 +35,7 @@ func TestListInstances(t *testing.T) {
 			if i > 5 {
 				instance.SetTerminated(time.Now())
 			}
-			_, err := db.NewInsert().Model(&instance).Exec(context.TODO())
+			_, err := db.NewInsert().Model(&instance).Exec(ctx)
 			require.NoError(t, err)
 		}
 

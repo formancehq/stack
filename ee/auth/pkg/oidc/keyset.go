@@ -7,7 +7,7 @@ import (
 
 	"github.com/formancehq/auth/pkg/delegatedauth"
 	"github.com/zitadel/oidc/v2/pkg/client"
-	"gopkg.in/square/go-jose.v2"
+	"gopkg.in/go-jose/go-jose.v2"
 )
 
 func ReadKeySet(httpClient *http.Client, ctx context.Context, configuration delegatedauth.Config) (*jose.JSONWebKeySet, error) {
