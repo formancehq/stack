@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/formancehq/payments/internal/connectors/plugins"
 	"github.com/formancehq/payments/internal/connectors/plugins/public/stripe/client"
 	"github.com/formancehq/payments/internal/models"
 	stripesdk "github.com/stripe/stripe-go/v79"
@@ -37,6 +38,13 @@ func (p *Plugin) Install(_ context.Context, req models.InstallRequest) (models.I
 	}, nil
 }
 
-func (p Plugin) Uninstall(ctx context.Context, req models.UninstallRequest) (models.UninstallResponse, error) {
+func (p *Plugin) Uninstall(ctx context.Context, req models.UninstallRequest) (models.UninstallResponse, error) {
 	return models.UninstallResponse{}, nil
+}
+
+func (p *Plugin) FetchNextExternalAccounts(ctx context.Context, req models.FetchNextExternalAccountsRequest) (models.FetchNextExternalAccountsResponse, error) {
+	if p.client == nil {
+		return models.FetchNextExternalAccountsResponse{}, plugins.ErrNotYetInstalled
+	}
+	return p.fetchNextExternalAccounts(ctx, req)
 }
