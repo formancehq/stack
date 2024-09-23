@@ -10,11 +10,15 @@ import (
 	"github.com/formancehq/payments/internal/models"
 )
 
+const (
+	rootAccountReference = "root"
+)
+
 type AccountsState struct {
 	LastID string `json:"lastID,omitempty"`
 }
 
-func (p Plugin) FetchNextAccounts(ctx context.Context, req models.FetchNextAccountsRequest) (models.FetchNextAccountsResponse, error) {
+func (p *Plugin) FetchNextAccounts(ctx context.Context, req models.FetchNextAccountsRequest) (models.FetchNextAccountsResponse, error) {
 	if p.client == nil {
 		return models.FetchNextAccountsResponse{}, plugins.ErrNotYetInstalled
 	}
