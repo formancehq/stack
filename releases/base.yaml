@@ -28,10 +28,8 @@ servers:
 - url: https://{stack}.sandbox.formance.cloud
   description: sandbox server
 
-#security:
+#security: {}
 #  - Authorization: []
-#  - NoAuthorization: []
-#  - NoAuth: []
 
 tags:
   - name: ledger.v1
