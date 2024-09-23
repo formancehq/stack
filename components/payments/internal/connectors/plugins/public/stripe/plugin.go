@@ -42,6 +42,20 @@ func (p *Plugin) Uninstall(ctx context.Context, req models.UninstallRequest) (mo
 	return models.UninstallResponse{}, nil
 }
 
+func (p *Plugin) FetchNextAccounts(ctx context.Context, req models.FetchNextAccountsRequest) (models.FetchNextAccountsResponse, error) {
+	if p.client == nil {
+		return models.FetchNextAccountsResponse{}, plugins.ErrNotYetInstalled
+	}
+	return p.fetchNextAccounts(ctx, req)
+}
+
+func (p *Plugin) FetchNextBalances(ctx context.Context, req models.FetchNextBalancesRequest) (models.FetchNextBalancesResponse, error) {
+	if p.client == nil {
+		return models.FetchNextBalancesResponse{}, plugins.ErrNotYetInstalled
+	}
+	return p.fetchNextBalances(ctx, req)
+}
+
 func (p *Plugin) FetchNextExternalAccounts(ctx context.Context, req models.FetchNextExternalAccountsRequest) (models.FetchNextExternalAccountsResponse, error) {
 	if p.client == nil {
 		return models.FetchNextExternalAccountsResponse{}, plugins.ErrNotYetInstalled

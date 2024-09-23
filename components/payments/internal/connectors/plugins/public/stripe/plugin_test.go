@@ -58,5 +58,19 @@ var _ = Describe("Stripe Plugin", func() {
 			_, err := plg.FetchNextAccounts(context.Background(), req)
 			Expect(err).To(MatchError(plugins.ErrNotYetInstalled))
 		})
+		It("fails when fetch next balances is called before install", func(ctx SpecContext) {
+			req := models.FetchNextBalancesRequest{
+				State: json.RawMessage(`{}`),
+			}
+			_, err := plg.FetchNextBalances(context.Background(), req)
+			Expect(err).To(MatchError(plugins.ErrNotYetInstalled))
+		})
+		It("fails when fetch next external accounts is called before install", func(ctx SpecContext) {
+			req := models.FetchNextExternalAccountsRequest{
+				State: json.RawMessage(`{}`),
+			}
+			_, err := plg.FetchNextExternalAccounts(context.Background(), req)
+			Expect(err).To(MatchError(plugins.ErrNotYetInstalled))
+		})
 	})
 })
