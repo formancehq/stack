@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/formancehq/payments/internal/connectors/plugins"
 	"github.com/formancehq/payments/internal/connectors/plugins/currency"
 	"github.com/formancehq/payments/internal/models"
 )
@@ -18,10 +17,7 @@ type AccountsState struct {
 	LastID string `json:"lastID,omitempty"`
 }
 
-func (p *Plugin) FetchNextAccounts(ctx context.Context, req models.FetchNextAccountsRequest) (models.FetchNextAccountsResponse, error) {
-	if p.client == nil {
-		return models.FetchNextAccountsResponse{}, plugins.ErrNotYetInstalled
-	}
+func (p *Plugin) fetchNextAccounts(ctx context.Context, req models.FetchNextAccountsRequest) (models.FetchNextAccountsResponse, error) {
 	var oldState AccountsState
 	if req.State != nil {
 		if err := json.Unmarshal(req.State, &oldState); err != nil {
