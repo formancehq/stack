@@ -71,11 +71,19 @@ type Hooks struct {
 }
 
 func New() *Hooks {
+	cc := NewClientCredentialsHook()
+
 	h := &Hooks{
-		sdkInitHooks:      []sdkInitHook{},
-		beforeRequestHook: []beforeRequestHook{},
-		afterSuccessHook:  []afterSuccessHook{},
-		afterErrorHook:    []afterErrorHook{},
+		sdkInitHooks: []sdkInitHook{
+			cc,
+		},
+		beforeRequestHook: []beforeRequestHook{
+			cc,
+		},
+		afterSuccessHook: []afterSuccessHook{},
+		afterErrorHook: []afterErrorHook{
+			cc,
+		},
 	}
 
 	initHooks(h)

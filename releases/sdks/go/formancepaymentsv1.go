@@ -33,7 +33,7 @@ func (s *FormancePaymentsV1) AddAccountToPool(ctx context.Context, request opera
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "addAccountToPool",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -207,7 +207,7 @@ func (s *FormancePaymentsV1) ConnectorsTransfer(ctx context.Context, request ope
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "connectorsTransfer",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -392,7 +392,7 @@ func (s *FormancePaymentsV1) CreateAccount(ctx context.Context, request shared.A
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createAccount",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -577,7 +577,7 @@ func (s *FormancePaymentsV1) CreateBankAccount(ctx context.Context, request shar
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createBankAccount",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -762,7 +762,7 @@ func (s *FormancePaymentsV1) CreatePayment(ctx context.Context, request shared.P
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createPayment",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -947,7 +947,7 @@ func (s *FormancePaymentsV1) CreatePool(ctx context.Context, request shared.Pool
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createPool",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1132,7 +1132,7 @@ func (s *FormancePaymentsV1) CreateTransferInitiation(ctx context.Context, reque
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createTransferInitiation",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1317,7 +1317,7 @@ func (s *FormancePaymentsV1) DeletePool(ctx context.Context, request operations.
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "deletePool",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1485,7 +1485,7 @@ func (s *FormancePaymentsV1) DeleteTransferInitiation(ctx context.Context, reque
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "deleteTransferInitiation",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1652,7 +1652,7 @@ func (s *FormancePaymentsV1) ForwardBankAccount(ctx context.Context, request ope
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "forwardBankAccount",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1836,7 +1836,7 @@ func (s *FormancePaymentsV1) GetAccountBalances(ctx context.Context, request ope
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getAccountBalances",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2018,7 +2018,7 @@ func (s *FormancePaymentsV1) GetBankAccount(ctx context.Context, request operati
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getBankAccount",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2199,7 +2199,7 @@ func (s *FormancePaymentsV1) GetConnectorTask(ctx context.Context, request opera
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getConnectorTask",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2378,7 +2378,7 @@ func (s *FormancePaymentsV1) GetConnectorTaskV1(ctx context.Context, request ope
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getConnectorTaskV1",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2556,7 +2556,7 @@ func (s *FormancePaymentsV1) GetPayment(ctx context.Context, request operations.
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getPayment",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2734,7 +2734,7 @@ func (s *FormancePaymentsV1) GetPool(ctx context.Context, request operations.Get
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getPool",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2912,7 +2912,7 @@ func (s *FormancePaymentsV1) GetPoolBalances(ctx context.Context, request operat
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getPoolBalances",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3094,7 +3094,7 @@ func (s *FormancePaymentsV1) GetTransferInitiation(ctx context.Context, request 
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getTransferInitiation",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3273,7 +3273,7 @@ func (s *FormancePaymentsV1) InstallConnector(ctx context.Context, request opera
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "installConnector",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3458,7 +3458,7 @@ func (s *FormancePaymentsV1) ListAllConnectors(ctx context.Context, opts ...oper
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listAllConnectors",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3637,7 +3637,7 @@ func (s *FormancePaymentsV1) ListBankAccounts(ctx context.Context, request opera
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listBankAccounts",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3820,7 +3820,7 @@ func (s *FormancePaymentsV1) ListConfigsAvailableConnectors(ctx context.Context,
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listConfigsAvailableConnectors",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -4001,7 +4001,7 @@ func (s *FormancePaymentsV1) ListConnectorTasks(ctx context.Context, request ope
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listConnectorTasks",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -4184,7 +4184,7 @@ func (s *FormancePaymentsV1) ListConnectorTasksV1(ctx context.Context, request o
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listConnectorTasksV1",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -4366,7 +4366,7 @@ func (s *FormancePaymentsV1) ListPayments(ctx context.Context, request operation
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listPayments",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -4548,7 +4548,7 @@ func (s *FormancePaymentsV1) ListPools(ctx context.Context, request operations.L
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listPools",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -4730,7 +4730,7 @@ func (s *FormancePaymentsV1) ListTransferInitiations(ctx context.Context, reques
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listTransferInitiations",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -4912,7 +4912,7 @@ func (s *FormancePaymentsV1) PaymentsgetAccount(ctx context.Context, request ope
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "paymentsgetAccount",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -5090,7 +5090,7 @@ func (s *FormancePaymentsV1) PaymentsgetServerInfo(ctx context.Context, opts ...
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "paymentsgetServerInfo",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -5268,7 +5268,7 @@ func (s *FormancePaymentsV1) PaymentslistAccounts(ctx context.Context, request o
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "paymentslistAccounts",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -5459,7 +5459,7 @@ func (s *FormancePaymentsV1) ReadConnectorConfig(ctx context.Context, request op
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "readConnectorConfig",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -5638,7 +5638,7 @@ func (s *FormancePaymentsV1) ReadConnectorConfigV1(ctx context.Context, request 
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "readConnectorConfigV1",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -5817,7 +5817,7 @@ func (s *FormancePaymentsV1) RemoveAccountFromPool(ctx context.Context, request 
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "removeAccountFromPool",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -5988,7 +5988,7 @@ func (s *FormancePaymentsV1) ResetConnector(ctx context.Context, request operati
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "resetConnector",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -6157,7 +6157,7 @@ func (s *FormancePaymentsV1) ResetConnectorV1(ctx context.Context, request opera
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "resetConnectorV1",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -6325,7 +6325,7 @@ func (s *FormancePaymentsV1) RetryTransferInitiation(ctx context.Context, reques
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "retryTransferInitiation",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -6493,7 +6493,7 @@ func (s *FormancePaymentsV1) ReverseTransferInitiation(ctx context.Context, requ
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "reverseTransferInitiation",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -6667,7 +6667,7 @@ func (s *FormancePaymentsV1) UdpateTransferInitiationStatus(ctx context.Context,
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "udpateTransferInitiationStatus",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -6843,7 +6843,7 @@ func (s *FormancePaymentsV1) UninstallConnector(ctx context.Context, request ope
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "uninstallConnector",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -7011,7 +7011,7 @@ func (s *FormancePaymentsV1) UninstallConnectorV1(ctx context.Context, request o
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "uninstallConnectorV1",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -7178,7 +7178,7 @@ func (s *FormancePaymentsV1) UpdateBankAccountMetadata(ctx context.Context, requ
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "updateBankAccountMetadata",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -7352,7 +7352,7 @@ func (s *FormancePaymentsV1) UpdateConnectorConfigV1(ctx context.Context, reques
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "updateConnectorConfigV1",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -7525,7 +7525,7 @@ func (s *FormancePaymentsV1) UpdateMetadata(ctx context.Context, request operati
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "updateMetadata",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "payments:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 

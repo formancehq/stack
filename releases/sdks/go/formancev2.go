@@ -33,7 +33,7 @@ func (s *FormanceV2) CancelEvent(ctx context.Context, request operations.V2Cance
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2CancelEvent",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -201,7 +201,7 @@ func (s *FormanceV2) CreateTrigger(ctx context.Context, request *shared.V2Trigge
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2CreateTrigger",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -386,7 +386,7 @@ func (s *FormanceV2) CreateWorkflow(ctx context.Context, request *shared.V2Creat
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2CreateWorkflow",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -571,7 +571,7 @@ func (s *FormanceV2) DeleteTrigger(ctx context.Context, request operations.V2Del
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2DeleteTrigger",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -739,7 +739,7 @@ func (s *FormanceV2) DeleteWorkflow(ctx context.Context, request operations.V2De
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2DeleteWorkflow",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -907,7 +907,7 @@ func (s *FormanceV2) GetInstance(ctx context.Context, request operations.V2GetIn
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2GetInstance",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1086,7 +1086,7 @@ func (s *FormanceV2) GetInstanceHistory(ctx context.Context, request operations.
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2GetInstanceHistory",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1265,7 +1265,7 @@ func (s *FormanceV2) GetInstanceStageHistory(ctx context.Context, request operat
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2GetInstanceStageHistory",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1443,7 +1443,7 @@ func (s *FormanceV2) GetServerInfo(ctx context.Context, opts ...operations.Optio
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2GetServerInfo",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1622,7 +1622,7 @@ func (s *FormanceV2) GetWorkflow(ctx context.Context, request operations.V2GetWo
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2GetWorkflow",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1801,7 +1801,7 @@ func (s *FormanceV2) ListInstances(ctx context.Context, request operations.V2Lis
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2ListInstances",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1984,7 +1984,7 @@ func (s *FormanceV2) ListTriggers(ctx context.Context, request operations.V2List
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2ListTriggers",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2167,7 +2167,7 @@ func (s *FormanceV2) ListTriggersOccurrences(ctx context.Context, request operat
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2ListTriggersOccurrences",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2350,7 +2350,7 @@ func (s *FormanceV2) ListWorkflows(ctx context.Context, request operations.V2Lis
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2ListWorkflows",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2533,7 +2533,7 @@ func (s *FormanceV2) ReadTrigger(ctx context.Context, request operations.V2ReadT
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2ReadTrigger",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2712,7 +2712,7 @@ func (s *FormanceV2) RunWorkflow(ctx context.Context, request operations.V2RunWo
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2RunWorkflow",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2901,7 +2901,7 @@ func (s *FormanceV2) SendEvent(ctx context.Context, request operations.V2SendEve
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "v2SendEvent",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -3075,7 +3075,7 @@ func (s *FormanceV2) TestTrigger(ctx context.Context, request operations.TestTri
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "testTrigger",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 

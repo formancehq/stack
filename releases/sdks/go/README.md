@@ -1,7 +1,7 @@
 # github.com/formancehq/formance-sdk-go/v2
 
 <div align="left">
-    <a href="https://speakeasyapi.dev/"><img src="https://custom-icon-badges.demolab.com/badge/-Built%20By%20Speakeasy-212015?style=for-the-badge&logoColor=FBE331&logo=speakeasy&labelColor=545454" /></a>
+    <a href="https://www.speakeasy.com/?utm_source=<no value>&utm_campaign=go"><img src="https://custom-icon-badges.demolab.com/badge/-Built%20By%20Speakeasy-212015?style=for-the-badge&logoColor=FBE331&logo=speakeasy&labelColor=545454" /></a>
     <a href="https://opensource.org/licenses/MIT">
         <img src="https://img.shields.io/badge/License-MIT-blue.svg" style="width: 100px; height: 28px;" />
     </a>
@@ -11,9 +11,9 @@
 ## 🏗 **Welcome to your new SDK!** 🏗
 
 It has been generated successfully based on your OpenAPI spec. However, it is not yet ready for production use. Here are some next steps:
-- [ ] 🛠 Make your SDK feel handcrafted by [customizing it](https://www.speakeasyapi.dev/docs/customize-sdks)
+- [ ] 🛠 Make your SDK feel handcrafted by [customizing it](https://www.speakeasy.com/docs/customize-sdks)
 - [ ] ♻️ Refine your SDK quickly by iterating locally with the [Speakeasy CLI](https://github.com/speakeasy-api/speakeasy)
-- [ ] 🎁 Publish your SDK to package managers by [configuring automatic publishing](https://www.speakeasyapi.dev/docs/productionize-sdks/publish-sdks)
+- [ ] 🎁 Publish your SDK to package managers by [configuring automatic publishing](https://www.speakeasy.com/docs/advanced-setup/publish-sdks)
 - [ ] ✨ When ready to productionize, delete this section from the README
 
 <!-- Start SDK Installation [installation] -->
@@ -43,7 +43,7 @@ import (
 func main() {
 	s := v2.New(
 		v2.WithSecurity(shared.Security{
-			Authorization: os.Getenv("AUTHORIZATION"),
+			ClientID: v2.String(os.Getenv("CLIENT_ID")),
 		}),
 	)
 
@@ -274,236 +274,6 @@ func main() {
 * [TestConfig](docs/sdks/formancewebhooksv1/README.md#testconfig) - Test one config
 <!-- End Available Resources and Operations [operations] -->
 
-<!-- Start Error Handling [errors] -->
-## Error Handling
-
-Handling errors in this SDK should largely match your expectations.  All operations return a response object or an error, they will never return both.  When specified by the OpenAPI spec document, the SDK will return the appropriate subclass.
-
-| Error Object            | Status Code             | Content Type            |
-| ----------------------- | ----------------------- | ----------------------- |
-| sdkerrors.ErrorResponse | default                 | application/json        |
-| sdkerrors.SDKError      | 4xx-5xx                 | */*                     |
-
-### Example
-
-```go
-package main
-
-import (
-	"context"
-	"errors"
-	"github.com/formancehq/formance-sdk-go/v2"
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"log"
-	"math/big"
-	"os"
-)
-
-func main() {
-	s := v2.New(
-		v2.WithSecurity(shared.Security{
-			Authorization: os.Getenv("AUTHORIZATION"),
-		}),
-	)
-	request := operations.CreateTransactionsRequest{
-		Transactions: shared.Transactions{
-			Transactions: []shared.TransactionData{
-				shared.TransactionData{
-					Postings: []shared.Posting{
-						shared.Posting{
-							Amount:      big.NewInt(100),
-							Asset:       "COIN",
-							Destination: "users:002",
-							Source:      "users:001",
-						},
-					},
-					Reference: v2.String("ref:001"),
-				},
-			},
-		},
-		Ledger: "ledger001",
-	}
-	ctx := context.Background()
-	res, err := s.Ledger.V1.CreateTransactions(ctx, request)
-	if err != nil {
-
-		var e *sdkerrors.ErrorResponse
-		if errors.As(err, &e) {
-			// handle error
-			log.Fatal(e.Error())
-		}
-
-		var e *sdkerrors.SDKError
-		if errors.As(err, &e) {
-			// handle error
-			log.Fatal(e.Error())
-		}
-	}
-}
-
-```
-<!-- End Error Handling [errors] -->
-
-<!-- Start Server Selection [server] -->
-## Server Selection
-
-### Select Server by Index
-
-You can override the default server globally using the `WithServerIndex` option when initializing the SDK client instance. The selected server will then be used as the default on the operations that use it. This table lists the indexes associated with the available servers:
-
-| # | Server | Variables |
-| - | ------ | --------- |
-| 0 | `http://localhost` | None |
-
-#### Example
-
-```go
-package main
-
-import (
-	"context"
-	"github.com/formancehq/formance-sdk-go/v2"
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"log"
-	"os"
-)
-
-func main() {
-	s := v2.New(
-		v2.WithServerIndex(0),
-		v2.WithSecurity(shared.Security{
-			Authorization: os.Getenv("AUTHORIZATION"),
-		}),
-	)
-
-	ctx := context.Background()
-	res, err := s.GetVersions(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-	if res.GetVersionsResponse != nil {
-		// handle response
-	}
-}
-
-```
-
-
-### Override Server URL Per-Client
-
-The default server can also be overridden globally using the `WithServerURL` option when initializing the SDK client instance. For example:
-```go
-package main
-
-import (
-	"context"
-	"github.com/formancehq/formance-sdk-go/v2"
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"log"
-	"os"
-)
-
-func main() {
-	s := v2.New(
-		v2.WithServerURL("http://localhost"),
-		v2.WithSecurity(shared.Security{
-			Authorization: os.Getenv("AUTHORIZATION"),
-		}),
-	)
-
-	ctx := context.Background()
-	res, err := s.GetVersions(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-	if res.GetVersionsResponse != nil {
-		// handle response
-	}
-}
-
-```
-<!-- End Server Selection [server] -->
-
-<!-- Start Custom HTTP Client [http-client] -->
-## Custom HTTP Client
-
-The Go SDK makes API calls that wrap an internal HTTP client. The requirements for the HTTP client are very simple. It must match this interface:
-
-```go
-type HTTPClient interface {
-	Do(req *http.Request) (*http.Response, error)
-}
-```
-
-The built-in `net/http` client satisfies this interface and a default client based on the built-in is provided by default. To replace this default with a client of your own, you can implement this interface yourself or provide your own client configured as desired. Here's a simple example, which adds a client with a 30 second timeout.
-
-```go
-import (
-	"net/http"
-	"time"
-	"github.com/myorg/your-go-sdk"
-)
-
-var (
-	httpClient = &http.Client{Timeout: 30 * time.Second}
-	sdkClient  = sdk.New(sdk.WithClient(httpClient))
-)
-```
-
-This can be a convenient way to configure timeouts, cookies, proxies, custom headers, and other low-level configuration.
-<!-- End Custom HTTP Client [http-client] -->
-
-<!-- Start Authentication [security] -->
-## Authentication
-
-### Per-Client Security Schemes
-
-This SDK supports the following security scheme globally:
-
-| Name            | Type            | Scheme          |
-| --------------- | --------------- | --------------- |
-| `Authorization` | oauth2          | OAuth2 token    |
-
-You can configure it using the `WithSecurity` option when initializing the SDK client instance. For example:
-```go
-package main
-
-import (
-	"context"
-	"github.com/formancehq/formance-sdk-go/v2"
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"log"
-	"os"
-)
-
-func main() {
-	s := v2.New(
-		v2.WithSecurity(shared.Security{
-			Authorization: os.Getenv("AUTHORIZATION"),
-		}),
-	)
-
-	ctx := context.Background()
-	res, err := s.GetVersions(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-	if res.GetVersionsResponse != nil {
-		// handle response
-	}
-}
-
-```
-<!-- End Authentication [security] -->
-
-<!-- Start Special Types [types] -->
-## Special Types
-
-
-<!-- End Special Types [types] -->
-
 <!-- Start Retries [retries] -->
 ## Retries
 
@@ -526,7 +296,7 @@ import (
 func main() {
 	s := v2.New(
 		v2.WithSecurity(shared.Security{
-			Authorization: os.Getenv("AUTHORIZATION"),
+			ClientID: v2.String(os.Getenv("CLIENT_ID")),
 		}),
 	)
 
@@ -579,7 +349,7 @@ func main() {
 				RetryConnectionErrors: false,
 			}),
 		v2.WithSecurity(shared.Security{
-			Authorization: os.Getenv("AUTHORIZATION"),
+			ClientID: v2.String(os.Getenv("CLIENT_ID")),
 		}),
 	)
 
@@ -596,6 +366,238 @@ func main() {
 ```
 <!-- End Retries [retries] -->
 
+<!-- Start Error Handling [errors] -->
+## Error Handling
+
+Handling errors in this SDK should largely match your expectations.  All operations return a response object or an error, they will never return both.  When specified by the OpenAPI spec document, the SDK will return the appropriate subclass.
+
+| Error Object            | Status Code             | Content Type            |
+| ----------------------- | ----------------------- | ----------------------- |
+| sdkerrors.ErrorResponse | default                 | application/json        |
+| sdkerrors.SDKError      | 4xx-5xx                 | */*                     |
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"errors"
+	"github.com/formancehq/formance-sdk-go/v2"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/sdkerrors"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"log"
+	"math/big"
+	"os"
+)
+
+func main() {
+	s := v2.New(
+		v2.WithSecurity(shared.Security{
+			ClientID: v2.String(os.Getenv("CLIENT_ID")),
+		}),
+	)
+	request := operations.CreateTransactionsRequest{
+		Transactions: shared.Transactions{
+			Transactions: []shared.TransactionData{
+				shared.TransactionData{
+					Postings: []shared.Posting{
+						shared.Posting{
+							Amount:      big.NewInt(100),
+							Asset:       "COIN",
+							Destination: "users:002",
+							Source:      "users:001",
+						},
+					},
+					Reference: v2.String("ref:001"),
+				},
+			},
+		},
+		Ledger: "ledger001",
+	}
+	ctx := context.Background()
+	res, err := s.Ledger.V1.CreateTransactions(ctx, request)
+	if err != nil {
+
+		var e *sdkerrors.ErrorResponse
+		if errors.As(err, &e) {
+			// handle error
+			log.Fatal(e.Error())
+		}
+
+		var e *sdkerrors.SDKError
+		if errors.As(err, &e) {
+			// handle error
+			log.Fatal(e.Error())
+		}
+	}
+}
+
+```
+<!-- End Error Handling [errors] -->
+
+<!-- Start Server Selection [server] -->
+## Server Selection
+
+### Select Server by Index
+
+You can override the default server globally using the `WithServerIndex` option when initializing the SDK client instance. The selected server will then be used as the default on the operations that use it. This table lists the indexes associated with the available servers:
+
+| # | Server | Variables |
+| - | ------ | --------- |
+| 0 | `http://localhost` | None |
+| 1 | `https://{stack}.sandbox.formance.cloud` | None |
+
+#### Example
+
+```go
+package main
+
+import (
+	"context"
+	"github.com/formancehq/formance-sdk-go/v2"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"log"
+	"os"
+)
+
+func main() {
+	s := v2.New(
+		v2.WithServerIndex(1),
+		v2.WithSecurity(shared.Security{
+			ClientID: v2.String(os.Getenv("CLIENT_ID")),
+		}),
+	)
+
+	ctx := context.Background()
+	res, err := s.GetVersions(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if res.GetVersionsResponse != nil {
+		// handle response
+	}
+}
+
+```
+
+
+### Override Server URL Per-Client
+
+The default server can also be overridden globally using the `WithServerURL` option when initializing the SDK client instance. For example:
+```go
+package main
+
+import (
+	"context"
+	"github.com/formancehq/formance-sdk-go/v2"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"log"
+	"os"
+)
+
+func main() {
+	s := v2.New(
+		v2.WithServerURL("http://localhost"),
+		v2.WithSecurity(shared.Security{
+			ClientID: v2.String(os.Getenv("CLIENT_ID")),
+		}),
+	)
+
+	ctx := context.Background()
+	res, err := s.GetVersions(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if res.GetVersionsResponse != nil {
+		// handle response
+	}
+}
+
+```
+<!-- End Server Selection [server] -->
+
+<!-- Start Custom HTTP Client [http-client] -->
+## Custom HTTP Client
+
+The Go SDK makes API calls that wrap an internal HTTP client. The requirements for the HTTP client are very simple. It must match this interface:
+
+```go
+type HTTPClient interface {
+	Do(req *http.Request) (*http.Response, error)
+}
+```
+
+The built-in `net/http` client satisfies this interface and a default client based on the built-in is provided by default. To replace this default with a client of your own, you can implement this interface yourself or provide your own client configured as desired. Here's a simple example, which adds a client with a 30 second timeout.
+
+```go
+import (
+	"net/http"
+	"time"
+	"github.com/myorg/your-go-sdk"
+)
+
+var (
+	httpClient = &http.Client{Timeout: 30 * time.Second}
+	sdkClient  = sdk.New(sdk.WithClient(httpClient))
+)
+```
+
+This can be a convenient way to configure timeouts, cookies, proxies, custom headers, and other low-level configuration.
+<!-- End Custom HTTP Client [http-client] -->
+
+<!-- Start Authentication [security] -->
+## Authentication
+
+### Per-Client Security Schemes
+
+This SDK supports the following security schemes globally:
+
+| Name           | Type           | Scheme         |
+| -------------- | -------------- | -------------- |
+| `ClientID`     | oauth2         | OAuth2 token   |
+| `ClientSecret` | oauth2         | OAuth2 token   |
+
+You can set the security parameters through the `WithSecurity` option when initializing the SDK client instance. The selected scheme will be used by default to authenticate with the API for all operations that support it. For example:
+```go
+package main
+
+import (
+	"context"
+	"github.com/formancehq/formance-sdk-go/v2"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	"log"
+	"os"
+)
+
+func main() {
+	s := v2.New(
+		v2.WithSecurity(shared.Security{
+			ClientID: v2.String(os.Getenv("CLIENT_ID")),
+		}),
+	)
+
+	ctx := context.Background()
+	res, err := s.GetVersions(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if res.GetVersionsResponse != nil {
+		// handle response
+	}
+}
+
+```
+<!-- End Authentication [security] -->
+
+<!-- Start Special Types [types] -->
+## Special Types
+
+
+<!-- End Special Types [types] -->
+
 <!-- Placeholder for Future Speakeasy SDK Sections -->
 
 # Development
@@ -608,7 +610,7 @@ looking for the latest version.
 
 ## Contributions
 
-While we value open-source contributions to this SDK, this library is generated programmatically.
-Feel free to open a PR or a Github issue as a proof of concept and we'll do our best to include it in a future release!
+While we value open-source contributions to this SDK, this library is generated programmatically. Any manual changes added to internal files will be overwritten on the next generation. 
+We look forward to hearing your feedback. Feel free to open a PR or an issue with a proof of concept and we'll do our best to include it in a future release. 
 
-### SDK Created by [Speakeasy](https://docs.speakeasyapi.dev/docs/using-speakeasy/client-sdks)
+### SDK Created by [Speakeasy](https://www.speakeasy.com/?utm_source=<no value>&utm_campaign=go)

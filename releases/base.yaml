@@ -25,9 +25,13 @@ info:
 servers:
 - url: http://localhost
   description: local server
+- url: https://{stack}.sandbox.formance.cloud
+  description: sandbox server
 
-security:
-  - Authorization: []
+#security:
+#  - Authorization: []
+#  - NoAuthorization: []
+#  - NoAuth: []
 
 tags:
   - name: ledger.v1

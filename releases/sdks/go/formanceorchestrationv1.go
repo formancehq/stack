@@ -33,7 +33,7 @@ func (s *FormanceOrchestrationV1) CancelEvent(ctx context.Context, request opera
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "cancelEvent",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -201,7 +201,7 @@ func (s *FormanceOrchestrationV1) CreateTrigger(ctx context.Context, request *sh
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createTrigger",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -386,7 +386,7 @@ func (s *FormanceOrchestrationV1) CreateWorkflow(ctx context.Context, request *s
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "createWorkflow",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -571,7 +571,7 @@ func (s *FormanceOrchestrationV1) DeleteTrigger(ctx context.Context, request ope
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "deleteTrigger",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -739,7 +739,7 @@ func (s *FormanceOrchestrationV1) DeleteWorkflow(ctx context.Context, request op
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "deleteWorkflow",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -907,7 +907,7 @@ func (s *FormanceOrchestrationV1) GetInstance(ctx context.Context, request opera
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getInstance",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1086,7 +1086,7 @@ func (s *FormanceOrchestrationV1) GetInstanceHistory(ctx context.Context, reques
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getInstanceHistory",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1265,7 +1265,7 @@ func (s *FormanceOrchestrationV1) GetInstanceStageHistory(ctx context.Context, r
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getInstanceStageHistory",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1444,7 +1444,7 @@ func (s *FormanceOrchestrationV1) GetWorkflow(ctx context.Context, request opera
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "getWorkflow",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1623,7 +1623,7 @@ func (s *FormanceOrchestrationV1) ListInstances(ctx context.Context, request ope
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listInstances",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1806,7 +1806,7 @@ func (s *FormanceOrchestrationV1) ListTriggers(ctx context.Context, request oper
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listTriggers",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -1989,7 +1989,7 @@ func (s *FormanceOrchestrationV1) ListTriggersOccurrences(ctx context.Context, r
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listTriggersOccurrences",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2168,7 +2168,7 @@ func (s *FormanceOrchestrationV1) ListWorkflows(ctx context.Context, opts ...ope
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "listWorkflows",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2346,7 +2346,7 @@ func (s *FormanceOrchestrationV1) OrchestrationgetServerInfo(ctx context.Context
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "orchestrationgetServerInfo",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2525,7 +2525,7 @@ func (s *FormanceOrchestrationV1) ReadTrigger(ctx context.Context, request opera
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "readTrigger",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:read"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2704,7 +2704,7 @@ func (s *FormanceOrchestrationV1) RunWorkflow(ctx context.Context, request opera
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "runWorkflow",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 
@@ -2893,7 +2893,7 @@ func (s *FormanceOrchestrationV1) SendEvent(ctx context.Context, request operati
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "sendEvent",
-		OAuth2Scopes:   []string{},
+		OAuth2Scopes:   []string{"auth:read", "orchestration:write"},
 		SecuritySource: s.sdkConfiguration.Security,
 	}
 

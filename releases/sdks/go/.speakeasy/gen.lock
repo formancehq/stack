@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
-id: 7eac0a45-60a2-40bb-9e85-26bd77ec2a6d
+id: 8cc5b996-ee96-49ac-9b4e-0cc5e3bfbe2f
 management:
-  docChecksum: ce9e9a1abe285e9e111c5ad7edccbbf3
+  docChecksum: e92196089dd1f79fdb19e88fc5e39117
   docVersion: v0.0.0
   speakeasyVersion: 1.346.0
   generationVersion: 2.379.3
   releaseVersion: v0.0.0
-  configChecksum: 86fb0b4c762641bbbe6b4f59e9dd3989
+  configChecksum: f2202d55313914a857427cd0c614fbb1
 features:
   go:
     additionalDependencies: 0.1.0
@@ -25,6 +25,7 @@ features:
     intellisenseMarkdownSupport: 0.1.0
     nameOverrides: 2.81.2
     nullables: 0.1.0
+    oauth2ClientCredentials: 0.1.1
     responseFormat: 0.1.2
     retries: 2.83.0
     sdkHooks: 0.1.0
@@ -1375,4 +1376,5 @@ generatedFiles:
   - pkg/models/operations/options.go
   - .gitattributes
   - internal/hooks/hooks.go
+  - internal/hooks/clientcredentials.go
   - CONTRIBUTING.md
