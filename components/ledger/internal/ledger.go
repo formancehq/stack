@@ -93,6 +93,7 @@ func NewDefaultConfiguration() Configuration {
 
 type Ledger struct {
 	Configuration
+	// todo: add restriction on name
 	Name    string    `json:"name"`
 	AddedAt time.Time `json:"addedAt"`
 	State   string    `json:"-"`
