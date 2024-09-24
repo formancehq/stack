@@ -39,10 +39,18 @@ archives:
     - completions/*
 
 brews:
-  - repository:
+  - name: fctl
+    alternative_names:
+      - fctl@{{ .Major }}
+    repository:
       owner: formancehq
       name: homebrew-tap
-    name: fctl
+      pull_request:
+        enabled: true
+        base:
+          owner: formancehq
+          name: homebrew-tap
+          branch: main
     folder: Formula
     homepage: https://formance.com
     skip_upload: 'false'
