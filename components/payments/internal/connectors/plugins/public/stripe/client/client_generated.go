@@ -86,3 +86,19 @@ func (mr *MockClientMockRecorder) GetExternalAccounts(ctx, accountID, lastID, pa
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetExternalAccounts", reflect.TypeOf((*MockClient)(nil).GetExternalAccounts), ctx, accountID, lastID, pageSize)
 }
+
+// GetPayments mocks base method.
+func (m *MockClient) GetPayments(ctx context.Context, accountID, lastID *string, pageSize int64) ([]*stripe.BalanceTransaction, bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPayments", ctx, accountID, lastID, pageSize)
+	ret0, _ := ret[0].([]*stripe.BalanceTransaction)
+	ret1, _ := ret[1].(bool)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// GetPayments indicates an expected call of GetPayments.
+func (mr *MockClientMockRecorder) GetPayments(ctx, accountID, lastID, pageSize any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPayments", reflect.TypeOf((*MockClient)(nil).GetPayments), ctx, accountID, lastID, pageSize)
+}

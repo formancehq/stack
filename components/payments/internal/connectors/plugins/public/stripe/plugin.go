@@ -62,3 +62,10 @@ func (p *Plugin) FetchNextExternalAccounts(ctx context.Context, req models.Fetch
 	}
 	return p.fetchNextExternalAccounts(ctx, req)
 }
+
+func (p *Plugin) FetchNextPayments(ctx context.Context, req models.FetchNextPaymentsRequest) (models.FetchNextPaymentsResponse, error) {
+	if p.client == nil {
+		return models.FetchNextPaymentsResponse{}, plugins.ErrNotYetInstalled
+	}
+	return p.fetchNextPayments(ctx, req)
+}
