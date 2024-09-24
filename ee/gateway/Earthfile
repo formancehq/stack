@@ -66,7 +66,8 @@ pre-commit:
     BUILD --pass-args +lint
 
 openapi:
-    RUN echo "not implemented"
+    COPY ./openapi.yaml .
+    SAVE ARTIFACT ./openapi.yaml
 
 tidy:
     FROM core+builder-image

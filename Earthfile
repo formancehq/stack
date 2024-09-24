@@ -25,7 +25,7 @@ build-final-spec:
     FOR c IN payments ledger
         COPY (./components/$c+openapi/openapi.yaml) /src/components/$c/
     END
-    FOR c IN auth webhooks search wallets reconciliation orchestration
+    FOR c IN auth webhooks search wallets reconciliation orchestration gateway
         COPY (./ee/$c+openapi/openapi.yaml) /src/ee/$c/
     END
 
