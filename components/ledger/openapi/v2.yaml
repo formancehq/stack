@@ -6,9 +6,6 @@ info:
 servers:
   - url: http://localhost:8080/
 paths:
-  x-speakeasy-errors:
-    statusCodes:
-      - default
   /v2/_info:
     get:
       tags:
