@@ -58,7 +58,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -68,7 +67,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.AddAccountToPoolRequest{
@@ -116,10 +116,9 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"math/big"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"math/big"
 	"context"
 	"log"
 )
@@ -127,7 +126,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.ConnectorsTransferRequest{
@@ -178,7 +178,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
 	"context"
@@ -188,7 +187,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := shared.AccountRequest{
@@ -236,7 +236,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
@@ -245,7 +244,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := shared.BankAccountRequest{
@@ -292,7 +292,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"math/big"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
@@ -303,7 +302,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := shared.PaymentRequest{
@@ -355,7 +355,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
@@ -364,7 +363,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := shared.PoolRequest{
@@ -412,7 +412,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"math/big"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
@@ -423,7 +422,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := shared.TransferInitiationRequest{
@@ -476,7 +476,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -486,7 +485,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.DeletePoolRequest{
@@ -531,7 +531,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -541,7 +540,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.DeleteTransferInitiationRequest{
@@ -586,7 +586,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -596,7 +595,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.ForwardBankAccountRequest{
@@ -644,7 +644,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -654,7 +653,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.GetAccountBalancesRequest{
@@ -705,7 +705,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -715,7 +714,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.GetBankAccountRequest{
@@ -762,7 +762,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -772,7 +771,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.GetConnectorTaskRequest{
@@ -818,7 +818,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -828,7 +827,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.GetConnectorTaskV1Request{
@@ -875,7 +875,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -885,7 +884,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.GetPaymentRequest{
@@ -930,7 +930,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -940,7 +939,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.GetPoolRequest{
@@ -985,10 +985,9 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
 	"context"
 	"log"
 )
@@ -996,7 +995,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.GetPoolBalancesRequest{
@@ -1042,7 +1042,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1052,7 +1051,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.GetTransferInitiationRequest{
@@ -1097,7 +1097,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1107,7 +1106,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.InstallConnectorRequest{
@@ -1159,7 +1159,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
@@ -1168,7 +1167,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
 
@@ -1210,7 +1210,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1220,7 +1219,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.ListBankAccountsRequest{
@@ -1270,7 +1270,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
@@ -1279,7 +1278,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
 
@@ -1323,7 +1323,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1333,7 +1332,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.ListConnectorTasksRequest{
@@ -1380,7 +1380,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1390,7 +1389,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.ListConnectorTasksV1Request{
@@ -1438,7 +1438,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1448,7 +1447,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.ListPaymentsRequest{
@@ -1498,7 +1498,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1508,7 +1507,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.ListPoolsRequest{
@@ -1558,7 +1558,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1568,7 +1567,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.ListTransferInitiationsRequest{
@@ -1618,7 +1618,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1628,7 +1627,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.PaymentsgetAccountRequest{
@@ -1673,7 +1673,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
@@ -1682,7 +1681,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
 
@@ -1724,7 +1724,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1734,7 +1733,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.PaymentslistAccountsRequest{
@@ -1786,7 +1786,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1796,7 +1795,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.ReadConnectorConfigRequest{
@@ -1841,7 +1841,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1851,7 +1850,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.ReadConnectorConfigV1Request{
@@ -1897,7 +1897,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1907,7 +1906,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.RemoveAccountFromPoolRequest{
@@ -1957,7 +1957,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -1967,7 +1966,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.ResetConnectorRequest{
@@ -2014,7 +2014,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -2024,7 +2023,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.ResetConnectorV1Request{
@@ -2070,7 +2070,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -2080,7 +2079,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.RetryTransferInitiationRequest{
@@ -2125,10 +2125,9 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"math/big"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"math/big"
 	"context"
 	"log"
 )
@@ -2136,7 +2135,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.ReverseTransferInitiationRequest{
@@ -2190,7 +2190,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -2200,7 +2199,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.UdpateTransferInitiationStatusRequest{
@@ -2250,7 +2250,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -2260,7 +2259,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.UninstallConnectorRequest{
@@ -2305,7 +2305,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -2315,7 +2314,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.UninstallConnectorV1Request{
@@ -2361,7 +2361,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -2371,7 +2370,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.UpdateBankAccountMetadataRequest{
@@ -2421,7 +2421,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -2431,7 +2430,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.UpdateConnectorConfigV1Request{
@@ -2485,7 +2485,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -2495,7 +2494,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.UpdateMetadataRequest{

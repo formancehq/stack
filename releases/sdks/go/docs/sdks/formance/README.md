@@ -31,7 +31,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
@@ -40,7 +39,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
 

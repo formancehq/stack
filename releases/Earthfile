@@ -1,6 +1,6 @@
 VERSION 0.8
 
-IMPORT github.com/formancehq/earthly:tags/v0.15.0 AS core
+IMPORT github.com/formancehq/earthly:tags/v0.16.0 AS core
 IMPORT ./../ AS stack
 
 sources:
@@ -12,7 +12,7 @@ sdk-generate:
   FROM node:20-alpine
   RUN apk update && apk add yq git
   WORKDIR /src
-  COPY (stack+speakeasy/speakeasy) /bin/speakeasy
+  COPY (core+sources-speakeasy/speakeasy) /bin/speakeasy
   ARG version=v0.0.0
   COPY (stack+build-final-spec/latest.json --version=$version) /src/releases/build/latest.json
   WORKDIR /src/releases

@@ -33,7 +33,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -43,7 +42,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.V2CancelEventRequest{
@@ -88,7 +88,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
@@ -97,15 +96,13 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
-    var request *shared.V2TriggerData = &shared.V2TriggerData{
-        Event: "<value>",
-        WorkflowID: "<value>",
-    }
+
     ctx := context.Background()
-    res, err := s.Orchestration.V2.CreateTrigger(ctx, request)
+    res, err := s.Orchestration.V2.CreateTrigger(ctx, nil)
     if err != nil {
         log.Fatal(err)
     }
@@ -143,7 +140,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
@@ -152,18 +148,13 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
-    var request *shared.V2CreateWorkflowRequest = &shared.V2CreateWorkflowRequest{
-        Stages: []map[string]any{
-            map[string]any{
-                "key": "<value>",
-            },
-        },
-    }
+
     ctx := context.Background()
-    res, err := s.Orchestration.V2.CreateWorkflow(ctx, request)
+    res, err := s.Orchestration.V2.CreateWorkflow(ctx, nil)
     if err != nil {
         log.Fatal(err)
     }
@@ -201,7 +192,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -211,7 +201,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.V2DeleteTriggerRequest{
@@ -256,7 +247,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -266,7 +256,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.V2DeleteWorkflowRequest{
@@ -311,7 +302,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -321,7 +311,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.V2GetInstanceRequest{
@@ -366,7 +357,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -376,7 +366,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.V2GetInstanceHistoryRequest{
@@ -421,7 +412,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -431,7 +421,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.V2GetInstanceStageHistoryRequest{
@@ -477,7 +468,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
@@ -486,7 +476,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
 
@@ -528,7 +519,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -538,7 +528,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.V2GetWorkflowRequest{
@@ -583,7 +574,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -593,7 +583,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.V2ListInstancesRequest{
@@ -641,7 +632,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -651,7 +641,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.V2ListTriggersRequest{
@@ -697,7 +688,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -707,7 +697,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.V2ListTriggersOccurrencesRequest{
@@ -754,7 +745,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -764,7 +754,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.V2ListWorkflowsRequest{
@@ -810,7 +801,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -820,7 +810,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.V2ReadTriggerRequest{
@@ -865,7 +856,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -875,7 +865,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.V2RunWorkflowRequest{
@@ -920,7 +911,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -930,7 +920,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.V2SendEventRequest{
@@ -975,7 +966,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -985,7 +975,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.TestTriggerRequest{

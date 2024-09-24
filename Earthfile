@@ -9,16 +9,6 @@ sources:
     COPY ${LOCATION} out
     SAVE ARTIFACT out
 
-speakeasy:
-    FROM core+base-image
-    RUN apk update && apk add yarn jq unzip curl
-    ARG VERSION=v1.346.0
-    ARG TARGETARCH
-    RUN curl -fsSL https://github.com/speakeasy-api/speakeasy/releases/download/${VERSION}/speakeasy_linux_$TARGETARCH.zip -o /tmp/speakeasy_linux_$TARGETARCH.zip
-    RUN unzip /tmp/speakeasy_linux_$TARGETARCH.zip speakeasy
-    RUN chmod +x speakeasy
-    SAVE ARTIFACT speakeasy
-
 build-final-spec:
     FROM core+base-image
     RUN apk update && apk add yarn nodejs npm jq

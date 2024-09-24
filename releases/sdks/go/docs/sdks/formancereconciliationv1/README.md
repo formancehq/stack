@@ -23,7 +23,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
@@ -32,7 +31,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := shared.PolicyRequest{
@@ -82,7 +82,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -92,7 +91,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.DeletePolicyRequest{
@@ -137,7 +137,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -147,7 +146,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.GetPolicyRequest{
@@ -192,7 +192,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -202,7 +201,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.GetReconciliationRequest{
@@ -247,7 +247,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -257,7 +256,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.ListPoliciesRequest{
@@ -303,7 +303,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"context"
@@ -313,7 +312,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.ListReconciliationsRequest{
@@ -359,10 +359,9 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
-	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
 	"context"
 	"log"
 )
@@ -370,7 +369,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
     request := operations.ReconcileRequest{
@@ -419,7 +419,6 @@ package main
 
 import(
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	"os"
 	"github.com/formancehq/formance-sdk-go/v2"
 	"context"
 	"log"
@@ -428,7 +427,8 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: v2.String(os.Getenv("CLIENT_ID")),
+            ClientID: "",
+            ClientSecret: "",
         }),
     )
 
