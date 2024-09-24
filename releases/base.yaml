@@ -53,36 +53,6 @@ components:
           refreshUrl: '/api/auth/oauth/token'
           scopes: {}
 
-  schemas:
-    Version:
-      type: object
-      properties:
-        name:
-          type: string
-        version:
-          type: string
-        health:
-          type: boolean
-      required:
-      - name
-      - version
-      - health
-    GetVersionsResponse:
-      type: object
-      properties:
-        region:
-          type: string
-        env:
-          type: string
-        versions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Version'
-      required:
-      - region
-      - env
-      - versions
-
 x-tagGroups:
   - name: Auth
     tags:
@@ -110,16 +80,3 @@ x-tagGroups:
   - name: Reconciliation
     tags:
       - reconciliation.v1
-
-paths:
-  /versions:
-    get:
-      summary: Show stack version information
-      operationId: getVersions
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GetVersionsResponse'

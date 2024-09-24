@@ -1,10 +1,10 @@
 lockVersion: 2.0.0
 id: 8cc5b996-ee96-49ac-9b4e-0cc5e3bfbe2f
 management:
-  docChecksum: e92196089dd1f79fdb19e88fc5e39117
+  docChecksum: b7819acc5410d6ccf3e18e9f29abd68c
   docVersion: v0.0.0
-  speakeasyVersion: 1.346.0
-  generationVersion: 2.379.3
+  speakeasyVersion: 1.351.0
+  generationVersion: 2.384.1
   releaseVersion: v0.0.0
   configChecksum: f2202d55313914a857427cd0c614fbb1
 features:
@@ -15,7 +15,7 @@ features:
     defaultEnabledRetries: 0.2.0
     deprecations: 2.81.1
     downloadStreams: 0.1.1
-    envVarSecurityUsage: 0.2.0
+    envVarSecurityUsage: 0.2.1
     errors: 2.81.9
     getRequestBodies: 2.81.1
     globalSecurity: 2.82.9

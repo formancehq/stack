@@ -37,13 +37,13 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"log"
-	"os"
 )
 
 func main() {
 	s := v2.New(
 		v2.WithSecurity(shared.Security{
-			ClientID: v2.String(os.Getenv("CLIENT_ID")),
+			ClientID:     "",
+			ClientSecret: "",
 		}),
 	)
 
@@ -289,14 +289,14 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/retry"
 	"log"
-	"os"
 	"pkg/models/operations"
 )
 
 func main() {
 	s := v2.New(
 		v2.WithSecurity(shared.Security{
-			ClientID: v2.String(os.Getenv("CLIENT_ID")),
+			ClientID:     "",
+			ClientSecret: "",
 		}),
 	)
 
@@ -332,7 +332,6 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/retry"
 	"log"
-	"os"
 )
 
 func main() {
@@ -349,7 +348,8 @@ func main() {
 				RetryConnectionErrors: false,
 			}),
 		v2.WithSecurity(shared.Security{
-			ClientID: v2.String(os.Getenv("CLIENT_ID")),
+			ClientID:     "",
+			ClientSecret: "",
 		}),
 	)
 
@@ -390,13 +390,13 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"log"
 	"math/big"
-	"os"
 )
 
 func main() {
 	s := v2.New(
 		v2.WithSecurity(shared.Security{
-			ClientID: v2.String(os.Getenv("CLIENT_ID")),
+			ClientID:     "",
+			ClientSecret: "",
 		}),
 	)
 	request := operations.CreateTransactionsRequest{
@@ -460,14 +460,14 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"log"
-	"os"
 )
 
 func main() {
 	s := v2.New(
 		v2.WithServerIndex(1),
 		v2.WithSecurity(shared.Security{
-			ClientID: v2.String(os.Getenv("CLIENT_ID")),
+			ClientID:     "",
+			ClientSecret: "",
 		}),
 	)
 
@@ -495,14 +495,14 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"log"
-	"os"
 )
 
 func main() {
 	s := v2.New(
 		v2.WithServerURL("http://localhost"),
 		v2.WithSecurity(shared.Security{
-			ClientID: v2.String(os.Getenv("CLIENT_ID")),
+			ClientID:     "",
+			ClientSecret: "",
 		}),
 	)
 
@@ -569,13 +569,13 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	"log"
-	"os"
 )
 
 func main() {
 	s := v2.New(
 		v2.WithSecurity(shared.Security{
-			ClientID: v2.String(os.Getenv("CLIENT_ID")),
+			ClientID:     "",
+			ClientSecret: "",
 		}),
 	)
 
