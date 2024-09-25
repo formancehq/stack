@@ -9,7 +9,6 @@ FROM core+base-image
 
 sources:
     WORKDIR /src/components/ledger
-    COPY --pass-args (releases+sdk-generate/go) /src/releases/sdks/go
     COPY go.mod go.sum .
     COPY --dir internal pkg cmd .
     COPY main.go .
