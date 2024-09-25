@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/formancehq/fctl/membershipclient"
-	v2 "github.com/formancehq/formance-sdk-go/v2"
+	v2 "github.com/formancehq/formance-sdk-go/v3"
 	"github.com/spf13/cobra"
 )
 

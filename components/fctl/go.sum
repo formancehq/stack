@@ -86,6 +86,8 @@ github.com/fatih/color v1.17.0 h1:GlRw1BRJxkpqUCBKzKOw098ed57fEsKeNjpTe3cSjK4=
 github.com/fatih/color v1.17.0/go.mod h1:YZ7TlrGPkiz6ku9fK3TLD/pl3CpsiFyu8N92HLgmosI=
 github.com/formancehq/cobra v0.0.0-20240315111924-ca456bf9cac9 h1:y+q436ECR5jNU+CAqK0pPGGM6pKUtvreQ4m/nfaKGQM=
 github.com/formancehq/cobra v0.0.0-20240315111924-ca456bf9cac9/go.mod h1:WXLWApfZ71AjXPya3WOlMsY9yMs7YeiHhFVlvLyhcho=
+github.com/formancehq/formance-sdk-go/v3 v3.0.0 h1:UIzVMJSPUBUSm29Zg50tZjM0f101WeWHYlu0ClfUk2c=
+github.com/formancehq/formance-sdk-go/v3 v3.0.0/go.mod h1:ZBBYCgtDgde68qMW5nZ9lfliM8W1D3ZI/BpZ+RdhD3c=
 github.com/formancehq/go-libs v1.7.1 h1:9D5cxKWFlVtdX5AYDXeUz1Nb9PdoEfQX0f/yeLsU324=
 github.com/formancehq/go-libs v1.7.1/go.mod h1:pWTScpoyieF7OoJ6WVmXNG9NhDjbZbAmFqd7UOw85iI=
 github.com/go-chi/chi/v5 v5.1.0 h1:acVI1TYaD+hhedDJ3r54HyA6sExp3HfXq7QWEEY/xMw=
@@ -299,6 +301,8 @@ golang.org/x/sync v0.0.0-20190423024810-112230192c58/go.mod h1:RxMgew5VJxzue5/jJ
 golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.1.0/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
+golang.org/x/sync v0.8.0 h1:3NFvSEYkUoMifnESzZl15y791HH1qU2xm6eCJU5ZPXQ=
+golang.org/x/sync v0.8.0/go.mod h1:Czt+wKu1gCyEFDUtn0jG5QVvpJ6rzVqr5aXyt9drQfk=
 golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/sys v0.0.0-20190222072716-a9d3bda3a223/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/sys v0.0.0-20191008105621-543471e840be/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=

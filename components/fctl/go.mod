@@ -8,7 +8,7 @@ require (
 	github.com/TylerBrock/colorjson v0.0.0-20200706003622-8a50f05110d2
 	github.com/c-bata/go-prompt v0.2.6
 	github.com/formancehq/fctl/membershipclient v0.0.0-20230109152136-5d4c9193a44c
-	github.com/formancehq/formance-sdk-go/v2 v2.1.0
+	github.com/formancehq/formance-sdk-go/v3 v3.0.0
 	github.com/formancehq/go-libs v1.7.1
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/iancoleman/strcase v0.3.0
@@ -68,6 +68,7 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/crypto v0.27.0 // indirect
+	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.25.0 // indirect
 	golang.org/x/term v0.24.0 // indirect
 	golang.org/x/text v0.18.0 // indirect
@@ -79,5 +80,3 @@ replace github.com/zitadel/oidc/v2 v2.6.1 => github.com/formancehq/oidc/v2 v2.6.
 replace github.com/formancehq/fctl/membershipclient => ./membershipclient
 
 replace github.com/spf13/cobra => github.com/formancehq/cobra v0.0.0-20240315111924-ca456bf9cac9
-
-replace github.com/formancehq/formance-sdk-go/v2 => ../../releases/sdks/go
