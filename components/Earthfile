@@ -16,6 +16,5 @@ deploy-staging:
 run:
     LOCALLY
     ARG --required TARGET
-    BUILD ./ledger+$TARGET
     BUILD ./operator+$TARGET
     BUILD ./payments+$TARGET
