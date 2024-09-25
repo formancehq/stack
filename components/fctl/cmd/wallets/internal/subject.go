@@ -3,8 +3,8 @@ package internal
 import (
 	"strings"
 
-	formance "github.com/formancehq/formance-sdk-go/v2"
-	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
+	formance "github.com/formancehq/formance-sdk-go/v3"
+	"github.com/formancehq/formance-sdk-go/v3/pkg/models/shared"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
