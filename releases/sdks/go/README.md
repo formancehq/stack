@@ -42,8 +42,7 @@ import (
 func main() {
 	s := v2.New(
 		v2.WithSecurity(shared.Security{
-			ClientID:     "",
-			ClientSecret: "",
+			ClientID: v2.String(""),
 		}),
 	)
 
@@ -295,8 +294,7 @@ import (
 func main() {
 	s := v2.New(
 		v2.WithSecurity(shared.Security{
-			ClientID:     "",
-			ClientSecret: "",
+			ClientID: v2.String(""),
 		}),
 	)
 
@@ -348,8 +346,7 @@ func main() {
 				RetryConnectionErrors: false,
 			}),
 		v2.WithSecurity(shared.Security{
-			ClientID:     "",
-			ClientSecret: "",
+			ClientID: v2.String(""),
 		}),
 	)
 
@@ -395,8 +392,7 @@ import (
 func main() {
 	s := v2.New(
 		v2.WithSecurity(shared.Security{
-			ClientID:     "",
-			ClientSecret: "",
+			ClientID: v2.String(""),
 		}),
 	)
 	request := operations.CreateTransactionsRequest{
@@ -448,7 +444,7 @@ You can override the default server globally using the `WithServerIndex` option 
 | # | Server | Variables |
 | - | ------ | --------- |
 | 0 | `http://localhost` | None |
-| 1 | `https://{stack}.sandbox.formance.cloud` | None |
+| 1 | `https://{organization}.{environment}.formance.cloud` | `environment` (default is `sandbox`), `organization` (default is `orgID-stackID`) |
 
 #### Example
 
@@ -466,8 +462,7 @@ func main() {
 	s := v2.New(
 		v2.WithServerIndex(1),
 		v2.WithSecurity(shared.Security{
-			ClientID:     "",
-			ClientSecret: "",
+			ClientID: v2.String(""),
 		}),
 	)
 
@@ -483,6 +478,11 @@ func main() {
 
 ```
 
+#### Variables
+
+Some of the server options above contain variables. If you want to set the values of those variables, the following options are provided for doing so:
+ * `WithEnvironment v2.ServerEnvironment`
+ * `WithOrganization string`
 
 ### Override Server URL Per-Client
 
@@ -501,8 +501,7 @@ func main() {
 	s := v2.New(
 		v2.WithServerURL("http://localhost"),
 		v2.WithSecurity(shared.Security{
-			ClientID:     "",
-			ClientSecret: "",
+			ClientID: v2.String(""),
 		}),
 	)
 
@@ -574,8 +573,7 @@ import (
 func main() {
 	s := v2.New(
 		v2.WithSecurity(shared.Security{
-			ClientID:     "",
-			ClientSecret: "",
+			ClientID: v2.String(""),
 		}),
 	)
 

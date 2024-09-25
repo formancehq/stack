@@ -31,8 +31,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.ActivateConfigRequest{
@@ -90,8 +89,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.ChangeConfigSecretRequest{
@@ -148,8 +146,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.DeactivateConfigRequest{
@@ -203,8 +200,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.DeleteConfigRequest{
@@ -258,8 +254,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.GetManyConfigsRequest{
@@ -322,8 +317,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := shared.ConfigUser{
@@ -383,8 +377,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.TestConfigRequest{

@@ -3,13 +3,14 @@
 package shared
 
 import (
+	"github.com/formancehq/formance-sdk-go/v2/pkg/types"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/utils"
 )
 
 type Security struct {
-	ClientID     string `security:"scheme,type=oauth2,subtype=client_credentials,name=clientID"`
-	ClientSecret string `security:"scheme,type=oauth2,subtype=client_credentials,name=clientSecret"`
-	tokenURL     string `const:"/api/auth/oauth/token"`
+	ClientID     *string `security:"scheme,type=oauth2,subtype=client_credentials,name=clientID"`
+	ClientSecret *string `security:"scheme,type=oauth2,subtype=client_credentials,name=clientSecret"`
+	tokenURL     *string `const:"/api/auth/oauth/token"`
 }
 
 func (s Security) MarshalJSON() ([]byte, error) {
@@ -23,20 +24,20 @@ func (s *Security) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (o *Security) GetClientID() string {
+func (o *Security) GetClientID() *string {
 	if o == nil {
-		return ""
+		return nil
 	}
 	return o.ClientID
 }
 
-func (o *Security) GetClientSecret() string {
+func (o *Security) GetClientSecret() *string {
 	if o == nil {
-		return ""
+		return nil
 	}
 	return o.ClientSecret
 }
 
-func (o *Security) GetTokenURL() string {
-	return "/api/auth/oauth/token"
+func (o *Security) GetTokenURL() *string {
+	return types.String("/api/auth/oauth/token")
 }
