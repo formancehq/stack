@@ -2,6 +2,14 @@ VERSION 0.8
 PROJECT FormanceHQ/stack
 
 IMPORT github.com/formancehq/earthly:tags/v0.15.0 AS core
+IMPORT github.com/formancehq/ledger:main AS ledger
+IMPORT github.com/formancehq/payments:main AS payments
+IMPORT github.com/formancehq/gateway:main AS gateway
+IMPORT github.com/formancehq/auth:main AS auth
+IMPORT github.com/formancehq/search:main AS search
+IMPORT github.com/formancehq/stargate:main AS stargate
+IMPORT github.com/formancehq/webhooks:main AS webhooks
+
 
 sources:
     FROM core+base-image
@@ -22,10 +30,14 @@ build-final-spec:
     COPY releases/openapi-merge.json .
     RUN mkdir ./build
 
-    FOR c IN payments ledger
-        COPY (./components/$c+openapi/openapi.yaml) /src/components/$c/
-    END
-    FOR c IN auth webhooks search wallets reconciliation orchestration gateway
+    COPY (ledger+openapi/openapi.yaml) /src/components/ledger/
+    COPY (payments+openapi/openapi.yaml) /src/components/payments/
+    COPY (gateway+openapi/openapi.yaml) /src/ee/gateway/
+    COPY (auth+openapi/openapi.yaml) /src/ee/auth/
+    COPY (search+openapi/openapi.yaml) /src/ee/search/
+    COPY (webhooks+openapi/openapi.yaml) /src/ee/webhooks/
+
+    FOR c IN wallets reconciliation orchestration
         COPY (./ee/$c+openapi/openapi.yaml) /src/ee/$c/
     END
 

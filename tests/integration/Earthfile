@@ -1,6 +1,13 @@
 VERSION 0.8
 
 IMPORT github.com/formancehq/earthly:tags/v0.15.0 AS core
+IMPORT github.com/formancehq/ledger:main AS ledger
+IMPORT github.com/formancehq/payments:main AS payments
+IMPORT github.com/formancehq/gateway:main AS gateway
+IMPORT github.com/formancehq/auth:main AS auth
+IMPORT github.com/formancehq/search:main AS search
+IMPORT github.com/formancehq/stargate:main AS stargate
+IMPORT github.com/formancehq/webhooks:main AS webhooks
 IMPORT ../.. AS stack
 IMPORT ../../releases AS releases
 
@@ -29,9 +36,13 @@ tests:
     COPY --pass-args (stack+sources/out --LOCATION=go.mod) /src/go.mod
     COPY --pass-args (stack+sources/out --LOCATION=go.sum) /src/go.sum
     COPY --pass-args (stack+sources/out --LOCATION=libs) /src/libs
-    COPY --pass-args (stack+sources/out --LOCATION=components/ledger) /src/components/ledger
-    COPY --pass-args (stack+sources/out --LOCATION=components/payments) /src/components/payments
+    COPY --pass-args (ledger+sources/src) /src/components/ledger
+    COPY --pass-args (payments+sources/src) /src/components/payments
     COPY --pass-args (stack+sources/out --LOCATION=ee) /src/ee
+    COPY --pass-args (gateway+sources/src) /src/ee/gateway/
+    COPY --pass-args (auth+sources/src) /src/ee/auth/
+    COPY --pass-args (search+sources/src) /src/ee/search/
+    COPY --pass-args (webhooks+sources/src) /src/ee/webhooks/
     COPY --pass-args (stack+build-final-spec/latest.json) /src/releases/build/latest.json
     COPY --pass-args (releases+sdk-generate/go) /src/releases/sdks/go
     COPY . /src/tests/integration
@@ -64,9 +75,13 @@ sources:
     WORKDIR src
     COPY --pass-args (stack+sources/out --LOCATION=libs) /src/libs
     COPY --pass-args (releases+sdk-generate/go) /src/releases/sdks/go
-    COPY --pass-args (stack+sources/out --LOCATION=components/ledger) /src/components/ledger
-    COPY --pass-args (stack+sources/out --LOCATION=components/payments) /src/components/payments
+    COPY --pass-args (ledger+sources/src) /src/components/ledger
+    COPY --pass-args (payments+sources/src) /src/components/payments
     COPY --pass-args (stack+sources/out --LOCATION=ee) /src/ee
+    COPY --pass-args (gateway+sources/src) /src/ee/gateway/
+    COPY --pass-args (auth+sources/src) /src/ee/auth/
+    COPY --pass-args (search+sources/src) /src/ee/search/
+    COPY --pass-args (webhooks+sources/src) /src/ee/webhooks/
     COPY --pass-args (stack+sources/out --LOCATION=go.mod) /src/go.mod
     COPY --pass-args (stack+sources/out --LOCATION=go.sum) /src/go.sum
     COPY . /src/tests/integration
