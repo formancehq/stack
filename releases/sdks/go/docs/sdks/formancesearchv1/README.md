@@ -25,8 +25,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := shared.Query{
@@ -90,8 +89,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
 

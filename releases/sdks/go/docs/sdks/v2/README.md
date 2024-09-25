@@ -51,8 +51,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2AddMetadataOnTransactionRequest{
@@ -111,8 +110,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2AddMetadataToAccountRequest{
@@ -171,8 +169,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2CountAccountsRequest{
@@ -226,8 +223,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2CountTransactionsRequest{
@@ -281,8 +277,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2CreateBulkRequest{
@@ -343,8 +338,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2CreateLedgerRequest{
@@ -404,8 +398,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2CreateTransactionRequest{
@@ -487,8 +480,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2DeleteAccountMetadataRequest{
@@ -544,8 +536,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2DeleteLedgerMetadataRequest{
@@ -601,8 +592,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2DeleteTransactionMetadataRequest{
@@ -658,8 +648,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2ExportLogsRequest{
@@ -712,8 +701,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2GetAccountRequest{
@@ -768,8 +756,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2GetBalancesAggregatedRequest{
@@ -822,8 +809,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
 
@@ -874,8 +860,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2GetLedgerRequest{
@@ -929,8 +914,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2GetLedgerInfoRequest{
@@ -985,8 +969,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2GetTransactionRequest{
@@ -1041,8 +1024,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2GetVolumesWithBalancesRequest{
@@ -1097,8 +1079,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2ImportLogsRequest{
@@ -1152,8 +1133,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2ListAccountsRequest{
@@ -1209,8 +1189,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2ListLedgersRequest{
@@ -1265,8 +1244,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2ListLogsRequest{
@@ -1322,8 +1300,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2ListTransactionsRequest{
@@ -1380,8 +1357,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2ReadStatsRequest{
@@ -1436,8 +1412,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2RevertTransactionRequest{
@@ -1492,8 +1467,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.V2UpdateLedgerMetadataRequest{

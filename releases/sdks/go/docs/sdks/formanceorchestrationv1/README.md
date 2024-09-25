@@ -41,8 +41,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.CancelEventRequest{
@@ -95,8 +94,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
 
@@ -147,8 +145,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
 
@@ -200,8 +197,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.DeleteTriggerRequest{
@@ -255,8 +251,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.DeleteWorkflowRequest{
@@ -310,8 +305,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.GetInstanceRequest{
@@ -365,8 +359,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.GetInstanceHistoryRequest{
@@ -420,8 +413,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.GetInstanceStageHistoryRequest{
@@ -476,8 +468,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.GetWorkflowRequest{
@@ -531,8 +522,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.ListInstancesRequest{
@@ -587,8 +577,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.ListTriggersRequest{}
@@ -640,8 +629,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.ListTriggersOccurrencesRequest{
@@ -694,8 +682,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
 
@@ -745,8 +732,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
 
@@ -797,8 +783,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.ReadTriggerRequest{
@@ -852,8 +837,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.RunWorkflowRequest{
@@ -907,8 +891,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.SendEventRequest{

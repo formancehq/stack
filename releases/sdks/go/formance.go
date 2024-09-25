@@ -5,6 +5,7 @@ package v2
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/cenkalti/backoff/v4"
 	"github.com/formancehq/formance-sdk-go/v2/internal/hooks"
@@ -23,8 +24,8 @@ import (
 var ServerList = []string{
 	// local server
 	"http://localhost",
-	// sandbox server
-	"https://{stack}.sandbox.formance.cloud",
+	// A per-organization and per-environment API
+	"https://{organization}.{environment}.formance.cloud",
 }
 
 // HTTPClient provides an interface for suplying the SDK with a custom HTTP client
@@ -55,6 +56,7 @@ type sdkConfiguration struct {
 	Security          func(context.Context) (interface{}, error)
 	ServerURL         string
 	ServerIndex       int
+	ServerDefaults    []map[string]string
 	Language          string
 	OpenAPIDocVersion string
 	SDKVersion        string
@@ -70,7 +72,7 @@ func (c *sdkConfiguration) GetServerDetails() (string, map[string]string) {
 		return c.ServerURL, nil
 	}
 
-	return ServerList[c.ServerIndex], nil
+	return ServerList[c.ServerIndex], c.ServerDefaults[c.ServerIndex]
 }
 
 // Formance Stack API: Open, modular foundation for unique payments flows
@@ -129,6 +131,62 @@ func WithServerIndex(serverIndex int) SDKOption {
 	}
 }
 
+// ServerEnvironment - The environment name. Defaults to the production environment.
+type ServerEnvironment string
+
+const (
+	ServerEnvironmentSandbox ServerEnvironment = "sandbox"
+	ServerEnvironmentEuWest1 ServerEnvironment = "eu-west-1"
+	ServerEnvironmentUsEast1 ServerEnvironment = "us-east-1"
+)
+
+func (e ServerEnvironment) ToPointer() *ServerEnvironment {
+	return &e
+}
+func (e *ServerEnvironment) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "sandbox":
+		fallthrough
+	case "eu-west-1":
+		fallthrough
+	case "us-east-1":
+		*e = ServerEnvironment(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for ServerEnvironment: %v", v)
+	}
+}
+
+// WithEnvironment allows setting the environment variable for url substitution
+func WithEnvironment(environment ServerEnvironment) SDKOption {
+	return func(sdk *Formance) {
+		for idx := range sdk.sdkConfiguration.ServerDefaults {
+			if _, ok := sdk.sdkConfiguration.ServerDefaults[idx]["environment"]; !ok {
+				continue
+			}
+
+			sdk.sdkConfiguration.ServerDefaults[idx]["environment"] = fmt.Sprintf("%v", environment)
+		}
+	}
+}
+
+// WithOrganization allows setting the organization variable for url substitution
+func WithOrganization(organization string) SDKOption {
+	return func(sdk *Formance) {
+		for idx := range sdk.sdkConfiguration.ServerDefaults {
+			if _, ok := sdk.sdkConfiguration.ServerDefaults[idx]["organization"]; !ok {
+				continue
+			}
+
+			sdk.sdkConfiguration.ServerDefaults[idx]["organization"] = fmt.Sprintf("%v", organization)
+		}
+	}
+}
+
 // WithClient allows the overriding of the default HTTP client used by the SDK
 func WithClient(client HTTPClient) SDKOption {
 	return func(sdk *Formance) {
@@ -174,7 +232,14 @@ func New(opts ...SDKOption) *Formance {
 			SDKVersion:        "v0.0.0",
 			GenVersion:        "2.384.1",
 			UserAgent:         "speakeasy-sdk/go v0.0.0 2.384.1 v0.0.0 github.com/formancehq/formance-sdk-go/v2",
-			Hooks:             hooks.New(),
+			ServerDefaults: []map[string]string{
+				{},
+				{
+					"environment":  "sandbox",
+					"organization": "orgID-stackID",
+				},
+			},
+			Hooks: hooks.New(),
 		},
 	}
 	for _, opt := range opts {

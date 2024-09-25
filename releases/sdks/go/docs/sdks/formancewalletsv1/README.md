@@ -41,8 +41,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.ConfirmHoldRequest{
@@ -100,8 +99,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.CreateBalanceRequest{
@@ -155,8 +153,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.CreateWalletRequest{}
@@ -209,8 +206,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.CreditWalletRequest{
@@ -282,8 +278,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.DebitWalletRequest{
@@ -347,8 +342,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.GetBalanceRequest{
@@ -403,8 +397,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.GetHoldRequest{
@@ -458,8 +451,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.GetHoldsRequest{
@@ -516,8 +508,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.GetTransactionsRequest{
@@ -573,8 +564,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.GetWalletRequest{
@@ -628,8 +618,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.GetWalletSummaryRequest{
@@ -683,8 +672,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.ListBalancesRequest{
@@ -737,8 +725,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.ListWalletsRequest{
@@ -798,8 +785,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.UpdateWalletRequest{
@@ -853,8 +839,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
     request := operations.VoidHoldRequest{
@@ -907,8 +892,7 @@ import(
 func main() {
     s := v2.New(
         v2.WithSecurity(shared.Security{
-            ClientID: "",
-            ClientSecret: "",
+            ClientID: v2.String(""),
         }),
     )
 

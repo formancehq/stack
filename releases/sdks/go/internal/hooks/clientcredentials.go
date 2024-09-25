@@ -197,10 +197,14 @@ func (c *clientCredentialsHook) getCredentials(ctx context.Context, source func(
 		return nil, fmt.Errorf("unexpected security type: %T", sec)
 	}
 
+	if security.ClientID == nil || security.ClientSecret == nil {
+		return nil, nil
+	}
+
 	return &credentials{
-		ClientID:     security.ClientID,
-		ClientSecret: security.ClientSecret,
-		TokenURL:     security.GetTokenURL(),
+		ClientID:     *security.ClientID,
+		ClientSecret: *security.ClientSecret,
+		TokenURL:     *security.GetTokenURL(),
 	}, nil
 }
 
