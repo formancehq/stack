@@ -40,7 +40,7 @@ var _ = Describe("Stripe Plugin Balances", func() {
 			accRef = "abc"
 			sampleBalance = &stripesdk.Balance{
 				Available: []*stripesdk.Amount{
-					&stripesdk.Amount{
+					{
 						Currency: stripesdk.CurrencyAED,
 						Amount:   49999,
 					},
