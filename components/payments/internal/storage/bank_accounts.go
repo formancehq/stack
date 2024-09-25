@@ -47,18 +47,22 @@ func (s *store) BankAccountsUpsert(ctx context.Context, ba models.BankAccount) e
 
 	toInsert := fromBankAccountModels(ba)
 	// Insert or update the bank account
-	var idsUpdated []uuid.UUID
-	err = tx.NewInsert().
+	res, err := tx.NewInsert().
 		Model(&toInsert).
 		Column("id", "created_at", "name", "country", "metadata").
 		On("CONFLICT (id) DO NOTHING").
 		Returning("id").
-		Scan(ctx, &idsUpdated)
+		Exec(ctx)
 	if err != nil {
 		return e("insert bank account", err)
 	}
 
-	if len(idsUpdated) > 0 {
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return e("insert bank account", err)
+	}
+
+	if rowsAffected > 0 {
 		_, err = tx.NewUpdate().
 			Model((*bankAccount)(nil)).
 			Set("account_number = pgp_sym_encrypt(?::TEXT, ?, ?)", toInsert.AccountNumber, s.configEncryptionKey, encryptionOptions).

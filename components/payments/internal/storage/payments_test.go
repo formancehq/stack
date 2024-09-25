@@ -229,13 +229,8 @@ func TestPaymentsUpsert(t *testing.T) {
 		p := models.Payment{
 			ID:            pID1,
 			ConnectorID:   defaultConnector.ID,
-			Reference:     "test1",
-			CreatedAt:     now.Add(-20 * time.Minute).UTC().Time,
-			Type:          models.PAYMENT_TYPE_TRANSFER,
-			InitialAmount: big.NewInt(100),
-			Amount:        big.NewInt(100),
-			Asset:         "USD/2",
-			Scheme:        models.PAYMENT_SCHEME_OTHER,
+			InitialAmount: big.NewInt(0),
+			Amount:        big.NewInt(0),
 			Adjustments: []models.PaymentAdjustment{
 				{
 					ID: models.PaymentAdjustmentID{

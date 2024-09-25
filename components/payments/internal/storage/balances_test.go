@@ -94,7 +94,7 @@ func TestBalancesUpsert(t *testing.T) {
 			{
 				AccountID:     defaultAccounts[2].ID,
 				CreatedAt:     now.Add(-59 * time.Minute).UTC().Time,
-				LastUpdatedAt: now.Add(-20 * time.Minute).UTC().Time,
+				LastUpdatedAt: now.Add(-20 * time.Minute).UTC().Time, // Last updated at should be updated to the new balance value
 				Asset:         "USD/2",
 				Balance:       big.NewInt(100),
 			},
@@ -125,6 +125,7 @@ func TestBalancesUpsert(t *testing.T) {
 		)
 
 		expectedBalances := []models.Balance{
+			// We should have one more balance with the new balance value
 			{
 				AccountID:     defaultAccounts[0].ID,
 				CreatedAt:     now.Add(-20 * time.Minute).UTC().Time,
@@ -132,6 +133,7 @@ func TestBalancesUpsert(t *testing.T) {
 				Asset:         "USD/2",
 				Balance:       big.NewInt(200),
 			},
+			// and the old balance should have its updated at to the new balance created at
 			{
 				AccountID:     defaultAccounts[0].ID,
 				CreatedAt:     now.Add(-60 * time.Minute).UTC().Time,
