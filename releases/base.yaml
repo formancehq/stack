@@ -25,11 +25,19 @@ info:
 servers:
 - url: http://localhost
   description: local server
-- url: https://{stack}.sandbox.formance.cloud
-  description: sandbox server
-
-#security: {}
-#  - Authorization: []
+- url: https://{organization}.{environment}.formance.cloud
+  description: A per-organization and per-environment API
+  variables:
+    organization:
+      description: The organization name. Defaults to a generic organization.
+      default: orgID-stackID
+    environment:
+      description: The environment name. Defaults to the production environment.
+      default: sandbox
+      enum:
+        - sandbox
+        - eu-west-1
+        - us-east-1
 
 tags:
   - name: ledger.v1
@@ -46,6 +54,13 @@ tags:
 components:
   securitySchemes:
     Authorization:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: '/api/auth/oauth/token'
+          refreshUrl: '/api/auth/oauth/token'
+          scopes: {}
+    NoAuthorization:
       type: oauth2
       flows:
         clientCredentials:

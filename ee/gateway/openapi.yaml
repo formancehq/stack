@@ -7,6 +7,9 @@ paths:
     get:
       summary: Show stack version information
       operationId: getVersions
+      security:
+        - NoAuthorization: []
+        - Authorization: []
       responses:
         "200":
           description: OK
