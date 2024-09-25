@@ -91,4 +91,4 @@ require (
 
 replace github.com/formancehq/formance-sdk-go/v2 => ../../releases/sdks/go
 
-replace github.com/formancehq/ledger => ../../components/ledger
+replace github.com/formancehq/ledger => github.com/formancehq/ledger v0.0.0-20240925161848-3cf78b93df02
