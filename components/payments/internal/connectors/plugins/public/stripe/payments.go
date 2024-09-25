@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"math/big"
 	"strings"
 	"time"
@@ -17,8 +18,8 @@ import (
 var (
 	ErrInvalidPaymentSource       = errors.New("payment source is invalid")
 	ErrUnsupportedAdjustment      = errors.New("unsupported adjustment")
-	ErrUnsupportedFee             = errors.New("unsupported fee")
 	ErrUnsupportedTransactionType = errors.New("unsupported TransactionType")
+	ErrUnsupportedCurrency        = errors.New("unsupported currency")
 )
 
 type PaymentState struct {
@@ -54,7 +55,12 @@ func (p *Plugin) fetchNextPayments(ctx context.Context, req models.FetchNextPaym
 		if err != nil {
 			return models.FetchNextPaymentsResponse{}, fmt.Errorf("failed to translate payment: %w", err)
 		}
-		payments = append(payments, payment)
+
+		// skip unsupported payments
+		if payment == nil {
+			continue
+		}
+		payments = append(payments, *payment)
 	}
 
 	payload, err := json.Marshal(newState)
@@ -68,14 +74,14 @@ func (p *Plugin) fetchNextPayments(ctx context.Context, req models.FetchNextPaym
 	}, nil
 }
 
-func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripesdk.BalanceTransaction) (payment models.PSPPayment, err error) {
+func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripesdk.BalanceTransaction) (payment *models.PSPPayment, err error) {
 	if balanceTransaction.Source == nil {
-		return payment, fmt.Errorf("payment source is invalid")
+		return nil, fmt.Errorf("payment source is invalid")
 	}
 
 	rawData, err := json.Marshal(balanceTransaction)
 	if err != nil {
-		return payment, fmt.Errorf("failed to marshal raw data: %w", err)
+		return nil, fmt.Errorf("failed to marshal raw data: %w", err)
 	}
 	metadata := make(map[string]string)
 
@@ -84,7 +90,7 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 		transactionCurrency := strings.ToUpper(string(balanceTransaction.Source.Charge.Currency))
 		_, ok := supportedCurrenciesWithDecimal[transactionCurrency]
 		if !ok {
-			return payment, fmt.Errorf("unsupported currency: %q", transactionCurrency)
+			return nil, fmt.Errorf("%w %q", ErrUnsupportedCurrency, transactionCurrency)
 		}
 
 		appendMetadata(metadata, balanceTransaction.Source.Charge.Metadata)
@@ -92,13 +98,13 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 			appendMetadata(metadata, balanceTransaction.Source.Charge.PaymentIntent.Metadata)
 		}
 
-		payment = models.PSPPayment{
+		payment = &models.PSPPayment{
 			Reference:                   balanceTransaction.ID,
 			Type:                        models.PAYMENT_TYPE_PAYIN,
 			Status:                      models.PAYMENT_STATUS_SUCCEEDED,
 			Amount:                      big.NewInt(balanceTransaction.Source.Charge.Amount - balanceTransaction.Source.Charge.AmountRefunded),
 			Asset:                       currency.FormatAsset(supportedCurrenciesWithDecimal, transactionCurrency),
-			Scheme:                      toPaymentScheme(balanceTransaction.Source.Charge.PaymentMethodDetails.Card.Brand),
+			Scheme:                      detailsToPaymentScheme(balanceTransaction.Source.Charge.PaymentMethodDetails),
 			CreatedAt:                   time.Unix(balanceTransaction.Created, 0),
 			DestinationAccountReference: accountRef,
 			Metadata:                    metadata,
@@ -117,7 +123,11 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 		transactionCurrency := strings.ToUpper(string(balanceTransaction.Source.Refund.Currency))
 		_, ok := supportedCurrenciesWithDecimal[transactionCurrency]
 		if !ok {
-			return payment, fmt.Errorf("unsupported currency: %q", transactionCurrency)
+			return nil, fmt.Errorf("%w %q", ErrUnsupportedCurrency, transactionCurrency)
+		}
+
+		if balanceTransaction.Source.Refund.Charge == nil {
+			return nil, fmt.Errorf("refund charge missing from refund payload: %q", balanceTransaction.ID)
 		}
 
 		appendMetadata(metadata, balanceTransaction.Source.Refund.Metadata)
@@ -125,14 +135,14 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 			appendMetadata(metadata, balanceTransaction.Source.Refund.PaymentIntent.Metadata)
 		}
 
-		payment = models.PSPPayment{
+		payment = &models.PSPPayment{
 			// ID of original transaction to ensure the refund is appended to the original record
 			Reference:                   balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
 			Type:                        models.PAYMENT_TYPE_PAYIN,
 			Status:                      models.PAYMENT_STATUS_REFUNDED,
 			Amount:                      big.NewInt(balanceTransaction.Source.Refund.Amount),
 			Asset:                       currency.FormatAsset(supportedCurrenciesWithDecimal, transactionCurrency),
-			Scheme:                      toPaymentScheme(balanceTransaction.Source.Refund.Charge.PaymentMethodDetails.Card.Brand),
+			Scheme:                      detailsToPaymentScheme(balanceTransaction.Source.Refund.Charge.PaymentMethodDetails),
 			CreatedAt:                   time.Unix(balanceTransaction.Created, 0),
 			DestinationAccountReference: accountRef,
 			Raw:                         rawData,
@@ -148,7 +158,11 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 		transactionCurrency := strings.ToUpper(string(balanceTransaction.Source.Refund.Currency))
 		_, ok := supportedCurrenciesWithDecimal[transactionCurrency]
 		if !ok {
-			return payment, fmt.Errorf("unsupported currency: %q", transactionCurrency)
+			return nil, fmt.Errorf("%w %q", ErrUnsupportedCurrency, transactionCurrency)
+		}
+
+		if balanceTransaction.Source.Refund.Charge == nil {
+			return nil, fmt.Errorf("refund charge missing from refund payload: %q", balanceTransaction.ID)
 		}
 
 		appendMetadata(metadata, balanceTransaction.Source.Refund.Metadata)
@@ -156,14 +170,14 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 			appendMetadata(metadata, balanceTransaction.Source.Refund.PaymentIntent.Metadata)
 		}
 
-		payment = models.PSPPayment{
+		payment = &models.PSPPayment{
 			// ID of original transaction to ensure the refund is appended to the original record
 			Reference:                   balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
 			Type:                        models.PAYMENT_TYPE_PAYIN,
 			Status:                      models.PAYMENT_STATUS_REFUNDED_FAILURE,
 			Amount:                      big.NewInt(balanceTransaction.Source.Refund.Amount),
 			Asset:                       currency.FormatAsset(supportedCurrenciesWithDecimal, transactionCurrency),
-			Scheme:                      toPaymentScheme(balanceTransaction.Source.Refund.Charge.PaymentMethodDetails.Card.Brand),
+			Scheme:                      detailsToPaymentScheme(balanceTransaction.Source.Refund.Charge.PaymentMethodDetails),
 			CreatedAt:                   time.Unix(balanceTransaction.Created, 0),
 			DestinationAccountReference: accountRef,
 			Raw:                         rawData,
@@ -174,7 +188,7 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 		transactionCurrency := strings.ToUpper(string(balanceTransaction.Source.Charge.Currency))
 		_, ok := supportedCurrenciesWithDecimal[transactionCurrency]
 		if !ok {
-			return payment, fmt.Errorf("unsupported currency: %q", transactionCurrency)
+			return nil, fmt.Errorf("%w %q", ErrUnsupportedCurrency, transactionCurrency)
 		}
 
 		appendMetadata(metadata, balanceTransaction.Source.Charge.Metadata)
@@ -182,7 +196,7 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 			appendMetadata(metadata, balanceTransaction.Source.Charge.PaymentIntent.Metadata)
 		}
 
-		payment = models.PSPPayment{
+		payment = &models.PSPPayment{
 			Reference:                   balanceTransaction.ID,
 			Type:                        models.PAYMENT_TYPE_PAYIN,
 			Status:                      models.PAYMENT_STATUS_SUCCEEDED,
@@ -205,7 +219,11 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 		transactionCurrency := strings.ToUpper(string(balanceTransaction.Source.Refund.Currency))
 		_, ok := supportedCurrenciesWithDecimal[transactionCurrency]
 		if !ok {
-			return payment, fmt.Errorf("unsupported currency: %q", transactionCurrency)
+			return nil, fmt.Errorf("%w %q", ErrUnsupportedCurrency, transactionCurrency)
+		}
+
+		if balanceTransaction.Source.Refund.Charge == nil {
+			return nil, fmt.Errorf("refund charge missing from payment refund payload: %q", balanceTransaction.ID)
 		}
 
 		appendMetadata(metadata, balanceTransaction.Source.Refund.Charge.Metadata)
@@ -213,7 +231,7 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 			appendMetadata(balanceTransaction.Source.Refund.Charge.PaymentIntent.Metadata)
 		}
 
-		payment = models.PSPPayment{
+		payment = &models.PSPPayment{
 			// ID of original transaction to ensure the refund is appended to the original record
 			Reference:                   balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
 			Type:                        models.PAYMENT_TYPE_PAYIN,
@@ -237,7 +255,11 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 		transactionCurrency := strings.ToUpper(string(balanceTransaction.Source.Refund.Currency))
 		_, ok := supportedCurrenciesWithDecimal[transactionCurrency]
 		if !ok {
-			return payment, fmt.Errorf("unsupported currency: %q", transactionCurrency)
+			return nil, fmt.Errorf("%w %q", ErrUnsupportedCurrency, transactionCurrency)
+		}
+
+		if balanceTransaction.Source.Refund.Charge == nil {
+			return nil, fmt.Errorf("refund charge missing from payment refund failure payload: %q", balanceTransaction.ID)
 		}
 
 		appendMetadata(metadata, balanceTransaction.Source.Refund.Charge.Metadata)
@@ -245,7 +267,7 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 			appendMetadata(metadata, balanceTransaction.Source.Refund.Charge.PaymentIntent.Metadata)
 		}
 
-		payment = models.PSPPayment{
+		payment = &models.PSPPayment{
 			// ID of original transaction to ensure the refund is appended to the original record
 			Reference:                   balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
 			Type:                        models.PAYMENT_TYPE_PAYIN,
@@ -263,12 +285,12 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 		transactionCurrency := strings.ToUpper(string(balanceTransaction.Source.Payout.Currency))
 		_, ok := supportedCurrenciesWithDecimal[transactionCurrency]
 		if !ok {
-			return payment, fmt.Errorf("unsupported currency: %q", transactionCurrency)
+			return nil, fmt.Errorf("%w %q", ErrUnsupportedCurrency, transactionCurrency)
 		}
 
 		appendMetadata(metadata, balanceTransaction.Source.Payout.Metadata)
 
-		payment = models.PSPPayment{
+		payment = &models.PSPPayment{
 			Reference: balanceTransaction.ID,
 			Type:      models.PAYMENT_TYPE_PAYOUT,
 			Status:    convertPayoutStatus(balanceTransaction.Source.Payout.Status),
@@ -279,9 +301,8 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 				case stripesdk.PayoutTypeBank:
 					return models.PAYMENT_SCHEME_SEPA_CREDIT
 				case stripesdk.PayoutTypeCard:
-					return toPaymentScheme(balanceTransaction.Source.Charge.PaymentMethodDetails.Card.Brand)
+					return destinationToPaymentScheme(balanceTransaction.Source.Payout.Destination)
 				}
-
 				return models.PAYMENT_SCHEME_UNKNOWN
 			}(),
 			CreatedAt:              time.Unix(balanceTransaction.Created, 0),
@@ -294,7 +315,7 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 		transactionCurrency := strings.ToUpper(string(balanceTransaction.Source.Payout.Currency))
 		_, ok := supportedCurrenciesWithDecimal[transactionCurrency]
 		if !ok {
-			return payment, fmt.Errorf("unsupported currency: %q", transactionCurrency)
+			return nil, fmt.Errorf("%w %q", ErrUnsupportedCurrency, transactionCurrency)
 		}
 
 		status := models.PAYMENT_STATUS_FAILED
@@ -303,7 +324,7 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 		}
 
 		appendMetadata(metadata, balanceTransaction.Source.Payout.Metadata)
-		payment = models.PSPPayment{
+		payment = &models.PSPPayment{
 			// ID of original transaction to ensure the refund is appended to the original record
 			Reference: balanceTransaction.Source.Payout.BalanceTransaction.ID,
 			Type:      models.PAYMENT_TYPE_PAYOUT,
@@ -315,7 +336,7 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 				case stripesdk.PayoutTypeBank:
 					return models.PAYMENT_SCHEME_SEPA_CREDIT
 				case stripesdk.PayoutTypeCard:
-					return toPaymentScheme(balanceTransaction.Source.Charge.PaymentMethodDetails.Card.Brand)
+					return destinationToPaymentScheme(balanceTransaction.Source.Payout.Destination)
 				}
 				return models.PAYMENT_SCHEME_UNKNOWN
 			}(),
@@ -329,11 +350,11 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 		transactionCurrency := strings.ToUpper(string(balanceTransaction.Source.Transfer.Currency))
 		_, ok := supportedCurrenciesWithDecimal[transactionCurrency]
 		if !ok {
-			return payment, fmt.Errorf("unsupported currency: %q", transactionCurrency)
+			return nil, fmt.Errorf("%w %q", ErrUnsupportedCurrency, transactionCurrency)
 		}
 
 		appendMetadata(metadata, balanceTransaction.Source.Transfer.Metadata)
-		payment = models.PSPPayment{
+		payment = &models.PSPPayment{
 			Reference:              balanceTransaction.ID,
 			Type:                   models.PAYMENT_TYPE_TRANSFER,
 			Status:                 models.PAYMENT_STATUS_SUCCEEDED,
@@ -354,11 +375,11 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 		transactionCurrency := strings.ToUpper(string(balanceTransaction.Source.Transfer.Currency))
 		_, ok := supportedCurrenciesWithDecimal[transactionCurrency]
 		if !ok {
-			return payment, fmt.Errorf("unsupported currency: %q", transactionCurrency)
+			return nil, fmt.Errorf("%w %q", ErrUnsupportedCurrency, transactionCurrency)
 		}
 
 		appendMetadata(metadata, balanceTransaction.Source.Transfer.Metadata)
-		payment = models.PSPPayment{
+		payment = &models.PSPPayment{
 			// ID of original transaction to ensure the refund is appended to the original record
 			Reference:              balanceTransaction.Source.Transfer.BalanceTransaction.ID,
 			Type:                   models.PAYMENT_TYPE_TRANSFER,
@@ -380,7 +401,7 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 		transactionCurrency := strings.ToUpper(string(balanceTransaction.Source.Transfer.Currency))
 		_, ok := supportedCurrenciesWithDecimal[transactionCurrency]
 		if !ok {
-			return payment, fmt.Errorf("unsupported currency: %q", transactionCurrency)
+			return nil, fmt.Errorf("%w %q", ErrUnsupportedCurrency, transactionCurrency)
 		}
 
 		status := models.PAYMENT_STATUS_FAILED
@@ -389,7 +410,7 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 		}
 
 		appendMetadata(metadata, balanceTransaction.Source.Transfer.Metadata)
-		payment = models.PSPPayment{
+		payment = &models.PSPPayment{
 			// ID of original transaction to ensure the refund is appended to the original record
 			Reference:              balanceTransaction.Source.Transfer.BalanceTransaction.ID,
 			Type:                   models.PAYMENT_TYPE_TRANSFER,
@@ -410,17 +431,17 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 	case stripesdk.BalanceTransactionTypeAdjustment:
 		if balanceTransaction.Source.Dispute == nil {
 			// We are only handling dispute adjustments
-			return payment, ErrUnsupportedAdjustment
+			return nil, ErrUnsupportedAdjustment
 		}
 
 		transactionCurrency := strings.ToUpper(string(balanceTransaction.Source.Dispute.Charge.Currency))
 		_, ok := supportedCurrenciesWithDecimal[transactionCurrency]
 		if !ok {
-			return payment, fmt.Errorf("unsupported currency: %q", transactionCurrency)
+			return nil, fmt.Errorf("%w %q", ErrUnsupportedCurrency, transactionCurrency)
 		}
 
 		disputeStatus := convertDisputeStatus(balanceTransaction.Source.Dispute.Status)
-		paymentStatus := models.PAYMENT_STATUS_PENDING
+		paymentStatus := models.PAYMENT_STATUS_DISPUTE
 		switch disputeStatus {
 		case models.PAYMENT_STATUS_DISPUTE_WON:
 			paymentStatus = models.PAYMENT_STATUS_SUCCEEDED
@@ -433,24 +454,24 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 			appendMetadata(metadata, balanceTransaction.Source.Dispute.Charge.PaymentIntent.Metadata)
 		}
 
-		payment = models.PSPPayment{
+		payment = &models.PSPPayment{
 			// ID of original transaction to ensure the refund is appended to the original record
 			Reference:                   balanceTransaction.Source.Dispute.Charge.BalanceTransaction.ID,
 			Type:                        models.PAYMENT_TYPE_PAYIN,
 			Status:                      paymentStatus, // Dispute is occuring, we don't know the outcome yet
 			Amount:                      big.NewInt(balanceTransaction.Amount),
 			Asset:                       currency.FormatAsset(supportedCurrenciesWithDecimal, transactionCurrency),
-			Scheme:                      toPaymentScheme(balanceTransaction.Source.Dispute.Charge.PaymentMethodDetails.Card.Brand),
+			Scheme:                      detailsToPaymentScheme(balanceTransaction.Source.Dispute.Charge.PaymentMethodDetails),
 			CreatedAt:                   time.Unix(balanceTransaction.Created, 0),
 			DestinationAccountReference: accountRef,
 			Raw:                         rawData,
 			Metadata:                    metadata,
 		}
 
-	case stripesdk.BalanceTransactionTypeStripeFee:
-		return payment, ErrUnsupportedFee
 	default:
-		return payment, ErrUnsupportedTransactionType
+		// TODO (laouji): standardize logging
+		log.Printf("stripe fetch payments task %s %q", ErrUnsupportedTransactionType, balanceTransaction.Type)
+		return nil, nil
 	}
 
 	return payment, err
@@ -495,9 +516,37 @@ func appendMetadata(s map[string]string, vs ...map[string]string) {
 	}
 }
 
-func toPaymentScheme(brand stripesdk.PaymentMethodCardBrand) models.PaymentScheme {
+func detailsToPaymentScheme(details *stripesdk.ChargePaymentMethodDetails) models.PaymentScheme {
+	if details == nil || details.Card == nil {
+		return models.PAYMENT_SCHEME_UNKNOWN
+	}
 	scheme, _ := models.PaymentSchemeFromString(
-		fmt.Sprintf("CARD_%s", strings.ToUpper(string(brand))),
+		fmt.Sprintf("CARD_%s", strings.ToUpper(string(details.Card.Brand))),
 	)
 	return scheme
+}
+
+func destinationToPaymentScheme(dest *stripesdk.PayoutDestination) models.PaymentScheme {
+	if dest == nil || dest.Card == nil {
+		return models.PAYMENT_SCHEME_UNKNOWN
+	}
+
+	switch dest.Card.Brand {
+	case stripesdk.CardBrandAmericanExpress:
+		return models.PAYMENT_SCHEME_CARD_AMEX
+	case stripesdk.CardBrandDiscover:
+		return models.PAYMENT_SCHEME_CARD_DISCOVER
+	case stripesdk.CardBrandDinersClub:
+		return models.PAYMENT_SCHEME_CARD_DINERS
+	case stripesdk.CardBrandJCB:
+		return models.PAYMENT_SCHEME_CARD_JCB
+	case stripesdk.CardBrandMasterCard:
+		return models.PAYMENT_SCHEME_CARD_MASTERCARD
+	case stripesdk.CardBrandUnionPay:
+		return models.PAYMENT_SCHEME_CARD_UNION_PAY
+	case stripesdk.CardBrandVisa:
+		return models.PAYMENT_SCHEME_CARD_VISA
+	default:
+		return models.PAYMENT_SCHEME_UNKNOWN
+	}
 }
