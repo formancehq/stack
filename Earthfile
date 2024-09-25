@@ -114,7 +114,7 @@ staging-application-set:
 
     WAIT
         FOR component IN $(cd ./components && ls -d */ | sed 's/.$//')
-            IF [ "$component" != "operator"  ]  && [ "$component" != "fctl" ]
+            IF [ "$component" != "operator"  ]
                 SET PARAMETERS="$PARAMETERS --parameter versions.files.default.$component=$TAG"
             END
         END
