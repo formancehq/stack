@@ -2,6 +2,7 @@ VERSION 0.8
 PROJECT FormanceHQ/stack
 
 IMPORT github.com/formancehq/earthly:tags/v0.15.0 AS core
+IMPORT github.com/formancehq/ledger:main AS ledger
 
 sources:
     FROM core+base-image
@@ -22,13 +23,13 @@ build-final-spec:
     COPY releases/openapi-merge.json .
     RUN mkdir ./build
 
-    FOR c IN payments ledger
+    COPY (ledger+openapi/openapi.yaml) /src/components/ledger/
+    FOR c IN payments
         COPY (./components/$c+openapi/openapi.yaml) /src/components/$c/
     END
     FOR c IN auth webhooks search wallets reconciliation orchestration gateway
         COPY (./ee/$c+openapi/openapi.yaml) /src/ee/$c/
     END
-
     RUN npm run build
     RUN jq -s '.[0] * .[1]' build/generate.json openapi-overlay.json > build/latest.json
     ARG version=v0.0.0

@@ -273,7 +273,7 @@ require (
 replace (
 	github.com/formancehq/auth => ../../ee/auth
 	github.com/formancehq/formance-sdk-go/v2 => ../../releases/sdks/go
-	github.com/formancehq/ledger => ../../components/ledger
+	github.com/formancehq/ledger => github.com/formancehq/ledger v0.0.0-20240925161848-3cf78b93df02
 	github.com/formancehq/orchestration => ../../ee/orchestration
 	github.com/formancehq/payments => ../../components/payments
 	github.com/formancehq/payments/genericclient => ../../components/payments/cmd/connectors/internal/connectors/generic/client/generated
