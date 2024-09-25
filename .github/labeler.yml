@@ -12,9 +12,6 @@ github:
     - any-glob-to-any-file: ".github/*"
 
 # Apps
-'components/fctl':
-  - changed-files:
-    - any-glob-to-any-file: "components/fctl/*"
 'components/ledger':
   - changed-files:
     - any-glob-to-any-file: "components/ledger/*"

@@ -41,7 +41,6 @@ docs/build
 # Components
 agent
 auth
-fctl
 gateway
 ledger
 operator
