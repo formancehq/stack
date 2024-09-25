@@ -115,14 +115,15 @@ func transactionToPayment(from client.Payment) (*models.PSPPayment, error) {
 	}
 
 	payment := models.PSPPayment{
-		Reference: from.Id,
-		CreatedAt: time.Unix(from.CreationDate, 0),
-		Type:      paymentType,
-		Amount:    &amount,
-		Asset:     currency.FormatAsset(supportedCurrenciesWithDecimal, from.DebitedFunds.Currency),
-		Scheme:    models.PAYMENT_SCHEME_OTHER,
-		Status:    paymentStatus,
-		Raw:       raw,
+		OriginalReference: from.Id,
+		Reference:         from.Id,
+		CreatedAt:         time.Unix(from.CreationDate, 0),
+		Type:              paymentType,
+		Amount:            &amount,
+		Asset:             currency.FormatAsset(supportedCurrenciesWithDecimal, from.DebitedFunds.Currency),
+		Scheme:            models.PAYMENT_SCHEME_OTHER,
+		Status:            paymentStatus,
+		Raw:               raw,
 	}
 
 	if from.DebitedWalletID != "" {

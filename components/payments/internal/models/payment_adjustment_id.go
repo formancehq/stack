@@ -11,7 +11,8 @@ import (
 )
 
 type PaymentAdjustmentID struct {
-	PaymentID
+	PaymentID PaymentID
+	Reference string
 	CreatedAt time.Time
 	Status    PaymentStatus
 }

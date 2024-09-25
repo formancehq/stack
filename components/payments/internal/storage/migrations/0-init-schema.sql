@@ -135,6 +135,7 @@ create table if not exists payment_adjustments (
     -- Mandatory fields
     id          varchar not null,
     payment_id  varchar not null,
+    reference   text not null,
     created_at  timestamp without time zone not null,
     status      text not null,
     raw         json not null,

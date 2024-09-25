@@ -114,14 +114,15 @@ func transactionToPayment(transaction client.Transaction) (*models.PSPPayment, e
 	paymentType := matchTransactionType(transaction.Type)
 
 	payment := &models.PSPPayment{
-		Reference: transaction.ID,
-		CreatedAt: transaction.CreatedAt,
-		Type:      paymentType,
-		Amount:    amount,
-		Asset:     currency.FormatAsset(supportedCurrenciesWithDecimal, transaction.Currency),
-		Scheme:    models.PAYMENT_SCHEME_OTHER,
-		Status:    matchTransactionStatus(transaction.Status),
-		Raw:       raw,
+		OriginalReference: transaction.ID,
+		Reference:         transaction.ID,
+		CreatedAt:         transaction.CreatedAt,
+		Type:              paymentType,
+		Amount:            amount,
+		Asset:             currency.FormatAsset(supportedCurrenciesWithDecimal, transaction.Currency),
+		Scheme:            models.PAYMENT_SCHEME_OTHER,
+		Status:            matchTransactionStatus(transaction.Status),
+		Raw:               raw,
 	}
 
 	switch paymentType {

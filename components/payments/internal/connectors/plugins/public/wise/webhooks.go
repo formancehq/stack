@@ -117,14 +117,15 @@ func (p Plugin) translateBalanceUpdateWebhook(ctx context.Context, req models.Tr
 	}
 
 	payment := models.PSPPayment{
-		Reference: update.Data.TransferReference,
-		CreatedAt: occuredAt,
-		Type:      paymentType,
-		Amount:    amount,
-		Asset:     currency.FormatAsset(supportedCurrenciesWithDecimal, update.Data.Currency),
-		Scheme:    models.PAYMENT_SCHEME_OTHER,
-		Status:    models.PAYMENT_STATUS_SUCCEEDED,
-		Raw:       raw,
+		Reference:         update.Data.TransferReference,
+		OriginalReference: update.Data.TransferReference,
+		CreatedAt:         occuredAt,
+		Type:              paymentType,
+		Amount:            amount,
+		Asset:             currency.FormatAsset(supportedCurrenciesWithDecimal, update.Data.Currency),
+		Scheme:            models.PAYMENT_SCHEME_OTHER,
+		Status:            models.PAYMENT_STATUS_SUCCEEDED,
+		Raw:               raw,
 	}
 
 	switch paymentType {

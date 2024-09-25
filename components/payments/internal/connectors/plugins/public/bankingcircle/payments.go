@@ -100,14 +100,15 @@ func translatePayment(from client.Payment) (*models.PSPPayment, error) {
 	}
 
 	payment := models.PSPPayment{
-		Reference: from.PaymentID,
-		CreatedAt: from.ProcessedTimestamp,
-		Type:      paymentType,
-		Amount:    amount,
-		Asset:     currency.FormatAsset(supportedCurrenciesWithDecimal, from.Transfer.Amount.Currency),
-		Scheme:    models.PAYMENT_SCHEME_OTHER,
-		Status:    matchPaymentStatus(from.Status),
-		Raw:       raw,
+		OriginalReference: from.PaymentID,
+		Reference:         from.PaymentID,
+		CreatedAt:         from.ProcessedTimestamp,
+		Type:              paymentType,
+		Amount:            amount,
+		Asset:             currency.FormatAsset(supportedCurrenciesWithDecimal, from.Transfer.Amount.Currency),
+		Scheme:            models.PAYMENT_SCHEME_OTHER,
+		Status:            matchPaymentStatus(from.Status),
+		Raw:               raw,
 	}
 
 	if from.DebtorInformation.AccountID != "" {

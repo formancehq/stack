@@ -10,6 +10,14 @@ import (
 
 // Internal struct used by the plugins
 type PSPPayment struct {
+	// Original PSP payment/transaction reference.
+	// In case of refunds, dispute etc... this reference should be the original
+	// payment reference. In case it's the first payment, it should be the same
+	// as the Reference.
+	// If we have no new reference for the payments when the status is refunded
+	// or disputed etc... we should use the same reference.
+	OriginalReference string
+
 	// PSP payment/transaction reference. Should be unique.
 	Reference string
 
@@ -202,13 +210,13 @@ func FromPSPPaymentToPayment(from PSPPayment, connectorID ConnectorID) Payment {
 	return Payment{
 		ID: PaymentID{
 			PaymentReference: PaymentReference{
-				Reference: from.Reference,
+				Reference: from.OriginalReference,
 				Type:      from.Type,
 			},
 			ConnectorID: connectorID,
 		},
 		ConnectorID:   connectorID,
-		Reference:     from.Reference,
+		Reference:     from.OriginalReference,
 		CreatedAt:     from.CreatedAt,
 		Type:          from.Type,
 		InitialAmount: from.Amount,
@@ -251,7 +259,7 @@ func FromPSPPayments(from []PSPPayment, connectorID ConnectorID) []Payment {
 func FromPSPPaymentToPaymentAdjustement(from PSPPayment, connectorID ConnectorID) PaymentAdjustment {
 	paymentID := PaymentID{
 		PaymentReference: PaymentReference{
-			Reference: from.Reference,
+			Reference: from.OriginalReference,
 			Type:      from.Type,
 		},
 		ConnectorID: connectorID,
@@ -260,10 +268,12 @@ func FromPSPPaymentToPaymentAdjustement(from PSPPayment, connectorID ConnectorID
 	return PaymentAdjustment{
 		ID: PaymentAdjustmentID{
 			PaymentID: paymentID,
+			Reference: from.Reference,
 			CreatedAt: from.CreatedAt,
 			Status:    from.Status,
 		},
 		PaymentID: paymentID,
+		Reference: from.Reference,
 		CreatedAt: from.CreatedAt,
 		Status:    from.Status,
 		Amount:    from.Amount,

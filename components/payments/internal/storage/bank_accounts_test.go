@@ -140,7 +140,17 @@ func TestBankAccountsUpdateMetadata(t *testing.T) {
 			"test3": "test4",
 		}
 
-		acc := defaultBankAccount
+		// redeclare it in order to not update the map of global variable
+		acc := models.BankAccount{
+			ID:            defaultBankAccount.ID,
+			CreatedAt:     now.Add(-60 * time.Minute).UTC().Time,
+			Name:          "test1",
+			AccountNumber: pointer.For("12345678"),
+			Country:       pointer.For("US"),
+			Metadata: map[string]string{
+				"foo": "bar",
+			},
+		}
 		for k, v := range metadata {
 			acc.Metadata[k] = v
 		}
@@ -193,7 +203,14 @@ func TestBankAccountsUpdateMetadata(t *testing.T) {
 			"test3": "test4",
 		}
 
-		acc := defaultBankAccount3
+		// redeclare it in order to not update the map of global variable
+		acc := models.BankAccount{
+			ID:            defaultBankAccount3.ID,
+			CreatedAt:     now.Add(-55 * time.Minute).UTC().Time,
+			Name:          "test1",
+			AccountNumber: pointer.For("12345678"),
+			Country:       pointer.For("US"),
+		}
 		acc.Metadata = make(map[string]string)
 		for k, v := range metadata {
 			acc.Metadata[k] = v
