@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/formancehq/go-libs/bun/bunpaginate"
+	"github.com/formancehq/go-libs/pointer"
 	"github.com/formancehq/go-libs/query"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/pkg/errors"
@@ -94,6 +95,21 @@ func (s *store) instancesQueryContext(qb query.Builder) (string, []any, error) {
 	}))
 }
 
+func (s *store) InstancesGet(ctx context.Context, id string, scheduleID string, connectorID models.ConnectorID) (*models.Instance, error) {
+	var i instance
+	err := s.db.NewSelect().
+		Model(&i).
+		Where("id = ?", id).
+		Where("schedule_id = ?", scheduleID).
+		Where("connector_id = ?", connectorID).
+		Scan(ctx)
+	if err != nil {
+		return nil, e("failed to fetch instance", err)
+	}
+
+	return pointer.For(toInstanceModel(i)), nil
+}
+
 func (s *store) InstancesList(ctx context.Context, q ListInstancesQuery) (*bunpaginate.Cursor[models.Instance], error) {
 	var (
 		where string
@@ -139,26 +155,37 @@ func (s *store) InstancesList(ctx context.Context, q ListInstancesQuery) (*bunpa
 
 func fromInstanceModel(from models.Instance) instance {
 	return instance{
-		ID:           from.ID,
-		ScheduleID:   from.ScheduleID,
-		ConnectorID:  from.ConnectorID,
-		CreatedAt:    from.CreatedAt,
-		UpdatedAt:    from.UpdatedAt,
-		Terminated:   from.Terminated,
-		TerminatedAt: from.TerminatedAt,
-		Error:        from.Error,
+		ID:          from.ID,
+		ScheduleID:  from.ScheduleID,
+		ConnectorID: from.ConnectorID,
+		CreatedAt:   from.CreatedAt.UTC(),
+		UpdatedAt:   from.UpdatedAt.UTC(),
+		Terminated:  from.Terminated,
+		TerminatedAt: func() *time.Time {
+			if from.TerminatedAt == nil {
+				return nil
+			}
+			return pointer.For(from.TerminatedAt.UTC())
+		}(),
+		Error: from.Error,
 	}
 }
 
 func toInstanceModel(from instance) models.Instance {
 	return models.Instance{
-		ID:           from.ID,
-		ScheduleID:   from.ScheduleID,
-		ConnectorID:  from.ConnectorID,
-		CreatedAt:    from.CreatedAt,
-		UpdatedAt:    from.UpdatedAt,
-		Terminated:   from.Terminated,
-		TerminatedAt: from.TerminatedAt,
-		Error:        from.Error,
+		ID:          from.ID,
+		ScheduleID:  from.ScheduleID,
+		ConnectorID: from.ConnectorID,
+		CreatedAt:   from.CreatedAt.UTC(),
+		UpdatedAt:   from.UpdatedAt.UTC(),
+		Terminated:  from.Terminated,
+		TerminatedAt: func() *time.Time {
+			if from.TerminatedAt == nil {
+				return nil
+			}
+
+			return pointer.For(from.TerminatedAt.UTC())
+		}(),
+		Error: from.Error,
 	}
 }

@@ -128,7 +128,7 @@ func fromScheduleModel(s models.Schedule) schedule {
 	return schedule{
 		ID:          s.ID,
 		ConnectorID: s.ConnectorID,
-		CreatedAt:   s.CreatedAt,
+		CreatedAt:   s.CreatedAt.UTC(),
 	}
 }
 
@@ -136,6 +136,6 @@ func toScheduleModel(s schedule) models.Schedule {
 	return models.Schedule{
 		ID:          s.ID,
 		ConnectorID: s.ConnectorID,
-		CreatedAt:   s.CreatedAt,
+		CreatedAt:   s.CreatedAt.UTC(),
 	}
 }

@@ -74,7 +74,7 @@ func (s *store) BalancesUpsert(ctx context.Context, balances []models.Balance) e
 	return e("failed to commit transaction", tx.Commit())
 }
 
-func (s *store) BalancesDeleteForConnectorID(ctx context.Context, connectorID models.ConnectorID) error {
+func (s *store) BalancesDeleteFromConnectorID(ctx context.Context, connectorID models.ConnectorID) error {
 	_, err := s.db.NewDelete().
 		Model((*balance)(nil)).
 		Where("connector_id = ?", connectorID).
@@ -155,6 +155,7 @@ func (s *store) BalancesList(ctx context.Context, q ListBalancesQuery) (*bunpagi
 	cursor, err := paginateWithOffset[bunpaginate.PaginatedQueryOptions[BalanceQuery], balance](s, ctx,
 		(*bunpaginate.OffsetPaginatedQuery[bunpaginate.PaginatedQueryOptions[BalanceQuery]])(&q),
 		func(query *bun.SelectQuery) *bun.SelectQuery {
+
 			query = applyBalanceQuery(query, q.Options.Options)
 
 			query = query.Order("created_at DESC")
@@ -244,11 +245,11 @@ func fromBalancesModels(from []models.Balance) []balance {
 func fromBalanceModels(from models.Balance) balance {
 	return balance{
 		AccountID:     from.AccountID,
-		CreatedAt:     from.CreatedAt,
+		CreatedAt:     from.CreatedAt.UTC(),
 		Asset:         from.Asset,
 		ConnectorID:   from.AccountID.ConnectorID,
 		Balance:       from.Balance,
-		LastUpdatedAt: from.LastUpdatedAt,
+		LastUpdatedAt: from.LastUpdatedAt.UTC(),
 	}
 }
 
@@ -263,9 +264,9 @@ func toBalancesModels(from []balance) []models.Balance {
 func toBalanceModels(from balance) models.Balance {
 	return models.Balance{
 		AccountID:     from.AccountID,
-		CreatedAt:     from.CreatedAt,
+		CreatedAt:     from.CreatedAt.UTC(),
 		Asset:         from.Asset,
 		Balance:       from.Balance,
-		LastUpdatedAt: from.LastUpdatedAt,
+		LastUpdatedAt: from.LastUpdatedAt.UTC(),
 	}
 }

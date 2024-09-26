@@ -166,7 +166,7 @@ create table if not exists pools (
 );
 create unique index pools_unique_name on pools (name);
 
-create table if not exists pools_related_accounts (
+create table if not exists pool_accounts (
     -- Mandatory fields
     pool_id     uuid not null,
     account_id  varchar not null,
@@ -174,12 +174,12 @@ create table if not exists pools_related_accounts (
     -- Primary key
     primary key (pool_id, account_id)
 );
-alter table pools_related_accounts
-    add constraint pools_related_accounts_pool_id_fk foreign key (pool_id)
+alter table pool_accounts
+    add constraint pool_accounts_pool_id_fk foreign key (pool_id)
     references pools (id)
     on delete cascade;
-alter table pools_related_accounts
-    add constraint pools_related_accounts_account_id_fk foreign key (account_id)
+alter table pool_accounts
+    add constraint pool_accounts_account_id_fk foreign key (account_id)
     references accounts (id)
     on delete cascade;
 
@@ -251,6 +251,10 @@ create table if not exists workflows_instances (
 alter table workflows_instances
     add constraint workflows_instances_connector_id_fk foreign key (connector_id)
     references connectors (id)
+    on delete cascade;
+alter table workflows_instances
+    add constraint workflows_instances_schedule_id_fk foreign key (schedule_id, connector_id)
+    references schedules (id, connector_id)
     on delete cascade;
 
 -- Webhook configs

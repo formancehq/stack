@@ -38,30 +38,52 @@ type bankAccount struct {
 	RelatedAccounts []*bankAccountRelatedAccount `bun:"rel:has-many,join:id=bank_account_id"`
 }
 
-func (s *store) BankAccountsUpsert(ctx context.Context, bankAccount models.BankAccount) error {
+func (s *store) BankAccountsUpsert(ctx context.Context, ba models.BankAccount) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return e("begin transaction", err)
 	}
 	defer tx.Rollback()
 
-	toInsert := fromBankAccountModels(bankAccount)
+	toInsert := fromBankAccountModels(ba)
 	// Insert or update the bank account
-	_, err = tx.NewInsert().
+	res, err := tx.NewInsert().
 		Model(&toInsert).
+		Column("id", "created_at", "name", "country", "metadata").
 		On("CONFLICT (id) DO NOTHING").
+		Returning("id").
 		Exec(ctx)
 	if err != nil {
 		return e("insert bank account", err)
 	}
 
-	// Insert or update the related accounts
-	_, err = tx.NewInsert().
-		Model(&toInsert.RelatedAccounts).
-		On("CONFLICT (bank_account_id, account_id) DO NOTHING").
-		Exec(ctx)
+	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return e("insert related accounts", err)
+		return e("insert bank account", err)
+	}
+
+	if rowsAffected > 0 {
+		_, err = tx.NewUpdate().
+			Model((*bankAccount)(nil)).
+			Set("account_number = pgp_sym_encrypt(?::TEXT, ?, ?)", toInsert.AccountNumber, s.configEncryptionKey, encryptionOptions).
+			Set("iban = pgp_sym_encrypt(?::TEXT, ?, ?)", toInsert.IBAN, s.configEncryptionKey, encryptionOptions).
+			Set("swift_bic_code = pgp_sym_encrypt(?::TEXT, ?, ?)", toInsert.SwiftBicCode, s.configEncryptionKey, encryptionOptions).
+			Where("id = ?", toInsert.ID).
+			Exec(ctx)
+		if err != nil {
+			return e("update bank account", err)
+		}
+	}
+
+	if len(toInsert.RelatedAccounts) > 0 {
+		// Insert or update the related accounts
+		_, err = tx.NewInsert().
+			Model(&toInsert.RelatedAccounts).
+			On("CONFLICT (bank_account_id, account_id) DO NOTHING").
+			Exec(ctx)
+		if err != nil {
+			return e("insert related accounts", err)
+		}
 	}
 
 	return e("commit transaction", tx.Commit())
@@ -108,9 +130,12 @@ func (s *store) BankAccountsGet(ctx context.Context, id uuid.UUID, expand bool) 
 	var account bankAccount
 	query := s.db.NewSelect().
 		Model(&account).
+		Column("id", "created_at", "name", "country", "metadata").
 		Relation("RelatedAccounts")
-	if !expand {
-		query = query.Column("id", "created_at", "name", "country", "metadata")
+	if expand {
+		query = query.ColumnExpr("pgp_sym_decrypt(account_number, ?, ?) AS decrypted_account_number", s.configEncryptionKey, encryptionOptions).
+			ColumnExpr("pgp_sym_decrypt(iban, ?, ?) AS decrypted_iban", s.configEncryptionKey, encryptionOptions).
+			ColumnExpr("pgp_sym_decrypt(swift_bic_code, ?, ?) AS decrypted_swift_bic_code", s.configEncryptionKey, encryptionOptions)
 	}
 	err := query.Where("id = ?", id).Scan(ctx)
 	if err != nil {
@@ -239,7 +264,7 @@ func (s *store) BankAccountsDeleteRelatedAccountFromConnectorID(ctx context.Cont
 func fromBankAccountModels(from models.BankAccount) bankAccount {
 	ba := bankAccount{
 		ID:        from.ID,
-		CreatedAt: from.CreatedAt,
+		CreatedAt: from.CreatedAt.UTC(),
 		Name:      from.Name,
 		Country:   from.Country,
 		Metadata:  from.Metadata,
@@ -269,7 +294,7 @@ func fromBankAccountModels(from models.BankAccount) bankAccount {
 func toBankAccountModels(from bankAccount) models.BankAccount {
 	ba := models.BankAccount{
 		ID:        from.ID,
-		CreatedAt: from.CreatedAt,
+		CreatedAt: from.CreatedAt.UTC(),
 		Name:      from.Name,
 		Country:   from.Country,
 		Metadata:  from.Metadata,
@@ -301,7 +326,7 @@ func fromBankAccountRelatedAccountModels(from models.BankAccountRelatedAccount) 
 		BankAccountID: from.BankAccountID,
 		AccountID:     from.AccountID,
 		ConnectorID:   from.ConnectorID,
-		CreatedAt:     from.CreatedAt,
+		CreatedAt:     from.CreatedAt.UTC(),
 	}
 }
 
@@ -310,6 +335,6 @@ func toBankAccountRelatedAccountModels(from bankAccountRelatedAccount) models.Ba
 		BankAccountID: from.BankAccountID,
 		AccountID:     from.AccountID,
 		ConnectorID:   from.ConnectorID,
-		CreatedAt:     from.CreatedAt,
+		CreatedAt:     from.CreatedAt.UTC(),
 	}
 }

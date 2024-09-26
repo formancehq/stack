@@ -161,7 +161,7 @@ func fromAccountModels(from models.Account) account {
 	return account{
 		ID:           from.ID,
 		ConnectorID:  from.ConnectorID,
-		CreatedAt:    from.CreatedAt,
+		CreatedAt:    from.CreatedAt.UTC(),
 		Reference:    from.Reference,
 		Type:         string(from.Type),
 		DefaultAsset: from.DefaultAsset,
@@ -176,7 +176,7 @@ func toAccountModels(from account) models.Account {
 		ID:           from.ID,
 		ConnectorID:  from.ConnectorID,
 		Reference:    from.Reference,
-		CreatedAt:    from.CreatedAt,
+		CreatedAt:    from.CreatedAt.UTC(),
 		Type:         models.AccountType(from.Type),
 		Name:         from.Name,
 		DefaultAsset: from.DefaultAsset,

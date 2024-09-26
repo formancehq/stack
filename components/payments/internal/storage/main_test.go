@@ -1,43 +1,58 @@
 package storage
 
-// func TestMain(m *testing.M) {
-// 	if err := pgtesting.CreatePostgresServer(); err != nil {
-// 		logging.Error(err)
-// 		os.Exit(1)
-// 	}
+import (
+	"context"
+	"crypto/rand"
+	"database/sql"
+	"os"
+	"testing"
 
-// 	code := m.Run()
-// 	if err := pgtesting.DestroyPostgresServer(); err != nil {
-// 		logging.Error(err)
-// 	}
-// 	os.Exit(code)
-// }
+	"github.com/formancehq/go-libs/bun/bunconnect"
+	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/go-libs/testing/docker"
+	"github.com/formancehq/go-libs/testing/platform/pgtesting"
+	"github.com/formancehq/go-libs/testing/utils"
+	"github.com/stretchr/testify/require"
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
+)
 
-// func newStore(t *testing.T) Storage {
-// 	t.Helper()
+var (
+	srv   *pgtesting.PostgresServer
+	bunDB *bun.DB
+)
 
-// 	pgServer := pgtesting.NewPostgresDatabase(t)
+func TestMain(m *testing.M) {
+	utils.WithTestMain(func(t *utils.TestingTForMain) int {
+		srv = pgtesting.CreatePostgresServer(t, docker.NewPool(t, logging.Testing()))
 
-// 	config, err := pgx.ParseConfig(pgServer.ConnString())
-// 	require.NoError(t, err)
+		db, err := sql.Open("postgres", srv.GetDSN())
+		if err != nil {
+			logging.Error(err)
+			os.Exit(1)
+		}
 
-// 	key := make([]byte, 64)
-// 	_, err = rand.Read(key)
-// 	require.NoError(t, err)
+		bunDB = bun.NewDB(db, pgdialect.New())
 
-// 	db := bun.NewDB(stdlib.OpenDB(*config), pgdialect.New())
-// 	t.Cleanup(func() {
-// 		_ = db.Close()
-// 	})
+		return m.Run()
+	})
+}
 
-// 	// TODO(polo): add migrations
-// 	// err = migrationstorage.Migrate(context.Background(), db)
-// 	// require.NoError(t, err)
+func newStore(t *testing.T) Storage {
+	t.Helper()
+	ctx := logging.TestingContext()
 
-// 	store := newStorage(
-// 		db,
-// 		string(key),
-// 	)
+	pgServer := srv.NewDatabase(t)
 
-// 	return store
-// }
+	db, err := bunconnect.OpenSQLDB(ctx, pgServer.ConnectionOptions())
+	require.NoError(t, err)
+
+	key := make([]byte, 64)
+	_, err = rand.Read(key)
+	require.NoError(t, err)
+
+	err = Migrate(context.Background(), db)
+	require.NoError(t, err)
+
+	return newStorage(db, string(key))
+}

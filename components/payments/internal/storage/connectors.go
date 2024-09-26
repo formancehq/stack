@@ -40,7 +40,7 @@ func (s *store) ConnectorsInstall(ctx context.Context, c models.Connector) error
 	toInsert := connector{
 		ID:        c.ID,
 		Name:      c.Name,
-		CreatedAt: c.CreatedAt,
+		CreatedAt: c.CreatedAt.UTC(),
 		Provider:  c.Provider,
 	}
 
@@ -88,7 +88,7 @@ func (s *store) ConnectorsGet(ctx context.Context, id models.ConnectorID) (*mode
 	return &models.Connector{
 		ID:        connector.ID,
 		Name:      connector.Name,
-		CreatedAt: connector.CreatedAt,
+		CreatedAt: connector.CreatedAt.UTC(),
 		Provider:  connector.Provider,
 		Config:    connector.DecryptedConfig,
 	}, nil
@@ -155,7 +155,7 @@ func (s *store) ConnectorsList(ctx context.Context, q ListConnectorsQuery) (*bun
 		connectors = append(connectors, models.Connector{
 			ID:        c.ID,
 			Name:      c.Name,
-			CreatedAt: c.CreatedAt,
+			CreatedAt: c.CreatedAt.UTC(),
 			Provider:  c.Provider,
 			Config:    c.DecryptedConfig,
 		})
