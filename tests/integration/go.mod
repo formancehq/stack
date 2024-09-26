@@ -9,7 +9,7 @@ require (
 	github.com/egymgmbh/go-prefix-writer v0.0.0-20180609083313-7326ea162eca
 	github.com/formancehq/auth v0.0.0-00010101000000-000000000000
 	github.com/formancehq/formance-sdk-go/v2 v2.0.0-00010101000000-000000000000
-	github.com/formancehq/go-libs v1.7.2-0.20240925132527-7627842ea9b5
+	github.com/formancehq/go-libs v1.7.2-0.20240926150224-306278b90e0c
 	github.com/formancehq/ledger v0.0.0-00010101000000-000000000000
 	github.com/formancehq/orchestration v0.0.0-00010101000000-000000000000
 	github.com/formancehq/payments v0.0.0-00010101000000-000000000000

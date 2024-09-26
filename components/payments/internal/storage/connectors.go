@@ -5,10 +5,10 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/formancehq/go-libs/bun/bunpaginate"
 	"github.com/formancehq/go-libs/query"
+	"github.com/formancehq/go-libs/time"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
@@ -40,7 +40,7 @@ func (s *store) ConnectorsInstall(ctx context.Context, c models.Connector) error
 	toInsert := connector{
 		ID:        c.ID,
 		Name:      c.Name,
-		CreatedAt: c.CreatedAt.UTC(),
+		CreatedAt: time.New(c.CreatedAt),
 		Provider:  c.Provider,
 	}
 
@@ -88,7 +88,7 @@ func (s *store) ConnectorsGet(ctx context.Context, id models.ConnectorID) (*mode
 	return &models.Connector{
 		ID:        connector.ID,
 		Name:      connector.Name,
-		CreatedAt: connector.CreatedAt.UTC(),
+		CreatedAt: connector.CreatedAt.Time,
 		Provider:  connector.Provider,
 		Config:    connector.DecryptedConfig,
 	}, nil
@@ -155,7 +155,7 @@ func (s *store) ConnectorsList(ctx context.Context, q ListConnectorsQuery) (*bun
 		connectors = append(connectors, models.Connector{
 			ID:        c.ID,
 			Name:      c.Name,
-			CreatedAt: c.CreatedAt.UTC(),
+			CreatedAt: c.CreatedAt.Time,
 			Provider:  c.Provider,
 			Config:    c.DecryptedConfig,
 		})

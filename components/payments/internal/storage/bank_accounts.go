@@ -3,11 +3,11 @@ package storage
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/formancehq/go-libs/bun/bunpaginate"
 	"github.com/formancehq/go-libs/pointer"
 	"github.com/formancehq/go-libs/query"
+	"github.com/formancehq/go-libs/time"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
@@ -264,7 +264,7 @@ func (s *store) BankAccountsDeleteRelatedAccountFromConnectorID(ctx context.Cont
 func fromBankAccountModels(from models.BankAccount) bankAccount {
 	ba := bankAccount{
 		ID:        from.ID,
-		CreatedAt: from.CreatedAt.UTC(),
+		CreatedAt: time.New(from.CreatedAt),
 		Name:      from.Name,
 		Country:   from.Country,
 		Metadata:  from.Metadata,
@@ -294,7 +294,7 @@ func fromBankAccountModels(from models.BankAccount) bankAccount {
 func toBankAccountModels(from bankAccount) models.BankAccount {
 	ba := models.BankAccount{
 		ID:        from.ID,
-		CreatedAt: from.CreatedAt.UTC(),
+		CreatedAt: from.CreatedAt.Time,
 		Name:      from.Name,
 		Country:   from.Country,
 		Metadata:  from.Metadata,
@@ -326,7 +326,7 @@ func fromBankAccountRelatedAccountModels(from models.BankAccountRelatedAccount) 
 		BankAccountID: from.BankAccountID,
 		AccountID:     from.AccountID,
 		ConnectorID:   from.ConnectorID,
-		CreatedAt:     from.CreatedAt.UTC(),
+		CreatedAt:     time.New(from.CreatedAt),
 	}
 }
 
@@ -335,6 +335,6 @@ func toBankAccountRelatedAccountModels(from bankAccountRelatedAccount) models.Ba
 		BankAccountID: from.BankAccountID,
 		AccountID:     from.AccountID,
 		ConnectorID:   from.ConnectorID,
-		CreatedAt:     from.CreatedAt.UTC(),
+		CreatedAt:     from.CreatedAt.Time,
 	}
 }

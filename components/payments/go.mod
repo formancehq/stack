@@ -7,7 +7,7 @@ toolchain go1.22.7
 require (
 	github.com/ThreeDotsLabs/watermill v1.3.7
 	github.com/bombsimon/logrusr/v3 v3.1.0
-	github.com/formancehq/go-libs v1.7.2-0.20240925132527-7627842ea9b5
+	github.com/formancehq/go-libs v1.7.2-0.20240926150224-306278b90e0c
 	github.com/formancehq/payments/genericclient v0.0.0-00010101000000-000000000000
 	github.com/gibson042/canonicaljson-go v1.0.3
 	github.com/go-chi/chi/v5 v5.1.0

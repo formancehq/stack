@@ -8,6 +8,7 @@ import (
 	"github.com/formancehq/go-libs/bun/bunpaginate"
 	"github.com/formancehq/go-libs/pointer"
 	"github.com/formancehq/go-libs/query"
+	internalTime "github.com/formancehq/go-libs/time"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
@@ -20,8 +21,8 @@ type instance struct {
 	ID          string             `bun:"id,pk,type:text,notnull"`
 	ScheduleID  string             `bun:"schedule_id,pk,type:text,notnull"`
 	ConnectorID models.ConnectorID `bun:"connector_id,pk,type:character varying,notnull"`
-	CreatedAt   time.Time          `bun:"created_at,type:timestamp without time zone,notnull"`
-	UpdatedAt   time.Time          `bun:"updated_at,type:timestamp without time zone,notnull"`
+	CreatedAt   internalTime.Time  `bun:"created_at,type:timestamp without time zone,notnull"`
+	UpdatedAt   internalTime.Time  `bun:"updated_at,type:timestamp without time zone,notnull"`
 
 	// Optional fields with default
 	// c.f. https://bun.uptrace.dev/guide/models.html#default
@@ -29,8 +30,8 @@ type instance struct {
 
 	// Optional fields
 	// c.f.: https://bun.uptrace.dev/guide/models.html#nulls
-	TerminatedAt *time.Time `bun:"terminated_at,type:timestamp without time zone,nullzero"`
-	Error        *string    `bun:"error,type:text,nullzero"`
+	TerminatedAt *internalTime.Time `bun:"terminated_at,type:timestamp without time zone,nullzero"`
+	Error        *string            `bun:"error,type:text,nullzero"`
 }
 
 func (s *store) InstancesUpsert(ctx context.Context, instance models.Instance) error {
@@ -158,14 +159,14 @@ func fromInstanceModel(from models.Instance) instance {
 		ID:          from.ID,
 		ScheduleID:  from.ScheduleID,
 		ConnectorID: from.ConnectorID,
-		CreatedAt:   from.CreatedAt.UTC(),
-		UpdatedAt:   from.UpdatedAt.UTC(),
+		CreatedAt:   internalTime.New(from.CreatedAt),
+		UpdatedAt:   internalTime.New(from.UpdatedAt),
 		Terminated:  from.Terminated,
-		TerminatedAt: func() *time.Time {
+		TerminatedAt: func() *internalTime.Time {
 			if from.TerminatedAt == nil {
 				return nil
 			}
-			return pointer.For(from.TerminatedAt.UTC())
+			return pointer.For(internalTime.New(*from.TerminatedAt))
 		}(),
 		Error: from.Error,
 	}
@@ -176,15 +177,15 @@ func toInstanceModel(from instance) models.Instance {
 		ID:          from.ID,
 		ScheduleID:  from.ScheduleID,
 		ConnectorID: from.ConnectorID,
-		CreatedAt:   from.CreatedAt.UTC(),
-		UpdatedAt:   from.UpdatedAt.UTC(),
+		CreatedAt:   from.CreatedAt.Time,
+		UpdatedAt:   from.UpdatedAt.Time,
 		Terminated:  from.Terminated,
 		TerminatedAt: func() *time.Time {
 			if from.TerminatedAt == nil {
 				return nil
 			}
 
-			return pointer.For(from.TerminatedAt.UTC())
+			return pointer.For(from.TerminatedAt.Time)
 		}(),
 		Error: from.Error,
 	}

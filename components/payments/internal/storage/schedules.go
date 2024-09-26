@@ -3,11 +3,11 @@ package storage
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/formancehq/go-libs/bun/bunpaginate"
 	"github.com/formancehq/go-libs/pointer"
 	"github.com/formancehq/go-libs/query"
+	"github.com/formancehq/go-libs/time"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
@@ -128,7 +128,7 @@ func fromScheduleModel(s models.Schedule) schedule {
 	return schedule{
 		ID:          s.ID,
 		ConnectorID: s.ConnectorID,
-		CreatedAt:   s.CreatedAt.UTC(),
+		CreatedAt:   time.New(s.CreatedAt),
 	}
 }
 
@@ -136,6 +136,6 @@ func toScheduleModel(s schedule) models.Schedule {
 	return models.Schedule{
 		ID:          s.ID,
 		ConnectorID: s.ConnectorID,
-		CreatedAt:   s.CreatedAt.UTC(),
+		CreatedAt:   s.CreatedAt.Time,
 	}
 }
