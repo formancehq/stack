@@ -271,16 +271,16 @@ require (
 )
 
 replace (
-	github.com/formancehq/auth => ../../ee/auth
+	github.com/formancehq/auth => github.com/formancehq/auth v0.0.0-20240925174204-6f5cb5948775
 	github.com/formancehq/formance-sdk-go/v2 => ../../releases/sdks/go
-	github.com/formancehq/ledger => ../../components/ledger
+	github.com/formancehq/ledger => github.com/formancehq/ledger v0.0.0-20240925161848-3cf78b93df02
 	github.com/formancehq/orchestration => ../../ee/orchestration
-	github.com/formancehq/payments => ../../components/payments
-	github.com/formancehq/payments/genericclient => ../../components/payments/cmd/connectors/internal/connectors/generic/client/generated
+	github.com/formancehq/payments => github.com/formancehq/payments v0.0.0-20240925171236-82f077b2e178
+	github.com/formancehq/payments/genericclient => github.com/formancehq/payments/cmd/connectors/internal/connectors/generic/client/generated v0.0.0-20240925171236-82f077b2e178
 	github.com/formancehq/reconciliation => ../../ee/reconciliation
-	github.com/formancehq/search => ../../ee/search
+	github.com/formancehq/search => github.com/formancehq/search v0.0.0-20240925174151-fe1cfd5a69cd
 	github.com/formancehq/stack/libs/events => ../../libs/events
 	github.com/formancehq/wallets => ../../ee/wallets
-	github.com/formancehq/webhooks => ../../ee/webhooks
+	github.com/formancehq/webhooks => github.com/formancehq/webhooks v0.0.0-20240925174047-7d4341ccfc5f
 	github.com/zitadel/oidc => github.com/formancehq/oidc v0.0.0-20220923202448-e2960a99b71c
 )

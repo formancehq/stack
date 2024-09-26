@@ -67,6 +67,8 @@ github.com/felixge/httpsnoop v1.0.4 h1:NFTV2Zj1bL4mc9sqWACXbQFVBBg2W3GPvqp8/ESS2
 github.com/felixge/httpsnoop v1.0.4/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
 github.com/formancehq/go-libs v1.7.1 h1:9D5cxKWFlVtdX5AYDXeUz1Nb9PdoEfQX0f/yeLsU324=
 github.com/formancehq/go-libs v1.7.1/go.mod h1:pWTScpoyieF7OoJ6WVmXNG9NhDjbZbAmFqd7UOw85iI=
+github.com/formancehq/ledger v0.0.0-20240925161848-3cf78b93df02 h1:0jB2JrN653A25DxUh4THjujWFZseMQqg5VMwGQxv7gc=
+github.com/formancehq/ledger v0.0.0-20240925161848-3cf78b93df02/go.mod h1:sGscj1S3S2ndAzOPVFQFBuC72YF8t+OAm/hcqDcxpxI=
 github.com/go-chi/chi/v5 v5.1.0 h1:acVI1TYaD+hhedDJ3r54HyA6sExp3HfXq7QWEEY/xMw=
 github.com/go-chi/chi/v5 v5.1.0/go.mod h1:DslCQbL2OYiznFReuXYUmQ2hGd1aDpCnlMNITLSKoi8=
 github.com/go-chi/render v1.0.3 h1:AsXqd2a1/INaIfUSKq3G5uA8weYx20FOsM7uSoCyyt4=

@@ -118,7 +118,6 @@ require (
 replace (
 	github.com/formancehq/membership-api/client => ./client
 	github.com/formancehq/operator => ./../../components/operator
-	github.com/formancehq/payments => ../../components/payments
 	github.com/zitadel/oidc/v2 => github.com/formancehq/oidc/v2 v2.0.0-20230524073911-09bdd1dca291
 	k8s.io/client-go v0.26.0 => k8s.io/client-go v0.25.4
 )

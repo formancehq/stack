@@ -82,4 +82,4 @@ require (
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
-replace github.com/formancehq/search => ../../ee/search
+replace github.com/formancehq/search => github.com/formancehq/search v0.0.0-20240925174151-fe1cfd5a69cd
