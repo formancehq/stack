@@ -1,8 +1,0 @@
----
-stages:
-- update:
-    account:
-      id: "${accountID}"
-      ledger: "${ledger}"
-      metadata:
-        foo: "${value}"

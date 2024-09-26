@@ -146,11 +146,6 @@ staging-application-set:
 staging-application-sync:
     BUILD core+application-sync --APPLICATION=staging-eu-west-1-hosting-regions
 
-tests:
-    LOCALLY
-    BUILD ./components+run --TARGET=tests
-    BUILD ./ee+run --TARGET=tests
-
 tests-integration:
     FROM core+base-image
     BUILD ./tests/integration+tests
@@ -158,16 +153,11 @@ tests-integration:
 pre-commit: # Generate the final spec and run all the pre-commit hooks
     LOCALLY
     BUILD ./releases+sdk-generate
-    BUILD ./libs+run --TARGET=pre-commit
-    BUILD ./components+run --TARGET=pre-commit
-    BUILD ./ee+run --TARGET=pre-commit
     BUILD ./helm/+pre-commit
     BUILD ./tests/integration+pre-commit
 
 tidy: # Run tidy on all the components
     LOCALLY
-    BUILD ./components+run --TARGET=tidy
-    BUILD ./ee+run --TARGET=tidy
     BUILD ./tests/integration+tidy
 
 tests-all:

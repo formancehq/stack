@@ -1,6 +1,0 @@
----
-stages:
-- delay:
-    duration: 5s
-    # 'delay' can be used with a duration or a date
-    # until: <date as rfc3339>
