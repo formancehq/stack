@@ -7,17 +7,17 @@ toolchain go1.22.7
 require (
 	github.com/docker/docker v27.3.1+incompatible
 	github.com/egymgmbh/go-prefix-writer v0.0.0-20180609083313-7326ea162eca
-	github.com/formancehq/auth v0.0.0-00010101000000-000000000000
-	github.com/formancehq/formance-sdk-go/v2 v2.0.0-00010101000000-000000000000
+	github.com/formancehq/auth v0.0.0-20240925213343-e5de0bb34c65
+	github.com/formancehq/formance-sdk-go/v3 v3.0.0
 	github.com/formancehq/go-libs v1.7.1
-	github.com/formancehq/ledger v0.0.0-00010101000000-000000000000
+	github.com/formancehq/ledger v0.0.0-20240925213413-0ef9d8eb67e6
 	github.com/formancehq/orchestration v0.0.0-00010101000000-000000000000
-	github.com/formancehq/payments v0.0.0-00010101000000-000000000000
-	github.com/formancehq/reconciliation v0.0.0-00010101000000-000000000000
-	github.com/formancehq/search v0.0.0-00010101000000-000000000000
+	github.com/formancehq/payments v0.0.0-20240925213419-a849e779040f
+	github.com/formancehq/reconciliation v0.0.0-20240926152910-eda505f2fcd3
+	github.com/formancehq/search v0.0.0-20240926085257-6b5288dc2576
 	github.com/formancehq/stack/libs/events v0.0.0-00010101000000-000000000000
-	github.com/formancehq/wallets v0.0.0-00010101000000-000000000000
-	github.com/formancehq/webhooks v0.0.0-00010101000000-000000000000
+	github.com/formancehq/wallets v0.0.0-20240926151232-c6fc6e393af0
+	github.com/formancehq/webhooks v0.0.0-20240926142120-a19c8730abaa
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.7.1
@@ -271,16 +271,8 @@ require (
 )
 
 replace (
-	github.com/formancehq/auth => github.com/formancehq/auth v0.0.0-20240925174204-6f5cb5948775
-	github.com/formancehq/formance-sdk-go/v2 => ../../releases/sdks/go
-	github.com/formancehq/ledger => github.com/formancehq/ledger v0.0.0-20240925161848-3cf78b93df02
-	github.com/formancehq/orchestration => ../../ee/orchestration
-	github.com/formancehq/payments => github.com/formancehq/payments v0.0.0-20240925171236-82f077b2e178
+	github.com/formancehq/orchestration => github.com/formancehq/flows v0.0.0-20240926150344-d8c14fc9e76c
 	github.com/formancehq/payments/genericclient => github.com/formancehq/payments/cmd/connectors/internal/connectors/generic/client/generated v0.0.0-20240925171236-82f077b2e178
-	github.com/formancehq/reconciliation => ../../ee/reconciliation
-	github.com/formancehq/search => github.com/formancehq/search v0.0.0-20240925174151-fe1cfd5a69cd
 	github.com/formancehq/stack/libs/events => ../../libs/events
-	github.com/formancehq/wallets => ../../ee/wallets
-	github.com/formancehq/webhooks => github.com/formancehq/webhooks v0.0.0-20240925174047-7d4341ccfc5f
 	github.com/zitadel/oidc => github.com/formancehq/oidc v0.0.0-20220923202448-e2960a99b71c
 )

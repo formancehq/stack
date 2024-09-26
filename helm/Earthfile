@@ -1,8 +1,6 @@
 VERSION 0.8
 
 IMPORT github.com/formancehq/earthly:tags/v0.15.0 AS core
-IMPORT .. AS stack
-IMPORT ../components/operator AS operator
 
 sources:
     FROM core+base-image
@@ -12,7 +10,6 @@ sources:
 
 helm-validate:
     FROM core+helm-base
-
     WORKDIR /src/helm
     COPY . .
     FOR chart IN $(ls -d */)

@@ -9,7 +9,9 @@ IMPORT github.com/formancehq/auth:main AS auth
 IMPORT github.com/formancehq/search:main AS search
 IMPORT github.com/formancehq/stargate:main AS stargate
 IMPORT github.com/formancehq/webhooks:main AS webhooks
-
+IMPORT github.com/formancehq/flows:main AS orchestration
+IMPORT github.com/formancehq/reconciliation:main AS reconciliation
+IMPORT github.com/formancehq/wallets:main AS wallets
 
 sources:
     FROM core+base-image
@@ -36,10 +38,9 @@ build-final-spec:
     COPY (auth+openapi/openapi.yaml) /src/ee/auth/
     COPY (search+openapi/openapi.yaml) /src/ee/search/
     COPY (webhooks+openapi/openapi.yaml) /src/ee/webhooks/
-
-    FOR c IN wallets reconciliation orchestration
-        COPY (./ee/$c+openapi/openapi.yaml) /src/ee/$c/
-    END
+    COPY (wallets+openapi/openapi.yaml) /src/ee/wallets/
+    COPY (reconciliation+openapi/openapi.yaml) /src/ee/reconciliation/
+    COPY (orchestration+openapi/openapi.yaml) /src/ee/orchestration/
 
     RUN npm run build
     RUN jq -s '.[0] * .[1]' build/generate.json openapi-overlay.json > build/latest.json
@@ -146,11 +147,6 @@ staging-application-set:
 staging-application-sync:
     BUILD core+application-sync --APPLICATION=staging-eu-west-1-hosting-regions
 
-tests:
-    LOCALLY
-    BUILD ./components+run --TARGET=tests
-    BUILD ./ee+run --TARGET=tests
-
 tests-integration:
     FROM core+base-image
     BUILD ./tests/integration+tests
@@ -158,16 +154,11 @@ tests-integration:
 pre-commit: # Generate the final spec and run all the pre-commit hooks
     LOCALLY
     BUILD ./releases+sdk-generate
-    BUILD ./libs+run --TARGET=pre-commit
-    BUILD ./components+run --TARGET=pre-commit
-    BUILD ./ee+run --TARGET=pre-commit
     BUILD ./helm/+pre-commit
     BUILD ./tests/integration+pre-commit
 
 tidy: # Run tidy on all the components
     LOCALLY
-    BUILD ./components+run --TARGET=tidy
-    BUILD ./ee+run --TARGET=tidy
     BUILD ./tests/integration+tidy
 
 tests-all:

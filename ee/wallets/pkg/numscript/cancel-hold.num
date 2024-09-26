@@ -1,9 +1,0 @@
-vars {
-  account $hold
-  account $dest
-}
-
-send [{{ .Asset }} *] (
-  source = $hold
-  destination = $dest
-)
