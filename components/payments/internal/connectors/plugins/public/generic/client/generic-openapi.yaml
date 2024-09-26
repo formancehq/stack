@@ -1,0 +1,298 @@
+openapi: 3.0.3
+info:
+  title: GENERIC connector API
+  version: "v0.1"
+
+# ---------------------- PATHS ----------------------
+paths:
+  /accounts:
+    get:
+      summary: Get all accounts
+      operationId: getAccounts
+      parameters:
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Sort'
+        - $ref: '#/components/parameters/CreatedAtFrom'
+      responses:
+        200:
+          $ref: '#/components/responses/Accounts'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /accounts/{accountId}/balances:
+    get:
+      summary: Get account balance
+      operationId: getAccountBalances
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+      responses:
+        200:
+          $ref: '#/components/responses/Balances'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /beneficiaries:
+    get:
+      summary: Get all beneficiaries
+      operationId: getBeneficiaries
+      parameters:
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Sort'
+        - $ref: '#/components/parameters/CreatedAtFrom'
+      responses:
+        200:
+          $ref: '#/components/responses/Beneficiaries'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /transactions:
+    get:
+      summary: Get all transactions
+      operationId: getTransactions
+      parameters:
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Sort'
+        - $ref: '#/components/parameters/UpdatedAtFrom'
+      responses:
+        200:
+          $ref: '#/components/responses/Transactions'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+# ---------------------- COMPONENTS ----------------------
+components:
+  # ---------------------- PARAMETERS ----------------------
+  parameters:
+    AccountId:
+      name: accountId
+      in: path
+      required: true
+      schema:
+        type: string
+    PageSize:
+      name: pageSize
+      in: query
+      description: Number of items per page
+      example: 100
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+        default: 100
+    Page:
+      name: page
+      in: query
+      description: Page number
+      example: 1
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+        default: 1
+    Sort:
+      name: sort
+      in: query
+      description: Sort order
+      example: createdAt:asc
+      schema:
+        type: string
+    CreatedAtFrom:
+      name: createdAtFrom
+      in: query
+      description: Filter by created at date
+      schema:
+        type: string
+        format: date-time
+    UpdatedAtFrom:
+      name: updatedAtFrom
+      in: query
+      description: Filter by updated at date
+      schema:
+        type: string
+        format: date-time
+
+  # ---------------------- RESPONSES ----------------------
+  responses:
+    NoContent:
+      description: No content
+
+    ErrorResponse:
+      description: General error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    Accounts:
+      description: List of accounts
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Account'
+
+    Balances:
+      description: Account balances
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Balances'
+
+    Beneficiaries:
+      description: List of beneficiaries
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Beneficiary'
+
+    Transactions:
+      description: List of transactions
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Transaction'
+
+  # ---------------------- SCHEMAS ----------------------
+  schemas:
+    Error:
+      type: object
+      required:
+        - Title
+        - Detail
+      properties:
+        Title:
+          type: string
+        Detail:
+          type: string
+
+    Account:
+      type: object
+      required:
+        - id
+        - accountName
+        - createdAt
+      properties:
+        id:
+          type: string
+        accountName:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+
+    Balances:
+      type: object
+      required:
+        - id
+        - accountID
+        - at
+        - balances
+      properties:
+        id:
+          type: string
+        accountID:
+          type: string
+        at:
+          type: string
+          format: date-time
+        balances:
+          type: array
+          items:
+            $ref: '#/components/schemas/Balance'
+
+    Balance:
+      type: object
+      required:
+        - amount
+        - currency
+      properties:
+        amount:
+          type: string
+        currency:
+          type: string
+
+    Beneficiary:
+      type: object
+      required:
+        - id
+        - createdAt
+        - ownerName
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        ownerName:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+
+
+    Transaction:
+      type: object
+      required:
+        - id
+        - createdAt
+        - updatedAt
+        - currency
+        - type
+        - status
+        - amount
+      properties:
+        id:
+          type: string
+        relatedTransactionID:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        currency:
+          type: string
+        scheme: 
+          type: string
+        type:
+          $ref: '#/components/schemas/TransactionType'
+        status:
+          $ref: '#/components/schemas/TransactionStatus'
+        amount:
+          type: string
+        sourceAccountID:
+          type: string
+        destinationAccountID:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+
+    Metadata:
+      type: object
+      additionalProperties:
+        type: string
+      nullable: true
+
+    TransactionType:
+      type: string
+      enum:
+        - PAYIN
+        - PAYOUT
+        - TRANSFER
+
+    TransactionStatus:
+      type: string
+      enum:
+        - PENDING
+        - SUCCEEDED
+        - FAILED

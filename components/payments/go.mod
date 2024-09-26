@@ -8,6 +8,7 @@ require (
 	github.com/ThreeDotsLabs/watermill v1.3.7
 	github.com/bombsimon/logrusr/v3 v3.1.0
 	github.com/formancehq/go-libs v1.7.2-0.20240925132527-7627842ea9b5
+	github.com/formancehq/payments/genericclient v0.0.0-00010101000000-000000000000
 	github.com/gibson042/canonicaljson-go v1.0.3
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/golang/mock v1.6.0
@@ -205,4 +206,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-// replace github.com/formancehq/payments/genericclient => ./cmd/connectors/internal/connectors/generic/client/generated
+replace github.com/formancehq/payments/genericclient => ./internal/connectors/plugins/public/generic/client/generated
