@@ -136,8 +136,8 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 		}
 
 		payment = &models.PSPPayment{
-			// ID of original transaction to ensure the refund is appended to the original record
-			Reference:                   balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
+			Reference:                   balanceTransaction.ID,
+			ParentReference:             balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
 			Type:                        models.PAYMENT_TYPE_PAYIN,
 			Status:                      models.PAYMENT_STATUS_REFUNDED,
 			Amount:                      big.NewInt(balanceTransaction.Source.Refund.Amount),
@@ -171,8 +171,8 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 		}
 
 		payment = &models.PSPPayment{
-			// ID of original transaction to ensure the refund is appended to the original record
-			Reference:                   balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
+			Reference:                   balanceTransaction.ID,
+			ParentReference:             balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
 			Type:                        models.PAYMENT_TYPE_PAYIN,
 			Status:                      models.PAYMENT_STATUS_REFUNDED_FAILURE,
 			Amount:                      big.NewInt(balanceTransaction.Source.Refund.Amount),
@@ -232,8 +232,8 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 		}
 
 		payment = &models.PSPPayment{
-			// ID of original transaction to ensure the refund is appended to the original record
-			Reference:                   balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
+			Reference:                   balanceTransaction.ID,
+			ParentReference:             balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
 			Type:                        models.PAYMENT_TYPE_PAYIN,
 			Status:                      models.PAYMENT_STATUS_REFUNDED,
 			Amount:                      big.NewInt(balanceTransaction.Source.Refund.Amount),
@@ -268,8 +268,8 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 		}
 
 		payment = &models.PSPPayment{
-			// ID of original transaction to ensure the refund is appended to the original record
-			Reference:                   balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
+			Reference:                   balanceTransaction.ID,
+			ParentReference:             balanceTransaction.Source.Refund.Charge.BalanceTransaction.ID,
 			Type:                        models.PAYMENT_TYPE_PAYIN,
 			Status:                      models.PAYMENT_STATUS_REFUNDED_FAILURE,
 			Amount:                      big.NewInt(balanceTransaction.Source.Refund.Amount),
@@ -325,12 +325,12 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 
 		appendMetadata(metadata, balanceTransaction.Source.Payout.Metadata)
 		payment = &models.PSPPayment{
-			// ID of original transaction to ensure the refund is appended to the original record
-			Reference: balanceTransaction.Source.Payout.BalanceTransaction.ID,
-			Type:      models.PAYMENT_TYPE_PAYOUT,
-			Status:    status,
-			Amount:    big.NewInt(balanceTransaction.Source.Payout.Amount),
-			Asset:     currency.FormatAsset(supportedCurrenciesWithDecimal, transactionCurrency),
+			Reference:       balanceTransaction.ID,
+			ParentReference: balanceTransaction.Source.Payout.BalanceTransaction.ID,
+			Type:            models.PAYMENT_TYPE_PAYOUT,
+			Status:          status,
+			Amount:          big.NewInt(balanceTransaction.Source.Payout.Amount),
+			Asset:           currency.FormatAsset(supportedCurrenciesWithDecimal, transactionCurrency),
 			Scheme: func() models.PaymentScheme {
 				switch balanceTransaction.Source.Payout.Type {
 				case stripesdk.PayoutTypeBank:
@@ -380,8 +380,8 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 
 		appendMetadata(metadata, balanceTransaction.Source.Transfer.Metadata)
 		payment = &models.PSPPayment{
-			// ID of original transaction to ensure the refund is appended to the original record
-			Reference:              balanceTransaction.Source.Transfer.BalanceTransaction.ID,
+			Reference:              balanceTransaction.ID,
+			ParentReference:        balanceTransaction.Source.Transfer.BalanceTransaction.ID,
 			Type:                   models.PAYMENT_TYPE_TRANSFER,
 			Status:                 models.PAYMENT_STATUS_REFUNDED,
 			Amount:                 big.NewInt(balanceTransaction.Amount),
@@ -411,8 +411,8 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 
 		appendMetadata(metadata, balanceTransaction.Source.Transfer.Metadata)
 		payment = &models.PSPPayment{
-			// ID of original transaction to ensure the refund is appended to the original record
-			Reference:              balanceTransaction.Source.Transfer.BalanceTransaction.ID,
+			Reference:              balanceTransaction.ID,
+			ParentReference:        balanceTransaction.Source.Transfer.BalanceTransaction.ID,
 			Type:                   models.PAYMENT_TYPE_TRANSFER,
 			Status:                 status,
 			Amount:                 big.NewInt(balanceTransaction.Amount),
@@ -455,8 +455,8 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 		}
 
 		payment = &models.PSPPayment{
-			// ID of original transaction to ensure the refund is appended to the original record
-			Reference:                   balanceTransaction.Source.Dispute.Charge.BalanceTransaction.ID,
+			Reference:                   balanceTransaction.ID,
+			ParentReference:             balanceTransaction.Source.Dispute.Charge.BalanceTransaction.ID,
 			Type:                        models.PAYMENT_TYPE_PAYIN,
 			Status:                      paymentStatus, // Dispute is occuring, we don't know the outcome yet
 			Amount:                      big.NewInt(balanceTransaction.Amount),
