@@ -24,7 +24,7 @@ func (p Plugin) fetchExternalAccounts(ctx context.Context, req models.FetchNextE
 		LastCreatedAtFrom: oldState.LastCreatedAtFrom,
 	}
 
-	var accounts []models.PSPAccount
+	accounts := make([]models.PSPAccount, 0, req.PageSize)
 	hasMore := false
 	for page := 0; ; page++ {
 		pagedExternalAccounts, err := p.client.ListBeneficiaries(ctx, int64(page), int64(req.PageSize), oldState.LastCreatedAtFrom)

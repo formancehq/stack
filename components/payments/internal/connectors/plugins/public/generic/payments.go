@@ -28,7 +28,7 @@ func (p Plugin) fetchNextPayments(ctx context.Context, req models.FetchNextPayme
 		LastUpdatedAtFrom: oldState.LastUpdatedAtFrom,
 	}
 
-	var payments []models.PSPPayment
+	payments := make([]models.PSPPayment, 0, req.PageSize)
 	hasMore := false
 	for page := 0; ; page++ {
 		pagedPayments, err := p.client.ListTransactions(ctx, int64(page), int64(req.PageSize), oldState.LastUpdatedAtFrom)

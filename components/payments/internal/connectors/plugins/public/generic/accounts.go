@@ -24,9 +24,8 @@ func (p Plugin) fetchNextAccounts(ctx context.Context, req models.FetchNextAccou
 		LastCreatedAtFrom: oldState.LastCreatedAtFrom,
 	}
 
-	var accounts []models.PSPAccount
+	accounts := make([]models.PSPAccount, 0, req.PageSize)
 	hasMore := false
-
 	for page := 0; ; page++ {
 		pagedAccounts, err := p.client.ListAccounts(ctx, int64(page), int64(req.PageSize), oldState.LastCreatedAtFrom)
 		if err != nil {
