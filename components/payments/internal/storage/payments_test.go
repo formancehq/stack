@@ -60,10 +60,12 @@ var (
 				{
 					ID: models.PaymentAdjustmentID{
 						PaymentID: pID1,
+						Reference: "test1",
 						CreatedAt: now.Add(-60 * time.Minute).UTC().Time,
 						Status:    models.PAYMENT_STATUS_SUCCEEDED,
 					},
 					PaymentID: pID1,
+					Reference: "test1",
 					CreatedAt: now.Add(-60 * time.Minute).UTC().Time,
 					Status:    models.PAYMENT_STATUS_SUCCEEDED,
 					Amount:    big.NewInt(100),
@@ -87,10 +89,12 @@ var (
 				{
 					ID: models.PaymentAdjustmentID{
 						PaymentID: pid2,
+						Reference: "test2",
 						CreatedAt: now.Add(-30 * time.Minute).UTC().Time,
 						Status:    models.PAYMENT_STATUS_FAILED,
 					},
 					PaymentID: pid2,
+					Reference: "test2",
 					CreatedAt: now.Add(-30 * time.Minute).UTC().Time,
 					Status:    models.PAYMENT_STATUS_FAILED,
 					Amount:    big.NewInt(200),
@@ -114,10 +118,12 @@ var (
 				{
 					ID: models.PaymentAdjustmentID{
 						PaymentID: pid3,
+						Reference: "another_reference",
 						CreatedAt: now.Add(-55 * time.Minute).UTC().Time,
 						Status:    models.PAYMENT_STATUS_PENDING,
 					},
 					PaymentID: pid3,
+					Reference: "another_reference",
 					CreatedAt: now.Add(-55 * time.Minute).UTC().Time,
 					Status:    models.PAYMENT_STATUS_PENDING,
 					Amount:    big.NewInt(300),
@@ -191,10 +197,12 @@ func TestPaymentsUpsert(t *testing.T) {
 				{
 					ID: models.PaymentAdjustmentID{
 						PaymentID: pid3,
+						Reference: "another_reference2",
 						CreatedAt: now.Add(-45 * time.Minute).UTC().Time,
 						Status:    models.PAYMENT_STATUS_SUCCEEDED,
 					},
 					PaymentID: pid3,
+					Reference: "another_reference2",
 					CreatedAt: now.Add(-45 * time.Minute).UTC().Time,
 					Status:    models.PAYMENT_STATUS_SUCCEEDED,
 					Amount:    big.NewInt(300),
@@ -205,10 +213,12 @@ func TestPaymentsUpsert(t *testing.T) {
 				{
 					ID: models.PaymentAdjustmentID{
 						PaymentID: pid3,
+						Reference: "another_reference",
 						CreatedAt: now.Add(-55 * time.Minute).UTC().Time,
 						Status:    models.PAYMENT_STATUS_PENDING,
 					},
 					PaymentID: pid3,
+					Reference: "another_reference",
 					CreatedAt: now.Add(-55 * time.Minute).UTC().Time,
 					Status:    models.PAYMENT_STATUS_PENDING,
 					Amount:    big.NewInt(300),
@@ -235,10 +245,12 @@ func TestPaymentsUpsert(t *testing.T) {
 				{
 					ID: models.PaymentAdjustmentID{
 						PaymentID: pID1,
+						Reference: "test1",
 						CreatedAt: now.Add(-20 * time.Minute).UTC().Time,
 						Status:    models.PAYMENT_STATUS_REFUNDED,
 					},
 					PaymentID: pID1,
+					Reference: "test1",
 					CreatedAt: now.Add(-20 * time.Minute).UTC().Time,
 					Status:    models.PAYMENT_STATUS_REFUNDED,
 					Amount:    big.NewInt(50),
@@ -273,10 +285,12 @@ func TestPaymentsUpsert(t *testing.T) {
 				{
 					ID: models.PaymentAdjustmentID{
 						PaymentID: pID1,
+						Reference: "test1",
 						CreatedAt: now.Add(-20 * time.Minute).UTC().Time,
 						Status:    models.PAYMENT_STATUS_REFUNDED,
 					},
 					PaymentID: pID1,
+					Reference: "test1",
 					CreatedAt: now.Add(-20 * time.Minute).UTC().Time,
 					Status:    models.PAYMENT_STATUS_REFUNDED,
 					Amount:    big.NewInt(50),
@@ -286,10 +300,12 @@ func TestPaymentsUpsert(t *testing.T) {
 				{
 					ID: models.PaymentAdjustmentID{
 						PaymentID: pID1,
+						Reference: "test1",
 						CreatedAt: now.Add(-60 * time.Minute).UTC().Time,
 						Status:    models.PAYMENT_STATUS_SUCCEEDED,
 					},
 					PaymentID: pID1,
+					Reference: "test1",
 					CreatedAt: now.Add(-60 * time.Minute).UTC().Time,
 					Status:    models.PAYMENT_STATUS_SUCCEEDED,
 					Amount:    big.NewInt(100),

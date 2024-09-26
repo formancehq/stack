@@ -48,6 +48,7 @@ type paymentAdjustment struct {
 	// Mandatory fields
 	ID        models.PaymentAdjustmentID `bun:"id,pk,type:character varying,notnull"`
 	PaymentID models.PaymentID           `bun:"payment_id,type:character varying,notnull"`
+	Reference string                     `bun:"reference,type:text,notnull"`
 	CreatedAt time.Time                  `bun:"created_at,type:timestamp without time zone,notnull"`
 	Status    models.PaymentStatus       `bun:"status,type:text,notnull"`
 	Raw       json.RawMessage            `bun:"raw,type:json,notnull"`
@@ -343,6 +344,7 @@ func fromPaymentAdjustmentModels(from models.PaymentAdjustment) paymentAdjustmen
 	return paymentAdjustment{
 		ID:        from.ID,
 		PaymentID: from.PaymentID,
+		Reference: from.Reference,
 		CreatedAt: from.CreatedAt.UTC(),
 		Status:    from.Status,
 		Amount:    from.Amount,
@@ -356,6 +358,7 @@ func toPaymentAdjustmentModels(from paymentAdjustment) models.PaymentAdjustment 
 	return models.PaymentAdjustment{
 		ID:        from.ID,
 		PaymentID: from.PaymentID,
+		Reference: from.Reference,
 		CreatedAt: from.CreatedAt.UTC(),
 		Status:    from.Status,
 		Amount:    from.Amount,

@@ -307,14 +307,15 @@ func (p Plugin) translateRefund(ctx context.Context, req webhookTranslateRequest
 	}
 
 	payment := models.PSPPayment{
-		Reference: refund.InitialTransactionID,
-		CreatedAt: time.Unix(refund.CreationDate, 0),
-		Type:      paymentType,
-		Amount:    &amountRefunded,
-		Asset:     currency.FormatAsset(supportedCurrenciesWithDecimal, refund.DebitedFunds.Currency),
-		Scheme:    models.PAYMENT_SCHEME_OTHER,
-		Status:    models.PAYMENT_STATUS_REFUNDED,
-		Raw:       raw,
+		ParentReference: refund.InitialTransactionID,
+		Reference:       refund.ID,
+		CreatedAt:       time.Unix(refund.CreationDate, 0),
+		Type:            paymentType,
+		Amount:          &amountRefunded,
+		Asset:           currency.FormatAsset(supportedCurrenciesWithDecimal, refund.DebitedFunds.Currency),
+		Scheme:          models.PAYMENT_SCHEME_OTHER,
+		Status:          models.PAYMENT_STATUS_REFUNDED,
+		Raw:             raw,
 	}
 
 	return models.WebhookResponse{

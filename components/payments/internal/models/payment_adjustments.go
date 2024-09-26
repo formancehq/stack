@@ -12,6 +12,10 @@ type PaymentAdjustment struct {
 	// Related Payment ID
 	PaymentID PaymentID `json:"paymentID"`
 
+	// Reference of the adjustment. If we do not have a new reference for the
+	// adjustment, it will be the same as the payment reference.
+	Reference string `json:"reference"`
+
 	// Creation date of the adjustment
 	CreatedAt time.Time `json:"createdAt"`
 
