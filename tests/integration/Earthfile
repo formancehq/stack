@@ -82,11 +82,13 @@ sources:
     COPY --pass-args (releases+sdk-generate/go) /src/releases/sdks/go
     COPY --pass-args (ledger+sources/src) /src/components/ledger
     COPY --pass-args (payments+sources/src) /src/components/payments
-    COPY --pass-args (stack+sources/out --LOCATION=ee) /src/ee
     COPY --pass-args (gateway+sources/src) /src/ee/gateway/
     COPY --pass-args (auth+sources/src) /src/ee/auth/
     COPY --pass-args (search+sources/src) /src/ee/search/
     COPY --pass-args (webhooks+sources/src) /src/ee/webhooks/
+    COPY --pass-args (orchestration+sources/src) /src/ee/orchestration/
+    COPY --pass-args (reconciliation+sources/src) /src/ee/reconciliation/
+    COPY --pass-args (wallets+sources/src) /src/ee/wallets/
     COPY --pass-args (stack+sources/out --LOCATION=go.mod) /src/go.mod
     COPY --pass-args (stack+sources/out --LOCATION=go.sum) /src/go.sum
     COPY . /src/tests/integration
