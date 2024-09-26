@@ -3,11 +3,11 @@ package storage
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/formancehq/go-libs/bun/bunpaginate"
 	"github.com/formancehq/go-libs/pointer"
 	"github.com/formancehq/go-libs/query"
+	"github.com/formancehq/go-libs/time"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
@@ -203,7 +203,7 @@ func fromPoolModel(from models.Pool) (pool, []poolAccounts) {
 	p := pool{
 		ID:        from.ID,
 		Name:      from.Name,
-		CreatedAt: from.CreatedAt.UTC(),
+		CreatedAt: time.New(from.CreatedAt),
 	}
 
 	var accounts []poolAccounts
@@ -229,7 +229,7 @@ func toPoolModel(from pool) models.Pool {
 	return models.Pool{
 		ID:           from.ID,
 		Name:         from.Name,
-		CreatedAt:    from.CreatedAt.UTC(),
+		CreatedAt:    from.CreatedAt.Time,
 		PoolAccounts: accounts,
 	}
 }

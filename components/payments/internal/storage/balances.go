@@ -8,6 +8,7 @@ import (
 
 	"github.com/formancehq/go-libs/bun/bunpaginate"
 	"github.com/formancehq/go-libs/pointer"
+	internalTime "github.com/formancehq/go-libs/time"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
@@ -17,13 +18,13 @@ type balance struct {
 	bun.BaseModel `bun:"table:balances"`
 
 	// Mandatory fields
-	AccountID models.AccountID `bun:"account_id,pk,type:character varying,notnull"`
-	CreatedAt time.Time        `bun:"created_at,pk,type:timestamp without time zone,notnull"`
-	Asset     string           `bun:"asset,pk,type:text,notnull"`
+	AccountID models.AccountID  `bun:"account_id,pk,type:character varying,notnull"`
+	CreatedAt internalTime.Time `bun:"created_at,pk,type:timestamp without time zone,notnull"`
+	Asset     string            `bun:"asset,pk,type:text,notnull"`
 
 	ConnectorID   models.ConnectorID `bun:"connector_id,type:character varying,notnull"`
 	Balance       *big.Int           `bun:"balance,type:numeric,notnull"`
-	LastUpdatedAt time.Time          `bun:"last_updated_at,type:timestamp without time zone,notnull"`
+	LastUpdatedAt internalTime.Time  `bun:"last_updated_at,type:timestamp without time zone,notnull"`
 }
 
 func (s *store) BalancesUpsert(ctx context.Context, balances []models.Balance) error {
@@ -245,11 +246,11 @@ func fromBalancesModels(from []models.Balance) []balance {
 func fromBalanceModels(from models.Balance) balance {
 	return balance{
 		AccountID:     from.AccountID,
-		CreatedAt:     from.CreatedAt.UTC(),
+		CreatedAt:     internalTime.New(from.CreatedAt),
 		Asset:         from.Asset,
 		ConnectorID:   from.AccountID.ConnectorID,
 		Balance:       from.Balance,
-		LastUpdatedAt: from.LastUpdatedAt.UTC(),
+		LastUpdatedAt: internalTime.New(from.LastUpdatedAt),
 	}
 }
 
@@ -264,9 +265,9 @@ func toBalancesModels(from []balance) []models.Balance {
 func toBalanceModels(from balance) models.Balance {
 	return models.Balance{
 		AccountID:     from.AccountID,
-		CreatedAt:     from.CreatedAt.UTC(),
+		CreatedAt:     from.CreatedAt.Time,
 		Asset:         from.Asset,
 		Balance:       from.Balance,
-		LastUpdatedAt: from.LastUpdatedAt.UTC(),
+		LastUpdatedAt: from.LastUpdatedAt.Time,
 	}
 }

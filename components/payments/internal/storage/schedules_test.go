@@ -3,11 +3,11 @@ package storage
 import (
 	"context"
 	"testing"
-	"time"
 
 	"github.com/formancehq/go-libs/bun/bunpaginate"
 	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/go-libs/query"
+	"github.com/formancehq/go-libs/time"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"

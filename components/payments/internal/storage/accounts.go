@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/formancehq/go-libs/bun/bunpaginate"
 	"github.com/formancehq/go-libs/query"
+	"github.com/formancehq/go-libs/time"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
@@ -161,7 +161,7 @@ func fromAccountModels(from models.Account) account {
 	return account{
 		ID:           from.ID,
 		ConnectorID:  from.ConnectorID,
-		CreatedAt:    from.CreatedAt.UTC(),
+		CreatedAt:    time.New(from.CreatedAt),
 		Reference:    from.Reference,
 		Type:         string(from.Type),
 		DefaultAsset: from.DefaultAsset,
@@ -176,7 +176,7 @@ func toAccountModels(from account) models.Account {
 		ID:           from.ID,
 		ConnectorID:  from.ConnectorID,
 		Reference:    from.Reference,
-		CreatedAt:    from.CreatedAt.UTC(),
+		CreatedAt:    from.CreatedAt.Time,
 		Type:         models.AccountType(from.Type),
 		Name:         from.Name,
 		DefaultAsset: from.DefaultAsset,

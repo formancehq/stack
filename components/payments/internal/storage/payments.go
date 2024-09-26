@@ -6,10 +6,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
-	"time"
 
 	"github.com/formancehq/go-libs/bun/bunpaginate"
 	"github.com/formancehq/go-libs/query"
+	"github.com/formancehq/go-libs/time"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
@@ -310,7 +310,7 @@ func fromPaymentModels(from models.Payment) payment {
 		ID:                   from.ID,
 		ConnectorID:          from.ConnectorID,
 		Reference:            from.Reference,
-		CreatedAt:            from.CreatedAt.UTC(),
+		CreatedAt:            time.New(from.CreatedAt),
 		Type:                 from.Type,
 		InitialAmount:        from.InitialAmount,
 		Amount:               from.Amount,
@@ -328,7 +328,7 @@ func toPaymentModels(payment payment, status models.PaymentStatus) models.Paymen
 		ConnectorID:          payment.ConnectorID,
 		InitialAmount:        payment.InitialAmount,
 		Reference:            payment.Reference,
-		CreatedAt:            payment.CreatedAt.UTC(),
+		CreatedAt:            payment.CreatedAt.Time,
 		Type:                 payment.Type,
 		Amount:               payment.Amount,
 		Asset:                payment.Asset,
@@ -345,7 +345,7 @@ func fromPaymentAdjustmentModels(from models.PaymentAdjustment) paymentAdjustmen
 		ID:        from.ID,
 		PaymentID: from.PaymentID,
 		Reference: from.Reference,
-		CreatedAt: from.CreatedAt.UTC(),
+		CreatedAt: time.New(from.CreatedAt),
 		Status:    from.Status,
 		Amount:    from.Amount,
 		Asset:     from.Asset,
@@ -359,7 +359,7 @@ func toPaymentAdjustmentModels(from paymentAdjustment) models.PaymentAdjustment 
 		ID:        from.ID,
 		PaymentID: from.PaymentID,
 		Reference: from.Reference,
-		CreatedAt: from.CreatedAt.UTC(),
+		CreatedAt: from.CreatedAt.Time,
 		Status:    from.Status,
 		Amount:    from.Amount,
 		Asset:     from.Asset,
