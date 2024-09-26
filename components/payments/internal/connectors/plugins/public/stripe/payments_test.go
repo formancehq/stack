@@ -28,6 +28,7 @@ var _ = Describe("Stripe Plugin Payments", func() {
 
 			samplePayments []*stripesdk.BalanceTransaction
 			accRef         string
+			pageSize       int
 		)
 
 		BeforeEach(func() {
@@ -35,6 +36,7 @@ var _ = Describe("Stripe Plugin Payments", func() {
 			m = client.NewMockClient(ctrl)
 			plg.SetClient(m)
 
+			pageSize = 15
 			accRef = "baseAcc"
 			samplePayments = []*stripesdk.BalanceTransaction{
 				{
@@ -189,6 +191,7 @@ var _ = Describe("Stripe Plugin Payments", func() {
 			req := models.FetchNextPaymentsRequest{
 				FromPayload: json.RawMessage(fmt.Sprintf(`{"reference": "%s"}`, accRef)),
 				State:       json.RawMessage(`{}`),
+				PageSize:    pageSize,
 			}
 			p := []*stripesdk.BalanceTransaction{
 				{
@@ -196,7 +199,7 @@ var _ = Describe("Stripe Plugin Payments", func() {
 					Type: stripesdk.BalanceTransactionTypeAdjustment,
 				},
 			}
-			m.EXPECT().GetPayments(ctx, &accRef, gomock.Any(), stripe.PageLimit).Return(
+			m.EXPECT().GetPayments(ctx, &accRef, gomock.Any(), int64(pageSize)).Return(
 				p,
 				true,
 				nil,
@@ -210,6 +213,7 @@ var _ = Describe("Stripe Plugin Payments", func() {
 			req := models.FetchNextPaymentsRequest{
 				FromPayload: json.RawMessage(fmt.Sprintf(`{"reference": "%s"}`, accRef)),
 				State:       json.RawMessage(`{}`),
+				PageSize:    pageSize,
 			}
 			p := []*stripesdk.BalanceTransaction{
 				{
@@ -222,7 +226,7 @@ var _ = Describe("Stripe Plugin Payments", func() {
 					},
 				},
 			}
-			m.EXPECT().GetPayments(ctx, &accRef, gomock.Any(), stripe.PageLimit).Return(
+			m.EXPECT().GetPayments(ctx, &accRef, gomock.Any(), int64(pageSize)).Return(
 				p,
 				true,
 				nil,
@@ -236,8 +240,9 @@ var _ = Describe("Stripe Plugin Payments", func() {
 			req := models.FetchNextPaymentsRequest{
 				FromPayload: json.RawMessage(fmt.Sprintf(`{"reference": "%s"}`, accRef)),
 				State:       json.RawMessage(`{}`),
+				PageSize:    pageSize,
 			}
-			m.EXPECT().GetPayments(ctx, &accRef, gomock.Any(), stripe.PageLimit).Return(
+			m.EXPECT().GetPayments(ctx, &accRef, gomock.Any(), int64(pageSize)).Return(
 				samplePayments,
 				true,
 				nil,

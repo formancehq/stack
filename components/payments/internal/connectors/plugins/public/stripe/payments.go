@@ -44,7 +44,7 @@ func (p *Plugin) fetchNextPayments(ctx context.Context, req models.FetchNextPaym
 
 	var payments []models.PSPPayment
 	newState := PaymentState{}
-	rawPayments, hasMore, err := p.client.GetPayments(ctx, &from.Reference, &oldState.LastID, PageLimit)
+	rawPayments, hasMore, err := p.client.GetPayments(ctx, resolveAccount(&from.Reference), &oldState.LastID, int64(req.PageSize))
 	if err != nil {
 		return models.FetchNextPaymentsResponse{}, err
 	}

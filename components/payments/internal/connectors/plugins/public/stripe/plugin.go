@@ -10,8 +10,6 @@ import (
 	stripesdk "github.com/stripe/stripe-go/v79"
 )
 
-const PageLimit = int64(20)
-
 type Plugin struct {
 	StripeAPIBackend stripesdk.Backend // override in tests to mock
 	client           client.Client

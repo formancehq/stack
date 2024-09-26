@@ -26,6 +26,7 @@ var _ = Describe("Stripe Plugin ExternalAccounts", func() {
 		var (
 			m *client.MockClient
 
+			pageSize               int
 			sampleExternalAccounts []*stripesdk.BankAccount
 			accRef                 string
 			created                int64
@@ -36,10 +37,11 @@ var _ = Describe("Stripe Plugin ExternalAccounts", func() {
 			m = client.NewMockClient(ctrl)
 			plg.SetClient(m)
 
+			pageSize = 10
 			accRef = "baseAcc"
 			created = 1483565364
 			sampleExternalAccounts = make([]*stripesdk.BankAccount, 0)
-			for i := 0; i < int(stripe.PageLimit); i++ {
+			for i := 0; i < pageSize; i++ {
 				sampleExternalAccounts = append(sampleExternalAccounts, &stripesdk.BankAccount{
 					ID:      fmt.Sprintf("some-reference-%d", i),
 					Account: &stripesdk.Account{Created: created},
@@ -51,8 +53,9 @@ var _ = Describe("Stripe Plugin ExternalAccounts", func() {
 			req := models.FetchNextExternalAccountsRequest{
 				FromPayload: json.RawMessage(fmt.Sprintf(`{"reference": "%s"}`, accRef)),
 				State:       json.RawMessage(`{}`),
+				PageSize:    pageSize,
 			}
-			m.EXPECT().GetExternalAccounts(ctx, &accRef, gomock.Any(), stripe.PageLimit).Return(
+			m.EXPECT().GetExternalAccounts(ctx, &accRef, gomock.Any(), int64(pageSize)).Return(
 				sampleExternalAccounts,
 				true,
 				nil,
@@ -60,7 +63,7 @@ var _ = Describe("Stripe Plugin ExternalAccounts", func() {
 			res, err := plg.FetchNextExternalAccounts(ctx, req)
 			Expect(err).To(BeNil())
 			Expect(res.HasMore).To(BeTrue())
-			Expect(res.ExternalAccounts).To(HaveLen(int(stripe.PageLimit)))
+			Expect(res.ExternalAccounts).To(HaveLen(pageSize))
 
 			var state stripe.AccountsState
 

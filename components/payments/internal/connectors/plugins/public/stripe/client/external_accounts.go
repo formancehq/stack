@@ -23,6 +23,11 @@ func (c *client) GetExternalAccounts(
 		filters.StartingAfter = lastID
 	}
 
+	// return 0 results because this endpoint cannot be used for root account
+	if accountID == nil {
+		return []*stripe.BankAccount{}, false, nil
+	}
+
 	itr := c.bankAccountClient.List(&stripe.BankAccountListParams{
 		Account:    accountID,
 		ListParams: filters,

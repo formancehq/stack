@@ -20,13 +20,7 @@ func (p *Plugin) fetchNextBalances(ctx context.Context, req models.FetchNextBala
 		return models.FetchNextBalancesResponse{}, err
 	}
 
-	stripeAccount := from.Reference
-	if stripeAccount == rootAccountReference {
-		// special case for root account
-		stripeAccount = ""
-	}
-
-	balance, err := p.client.GetAccountBalances(ctx, &stripeAccount)
+	balance, err := p.client.GetAccountBalances(ctx, resolveAccount(&from.Reference))
 	if err != nil {
 		return models.FetchNextBalancesResponse{}, err
 	}

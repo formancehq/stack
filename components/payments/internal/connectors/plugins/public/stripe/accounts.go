@@ -9,12 +9,21 @@ import (
 	"github.com/formancehq/payments/internal/models"
 )
 
-const (
+var (
 	rootAccountReference = "root"
 )
 
+// root account reference is internal so we don't pass it to Stripe API clients
+func resolveAccount(ref *string) *string {
+	if *ref == rootAccountReference {
+		return nil
+	}
+	return ref
+}
+
 type AccountsState struct {
-	LastID string `json:"lastID,omitempty"`
+	InitFinished bool   `json:"init_finished"`
+	LastID       string `json:"lastID,omitempty"`
 }
 
 func (p *Plugin) fetchNextAccounts(ctx context.Context, req models.FetchNextAccountsRequest) (models.FetchNextAccountsResponse, error) {
@@ -25,9 +34,25 @@ func (p *Plugin) fetchNextAccounts(ctx context.Context, req models.FetchNextAcco
 		}
 	}
 
-	var accounts []models.PSPAccount
-	newState := AccountsState{}
-	rawAccounts, hasMore, err := p.client.GetAccounts(ctx, &oldState.LastID, PageLimit)
+	accounts := make([]models.PSPAccount, 0, req.PageSize)
+	if !oldState.InitFinished {
+		// create a root account if this is the first time this is being run
+		accounts = append(accounts, models.PSPAccount{
+			Name:      &rootAccountReference,
+			Reference: rootAccountReference,
+			CreatedAt: time.Now().UTC(),
+			Raw:       json.RawMessage("{}"),
+			Metadata:  map[string]string{},
+		})
+		oldState.InitFinished = true
+	}
+
+	needed := req.PageSize - len(accounts)
+
+	newState := AccountsState{
+		InitFinished: oldState.InitFinished,
+	}
+	rawAccounts, hasMore, err := p.client.GetAccounts(ctx, &oldState.LastID, int64(needed))
 	if err != nil {
 		return models.FetchNextAccountsResponse{}, err
 	}

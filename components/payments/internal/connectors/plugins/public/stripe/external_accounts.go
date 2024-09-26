@@ -31,7 +31,7 @@ func (p *Plugin) fetchNextExternalAccounts(ctx context.Context, req models.Fetch
 	newState := AccountsState{}
 	var accounts []models.PSPAccount
 
-	rawAccounts, hasMore, err := p.client.GetExternalAccounts(ctx, &from.Reference, &oldState.LastID, PageLimit)
+	rawAccounts, hasMore, err := p.client.GetExternalAccounts(ctx, resolveAccount(&from.Reference), &oldState.LastID, int64(req.PageSize))
 	if err != nil {
 		return models.FetchNextExternalAccountsResponse{}, err
 	}

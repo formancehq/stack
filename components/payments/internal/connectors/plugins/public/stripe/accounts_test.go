@@ -26,6 +26,7 @@ var _ = Describe("Stripe Plugin Accounts", func() {
 		var (
 			m *client.MockClient
 
+			pageSize       int
 			sampleAccounts []*stripesdk.Account
 		)
 
@@ -33,9 +34,10 @@ var _ = Describe("Stripe Plugin Accounts", func() {
 			ctrl := gomock.NewController(GinkgoT())
 			m = client.NewMockClient(ctrl)
 			plg.SetClient(m)
+			pageSize = 20
 
 			sampleAccounts = make([]*stripesdk.Account, 0)
-			for i := 0; i < int(stripe.PageLimit); i++ {
+			for i := 0; i < pageSize-1; i++ {
 				sampleAccounts = append(sampleAccounts, &stripesdk.Account{
 					ID: fmt.Sprintf("some-reference-%d", i),
 				})
@@ -44,9 +46,11 @@ var _ = Describe("Stripe Plugin Accounts", func() {
 		})
 		It("fetches next accounts", func(ctx SpecContext) {
 			req := models.FetchNextAccountsRequest{
-				State: json.RawMessage(`{}`),
+				State:    json.RawMessage(`{}`),
+				PageSize: pageSize,
 			}
-			m.EXPECT().GetAccounts(ctx, gomock.Any(), stripe.PageLimit).Return(
+			// pageSize passed to client is less when we generate a root account
+			m.EXPECT().GetAccounts(ctx, gomock.Any(), int64(pageSize-1)).Return(
 				sampleAccounts,
 				true,
 				nil,
@@ -54,7 +58,8 @@ var _ = Describe("Stripe Plugin Accounts", func() {
 			res, err := plg.FetchNextAccounts(ctx, req)
 			Expect(err).To(BeNil())
 			Expect(res.HasMore).To(BeTrue())
-			Expect(res.Accounts).To(HaveLen(int(stripe.PageLimit)))
+			Expect(res.Accounts).To(HaveLen(req.PageSize))
+			Expect(res.Accounts[0].Reference).To(Equal("root"))
 
 			var state stripe.AccountsState
 
