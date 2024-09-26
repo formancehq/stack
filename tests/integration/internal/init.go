@@ -2,7 +2,7 @@ package internal
 
 import (
 	"context"
-	formance "github.com/formancehq/formance-sdk-go/v2"
+	formance "github.com/formancehq/formance-sdk-go/v3"
 	"github.com/formancehq/go-libs/logging"
 	"github.com/oauth2-proxy/mockoidc"
 	. "github.com/onsi/ginkgo/v2"
