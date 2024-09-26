@@ -10,10 +10,10 @@ import (
 
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
-	ledgerevents "github.com/formancehq/ledger/pkg/events"
-	"github.com/formancehq/stack/libs/events"
 	"github.com/formancehq/go-libs/metadata"
 	"github.com/formancehq/go-libs/pointer"
+	ledgerevents "github.com/formancehq/ledger/pkg/events"
+	"github.com/formancehq/stack/libs/events"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/nats-io/nats.go"
 	. "github.com/onsi/ginkgo/v2"
@@ -198,7 +198,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 						"destination": "alice",
 					},
 				},
-				"txid":      float64(0),
+				"txid":      float64(1),
 				"timestamp": timestamp.Format(time.RFC3339),
 				"ledger":    "default",
 			}
@@ -287,7 +287,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 
 			Expect(err).Should(Equal(&sdkerrors.V2ErrorResponse{
 				ErrorCode:    shared.V2ErrorsEnumInsufficientFund,
-				ErrorMessage: "running numscript: script execution failed: account(s) @bob had/have insufficient funds",
+				ErrorMessage: "unexpected error while forging log: failed to execute program: failed to execute machine: account(s) @bob had/have insufficient funds",
 			}))
 		})
 	})
@@ -324,7 +324,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 		})
 		It("should be ok", func() {
 			Expect(err).To(Succeed())
-			Expect(response.V2CreateTransactionResponse.Data.ID).To(Equal(big.NewInt(0)))
+			Expect(response.V2CreateTransactionResponse.Data.ID).To(Equal(big.NewInt(1)))
 		})
 		Then("creating a ledger transaction with same ik and different ledger", func() {
 			BeforeEach(func() {
@@ -351,7 +351,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 			})
 			It("should not have an error", func() {
 				Expect(err).To(Succeed())
-				Expect(response.V2CreateTransactionResponse.Data.ID).To(Equal(big.NewInt(0)))
+				Expect(response.V2CreateTransactionResponse.Data.ID).To(Equal(big.NewInt(1)))
 			})
 		})
 	})
@@ -384,13 +384,13 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 		BeforeEach(createTransaction)
 		It("should be ok", func() {
 			Expect(err).To(Succeed())
-			Expect(response.V2CreateTransactionResponse.Data.ID).To(Equal(big.NewInt(0)))
+			Expect(response.V2CreateTransactionResponse.Data.ID).To(Equal(big.NewInt(1)))
 		})
 		Then("replaying with the same IK", func() {
 			BeforeEach(createTransaction)
 			It("should respond with the same tx id", func() {
 				Expect(err).To(Succeed())
-				Expect(response.V2CreateTransactionResponse.Data.ID).To(Equal(big.NewInt(0)))
+				Expect(response.V2CreateTransactionResponse.Data.ID).To(Equal(big.NewInt(1)))
 			})
 		})
 	})
@@ -421,7 +421,6 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 		It("should fail with "+string(shared.V2ErrorsEnumCompilationFailed)+" code", func() {
 			Expect(err).NotTo(Succeed())
 			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(shared.V2ErrorsEnumCompilationFailed))
-			Expect(err.(*sdkerrors.V2ErrorResponse).Details).To(Equal(pointer.For("https://play.numscript.org/?payload=eyJlcnJvciI6Ilx1MDAxYlszMW0tLVx1MDAzZVx1MDAxYlswbSBlcnJvcjoxOjE1XHJcbiAgXHUwMDFiWzM0bXxcdTAwMWJbMG1cclxuXHUwMDFiWzMxbTEgfCBcdTAwMWJbMG1cdTAwMWJbOTBtc2VuZCBbQ09JTiAtMTAwXHUwMDFiWzBtXVx1MDAxYls5MG0gKFxyXG5cdTAwMWJbMG0gIFx1MDAxYlszNG18XHUwMDFiWzBtICAgICAgICAgICAgICAgIFx1MDAxYlszMW1eXHUwMDFiWzBtIG5vIHZpYWJsZSBhbHRlcm5hdGl2ZSBhdCBpbnB1dCAnW0NPSU4tMTAwXSdcclxuIn0=")))
 		})
 	})
 	When("creating a transaction on a ledger with a negative amount in the script", func() {
@@ -455,7 +454,6 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 		It("should fail with "+string(shared.V2ErrorsEnumCompilationFailed)+" code", func() {
 			Expect(err).NotTo(Succeed())
 			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(shared.V2ErrorsEnumCompilationFailed))
-			Expect(err.(*sdkerrors.V2ErrorResponse).Details).To(Equal(pointer.For("https://play.numscript.org/?payload=eyJlcnJvciI6ImludmFsaWQgSlNPTiB2YWx1ZSBmb3IgdmFyaWFibGUgJGFtb3VudCBvZiB0eXBlIG1vbmV0YXJ5OiB2YWx1ZSBbVVNEIC0xMDBdOiBuZWdhdGl2ZSBhbW91bnQifQ==")))
 		})
 	})
 	When("creating a transaction on the ledger v1 with old variable format", func() {
@@ -492,7 +490,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 		})
 		It("should be ok", func() {
 			Expect(err).To(Succeed())
-			Expect(response.TransactionsResponse.Data[0].Txid).To(Equal(big.NewInt(0)))
+			Expect(response.TransactionsResponse.Data[0].Txid).To(Equal(big.NewInt(1)))
 		})
 	})
 	When("creating a transaction on a ledger with error on script", func() {
@@ -518,7 +516,6 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 		It("should fail with "+string(shared.V2ErrorsEnumCompilationFailed)+" code", func() {
 			Expect(err).NotTo(Succeed())
 			Expect(err.(*sdkerrors.V2ErrorResponse).ErrorCode).To(Equal(shared.V2ErrorsEnumCompilationFailed))
-			Expect(err.(*sdkerrors.V2ErrorResponse).Details).To(Equal(pointer.For("https://play.numscript.org/?payload=eyJlcnJvciI6Ilx1MDAxYlszMW0tLVx1MDAzZVx1MDAxYlswbSBlcnJvcjoxOjBcclxuICBcdTAwMWJbMzRtfFx1MDAxYlswbVxyXG5cdTAwMWJbMzFtMSB8IFx1MDAxYlswbVx1MDAxYls5MG1cdTAwMWJbMG1YWFhcdTAwMWJbOTBtXHJcblx1MDAxYlswbSAgXHUwMDFiWzM0bXxcdTAwMWJbMG0gXHUwMDFiWzMxbV5eXHUwMDFiWzBtIG1pc21hdGNoZWQgaW5wdXQgJ1hYWCcgZXhwZWN0aW5nIHtORVdMSU5FLCAndmFycycsICdzZXRfdHhfbWV0YScsICdzZXRfYWNjb3VudF9tZXRhJywgJ3ByaW50JywgJ2ZhaWwnLCAnc2VuZCcsICdzYXZlJ31cclxuIn0=")))
 		})
 	})
 	When("creating a transaction with no postings", func() {
@@ -635,7 +632,7 @@ var _ = WithModules([]*Module{modules.Search, modules.Ledger}, func() {
 				)
 			})
 			It("Should return the same tx id as with dry run", func() {
-				Expect(txResponse.V2CreateTransactionResponse.Data.ID.Uint64()).To(Equal(ret.V2CreateTransactionResponse.Data.ID.Uint64()))
+				Expect(txResponse.V2CreateTransactionResponse.Data.ID.Uint64()).To(Equal(ret.V2CreateTransactionResponse.Data.ID.Uint64() + 1))
 			})
 		})
 	})

@@ -5,6 +5,8 @@ import (
 	"github.com/formancehq/stack/libs/events"
 	"github.com/formancehq/stack/tests/integration/internal/modules"
 	"github.com/nats-io/nats.go"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 	"math/big"
 	"net/http"
 	"time"
@@ -12,8 +14,6 @@ import (
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/operations"
 	"github.com/formancehq/formance-sdk-go/v2/pkg/models/shared"
 	. "github.com/formancehq/stack/tests/integration/internal"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
 	"github.com/pborman/uuid"
 )
 
@@ -116,7 +116,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Orchestration, modules.Ledge
 								},
 							},
 						},
-						LastFailure:   ptr("running numscript: script execution failed: account(s) @empty:account had/have insufficient funds"),
+						LastFailure:   ptr("unexpected error while forging log: failed to execute program: failed to execute machine: account(s) @empty:account had/have insufficient funds"),
 						Attempt:       getWorkflowInstanceHistoryStageResponse.Data[0].Attempt,
 						NextExecution: getWorkflowInstanceHistoryStageResponse.Data[0].NextExecution,
 						StartedAt:     getWorkflowInstanceHistoryStageResponse.Data[0].StartedAt,

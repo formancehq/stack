@@ -83,7 +83,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 				})
 				It("should create the transaction at the specified timestamp", func() {
 					tx, err := Client().Ledger.V2.GetTransaction(TestContext(), operations.V2GetTransactionRequest{
-						ID:     big.NewInt(1),
+						ID:     big.NewInt(2),
 						Ledger: "wallets-002",
 					})
 					Expect(err).To(Succeed())

@@ -97,7 +97,7 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 			})
 			It("should create the transaction at the specified date", func() {
 				tx, err := Client().Ledger.V2.GetTransaction(TestContext(), operations.V2GetTransactionRequest{
-					ID:     big.NewInt(0),
+					ID:     big.NewInt(1),
 					Ledger: "wallets-002",
 				})
 				Expect(err).To(Succeed())

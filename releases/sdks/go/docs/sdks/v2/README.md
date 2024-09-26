@@ -430,6 +430,7 @@ func main() {
             },
         },
         DryRun: v2.Bool(true),
+        Force: v2.Bool(true),
         Ledger: "ledger001",
     }
     ctx := context.Background()
@@ -1416,6 +1417,7 @@ func main() {
         }),
     )
     request := operations.V2RevertTransactionRequest{
+        DryRun: v2.Bool(true),
         ID: big.NewInt(1234),
         Ledger: "ledger001",
     }

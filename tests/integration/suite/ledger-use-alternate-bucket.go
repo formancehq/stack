@@ -19,7 +19,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			ledger1 string
 		)
 		BeforeEach(func() {
-			ledger1 = uuid.NewString()
+			ledger1 = uuid.NewString()[:8]
 			response, err := Client().Ledger.V2.CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 				V2CreateLedgerRequest: &shared.V2CreateLedgerRequest{
 					Bucket: pointer.For("bucket0"),
@@ -57,7 +57,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 					ledger2 string
 				)
 				BeforeEach(func() {
-					ledger2 = uuid.NewString()
+					ledger2 = uuid.NewString()[:8]
 					response, err := Client().Ledger.V2.CreateLedger(TestContext(), operations.V2CreateLedgerRequest{
 						V2CreateLedgerRequest: &shared.V2CreateLedgerRequest{
 							Bucket: pointer.For("bucket0"),
