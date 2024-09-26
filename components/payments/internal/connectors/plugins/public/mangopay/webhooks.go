@@ -183,15 +183,15 @@ func (p Plugin) translateTransfer(ctx context.Context, req webhookTranslateReque
 	}
 
 	payment := models.PSPPayment{
-		OriginalReference: transfer.ID,
-		Reference:         transfer.ID,
-		CreatedAt:         time.Unix(transfer.CreationDate, 0),
-		Type:              models.PAYMENT_TYPE_TRANSFER,
-		Amount:            &amount,
-		Asset:             currency.FormatAsset(supportedCurrenciesWithDecimal, transfer.DebitedFunds.Currency),
-		Scheme:            models.PAYMENT_SCHEME_OTHER,
-		Status:            paymentStatus,
-		Raw:               raw,
+		ParentReference: transfer.ID,
+		Reference:       transfer.ID,
+		CreatedAt:       time.Unix(transfer.CreationDate, 0),
+		Type:            models.PAYMENT_TYPE_TRANSFER,
+		Amount:          &amount,
+		Asset:           currency.FormatAsset(supportedCurrenciesWithDecimal, transfer.DebitedFunds.Currency),
+		Scheme:          models.PAYMENT_SCHEME_OTHER,
+		Status:          paymentStatus,
+		Raw:             raw,
 	}
 
 	if transfer.DebitedWalletID != "" {
@@ -228,15 +228,15 @@ func (p Plugin) translatePayout(ctx context.Context, req webhookTranslateRequest
 	}
 
 	payment := models.PSPPayment{
-		OriginalReference: payout.ID,
-		Reference:         payout.ID,
-		CreatedAt:         time.Unix(payout.CreationDate, 0),
-		Type:              models.PAYMENT_TYPE_PAYOUT,
-		Amount:            &amount,
-		Asset:             currency.FormatAsset(supportedCurrenciesWithDecimal, payout.DebitedFunds.Currency),
-		Scheme:            models.PAYMENT_SCHEME_OTHER,
-		Status:            paymentStatus,
-		Raw:               raw,
+		ParentReference: payout.ID,
+		Reference:       payout.ID,
+		CreatedAt:       time.Unix(payout.CreationDate, 0),
+		Type:            models.PAYMENT_TYPE_PAYOUT,
+		Amount:          &amount,
+		Asset:           currency.FormatAsset(supportedCurrenciesWithDecimal, payout.DebitedFunds.Currency),
+		Scheme:          models.PAYMENT_SCHEME_OTHER,
+		Status:          paymentStatus,
+		Raw:             raw,
 	}
 
 	if payout.DebitedWalletID != "" {
@@ -269,15 +269,15 @@ func (p Plugin) translatePayin(ctx context.Context, req webhookTranslateRequest)
 	}
 
 	payment := models.PSPPayment{
-		OriginalReference: payin.ID,
-		Reference:         payin.ID,
-		CreatedAt:         time.Unix(payin.CreationDate, 0),
-		Type:              models.PAYMENT_TYPE_PAYIN,
-		Amount:            &amount,
-		Asset:             currency.FormatAsset(supportedCurrenciesWithDecimal, payin.DebitedFunds.Currency),
-		Scheme:            models.PAYMENT_SCHEME_OTHER,
-		Status:            paymentStatus,
-		Raw:               raw,
+		ParentReference: payin.ID,
+		Reference:       payin.ID,
+		CreatedAt:       time.Unix(payin.CreationDate, 0),
+		Type:            models.PAYMENT_TYPE_PAYIN,
+		Amount:          &amount,
+		Asset:           currency.FormatAsset(supportedCurrenciesWithDecimal, payin.DebitedFunds.Currency),
+		Scheme:          models.PAYMENT_SCHEME_OTHER,
+		Status:          paymentStatus,
+		Raw:             raw,
 	}
 
 	if payin.CreditedWalletID != "" {
@@ -310,15 +310,15 @@ func (p Plugin) translateRefund(ctx context.Context, req webhookTranslateRequest
 	}
 
 	payment := models.PSPPayment{
-		OriginalReference: refund.InitialTransactionID,
-		Reference:         refund.ID,
-		CreatedAt:         time.Unix(refund.CreationDate, 0),
-		Type:              paymentType,
-		Amount:            &amountRefunded,
-		Asset:             currency.FormatAsset(supportedCurrenciesWithDecimal, refund.DebitedFunds.Currency),
-		Scheme:            models.PAYMENT_SCHEME_OTHER,
-		Status:            models.PAYMENT_STATUS_REFUNDED,
-		Raw:               raw,
+		ParentReference: refund.InitialTransactionID,
+		Reference:       refund.ID,
+		CreatedAt:       time.Unix(refund.CreationDate, 0),
+		Type:            paymentType,
+		Amount:          &amountRefunded,
+		Asset:           currency.FormatAsset(supportedCurrenciesWithDecimal, refund.DebitedFunds.Currency),
+		Scheme:          models.PAYMENT_SCHEME_OTHER,
+		Status:          models.PAYMENT_STATUS_REFUNDED,
+		Raw:             raw,
 	}
 
 	return models.WebhookResponse{

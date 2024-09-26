@@ -12,11 +12,9 @@ import (
 type PSPPayment struct {
 	// Original PSP payment/transaction reference.
 	// In case of refunds, dispute etc... this reference should be the original
-	// payment reference. In case it's the first payment, it should be the same
-	// as the Reference.
-	// If we have no new reference for the payments when the status is refunded
-	// or disputed etc... we should use the same reference.
-	OriginalReference string
+	// payment reference. In case it's the first payment, ths reference should
+	// be empty
+	ParentReference string
 
 	// PSP payment/transaction reference. Should be unique.
 	Reference string
@@ -50,6 +48,10 @@ type PSPPayment struct {
 
 	// PSP response in raw
 	Raw json.RawMessage
+}
+
+func (p *PSPPayment) HasParent() bool {
+	return p.ParentReference != ""
 }
 
 type Payment struct {
@@ -207,16 +209,21 @@ func (c *Payment) UnmarshalJSON(data []byte) error {
 }
 
 func FromPSPPaymentToPayment(from PSPPayment, connectorID ConnectorID) Payment {
-	return Payment{
+	paymentReference := from.Reference
+	if from.HasParent() {
+		paymentReference = from.ParentReference
+	}
+
+	p := Payment{
 		ID: PaymentID{
 			PaymentReference: PaymentReference{
-				Reference: from.OriginalReference,
+				Reference: paymentReference,
 				Type:      from.Type,
 			},
 			ConnectorID: connectorID,
 		},
 		ConnectorID:   connectorID,
-		Reference:     from.OriginalReference,
+		Reference:     paymentReference,
 		CreatedAt:     from.CreatedAt,
 		Type:          from.Type,
 		InitialAmount: from.Amount,
@@ -244,22 +251,30 @@ func FromPSPPaymentToPayment(from PSPPayment, connectorID ConnectorID) Payment {
 		}(),
 		Metadata: from.Metadata,
 	}
+
+	p.Adjustments = append(p.Adjustments, FromPSPPaymentToPaymentAdjustement(from, connectorID))
+
+	return p
 }
 
 func FromPSPPayments(from []PSPPayment, connectorID ConnectorID) []Payment {
 	payments := make([]Payment, 0, len(from))
 	for _, p := range from {
 		payment := FromPSPPaymentToPayment(p, connectorID)
-		payment.Adjustments = append(payment.Adjustments, FromPSPPaymentToPaymentAdjustement(p, connectorID))
 		payments = append(payments, payment)
 	}
 	return payments
 }
 
 func FromPSPPaymentToPaymentAdjustement(from PSPPayment, connectorID ConnectorID) PaymentAdjustment {
+	parentReference := from.Reference
+	if from.HasParent() {
+		parentReference = from.ParentReference
+	}
+
 	paymentID := PaymentID{
 		PaymentReference: PaymentReference{
-			Reference: from.OriginalReference,
+			Reference: parentReference,
 			Type:      from.Type,
 		},
 		ConnectorID: connectorID,
