@@ -183,15 +183,14 @@ func (p Plugin) translateTransfer(ctx context.Context, req webhookTranslateReque
 	}
 
 	payment := models.PSPPayment{
-		ParentReference: transfer.ID,
-		Reference:       transfer.ID,
-		CreatedAt:       time.Unix(transfer.CreationDate, 0),
-		Type:            models.PAYMENT_TYPE_TRANSFER,
-		Amount:          &amount,
-		Asset:           currency.FormatAsset(supportedCurrenciesWithDecimal, transfer.DebitedFunds.Currency),
-		Scheme:          models.PAYMENT_SCHEME_OTHER,
-		Status:          paymentStatus,
-		Raw:             raw,
+		Reference: transfer.ID,
+		CreatedAt: time.Unix(transfer.CreationDate, 0),
+		Type:      models.PAYMENT_TYPE_TRANSFER,
+		Amount:    &amount,
+		Asset:     currency.FormatAsset(supportedCurrenciesWithDecimal, transfer.DebitedFunds.Currency),
+		Scheme:    models.PAYMENT_SCHEME_OTHER,
+		Status:    paymentStatus,
+		Raw:       raw,
 	}
 
 	if transfer.DebitedWalletID != "" {
@@ -228,15 +227,14 @@ func (p Plugin) translatePayout(ctx context.Context, req webhookTranslateRequest
 	}
 
 	payment := models.PSPPayment{
-		ParentReference: payout.ID,
-		Reference:       payout.ID,
-		CreatedAt:       time.Unix(payout.CreationDate, 0),
-		Type:            models.PAYMENT_TYPE_PAYOUT,
-		Amount:          &amount,
-		Asset:           currency.FormatAsset(supportedCurrenciesWithDecimal, payout.DebitedFunds.Currency),
-		Scheme:          models.PAYMENT_SCHEME_OTHER,
-		Status:          paymentStatus,
-		Raw:             raw,
+		Reference: payout.ID,
+		CreatedAt: time.Unix(payout.CreationDate, 0),
+		Type:      models.PAYMENT_TYPE_PAYOUT,
+		Amount:    &amount,
+		Asset:     currency.FormatAsset(supportedCurrenciesWithDecimal, payout.DebitedFunds.Currency),
+		Scheme:    models.PAYMENT_SCHEME_OTHER,
+		Status:    paymentStatus,
+		Raw:       raw,
 	}
 
 	if payout.DebitedWalletID != "" {
@@ -269,15 +267,14 @@ func (p Plugin) translatePayin(ctx context.Context, req webhookTranslateRequest)
 	}
 
 	payment := models.PSPPayment{
-		ParentReference: payin.ID,
-		Reference:       payin.ID,
-		CreatedAt:       time.Unix(payin.CreationDate, 0),
-		Type:            models.PAYMENT_TYPE_PAYIN,
-		Amount:          &amount,
-		Asset:           currency.FormatAsset(supportedCurrenciesWithDecimal, payin.DebitedFunds.Currency),
-		Scheme:          models.PAYMENT_SCHEME_OTHER,
-		Status:          paymentStatus,
-		Raw:             raw,
+		Reference: payin.ID,
+		CreatedAt: time.Unix(payin.CreationDate, 0),
+		Type:      models.PAYMENT_TYPE_PAYIN,
+		Amount:    &amount,
+		Asset:     currency.FormatAsset(supportedCurrenciesWithDecimal, payin.DebitedFunds.Currency),
+		Scheme:    models.PAYMENT_SCHEME_OTHER,
+		Status:    paymentStatus,
+		Raw:       raw,
 	}
 
 	if payin.CreditedWalletID != "" {

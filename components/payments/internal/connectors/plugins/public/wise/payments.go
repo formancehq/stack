@@ -101,15 +101,14 @@ func fromTransferToPayment(from client.Transfer) (*models.PSPPayment, error) {
 	}
 
 	p := models.PSPPayment{
-		ParentReference: fmt.Sprintf("%d", from.ID),
-		Reference:       fmt.Sprintf("%d", from.ID),
-		CreatedAt:       from.CreatedAt,
-		Type:            models.PAYMENT_TYPE_TRANSFER,
-		Amount:          amount,
-		Asset:           currency.FormatAsset(supportedCurrenciesWithDecimal, from.TargetCurrency),
-		Scheme:          models.PAYMENT_SCHEME_OTHER,
-		Status:          matchTransferStatus(from.Status),
-		Raw:             raw,
+		Reference: fmt.Sprintf("%d", from.ID),
+		CreatedAt: from.CreatedAt,
+		Type:      models.PAYMENT_TYPE_TRANSFER,
+		Amount:    amount,
+		Asset:     currency.FormatAsset(supportedCurrenciesWithDecimal, from.TargetCurrency),
+		Scheme:    models.PAYMENT_SCHEME_OTHER,
+		Status:    matchTransferStatus(from.Status),
+		Raw:       raw,
 	}
 
 	if from.SourceBalanceID != 0 {

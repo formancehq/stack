@@ -120,15 +120,14 @@ func transactionToPayment(transaction client.Transaction, from models.PSPAccount
 	}
 
 	payment := &models.PSPPayment{
-		ParentReference: transaction.ID,
-		Reference:       transaction.ID,
-		CreatedAt:       createdAt,
-		Type:            paymentType,
-		Amount:          amount,
-		Asset:           currency.FormatAsset(supportedCurrenciesWithDecimal, transaction.Account.Currency),
-		Scheme:          models.PAYMENT_SCHEME_OTHER,
-		Status:          models.PAYMENT_STATUS_SUCCEEDED,
-		Raw:             raw,
+		Reference: transaction.ID,
+		CreatedAt: createdAt,
+		Type:      paymentType,
+		Amount:    amount,
+		Asset:     currency.FormatAsset(supportedCurrenciesWithDecimal, transaction.Account.Currency),
+		Scheme:    models.PAYMENT_SCHEME_OTHER,
+		Status:    models.PAYMENT_STATUS_SUCCEEDED,
+		Raw:       raw,
 	}
 
 	switch paymentType {
