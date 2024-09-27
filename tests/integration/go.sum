@@ -138,6 +138,8 @@ github.com/fatih/structs v1.1.0/go.mod h1:9NiDSp5zOcgEDl+j00MP/WkGVPOlPRLejGD8Ga
 github.com/felixge/httpsnoop v1.0.1/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
 github.com/felixge/httpsnoop v1.0.4 h1:NFTV2Zj1bL4mc9sqWACXbQFVBBg2W3GPvqp8/ESS2Wg=
 github.com/felixge/httpsnoop v1.0.4/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
+github.com/formancehq/formance-sdk-go/v3 v3.0.0 h1:UIzVMJSPUBUSm29Zg50tZjM0f101WeWHYlu0ClfUk2c=
+github.com/formancehq/formance-sdk-go/v3 v3.0.0/go.mod h1:ZBBYCgtDgde68qMW5nZ9lfliM8W1D3ZI/BpZ+RdhD3c=
 github.com/formancehq/go-libs v1.7.2-0.20240927101303-a8e108b39d15 h1:a/STc7qwGyEX3itlrLgVJoB0N8IGA9TJ+xPeQns7Lsk=
 github.com/formancehq/go-libs v1.7.2-0.20240927101303-a8e108b39d15/go.mod h1:ynmWBbsdhVyjE+MxneMErtgd/RnNAk892VuIhZE2fps=
 github.com/fortytw2/leaktest v1.3.0 h1:u8491cBMTQ8ft8aeV+adlcytMZylmA5nnwwkRZjI8vw=
