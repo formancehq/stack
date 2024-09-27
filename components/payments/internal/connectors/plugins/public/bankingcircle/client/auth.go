@@ -46,7 +46,6 @@ func (c *Client) login(ctx context.Context) error {
 		}
 		return fmt.Errorf("failed to login: %d", statusCode)
 	}
-	return fmt.Errorf("failed make login request: %w", err)
 
 	c.accessToken = res.AccessToken
 	expiresIn, err := strconv.Atoi(res.ExpiresIn)
