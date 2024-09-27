@@ -28,10 +28,46 @@ services:
         condition: service_healthy
     volumes:
       - .:/app/components/payments
-      - ../../libs:/app/libs
     working_dir: /app/components/payments
     environment:
       POSTGRES_URI: postgres://payments:payments@postgres:${POSTGRES_PORT:-5432}/payments?sslmode=disable
+
+  temporal:
+    image: temporalio/auto-setup:1.25.0
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB: postgres12
+      DB_PORT: 5432
+      POSTGRES_USER: payments
+      POSTGRES_PWD: payments
+      POSTGRES_SEEDS: postgres
+      DYNAMIC_CONFIG_FILE_PATH: config/dynamicconfig/development-sql.yaml
+    ports:
+      - 7233:7233
+    volumes:
+      - ./local_env/postgres/temporal-sql.yaml:/etc/temporal/config/dynamicconfig/development-sql.yaml
+  temporal-admin-tools:
+    container_name: temporal-admin-tools
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_CLI_ADDRESS=temporal:7233
+    image: temporalio/admin-tools:1.25.0-tctl-1.18.1-cli-1.0.0
+    stdin_open: true
+    tty: true
+  temporal-ui:
+    container_name: temporal-ui
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_CORS_ORIGINS=http://localhost:3000
+    image: temporalio/ui:2.26.2
+    ports:
+      - 8081:8080
 
   payments:
     image: golang:1.22.4-alpine3.19
@@ -50,11 +86,12 @@ services:
       - "8080:8080"
     volumes:
       - .:/app/components/payments
-      - ../../libs:/app/libs
     working_dir: /app/components/payments
     environment:
-      DEBUG: ${DEBUG:-"true"}
+      DEBUG: true
       POSTGRES_URI: postgres://payments:payments@postgres:${POSTGRES_PORT:-5432}/payments?sslmode=disable
       CONFIG_ENCRYPTION_KEY: mysuperencryptionkey
-
-# TODO(polo): add temporal
+      TEMPORAL_ADDRESS: temporal:7233
+      PLUGIN_MAGIC_COOKIE: mysupercookie
+      PLUGIN_DIRECTORY_PATH: /app/components/payments/plugins
+      TEMPORAL_INIT_SEARCH_ATTRIBUTES: true
