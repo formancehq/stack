@@ -7,13 +7,14 @@ import (
 	"github.com/stripe/stripe-go/v79"
 )
 
-func (c *client) GetAccountBalances(ctx context.Context, accountID *string) (*stripe.Balance, error) {
+func (c *client) GetAccountBalances(ctx context.Context, accountID string) (*stripe.Balance, error) {
 	// TODO
 	//	f := connectors.ClientMetrics(ctx, "stripe", "get_balances")
 	//	now := time.Now()
 	//	defer f(ctx, now)
-	filters := stripe.Params{
-		StripeAccount: accountID,
+	var filters stripe.Params
+	if accountID != "" {
+		filters.StripeAccount = &accountID
 	}
 
 	balance, err := c.balanceClient.Get(&stripe.BalanceParams{Params: filters})

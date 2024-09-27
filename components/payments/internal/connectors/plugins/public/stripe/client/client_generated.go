@@ -41,7 +41,7 @@ func (m *MockClient) EXPECT() *MockClientMockRecorder {
 }
 
 // GetAccountBalances mocks base method.
-func (m *MockClient) GetAccountBalances(ctx context.Context, accountID *string) (*stripe.Balance, error) {
+func (m *MockClient) GetAccountBalances(ctx context.Context, accountID string) (*stripe.Balance, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAccountBalances", ctx, accountID)
 	ret0, _ := ret[0].(*stripe.Balance)
@@ -56,49 +56,52 @@ func (mr *MockClientMockRecorder) GetAccountBalances(ctx, accountID any) *gomock
 }
 
 // GetAccounts mocks base method.
-func (m *MockClient) GetAccounts(ctx context.Context, lastID *string, pageSize int64) ([]*stripe.Account, bool, error) {
+func (m *MockClient) GetAccounts(ctx context.Context, timeline Timeline, pageSize int64) ([]*stripe.Account, Timeline, bool, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAccounts", ctx, lastID, pageSize)
+	ret := m.ctrl.Call(m, "GetAccounts", ctx, timeline, pageSize)
 	ret0, _ := ret[0].([]*stripe.Account)
-	ret1, _ := ret[1].(bool)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
+	ret1, _ := ret[1].(Timeline)
+	ret2, _ := ret[2].(bool)
+	ret3, _ := ret[3].(error)
+	return ret0, ret1, ret2, ret3
 }
 
 // GetAccounts indicates an expected call of GetAccounts.
-func (mr *MockClientMockRecorder) GetAccounts(ctx, lastID, pageSize any) *gomock.Call {
+func (mr *MockClientMockRecorder) GetAccounts(ctx, timeline, pageSize any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAccounts", reflect.TypeOf((*MockClient)(nil).GetAccounts), ctx, lastID, pageSize)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAccounts", reflect.TypeOf((*MockClient)(nil).GetAccounts), ctx, timeline, pageSize)
 }
 
 // GetExternalAccounts mocks base method.
-func (m *MockClient) GetExternalAccounts(ctx context.Context, accountID, lastID *string, pageSize int64) ([]*stripe.BankAccount, bool, error) {
+func (m *MockClient) GetExternalAccounts(ctx context.Context, accountID string, timeline Timeline, pageSize int64) ([]*stripe.BankAccount, Timeline, bool, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetExternalAccounts", ctx, accountID, lastID, pageSize)
+	ret := m.ctrl.Call(m, "GetExternalAccounts", ctx, accountID, timeline, pageSize)
 	ret0, _ := ret[0].([]*stripe.BankAccount)
-	ret1, _ := ret[1].(bool)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
+	ret1, _ := ret[1].(Timeline)
+	ret2, _ := ret[2].(bool)
+	ret3, _ := ret[3].(error)
+	return ret0, ret1, ret2, ret3
 }
 
 // GetExternalAccounts indicates an expected call of GetExternalAccounts.
-func (mr *MockClientMockRecorder) GetExternalAccounts(ctx, accountID, lastID, pageSize any) *gomock.Call {
+func (mr *MockClientMockRecorder) GetExternalAccounts(ctx, accountID, timeline, pageSize any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetExternalAccounts", reflect.TypeOf((*MockClient)(nil).GetExternalAccounts), ctx, accountID, lastID, pageSize)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetExternalAccounts", reflect.TypeOf((*MockClient)(nil).GetExternalAccounts), ctx, accountID, timeline, pageSize)
 }
 
 // GetPayments mocks base method.
-func (m *MockClient) GetPayments(ctx context.Context, accountID, lastID *string, pageSize int64) ([]*stripe.BalanceTransaction, bool, error) {
+func (m *MockClient) GetPayments(ctx context.Context, accountID string, timeline Timeline, pageSize int64) ([]*stripe.BalanceTransaction, Timeline, bool, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetPayments", ctx, accountID, lastID, pageSize)
+	ret := m.ctrl.Call(m, "GetPayments", ctx, accountID, timeline, pageSize)
 	ret0, _ := ret[0].([]*stripe.BalanceTransaction)
-	ret1, _ := ret[1].(bool)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
+	ret1, _ := ret[1].(Timeline)
+	ret2, _ := ret[2].(bool)
+	ret3, _ := ret[3].(error)
+	return ret0, ret1, ret2, ret3
 }
 
 // GetPayments indicates an expected call of GetPayments.
-func (mr *MockClientMockRecorder) GetPayments(ctx, accountID, lastID, pageSize any) *gomock.Call {
+func (mr *MockClientMockRecorder) GetPayments(ctx, accountID, timeline, pageSize any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPayments", reflect.TypeOf((*MockClient)(nil).GetPayments), ctx, accountID, lastID, pageSize)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPayments", reflect.TypeOf((*MockClient)(nil).GetPayments), ctx, accountID, timeline, pageSize)
 }

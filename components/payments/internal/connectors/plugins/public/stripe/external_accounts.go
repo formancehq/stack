@@ -7,13 +7,18 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/internal/connectors/plugins/currency"
+	"github.com/formancehq/payments/internal/connectors/plugins/public/stripe/client"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/pkg/errors"
 )
 
+type ExternalAccountsState struct {
+	Timeline client.Timeline `json:"timeline"`
+}
+
 func (p *Plugin) fetchNextExternalAccounts(ctx context.Context, req models.FetchNextExternalAccountsRequest) (models.FetchNextExternalAccountsResponse, error) {
 	var (
-		oldState AccountsState
+		oldState ExternalAccountsState
 		from     models.PSPAccount
 	)
 	if req.State != nil {
@@ -28,16 +33,21 @@ func (p *Plugin) fetchNextExternalAccounts(ctx context.Context, req models.Fetch
 		return models.FetchNextExternalAccountsResponse{}, err
 	}
 
-	newState := AccountsState{}
+	newState := oldState
 	var accounts []models.PSPAccount
 
-	rawAccounts, hasMore, err := p.client.GetExternalAccounts(ctx, resolveAccount(&from.Reference), &oldState.LastID, int64(req.PageSize))
+	rawAccounts, timeline, hasMore, err := p.client.GetExternalAccounts(
+		ctx,
+		resolveAccount(from.Reference),
+		oldState.Timeline,
+		int64(req.PageSize),
+	)
 	if err != nil {
 		return models.FetchNextExternalAccountsResponse{}, err
 	}
-	for _, acc := range rawAccounts {
-		newState.LastID = acc.ID
+	newState.Timeline = timeline
 
+	for _, acc := range rawAccounts {
 		raw, err := json.Marshal(acc)
 		if err != nil {
 			return models.FetchNextExternalAccountsResponse{}, err

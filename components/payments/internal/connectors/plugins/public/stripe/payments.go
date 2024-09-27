@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/internal/connectors/plugins/currency"
+	"github.com/formancehq/payments/internal/connectors/plugins/public/stripe/client"
 	"github.com/formancehq/payments/internal/models"
 	"github.com/pkg/errors"
 	stripesdk "github.com/stripe/stripe-go/v79"
@@ -22,12 +23,12 @@ var (
 	ErrUnsupportedCurrency        = errors.New("unsupported currency")
 )
 
-type PaymentState struct {
-	LastID string `json:"lastID,omitempty"`
+type PaymentsState struct {
+	Timeline client.Timeline `json:"timeline"`
 }
 
 func (p *Plugin) fetchNextPayments(ctx context.Context, req models.FetchNextPaymentsRequest) (models.FetchNextPaymentsResponse, error) {
-	var oldState PaymentState
+	var oldState PaymentsState
 	if req.State != nil {
 		if err := json.Unmarshal(req.State, &oldState); err != nil {
 			return models.FetchNextPaymentsResponse{}, err
@@ -43,14 +44,19 @@ func (p *Plugin) fetchNextPayments(ctx context.Context, req models.FetchNextPaym
 	}
 
 	var payments []models.PSPPayment
-	newState := PaymentState{}
-	rawPayments, hasMore, err := p.client.GetPayments(ctx, resolveAccount(&from.Reference), &oldState.LastID, int64(req.PageSize))
+	newState := oldState
+	rawPayments, timeline, hasMore, err := p.client.GetPayments(
+		ctx,
+		resolveAccount(from.Reference),
+		oldState.Timeline,
+		int64(req.PageSize),
+	)
 	if err != nil {
 		return models.FetchNextPaymentsResponse{}, err
 	}
+	newState.Timeline = timeline
 
 	for _, rawPayment := range rawPayments {
-		newState.LastID = rawPayment.ID
 		payment, err := p.translatePayment(&from.Reference, rawPayment)
 		if err != nil {
 			return models.FetchNextPaymentsResponse{}, fmt.Errorf("failed to translate payment: %w", err)
@@ -76,7 +82,8 @@ func (p *Plugin) fetchNextPayments(ctx context.Context, req models.FetchNextPaym
 
 func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripesdk.BalanceTransaction) (payment *models.PSPPayment, err error) {
 	if balanceTransaction.Source == nil {
-		return nil, fmt.Errorf("payment source is invalid")
+		log.Printf("skipping balance transaction of type %q with nil source element: %q", balanceTransaction.Type, balanceTransaction.ID)
+		return nil, nil
 	}
 
 	rawData, err := json.Marshal(balanceTransaction)
@@ -87,6 +94,10 @@ func (p *Plugin) translatePayment(accountRef *string, balanceTransaction *stripe
 
 	switch balanceTransaction.Type {
 	case stripesdk.BalanceTransactionTypeCharge:
+		if balanceTransaction.Source.Charge == nil {
+			log.Printf("skipping balance transaction of type %q with nil charge element: %q", balanceTransaction.Type, balanceTransaction.ID)
+			return nil, nil
+		}
 		transactionCurrency := strings.ToUpper(string(balanceTransaction.Source.Charge.Currency))
 		_, ok := supportedCurrenciesWithDecimal[transactionCurrency]
 		if !ok {

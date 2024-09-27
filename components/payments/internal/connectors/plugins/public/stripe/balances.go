@@ -20,7 +20,7 @@ func (p *Plugin) fetchNextBalances(ctx context.Context, req models.FetchNextBala
 		return models.FetchNextBalancesResponse{}, err
 	}
 
-	balance, err := p.client.GetAccountBalances(ctx, resolveAccount(&from.Reference))
+	balance, err := p.client.GetAccountBalances(ctx, resolveAccount(from.Reference))
 	if err != nil {
 		return models.FetchNextBalancesResponse{}, err
 	}

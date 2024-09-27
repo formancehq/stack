@@ -12,10 +12,10 @@ import (
 
 //go:generate mockgen -source client.go -destination client_generated.go -package client . Client
 type Client interface {
-	GetAccounts(ctx context.Context, lastID *string, pageSize int64) ([]*stripe.Account, bool, error)
-	GetAccountBalances(ctx context.Context, accountID *string) (*stripe.Balance, error)
-	GetExternalAccounts(ctx context.Context, accountID *string, lastID *string, pageSize int64) ([]*stripe.BankAccount, bool, error)
-	GetPayments(ctx context.Context, accountID *string, lastID *string, pageSize int64) ([]*stripe.BalanceTransaction, bool, error)
+	GetAccounts(ctx context.Context, timeline Timeline, pageSize int64) ([]*stripe.Account, Timeline, bool, error)
+	GetAccountBalances(ctx context.Context, accountID string) (*stripe.Balance, error)
+	GetExternalAccounts(ctx context.Context, accountID string, timeline Timeline, pageSize int64) ([]*stripe.BankAccount, Timeline, bool, error)
+	GetPayments(ctx context.Context, accountID string, timeline Timeline, pageSize int64) ([]*stripe.BalanceTransaction, Timeline, bool, error)
 }
 
 type client struct {
@@ -36,4 +36,9 @@ func New(backend stripe.Backend, apiKey string) Client {
 		bankAccountClient:        bankaccount.Client{B: backend, Key: apiKey},
 		balanceTransactionClient: balancetransaction.Client{B: backend, Key: apiKey},
 	}
+}
+
+func limit(wanted int64, have int) *int64 {
+	needed := wanted - int64(have)
+	return &needed
 }

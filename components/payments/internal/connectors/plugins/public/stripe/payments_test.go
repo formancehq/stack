@@ -187,27 +187,6 @@ var _ = Describe("Stripe Plugin Payments", func() {
 			}
 
 		})
-		It("fails when payments missing source are received", func(ctx SpecContext) {
-			req := models.FetchNextPaymentsRequest{
-				FromPayload: json.RawMessage(fmt.Sprintf(`{"reference": "%s"}`, accRef)),
-				State:       json.RawMessage(`{}`),
-				PageSize:    pageSize,
-			}
-			p := []*stripesdk.BalanceTransaction{
-				{
-					ID:   "someid",
-					Type: stripesdk.BalanceTransactionTypeAdjustment,
-				},
-			}
-			m.EXPECT().GetPayments(ctx, &accRef, gomock.Any(), int64(pageSize)).Return(
-				p,
-				true,
-				nil,
-			)
-			res, err := plg.FetchNextPayments(ctx, req)
-			Expect(err).To(MatchError(ContainSubstring(stripe.ErrInvalidPaymentSource.Error())))
-			Expect(res.HasMore).To(BeFalse())
-		})
 
 		It("fails when payments contain unsupported currencies", func(ctx SpecContext) {
 			req := models.FetchNextPaymentsRequest{
@@ -226,8 +205,9 @@ var _ = Describe("Stripe Plugin Payments", func() {
 					},
 				},
 			}
-			m.EXPECT().GetPayments(ctx, &accRef, gomock.Any(), int64(pageSize)).Return(
+			m.EXPECT().GetPayments(ctx, accRef, gomock.Any(), int64(pageSize)).Return(
 				p,
+				client.Timeline{},
 				true,
 				nil,
 			)
@@ -242,8 +222,9 @@ var _ = Describe("Stripe Plugin Payments", func() {
 				State:       json.RawMessage(`{}`),
 				PageSize:    pageSize,
 			}
-			m.EXPECT().GetPayments(ctx, &accRef, gomock.Any(), int64(pageSize)).Return(
+			m.EXPECT().GetPayments(ctx, accRef, gomock.Any(), int64(pageSize)).Return(
 				samplePayments,
+				client.Timeline{LatestID: samplePayments[len(samplePayments)-1].ID},
 				true,
 				nil,
 			)
@@ -302,11 +283,11 @@ var _ = Describe("Stripe Plugin Payments", func() {
 			Expect(res.Payments[11].Type).To(Equal(models.PAYMENT_TYPE_PAYIN))
 			Expect(res.Payments[11].Status).To(Equal(models.PAYMENT_STATUS_DISPUTE))
 
-			var state stripe.PaymentState
+			var state stripe.PaymentsState
 
 			err = json.Unmarshal(res.NewState, &state)
 			Expect(err).To(BeNil())
-			Expect(state.LastID).To(Equal(samplePayments[len(samplePayments)-1].ID))
+			Expect(state.Timeline.LatestID).To(Equal(samplePayments[len(samplePayments)-1].ID))
 		})
 	})
 })

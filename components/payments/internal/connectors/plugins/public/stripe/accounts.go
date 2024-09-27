@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/internal/connectors/plugins/currency"
+	"github.com/formancehq/payments/internal/connectors/plugins/public/stripe/client"
 	"github.com/formancehq/payments/internal/models"
 )
 
@@ -14,16 +15,16 @@ var (
 )
 
 // root account reference is internal so we don't pass it to Stripe API clients
-func resolveAccount(ref *string) *string {
-	if *ref == rootAccountReference {
-		return nil
+func resolveAccount(ref string) string {
+	if ref == rootAccountReference {
+		return ""
 	}
 	return ref
 }
 
 type AccountsState struct {
-	InitFinished bool   `json:"init_finished"`
-	LastID       string `json:"lastID,omitempty"`
+	RootCreated bool            `json:"root_created"`
+	Timeline    client.Timeline `json:"timeline"`
 }
 
 func (p *Plugin) fetchNextAccounts(ctx context.Context, req models.FetchNextAccountsRequest) (models.FetchNextAccountsResponse, error) {
@@ -35,7 +36,7 @@ func (p *Plugin) fetchNextAccounts(ctx context.Context, req models.FetchNextAcco
 	}
 
 	accounts := make([]models.PSPAccount, 0, req.PageSize)
-	if !oldState.InitFinished {
+	if !oldState.RootCreated {
 		// create a root account if this is the first time this is being run
 		accounts = append(accounts, models.PSPAccount{
 			Name:      &rootAccountReference,
@@ -44,21 +45,19 @@ func (p *Plugin) fetchNextAccounts(ctx context.Context, req models.FetchNextAcco
 			Raw:       json.RawMessage("{}"),
 			Metadata:  map[string]string{},
 		})
-		oldState.InitFinished = true
+		oldState.RootCreated = true
 	}
 
 	needed := req.PageSize - len(accounts)
 
-	newState := AccountsState{
-		InitFinished: oldState.InitFinished,
-	}
-	rawAccounts, hasMore, err := p.client.GetAccounts(ctx, &oldState.LastID, int64(needed))
+	newState := oldState
+	rawAccounts, timeline, hasMore, err := p.client.GetAccounts(ctx, oldState.Timeline, int64(needed))
 	if err != nil {
 		return models.FetchNextAccountsResponse{}, err
 	}
-	for _, acc := range rawAccounts {
-		newState.LastID = acc.ID
+	newState.Timeline = timeline
 
+	for _, acc := range rawAccounts {
 		raw, err := json.Marshal(acc)
 		if err != nil {
 			return models.FetchNextAccountsResponse{}, err
