@@ -163,28 +163,6 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 			})
 			Then("following next cursor", func() {
 				BeforeEach(func() {
-
-					// Create a new transaction to ensure cursor is stable
-					_, err := Client().Ledger.V2CreateTransaction(
-						TestContext(),
-						operations.V2CreateTransactionRequest{
-							V2PostTransaction: shared.V2PostTransaction{
-								Metadata: map[string]string{},
-								Postings: []shared.V2Posting{
-									{
-										Amount:      big.NewInt(100),
-										Asset:       "USD",
-										Source:      "world",
-										Destination: "account:0",
-									},
-								},
-								Timestamp: pointer.For(time.Now()),
-							},
-							Ledger: "default",
-						},
-					)
-					Expect(err).ToNot(HaveOccurred())
-
 					response, err := Client().Ledger.V2ListTransactions(
 						TestContext(),
 						operations.V2ListTransactionsRequest{
@@ -262,7 +240,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 					"pageSize": float64(10),
 					"options": map[string]any{
 						"pit":              now.Format(time.RFC3339),
-						"oot":				nil,
+						"oot":              nil,
 						"volumes":          false,
 						"effectiveVolumes": false,
 					},
@@ -322,7 +300,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 					"pageSize": float64(10),
 					"options": map[string]any{
 						"pit":              now.Format(time.RFC3339),
-						"oot":				nil,
+						"oot":              nil,
 						"volumes":          false,
 						"effectiveVolumes": false,
 					},

@@ -37,7 +37,7 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				"clientType": "silver",
 			}
 
-			timestamp = time.Now().Round(time.Second).UTC()
+			timestamp = time.Now().Add(24 * time.Hour).Round(time.Second).UTC()
 			bigInt, _ = big.NewInt(0).SetString("999999999999999999999999999999999999999999999999999999999999999999999999999999999999999", 10)
 		)
 		BeforeEach(func() {
@@ -220,6 +220,24 @@ var _ = WithModules([]*Module{modules.Ledger}, func() {
 				Address:  "foo:foo",
 				Metadata: metadata1,
 			}))
+		})
+		It("should be listed on api using first_usage filters", func() {
+			response, err := Client().Ledger.V2ListAccounts(
+				TestContext(),
+				operations.V2ListAccountsRequest{
+					Ledger: "default",
+					RequestBody: map[string]interface{}{
+						"$lt": map[string]any{
+							"first_usage": time.Now(),
+						},
+					},
+				},
+			)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
+
+			accountsCursorResponse := response.V2AccountsCursorResponse
+			Expect(accountsCursorResponse.Cursor.Data).To(HaveLen(2))
 		})
 		It("should be listable on api using $not filter", func() {
 			response, err := Client().Ledger.V2ListAccounts(
