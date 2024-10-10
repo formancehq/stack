@@ -238,8 +238,8 @@ func main() {
 
 ### [Search.V1](docs/sdks/formancesearchv1/README.md)
 
-* [Search](docs/sdks/formancesearchv1/README.md#search) - search.v1
-* [SearchgetServerInfo](docs/sdks/formancesearchv1/README.md#searchgetserverinfo) - Get server info
+* [~~Search~~](docs/sdks/formancesearchv1/README.md#search) - search.v1 :warning: **Deprecated**
+* [~~SearchgetServerInfo~~](docs/sdks/formancesearchv1/README.md#searchgetserverinfo) - Get server info :warning: **Deprecated**
 
 
 ### [Wallets.V1](docs/sdks/formancewalletsv1/README.md)
