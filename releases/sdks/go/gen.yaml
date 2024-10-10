@@ -11,7 +11,7 @@ generation:
     oAuth2ClientCredentialsEnabled: true
   telemetryEnabled: false
 go:
-  version: v0.0.0
+  version: 0.0.1
   additionalDependencies: {}
   allowUnknownFieldsInWeakUnions: false
   author: Formance

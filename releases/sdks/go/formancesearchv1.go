@@ -29,6 +29,8 @@ func newFormanceSearchV1(sdkConfig sdkConfiguration) *FormanceSearchV1 {
 
 // Search - search.v1
 // Elasticsearch.v1 query engine
+//
+// Deprecated method: This will be removed in a future release, please migrate away from it as soon as possible.
 func (s *FormanceSearchV1) Search(ctx context.Context, request shared.Query, opts ...operations.Option) (*operations.SearchResponse, error) {
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
@@ -203,6 +205,8 @@ func (s *FormanceSearchV1) Search(ctx context.Context, request shared.Query, opt
 }
 
 // SearchgetServerInfo - Get server info
+//
+// Deprecated method: This will be removed in a future release, please migrate away from it as soon as possible.
 func (s *FormanceSearchV1) SearchgetServerInfo(ctx context.Context, opts ...operations.Option) (*operations.SearchgetServerInfoResponse, error) {
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
