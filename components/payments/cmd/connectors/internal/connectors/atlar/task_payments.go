@@ -199,7 +199,7 @@ func UpdatePaymentStatusTask(
 		)
 		if err != nil {
 			otel.RecordError(span, err)
-			return fmt.Errorf("failed to get atlar transfer: %v, %w", err, task.ErrRetryable)
+			return fmt.Errorf("failed to get atlar transfer: %w, %w", err, task.ErrRetryable)
 		}
 
 		status := getCreditTransferResponse.Payload.Status
