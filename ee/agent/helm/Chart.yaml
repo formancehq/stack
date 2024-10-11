@@ -3,12 +3,12 @@ name: agent
 description: Formance Membership Agent Helm Chart
 home: "https://formance.com"
 sources:
-- "https://github.com/formancehq/membership-api"
+  - "https://github.com/formancehq/membership-api"
 maintainers:
-- name: "Formance Team"
-  email: "support@formance.com"
+  - name: "Formance Team"
+    email: "support@formance.com"
 icon: "https://avatars.githubusercontent.com/u/84325077?s=200&v=4"
 
 type: application
-version: v2.1.0-beta.1
-appVersion: v2.1.0-beta.1
+version: v2.1.0-beta.4
+appVersion: v2.1.0-beta.4

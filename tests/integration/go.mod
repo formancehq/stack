@@ -8,7 +8,7 @@ require (
 	github.com/docker/docker v27.3.1+incompatible
 	github.com/egymgmbh/go-prefix-writer v0.0.0-20180609083313-7326ea162eca
 	github.com/formancehq/auth v0.0.0-00010101000000-000000000000
-	github.com/formancehq/formance-sdk-go/v2 v2.0.0-00010101000000-000000000000
+	github.com/formancehq/formance-sdk-go/v3 v3.0.0
 	github.com/formancehq/go-libs v1.7.1
 	github.com/formancehq/ledger v0.0.0-00010101000000-000000000000
 	github.com/formancehq/orchestration v0.0.0-00010101000000-000000000000
@@ -93,6 +93,7 @@ require (
 	github.com/fatih/color v1.17.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
+	github.com/formancehq/formance-sdk-go/v2 v2.0.0-00010101000000-000000000000 // indirect
 	github.com/formancehq/payments/genericclient v0.0.0-00010101000000-000000000000 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/get-momo/atlar-v1-go-client v1.2.1 // indirect
