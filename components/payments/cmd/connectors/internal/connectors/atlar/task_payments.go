@@ -362,7 +362,7 @@ func ingestAtlarTransaction(
 
 	transactionResponse, err := client.GetV1TransactionsID(ctx, transactionId)
 	if err != nil {
-		return fmt.Errorf("failed to get atlar transaction: %v, %w", err, task.ErrRetryable)
+		return fmt.Errorf("failed to get atlar transaction: %w, %w", err, task.ErrRetryable)
 
 	}
 
