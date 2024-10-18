@@ -14,6 +14,7 @@ import (
 var (
 	b1T = time.Date(2023, 11, 14, 5, 1, 10, 0, time.UTC)
 	b2T = time.Date(2023, 11, 14, 5, 1, 20, 0, time.UTC)
+	b3T = time.Date(2023, 11, 14, 5, 1, 40, 0, time.UTC)
 )
 
 func TestBalances(t *testing.T) {
@@ -22,6 +23,7 @@ func TestBalances(t *testing.T) {
 	testInstallConnectors(t, store)
 	testCreateAccounts(t, store)
 	testCreateBalances(t, store)
+	testUpdateBalances(t, store)
 	testUninstallConnectors(t, store)
 	testBalancesDeletedAfterConnectorUninstall(t, store)
 }
@@ -60,7 +62,64 @@ func testCreateBalances(t *testing.T, store *storage.Storage) {
 	err = store.InsertBalances(context.Background(), []*models.Balance{b2}, true)
 	require.NoError(t, err)
 
-	testGetBalance(t, store, acc1ID, []*models.Balance{b2, b1}, nil)
+	testGetBalance(t, store, acc1ID, []*models.Balance{b2, b1})
+}
+
+func testUpdateBalances(t *testing.T, store *storage.Storage) {
+	b1 := &models.Balance{
+		AccountID:     acc2ID,
+		Asset:         "USD",
+		Balance:       big.NewInt(int64(338737362)),
+		CreatedAt:     time.Date(2024, 10, 8, 22, 28, 18, 893000, time.UTC),
+		LastUpdatedAt: time.Date(2024, 10, 8, 22, 28, 18, 893000, time.UTC),
+	}
+
+	err := store.InsertBalances(context.Background(), []*models.Balance{b1}, false)
+	require.NoError(t, err)
+
+	testGetBalance(t, store, acc2ID, []*models.Balance{b1})
+
+	b2 := &models.Balance{
+		AccountID:     acc2ID,
+		Asset:         "USD",
+		Balance:       big.NewInt(int64(317070162)),
+		CreatedAt:     time.Date(2024, 10, 15, 15, 00, 01, 960000, time.UTC),
+		LastUpdatedAt: time.Date(2024, 10, 15, 15, 00, 01, 960000, time.UTC),
+	}
+
+	b1.LastUpdatedAt = b2.CreatedAt
+	err = store.InsertBalances(context.Background(), []*models.Balance{b1, b2}, false)
+	require.NoError(t, err)
+
+	testGetBalance(t, store, acc2ID, []*models.Balance{b2, b1})
+
+	b3 := &models.Balance{
+		AccountID:     acc2ID,
+		Asset:         "USD",
+		Balance:       big.NewInt(int64(327762162)),
+		CreatedAt:     time.Date(2024, 10, 16, 19, 36, 29, 850000, time.UTC),
+		LastUpdatedAt: time.Date(2024, 10, 16, 19, 36, 29, 850000, time.UTC),
+	}
+
+	err = store.InsertBalances(context.Background(), []*models.Balance{b1, b2, b3}, false)
+	require.NoError(t, err)
+
+	b2.LastUpdatedAt = b3.CreatedAt
+	testGetBalance(t, store, acc2ID, []*models.Balance{b3, b2, b1})
+
+	b4 := &models.Balance{
+		AccountID:     acc2ID,
+		Asset:         "USD",
+		Balance:       big.NewInt(int64(327762162)),
+		CreatedAt:     time.Date(2024, 10, 16, 19, 38, 06, 766000, time.UTC),
+		LastUpdatedAt: time.Date(2024, 10, 16, 19, 38, 06, 766000, time.UTC),
+	}
+
+	err = store.InsertBalances(context.Background(), []*models.Balance{b1, b2, b3, b4}, false)
+	require.NoError(t, err)
+
+	b3.LastUpdatedAt = b3T
+	testGetBalance(t, store, acc2ID, []*models.Balance{b3, b2, b1})
 }
 
 func testGetBalance(
@@ -68,7 +127,6 @@ func testGetBalance(
 	store *storage.Storage,
 	accountID models.AccountID,
 	expectedBalances []*models.Balance,
-	expectedError error,
 ) {
 	balances, err := store.GetBalancesForAccountID(context.Background(), accountID)
 	require.NoError(t, err)
