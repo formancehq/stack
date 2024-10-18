@@ -20,7 +20,7 @@ sources:
 generate:
     FROM core+builder-image
     RUN apk update && apk add openjdk11
-    DO --pass-args core+GO_INSTALL --package=go.uber.org/mock/mockgen@latest
+    DO --pass-args core+GO_INSTALL --package=go.uber.org/mock/mockgen@v0.4.0
     COPY (+sources/*) /src
     WORKDIR /src/ee/orchestration
     DO --pass-args core+GO_GENERATE
