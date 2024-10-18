@@ -6,6 +6,7 @@ import (
 	"errors"
 
 	"github.com/formancehq/payments/internal/models"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/uptrace/bun"
 )
 
@@ -19,7 +20,10 @@ func (s *Storage) InsertBalances(ctx context.Context, balances []*models.Balance
 		return err
 	}
 	defer func() {
-		_ = tx.Rollback()
+		err := tx.Rollback()
+		if err != nil {
+			logging.FromContext(ctx).Error("failed to rollback transaction", err)
+		}
 	}()
 
 	for _, balance := range balances {
