@@ -59,7 +59,7 @@ generate:
 
 generate-mock:
     FROM core+builder-image
-    DO --pass-args core+GO_INSTALL --package=go.uber.org/mock/mockgen@latest
+    DO --pass-args core+GO_INSTALL --package=go.uber.org/mock/mockgen@v0.4.0
     COPY (+sources/*) /src
     WORKDIR /src/components/operator
     RUN go generate -run mockgen ./...

@@ -117,7 +117,7 @@ func (s *Storage) GetBalanceAtByCurrency(ctx context.Context, accountID models.A
 		Where("currency = ?", currency).
 		Where("created_at <= ?", at).
 		Where("last_updated_at >= ?", at).
-		Order("last_updated_at DESC").
+		Order("created_at DESC").
 		Limit(1).
 		Scan(ctx)
 	if err != nil {
