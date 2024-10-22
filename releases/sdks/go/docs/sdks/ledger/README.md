@@ -1,5 +1,0 @@
-# Ledger
-(*Ledger*)
-
-### Available Operations
-
