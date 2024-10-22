@@ -22,6 +22,10 @@ jobs:
       - name: Generate OpenAPI final specification
         run: >
           earthly +build-final-spec --version=${{github.ref_name}}
+      - name: Create Release
+        run: gh release create ${{github.ref_name}} --generate-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Add the OpenAPI file to the release assets
         run: >
           gh release upload ${{github.ref_name}} ./releases/build/generate.json#openapi.json
