@@ -9,7 +9,6 @@ permissions:
 jobs:
   OpenAPI:
     runs-on: "ubuntu-latest"
-    needs:
     steps:
       - uses: earthly/actions-setup@v1
         with:
