@@ -45,11 +45,11 @@ func ExternalAccountFromAtlarData(
 	}, nil
 }
 
-func ExtractAccountMetadata(account *atlar_models.Account) metadata.Metadata {
+func ExtractAccountMetadata(account *atlar_models.Account, bank *atlar_models.ThirdParty) metadata.Metadata {
 	result := metadata.Metadata{}
 	result = result.Merge(ComputeAccountMetadataBool("fictive", account.Fictive))
-	result = result.Merge(ComputeAccountMetadata("bank/id", account.Bank.ID))
-	result = result.Merge(ComputeAccountMetadata("bank/name", account.Bank.Name))
+	result = result.Merge(ComputeAccountMetadata("bank/id", bank.ID))
+	result = result.Merge(ComputeAccountMetadata("bank/name", bank.Name))
 	result = result.Merge(ComputeAccountMetadata("bank/bic", account.Bank.Bic))
 	result = result.Merge(IdentifiersToMetadata(account.Identifiers))
 	result = result.Merge(ComputeAccountMetadata("alias", account.Alias))
