@@ -120,6 +120,11 @@ func postAccountMetadata(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(m) == 0 {
+		sharedapi.NoContent(w)
+		return
+	}
+
 	err := l.SaveMeta(r.Context(), getCommandParameters(r), ledger.MetaTargetTypeAccount, chi.URLParam(r, "address"), m)
 	if err != nil {
 		sharedapi.InternalServerError(w, r, err)

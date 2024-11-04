@@ -218,6 +218,11 @@ func postTransactionMetadata(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(m) == 0 {
+		sharedapi.NoContent(w)
+		return
+	}
+
 	txID, ok := big.NewInt(0).SetString(chi.URLParam(r, "id"), 10)
 	if !ok {
 		sharedapi.NotFound(w, errors.New("invalid transaction ID"))
