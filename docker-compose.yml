@@ -11,7 +11,7 @@ services:
       - ".local/gateway/Caddyfile:/etc/caddy/Caddyfile"
 
   ledger:
-    image: "ghcr.io/formancehq/ledger:v2.1.0"
+    image: "ghcr.io/formancehq/ledger:v2.1.1"
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://127.0.0.1:3068/_healthcheck" ]
       interval: 10s
