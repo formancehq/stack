@@ -29,6 +29,12 @@ func (c *Client) GetV1CounterpartiesID(ctx context.Context, counterPartyID strin
 }
 
 func (c *Client) CreateCounterParty(ctx context.Context, newExternalBankAccount *models.BankAccount) (*string, error) {
+	ctx, span := connectors.StartSpan(
+		ctx,
+		"atlar.client.CreateCounterParty",
+	)
+	defer span.End()
+
 	f := connectors.ClientMetrics(ctx, "atlar", "create_counterparty")
 	now := time.Now()
 	defer f(ctx, now)

@@ -10,6 +10,12 @@ import (
 )
 
 func (c *Client) PostV1CreditTransfers(ctx context.Context, req *atlar_models.CreatePaymentRequest) (*credit_transfers.PostV1CreditTransfersCreated, error) {
+	ctx, span := connectors.StartSpan(
+		ctx,
+		"atlar.client.PostV1CreditTransfers",
+	)
+	defer span.End()
+
 	f := connectors.ClientMetrics(ctx, "atlar", "create_credit_transfer")
 	now := time.Now()
 	defer f(ctx, now)
