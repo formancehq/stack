@@ -114,7 +114,7 @@ func (s *Storage) transferInitiationQueryContext(qb query.Builder) (string, []an
 			case string:
 				return fmt.Sprintf("%s = ?", key), []any{reference}, nil
 			default:
-				return "", nil, fmt.Errorf("unexpected type %T for column '%s'", reference, key)
+				return "", nil, fmt.Errorf("unexpected type %T for column %q", reference, key)
 			}
 		default:
 			return "", nil, fmt.Errorf("unknown key '%s' when building query", key)
