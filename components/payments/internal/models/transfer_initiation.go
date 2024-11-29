@@ -115,6 +115,7 @@ type TransferInitiation struct {
 	// Filled when created in DB
 	ID TransferInitiationID `bun:",pk,nullzero"`
 
+	Reference   string
 	CreatedAt   time.Time `bun:",nullzero"`
 	ScheduledAt time.Time `bun:",nullzero"`
 	Description string

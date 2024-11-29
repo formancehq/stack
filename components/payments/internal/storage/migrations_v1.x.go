@@ -391,6 +391,11 @@ func registerMigrationsV1(ctx context.Context, migrator *migrations.Migrator) {
 				return fixExpandingChangelogs(ctx, tx)
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				return fixMissingReferenceTransferInitiation(ctx, tx)
+			},
+		},
 	)
 }
 
@@ -1082,6 +1087,57 @@ func fixExpandingChangelogs(ctx context.Context, tx bun.Tx) error {
 			Model(&metadata).
 			On("CONFLICT (payment_id, key) DO UPDATE").
 			Set("changelog = EXCLUDED.changelog").
+			Exec(ctx)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func fixMissingReferenceTransferInitiation(ctx context.Context, tx bun.Tx) error {
+	_, err := tx.Exec(`
+		ALTER TABLE transfers.transfer_initiation ADD COLUMN IF NOT EXISTS reference text;
+	`)
+	if err != nil {
+		return err
+	}
+
+	var createdAt time.Time
+	for {
+		var transferInitiations []models.TransferInitiation
+		query := tx.NewSelect().
+			Model(&transferInitiations).
+			Order("created_at ASC").
+			Limit(100)
+
+		if !createdAt.IsZero() {
+			query.Where("created_at > ?", createdAt)
+		}
+
+		err := query.Scan(ctx)
+		if err != nil {
+			return err
+		}
+
+		fmt.Println("Processing", len(transferInitiations), "transfer initiations")
+		if len(transferInitiations) == 0 {
+			break
+		}
+
+		for i := range transferInitiations {
+			if transferInitiations[i].Reference == "" {
+				transferInitiations[i].Reference = transferInitiations[i].ID.Reference
+			}
+			createdAt = transferInitiations[i].CreatedAt
+		}
+
+		fmt.Println("Updating", len(transferInitiations), "transfer initiations")
+		_, err = tx.NewInsert().
+			Model(&transferInitiations).
+			On("CONFLICT (id) DO UPDATE").
+			Set("reference = EXCLUDED.reference").
 			Exec(ctx)
 		if err != nil {
 			return err

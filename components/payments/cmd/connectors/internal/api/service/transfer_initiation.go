@@ -140,6 +140,7 @@ func (s *Service) CreateTransferInitiation(ctx context.Context, req *CreateTrans
 	createdAt := time.Now().UTC()
 	tf := &models.TransferInitiation{
 		ID:                   id,
+		Reference:            req.Reference,
 		CreatedAt:            createdAt,
 		ScheduledAt:          req.ScheduledAt,
 		Description:          req.Description,

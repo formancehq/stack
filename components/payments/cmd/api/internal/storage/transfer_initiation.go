@@ -14,7 +14,7 @@ func (s *Storage) GetTransferInitiation(ctx context.Context, id models.TransferI
 	var transferInitiation models.TransferInitiation
 
 	query := s.db.NewSelect().
-		Column("id", "connector_id", "created_at", "scheduled_at", "description", "type", "source_account_id", "destination_account_id", "provider", "initial_amount", "amount", "asset", "metadata").
+		Column("id", "reference", "connector_id", "created_at", "scheduled_at", "description", "type", "source_account_id", "destination_account_id", "provider", "initial_amount", "amount", "asset", "metadata").
 		Model(&transferInitiation).
 		Relation("RelatedAdjustments").
 		Where("id = ?", id)
@@ -68,7 +68,7 @@ func (s *Storage) ListTransferInitiations(ctx context.Context, q ListTransferIni
 		(*bunpaginate.OffsetPaginatedQuery[PaginatedQueryOptions[TransferInitiationQuery]])(&q),
 		func(query *bun.SelectQuery) *bun.SelectQuery {
 			query = query.
-				Column("id", "connector_id", "created_at", "scheduled_at", "description", "type", "source_account_id", "destination_account_id", "provider", "initial_amount", "amount", "asset", "metadata").
+				Column("id", "reference", "connector_id", "created_at", "scheduled_at", "description", "type", "source_account_id", "destination_account_id", "provider", "initial_amount", "amount", "asset", "metadata").
 				Relation("RelatedAdjustments")
 
 			if q.Options.QueryBuilder != nil {
@@ -104,6 +104,17 @@ func (s *Storage) transferInitiationQueryContext(qb query.Builder) (string, []an
 				return fmt.Sprintf("%s = ?", key), []any{accountID}, nil
 			default:
 				return "", nil, fmt.Errorf("unexpected type %T for column '%s'", accountID, key)
+			}
+		case key == "reference":
+			if operator != "$match" {
+				return "", nil, fmt.Errorf("'%s' column can only be used with $match", key)
+			}
+
+			switch reference := value.(type) {
+			case string:
+				return fmt.Sprintf("%s = ?", key), []any{reference}, nil
+			default:
+				return "", nil, fmt.Errorf("unexpected type %T for column '%s'", reference, key)
 			}
 		default:
 			return "", nil, fmt.Errorf("unknown key '%s' when building query", key)
