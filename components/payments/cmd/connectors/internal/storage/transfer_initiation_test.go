@@ -49,6 +49,7 @@ func testCreateTransferInitiations(t *testing.T, store *storage.Storage) {
 	}
 	t1 = &models.TransferInitiation{
 		ID:          t1ID,
+		Reference:   "test1",
 		CreatedAt:   t1T,
 		ScheduledAt: t1T,
 		Description: "test_description",
@@ -73,6 +74,7 @@ func testCreateTransferInitiations(t *testing.T, store *storage.Storage) {
 	}
 	t2 = &models.TransferInitiation{
 		ID:                   t2ID,
+		Reference:            "test2",
 		CreatedAt:            t2T,
 		ScheduledAt:          t2T,
 		Description:          "test_description2",
@@ -136,6 +138,7 @@ func testGetTransferInitiation(
 
 func checkTransferInitiationsEqual(t *testing.T, t1, t2 *models.TransferInitiation, checkRelatedAdjusment bool) {
 	require.Equal(t, t1.ID, t2.ID)
+	require.Equal(t, t1.Reference, t2.Reference)
 	require.Equal(t, t1.CreatedAt.UTC(), t2.CreatedAt.UTC())
 	require.Equal(t, t1.ScheduledAt.UTC(), t2.ScheduledAt.UTC())
 	require.Equal(t, t1.Description, t2.Description)
