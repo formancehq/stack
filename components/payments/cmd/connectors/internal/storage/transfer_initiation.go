@@ -19,7 +19,7 @@ func (s *Storage) CreateTransferInitiation(ctx context.Context, transferInitiati
 	}()
 
 	query := tx.NewInsert().
-		Column("id", "created_at", "scheduled_at", "description", "type", "destination_account_id", "provider", "connector_id", "initial_amount", "amount", "asset", "metadata").
+		Column("id", "reference", "created_at", "scheduled_at", "description", "type", "destination_account_id", "provider", "connector_id", "initial_amount", "amount", "asset", "metadata").
 		Model(transferInitiation)
 
 	if transferInitiation.SourceAccountID != nil {
@@ -53,7 +53,7 @@ func (s *Storage) ReadTransferInitiation(ctx context.Context, id models.Transfer
 	var transferInitiation models.TransferInitiation
 
 	query := s.db.NewSelect().
-		Column("id", "created_at", "scheduled_at", "description", "type", "source_account_id", "destination_account_id", "provider", "connector_id", "amount", "asset", "metadata").
+		Column("id", "reference", "created_at", "scheduled_at", "description", "type", "source_account_id", "destination_account_id", "provider", "connector_id", "amount", "asset", "metadata").
 		Model(&transferInitiation).
 		Relation("RelatedAdjustments").
 		Where("id = ?", id)
