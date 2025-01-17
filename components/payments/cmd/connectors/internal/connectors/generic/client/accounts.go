@@ -18,9 +18,9 @@ func (c *Client) ListAccounts(ctx context.Context, page, pageSize int64) ([]gene
 		Page(page).
 		PageSize(pageSize)
 
-	accounts, _, err := req.Execute()
+	accounts, resp, err := req.Execute()
 	if err != nil {
-		return nil, err
+		return nil, wrapError(err, resp)
 	}
 
 	return accounts, nil

@@ -3,6 +3,7 @@ package generic
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors/generic/client"
@@ -62,15 +63,18 @@ func taskFetchAccounts(client *client.Client, config *Config) task.Task {
 func ingestAccounts(
 	ctx context.Context,
 	connectorID models.ConnectorID,
-	client *client.Client,
+	c *client.Client,
 	ingester ingestion.Ingester,
 	scheduler task.Scheduler,
 ) error {
 
 	balancesTasks := make([]models.TaskDescriptor, 0)
 	for page := 1; ; page++ {
-		accounts, err := client.ListAccounts(ctx, int64(page), pageSize)
+		accounts, err := c.ListAccounts(ctx, int64(page), pageSize)
 		if err != nil {
+			if errors.Is(err, client.ErrStatusCodeServerError) {
+				return fmt.Errorf("%w: %w", task.ErrRetryable, err)
+			}
 			return err
 		}
 

@@ -2,6 +2,7 @@ package generic
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math/big"
 
@@ -16,7 +17,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 )
 
-func taskFetchBalances(client *client.Client, config *Config, accountID string) task.Task {
+func taskFetchBalances(c *client.Client, config *Config, accountID string) task.Task {
 	return func(
 		ctx context.Context,
 		taskID models.TaskID,
@@ -32,10 +33,15 @@ func taskFetchBalances(client *client.Client, config *Config, accountID string) 
 		)
 		defer span.End()
 
-		balances, err := client.GetBalances(ctx, accountID)
+		balances, err := c.GetBalances(ctx, accountID)
 		if err != nil {
 			// retryable error already handled by the client
 			otel.RecordError(span, err)
+
+			if errors.Is(err, client.ErrStatusCodeServerError) {
+				return fmt.Errorf("%w: %w", task.ErrRetryable, err)
+			}
+
 			return err
 		}
 

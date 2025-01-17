@@ -3,6 +3,7 @@ package generic
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/formancehq/payments/cmd/connectors/internal/connectors"
@@ -55,7 +56,7 @@ func taskFetchBeneficiaries(client *client.Client, config *Config) task.Task {
 func ingestBeneficiaries(
 	ctx context.Context,
 	connectorID models.ConnectorID,
-	client *client.Client,
+	c *client.Client,
 	ingester ingestion.Ingester,
 	state fetchBeneficiariesState,
 ) (fetchBeneficiariesState, error) {
@@ -64,8 +65,12 @@ func ingestBeneficiaries(
 	}
 
 	for page := 1; ; page++ {
-		beneficiaries, err := client.ListBeneficiaries(ctx, int64(page), pageSize, state.LastCreatedAt)
+		beneficiaries, err := c.ListBeneficiaries(ctx, int64(page), pageSize, state.LastCreatedAt)
 		if err != nil {
+			if errors.Is(err, client.ErrStatusCodeServerError) {
+				return fetchBeneficiariesState{}, fmt.Errorf("%w: %w", task.ErrRetryable, err)
+			}
+
 			return fetchBeneficiariesState{}, err
 		}
 

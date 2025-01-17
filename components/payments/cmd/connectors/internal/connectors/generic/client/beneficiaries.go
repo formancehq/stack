@@ -22,9 +22,9 @@ func (c *Client) ListBeneficiaries(ctx context.Context, page, pageSize int64, cr
 		req = req.CreatedAtFrom(createdAtFrom)
 	}
 
-	beneficiaries, _, err := req.Execute()
+	beneficiaries, resp, err := req.Execute()
 	if err != nil {
-		return nil, err
+		return nil, wrapError(err, resp)
 	}
 
 	return beneficiaries, nil
