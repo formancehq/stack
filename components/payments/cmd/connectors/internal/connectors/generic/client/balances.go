@@ -15,9 +15,9 @@ func (c *Client) GetBalances(ctx context.Context, accountID string) (*genericcli
 
 	req := c.apiClient.DefaultApi.GetAccountBalances(ctx, accountID)
 
-	balances, _, err := req.Execute()
+	balances, resp, err := req.Execute()
 	if err != nil {
-		return nil, err
+		return nil, wrapError(err, resp)
 	}
 
 	return balances, nil

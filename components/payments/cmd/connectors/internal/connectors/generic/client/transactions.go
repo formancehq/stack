@@ -21,9 +21,9 @@ func (c *Client) ListTransactions(ctx context.Context, page, pageSize int64, upd
 		req = req.UpdatedAtFrom(updatedAtFrom)
 	}
 
-	transactions, _, err := req.Execute()
+	transactions, resp, err := req.Execute()
 	if err != nil {
-		return nil, err
+		return nil, wrapError(err, resp)
 	}
 
 	return transactions, nil

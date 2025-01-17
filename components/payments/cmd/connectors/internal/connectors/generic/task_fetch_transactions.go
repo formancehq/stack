@@ -60,7 +60,7 @@ func taskFetchTransactions(client *client.Client, config *Config) task.Task {
 func ingestTransactions(
 	ctx context.Context,
 	connectorID models.ConnectorID,
-	client *client.Client,
+	c *client.Client,
 	ingester ingestion.Ingester,
 	scheduler task.Scheduler,
 	state fetchTransactionsState,
@@ -70,8 +70,12 @@ func ingestTransactions(
 	}
 
 	for page := 1; ; page++ {
-		transactions, err := client.ListTransactions(ctx, int64(page), pageSize, state.LastUpdatedAt)
+		transactions, err := c.ListTransactions(ctx, int64(page), pageSize, state.LastUpdatedAt)
 		if err != nil {
+			if errors.Is(err, client.ErrStatusCodeServerError) {
+				return fetchTransactionsState{}, fmt.Errorf("%w: %w", task.ErrRetryable, err)
+			}
+
 			return fetchTransactionsState{}, err
 		}
 
