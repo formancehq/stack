@@ -43,6 +43,7 @@ tags:
   - name: ledger.v1
   - name: ledger.v2
   - name: payments.v1
+  - name: payments.v3
   - name: auth.v1
   - name: orchestration.v1
   - name: orchestration.v2
@@ -79,6 +80,7 @@ x-tagGroups:
   - name: Payments
     tags:
       - payments.v1
+      - payments.v3
   - name: Search
     tags:
       - search.v1
