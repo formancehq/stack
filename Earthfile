@@ -2,17 +2,16 @@ VERSION 0.8
 PROJECT FormanceHQ/stack
 
 IMPORT github.com/formancehq/earthly:tags/v0.15.0 AS core
-IMPORT github.com/formancehq/ledger:v2.2.0-rc.3 AS ledger
+IMPORT github.com/formancehq/ledger:v2.2.0-rc.4 AS ledger
+IMPORT github.com/formancehq/payments:v3.0.0-rc.2 AS payments
 IMPORT github.com/formancehq/wallets:v2.1.0 AS wallets
-IMPORT github.com/formancehq/payments:v3.0.0-beta.4 AS payments
-
-IMPORT github.com/formancehq/gateway:main AS gateway
-IMPORT github.com/formancehq/auth:main AS auth
-IMPORT github.com/formancehq/search:main AS search
-IMPORT github.com/formancehq/stargate:main AS stargate
-IMPORT github.com/formancehq/webhooks:main AS webhooks
-IMPORT github.com/formancehq/flows:main AS orchestration
-IMPORT github.com/formancehq/reconciliation:main AS reconciliation
+IMPORT github.com/formancehq/webhooks:v2.1.0 AS webhooks
+IMPORT github.com/formancehq/auth:v2.1.1 AS auth
+IMPORT github.com/formancehq/search:v2.1.0 AS search
+IMPORT github.com/formancehq/stargate:v2.1.0 AS stargate
+IMPORT github.com/formancehq/flows:v2.1.0 AS orchestration
+IMPORT github.com/formancehq/reconciliation:v2.1.0 AS reconciliation
+IMPORT github.com/formancehq/gateway:v2.1.0 AS gateway
 
 sources:
     FROM core+base-image
