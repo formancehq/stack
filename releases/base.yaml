@@ -33,8 +33,9 @@ servers:
       default: orgID-stackID
     environment:
       description: The environment name. Defaults to the production environment.
-      default: sandbox
+      default: eu.sandbox
       enum:
+        - eu.sandbox
         - sandbox
         - eu-west-1
         - us-east-1
