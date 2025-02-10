@@ -77,21 +77,10 @@ The full documentation for the formance stack can be found at [docs.formance.com
 
 Formance is transitioning to a unified public facing monorepo (this one) that imports versioned services submodules and provides a common infrastructure layer. As we are finalizing this transition, this monorepo is structured as below
 
-### Architecture
-
-```
-formancehq/stack/
-  |- components      # Stack services in OSS
-  |- ee        # Stack services in EE Licence
-  |- docs      # Exhaustive documentation deployed at docs.formance.com
-  |- config    # Boilerplate configuration for stack dependencies
-```
-
 ### Technologies
 
 The Formance Stack is built on open-source, battle tested technologies including:
 
 - **PostgreSQL** - Main storage backend
-- **Redis** - Caching and services instances syncing
 - **Kafka/NATS** - Cross-services async communication
 - **Traefik** - Main HTTP gateway
