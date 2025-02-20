@@ -144,6 +144,25 @@ var _ = WithModules([]*Module{modules.Auth, modules.Ledger, modules.Wallets}, fu
 				Expect(sdkError.ErrorCode).To(Equal(sdkerrors.SchemasWalletsErrorResponseErrorCodeValidation))
 			})
 		})
+		Then("crediting it with big amount", func() {
+			It("should fail", func() {
+				_, err := Client().Wallets.CreditWallet(TestContext(), operations.CreditWalletRequest{
+					CreditWalletRequest: &shared.CreditWalletRequest{
+						Amount: shared.Monetary{
+							Amount: big.NewInt(9999999),
+							Asset:  "USD/2",
+						},
+						Sources:  []shared.Subject{},
+						Metadata: map[string]string{},
+					},
+					ID: response.CreateWalletResponse.Data.ID,
+				})
+				Expect(err).NotTo(Succeed())
+				sdkError := &sdkerrors.WalletsErrorResponse{}
+				Expect(errors.As(err, &sdkError)).To(BeTrue())
+				Expect(sdkError.ErrorCode).To(Equal(sdkerrors.SchemasWalletsErrorResponseErrorCodeValidation))
+			})
+		})
 		Then("crediting it with invalid asset name", func() {
 			It("should fail", func() {
 				_, err := Client().Wallets.CreditWallet(TestContext(), operations.CreditWalletRequest{
