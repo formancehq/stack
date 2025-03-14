@@ -2,7 +2,7 @@ VERSION 0.8
 PROJECT FormanceHQ/stack
 
 IMPORT github.com/formancehq/earthly:tags/v0.15.0 AS core
-IMPORT github.com/formancehq/ledger:v2.1.1 AS ledger
+IMPORT github.com/formancehq/ledger:main AS ledger
 IMPORT github.com/formancehq/payments:main AS payments
 IMPORT github.com/formancehq/gateway:main AS gateway
 IMPORT github.com/formancehq/auth:main AS auth
