@@ -18,6 +18,8 @@ import (
 	"github.com/gorilla/mux"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 type APIVersion int
@@ -110,13 +112,45 @@ func readConfig[Config models.ConnectorConfigObject](
 			return
 		}
 
-		err = json.NewEncoder(w).Encode(api.BaseResponse[Config]{
-			Data: &config,
-		})
+		b, err := config.Marshal()
 		if err != nil {
 			otel.RecordError(span, err)
-			api.InternalServerError(w, r, err)
+			handleConnectorsManagerErrors(w, r, err)
 			return
+		}
+
+		var m map[string]interface{}
+		err = json.Unmarshal(b, &m)
+		if err != nil {
+			otel.RecordError(span, err)
+			handleConnectorsManagerErrors(w, r, err)
+			return
+		}
+
+		// inject provider into config json so SDK can distinguish between config types
+		caser := cases.Title(language.English)
+		m["provider"] = caser.String(connectorID.Provider.String())
+		result, err := json.Marshal(m)
+		if err != nil {
+			otel.RecordError(span, err)
+			handleConnectorsManagerErrors(w, r, err)
+			return
+		}
+
+		rawConfig := json.RawMessage(result)
+		writeConfig(w, r, rawConfig, span)
+	}
+}
+
+func writeConfig(w http.ResponseWriter, r *http.Request, v any, span trace.Span) {
+	resBody := api.BaseResponse[any]{
+		Data: &v,
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if v != nil {
+		if err := json.NewEncoder(w).Encode(resBody); err != nil {
+			otel.RecordError(span, err)
+			api.InternalServerError(w, r, err)
 		}
 	}
 }
