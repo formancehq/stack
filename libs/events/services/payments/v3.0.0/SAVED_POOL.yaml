@@ -1,0 +1,18 @@
+type: object
+required:
+  - id
+  - name
+  - createdAt
+  - accountIDs
+properties:
+  id:
+    type: string
+  name:
+    type: string
+  createdAt:
+    type: string
+    format: date-time
+  accountIDs:
+    type: array
+    items:
+      type: string

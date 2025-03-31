@@ -20,15 +20,27 @@
     "payload": {
       "type": "object",
       "required": [
+        "id",
+        "name",
         "createdAt",
-        "connectorID"
+        "accountIDs"
       ],
       "properties": {
-        "createdAt": {
+        "id": {
           "type": "string"
         },
-        "connectorID": {
+        "name": {
           "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "accountIDs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     }

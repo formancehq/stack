@@ -1,0 +1,114 @@
+{
+  "type": "object",
+  "properties": {
+    "app": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "type": {
+      "type": "string"
+    },
+    "ledger": {
+      "type": "string"
+    },
+    "payload": {
+      "type": "object",
+      "required": [
+        "id",
+        "connectorID",
+        "provider",
+        "reference",
+        "createdAt",
+        "type",
+        "status",
+        "scheme",
+        "asset",
+        "amount",
+        "initialAmount"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "connectorID": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "reference": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "type": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "scheme": {
+          "type": "string"
+        },
+        "asset": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "number",
+          "format": "bigint"
+        },
+        "initialAmount": {
+          "type": "number",
+          "format": "bigint"
+        },
+        "sourceAccountID": {
+          "type": "string"
+        },
+        "destinationAccountID": {
+          "type": "string"
+        },
+        "links": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "uri": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "rawData": {
+          "type": "object"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "date",
+    "app",
+    "version",
+    "type",
+    "payload"
+  ]
+}

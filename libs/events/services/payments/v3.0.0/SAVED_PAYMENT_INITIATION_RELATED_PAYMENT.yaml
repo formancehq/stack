@@ -1,0 +1,9 @@
+type: object
+required:
+  - paymentInitiationID
+  - paymentID
+properties:
+  paymentInitiationID:
+    type: string
+  paymentID:
+    type: string
