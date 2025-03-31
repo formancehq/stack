@@ -22,30 +22,70 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "name",
-              "createdAt",
-              "accountIDs"
-            ],
             "properties": {
-              "id": {
+              "ledger": {
                 "type": "string"
               },
-              "name": {
-                "type": "string"
-              },
-              "createdAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "accountIDs": {
+              "transactions": {
                 "type": "array",
                 "items": {
-                  "type": "string"
+                  "type": "object",
+                  "properties": {
+                    "postings": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "source": {
+                            "type": "string"
+                          },
+                          "destination": {
+                            "type": "string"
+                          },
+                          "amount": {
+                            "type": "number"
+                          },
+                          "asset": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "source",
+                          "destination",
+                          "amount",
+                          "asset"
+                        ]
+                      }
+                    },
+                    "reference": {
+                      "type": "string"
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {},
+                      "required": []
+                    },
+                    "txid": {
+                      "type": "number"
+                    },
+                    "timestamp": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "postings",
+                    "reference",
+                    "metadata",
+                    "txid",
+                    "timestamp"
+                  ]
                 }
               }
-            }
+            },
+            "required": [
+              "ledger",
+              "transactions"
+            ]
           }
         },
         "required": [
@@ -77,30 +117,120 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "name",
-              "createdAt",
-              "accountIDs"
-            ],
             "properties": {
-              "id": {
+              "ledger": {
                 "type": "string"
               },
-              "name": {
-                "type": "string"
+              "revertedTransaction": {
+                "type": "object",
+                "properties": {
+                  "postings": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "source": {
+                          "type": "string"
+                        },
+                        "destination": {
+                          "type": "string"
+                        },
+                        "amount": {
+                          "type": "number"
+                        },
+                        "asset": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "source",
+                        "destination",
+                        "amount",
+                        "asset"
+                      ]
+                    }
+                  },
+                  "reference": {
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                  },
+                  "txid": {
+                    "type": "number"
+                  },
+                  "timestamp": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "postings",
+                  "reference",
+                  "metadata",
+                  "txid",
+                  "timestamp"
+                ]
               },
-              "createdAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              "revertTransaction": {
+                "type": "object",
+                "properties": {
+                  "postings": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "source": {
+                          "type": "string"
+                        },
+                        "destination": {
+                          "type": "string"
+                        },
+                        "amount": {
+                          "type": "number"
+                        },
+                        "asset": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "source",
+                        "destination",
+                        "amount",
+                        "asset"
+                      ]
+                    }
+                  },
+                  "reference": {
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                  },
+                  "txid": {
+                    "type": "number"
+                  },
+                  "timestamp": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "postings",
+                  "reference",
+                  "metadata",
+                  "txid",
+                  "timestamp"
+                ]
               }
-            }
+            },
+            "required": [
+              "ledger",
+              "revertedTransaction",
+              "revertTransaction"
+            ]
           }
         },
         "required": [
@@ -132,30 +262,27 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "name",
-              "createdAt",
-              "accountIDs"
-            ],
             "properties": {
-              "id": {
+              "ledger": {
                 "type": "string"
               },
-              "name": {
+              "targetType": {
                 "type": "string"
               },
-              "createdAt": {
-                "type": "string",
-                "format": "date-time"
+              "targetId": {
+                "type": "string"
               },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              "metadata": {
+                "type": "object",
+                "additionalProperties": {}
               }
-            }
+            },
+            "required": [
+              "ledger",
+              "targetType",
+              "targetId",
+              "metadata"
+            ]
           }
         },
         "required": [
@@ -189,30 +316,73 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "name",
-              "createdAt",
-              "accountIDs"
-            ],
             "properties": {
-              "id": {
+              "ledger": {
                 "type": "string"
               },
-              "name": {
-                "type": "string"
-              },
-              "createdAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "accountIDs": {
+              "transactions": {
                 "type": "array",
                 "items": {
-                  "type": "string"
+                  "type": "object",
+                  "properties": {
+                    "postings": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "source": {
+                            "type": "string"
+                          },
+                          "destination": {
+                            "type": "string"
+                          },
+                          "amount": {
+                            "type": "number"
+                          },
+                          "asset": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "source",
+                          "destination",
+                          "amount",
+                          "asset"
+                        ]
+                      }
+                    },
+                    "reference": {
+                      "type": "string"
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {},
+                      "required": []
+                    },
+                    "id": {
+                      "type": "number"
+                    },
+                    "timestamp": {
+                      "type": "string"
+                    },
+                    "reverted": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "postings",
+                    "metadata",
+                    "id",
+                    "timestamp",
+                    "reverted"
+                  ]
                 }
               }
-            }
+            },
+            "required": [
+              "ledger",
+              "transactions"
+            ]
           }
         },
         "required": [
@@ -244,30 +414,26 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "name",
-              "createdAt",
-              "accountIDs"
-            ],
             "properties": {
-              "id": {
+              "ledger": {
                 "type": "string"
               },
-              "name": {
+              "targetType": {
                 "type": "string"
               },
-              "createdAt": {
-                "type": "string",
-                "format": "date-time"
+              "targetId": {
+                "type": "string"
               },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              "key": {
+                "type": "string"
               }
-            }
+            },
+            "required": [
+              "ledger",
+              "targetType",
+              "targetId",
+              "key"
+            ]
           }
         },
         "required": [
@@ -299,30 +465,122 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "name",
-              "createdAt",
-              "accountIDs"
-            ],
             "properties": {
-              "id": {
+              "ledger": {
                 "type": "string"
               },
-              "name": {
-                "type": "string"
+              "revertedTransaction": {
+                "type": "object",
+                "properties": {
+                  "postings": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "source": {
+                          "type": "string"
+                        },
+                        "destination": {
+                          "type": "string"
+                        },
+                        "amount": {
+                          "type": "number"
+                        },
+                        "asset": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "source",
+                        "destination",
+                        "amount",
+                        "asset"
+                      ]
+                    }
+                  },
+                  "reference": {
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                  },
+                  "id": {
+                    "type": "number"
+                  },
+                  "timestamp": {
+                    "type": "string"
+                  },
+                  "reverted": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "postings",
+                  "metadata",
+                  "id",
+                  "timestamp",
+                  "reverted"
+                ]
               },
-              "createdAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              "revertTransaction": {
+                "type": "object",
+                "properties": {
+                  "postings": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "source": {
+                          "type": "string"
+                        },
+                        "destination": {
+                          "type": "string"
+                        },
+                        "amount": {
+                          "type": "number"
+                        },
+                        "asset": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "source",
+                        "destination",
+                        "amount",
+                        "asset"
+                      ]
+                    }
+                  },
+                  "reference": {
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                  },
+                  "id": {
+                    "type": "number"
+                  },
+                  "timestamp": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "postings",
+                  "metadata",
+                  "id",
+                  "timestamp"
+                ]
               }
-            }
+            },
+            "required": [
+              "ledger",
+              "revertedTransaction",
+              "revertTransaction"
+            ]
           }
         },
         "required": [
@@ -354,30 +612,27 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "name",
-              "createdAt",
-              "accountIDs"
-            ],
             "properties": {
-              "id": {
+              "ledger": {
                 "type": "string"
               },
-              "name": {
+              "targetType": {
                 "type": "string"
               },
-              "createdAt": {
-                "type": "string",
-                "format": "date-time"
+              "targetId": {
+                "type": "string"
               },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              "metadata": {
+                "type": "object",
+                "additionalProperties": {}
               }
-            }
+            },
+            "required": [
+              "ledger",
+              "targetType",
+              "targetId",
+              "metadata"
+            ]
           }
         },
         "required": [
@@ -413,30 +668,25 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "name",
-              "createdAt",
-              "accountIDs"
-            ],
             "properties": {
               "id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              },
-              "createdAt": {
                 "type": "string",
-                "format": "date-time"
+                "minLength": 1
               },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              "triggerID": {
+                "type": "string",
+                "minLength": 1
+              },
+              "error": {
+                "type": "string",
+                "minLength": 1
               }
-            }
+            },
+            "required": [
+              "id",
+              "triggerID",
+              "error"
+            ]
           }
         },
         "required": [
@@ -468,30 +718,25 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "name",
-              "createdAt",
-              "accountIDs"
-            ],
             "properties": {
               "id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              },
-              "createdAt": {
                 "type": "string",
-                "format": "date-time"
+                "minLength": 1
               },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              "instanceID": {
+                "type": "string",
+                "minLength": 1
+              },
+              "error": {
+                "type": "string",
+                "minLength": 1
               }
-            }
+            },
+            "required": [
+              "id",
+              "instanceID",
+              "error"
+            ]
           }
         },
         "required": [
@@ -523,30 +768,30 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "name",
-              "createdAt",
-              "accountIDs"
-            ],
             "properties": {
               "id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              },
-              "createdAt": {
                 "type": "string",
-                "format": "date-time"
+                "minLength": 1
               },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              "instanceID": {
+                "type": "string",
+                "minLength": 1
+              },
+              "number": {
+                "type": "integer",
+                "minLength": 1
+              },
+              "error": {
+                "type": "string",
+                "minLength": 1
               }
-            }
+            },
+            "required": [
+              "id",
+              "instanceID",
+              "number",
+              "error"
+            ]
           }
         },
         "required": [
@@ -578,30 +823,20 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "name",
-              "createdAt",
-              "accountIDs"
-            ],
             "properties": {
               "id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              },
-              "createdAt": {
                 "type": "string",
-                "format": "date-time"
+                "minLength": 1
               },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              "instanceID": {
+                "type": "string",
+                "minLength": 1
               }
-            }
+            },
+            "required": [
+              "id",
+              "instanceID"
+            ]
           }
         },
         "required": [
@@ -633,30 +868,25 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "name",
-              "createdAt",
-              "accountIDs"
-            ],
             "properties": {
               "id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              },
-              "createdAt": {
                 "type": "string",
-                "format": "date-time"
+                "minLength": 1
               },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              "instanceID": {
+                "type": "string",
+                "minLength": 1
+              },
+              "number": {
+                "type": "integer",
+                "minLength": 1
               }
-            }
+            },
+            "required": [
+              "id",
+              "instanceID",
+              "number"
+            ]
           }
         },
         "required": [
@@ -688,30 +918,21 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "name",
-              "createdAt",
-              "accountIDs"
-            ],
             "properties": {
               "id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              },
-              "createdAt": {
                 "type": "string",
-                "format": "date-time"
+                "minLength": 1
               },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              "triggerID": {
+                "type": "string",
+                "minLength": 1
               }
-            }
+            },
+            "required": [
+              "id",
+              "triggerID",
+              "workflowInstanceID"
+            ]
           }
         },
         "required": [
@@ -743,30 +964,20 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "name",
-              "createdAt",
-              "accountIDs"
-            ],
             "properties": {
               "id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              },
-              "createdAt": {
                 "type": "string",
-                "format": "date-time"
+                "minLength": 1
               },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              "instanceID": {
+                "type": "string",
+                "minLength": 1
               }
-            }
+            },
+            "required": [
+              "id",
+              "instanceID"
+            ]
           }
         },
         "required": [
@@ -798,30 +1009,25 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "name",
-              "createdAt",
-              "accountIDs"
-            ],
             "properties": {
               "id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              },
-              "createdAt": {
                 "type": "string",
-                "format": "date-time"
+                "minLength": 1
               },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              "instanceID": {
+                "type": "string",
+                "minLength": 1
+              },
+              "number": {
+                "type": "integer",
+                "minLength": 1
               }
-            }
+            },
+            "required": [
+              "id",
+              "instanceID",
+              "number"
+            ]
           }
         },
         "required": [
@@ -857,30 +1063,18 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "name",
-              "createdAt",
-              "accountIDs"
-            ],
             "properties": {
-              "id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              },
               "createdAt": {
-                "type": "string",
-                "format": "date-time"
+                "type": "string"
               },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              "connector": {
+                "type": "string"
               }
-            }
+            },
+            "required": [
+              "createdAt",
+              "connector"
+            ]
           }
         },
         "required": [
@@ -914,26 +1108,40 @@
             "type": "object",
             "required": [
               "id",
-              "name",
+              "reference",
               "createdAt",
-              "accountIDs"
+              "provider",
+              "defaultAsset",
+              "accountName",
+              "type"
             ],
             "properties": {
               "id": {
                 "type": "string"
               },
-              "name": {
+              "reference": {
                 "type": "string"
               },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
               },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              "provider": {
+                "type": "string"
+              },
+              "defaultAsset": {
+                "type": "string"
+              },
+              "accountName": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "UNKNOWN",
+                  "INTERNAL",
+                  "EXTERNAL"
+                ]
               }
             }
           }
@@ -968,27 +1176,25 @@
           "payload": {
             "type": "object",
             "required": [
-              "id",
-              "name",
+              "accountID",
               "createdAt",
-              "accountIDs"
+              "asset",
+              "balance"
             ],
             "properties": {
-              "id": {
-                "type": "string"
-              },
-              "name": {
+              "accountID": {
                 "type": "string"
               },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
               },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              "asset": {
+                "type": "string"
+              },
+              "balance": {
+                "type": "number",
+                "format": "bigint"
               }
             }
           }
@@ -1024,24 +1230,111 @@
             "type": "object",
             "required": [
               "id",
-              "name",
+              "reference",
               "createdAt",
-              "accountIDs"
+              "provider",
+              "type",
+              "status",
+              "scheme",
+              "asset",
+              "amount",
+              "initialAmount"
             ],
             "properties": {
               "id": {
                 "type": "string"
               },
-              "name": {
+              "reference": {
                 "type": "string"
               },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
               },
-              "accountIDs": {
-                "type": "array",
+              "provider": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "PAY-IN",
+                  "PAYOUT",
+                  "TRANSFER",
+                  "OTHER"
+                ]
+              },
+              "status": {
+                "type": "string"
+              },
+              "scheme": {
+                "type": "string",
+                "enum": [
+                  "unknown",
+                  "other",
+                  "visa",
+                  "mastercard",
+                  "amex",
+                  "diners",
+                  "discover",
+                  "jcb",
+                  "unionpay",
+                  "alipay",
+                  "cup",
+                  "sepa debit",
+                  "sepa credit",
+                  "sepa",
+                  "apple pay",
+                  "google pay",
+                  "doku",
+                  "dragonpay",
+                  "maestro",
+                  "molpay",
+                  "a2a",
+                  "ach debit",
+                  "ach",
+                  "rtp"
+                ]
+              },
+              "asset": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "number",
+                "format": "bigint"
+              },
+              "initialAmount": {
+                "type": "number",
+                "format": "bigint"
+              },
+              "sourceAccountId": {
+                "type": "string"
+              },
+              "destinationAccountId": {
+                "type": "string"
+              },
+              "links": {
+                "type": [
+                  "array",
+                  "null"
+                ],
                 "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "uri": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "rawData": {
+                "type": "object"
+              },
+              "metadata": {
+                "type": "object",
+                "additionalProperties": {
                   "type": "string"
                 }
               }
@@ -1080,27 +1373,15 @@
           "payload": {
             "type": "object",
             "required": [
-              "id",
-              "name",
               "createdAt",
-              "accountIDs"
+              "connectorID"
             ],
             "properties": {
-              "id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              },
               "createdAt": {
-                "type": "string",
-                "format": "date-time"
+                "type": "string"
               },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              "connectorID": {
+                "type": "string"
               }
             }
           }
@@ -1136,26 +1417,15 @@
             "type": "object",
             "required": [
               "id",
-              "name",
-              "createdAt",
-              "accountIDs"
+              "createdAt"
             ],
             "properties": {
               "id": {
                 "type": "string"
               },
-              "name": {
-                "type": "string"
-              },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
-              },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
               }
             }
           }
@@ -1191,26 +1461,15 @@
             "type": "object",
             "required": [
               "id",
-              "name",
-              "createdAt",
-              "accountIDs"
+              "createdAt"
             ],
             "properties": {
               "id": {
                 "type": "string"
               },
-              "name": {
-                "type": "string"
-              },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
-              },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
               }
             }
           }
@@ -1246,26 +1505,44 @@
             "type": "object",
             "required": [
               "id",
-              "name",
+              "reference",
               "createdAt",
-              "accountIDs"
+              "connectorId",
+              "provider",
+              "defaultAsset",
+              "accountName",
+              "type"
             ],
             "properties": {
               "id": {
                 "type": "string"
               },
-              "name": {
+              "reference": {
                 "type": "string"
               },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
               },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              "connectorId": {
+                "type": "string"
+              },
+              "provider": {
+                "type": "string"
+              },
+              "defaultAsset": {
+                "type": "string"
+              },
+              "accountName": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "UNKNOWN",
+                  "INTERNAL",
+                  "EXTERNAL"
+                ]
               }
             }
           }
@@ -1300,27 +1577,29 @@
           "payload": {
             "type": "object",
             "required": [
-              "id",
-              "name",
+              "accountID",
+              "connectorId",
               "createdAt",
-              "accountIDs"
+              "asset",
+              "balance"
             ],
             "properties": {
-              "id": {
+              "accountID": {
                 "type": "string"
               },
-              "name": {
+              "connectorId": {
                 "type": "string"
               },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
               },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              "asset": {
+                "type": "string"
+              },
+              "balance": {
+                "type": "number",
+                "format": "bigint"
               }
             }
           }
@@ -1356,25 +1635,65 @@
             "type": "object",
             "required": [
               "id",
-              "name",
               "createdAt",
-              "accountIDs"
+              "name",
+              "country"
             ],
             "properties": {
               "id": {
-                "type": "string"
-              },
-              "name": {
                 "type": "string"
               },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
               },
-              "accountIDs": {
-                "type": "array",
+              "name": {
+                "type": "string"
+              },
+              "country": {
+                "type": "string"
+              },
+              "accountNumber": {
+                "type": "string"
+              },
+              "iban": {
+                "type": "string"
+              },
+              "swiftBicCode": {
+                "type": "string"
+              },
+              "adjustments": {
+                "type": [
+                  "array",
+                  "null"
+                ],
                 "items": {
-                  "type": "string"
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "createdAt",
+                    "accountID",
+                    "connectorID",
+                    "provider"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "accountID": {
+                      "type": "string"
+                    },
+                    "connectorID": {
+                      "type": "string"
+                    },
+                    "provider": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
@@ -1411,24 +1730,115 @@
             "type": "object",
             "required": [
               "id",
-              "name",
+              "reference",
               "createdAt",
-              "accountIDs"
+              "connectorId",
+              "provider",
+              "type",
+              "status",
+              "scheme",
+              "asset",
+              "amount",
+              "initialAmount"
             ],
             "properties": {
               "id": {
                 "type": "string"
               },
-              "name": {
+              "reference": {
                 "type": "string"
               },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
               },
-              "accountIDs": {
-                "type": "array",
+              "connectorId": {
+                "type": "string"
+              },
+              "provider": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "PAY-IN",
+                  "PAYOUT",
+                  "TRANSFER",
+                  "OTHER"
+                ]
+              },
+              "status": {
+                "type": "string"
+              },
+              "scheme": {
+                "type": "string",
+                "enum": [
+                  "unknown",
+                  "other",
+                  "visa",
+                  "mastercard",
+                  "amex",
+                  "diners",
+                  "discover",
+                  "jcb",
+                  "unionpay",
+                  "alipay",
+                  "cup",
+                  "sepa debit",
+                  "sepa credit",
+                  "sepa",
+                  "apple pay",
+                  "google pay",
+                  "doku",
+                  "dragonpay",
+                  "maestro",
+                  "molpay",
+                  "a2a",
+                  "ach debit",
+                  "ach",
+                  "rtp"
+                ]
+              },
+              "asset": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "number",
+                "format": "bigint"
+              },
+              "initialAmount": {
+                "type": "number",
+                "format": "bigint"
+              },
+              "sourceAccountId": {
+                "type": "string"
+              },
+              "destinationAccountId": {
+                "type": "string"
+              },
+              "links": {
+                "type": [
+                  "array",
+                  "null"
+                ],
                 "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "uri": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "rawData": {
+                "type": "object"
+              },
+              "metadata": {
+                "type": "object",
+                "additionalProperties": {
                   "type": "string"
                 }
               }
@@ -1521,25 +1931,115 @@
             "type": "object",
             "required": [
               "id",
-              "name",
               "createdAt",
-              "accountIDs"
+              "scheduledAt",
+              "connectorId",
+              "provider",
+              "description",
+              "type",
+              "destinationAccountId",
+              "amount",
+              "asset",
+              "attempts",
+              "status",
+              "error"
             ],
             "properties": {
               "id": {
-                "type": "string"
-              },
-              "name": {
                 "type": "string"
               },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
               },
-              "accountIDs": {
-                "type": "array",
+              "scheduledAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "connectorId": {
+                "type": "string"
+              },
+              "provider": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "TRANSFER",
+                  "PAYOUT"
+                ]
+              },
+              "sourceAccountId": {
+                "type": "string"
+              },
+              "destinationAccountId": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "number",
+                "format": "bigint"
+              },
+              "asset": {
+                "type": "string"
+              },
+              "attempts": {
+                "type": "number"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "WAITING_FOR_VALIDATION",
+                  "PROCESSING",
+                  "PROCESSED",
+                  "FAILED",
+                  "REJECTED",
+                  "VALIDATED",
+                  "ASK_RETRIED",
+                  "ASK_REVERSED",
+                  "REVERSE_PROCESSING",
+                  "REVERSE_FAILED",
+                  "PARTIALLY_REVERSED",
+                  "REVERSED"
+                ]
+              },
+              "error": {
+                "type": "string"
+              },
+              "relatedPayments": {
+                "type": [
+                  "array",
+                  "null"
+                ],
                 "items": {
-                  "type": "string"
+                  "type": "object",
+                  "required": [
+                    "transferInitiationId",
+                    "paymentId",
+                    "createdAt",
+                    "status",
+                    "error"
+                  ],
+                  "properties": {
+                    "transferInitiationId": {
+                      "type": "string"
+                    },
+                    "paymentId": {
+                      "type": "string"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
@@ -1577,27 +2077,15 @@
           "payload": {
             "type": "object",
             "required": [
-              "id",
-              "name",
               "createdAt",
-              "accountIDs"
+              "connectorID"
             ],
             "properties": {
-              "id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              },
               "createdAt": {
-                "type": "string",
-                "format": "date-time"
+                "type": "string"
               },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              "connectorID": {
+                "type": "string"
               }
             }
           }
@@ -1633,26 +2121,15 @@
             "type": "object",
             "required": [
               "id",
-              "name",
-              "createdAt",
-              "accountIDs"
+              "createdAt"
             ],
             "properties": {
               "id": {
                 "type": "string"
               },
-              "name": {
-                "type": "string"
-              },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
-              },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
               }
             }
           }
@@ -1688,24 +2165,44 @@
             "type": "object",
             "required": [
               "id",
-              "name",
+              "provider",
+              "connectorID",
               "createdAt",
-              "accountIDs"
+              "reference",
+              "type"
             ],
             "properties": {
               "id": {
                 "type": "string"
               },
-              "name": {
+              "provider": {
+                "type": "string"
+              },
+              "connectorID": {
                 "type": "string"
               },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
               },
-              "accountIDs": {
-                "type": "array",
-                "items": {
+              "reference": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "rawData": {
+                "type": "object"
+              },
+              "defaultAsset": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "metadata": {
+                "type": "object",
+                "additionalProperties": {
                   "type": "string"
                 }
               }
@@ -1742,27 +2239,38 @@
           "payload": {
             "type": "object",
             "required": [
-              "id",
-              "name",
+              "accountID",
+              "connectorID",
+              "provider",
               "createdAt",
-              "accountIDs"
+              "lastUpdatedAt",
+              "asset",
+              "balance"
             ],
             "properties": {
-              "id": {
+              "accountID": {
                 "type": "string"
               },
-              "name": {
+              "connectorID": {
+                "type": "string"
+              },
+              "provider": {
                 "type": "string"
               },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
               },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              "lastUpdatedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "asset": {
+                "type": "string"
+              },
+              "balance": {
+                "type": "number",
+                "format": "bigint"
               }
             }
           }
@@ -1798,25 +2306,66 @@
             "type": "object",
             "required": [
               "id",
-              "name",
               "createdAt",
-              "accountIDs"
+              "name"
             ],
             "properties": {
               "id": {
-                "type": "string"
-              },
-              "name": {
                 "type": "string"
               },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
               },
-              "accountIDs": {
-                "type": "array",
-                "items": {
+              "name": {
+                "type": "string"
+              },
+              "country": {
+                "type": "string"
+              },
+              "accountNumber": {
+                "type": "string"
+              },
+              "iban": {
+                "type": "string"
+              },
+              "swiftBicCode": {
+                "type": "string"
+              },
+              "metadata": {
+                "type": "object",
+                "additionalProperties": {
                   "type": "string"
+                }
+              },
+              "relatedAccounts": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "createdAt",
+                    "accountID",
+                    "connectorID",
+                    "provider"
+                  ],
+                  "properties": {
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "accountID": {
+                      "type": "string"
+                    },
+                    "connectorID": {
+                      "type": "string"
+                    },
+                    "provider": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
@@ -1853,24 +2402,83 @@
             "type": "object",
             "required": [
               "id",
-              "name",
+              "connectorID",
+              "provider",
+              "reference",
               "createdAt",
-              "accountIDs"
+              "type",
+              "status",
+              "scheme",
+              "asset",
+              "amount",
+              "initialAmount"
             ],
             "properties": {
               "id": {
                 "type": "string"
               },
-              "name": {
+              "connectorID": {
+                "type": "string"
+              },
+              "provider": {
+                "type": "string"
+              },
+              "reference": {
                 "type": "string"
               },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
               },
-              "accountIDs": {
-                "type": "array",
+              "type": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              },
+              "scheme": {
+                "type": "string"
+              },
+              "asset": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "number",
+                "format": "bigint"
+              },
+              "initialAmount": {
+                "type": "number",
+                "format": "bigint"
+              },
+              "sourceAccountID": {
+                "type": "string"
+              },
+              "destinationAccountID": {
+                "type": "string"
+              },
+              "links": {
+                "type": [
+                  "array",
+                  "null"
+                ],
                 "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "uri": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "rawData": {
+                "type": "object"
+              },
+              "metadata": {
+                "type": "object",
+                "additionalProperties": {
                   "type": "string"
                 }
               }
@@ -1908,24 +2516,59 @@
             "type": "object",
             "required": [
               "id",
-              "name",
+              "connectorID",
+              "provider",
+              "reference",
               "createdAt",
-              "accountIDs"
+              "scheduledAt",
+              "description",
+              "type",
+              "amount",
+              "asset"
             ],
             "properties": {
               "id": {
                 "type": "string"
               },
-              "name": {
+              "connectorID": {
+                "type": "string"
+              },
+              "provider": {
+                "type": "string"
+              },
+              "reference": {
                 "type": "string"
               },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
               },
-              "accountIDs": {
-                "type": "array",
-                "items": {
+              "scheduledAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "description": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "number",
+                "format": "bigint"
+              },
+              "asset": {
+                "type": "string"
+              },
+              "sourceAccountID": {
+                "type": "string"
+              },
+              "destinationAccountID": {
+                "type": "string"
+              },
+              "metadata": {
+                "type": "object",
+                "additionalProperties": {
                   "type": "string"
                 }
               }
@@ -1963,24 +2606,32 @@
             "type": "object",
             "required": [
               "id",
-              "name",
-              "createdAt",
-              "accountIDs"
+              "paymentInitiationID",
+              "status"
             ],
             "properties": {
               "id": {
                 "type": "string"
               },
-              "name": {
+              "paymentInitiationID": {
                 "type": "string"
               },
-              "createdAt": {
-                "type": "string",
-                "format": "date-time"
+              "status": {
+                "type": "string"
               },
-              "accountIDs": {
-                "type": "array",
-                "items": {
+              "amount": {
+                "type": "number",
+                "format": "bigint"
+              },
+              "asset": {
+                "type": "string"
+              },
+              "error": {
+                "type": "object"
+              },
+              "metadata": {
+                "type": "object",
+                "additionalProperties": {
                   "type": "string"
                 }
               }
@@ -2017,27 +2668,15 @@
           "payload": {
             "type": "object",
             "required": [
-              "id",
-              "name",
-              "createdAt",
-              "accountIDs"
+              "paymentInitiationID",
+              "paymentID"
             ],
             "properties": {
-              "id": {
+              "paymentInitiationID": {
                 "type": "string"
               },
-              "name": {
+              "paymentID": {
                 "type": "string"
-              },
-              "createdAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "accountIDs": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
               }
             }
           }
