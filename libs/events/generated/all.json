@@ -2055,7 +2055,7 @@
       }
     },
     "v3.0.0": {
-      "CONNECTOR_RESET": {
+      "V3_CONNECTOR_RESET": {
         "type": "object",
         "properties": {
           "app": {
@@ -2098,7 +2098,7 @@
           "payload"
         ]
       },
-      "DELETED_POOL": {
+      "V3_DELETED_POOL": {
         "type": "object",
         "properties": {
           "app": {
@@ -2142,7 +2142,7 @@
           "payload"
         ]
       },
-      "SAVED_ACCOUNT": {
+      "V3_SAVED_ACCOUNT": {
         "type": "object",
         "properties": {
           "app": {
@@ -2217,7 +2217,7 @@
           "payload"
         ]
       },
-      "SAVED_BALANCE": {
+      "V3_SAVED_BALANCE": {
         "type": "object",
         "properties": {
           "app": {
@@ -2283,7 +2283,7 @@
           "payload"
         ]
       },
-      "SAVED_BANK_ACCOUNT": {
+      "V3_SAVED_BANK_ACCOUNT": {
         "type": "object",
         "properties": {
           "app": {
@@ -2379,7 +2379,7 @@
           "payload"
         ]
       },
-      "SAVED_PAYMENT": {
+      "V3_SAVED_PAYMENT": {
         "type": "object",
         "properties": {
           "app": {
@@ -2493,7 +2493,7 @@
           "payload"
         ]
       },
-      "SAVED_PAYMENT_INITIATION": {
+      "V3_SAVED_PAYMENT_INITIATION": {
         "type": "object",
         "properties": {
           "app": {
@@ -2583,7 +2583,7 @@
           "payload"
         ]
       },
-      "SAVED_PAYMENT_INITIATION_ADJUSTMENT": {
+      "V3_SAVED_PAYMENT_INITIATION_ADJUSTMENT": {
         "type": "object",
         "properties": {
           "app": {
@@ -2646,7 +2646,7 @@
           "payload"
         ]
       },
-      "SAVED_PAYMENT_INITIATION_RELATED_PAYMENT": {
+      "V3_SAVED_PAYMENT_INITIATION_RELATED_PAYMENT": {
         "type": "object",
         "properties": {
           "app": {
@@ -2689,7 +2689,7 @@
           "payload"
         ]
       },
-      "SAVED_POOL": {
+      "V3_SAVED_POOL": {
         "type": "object",
         "properties": {
           "app": {
