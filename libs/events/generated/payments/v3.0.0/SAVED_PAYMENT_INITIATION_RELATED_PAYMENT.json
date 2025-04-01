@@ -20,14 +20,14 @@
     "payload": {
       "type": "object",
       "required": [
-        "createdAt",
-        "connectorID"
+        "paymentInitiationID",
+        "paymentID"
       ],
       "properties": {
-        "createdAt": {
+        "paymentInitiationID": {
           "type": "string"
         },
-        "connectorID": {
+        "paymentID": {
           "type": "string"
         }
       }

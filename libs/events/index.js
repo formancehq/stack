@@ -4,7 +4,6 @@ const yaml = require('yaml');
 (async () => {
 
     const rawBase = await fs.readFile("./base.yaml", { encoding: 'utf8' });
-    const base = yaml.parse(rawBase);
     const aggregated = {};
 
     for(const service of await fs.readdir("services")) {
@@ -13,6 +12,7 @@ const yaml = require('yaml');
             aggregated[service][version] = {};
             for(const event of await fs.readdir('services/' + service + '/' + version)) {
                 const rawEventData = await fs.readFile('services/' + service + '/' + version + '/' + event, { encoding: 'utf8' });
+                const base = yaml.parse(rawBase);
                 base.properties.payload = yaml.parse(rawEventData);
                 const directory = 'generated/' + service + '/' + version + '/';
                 await fs.mkdir(directory, { recursive: true });
@@ -23,5 +23,6 @@ const yaml = require('yaml');
         }
     }
 
+    console.log(aggregated);
     await fs.writeFile('generated/all.json', JSON.stringify(aggregated, null, 2));
 })();
