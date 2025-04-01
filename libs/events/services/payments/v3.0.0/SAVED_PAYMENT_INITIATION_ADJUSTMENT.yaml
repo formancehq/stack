@@ -1,0 +1,23 @@
+type: object
+required:
+  - id
+  - paymentInitiationID
+  - status
+properties:
+  id:
+    type: string
+  paymentInitiationID:
+    type: string
+  status:
+    type: string
+  amount:
+    type: number
+    format: bigint
+  asset:
+    type: string
+  error:
+    type: object
+  metadata:
+    type: object
+    additionalProperties:
+      type: string

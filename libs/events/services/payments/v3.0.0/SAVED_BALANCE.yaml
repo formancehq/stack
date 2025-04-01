@@ -1,0 +1,27 @@
+type: object
+required:
+  - accountID
+  - connectorID
+  - provider
+  - createdAt
+  - lastUpdatedAt
+  - asset
+  - balance
+properties:
+  accountID:
+    type: string
+  connectorID:
+    type: string
+  provider:
+    type: string
+  createdAt:
+    type: string
+    format: date-time
+  lastUpdatedAt:
+    type: string
+    format: date-time
+  asset:
+    type: string
+  balance:
+    type: number
+    format: bigint

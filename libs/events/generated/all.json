@@ -22,120 +22,70 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "createdAt",
-              "scheduledAt",
-              "connectorId",
-              "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
-              "status",
-              "error"
-            ],
             "properties": {
-              "id": {
+              "ledger": {
                 "type": "string"
               },
-              "createdAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "scheduledAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "connectorId": {
-                "type": "string"
-              },
-              "provider": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
-                ]
-              },
-              "sourceAccountId": {
-                "type": "string"
-              },
-              "destinationAccountId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
-              },
-              "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
-                "type": [
-                  "array",
-                  "null"
-                ],
+              "transactions": {
+                "type": "array",
                 "items": {
                   "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
                   "properties": {
-                    "transferInitiationId": {
+                    "postings": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "source": {
+                            "type": "string"
+                          },
+                          "destination": {
+                            "type": "string"
+                          },
+                          "amount": {
+                            "type": "number"
+                          },
+                          "asset": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "source",
+                          "destination",
+                          "amount",
+                          "asset"
+                        ]
+                      }
+                    },
+                    "reference": {
                       "type": "string"
                     },
-                    "paymentId": {
-                      "type": "string"
+                    "metadata": {
+                      "type": "object",
+                      "properties": {},
+                      "required": []
                     },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
+                    "txid": {
+                      "type": "number"
                     },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
+                    "timestamp": {
                       "type": "string"
                     }
-                  }
+                  },
+                  "required": [
+                    "postings",
+                    "reference",
+                    "metadata",
+                    "txid",
+                    "timestamp"
+                  ]
                 }
               }
-            }
+            },
+            "required": [
+              "ledger",
+              "transactions"
+            ]
           }
         },
         "required": [
@@ -167,120 +117,120 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "createdAt",
-              "scheduledAt",
-              "connectorId",
-              "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
-              "status",
-              "error"
-            ],
             "properties": {
-              "id": {
+              "ledger": {
                 "type": "string"
               },
-              "createdAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "scheduledAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "connectorId": {
-                "type": "string"
-              },
-              "provider": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
-                ]
-              },
-              "sourceAccountId": {
-                "type": "string"
-              },
-              "destinationAccountId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
-              },
-              "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
-                "type": [
-                  "array",
-                  "null"
-                ],
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
-                  "properties": {
-                    "transferInitiationId": {
-                      "type": "string"
-                    },
-                    "paymentId": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
-                      "type": "string"
+              "revertedTransaction": {
+                "type": "object",
+                "properties": {
+                  "postings": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "source": {
+                          "type": "string"
+                        },
+                        "destination": {
+                          "type": "string"
+                        },
+                        "amount": {
+                          "type": "number"
+                        },
+                        "asset": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "source",
+                        "destination",
+                        "amount",
+                        "asset"
+                      ]
                     }
+                  },
+                  "reference": {
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                  },
+                  "txid": {
+                    "type": "number"
+                  },
+                  "timestamp": {
+                    "type": "string"
                   }
-                }
+                },
+                "required": [
+                  "postings",
+                  "reference",
+                  "metadata",
+                  "txid",
+                  "timestamp"
+                ]
+              },
+              "revertTransaction": {
+                "type": "object",
+                "properties": {
+                  "postings": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "source": {
+                          "type": "string"
+                        },
+                        "destination": {
+                          "type": "string"
+                        },
+                        "amount": {
+                          "type": "number"
+                        },
+                        "asset": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "source",
+                        "destination",
+                        "amount",
+                        "asset"
+                      ]
+                    }
+                  },
+                  "reference": {
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                  },
+                  "txid": {
+                    "type": "number"
+                  },
+                  "timestamp": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "postings",
+                  "reference",
+                  "metadata",
+                  "txid",
+                  "timestamp"
+                ]
               }
-            }
+            },
+            "required": [
+              "ledger",
+              "revertedTransaction",
+              "revertTransaction"
+            ]
           }
         },
         "required": [
@@ -312,120 +262,27 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "createdAt",
-              "scheduledAt",
-              "connectorId",
-              "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
-              "status",
-              "error"
-            ],
             "properties": {
-              "id": {
+              "ledger": {
                 "type": "string"
               },
-              "createdAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "scheduledAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "connectorId": {
+              "targetType": {
                 "type": "string"
               },
-              "provider": {
+              "targetId": {
                 "type": "string"
               },
-              "description": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
-                ]
-              },
-              "sourceAccountId": {
-                "type": "string"
-              },
-              "destinationAccountId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
-              },
-              "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
-                "type": [
-                  "array",
-                  "null"
-                ],
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
-                  "properties": {
-                    "transferInitiationId": {
-                      "type": "string"
-                    },
-                    "paymentId": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
+              "metadata": {
+                "type": "object",
+                "additionalProperties": {}
               }
-            }
+            },
+            "required": [
+              "ledger",
+              "targetType",
+              "targetId",
+              "metadata"
+            ]
           }
         },
         "required": [
@@ -459,120 +316,73 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "createdAt",
-              "scheduledAt",
-              "connectorId",
-              "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
-              "status",
-              "error"
-            ],
             "properties": {
-              "id": {
+              "ledger": {
                 "type": "string"
               },
-              "createdAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "scheduledAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "connectorId": {
-                "type": "string"
-              },
-              "provider": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
-                ]
-              },
-              "sourceAccountId": {
-                "type": "string"
-              },
-              "destinationAccountId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
-              },
-              "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
-                "type": [
-                  "array",
-                  "null"
-                ],
+              "transactions": {
+                "type": "array",
                 "items": {
                   "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
                   "properties": {
-                    "transferInitiationId": {
+                    "postings": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "source": {
+                            "type": "string"
+                          },
+                          "destination": {
+                            "type": "string"
+                          },
+                          "amount": {
+                            "type": "number"
+                          },
+                          "asset": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "source",
+                          "destination",
+                          "amount",
+                          "asset"
+                        ]
+                      }
+                    },
+                    "reference": {
                       "type": "string"
                     },
-                    "paymentId": {
+                    "metadata": {
+                      "type": "object",
+                      "properties": {},
+                      "required": []
+                    },
+                    "id": {
+                      "type": "number"
+                    },
+                    "timestamp": {
                       "type": "string"
                     },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
-                      "type": "string"
+                    "reverted": {
+                      "type": "boolean"
                     }
-                  }
+                  },
+                  "required": [
+                    "postings",
+                    "metadata",
+                    "id",
+                    "timestamp",
+                    "reverted"
+                  ]
                 }
               }
-            }
+            },
+            "required": [
+              "ledger",
+              "transactions"
+            ]
           }
         },
         "required": [
@@ -604,120 +414,26 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "createdAt",
-              "scheduledAt",
-              "connectorId",
-              "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
-              "status",
-              "error"
-            ],
             "properties": {
-              "id": {
+              "ledger": {
                 "type": "string"
               },
-              "createdAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "scheduledAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "connectorId": {
+              "targetType": {
                 "type": "string"
               },
-              "provider": {
+              "targetId": {
                 "type": "string"
               },
-              "description": {
+              "key": {
                 "type": "string"
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
-                ]
-              },
-              "sourceAccountId": {
-                "type": "string"
-              },
-              "destinationAccountId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
-              },
-              "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
-                "type": [
-                  "array",
-                  "null"
-                ],
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
-                  "properties": {
-                    "transferInitiationId": {
-                      "type": "string"
-                    },
-                    "paymentId": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
               }
-            }
+            },
+            "required": [
+              "ledger",
+              "targetType",
+              "targetId",
+              "key"
+            ]
           }
         },
         "required": [
@@ -749,120 +465,122 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "createdAt",
-              "scheduledAt",
-              "connectorId",
-              "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
-              "status",
-              "error"
-            ],
             "properties": {
-              "id": {
+              "ledger": {
                 "type": "string"
               },
-              "createdAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "scheduledAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "connectorId": {
-                "type": "string"
-              },
-              "provider": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
-                ]
-              },
-              "sourceAccountId": {
-                "type": "string"
-              },
-              "destinationAccountId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
-              },
-              "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
-                "type": [
-                  "array",
-                  "null"
-                ],
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
-                  "properties": {
-                    "transferInitiationId": {
-                      "type": "string"
-                    },
-                    "paymentId": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
-                      "type": "string"
+              "revertedTransaction": {
+                "type": "object",
+                "properties": {
+                  "postings": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "source": {
+                          "type": "string"
+                        },
+                        "destination": {
+                          "type": "string"
+                        },
+                        "amount": {
+                          "type": "number"
+                        },
+                        "asset": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "source",
+                        "destination",
+                        "amount",
+                        "asset"
+                      ]
                     }
+                  },
+                  "reference": {
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                  },
+                  "id": {
+                    "type": "number"
+                  },
+                  "timestamp": {
+                    "type": "string"
+                  },
+                  "reverted": {
+                    "type": "boolean"
                   }
-                }
+                },
+                "required": [
+                  "postings",
+                  "metadata",
+                  "id",
+                  "timestamp",
+                  "reverted"
+                ]
+              },
+              "revertTransaction": {
+                "type": "object",
+                "properties": {
+                  "postings": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "source": {
+                          "type": "string"
+                        },
+                        "destination": {
+                          "type": "string"
+                        },
+                        "amount": {
+                          "type": "number"
+                        },
+                        "asset": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "source",
+                        "destination",
+                        "amount",
+                        "asset"
+                      ]
+                    }
+                  },
+                  "reference": {
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                  },
+                  "id": {
+                    "type": "number"
+                  },
+                  "timestamp": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "postings",
+                  "metadata",
+                  "id",
+                  "timestamp"
+                ]
               }
-            }
+            },
+            "required": [
+              "ledger",
+              "revertedTransaction",
+              "revertTransaction"
+            ]
           }
         },
         "required": [
@@ -894,120 +612,27 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "createdAt",
-              "scheduledAt",
-              "connectorId",
-              "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
-              "status",
-              "error"
-            ],
             "properties": {
-              "id": {
+              "ledger": {
                 "type": "string"
               },
-              "createdAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "scheduledAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "connectorId": {
+              "targetType": {
                 "type": "string"
               },
-              "provider": {
+              "targetId": {
                 "type": "string"
               },
-              "description": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
-                ]
-              },
-              "sourceAccountId": {
-                "type": "string"
-              },
-              "destinationAccountId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
-              },
-              "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
-                "type": [
-                  "array",
-                  "null"
-                ],
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
-                  "properties": {
-                    "transferInitiationId": {
-                      "type": "string"
-                    },
-                    "paymentId": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
+              "metadata": {
+                "type": "object",
+                "additionalProperties": {}
               }
-            }
+            },
+            "required": [
+              "ledger",
+              "targetType",
+              "targetId",
+              "metadata"
+            ]
           }
         },
         "required": [
@@ -1043,120 +668,25 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "createdAt",
-              "scheduledAt",
-              "connectorId",
-              "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
-              "status",
-              "error"
-            ],
             "properties": {
               "id": {
-                "type": "string"
-              },
-              "createdAt": {
                 "type": "string",
-                "format": "date-time"
+                "minLength": 1
               },
-              "scheduledAt": {
+              "triggerID": {
                 "type": "string",
-                "format": "date-time"
-              },
-              "connectorId": {
-                "type": "string"
-              },
-              "provider": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
-                ]
-              },
-              "sourceAccountId": {
-                "type": "string"
-              },
-              "destinationAccountId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
+                "minLength": 1
               },
               "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
-                "type": [
-                  "array",
-                  "null"
-                ],
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
-                  "properties": {
-                    "transferInitiationId": {
-                      "type": "string"
-                    },
-                    "paymentId": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
+                "type": "string",
+                "minLength": 1
               }
-            }
+            },
+            "required": [
+              "id",
+              "triggerID",
+              "error"
+            ]
           }
         },
         "required": [
@@ -1188,120 +718,25 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "createdAt",
-              "scheduledAt",
-              "connectorId",
-              "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
-              "status",
-              "error"
-            ],
             "properties": {
               "id": {
-                "type": "string"
-              },
-              "createdAt": {
                 "type": "string",
-                "format": "date-time"
+                "minLength": 1
               },
-              "scheduledAt": {
+              "instanceID": {
                 "type": "string",
-                "format": "date-time"
-              },
-              "connectorId": {
-                "type": "string"
-              },
-              "provider": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
-                ]
-              },
-              "sourceAccountId": {
-                "type": "string"
-              },
-              "destinationAccountId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
+                "minLength": 1
               },
               "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
-                "type": [
-                  "array",
-                  "null"
-                ],
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
-                  "properties": {
-                    "transferInitiationId": {
-                      "type": "string"
-                    },
-                    "paymentId": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
+                "type": "string",
+                "minLength": 1
               }
-            }
+            },
+            "required": [
+              "id",
+              "instanceID",
+              "error"
+            ]
           }
         },
         "required": [
@@ -1333,120 +768,30 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "createdAt",
-              "scheduledAt",
-              "connectorId",
-              "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
-              "status",
-              "error"
-            ],
             "properties": {
               "id": {
-                "type": "string"
-              },
-              "createdAt": {
                 "type": "string",
-                "format": "date-time"
+                "minLength": 1
               },
-              "scheduledAt": {
+              "instanceID": {
                 "type": "string",
-                "format": "date-time"
+                "minLength": 1
               },
-              "connectorId": {
-                "type": "string"
-              },
-              "provider": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
-                ]
-              },
-              "sourceAccountId": {
-                "type": "string"
-              },
-              "destinationAccountId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
+              "number": {
+                "type": "integer",
+                "minLength": 1
               },
               "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
-                "type": [
-                  "array",
-                  "null"
-                ],
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
-                  "properties": {
-                    "transferInitiationId": {
-                      "type": "string"
-                    },
-                    "paymentId": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
+                "type": "string",
+                "minLength": 1
               }
-            }
+            },
+            "required": [
+              "id",
+              "instanceID",
+              "number",
+              "error"
+            ]
           }
         },
         "required": [
@@ -1478,120 +823,20 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "createdAt",
-              "scheduledAt",
-              "connectorId",
-              "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
-              "status",
-              "error"
-            ],
             "properties": {
               "id": {
-                "type": "string"
-              },
-              "createdAt": {
                 "type": "string",
-                "format": "date-time"
+                "minLength": 1
               },
-              "scheduledAt": {
+              "instanceID": {
                 "type": "string",
-                "format": "date-time"
-              },
-              "connectorId": {
-                "type": "string"
-              },
-              "provider": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
-                ]
-              },
-              "sourceAccountId": {
-                "type": "string"
-              },
-              "destinationAccountId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
-              },
-              "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
-                "type": [
-                  "array",
-                  "null"
-                ],
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
-                  "properties": {
-                    "transferInitiationId": {
-                      "type": "string"
-                    },
-                    "paymentId": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
+                "minLength": 1
               }
-            }
+            },
+            "required": [
+              "id",
+              "instanceID"
+            ]
           }
         },
         "required": [
@@ -1623,120 +868,25 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "createdAt",
-              "scheduledAt",
-              "connectorId",
-              "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
-              "status",
-              "error"
-            ],
             "properties": {
               "id": {
-                "type": "string"
-              },
-              "createdAt": {
                 "type": "string",
-                "format": "date-time"
+                "minLength": 1
               },
-              "scheduledAt": {
+              "instanceID": {
                 "type": "string",
-                "format": "date-time"
+                "minLength": 1
               },
-              "connectorId": {
-                "type": "string"
-              },
-              "provider": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
-                ]
-              },
-              "sourceAccountId": {
-                "type": "string"
-              },
-              "destinationAccountId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
-              },
-              "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
-                "type": [
-                  "array",
-                  "null"
-                ],
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
-                  "properties": {
-                    "transferInitiationId": {
-                      "type": "string"
-                    },
-                    "paymentId": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
+              "number": {
+                "type": "integer",
+                "minLength": 1
               }
-            }
+            },
+            "required": [
+              "id",
+              "instanceID",
+              "number"
+            ]
           }
         },
         "required": [
@@ -1768,120 +918,21 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "createdAt",
-              "scheduledAt",
-              "connectorId",
-              "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
-              "status",
-              "error"
-            ],
             "properties": {
               "id": {
-                "type": "string"
-              },
-              "createdAt": {
                 "type": "string",
-                "format": "date-time"
+                "minLength": 1
               },
-              "scheduledAt": {
+              "triggerID": {
                 "type": "string",
-                "format": "date-time"
-              },
-              "connectorId": {
-                "type": "string"
-              },
-              "provider": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
-                ]
-              },
-              "sourceAccountId": {
-                "type": "string"
-              },
-              "destinationAccountId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
-              },
-              "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
-                "type": [
-                  "array",
-                  "null"
-                ],
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
-                  "properties": {
-                    "transferInitiationId": {
-                      "type": "string"
-                    },
-                    "paymentId": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
+                "minLength": 1
               }
-            }
+            },
+            "required": [
+              "id",
+              "triggerID",
+              "workflowInstanceID"
+            ]
           }
         },
         "required": [
@@ -1913,120 +964,20 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "createdAt",
-              "scheduledAt",
-              "connectorId",
-              "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
-              "status",
-              "error"
-            ],
             "properties": {
               "id": {
-                "type": "string"
-              },
-              "createdAt": {
                 "type": "string",
-                "format": "date-time"
+                "minLength": 1
               },
-              "scheduledAt": {
+              "instanceID": {
                 "type": "string",
-                "format": "date-time"
-              },
-              "connectorId": {
-                "type": "string"
-              },
-              "provider": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
-                ]
-              },
-              "sourceAccountId": {
-                "type": "string"
-              },
-              "destinationAccountId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
-              },
-              "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
-                "type": [
-                  "array",
-                  "null"
-                ],
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
-                  "properties": {
-                    "transferInitiationId": {
-                      "type": "string"
-                    },
-                    "paymentId": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
+                "minLength": 1
               }
-            }
+            },
+            "required": [
+              "id",
+              "instanceID"
+            ]
           }
         },
         "required": [
@@ -2058,120 +1009,25 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "createdAt",
-              "scheduledAt",
-              "connectorId",
-              "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
-              "status",
-              "error"
-            ],
             "properties": {
               "id": {
-                "type": "string"
-              },
-              "createdAt": {
                 "type": "string",
-                "format": "date-time"
+                "minLength": 1
               },
-              "scheduledAt": {
+              "instanceID": {
                 "type": "string",
-                "format": "date-time"
+                "minLength": 1
               },
-              "connectorId": {
-                "type": "string"
-              },
-              "provider": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
-                ]
-              },
-              "sourceAccountId": {
-                "type": "string"
-              },
-              "destinationAccountId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
-              },
-              "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
-                "type": [
-                  "array",
-                  "null"
-                ],
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
-                  "properties": {
-                    "transferInitiationId": {
-                      "type": "string"
-                    },
-                    "paymentId": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
+              "number": {
+                "type": "integer",
+                "minLength": 1
               }
-            }
+            },
+            "required": [
+              "id",
+              "instanceID",
+              "number"
+            ]
           }
         },
         "required": [
@@ -2207,120 +1063,18 @@
           },
           "payload": {
             "type": "object",
-            "required": [
-              "id",
-              "createdAt",
-              "scheduledAt",
-              "connectorId",
-              "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
-              "status",
-              "error"
-            ],
             "properties": {
-              "id": {
-                "type": "string"
-              },
               "createdAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "scheduledAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "connectorId": {
                 "type": "string"
               },
-              "provider": {
+              "connector": {
                 "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
-                ]
-              },
-              "sourceAccountId": {
-                "type": "string"
-              },
-              "destinationAccountId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
-              },
-              "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
-                "type": [
-                  "array",
-                  "null"
-                ],
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
-                  "properties": {
-                    "transferInitiationId": {
-                      "type": "string"
-                    },
-                    "paymentId": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
               }
-            }
+            },
+            "required": [
+              "createdAt",
+              "connector"
+            ]
           }
         },
         "required": [
@@ -2354,116 +1108,40 @@
             "type": "object",
             "required": [
               "id",
+              "reference",
               "createdAt",
-              "scheduledAt",
-              "connectorId",
               "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
-              "status",
-              "error"
+              "defaultAsset",
+              "accountName",
+              "type"
             ],
             "properties": {
               "id": {
+                "type": "string"
+              },
+              "reference": {
                 "type": "string"
               },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
               },
-              "scheduledAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "connectorId": {
-                "type": "string"
-              },
               "provider": {
                 "type": "string"
               },
-              "description": {
+              "defaultAsset": {
+                "type": "string"
+              },
+              "accountName": {
                 "type": "string"
               },
               "type": {
                 "type": "string",
                 "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
+                  "UNKNOWN",
+                  "INTERNAL",
+                  "EXTERNAL"
                 ]
-              },
-              "sourceAccountId": {
-                "type": "string"
-              },
-              "destinationAccountId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
-              },
-              "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
-                "type": [
-                  "array",
-                  "null"
-                ],
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
-                  "properties": {
-                    "transferInitiationId": {
-                      "type": "string"
-                    },
-                    "paymentId": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
               }
             }
           }
@@ -2498,117 +1176,25 @@
           "payload": {
             "type": "object",
             "required": [
-              "id",
+              "accountID",
               "createdAt",
-              "scheduledAt",
-              "connectorId",
-              "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
               "asset",
-              "attempts",
-              "status",
-              "error"
+              "balance"
             ],
             "properties": {
-              "id": {
+              "accountID": {
                 "type": "string"
               },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
               },
-              "scheduledAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "connectorId": {
-                "type": "string"
-              },
-              "provider": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
-                ]
-              },
-              "sourceAccountId": {
-                "type": "string"
-              },
-              "destinationAccountId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
               "asset": {
                 "type": "string"
               },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
-              },
-              "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
-                "type": [
-                  "array",
-                  "null"
-                ],
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
-                  "properties": {
-                    "transferInitiationId": {
-                      "type": "string"
-                    },
-                    "paymentId": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
+              "balance": {
+                "type": "number",
+                "format": "bigint"
               }
             }
           }
@@ -2644,46 +1230,81 @@
             "type": "object",
             "required": [
               "id",
+              "reference",
               "createdAt",
-              "scheduledAt",
-              "connectorId",
               "provider",
-              "description",
               "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
               "status",
-              "error"
+              "scheme",
+              "asset",
+              "amount",
+              "initialAmount"
             ],
             "properties": {
               "id": {
+                "type": "string"
+              },
+              "reference": {
                 "type": "string"
               },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
               },
-              "scheduledAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "connectorId": {
-                "type": "string"
-              },
               "provider": {
-                "type": "string"
-              },
-              "description": {
                 "type": "string"
               },
               "type": {
                 "type": "string",
                 "enum": [
+                  "PAY-IN",
+                  "PAYOUT",
                   "TRANSFER",
-                  "PAYOUT"
+                  "OTHER"
                 ]
+              },
+              "status": {
+                "type": "string"
+              },
+              "scheme": {
+                "type": "string",
+                "enum": [
+                  "unknown",
+                  "other",
+                  "visa",
+                  "mastercard",
+                  "amex",
+                  "diners",
+                  "discover",
+                  "jcb",
+                  "unionpay",
+                  "alipay",
+                  "cup",
+                  "sepa debit",
+                  "sepa credit",
+                  "sepa",
+                  "apple pay",
+                  "google pay",
+                  "doku",
+                  "dragonpay",
+                  "maestro",
+                  "molpay",
+                  "a2a",
+                  "ach debit",
+                  "ach",
+                  "rtp"
+                ]
+              },
+              "asset": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "number",
+                "format": "bigint"
+              },
+              "initialAmount": {
+                "type": "number",
+                "format": "bigint"
               },
               "sourceAccountId": {
                 "type": "string"
@@ -2691,68 +1312,30 @@
               "destinationAccountId": {
                 "type": "string"
               },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
-              },
-              "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
+              "links": {
                 "type": [
                   "array",
                   "null"
                 ],
                 "items": {
                   "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
                   "properties": {
-                    "transferInitiationId": {
+                    "name": {
                       "type": "string"
                     },
-                    "paymentId": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
+                    "uri": {
                       "type": "string"
                     }
                   }
+                }
+              },
+              "rawData": {
+                "type": "object"
+              },
+              "metadata": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
                 }
               }
             }
@@ -2790,117 +1373,15 @@
           "payload": {
             "type": "object",
             "required": [
-              "id",
               "createdAt",
-              "scheduledAt",
-              "connectorId",
-              "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
-              "status",
-              "error"
+              "connectorID"
             ],
             "properties": {
-              "id": {
-                "type": "string"
-              },
               "createdAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "scheduledAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "connectorId": {
                 "type": "string"
               },
-              "provider": {
+              "connectorID": {
                 "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
-                ]
-              },
-              "sourceAccountId": {
-                "type": "string"
-              },
-              "destinationAccountId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
-              },
-              "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
-                "type": [
-                  "array",
-                  "null"
-                ],
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
-                  "properties": {
-                    "transferInitiationId": {
-                      "type": "string"
-                    },
-                    "paymentId": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
               }
             }
           }
@@ -2936,18 +1417,7 @@
             "type": "object",
             "required": [
               "id",
-              "createdAt",
-              "scheduledAt",
-              "connectorId",
-              "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
-              "status",
-              "error"
+              "createdAt"
             ],
             "properties": {
               "id": {
@@ -2956,96 +1426,6 @@
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
-              },
-              "scheduledAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "connectorId": {
-                "type": "string"
-              },
-              "provider": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
-                ]
-              },
-              "sourceAccountId": {
-                "type": "string"
-              },
-              "destinationAccountId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
-              },
-              "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
-                "type": [
-                  "array",
-                  "null"
-                ],
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
-                  "properties": {
-                    "transferInitiationId": {
-                      "type": "string"
-                    },
-                    "paymentId": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
               }
             }
           }
@@ -3081,18 +1461,7 @@
             "type": "object",
             "required": [
               "id",
-              "createdAt",
-              "scheduledAt",
-              "connectorId",
-              "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
-              "status",
-              "error"
+              "createdAt"
             ],
             "properties": {
               "id": {
@@ -3101,96 +1470,6 @@
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
-              },
-              "scheduledAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "connectorId": {
-                "type": "string"
-              },
-              "provider": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
-                ]
-              },
-              "sourceAccountId": {
-                "type": "string"
-              },
-              "destinationAccountId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
-              },
-              "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
-                "type": [
-                  "array",
-                  "null"
-                ],
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
-                  "properties": {
-                    "transferInitiationId": {
-                      "type": "string"
-                    },
-                    "paymentId": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
               }
             }
           }
@@ -3226,28 +1505,22 @@
             "type": "object",
             "required": [
               "id",
+              "reference",
               "createdAt",
-              "scheduledAt",
               "connectorId",
               "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
-              "status",
-              "error"
+              "defaultAsset",
+              "accountName",
+              "type"
             ],
             "properties": {
               "id": {
                 "type": "string"
               },
-              "createdAt": {
-                "type": "string",
-                "format": "date-time"
+              "reference": {
+                "type": "string"
               },
-              "scheduledAt": {
+              "createdAt": {
                 "type": "string",
                 "format": "date-time"
               },
@@ -3257,85 +1530,19 @@
               "provider": {
                 "type": "string"
               },
-              "description": {
+              "defaultAsset": {
+                "type": "string"
+              },
+              "accountName": {
                 "type": "string"
               },
               "type": {
                 "type": "string",
                 "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
+                  "UNKNOWN",
+                  "INTERNAL",
+                  "EXTERNAL"
                 ]
-              },
-              "sourceAccountId": {
-                "type": "string"
-              },
-              "destinationAccountId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
-              },
-              "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
-                "type": [
-                  "array",
-                  "null"
-                ],
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
-                  "properties": {
-                    "transferInitiationId": {
-                      "type": "string"
-                    },
-                    "paymentId": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
               }
             }
           }
@@ -3370,117 +1577,29 @@
           "payload": {
             "type": "object",
             "required": [
-              "id",
-              "createdAt",
-              "scheduledAt",
+              "accountID",
               "connectorId",
-              "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
+              "createdAt",
               "asset",
-              "attempts",
-              "status",
-              "error"
+              "balance"
             ],
             "properties": {
-              "id": {
+              "accountID": {
+                "type": "string"
+              },
+              "connectorId": {
                 "type": "string"
               },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
               },
-              "scheduledAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "connectorId": {
-                "type": "string"
-              },
-              "provider": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
-                ]
-              },
-              "sourceAccountId": {
-                "type": "string"
-              },
-              "destinationAccountId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
               "asset": {
                 "type": "string"
               },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
-              },
-              "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
-                "type": [
-                  "array",
-                  "null"
-                ],
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
-                  "properties": {
-                    "transferInitiationId": {
-                      "type": "string"
-                    },
-                    "paymentId": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
-                }
+              "balance": {
+                "type": "number",
+                "format": "bigint"
               }
             }
           }
@@ -3517,17 +1636,8 @@
             "required": [
               "id",
               "createdAt",
-              "scheduledAt",
-              "connectorId",
-              "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
-              "status",
-              "error"
+              "name",
+              "country"
             ],
             "properties": {
               "id": {
@@ -3537,63 +1647,22 @@
                 "type": "string",
                 "format": "date-time"
               },
-              "scheduledAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "connectorId": {
+              "name": {
                 "type": "string"
               },
-              "provider": {
+              "country": {
                 "type": "string"
               },
-              "description": {
+              "accountNumber": {
                 "type": "string"
               },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
-                ]
-              },
-              "sourceAccountId": {
+              "iban": {
                 "type": "string"
               },
-              "destinationAccountId": {
+              "swiftBicCode": {
                 "type": "string"
               },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
-              },
-              "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
+              "adjustments": {
                 "type": [
                   "array",
                   "null"
@@ -3601,27 +1670,27 @@
                 "items": {
                   "type": "object",
                   "required": [
-                    "transferInitiationId",
-                    "paymentId",
+                    "id",
                     "createdAt",
-                    "status",
-                    "error"
+                    "accountID",
+                    "connectorID",
+                    "provider"
                   ],
                   "properties": {
-                    "transferInitiationId": {
-                      "type": "string"
-                    },
-                    "paymentId": {
+                    "id": {
                       "type": "string"
                     },
                     "createdAt": {
                       "type": "string",
                       "format": "date-time"
                     },
-                    "status": {
+                    "accountID": {
                       "type": "string"
                     },
-                    "error": {
+                    "connectorID": {
+                      "type": "string"
+                    },
+                    "provider": {
                       "type": "string"
                     }
                   }
@@ -3661,28 +1730,25 @@
             "type": "object",
             "required": [
               "id",
+              "reference",
               "createdAt",
-              "scheduledAt",
               "connectorId",
               "provider",
-              "description",
               "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
               "status",
-              "error"
+              "scheme",
+              "asset",
+              "amount",
+              "initialAmount"
             ],
             "properties": {
               "id": {
                 "type": "string"
               },
-              "createdAt": {
-                "type": "string",
-                "format": "date-time"
+              "reference": {
+                "type": "string"
               },
-              "scheduledAt": {
+              "createdAt": {
                 "type": "string",
                 "format": "date-time"
               },
@@ -3692,15 +1758,57 @@
               "provider": {
                 "type": "string"
               },
-              "description": {
-                "type": "string"
-              },
               "type": {
                 "type": "string",
                 "enum": [
+                  "PAY-IN",
+                  "PAYOUT",
                   "TRANSFER",
-                  "PAYOUT"
+                  "OTHER"
                 ]
+              },
+              "status": {
+                "type": "string"
+              },
+              "scheme": {
+                "type": "string",
+                "enum": [
+                  "unknown",
+                  "other",
+                  "visa",
+                  "mastercard",
+                  "amex",
+                  "diners",
+                  "discover",
+                  "jcb",
+                  "unionpay",
+                  "alipay",
+                  "cup",
+                  "sepa debit",
+                  "sepa credit",
+                  "sepa",
+                  "apple pay",
+                  "google pay",
+                  "doku",
+                  "dragonpay",
+                  "maestro",
+                  "molpay",
+                  "a2a",
+                  "ach debit",
+                  "ach",
+                  "rtp"
+                ]
+              },
+              "asset": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "number",
+                "format": "bigint"
+              },
+              "initialAmount": {
+                "type": "number",
+                "format": "bigint"
               },
               "sourceAccountId": {
                 "type": "string"
@@ -3708,68 +1816,30 @@
               "destinationAccountId": {
                 "type": "string"
               },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
-              },
-              "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
+              "links": {
                 "type": [
                   "array",
                   "null"
                 ],
                 "items": {
                   "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
                   "properties": {
-                    "transferInitiationId": {
+                    "name": {
                       "type": "string"
                     },
-                    "paymentId": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
+                    "uri": {
                       "type": "string"
                     }
                   }
+                }
+              },
+              "rawData": {
+                "type": "object"
+              },
+              "metadata": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
                 }
               }
             }
@@ -3806,115 +1876,25 @@
             "type": "object",
             "required": [
               "id",
+              "name",
               "createdAt",
-              "scheduledAt",
-              "connectorId",
-              "provider",
-              "description",
-              "type",
-              "destinationAccountId",
-              "amount",
-              "asset",
-              "attempts",
-              "status",
-              "error"
+              "accountIDs"
             ],
             "properties": {
               "id": {
+                "type": "string"
+              },
+              "name": {
                 "type": "string"
               },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
               },
-              "scheduledAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "connectorId": {
-                "type": "string"
-              },
-              "provider": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "TRANSFER",
-                  "PAYOUT"
-                ]
-              },
-              "sourceAccountId": {
-                "type": "string"
-              },
-              "destinationAccountId": {
-                "type": "string"
-              },
-              "amount": {
-                "type": "number",
-                "format": "bigint"
-              },
-              "asset": {
-                "type": "string"
-              },
-              "attempts": {
-                "type": "number"
-              },
-              "status": {
-                "type": "string",
-                "enum": [
-                  "WAITING_FOR_VALIDATION",
-                  "PROCESSING",
-                  "PROCESSED",
-                  "FAILED",
-                  "REJECTED",
-                  "VALIDATED",
-                  "ASK_RETRIED",
-                  "ASK_REVERSED",
-                  "REVERSE_PROCESSING",
-                  "REVERSE_FAILED",
-                  "PARTIALLY_REVERSED",
-                  "REVERSED"
-                ]
-              },
-              "error": {
-                "type": "string"
-              },
-              "relatedPayments": {
-                "type": [
-                  "array",
-                  "null"
-                ],
+              "accountIDs": {
+                "type": "array",
                 "items": {
-                  "type": "object",
-                  "required": [
-                    "transferInitiationId",
-                    "paymentId",
-                    "createdAt",
-                    "status",
-                    "error"
-                  ],
-                  "properties": {
-                    "transferInitiationId": {
-                      "type": "string"
-                    },
-                    "paymentId": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "error": {
-                      "type": "string"
-                    }
-                  }
+                  "type": "string"
                 }
               }
             }
@@ -4060,6 +2040,697 @@
                       "type": "string"
                     }
                   }
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "date",
+          "app",
+          "version",
+          "type",
+          "payload"
+        ]
+      }
+    },
+    "v3.0.0": {
+      "CONNECTOR_RESET": {
+        "type": "object",
+        "properties": {
+          "app": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "type": {
+            "type": "string"
+          },
+          "ledger": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "createdAt",
+              "connectorID"
+            ],
+            "properties": {
+              "createdAt": {
+                "type": "string"
+              },
+              "connectorID": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "required": [
+          "date",
+          "app",
+          "version",
+          "type",
+          "payload"
+        ]
+      },
+      "DELETED_POOL": {
+        "type": "object",
+        "properties": {
+          "app": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "type": {
+            "type": "string"
+          },
+          "ledger": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "id",
+              "createdAt"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        },
+        "required": [
+          "date",
+          "app",
+          "version",
+          "type",
+          "payload"
+        ]
+      },
+      "SAVED_ACCOUNT": {
+        "type": "object",
+        "properties": {
+          "app": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "type": {
+            "type": "string"
+          },
+          "ledger": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "id",
+              "provider",
+              "connectorID",
+              "createdAt",
+              "reference",
+              "type"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "provider": {
+                "type": "string"
+              },
+              "connectorID": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "reference": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "rawData": {
+                "type": "object"
+              },
+              "defaultAsset": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "metadata": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "date",
+          "app",
+          "version",
+          "type",
+          "payload"
+        ]
+      },
+      "SAVED_BALANCE": {
+        "type": "object",
+        "properties": {
+          "app": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "type": {
+            "type": "string"
+          },
+          "ledger": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "accountID",
+              "connectorID",
+              "provider",
+              "createdAt",
+              "lastUpdatedAt",
+              "asset",
+              "balance"
+            ],
+            "properties": {
+              "accountID": {
+                "type": "string"
+              },
+              "connectorID": {
+                "type": "string"
+              },
+              "provider": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "lastUpdatedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "asset": {
+                "type": "string"
+              },
+              "balance": {
+                "type": "number",
+                "format": "bigint"
+              }
+            }
+          }
+        },
+        "required": [
+          "date",
+          "app",
+          "version",
+          "type",
+          "payload"
+        ]
+      },
+      "SAVED_BANK_ACCOUNT": {
+        "type": "object",
+        "properties": {
+          "app": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "type": {
+            "type": "string"
+          },
+          "ledger": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "id",
+              "createdAt",
+              "name"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "name": {
+                "type": "string"
+              },
+              "country": {
+                "type": "string"
+              },
+              "accountNumber": {
+                "type": "string"
+              },
+              "iban": {
+                "type": "string"
+              },
+              "swiftBicCode": {
+                "type": "string"
+              },
+              "metadata": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "relatedAccounts": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "createdAt",
+                    "accountID",
+                    "connectorID",
+                    "provider"
+                  ],
+                  "properties": {
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "accountID": {
+                      "type": "string"
+                    },
+                    "connectorID": {
+                      "type": "string"
+                    },
+                    "provider": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "date",
+          "app",
+          "version",
+          "type",
+          "payload"
+        ]
+      },
+      "SAVED_PAYMENT": {
+        "type": "object",
+        "properties": {
+          "app": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "type": {
+            "type": "string"
+          },
+          "ledger": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "id",
+              "connectorID",
+              "provider",
+              "reference",
+              "createdAt",
+              "type",
+              "status",
+              "scheme",
+              "asset",
+              "amount",
+              "initialAmount"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "connectorID": {
+                "type": "string"
+              },
+              "provider": {
+                "type": "string"
+              },
+              "reference": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "type": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              },
+              "scheme": {
+                "type": "string"
+              },
+              "asset": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "number",
+                "format": "bigint"
+              },
+              "initialAmount": {
+                "type": "number",
+                "format": "bigint"
+              },
+              "sourceAccountID": {
+                "type": "string"
+              },
+              "destinationAccountID": {
+                "type": "string"
+              },
+              "links": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "uri": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "rawData": {
+                "type": "object"
+              },
+              "metadata": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "date",
+          "app",
+          "version",
+          "type",
+          "payload"
+        ]
+      },
+      "SAVED_PAYMENT_INITIATION": {
+        "type": "object",
+        "properties": {
+          "app": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "type": {
+            "type": "string"
+          },
+          "ledger": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "id",
+              "connectorID",
+              "provider",
+              "reference",
+              "createdAt",
+              "scheduledAt",
+              "description",
+              "type",
+              "amount",
+              "asset"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "connectorID": {
+                "type": "string"
+              },
+              "provider": {
+                "type": "string"
+              },
+              "reference": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "scheduledAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "description": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "number",
+                "format": "bigint"
+              },
+              "asset": {
+                "type": "string"
+              },
+              "sourceAccountID": {
+                "type": "string"
+              },
+              "destinationAccountID": {
+                "type": "string"
+              },
+              "metadata": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "date",
+          "app",
+          "version",
+          "type",
+          "payload"
+        ]
+      },
+      "SAVED_PAYMENT_INITIATION_ADJUSTMENT": {
+        "type": "object",
+        "properties": {
+          "app": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "type": {
+            "type": "string"
+          },
+          "ledger": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "id",
+              "paymentInitiationID",
+              "status"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "paymentInitiationID": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "number",
+                "format": "bigint"
+              },
+              "asset": {
+                "type": "string"
+              },
+              "error": {
+                "type": "object"
+              },
+              "metadata": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "date",
+          "app",
+          "version",
+          "type",
+          "payload"
+        ]
+      },
+      "SAVED_PAYMENT_INITIATION_RELATED_PAYMENT": {
+        "type": "object",
+        "properties": {
+          "app": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "type": {
+            "type": "string"
+          },
+          "ledger": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "paymentInitiationID",
+              "paymentID"
+            ],
+            "properties": {
+              "paymentInitiationID": {
+                "type": "string"
+              },
+              "paymentID": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "required": [
+          "date",
+          "app",
+          "version",
+          "type",
+          "payload"
+        ]
+      },
+      "SAVED_POOL": {
+        "type": "object",
+        "properties": {
+          "app": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "type": {
+            "type": "string"
+          },
+          "ledger": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "id",
+              "name",
+              "createdAt",
+              "accountIDs"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "accountIDs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
                 }
               }
             }
