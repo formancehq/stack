@@ -1,0 +1,44 @@
+type: object
+required:
+  - id
+  - createdAt
+  - name
+properties:
+  id:
+    type: string
+  createdAt:
+    type: string
+    format: date-time
+  name:
+    type: string
+  country:
+    type: string
+  accountNumber:
+    type: string
+  iban:
+    type: string
+  swiftBicCode:
+    type: string
+  metadata:
+    type: object
+    additionalProperties:
+      type: string
+  relatedAccounts:
+    type: ["array", "null"]
+    items:
+      type: object
+      required:
+        - createdAt
+        - accountID
+        - connectorID
+        - provider
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        accountID:
+          type: string
+        connectorID:
+          type: string
+        provider:
+          type: string

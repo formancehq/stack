@@ -1,9 +1,10 @@
 type: object
 required:
+  - id
   - createdAt
-  - connectorID
 properties:
+  id:
+    type: string
   createdAt:
     type: string
-  connectorID:
-    type: string
+    format: date-time

@@ -20,15 +20,35 @@
     "payload": {
       "type": "object",
       "required": [
-        "createdAt",
-        "connectorID"
+        "id",
+        "paymentInitiationID",
+        "status"
       ],
       "properties": {
-        "createdAt": {
+        "id": {
           "type": "string"
         },
-        "connectorID": {
+        "paymentInitiationID": {
           "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "number",
+          "format": "bigint"
+        },
+        "asset": {
+          "type": "string"
+        },
+        "error": {
+          "type": "object"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     }

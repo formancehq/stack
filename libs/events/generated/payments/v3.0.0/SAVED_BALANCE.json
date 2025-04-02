@@ -20,15 +20,38 @@
     "payload": {
       "type": "object",
       "required": [
+        "accountID",
+        "connectorID",
+        "provider",
         "createdAt",
-        "connectorID"
+        "lastUpdatedAt",
+        "asset",
+        "balance"
       ],
       "properties": {
-        "createdAt": {
+        "accountID": {
           "type": "string"
         },
         "connectorID": {
           "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "lastUpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "asset": {
+          "type": "string"
+        },
+        "balance": {
+          "type": "number",
+          "format": "bigint"
         }
       }
     }
