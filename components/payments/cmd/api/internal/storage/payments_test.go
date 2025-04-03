@@ -77,6 +77,45 @@ func insertPayments(t *testing.T, store *Storage, connectorID models.ConnectorID
 	return []models.Payment{p1, p2}
 }
 
+func TestUpsertPayments(t *testing.T) {
+	t.Parallel()
+
+	store := newStore(t)
+
+	connectorID := installConnector(t, store)
+	insertAccounts(t, store, connectorID)
+	insertPayments(t, store, connectorID)
+
+	p1 := models.Payment{
+		ID: models.PaymentID{
+			PaymentReference: models.PaymentReference{
+				Reference: "test_1",
+				Type:      models.PaymentTypePayIn,
+			},
+			ConnectorID: connectorID,
+		},
+		ConnectorID:   connectorID,
+		CreatedAt:     time.Date(2023, 11, 14, 8, 0, 0, 0, time.UTC),
+		Reference:     "test_1",
+		Amount:        big.NewInt(100),
+		InitialAmount: big.NewInt(100),
+		Type:          models.PaymentTypePayIn,
+		Status:        models.PaymentStatusPending,
+		Scheme:        models.PaymentSchemeA2A,
+		Asset:         models.Asset("USD/2"),
+		SourceAccountID: &models.AccountID{
+			Reference:   "test_account",
+			ConnectorID: connectorID,
+		},
+		DestinationAccountID: &models.AccountID{
+			Reference:   "test_account2",
+			ConnectorID: connectorID,
+		},
+	}
+	err := store.UpsertPayments(context.Background(), []*models.Payment{&p1})
+	require.NoError(t, err)
+}
+
 func TestListPayments(t *testing.T) {
 	t.Parallel()
 

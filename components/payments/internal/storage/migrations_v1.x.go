@@ -396,6 +396,21 @@ func registerMigrationsV1(ctx context.Context, migrator *migrations.Migrator) {
 				return fixMissingReferenceTransferInitiation(ctx, tx)
 			},
 		},
+		migrations.Migration{
+			Up: func(tx bun.Tx) error {
+				// Rererence should be unique within a connector, but not accross
+				// connectors. This migration fixes it.
+				_, err := tx.Exec(`
+					ALTER TABLE payments.payment ADD CONSTRAINT payment_reference_connector_id_unique_key UNIQUE (reference, connector_id);
+					ALTER TABLE payments.payment DROP CONSTRAINT IF EXISTS payment_reference_key;
+				`)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+		},
 	)
 }
 
