@@ -16,6 +16,11 @@ var (
 		Reference: uuid.New(),
 		Provider:  models.ConnectorProviderDummyPay,
 	}
+
+	connectorID2 = models.ConnectorID{
+		Reference: uuid.New(),
+		Provider:  models.ConnectorProviderDummyPay,
+	}
 )
 
 func TestConnectors(t *testing.T) {
@@ -37,6 +42,18 @@ func testInstallConnectors(t *testing.T, store *storage.Storage) {
 	err := store.Install(
 		context.Background(),
 		&connector1,
+		json.RawMessage([]byte(`{"foo": "bar"}`)),
+	)
+	require.NoError(t, err)
+
+	connector2 := models.Connector{
+		ID:       connectorID2,
+		Name:     "test2",
+		Provider: models.ConnectorProviderDummyPay,
+	}
+	err = store.Install(
+		context.Background(),
+		&connector2,
 		json.RawMessage([]byte(`{"foo": "bar"}`)),
 	)
 	require.NoError(t, err)

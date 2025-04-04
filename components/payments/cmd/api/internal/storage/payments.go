@@ -146,7 +146,7 @@ func (s *Storage) UpsertPayments(ctx context.Context, payments []*models.Payment
 
 	_, err := s.db.NewInsert().
 		Model(&payments).
-		On("CONFLICT (reference) DO UPDATE").
+		On("CONFLICT (reference, connector_id) DO UPDATE").
 		Set("amount = EXCLUDED.amount").
 		Set("type = EXCLUDED.type").
 		Set("status = EXCLUDED.status").

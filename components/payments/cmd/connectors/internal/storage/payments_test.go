@@ -26,9 +26,58 @@ func TestPayments(t *testing.T) {
 
 	testInstallConnectors(t, store)
 	testCreatePayments(t, store)
+	testCreatePaymentsSameReferenceButDifferentConnectorID(t, store)
 	testUpdatePayment(t, store)
 	testUninstallConnectors(t, store)
 	testPaymentsDeletedAfterConnectorUninstall(t, store)
+}
+
+func testCreatePaymentsSameReferenceButDifferentConnectorID(t *testing.T, store *storage.Storage) {
+	id1 := &models.PaymentID{
+		PaymentReference: models.PaymentReference{
+			Reference: "test-same-reference",
+			Type:      models.PaymentTypePayOut,
+		},
+		ConnectorID: connectorID,
+	}
+	p1 := &models.Payment{
+		ID:          *id1,
+		CreatedAt:   p1T,
+		Reference:   "test-same-reference",
+		Amount:      big.NewInt(100),
+		ConnectorID: connectorID,
+		Type:        models.PaymentTypePayOut,
+		Status:      models.PaymentStatusSucceeded,
+		Scheme:      models.PaymentSchemeCardVisa,
+		Asset:       models.Asset("USD/2"),
+	}
+
+	ids, err := store.UpsertPayments(context.Background(), []*models.Payment{p1})
+	require.NoError(t, err)
+	require.Len(t, ids, 1)
+
+	id2 := &models.PaymentID{
+		PaymentReference: models.PaymentReference{
+			Reference: "test-same-reference2",
+			Type:      models.PaymentTypePayOut,
+		},
+		ConnectorID: connectorID2,
+	}
+	p2 := &models.Payment{
+		ID:          *id2,
+		CreatedAt:   p1T,
+		Reference:   "test-same-reference2",
+		Amount:      big.NewInt(100),
+		ConnectorID: connectorID2,
+		Type:        models.PaymentTypePayOut,
+		Status:      models.PaymentStatusSucceeded,
+		Scheme:      models.PaymentSchemeCardVisa,
+		Asset:       models.Asset("USD/2"),
+	}
+
+	ids, err = store.UpsertPayments(context.Background(), []*models.Payment{p2})
+	require.NoError(t, err)
+	require.Len(t, ids, 1)
 }
 
 func testCreatePayments(t *testing.T, store *storage.Storage) {
