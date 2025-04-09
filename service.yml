@@ -1,0 +1,97 @@
+version: 2
+services:
+  gateway:
+    git_url: https://github.com/Frame-Payments/ledger.git
+    git_branch: main
+    dockerfile_path: ./Dockerfile
+    ports:
+      - container: 80
+        http: 80
+      - container: 443
+        https: 443
+    volumes:
+      - .local/gateway/Caddyfile:/etc/caddy/Caddyfile
+    type: daemon_set
+
+  ledger:
+    git_url: https://github.com/Frame-Payments/ledger.git
+    git_branch: main
+    dockerfile_path: ./Dockerfile
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://127.0.0.1:3068/_healthcheck" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_URI: "postgresql://_env(DB_USER):_env(DB_PASSWORD)@_env(DB_HOST):_env(DB_PORT)/_env(DB_NAME)?sslmode=disable"
+
+  payments-migrate:
+    git_url: https://github.com/Frame-Payments/ledger.git
+    git_branch: main
+    dockerfile_path: ./Dockerfile
+    command: migrate up
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_URI: "postgres://_env(DB_USER):_env(DB_PASSWORD)@_env(DB_HOST):_env(DB_PORT)/_env(DB_NAME)?sslmode=disable"
+
+  payments-api:
+    git_url: https://github.com/Frame-Payments/ledger.git
+    git_branch: main
+    dockerfile_path: ./Dockerfile
+    command: api server
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://127.0.0.1:8080/_live" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      postgres:
+        condition: service_healthy
+      payments-migrate:
+        condition: service_completed_successfully
+    environment:
+      DEBUG: ${DEBUG:-"true"}
+      POSTGRES_URI: "postgres://_env(DB_USER):_env(DB_PASSWORD)@_env(DB_HOST):_env(DB_PORT)/_env(DB_NAME)?sslmode=disable"
+      CONFIG_ENCRYPTION_KEY: mysuperencryptionkey
+
+  payments-connectors:
+    git_url: https://github.com/Frame-Payments/ledger.git
+    git_branch: main
+    dockerfile_path: ./Dockerfile
+    command: connectors server
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://127.0.0.1:8080/_live" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      postgres:
+        condition: service_healthy
+      payments-migrate:
+        condition: service_completed_successfully
+    environment:
+      DEBUG: ${DEBUG:-"true"}
+      POSTGRES_URI: "postgres://_env(DB_USER):_env(DB_PASSWORD)@_env(DB_HOST):_env(DB_PORT)/_env(DB_NAME)?sslmode=disable"
+      CONFIG_ENCRYPTION_KEY: mysuperencryptionkey
+
+  postgres:
+    image: postgres:13
+    ports:
+      - 5432
+    environment:
+      POSTGRES_USER: "_env(DB_USER)"
+      POSTGRES_PASSWORD: "_env(DB_PASSWORD)"
+      POSTGRES_DB: "_env(DB_NAME)"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+databases:
+  - postgresql
+
+volumes:
+  postgres-data:
