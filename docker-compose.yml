@@ -10,18 +10,22 @@ services:
     volumes:
       - ".local/gateway/Caddyfile:/etc/caddy/Caddyfile"
 
-  ledger:
-    image: "ghcr.io/formancehq/ledger:v2.2.0"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://127.0.0.1:3068/_healthcheck" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      POSTGRES_URI: "postgresql://formance:formance@postgres:${FORMANCE_POSTGRES_PORT:-5432}/ledger?sslmode=disable"
+ledger:
+  git_url: https://github.com/Frame-Payments/ledger.git
+  git_branch: main
+  dockerfile_path: ./Dockerfile
+  command: server
+  healthcheck:
+    test: [ "CMD", "curl", "-f", "http://127.0.0.1:3068/_healthcheck" ]
+    interval: 10s
+    timeout: 5s
+    retries: 5
+  depends_on:
+    postgres:
+      condition: service_healthy
+  environment:
+    POSTGRES_URI: "postgresql://_env(DB_USER):_env(DB_PASSWORD)@_env(DB_HOST):_env(DB_PORT)/_env(DB_NAME)?sslmode=disable"
+
 
   payments-migrate:
     image: "ghcr.io/formancehq/payments:v3.0.1"
