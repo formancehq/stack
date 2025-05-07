@@ -17,7 +17,7 @@ services:
     git_url: https://github.com/Frame-Payments/ledger.git
     git_branch: main
     dockerfile_path: ./Dockerfile
-    command: ["server"]
+    command: ["/app/ledger", "server"]
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://127.0.0.1:3068/_healthcheck" ]
       interval: 10s
