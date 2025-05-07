@@ -10,3 +10,4 @@ COPY . .
 RUN yarn install
 RUN yarn run build
 ENTRYPOINT ["/usr/bin/k6"]
+CMD ["run", "tests/benchmarks/scripts/benchs/ledger-v2.js"]
