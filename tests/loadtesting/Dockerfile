@@ -9,5 +9,5 @@ WORKDIR /k6
 COPY . .
 RUN yarn install
 RUN yarn run build
-ENTRYPOINT ["/usr/bin/k6"]
+ENTRYPOINT ["/app/ledger"]
 CMD ["run", "tests/benchmarks/scripts/benchs/ledger-v2.js"]
