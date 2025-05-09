@@ -1,9 +1,0 @@
-type: object
-required:
-  - createdAt
-  - connectorID
-properties:
-  createdAt:
-    type: string
-  connectorID:
-    type: string
