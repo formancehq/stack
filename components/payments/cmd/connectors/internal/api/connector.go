@@ -13,7 +13,6 @@ import (
 	"github.com/formancehq/payments/internal/otel"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
@@ -131,24 +130,6 @@ func readConfig[Config models.ConnectorConfigObject](
 		// inject provider into config json so SDK can distinguish between config types
 		caser := cases.Title(language.English)
 		m["provider"] = caser.String(connectorID.Provider.String())
-
-		// rewrite pollingDuration struct as a string to match API spec
-		pollingPeriod, ok := m["pollingPeriod"].(map[string]interface{})
-		if ok {
-			duration, found := pollingPeriod["duration"]
-			if found {
-				var ns int64
-				switch v := duration.(type) {
-				case int64:
-					ns = v
-				case float64:
-					ns = int64(v)
-				default:
-					logging.FromContext(ctx).Debugf("pollingPeriod.Duration was of an unexpected type: %T", v)
-				}
-				m["pollingPeriod"] = time.Duration(ns).String()
-			}
-		}
 
 		result, err := json.Marshal(m)
 		if err != nil {
