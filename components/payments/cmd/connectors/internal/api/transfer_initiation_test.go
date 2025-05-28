@@ -361,6 +361,7 @@ func TestCreateTransferInitiations(t *testing.T) {
 				SourceAccountID:      createTransferInitiationResponse.SourceAccountID.String(),
 				DestinationAccountID: createTransferInitiationResponse.DestinationAccountID.String(),
 				ConnectorID:          createTransferInitiationResponse.ConnectorID.String(),
+				Provider:             createTransferInitiationResponse.Provider.String(),
 				Type:                 createTransferInitiationResponse.Type.String(),
 				Amount:               createTransferInitiationResponse.Amount,
 				Asset:                createTransferInitiationResponse.Asset.String(),
