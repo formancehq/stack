@@ -38,22 +38,6 @@ archives:
     files:
     - completions/*
 
-brews:
-  - repository:
-      owner: formancehq
-      name: homebrew-tap
-    name: fctl
-    folder: Formula
-    homepage: https://formance.com
-    skip_upload: 'false'
-    test: |
-      system "#{bin}/fctl version"
-    install: |
-      bin.install "fctl"
-      bash_completion.install "completions/fctl.bash" => "fctl"
-      zsh_completion.install "completions/fctl.zsh" => "_fctl"
-      fish_completion.install "completions/fctl.fish"
-
 furies:
   - account: formance
     ids:
