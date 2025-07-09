@@ -911,12 +911,12 @@ func TestGetPoolBalance(t *testing.T) {
 			backend, mockService := newTestingBackend(t)
 			if testCase.expectedStatusCode < 300 && testCase.expectedStatusCode >= 200 {
 				mockService.EXPECT().
-					GetPoolBalance(gomock.Any(), testCase.poolID, atTime.Format(time.RFC3339)).
+					GetPoolBalanceAt(gomock.Any(), testCase.poolID, atTime.Format(time.RFC3339)).
 					Return(getPoolBalanceResponse, nil)
 			}
 			if testCase.serviceError != nil {
 				mockService.EXPECT().
-					GetPoolBalance(gomock.Any(), testCase.poolID, atTime.Format(time.RFC3339)).
+					GetPoolBalanceAt(gomock.Any(), testCase.poolID, atTime.Format(time.RFC3339)).
 					Return(nil, testCase.serviceError)
 			}
 
@@ -940,7 +940,121 @@ func TestGetPoolBalance(t *testing.T) {
 			}
 		})
 	}
+}
 
+func TestGetPoolBalanceLatest(t *testing.T) {
+	t.Parallel()
+
+	uuid1 := uuid.New()
+	type testCase struct {
+		name               string
+		queryParams        url.Values
+		poolID             string
+		serviceError       error
+		expectedStatusCode int
+		expectedErrorCode  string
+	}
+
+	testCases := []testCase{
+		{
+			name:   "nominal",
+			poolID: uuid1.String(),
+		},
+		{
+			name:               "err validation from backend",
+			poolID:             uuid1.String(),
+			serviceError:       service.ErrValidation,
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrValidation,
+		},
+		{
+			name:               "ErrNotFound from storage",
+			poolID:             uuid1.String(),
+			serviceError:       storage.ErrNotFound,
+			expectedStatusCode: http.StatusNotFound,
+			expectedErrorCode:  ErrNotFound,
+		},
+		{
+			name:               "ErrDuplicateKeyValue from storage",
+			poolID:             uuid1.String(),
+			serviceError:       storage.ErrDuplicateKeyValue,
+			expectedStatusCode: http.StatusBadRequest,
+			expectedErrorCode:  ErrUniqueReference,
+		},
+		{
+			name:               "other storage errors from storage",
+			poolID:             uuid1.String(),
+			serviceError:       errors.New("some error"),
+			expectedStatusCode: http.StatusInternalServerError,
+			expectedErrorCode:  sharedapi.ErrorInternal,
+		},
+	}
+
+	for _, testCase := range testCases {
+		testCase := testCase
+		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
+			if testCase.expectedStatusCode == 0 {
+				testCase.expectedStatusCode = http.StatusOK
+			}
+
+			getPoolBalanceResponse := &service.GetPoolBalanceResponse{
+				Balances: []*service.Balance{
+					{
+						Amount: big.NewInt(100),
+						Asset:  "EUR/2",
+					},
+					{
+						Amount: big.NewInt(12000),
+						Asset:  "USD/2",
+					},
+				},
+			}
+
+			expectedPoolBalancesResponse := []*poolBalanceResponse{
+				{
+					Amount: getPoolBalanceResponse.Balances[0].Amount,
+					Asset:  getPoolBalanceResponse.Balances[0].Asset,
+				},
+				{
+					Amount: getPoolBalanceResponse.Balances[1].Amount,
+					Asset:  getPoolBalanceResponse.Balances[1].Asset,
+				},
+			}
+
+			backend, mockService := newTestingBackend(t)
+			if testCase.expectedStatusCode < 300 && testCase.expectedStatusCode >= 200 {
+				mockService.EXPECT().
+					GetPoolBalance(gomock.Any(), testCase.poolID).
+					Return(getPoolBalanceResponse, nil)
+			}
+			if testCase.serviceError != nil {
+				mockService.EXPECT().
+					GetPoolBalance(gomock.Any(), testCase.poolID).
+					Return(nil, testCase.serviceError)
+			}
+
+			router := httpRouter(backend, logging.Testing(), sharedapi.ServiceInfo{}, auth.NewNoAuth())
+
+			req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/pools/%s/balances/latest", testCase.poolID), nil)
+			rec := httptest.NewRecorder()
+			req.URL.RawQuery = testCase.queryParams.Encode()
+
+			router.ServeHTTP(rec, req)
+
+			require.Equal(t, testCase.expectedStatusCode, rec.Code)
+			if testCase.expectedStatusCode < 300 && testCase.expectedStatusCode >= 200 {
+				var resp sharedapi.BaseResponse[[]*poolBalanceResponse]
+				sharedapi.Decode(t, rec.Body, &resp)
+				require.Equal(t, &expectedPoolBalancesResponse, resp.Data)
+			} else {
+				err := sharedapi.ErrorResponse{}
+				sharedapi.Decode(t, rec.Body, &err)
+				require.EqualValues(t, testCase.expectedErrorCode, err.ErrorCode)
+			}
+		})
+	}
 }
 
 func TestDeletePool(t *testing.T) {

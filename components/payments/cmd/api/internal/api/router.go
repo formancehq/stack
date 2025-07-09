@@ -69,6 +69,7 @@ func httpRouter(
 	authGroup.Path("/pools/{poolID}/accounts").Methods(http.MethodPost).Handler(addAccountToPoolHandler(b))
 	authGroup.Path("/pools/{poolID}/accounts/{accountID}").Methods(http.MethodDelete).Handler(removeAccountFromPoolHandler(b))
 	authGroup.Path("/pools/{poolID}/balances").Methods(http.MethodGet).Handler(getPoolBalances(b))
+	authGroup.Path("/pools/{poolID}/balances/latest").Methods(http.MethodGet).Handler(getPoolBalancesLatest(b))
 
 	return rootMux
 }

@@ -21,6 +21,7 @@ type Store interface {
 	GetAccount(ctx context.Context, id string) (*models.Account, error)
 	ListBalances(ctx context.Context, q storage.ListBalancesQuery) (*bunpaginate.Cursor[models.Balance], error)
 	GetBalancesAt(ctx context.Context, accountID models.AccountID, at time.Time) ([]*models.Balance, error)
+	GetBalancesLatest(ctx context.Context, accountID models.AccountID) ([]*models.Balance, error)
 	ListBankAccounts(ctx context.Context, q storage.ListBankAccountQuery) (*bunpaginate.Cursor[models.BankAccount], error)
 	GetBankAccount(ctx context.Context, id uuid.UUID, expand bool) (*models.BankAccount, error)
 	UpsertPayments(ctx context.Context, payments []*models.Payment) error

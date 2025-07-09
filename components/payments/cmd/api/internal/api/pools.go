@@ -13,6 +13,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/bun/bunpaginate"
 	"github.com/formancehq/stack/libs/go-libs/pointer"
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
@@ -297,7 +298,7 @@ func getPoolBalances(b backend.Backend) http.HandlerFunc {
 
 		span.SetAttributes(attribute.String("request.atTime", atTime))
 
-		balance, err := b.GetService().GetPoolBalance(ctx, poolID, atTime)
+		balance, err := b.GetService().GetPoolBalanceAt(ctx, poolID, atTime)
 		if err != nil {
 			otel.RecordError(span, err)
 			handleServiceErrors(w, r, err)
@@ -317,6 +318,53 @@ func getPoolBalances(b backend.Backend) http.HandlerFunc {
 
 		err = json.NewEncoder(w).Encode(api.BaseResponse[poolBalancesResponse]{
 			Data: data,
+		})
+		if err != nil {
+			otel.RecordError(span, err)
+			api.InternalServerError(w, r, err)
+			return
+		}
+	}
+}
+
+func getPoolBalancesLatest(backend backend.Backend) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := otel.Tracer().Start(r.Context(), "getPoolBalancesLatest")
+		defer span.End()
+
+		poolID, ok := mux.Vars(r)["poolID"]
+		if !ok {
+			var err = errors.New("missing poolID")
+			otel.RecordError(span, err)
+			api.BadRequest(w, ErrInvalidID, err)
+			return
+		}
+
+		span.SetAttributes(attribute.String("poolID", poolID))
+		id, err := uuid.Parse(poolID)
+		if err != nil {
+			otel.RecordError(span, err)
+			api.BadRequest(w, ErrInvalidID, err)
+			return
+		}
+
+		res, err := backend.GetService().GetPoolBalance(ctx, id.String())
+		if err != nil {
+			otel.RecordError(span, err)
+			handleServiceErrors(w, r, err)
+			return
+		}
+
+		balances := make([]*poolBalanceResponse, len(res.Balances))
+		for i := range res.Balances {
+			balances[i] = &poolBalanceResponse{
+				Amount: res.Balances[i].Amount,
+				Asset:  res.Balances[i].Asset,
+			}
+		}
+
+		err = json.NewEncoder(w).Encode(api.BaseResponse[[]*poolBalanceResponse]{
+			Data: &balances,
 		})
 		if err != nil {
 			otel.RecordError(span, err)
