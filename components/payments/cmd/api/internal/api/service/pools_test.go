@@ -288,7 +288,7 @@ func TestDeletePool(t *testing.T) {
 
 }
 
-func TestGetPoolBalance(t *testing.T) {
+func TestGetPoolBalanceAt(t *testing.T) {
 	t.Parallel()
 
 	type testCase struct {
@@ -331,7 +331,58 @@ func TestGetPoolBalance(t *testing.T) {
 				"USD/2": big.NewInt(300),
 			}
 
-			balances, err := service.GetPoolBalance(context.Background(), tc.poolID, tc.atTime)
+			balances, err := service.GetPoolBalanceAt(context.Background(), tc.poolID, tc.atTime)
+			if tc.expectedError != nil {
+				require.True(t, errors.Is(err, tc.expectedError))
+			} else {
+				require.NoError(t, err)
+
+				require.Equal(t, 2, len(balances.Balances))
+				for _, balance := range balances.Balances {
+					expectedAmount, ok := expectedResponseMap[balance.Asset]
+					require.True(t, ok)
+					require.Equal(t, expectedAmount, balance.Amount)
+				}
+			}
+		})
+	}
+}
+
+func TestGetPoolBalance(t *testing.T) {
+	t.Parallel()
+
+	type testCase struct {
+		name          string
+		poolID        string
+		expectedError error
+	}
+
+	uuid1 := uuid.New()
+
+	testCases := []testCase{
+		{
+			name:   "nominal",
+			poolID: uuid1.String(),
+		},
+		{
+			name:          "invalid poolID",
+			poolID:        "invalid",
+			expectedError: ErrValidation,
+		},
+	}
+
+	service := New(&MockStore{}, &MockPublisher{}, messages.NewMessages(""))
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			expectedResponseMap := map[string]*big.Int{
+				"EUR/2": big.NewInt(200),
+				"USD/2": big.NewInt(300),
+			}
+
+			balances, err := service.GetPoolBalance(context.Background(), tc.poolID)
 			if tc.expectedError != nil {
 				require.True(t, errors.Is(err, tc.expectedError))
 			} else {

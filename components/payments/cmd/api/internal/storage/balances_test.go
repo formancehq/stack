@@ -363,3 +363,32 @@ func TestGetBalanceAt(t *testing.T) {
 		require.Equal(t, big.NewInt(1000), balances[0].Balance)
 	})
 }
+
+func TestGetBalanceLatest(t *testing.T) {
+	t.Parallel()
+
+	store := newStore(t)
+
+	connectorID := installConnector(t, store)
+	accounts := insertAccounts(t, store, connectorID)
+	balancesPerAccountAndAssets := make(map[string]map[string][]models.Balance)
+	for _, account := range accounts {
+		if balancesPerAccountAndAssets[account.String()] == nil {
+			balancesPerAccountAndAssets[account.String()] = make(map[string][]models.Balance)
+		}
+
+		balances := insertBalances(t, store, account)
+		for _, balance := range balances {
+			balancesPerAccountAndAssets[account.String()][balance.Asset.String()] = append(balancesPerAccountAndAssets[account.String()][balance.Asset.String()], balance)
+		}
+	}
+
+	t.Run("get latest balances returns 1 balance per currency", func(t *testing.T) {
+		balances, err := store.GetBalancesLatest(context.Background(), accounts[0])
+		require.NoError(t, err)
+		require.NotNil(t, balances)
+		require.Len(t, balances, 2)
+		require.Equal(t, balances[0].Asset.String(), "EUR/2")
+		require.Equal(t, balances[1].Asset.String(), "USD/2")
+	})
+}

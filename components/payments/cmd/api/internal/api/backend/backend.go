@@ -31,7 +31,8 @@ type Service interface {
 	RemoveAccountFromPool(ctx context.Context, poolID string, accountID string) error
 	ListPools(ctx context.Context, q storage.ListPoolsQuery) (*bunpaginate.Cursor[models.Pool], error)
 	GetPool(ctx context.Context, poolID string) (*models.Pool, error)
-	GetPoolBalance(ctx context.Context, poolID string, atTime string) (*service.GetPoolBalanceResponse, error)
+	GetPoolBalance(ctx context.Context, poolID string) (*service.GetPoolBalanceResponse, error)
+	GetPoolBalanceAt(ctx context.Context, poolID string, atTime string) (*service.GetPoolBalanceResponse, error)
 	DeletePool(ctx context.Context, poolID string) error
 }
 

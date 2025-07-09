@@ -172,19 +172,34 @@ func (mr *MockServiceMockRecorder) GetPool(ctx, poolID interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPool", reflect.TypeOf((*MockService)(nil).GetPool), ctx, poolID)
 }
 
-// GetPoolBalance mocks base method.
-func (m *MockService) GetPoolBalance(ctx context.Context, poolID, atTime string) (*service.GetPoolBalanceResponse, error) {
+// GetPoolBalanceAt mocks base method.
+func (m *MockService) GetPoolBalanceAt(ctx context.Context, poolID, atTime string) (*service.GetPoolBalanceResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetPoolBalance", ctx, poolID, atTime)
+	ret := m.ctrl.Call(m, "GetPoolBalanceAt", ctx, poolID, atTime)
+	ret0, _ := ret[0].(*service.GetPoolBalanceResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPoolBalanceAt indicates an expected call of GetPoolBalanceAt.
+func (mr *MockServiceMockRecorder) GetPoolBalanceAt(ctx, poolID, atTime interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPoolBalanceAt", reflect.TypeOf((*MockService)(nil).GetPoolBalanceAt), ctx, poolID, atTime)
+}
+
+// GetPoolBalance mocks base method.
+func (m *MockService) GetPoolBalance(ctx context.Context, poolID string) (*service.GetPoolBalanceResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPoolBalance", ctx, poolID)
 	ret0, _ := ret[0].(*service.GetPoolBalanceResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetPoolBalance indicates an expected call of GetPoolBalance.
-func (mr *MockServiceMockRecorder) GetPoolBalance(ctx, poolID, atTime interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) GetPoolBalance(ctx, poolID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPoolBalance", reflect.TypeOf((*MockService)(nil).GetPoolBalance), ctx, poolID, atTime)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPoolBalance", reflect.TypeOf((*MockService)(nil).GetPoolBalance), ctx, poolID)
 }
 
 // ListAccounts mocks base method.

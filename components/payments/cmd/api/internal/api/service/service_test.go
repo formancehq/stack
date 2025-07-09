@@ -49,6 +49,21 @@ func (m *MockStore) GetBalancesAt(ctx context.Context, accountID models.AccountI
 	}, nil
 }
 
+func (m *MockStore) GetBalancesLatest(ctx context.Context, accountID models.AccountID) ([]*models.Balance, error) {
+	return []*models.Balance{
+		{
+			AccountID: accountID,
+			Asset:     "EUR/2",
+			Balance:   big.NewInt(100),
+		},
+		{
+			AccountID: accountID,
+			Asset:     "USD/2",
+			Balance:   big.NewInt(150),
+		},
+	}, nil
+}
+
 func (m *MockStore) UpsertAccounts(ctx context.Context, accounts []*models.Account) error {
 	return nil
 }

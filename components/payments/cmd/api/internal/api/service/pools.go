@@ -185,7 +185,7 @@ type Balance struct {
 	Asset  string
 }
 
-func (s *Service) GetPoolBalance(
+func (s *Service) GetPoolBalanceAt(
 	ctx context.Context,
 	poolID string,
 	atTime string,
@@ -208,6 +208,51 @@ func (s *Service) GetPoolBalance(
 	res := make(map[string]*big.Int)
 	for _, poolAccount := range pool.PoolAccounts {
 		balances, err := s.store.GetBalancesAt(ctx, poolAccount.AccountID, at)
+		if err != nil {
+			return nil, newStorageError(err, "getting balances")
+		}
+
+		for _, balance := range balances {
+			amount, ok := res[balance.Asset.String()]
+			if !ok {
+				amount = big.NewInt(0)
+			}
+
+			amount.Add(amount, balance.Balance)
+			res[balance.Asset.String()] = amount
+		}
+	}
+
+	balances := make([]*Balance, 0, len(res))
+	for asset, amount := range res {
+		balances = append(balances, &Balance{
+			Asset:  asset,
+			Amount: amount,
+		})
+	}
+
+	return &GetPoolBalanceResponse{
+		Balances: balances,
+	}, nil
+}
+
+func (s *Service) GetPoolBalance(
+	ctx context.Context,
+	poolID string,
+) (*GetPoolBalanceResponse, error) {
+	id, err := uuid.Parse(poolID)
+	if err != nil {
+		return nil, errors.Wrap(ErrValidation, err.Error())
+	}
+
+	pool, err := s.store.GetPool(ctx, id)
+	if err != nil {
+		return nil, newStorageError(err, "getting pool")
+	}
+
+	res := make(map[string]*big.Int)
+	for _, poolAccount := range pool.PoolAccounts {
+		balances, err := s.store.GetBalancesLatest(ctx, poolAccount.AccountID)
 		if err != nil {
 			return nil, newStorageError(err, "getting balances")
 		}
