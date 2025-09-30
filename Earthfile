@@ -2,16 +2,6 @@ VERSION 0.8
 PROJECT FormanceHQ/stack
 
 IMPORT github.com/formancehq/earthly:tags/v0.15.0 AS core
-IMPORT github.com/formancehq/ledger:v2.1.1 AS ledger
-IMPORT github.com/formancehq/payments:main AS payments
-IMPORT github.com/formancehq/gateway:main AS gateway
-IMPORT github.com/formancehq/auth:main AS auth
-IMPORT github.com/formancehq/search:main AS search
-IMPORT github.com/formancehq/stargate:main AS stargate
-IMPORT github.com/formancehq/webhooks:main AS webhooks
-IMPORT github.com/formancehq/flows:main AS orchestration
-IMPORT github.com/formancehq/reconciliation:main AS reconciliation
-IMPORT github.com/formancehq/wallets:main AS wallets
 
 sources:
     FROM core+base-image
@@ -21,7 +11,7 @@ sources:
 
 build-final-spec:
     FROM core+base-image
-    RUN apk update && apk add yarn nodejs npm jq
+    RUN apk update && apk add yarn nodejs npm jq curl
     WORKDIR /src/releases
     COPY releases/package.* .
     RUN npm install
@@ -32,15 +22,17 @@ build-final-spec:
     COPY releases/openapi-merge.json .
     RUN mkdir ./build
 
-    COPY (ledger+openapi/openapi.yaml) /src/components/ledger/
-    COPY (payments+openapi/openapi.yaml) /src/components/payments/
-    COPY (gateway+openapi/openapi.yaml) /src/ee/gateway/
-    COPY (auth+openapi/openapi.yaml) /src/ee/auth/
-    COPY (search+openapi/openapi.yaml) /src/ee/search/
-    COPY (webhooks+openapi/openapi.yaml) /src/ee/webhooks/
-    COPY (wallets+openapi/openapi.yaml) /src/ee/wallets/
-    COPY (reconciliation+openapi/openapi.yaml) /src/ee/reconciliation/
-    COPY (orchestration+openapi/openapi.yaml) /src/ee/orchestration/
+    RUN mkdir -p /src/components/ledger/ /src/components/payments/ /src/ee/gateway/ /src/ee/auth/ /src/ee/search/ /src/ee/webhooks/ /src/ee/wallets/ /src/ee/reconciliation/ /src/ee/orchestration/
+    
+    RUN curl -L -o /src/components/ledger/openapi.yaml https://github.com/formancehq/ledger/releases/download/v2.3.0/openapi.yaml
+    RUN curl -L -o /src/components/payments/openapi.yaml https://github.com/formancehq/payments/releases/download/v3.0.18/openapi.yaml
+    RUN curl -L -o /src/ee/gateway/openapi.yaml https://github.com/formancehq/gateway/releases/download/v2.1.0/openapi.yaml
+    RUN curl -L -o /src/ee/auth/openapi.yaml https://github.com/formancehq/auth/releases/download/v2.4.0/openapi.yaml
+    RUN curl -L -o /src/ee/search/openapi.yaml https://github.com/formancehq/search/releases/download/v2.1.0/openapi.yaml
+    RUN curl -L -o /src/ee/webhooks/openapi.yaml https://github.com/formancehq/webhooks/releases/download/v2.2.0/openapi.yaml
+    RUN curl -L -o /src/ee/wallets/openapi.yaml https://github.com/formancehq/wallets/releases/download/v2.1.5/openapi.yaml
+    RUN curl -L -o /src/ee/reconciliation/openapi.yaml https://github.com/formancehq/reconciliation/releases/download/v2.2.0/openapi.yaml
+    RUN curl -L -o /src/ee/orchestration/openapi.yaml https://github.com/formancehq/flows/releases/download/v2.4.0/openapi.yaml
 
     RUN npm run build
     RUN jq -s '.[0] * .[1]' build/generate.json openapi-overlay.json > build/latest.json
