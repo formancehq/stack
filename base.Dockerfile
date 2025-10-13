@@ -1,8 +1,9 @@
 FROM ubuntu:22.04 AS base
-RUN apt update && apt install -y ca-certificates curl && rm -rf /var/lib/apt/lists/*
+RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y ca-certificates curl tzdata && rm -rf /var/lib/apt/lists/*
 
-FROM alpine:latest as certs
+FROM alpine:latest AS certs
 RUN apk --update add ca-certificates
 
-FROM scratch AS scratch
+FROM scratch
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=base /usr/share/zoneinfo /usr/share/zoneinfo
