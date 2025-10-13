@@ -4,6 +4,6 @@ RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y ca-certificates 
 FROM alpine:latest AS certs
 RUN apk --update add ca-certificates
 
-FROM scratch
+FROM scratch AS scratch
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=base /usr/share/zoneinfo /usr/share/zoneinfo
