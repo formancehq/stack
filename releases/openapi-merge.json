@@ -4,8 +4,8 @@
       "inputFile": "./base.yaml"
     },
     {
-      "inputFile": "./../ee/auth/openapi.yaml",
-      "pathModification":{
+      "inputFile": "./../components/auth.openapi.yaml",
+      "pathModification": {
         "prepend": "/api/auth"
       },
       "dispute": {
@@ -13,14 +13,14 @@
       }
     },
     {
-      "inputFile": "./../ee/gateway/openapi.yaml",
+      "inputFile": "./../components/gateway.openapi.yaml",
       "dispute": {
         "prefix": "gateway"
       }
     },
     {
-      "inputFile": "./../components/ledger/openapi.yaml",
-      "pathModification":{
+      "inputFile": "./../components/ledger.openapi.yaml",
+      "pathModification": {
         "prepend": "/api/ledger"
       },
       "dispute": {
@@ -28,8 +28,8 @@
       }
     },
     {
-      "inputFile": "./../components/payments/openapi.yaml",
-      "pathModification":{
+      "inputFile": "./../components/payments.openapi.yaml",
+      "pathModification": {
         "prepend": "/api/payments"
       },
       "dispute": {
@@ -37,8 +37,8 @@
       }
     },
     {
-      "inputFile": "./../ee/search/openapi.yaml",
-      "pathModification":{
+      "inputFile": "./../components/search.openapi.yaml",
+      "pathModification": {
         "prepend": "/api/search"
       },
       "dispute": {
@@ -46,8 +46,8 @@
       }
     },
     {
-      "inputFile": "./../ee/webhooks/openapi.yaml",
-      "pathModification":{
+      "inputFile": "./../components/webhooks.openapi.yaml",
+      "pathModification": {
         "prepend": "/api/webhooks"
       },
       "operationSelection": {
@@ -58,8 +58,8 @@
       }
     },
     {
-      "inputFile": "./../ee/wallets/openapi.yaml",
-      "pathModification":{
+      "inputFile": "./../components/wallets.openapi.yaml",
+      "pathModification": {
         "prepend": "/api/wallets"
       },
       "operationSelection": {
@@ -70,8 +70,8 @@
       }
     },
     {
-      "inputFile": "./../ee/orchestration/openapi.yaml",
-      "pathModification":{
+      "inputFile": "./../components/orchestration.openapi.yaml",
+      "pathModification": {
         "prepend": "/api/orchestration"
       },
       "operationSelection": {
@@ -82,8 +82,8 @@
       }
     },
     {
-      "inputFile": "./../ee/reconciliation/openapi.yaml",
-      "pathModification":{
+      "inputFile": "./../components/reconciliation.openapi.yaml",
+      "pathModification": {
         "prepend": "/api/reconciliation"
       },
       "operationSelection": {

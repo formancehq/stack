@@ -23,22 +23,21 @@ info:
   version: "SDK_VERSION"
 
 servers:
-- url: http://localhost
-  description: local server
-- url: https://{organization}.{environment}.formance.cloud
-  description: A per-organization and per-environment API
-  variables:
-    organization:
-      description: The organization name. Defaults to a generic organization.
-      default: orgID-stackID
-    environment:
-      description: The environment name. Defaults to the production environment.
-      default: eu.sandbox
-      enum:
-        - eu.sandbox
-        - sandbox
-        - eu-west-1
-        - us-east-1
+  - url: http://localhost
+    description: local server
+  - url: https://{organization}.{environment}.formance.cloud
+    description: A per-organization and per-environment API
+    variables:
+      organization:
+        description: The organization name. Defaults to a generic organization.
+        default: orgID-stackID
+      environment:
+        description: The environment name. Defaults to the production environment.
+        default: eu.sandbox
+        enum:
+          - eu.sandbox
+          - eu-west-1
+          - us-east-1
 
 tags:
   - name: ledger.v1
@@ -59,15 +58,15 @@ components:
       type: oauth2
       flows:
         clientCredentials:
-          tokenUrl: '/api/auth/oauth/token'
-          refreshUrl: '/api/auth/oauth/token'
+          tokenUrl: "/api/auth/oauth/token"
+          refreshUrl: "/api/auth/oauth/token"
           scopes: {}
     NoAuthorization:
       type: oauth2
       flows:
         clientCredentials:
-          tokenUrl: '/api/auth/oauth/token'
-          refreshUrl: '/api/auth/oauth/token'
+          tokenUrl: "/api/auth/oauth/token"
+          refreshUrl: "/api/auth/oauth/token"
           scopes: {}
 
 x-tagGroups:
