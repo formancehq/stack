@@ -57,6 +57,13 @@ build-final-spec:
     END
     SAVE ARTIFACT build/latest.json
 
+
+build:
+    LOCALLY
+    BUILD --pass-args +build-final-spec
+    BUILD --pass-args ./events+generate
+
 pre-commit: # Generate the final spec and run all the pre-commit hooks
     LOCALLY
     BUILD +build-final-spec
+    BUILD ./events+pre-commit

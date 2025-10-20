@@ -1,9 +1,25 @@
 VERSION 0.8
 
 IMPORT github.com/formancehq/earthly:tags/v0.15.0 AS core
-IMPORT ../.. AS stack
 
 FROM core+base-image
+
+GO_LINT:
+    FUNCTION
+    COPY (+sources/out --LOCATION=.golangci.yml) .golangci.yml
+    ARG GOPROXY
+    RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
+        --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
+        --mount=type=cache,id=golangci,target=/root/.cache/golangci-lint \
+        golangci-lint run --fix ./...
+
+GO_TIDY:
+    FUNCTION
+    ARG GOPROXY
+    RUN --mount=type=cache,id=gomod,target=${GOPATH}/pkg/mod \
+        --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
+        go mod tidy
+    SAVE ARTIFACT go.* AS LOCAL .
 
 go-sources:
     COPY events.go go.* base.yaml /src/
@@ -15,7 +31,7 @@ tidy:
     FROM core+builder-image
     COPY (+go-sources/*) /src
     WORKDIR /src
-    DO --pass-args stack+GO_TIDY
+    DO --pass-args +GO_TIDY
     SAVE ARTIFACT go.* AS LOCAL ./
 
 lint:
@@ -23,7 +39,7 @@ lint:
     COPY (+go-sources/*) /src
     WORKDIR /src
     COPY --pass-args +tidy/go.* .
-    DO --pass-args stack+GO_LINT
+    DO --pass-args +GO_LINT
     SAVE ARTIFACT * AS LOCAL ./
 
 generate:
@@ -41,5 +57,4 @@ pre-commit:
     WAIT
       BUILD --pass-args +tidy
     END
-    BUILD --pass-args +lint
     BUILD --pass-args +generate
