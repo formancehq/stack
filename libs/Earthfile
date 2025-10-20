@@ -1,9 +1,0 @@
-VERSION 0.8
-
-IMPORT github.com/formancehq/earthly:tags/v0.15.0 AS core
-IMPORT .. AS stack
-
-run:
-  LOCALLY
-  ARG --required TARGET
-  BUILD ./events+$TARGET
