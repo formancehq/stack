@@ -35,36 +35,6 @@ fctl ui
 
 [1] https://docs.formance.com/guides/newSandbox
 
-## 💻 Getting started locally
-
-### Requirements
-1. Make sure docker is installed on your machine.
-2. Ensure your docker daemon has at least 5GB uf usable RAM available. Otherwise you will run into random crashes.
-3. Make sure Docker Compose is installed and available (it should be the case if you have chosen to install Docker via Docker Desktop); and
-4. Make sure Git is also installed on your machine.
-
-
-### Run the app
-To start using Formance Stack, run the following commands in a shell:
-
-```
-# Get the code
-git clone https://github.com/formancehq/stack.git
-
-# Go to the cloned stack directory
-cd stack
-
-# Start the stack containers
-docker compose up
-```
-
-The Stack's API is exposed at http://localhost/api.
-
-You can run :
-````
-curl http://localhost/api/ledger/_info
-````
-
 ## ☁️ Cloud Native Deployment
 
 The Formance Stack is distributed as a collection of binaries, with optional packaging as Docker images and configuration support through command line options and environment variables. The recommended, standard way to deploy the collection of services is to a Kubernetes cluster through our Formance official Helm charts, which repository is available at [helm.formance.com](https://helm.formance.com/).
