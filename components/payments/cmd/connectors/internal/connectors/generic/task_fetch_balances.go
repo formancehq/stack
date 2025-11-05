@@ -38,7 +38,7 @@ func taskFetchBalances(c *client.Client, config *Config, accountID string) task.
 			// retryable error already handled by the client
 			otel.RecordError(span, err)
 
-			if errors.Is(err, client.ErrStatusCodeServerError) {
+			if errors.Is(err, client.ErrStatusCodeServerError) || errors.Is(err, client.ErrUnreachableServerError) {
 				return fmt.Errorf("%w: %w", task.ErrRetryable, err)
 			}
 

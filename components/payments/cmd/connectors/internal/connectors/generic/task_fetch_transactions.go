@@ -72,7 +72,7 @@ func ingestTransactions(
 	for page := 1; ; page++ {
 		transactions, err := c.ListTransactions(ctx, int64(page), pageSize, state.LastUpdatedAt)
 		if err != nil {
-			if errors.Is(err, client.ErrStatusCodeServerError) {
+			if errors.Is(err, client.ErrStatusCodeServerError) || errors.Is(err, client.ErrUnreachableServerError) {
 				return fetchTransactionsState{}, fmt.Errorf("%w: %w", task.ErrRetryable, err)
 			}
 
