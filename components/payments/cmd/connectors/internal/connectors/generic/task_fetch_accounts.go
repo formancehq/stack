@@ -72,7 +72,7 @@ func ingestAccounts(
 	for page := 1; ; page++ {
 		accounts, err := c.ListAccounts(ctx, int64(page), pageSize)
 		if err != nil {
-			if errors.Is(err, client.ErrStatusCodeServerError) {
+			if errors.Is(err, client.ErrStatusCodeServerError) || errors.Is(err, client.ErrUnreachableServerError) {
 				return fmt.Errorf("%w: %w", task.ErrRetryable, err)
 			}
 			return err

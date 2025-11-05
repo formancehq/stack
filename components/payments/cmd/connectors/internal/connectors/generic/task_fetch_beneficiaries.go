@@ -67,7 +67,7 @@ func ingestBeneficiaries(
 	for page := 1; ; page++ {
 		beneficiaries, err := c.ListBeneficiaries(ctx, int64(page), pageSize, state.LastCreatedAt)
 		if err != nil {
-			if errors.Is(err, client.ErrStatusCodeServerError) {
+			if errors.Is(err, client.ErrStatusCodeServerError) || errors.Is(err, client.ErrUnreachableServerError) {
 				return fetchBeneficiariesState{}, fmt.Errorf("%w: %w", task.ErrRetryable, err)
 			}
 
