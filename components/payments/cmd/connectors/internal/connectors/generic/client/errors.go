@@ -12,6 +12,10 @@ var (
 )
 
 func wrapError(err error, resp *http.Response) error {
+	if resp == nil {
+		return err
+	}
+
 	statusCode := resp.StatusCode
 
 	if statusCode >= http.StatusBadRequest && statusCode < http.StatusInternalServerError {
