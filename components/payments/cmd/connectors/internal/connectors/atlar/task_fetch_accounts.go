@@ -157,22 +157,24 @@ func ingestAccountsBatch(
 			RawData:      raw,
 		})
 
-		balance := account.Balance
-		balanceTimestamp, err := ParseAtlarTimestamp(balance.Timestamp)
-		if err != nil {
-			return err
+		if account.Balance != nil {
+			balance := account.Balance
+			balanceTimestamp, err := ParseAtlarTimestamp(balance.Timestamp)
+			if err != nil {
+				return err
+			}
+			balanceBatch = append(balanceBatch, &models.Balance{
+				AccountID: models.AccountID{
+					Reference:   *account.ID,
+					ConnectorID: connectorID,
+				},
+				Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, *balance.Amount.Currency),
+				Balance:       big.NewInt(*balance.Amount.Value),
+				CreatedAt:     balanceTimestamp,
+				LastUpdatedAt: time.Now().UTC(),
+				ConnectorID:   connectorID,
+			})
 		}
-		balanceBatch = append(balanceBatch, &models.Balance{
-			AccountID: models.AccountID{
-				Reference:   *account.ID,
-				ConnectorID: connectorID,
-			},
-			Asset:         currency.FormatAsset(supportedCurrenciesWithDecimal, *balance.Amount.Currency),
-			Balance:       big.NewInt(*balance.Amount.Value),
-			CreatedAt:     balanceTimestamp,
-			LastUpdatedAt: time.Now().UTC(),
-			ConnectorID:   connectorID,
-		})
 	}
 
 	if err := ingester.IngestAccounts(ctx, accountsBatch); err != nil {
