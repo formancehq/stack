@@ -12,6 +12,7 @@ ARG SEARCH_VERSION=v2.1.0
 ARG ORCHESTRATION_VERSION=v2.4.0
 ARG RECONCILIATION_VERSION=v2.2.1
 ARG GATEWAY_VERSION=v2.1.0
+ARG TRANSACTIONS_VERSION=b3299f19ef3f66c74f353232095854624206409f
 
 sources:
     FROM core+base-image
@@ -43,6 +44,7 @@ build-final-spec:
     RUN curl -L https://github.com/formancehq/wallets/releases/download/${WALLETS_VERSION}/openapi.yaml -o wallets.openapi.yaml
     RUN curl -L https://github.com/formancehq/reconciliation/releases/download/${RECONCILIATION_VERSION}/openapi.yaml -o reconciliation.openapi.yaml
     RUN curl -L https://github.com/formancehq/flows/releases/download/${ORCHESTRATION_VERSION}/openapi.yaml -o orchestration.openapi.yaml
+    RUN curl -L https://github.com/formancehq/transactions/releases/download/${TRANSACTIONS_VERSION}/openapi.yaml -o transactions.openapi.yaml
 
     WORKDIR /src/releases
     RUN npm run build

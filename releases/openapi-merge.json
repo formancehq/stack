@@ -92,6 +92,18 @@
       "dispute": {
         "prefix": "reconciliation"
       }
+    },
+    {
+      "inputFile": "./../components/transactions.openapi.yaml",
+      "pathModification": {
+        "prepend": "/api/transactions"
+      },
+      "operationSelection": {
+        "excludeTags": ["Health"]
+      },
+      "dispute": {
+        "prefix": "transactions"
+      }
     }
   ],
   "output": "./build/generate.json"
