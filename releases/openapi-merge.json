@@ -92,6 +92,15 @@
       "dispute": {
         "prefix": "reconciliation"
       }
+    },
+    {
+      "inputFile": "./../components/transaction-plane.openapi.yaml",
+      "pathModification": {
+        "prepend": "/api/transactionplane"
+      },
+      "dispute": {
+        "prefix": "transactionplane"
+      }
     }
   ],
   "output": "./build/generate.json"
