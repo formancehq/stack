@@ -50,3 +50,6 @@ github:
 'ee/reconciliation':
   - changed-files:
     - any-glob-to-any-file: "ee/reconciliation/*"
+'ee/transaction-plane':
+  - changed-files:
+    - any-glob-to-any-file: "ee/transaction-plane/*"

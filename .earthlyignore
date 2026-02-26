@@ -50,6 +50,7 @@ search
 stargate
 wallets
 webhooks
+transaction-plane
 
 # Operator tooling
 components/operator/bin

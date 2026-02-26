@@ -51,6 +51,7 @@ tags:
   - name: search.v1
   - name: webhooks.v1
   - name: wallets.v1
+  - name: transaction-plane.v1
 
 components:
   securitySchemes:
@@ -97,3 +98,6 @@ x-tagGroups:
   - name: Reconciliation
     tags:
       - reconciliation.v1
+  - name: TransactionPlane
+    tags:
+      - transaction-plane.v1
