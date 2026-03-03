@@ -1,27 +1,22 @@
 package auth
 
 import (
-	"context"
 	"fmt"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/hashicorp/go-retryablehttp"
-	"github.com/zitadel/oidc/v2/pkg/client/rp"
 	"github.com/zitadel/oidc/v2/pkg/oidc"
 	"github.com/zitadel/oidc/v2/pkg/op"
 	"go.uber.org/zap"
 )
 
 type jwtAuth struct {
-	logger              logging.Logger
-	httpClient          *http.Client
-	accessTokenVerifier op.AccessTokenVerifier
-
-	issuer      string
+	logger      logging.Logger
+	httpClient  *http.Client
+	verifiers   map[string]op.AccessTokenVerifier // issuer -> verifier
 	checkScopes bool
 	service     string
 }
@@ -35,17 +30,16 @@ func newOtlpHttpClient(maxRetries int) *http.Client {
 func newJWTAuth(
 	logger logging.Logger,
 	readKeySetMaxRetries int,
-	issuer string,
+	verifiers map[string]op.AccessTokenVerifier,
 	service string,
 	checkScopes bool,
 ) *jwtAuth {
 	return &jwtAuth{
-		logger:              logger,
-		httpClient:          newOtlpHttpClient(readKeySetMaxRetries),
-		accessTokenVerifier: nil,
-		issuer:              issuer,
-		checkScopes:         checkScopes,
-		service:             service,
+		logger:      logger,
+		httpClient:  newOtlpHttpClient(readKeySetMaxRetries),
+		verifiers:   verifiers,
+		checkScopes: checkScopes,
+		service:     service,
 	}
 }
 
@@ -66,13 +60,28 @@ func (ja *jwtAuth) Authenticate(w http.ResponseWriter, r *http.Request) (bool, e
 	token := strings.TrimPrefix(authHeader, strings.ToLower(oidc.PrefixBearer))
 	token = strings.TrimPrefix(token, oidc.PrefixBearer)
 
-	accessTokenVerifier, err := ja.getAccessTokenVerifier(r.Context())
-	if err != nil {
-		ja.logger.Error("unable to create access token verifier", zap.Error(err))
-		return false, fmt.Errorf("unable to create access token verifier: %w", err)
+	// Pre-parse the token to extract the issuer claim, so we can select
+	// the correct verifier (each issuer has its own key set).
+	var preClaims oidc.TokenClaims
+	if _, err := oidc.ParseToken(token, &preClaims); err != nil {
+		ja.logger.Error("unable to parse token", zap.Error(err))
+		return false, fmt.Errorf("unable to parse token: %w", err)
 	}
 
-	claims, err := op.VerifyAccessToken[*oidc.AccessTokenClaims](r.Context(), token, accessTokenVerifier)
+	verifier, ok := ja.verifiers[preClaims.Issuer]
+	if !ok {
+		issuers := make([]string, 0, len(ja.verifiers))
+		for iss := range ja.verifiers {
+			issuers = append(issuers, iss)
+		}
+		ja.logger.Error("untrusted issuer",
+			zap.String("got", preClaims.Issuer),
+			zap.Strings("trusted", issuers),
+		)
+		return false, fmt.Errorf("issuer does not match: got: %s, trusted: %v", preClaims.Issuer, issuers)
+	}
+
+	claims, err := op.VerifyAccessToken[*oidc.AccessTokenClaims](r.Context(), token, verifier)
 	if err != nil {
 		ja.logger.Error("unable to verify access token", zap.Error(err))
 		return false, fmt.Errorf("unable to verify access token: %w", err)
@@ -96,27 +105,4 @@ func (ja *jwtAuth) Authenticate(w http.ResponseWriter, r *http.Request) (bool, e
 	}
 
 	return true, nil
-}
-
-func (ja *jwtAuth) getAccessTokenVerifier(ctx context.Context) (op.AccessTokenVerifier, error) {
-	if ja.accessTokenVerifier == nil {
-		//discoveryConfiguration, err := client.Discover(ja.Issuer, ja.httpClient)
-		//if err != nil {
-		//	return nil, err
-		//}
-
-		// todo: ugly quick fix
-		authServicePort := "8080"
-		if fromEnv := os.Getenv("AUTH_SERVICE_PORT"); fromEnv != "" {
-			authServicePort = fromEnv
-		}
-		keySet := rp.NewRemoteKeySet(ja.httpClient, fmt.Sprintf("http://auth:%s/keys", authServicePort))
-
-		ja.accessTokenVerifier = op.NewAccessTokenVerifier(
-			os.Getenv("STACK_PUBLIC_URL")+"/api/auth",
-			keySet,
-		)
-	}
-
-	return ja.accessTokenVerifier, nil
 }
