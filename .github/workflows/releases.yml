@@ -27,7 +27,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Add the OpenAPI file to the release assets
-        run: >
+        run: |
           gh release upload ${{github.ref_name}} ./releases/build/generate.json#openapi.json
           gh release upload ${{github.ref_name}} ./events/generated/all.json#events.json
         env:
