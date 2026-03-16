@@ -1,0 +1,72 @@
+overlay: 1.0.0
+info:
+  title: Shared overlay for Formance Stack OpenAPI spec
+  version: 0.0.1
+actions:
+  # Remove the NoAuthorization securityScheme definition (injected by component merge)
+  - target: $.components.securitySchemes.NoAuthorization
+    remove: true
+
+  # Remove existing security on GET /versions and replace with empty requirement
+  - target: $.paths['/versions'].get.security
+    remove: true
+  - target: $.paths['/versions'].get
+    update:
+      security:
+        - {}
+
+  # Remove requestBody on Ledger v2 GET/HEAD operations
+  - target: $.paths['/api/ledger/v2'].get.requestBody
+    remove: true
+  - target: $.paths['/api/ledger/v2/{ledger}/accounts'].get.requestBody
+    remove: true
+  - target: $.paths['/api/ledger/v2/{ledger}/accounts'].head.requestBody
+    remove: true
+  - target: $.paths['/api/ledger/v2/{ledger}/transactions'].get.requestBody
+    remove: true
+  - target: $.paths['/api/ledger/v2/{ledger}/transactions'].head.requestBody
+    remove: true
+  - target: $.paths['/api/ledger/v2/{ledger}/aggregate/balances'].get.requestBody
+    remove: true
+  - target: $.paths['/api/ledger/v2/{ledger}/volumes'].get.requestBody
+    remove: true
+  - target: $.paths['/api/ledger/v2/{ledger}/logs'].get.requestBody
+    remove: true
+
+  # Remove requestBody on Payments v1 GET operations
+  - target: $.paths['/api/payments/accounts'].get.requestBody
+    remove: true
+
+  # Remove requestBody on Payments v3 GET operations
+  - target: $.paths['/api/payments/v3/accounts'].get.requestBody
+    remove: true
+  - target: $.paths['/api/payments/v3/bank-accounts'].get.requestBody
+    remove: true
+  - target: $.paths['/api/payments/v3/connectors'].get.requestBody
+    remove: true
+  - target: $.paths['/api/payments/v3/connectors/{connectorID}/schedules'].get.requestBody
+    remove: true
+  - target: $.paths['/api/payments/v3/payments'].get.requestBody
+    remove: true
+  - target: $.paths['/api/payments/v3/payment-initiations'].get.requestBody
+    remove: true
+  - target: $.paths['/api/payments/v3/payment-initiations/{paymentInitiationID}/adjustments'].get.requestBody
+    remove: true
+  - target: $.paths['/api/payments/v3/payment-initiations/{paymentInitiationID}/payments'].get.requestBody
+    remove: true
+  - target: $.paths['/api/payments/v3/payment-service-users'].get.requestBody
+    remove: true
+  - target: $.paths['/api/payments/v3/payment-service-users/{paymentServiceUserID}/connections'].get.requestBody
+    remove: true
+  - target: $.paths['/api/payments/v3/payment-service-users/{paymentServiceUserID}/connectors/{connectorID}/connections'].get.requestBody
+    remove: true
+  - target: $.paths['/api/payments/v3/payment-service-users/{paymentServiceUserID}/connectors/{connectorID}/link-attempts'].get.requestBody
+    remove: true
+  - target: $.paths['/api/payments/v3/pools'].get.requestBody
+    remove: true
+
+  # Remove requestBody on Reconciliation GET operations
+  - target: $.paths['/api/reconciliation/policies'].get.requestBody
+    remove: true
+  - target: $.paths['/api/reconciliation/reconciliations'].get.requestBody
+    remove: true

@@ -32,3 +32,12 @@ jobs:
           gh release upload ${{github.ref_name}} ./events/generated/all.json#events.json
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-registry:
+    needs: OpenAPI
+    uses: speakeasy-api/sdk-generation-action/.github/workflows/tag.yaml@v15
+    with:
+      registry_tags: ${{ github.ref_name }}
+    secrets:
+      github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      speakeasy_api_key: ${{ secrets.SPEAKEASY_API_KEY }}

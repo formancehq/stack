@@ -1,0 +1,12 @@
+workflowVersion: 1.0.0
+speakeasyVersion: latest
+sources:
+    stacks-source:
+        inputs:
+            - location: ./releases/build/generate.json
+        overlays:
+            - location: ./releases/overlays/shared.overlay.yaml
+        output: ./releases/build/openapi-overlaid.yaml
+        registry:
+            location: registry.speakeasyapi.dev/formance/formance/stacks-source
+targets: {}

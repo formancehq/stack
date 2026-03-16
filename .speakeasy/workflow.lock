@@ -1,0 +1,23 @@
+speakeasyVersion: 1.755.0
+sources:
+    stacks-source:
+        sourceNamespace: stacks-source
+        sourceRevisionDigest: sha256:5f3efcd6d57a3d10c6117dc8652e196b181e1535d33294062cfb5f997c8abff0
+        sourceBlobDigest: sha256:9e907dbdf2d4f42763a7a8d9e384a155be7a9443e612fa924108231587f827ad
+        tags:
+            - latest
+            - v0.0.0
+targets: {}
+workflow:
+    workflowVersion: 1.0.0
+    speakeasyVersion: latest
+    sources:
+        stacks-source:
+            inputs:
+                - location: ./releases/build/generate.json
+            overlays:
+                - location: ./releases/overlays/shared.overlay.yaml
+            output: ./releases/build/openapi-overlaid.yaml
+            registry:
+                location: registry.speakeasyapi.dev/formance/formance/stacks-source
+    targets: {}
