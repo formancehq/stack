@@ -16,6 +16,8 @@ jobs:
       - uses: cachix/install-nix-action@v31
       - name: Build OpenAPI spec and events
         run: nix develop --impure --command just build ${{github.ref_name}}
+        env:
+          SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
       - name: Create Release
         run: gh release create ${{github.ref_name}} --generate-notes
         env:
