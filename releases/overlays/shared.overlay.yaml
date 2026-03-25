@@ -14,3 +14,21 @@ actions:
     update:
       security:
         - {}
+
+  # Fix ledger_V2QueryParams.sort: replace $ref with inline definition
+  - target: $.components.schemas.ledger_V2QueryParams.properties.sort
+    update:
+      type: string
+      description: |
+        Sort results using a field name and order (ascending or descending).
+        Format: `<field>:<order>`, where `<field>` is the field name and `<order>` is either `asc` or `desc`.
+      example: "id:desc"
+  - target: $.components.schemas.ledger_V2QueryParams.properties.sort.$ref
+    remove: true
+
+  # Speakeasy error handling
+  - target: $.paths
+    update:
+      x-speakeasy-errors:
+        statusCodes:
+          - default

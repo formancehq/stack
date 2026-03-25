@@ -7,21 +7,15 @@ permissions:
   contents: write
 
 jobs:
-  OpenAPI:
+  Release:
     runs-on: "ubuntu-latest"
     steps:
-      - uses: earthly/actions-setup@v1
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          version: "latest"
       - uses: "actions/checkout@v4"
         with:
           fetch-depth: 0
-      - name: Setup Env
-        uses: ./.github/actions/env
-      - name: Generate OpenAPI final specification
-        run: >
-          earthly +build-final-spec --version=${{github.ref_name}}
+      - uses: cachix/install-nix-action@v31
+      - name: Build OpenAPI spec and events
+        run: nix develop --impure --command just build ${{github.ref_name}}
       - name: Create Release
         run: gh release create ${{github.ref_name}} --generate-notes
         env:
@@ -32,12 +26,7 @@ jobs:
           gh release upload ${{github.ref_name}} ./events/generated/all.json#events.json
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  publish-registry:
-    needs: OpenAPI
-    uses: speakeasy-api/sdk-generation-action/.github/workflows/tag.yaml@v15
-    with:
-      registry_tags: ${{ github.ref_name }}
-    secrets:
-      github_access_token: ${{ secrets.GITHUB_TOKEN }}
-      speakeasy_api_key: ${{ secrets.SPEAKEASY_API_KEY }}
+      - name: Publish OpenAPI to Speakeasy Registry
+        run: nix develop --impure --command speakeasy run -s all --registry-tags ${{github.ref_name}},LATEST_RELEASE
+        env:
+          SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}

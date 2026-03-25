@@ -1,12 +1,12 @@
-speakeasyVersion: 1.755.0
+speakeasyVersion: 1.759.2
 sources:
     stacks-source:
         sourceNamespace: stacks-source
-        sourceRevisionDigest: sha256:5f3efcd6d57a3d10c6117dc8652e196b181e1535d33294062cfb5f997c8abff0
-        sourceBlobDigest: sha256:9e907dbdf2d4f42763a7a8d9e384a155be7a9443e612fa924108231587f827ad
+        sourceRevisionDigest: sha256:55cacc53f19d56070c775a281f59a76932d9d24a1a20af46d16243cc2bef9fb1
+        sourceBlobDigest: sha256:3b3e29bfb7abe6a0e8e1cb9c0601add2558863329b78c6b4759d77ecd5602db7
         tags:
             - latest
-            - v0.0.0
+            - RECONCILIATION_VERSION
 targets: {}
 workflow:
     workflowVersion: 1.0.0
@@ -14,10 +14,28 @@ workflow:
     sources:
         stacks-source:
             inputs:
-                - location: ./releases/build/generate.json
+                - location: ./releases/base.yaml
+                - location: ./components/auth.openapi.yaml
+                  modelNamespace: auth
+                - location: ./components/gateway.openapi.yaml
+                  modelNamespace: gateway
+                - location: ./components/ledger.openapi.yaml
+                  modelNamespace: ledger
+                - location: ./components/payments.openapi.yaml
+                  modelNamespace: payments
+                - location: ./components/search.openapi.yaml
+                  modelNamespace: search
+                - location: ./components/webhooks.openapi.yaml
+                  modelNamespace: webhooks
+                - location: ./components/wallets.openapi.yaml
+                  modelNamespace: wallets
+                - location: ./components/orchestration.openapi.yaml
+                  modelNamespace: orchestration
+                - location: ./components/reconciliation.openapi.yaml
+                  modelNamespace: reconciliation
             overlays:
                 - location: ./releases/overlays/shared.overlay.yaml
-            output: ./releases/build/openapi-overlaid.yaml
+            output: ./releases/build/generate.json
             registry:
                 location: registry.speakeasyapi.dev/formance/formance/stacks-source
     targets: {}
