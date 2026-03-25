@@ -3,6 +3,11 @@ info:
   title: Shared overlay for Formance Stack OpenAPI spec
   version: 0.0.1
 actions:
+  # Restore info.version (overwritten by last-wins merge from component specs)
+  - target: $.info
+    update:
+      version: SDK_VERSION
+
   # Remove the NoAuthorization securityScheme definition (injected by component merge)
   - target: $.components.securitySchemes.NoAuthorization
     remove: true
