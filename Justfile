@@ -36,7 +36,7 @@ prepend-paths: download-specs
 # Build the merged OpenAPI spec using Speakeasy
 build-openapi version="v0.0.0": prepend-paths
     mkdir -p releases/build
-    speakeasy run -s all
+    speakeasy run -s all --skip-upload-spec
     cd releases && sed -i'' -e 's/SDK_VERSION/{{version}}/g' build/generate.json
 
 # Generate event schemas

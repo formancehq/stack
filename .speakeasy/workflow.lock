@@ -14,7 +14,6 @@ workflow:
     sources:
         stacks-source:
             inputs:
-                - location: ./releases/base.yaml
                 - location: ./components/auth.openapi.yaml
                   modelNamespace: auth
                 - location: ./components/gateway.openapi.yaml
@@ -33,6 +32,7 @@ workflow:
                   modelNamespace: orchestration
                 - location: ./components/reconciliation.openapi.yaml
                   modelNamespace: reconciliation
+                - location: ./releases/base.yaml
             overlays:
                 - location: ./releases/overlays/shared.overlay.yaml
             output: ./releases/build/generate.json
