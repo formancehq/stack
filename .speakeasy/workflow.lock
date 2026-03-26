@@ -2,11 +2,11 @@ speakeasyVersion: 1.759.2
 sources:
     stacks-source:
         sourceNamespace: stacks-source
-        sourceRevisionDigest: sha256:55cacc53f19d56070c775a281f59a76932d9d24a1a20af46d16243cc2bef9fb1
-        sourceBlobDigest: sha256:3b3e29bfb7abe6a0e8e1cb9c0601add2558863329b78c6b4759d77ecd5602db7
+        sourceRevisionDigest: sha256:9759a5b722fd64e2bba1328cb5dc0721bb585ab43981bd8e0cd37cb8c45a7e2c
+        sourceBlobDigest: sha256:a4c19e079552ce6285a89a01d183df722c4f2cc18cf9f941255f653ffc135c6c
         tags:
             - latest
-            - RECONCILIATION_VERSION
+            - SDK_VERSION
 targets: {}
 workflow:
     workflowVersion: 1.0.0
