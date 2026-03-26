@@ -31,6 +31,15 @@ actions:
   - target: $.components.schemas.ledger_V2QueryParams.properties.sort.$ref
     remove: true
 
+  # Fix Go import cycle: tag inline cursor objects with ledger namespace
+  # so Speakeasy keeps extracted types in the ledger package instead of operations
+  - target: $.components.schemas.ledger_V2ExportersCursorResponse.properties.cursor
+    update:
+      x-speakeasy-model-namespace: ledger
+  - target: $.components.schemas.ledger_V2PipelinesCursorResponse.properties.cursor
+    update:
+      x-speakeasy-model-namespace: ledger
+
   # Speakeasy error handling
   - target: $.paths
     update:
