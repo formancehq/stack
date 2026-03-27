@@ -1,30 +1,30 @@
 workflowVersion: 1.0.0
 speakeasyVersion: latest
 sources:
-  stacks-source:
-    inputs:
-      - location: ./components/auth.openapi.yaml
-        modelNamespace: auth
-      - location: ./components/gateway.openapi.yaml
-        modelNamespace: gateway
-      - location: ./components/ledger.openapi.yaml
-        modelNamespace: ledger
-      - location: ./components/payments.openapi.yaml
-        modelNamespace: payments
-      - location: ./components/search.openapi.yaml
-        modelNamespace: search
-      - location: ./components/webhooks.openapi.yaml
-        modelNamespace: webhooks
-      - location: ./components/wallets.openapi.yaml
-        modelNamespace: wallets
-      - location: ./components/orchestration.openapi.yaml
-        modelNamespace: orchestration
-      - location: ./components/reconciliation.openapi.yaml
-        modelNamespace: reconciliation
-      - location: ./releases/base.yaml
-    overlays:
-      - location: ./releases/overlays/shared.overlay.yaml
-    output: ./releases/build/generate.json
-    registry:
-      location: registry.speakeasyapi.dev/formance/formance/stacks-source
+    stacks-source:
+        inputs:
+            - location: ./components/auth.openapi.yaml
+              modelNamespace: auth
+            - location: ./components/gateway.openapi.yaml
+              modelNamespace: gateway
+            - location: ./components/ledger.openapi.yaml
+              modelNamespace: ledger
+            - location: ./components/payments.openapi.yaml
+              modelNamespace: payments
+            - location: ./components/search.openapi.yaml
+              modelNamespace: search
+            - location: ./components/webhooks.openapi.yaml
+              modelNamespace: webhooks
+            - location: ./components/wallets.openapi.yaml
+              modelNamespace: wallets
+            - location: ./components/orchestration.openapi.yaml
+              modelNamespace: orchestration
+            - location: ./components/reconciliation.openapi.yaml
+              modelNamespace: reconciliation
+            - location: ./releases/base.yaml
+        overlays:
+            - location: ./releases/overlays/shared.overlay.yaml
+        output: ./releases/build/generate.json
+        registry:
+            location: registry.speakeasyapi.dev/formance/formance/stacks-source
 targets: {}

@@ -1,5 +1,5 @@
 # Component versions
-LEDGER_VERSION := "v2.4.0"
+LEDGER_VERSION := "v2.4.3"
 PAYMENTS_VERSION := "v3.2.0"
 WALLETS_VERSION := "v2.1.5"
 WEBHOOKS_VERSION := "v2.2.0"

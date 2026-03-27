@@ -1,9 +1,9 @@
-speakeasyVersion: 1.759.2
+speakeasyVersion: 1.759.3
 sources:
     stacks-source:
         sourceNamespace: stacks-source
-        sourceRevisionDigest: sha256:9759a5b722fd64e2bba1328cb5dc0721bb585ab43981bd8e0cd37cb8c45a7e2c
-        sourceBlobDigest: sha256:a4c19e079552ce6285a89a01d183df722c4f2cc18cf9f941255f653ffc135c6c
+        sourceRevisionDigest: sha256:cbe386daae9f188190ef706592b7d8f47d08842b64db2b7425a5f26192c3b80d
+        sourceBlobDigest: sha256:43596c6d78adb93167d2c34236981efe1f1ed199738110e3e2e9f2b194128db5
         tags:
             - latest
             - SDK_VERSION
@@ -14,7 +14,6 @@ workflow:
     sources:
         stacks-source:
             inputs:
-                - location: ./releases/base.yaml
                 - location: ./components/auth.openapi.yaml
                   modelNamespace: auth
                 - location: ./components/gateway.openapi.yaml
@@ -33,6 +32,7 @@ workflow:
                   modelNamespace: orchestration
                 - location: ./components/reconciliation.openapi.yaml
                   modelNamespace: reconciliation
+                - location: ./releases/base.yaml
             overlays:
                 - location: ./releases/overlays/shared.overlay.yaml
             output: ./releases/build/generate.json
