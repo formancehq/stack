@@ -61,13 +61,6 @@ components:
           tokenUrl: "/api/auth/oauth/token"
           refreshUrl: "/api/auth/oauth/token"
           scopes: {}
-    NoAuthorization:
-      type: oauth2
-      flows:
-        clientCredentials:
-          tokenUrl: "/api/auth/oauth/token"
-          refreshUrl: "/api/auth/oauth/token"
-          scopes: {}
 
 x-tagGroups:
   - name: Auth

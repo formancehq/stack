@@ -27,10 +27,10 @@ worktrees
 .env
 
 
-# Earthly
-.tmp-earthly-out
+# Downloaded OpenAPI specs
+components/
 .DS_Store
-openapi/node_modules
+node_modules/
 
 
 .kubeconfig

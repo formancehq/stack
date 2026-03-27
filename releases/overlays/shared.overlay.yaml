@@ -1,0 +1,48 @@
+overlay: 1.0.0
+info:
+  title: Shared overlay for Formance Stack OpenAPI spec
+  version: 0.0.1
+actions:
+  # Restore info.version (overwritten by last-wins merge from component specs)
+  - target: $.info
+    update:
+      version: SDK_VERSION
+
+  # Remove the NoAuthorization securityScheme definition (injected by component merge)
+  - target: $.components.securitySchemes.NoAuthorization
+    remove: true
+
+  # Remove existing security on GET /versions and replace with empty requirement
+  - target: $.paths['/versions'].get.security
+    remove: true
+  - target: $.paths['/versions'].get
+    update:
+      security:
+        - {}
+
+  # Fix ledger_V2QueryParams.sort: replace $ref with inline definition
+  - target: $.components.schemas.ledger_V2QueryParams.properties.sort
+    update:
+      type: string
+      description: |
+        Sort results using a field name and order (ascending or descending).
+        Format: `<field>:<order>`, where `<field>` is the field name and `<order>` is either `asc` or `desc`.
+      example: "id:desc"
+  - target: $.components.schemas.ledger_V2QueryParams.properties.sort.$ref
+    remove: true
+
+  # Fix Go import cycle: tag inline cursor objects with ledger namespace
+  # so Speakeasy keeps extracted types in the ledger package instead of operations
+  - target: $.components.schemas.ledger_V2ExportersCursorResponse.properties.cursor
+    update:
+      x-speakeasy-model-namespace: ledger
+  - target: $.components.schemas.ledger_V2PipelinesCursorResponse.properties.cursor
+    update:
+      x-speakeasy-model-namespace: ledger
+
+  # Speakeasy error handling
+  - target: $.paths
+    update:
+      x-speakeasy-errors:
+        statusCodes:
+          - default
