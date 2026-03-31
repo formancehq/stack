@@ -27,4 +27,64 @@ sources:
         output: ./releases/build/generate.json
         registry:
             location: registry.speakeasyapi.dev/formance/formance/stacks-source
-targets: {}
+targets:
+    csharp-sdk:
+        target: csharp
+        source: stacks-source
+        output: ./sdks/csharp
+        codeSamples:
+            registry:
+                location: registry.speakeasyapi.dev/formance/formance/stacks-source-csharp-code-samples
+            labelOverride:
+                fixedValue: Csharp (SDK)
+            blocking: false
+    go-sdk:
+        target: go
+        source: stacks-source
+        output: ./sdks/go
+        codeSamples:
+            registry:
+                location: registry.speakeasyapi.dev/formance/formance/stacks-source-go-code-samples
+            labelOverride:
+                fixedValue: Go (SDK)
+            blocking: false
+    java-sdk:
+        target: java
+        source: stacks-source
+        output: ./sdks/java
+        codeSamples:
+            registry:
+                location: registry.speakeasyapi.dev/formance/formance/stacks-source-java-code-samples
+            labelOverride:
+                fixedValue: Java (SDK)
+            blocking: false
+    php-sdk:
+        target: php
+        source: stacks-source
+        output: ./sdks/php
+        codeSamples:
+            registry:
+                location: registry.speakeasyapi.dev/formance/formance/stacks-source-php-code-samples
+            labelOverride:
+                fixedValue: Php (SDK)
+            blocking: false
+    python-sdk:
+        target: python
+        source: stacks-source
+        output: ./sdks/python
+        codeSamples:
+            registry:
+                location: registry.speakeasyapi.dev/formance/formance/stacks-source-python-code-samples
+            labelOverride:
+                fixedValue: Python (SDK)
+            blocking: false
+    typescript-sdk:
+        target: typescript
+        source: stacks-source
+        output: ./sdks/typescript
+        codeSamples:
+            registry:
+                location: registry.speakeasyapi.dev/formance/formance/stacks-source-typescript-code-samples
+            labelOverride:
+                fixedValue: Typescript (SDK)
+            blocking: false
