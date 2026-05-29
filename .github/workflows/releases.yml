@@ -21,7 +21,6 @@ jobs:
       - name: Generate changelog
         run: bash .github/scripts/generate-changelog.sh
         env:
-          GH_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           OUTPUT_FILE: /tmp/changelog.md
       - name: Create Release
         run: gh release create ${{github.ref_name}} --notes-file /tmp/changelog.md
