@@ -18,8 +18,12 @@ jobs:
         run: nix develop --impure --command just build ${{github.ref_name}}
         env:
           SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
+      - name: Generate changelog
+        run: bash .github/scripts/generate-changelog.sh
+        env:
+          OUTPUT_FILE: /tmp/changelog.md
       - name: Create Release
-        run: gh release create ${{github.ref_name}} --generate-notes
+        run: gh release create ${{github.ref_name}} --notes-file /tmp/changelog.md
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Add the OpenAPI file to the release assets
