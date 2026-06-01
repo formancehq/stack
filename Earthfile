@@ -21,7 +21,7 @@ sources:
 
 build-final-spec:
     FROM core+base-image
-    RUN apk update && apk add yarn nodejs npm jq
+    RUN apk update && apk add yarn nodejs npm jq yq
     WORKDIR /src/releases
     COPY releases/package.* .
     RUN npm install
@@ -41,6 +41,9 @@ build-final-spec:
     COPY (wallets+openapi/openapi.yaml) /src/ee/wallets/
     COPY (reconciliation+openapi/openapi.yaml) /src/ee/reconciliation/
     COPY (orchestration+openapi/openapi.yaml) /src/ee/orchestration/
+
+    # Strip component-level servers blocks so only base.yaml servers survive the merge
+    RUN find /src/components /src/ee -name 'openapi.yaml' -exec yq -i 'del(.servers)' {} \;
 
     RUN npm run build
     RUN jq -s '.[0] * .[1]' build/generate.json openapi-overlay.json > build/latest.json
