@@ -33,8 +33,12 @@ prepend-paths: download-specs
     yq -i '.paths |= (to_entries | map(select(.key == "/*").key = "/api/orchestration" + .key) | from_entries)' components/orchestration.openapi.yaml
     yq -i '.paths |= (to_entries | map(select(.key == "/*").key = "/api/reconciliation" + .key) | from_entries)' components/reconciliation.openapi.yaml
 
+# Strip component-level servers blocks so only base.yaml servers survive the merge
+strip-servers: prepend-paths
+    for f in components/*.openapi.yaml; do yq -i 'del(.servers)' "$f"; done
+
 # Build the merged OpenAPI spec using Speakeasy
-build-openapi version="v0.0.0": prepend-paths
+build-openapi version="v0.0.0": strip-servers
     mkdir -p releases/build
     speakeasy run -s all
     cd releases && sed -i'' -e 's/SDK_VERSION/{{version}}/g' build/generate.json
