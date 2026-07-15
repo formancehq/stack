@@ -1,9 +1,9 @@
-speakeasyVersion: 1.768.2
+speakeasyVersion: 1.790.1
 sources:
     stacks-source:
         sourceNamespace: stacks-source
-        sourceRevisionDigest: sha256:45c10ea1febd1e251f079e49a7b0517f74e6b8b5416e12daf850cd551347688a
-        sourceBlobDigest: sha256:c4a8e0d72bb2f338b2195495b4cd51647e3cbb8f4bf161a3b8370eb33e2511be
+        sourceRevisionDigest: sha256:29bcc13579975f77dd3c03533a712fe17b643af1c516b86f4a499f42856f32b7
+        sourceBlobDigest: sha256:78f47f273db89d72d6e74f2f284483f751ee4449fb7f46efadc4525882a6f955
         tags:
             - latest
             - SDK_VERSION

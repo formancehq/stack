@@ -1,6 +1,6 @@
 # Component versions
 LEDGER_VERSION := "v2.4.6"
-PAYMENTS_VERSION := "v3.3.0"
+PAYMENTS_VERSION := "v3.4.0"
 WALLETS_VERSION := "v2.1.5"
 WEBHOOKS_VERSION := "v2.3.2"
 AUTH_VERSION := "v2.4.3"
@@ -12,15 +12,15 @@ GATEWAY_VERSION := "v2.2.0"
 # Download all component OpenAPI specs from GitHub releases
 download-specs:
     mkdir -p components
-    wget -q https://github.com/formancehq/ledger/releases/download/{{LEDGER_VERSION}}/openapi.yaml -O components/ledger.openapi.yaml
-    wget -q https://github.com/formancehq/payments/releases/download/{{PAYMENTS_VERSION}}/openapi.yaml -O components/payments.openapi.yaml
-    wget -q https://github.com/formancehq/gateway/releases/download/{{GATEWAY_VERSION}}/openapi.yaml -O components/gateway.openapi.yaml
-    wget -q https://github.com/formancehq/auth/releases/download/{{AUTH_VERSION}}/openapi.yaml -O components/auth.openapi.yaml
-    wget -q https://github.com/formancehq/search/releases/download/{{SEARCH_VERSION}}/openapi.yaml -O components/search.openapi.yaml
-    wget -q https://github.com/formancehq/webhooks/releases/download/{{WEBHOOKS_VERSION}}/openapi.yaml -O components/webhooks.openapi.yaml
-    wget -q https://github.com/formancehq/wallets/releases/download/{{WALLETS_VERSION}}/openapi.yaml -O components/wallets.openapi.yaml
-    wget -q https://github.com/formancehq/reconciliation/releases/download/{{RECONCILIATION_VERSION}}/openapi.yaml -O components/reconciliation.openapi.yaml
-    wget -q https://github.com/formancehq/flows/releases/download/{{ORCHESTRATION_VERSION}}/openapi.yaml -O components/orchestration.openapi.yaml
+    wget -q https://github.com/formancehq/ledger/releases/download/{{ LEDGER_VERSION }}/openapi.yaml -O components/ledger.openapi.yaml
+    wget -q https://github.com/formancehq/payments/releases/download/{{ PAYMENTS_VERSION }}/openapi.yaml -O components/payments.openapi.yaml
+    wget -q https://github.com/formancehq/gateway/releases/download/{{ GATEWAY_VERSION }}/openapi.yaml -O components/gateway.openapi.yaml
+    wget -q https://github.com/formancehq/auth/releases/download/{{ AUTH_VERSION }}/openapi.yaml -O components/auth.openapi.yaml
+    wget -q https://github.com/formancehq/search/releases/download/{{ SEARCH_VERSION }}/openapi.yaml -O components/search.openapi.yaml
+    wget -q https://github.com/formancehq/webhooks/releases/download/{{ WEBHOOKS_VERSION }}/openapi.yaml -O components/webhooks.openapi.yaml
+    wget -q https://github.com/formancehq/wallets/releases/download/{{ WALLETS_VERSION }}/openapi.yaml -O components/wallets.openapi.yaml
+    wget -q https://github.com/formancehq/reconciliation/releases/download/{{ RECONCILIATION_VERSION }}/openapi.yaml -O components/reconciliation.openapi.yaml
+    wget -q https://github.com/formancehq/flows/releases/download/{{ ORCHESTRATION_VERSION }}/openapi.yaml -O components/orchestration.openapi.yaml
 
 # Prepend API path prefix to each component spec
 prepend-paths: download-specs
@@ -41,7 +41,7 @@ strip-servers: prepend-paths
 build-openapi version="v0.0.0": strip-servers
     mkdir -p releases/build
     speakeasy run -s all
-    cd releases && sed -i'' -e 's/SDK_VERSION/{{version}}/g' build/generate.json
+    cd releases && sed -i'' -e 's/SDK_VERSION/{{ version }}/g' build/generate.json
 
 # Generate event schemas
 generate-events:
@@ -53,7 +53,7 @@ build version="v0.0.0": (build-openapi version) generate-events
 
 # Publish OpenAPI spec to Speakeasy Registry
 publish-speakeasy version: prepend-paths
-    speakeasy run -s all --registry-tags {{version}},LATEST_RELEASE
+    speakeasy run -s all --registry-tags {{ version }},LATEST_RELEASE
 
 # Pre-commit: build spec and generate events
-pre-commit: (build-openapi) generate-events
+pre-commit: build-openapi generate-events
