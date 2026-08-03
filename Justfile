@@ -1,20 +1,20 @@
 # Component versions
-LEDGER_VERSION := "v2.4.6"
+LEDGER_VERSION := "v2.4.12"
 PAYMENTS_VERSION := "v3.4.0"
-WALLETS_VERSION := "v2.1.5"
-WEBHOOKS_VERSION := "v2.3.2"
-AUTH_VERSION := "v2.4.3"
+WALLETS_VERSION := "v2.2.0"
+WEBHOOKS_VERSION := "v2.5.0"
+AUTH_VERSION := "v2.5.0"
 SEARCH_VERSION := "v2.1.0"
 ORCHESTRATION_VERSION := "v2.6.0"
-RECONCILIATION_VERSION := "v2.2.2"
-GATEWAY_VERSION := "v2.2.0"
+RECONCILIATION_VERSION := "v2.4.0"
+GATEWAY_VERSION := "v2.3.1"
 
 # Download all component OpenAPI specs from GitHub releases
 download-specs:
     mkdir -p components
     wget -q https://github.com/formancehq/ledger/releases/download/{{ LEDGER_VERSION }}/openapi.yaml -O components/ledger.openapi.yaml
     wget -q https://github.com/formancehq/payments/releases/download/{{ PAYMENTS_VERSION }}/openapi.yaml -O components/payments.openapi.yaml
-    wget -q https://github.com/formancehq/gateway/releases/download/{{ GATEWAY_VERSION }}/openapi.yaml -O components/gateway.openapi.yaml
+    wget -q https://raw.githubusercontent.com/formancehq/gateway/{{ GATEWAY_VERSION }}/openapi.yaml -O components/gateway.openapi.yaml
     wget -q https://github.com/formancehq/auth/releases/download/{{ AUTH_VERSION }}/openapi.yaml -O components/auth.openapi.yaml
     wget -q https://github.com/formancehq/search/releases/download/{{ SEARCH_VERSION }}/openapi.yaml -O components/search.openapi.yaml
     wget -q https://github.com/formancehq/webhooks/releases/download/{{ WEBHOOKS_VERSION }}/openapi.yaml -O components/webhooks.openapi.yaml
