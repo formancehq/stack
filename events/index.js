@@ -24,5 +24,11 @@ const yaml = require('yaml');
     }
 
     console.log(aggregated);
-    await fs.writeFile('generated/all.json', JSON.stringify(aggregated, null, 2));
+    const aggregatedJSON = JSON.stringify(aggregated, null, 2);
+    await fs.writeFile('generated/all.json', aggregatedJSON);
+
+    // Keep the legacy location in sync while existing consumers (notably the
+    // Platform UI) still fetch the event catalogue from libs/events.
+    await fs.mkdir('../libs/events/generated', { recursive: true });
+    await fs.writeFile('../libs/events/generated/all.json', aggregatedJSON);
 })();

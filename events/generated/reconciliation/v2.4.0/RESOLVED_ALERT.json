@@ -1,0 +1,267 @@
+{
+  "type": "object",
+  "properties": {
+    "app": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "type": {
+      "type": "string"
+    },
+    "ledger": {
+      "type": "string"
+    },
+    "payload": {
+      "type": "object",
+      "required": [
+        "alert",
+        "event"
+      ],
+      "properties": {
+        "alert": {
+          "type": "object",
+          "required": [
+            "id",
+            "ruleID",
+            "fingerprint",
+            "periodID",
+            "status",
+            "severity",
+            "firstSeenAt",
+            "lastSeenAt",
+            "occurrenceCount",
+            "lastEvaluationID",
+            "createdAt",
+            "updatedAt"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "ruleID": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "fingerprint": {
+              "type": "string"
+            },
+            "periodID": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "OPEN",
+                "ACKNOWLEDGED",
+                "RESOLVED"
+              ]
+            },
+            "severity": {
+              "type": "string",
+              "enum": [
+                "info",
+                "low",
+                "medium",
+                "high",
+                "critical"
+              ]
+            },
+            "firstSeenAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "lastSeenAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "occurrenceCount": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "lastEvaluationID": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "evidence": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "ack": {
+              "type": "object",
+              "required": [
+                "by",
+                "at"
+              ],
+              "properties": {
+                "by": {
+                  "type": "string"
+                },
+                "at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "note": {
+                  "type": "string"
+                }
+              }
+            },
+            "resolution": {
+              "type": "object",
+              "required": [
+                "kind",
+                "by",
+                "at"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "auto",
+                    "fixed_by_booking",
+                    "accepted_by_business"
+                  ]
+                },
+                "by": {
+                  "type": "string"
+                },
+                "at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "note": {
+                  "type": "string"
+                },
+                "transactionRefs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "evidenceSnapshot": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            },
+            "snooze": {
+              "type": "object",
+              "required": [
+                "until",
+                "by",
+                "at"
+              ],
+              "properties": {
+                "until": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "by": {
+                  "type": "string"
+                },
+                "at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "note": {
+                  "type": "string"
+                }
+              }
+            },
+            "labels": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "event": {
+          "type": "object",
+          "required": [
+            "id",
+            "alertID",
+            "type",
+            "newStatus",
+            "notify",
+            "at",
+            "createdAt"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "alertID": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "evaluationID": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "pass",
+                "resolve"
+              ]
+            },
+            "prevStatus": {
+              "type": "string",
+              "enum": [
+                "OPEN",
+                "ACKNOWLEDGED",
+                "RESOLVED"
+              ]
+            },
+            "newStatus": {
+              "type": "string",
+              "enum": [
+                "OPEN",
+                "ACKNOWLEDGED",
+                "RESOLVED"
+              ]
+            },
+            "payload": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "notify": {
+              "type": "boolean"
+            },
+            "at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "date",
+    "app",
+    "version",
+    "type",
+    "payload"
+  ]
+}
