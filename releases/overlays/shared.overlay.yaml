@@ -40,6 +40,28 @@ actions:
     update:
       x-speakeasy-model-namespace: ledger
 
+  # Keep infrastructure endpoints in the declared Ledger v2 tag group
+  - target: $.paths['/api/ledger/_/info'].get.tags[0]
+    remove: true
+  - target: $.paths['/api/ledger/_/info'].get.tags
+    update:
+      - ledger.v2
+  - target: $.paths['/api/ledger/_/metrics'].get.tags[0]
+    remove: true
+  - target: $.paths['/api/ledger/_/metrics'].get.tags
+    update:
+      - ledger.v2
+
+  # Remove an orphaned Auth schema that is not referenced by any operation
+  - target: $.components.schemas.auth_Scope
+    remove: true
+  - target: $.components.schemas.auth_ScopeOptions
+    remove: true
+
+  # Remove the duplicated FAILED value from the legacy payment status enum
+  - target: $.components.schemas.payments_LegacyPaymentStatus.enum[14]
+    remove: true
+
   # Treat all HTTP error responses as errors. Component specs contribute their
   # own defaults during merge, so remove the merged value before replacing it.
   - target: $.paths.x-speakeasy-errors
