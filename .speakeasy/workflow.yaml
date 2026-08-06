@@ -24,6 +24,7 @@ sources:
             - location: ./releases/base.yaml
         overlays:
             - location: ./releases/overlays/shared.overlay.yaml
+            - location: ./releases/overlays/generated.overlay.json
         output: ./releases/build/generate.json
         registry:
             location: registry.speakeasyapi.dev/formance/formance/stacks-source

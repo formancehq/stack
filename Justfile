@@ -37,11 +37,31 @@ prepend-paths: download-specs
 strip-servers: prepend-paths
     for f in components/*.openapi.yaml; do yq -i 'del(.servers)' "$f"; done
 
+# Generate namespace-aware composition fixes from the configured inputs.
+generate-composition-overlay: strip-servers
+    mkdir -p releases/build
+    bash .github/scripts/generate-composition-overlay.sh
+
 # Build the merged OpenAPI spec using Speakeasy
-build-openapi version="v0.0.0": strip-servers
+build-openapi version="v0.0.0": generate-composition-overlay
     mkdir -p releases/build
     speakeasy run -s all
     cd releases && sed -i'' -e 's/SDK_VERSION/{{ version }}/g' build/generate.json
+    just validate-openapi
+
+# Validate invariants introduced by composing namespaced OpenAPI documents.
+validate-openapi:
+    # Every local discriminator mapping must resolve to an existing schema.
+    jq -e '.components.schemas as $schemas | [ $schemas | .. | objects | select(.discriminator.mapping? != null) | .discriminator.mapping[] | select(type == "string" and startswith("#/components/schemas/")) | sub("^#/components/schemas/"; "") | select($schemas[.] == null) ] | length == 0' releases/build/generate.json >/dev/null
+    # Ledger query-template helpers rely on these resource constants.
+    jq -e '[.components.schemas.ledger_V2QueryParams.oneOf[].properties.resource | select(.const == null or .enum != null)] | length == 0' releases/build/generate.json >/dev/null
+    # Error responses must not be generated as successful response variants.
+    test "$(jq -c '.paths["x-speakeasy-errors"].statusCodes' releases/build/generate.json)" = '["4XX","5XX","default"]'
+    # Every operation tag must be declared globally.
+    jq -e '[.tags[].name] as $tags | [.paths[] | to_entries[] | select(.key | IN("get", "post", "put", "patch", "delete", "options", "head", "trace")) | .value.tags[]? | select(. as $tag | $tags | index($tag) == null)] | length == 0' releases/build/generate.json >/dev/null
+    # Composition cleanups must remain applied when component specs change.
+    jq -e '.components.schemas.auth_Scope == null and .components.schemas.auth_ScopeOptions == null' releases/build/generate.json >/dev/null
+    jq -e '[.. | objects | select(.enum? != null) | .enum | select(length != (unique | length))] | length == 0' releases/build/generate.json >/dev/null
 
 # Generate event schemas
 generate-events:
@@ -52,7 +72,7 @@ generate-events:
 build version="v0.0.0": (build-openapi version) generate-events
 
 # Publish OpenAPI spec to Speakeasy Registry
-publish-speakeasy version: prepend-paths
+publish-speakeasy version: generate-composition-overlay
     speakeasy run -s all --registry-tags {{ version }},LATEST_RELEASE
 
 # Pre-commit: build spec and generate events

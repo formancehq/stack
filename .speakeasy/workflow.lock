@@ -1,9 +1,9 @@
-speakeasyVersion: 1.791.1
+speakeasyVersion: 1.791.4
 sources:
     stacks-source:
         sourceNamespace: stacks-source
-        sourceRevisionDigest: sha256:6c3c89b43c0d8a0f2fecf34ff86937fc61d691088dc23ac99c12b455daefb396
-        sourceBlobDigest: sha256:13724b4f3a2771b9912c10beaaecd2e73b3ca8203d7f7b40cadaca7014f45994
+        sourceRevisionDigest: sha256:1d9e07120ee16749020c103aba5ef1de0601f8ee52ff065d000a1e651521898e
+        sourceBlobDigest: sha256:29450b93df4a9523bbe1b02552a402098ed562fe9fae90ccacfa55994fee806f
         tags:
             - latest
             - SDK_VERSION
@@ -35,6 +35,7 @@ workflow:
                 - location: ./releases/base.yaml
             overlays:
                 - location: ./releases/overlays/shared.overlay.yaml
+                - location: ./releases/overlays/generated.overlay.json
             output: ./releases/build/generate.json
             registry:
                 location: registry.speakeasyapi.dev/formance/formance/stacks-source

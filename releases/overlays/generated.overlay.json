@@ -1,0 +1,133 @@
+{
+  "overlay": "1.0.0",
+  "info": {
+    "title": "Generated namespace fixes for the Formance Stack OpenAPI spec",
+    "version": "0.0.1"
+  },
+  "actions": [
+    {
+      "target": "$.components.schemas[\"ledger_V2BulkElement\"].discriminator.mapping",
+      "update": {
+        "CREATE_TRANSACTION": "#/components/schemas/ledger_V2BulkElementCreateTransaction",
+        "ADD_METADATA": "#/components/schemas/ledger_V2BulkElementAddMetadata",
+        "REVERT_TRANSACTION": "#/components/schemas/ledger_V2BulkElementRevertTransaction",
+        "DELETE_METADATA": "#/components/schemas/ledger_V2BulkElementDeleteMetadata"
+      }
+    },
+    {
+      "target": "$.components.schemas[\"ledger_V2BulkElementResult\"].discriminator.mapping",
+      "update": {
+        "CREATE_TRANSACTION": "#/components/schemas/ledger_V2BulkElementResultCreateTransaction",
+        "ADD_METADATA": "#/components/schemas/ledger_V2BulkElementResultAddMetadata",
+        "REVERT_TRANSACTION": "#/components/schemas/ledger_V2BulkElementResultRevertTransaction",
+        "DELETE_METADATA": "#/components/schemas/ledger_V2BulkElementResultDeleteMetadata",
+        "ERROR": "#/components/schemas/ledger_V2BulkElementResultError"
+      }
+    },
+    {
+      "target": "$.components.schemas[\"ledger_V2QueryParams\"].oneOf[0].properties.resource.enum",
+      "remove": true
+    },
+    {
+      "target": "$.components.schemas[\"ledger_V2QueryParams\"].oneOf[0].properties.resource",
+      "update": {
+        "const": "accounts"
+      }
+    },
+    {
+      "target": "$.components.schemas[\"ledger_V2QueryParams\"].oneOf[1].properties.resource.enum",
+      "remove": true
+    },
+    {
+      "target": "$.components.schemas[\"ledger_V2QueryParams\"].oneOf[1].properties.resource",
+      "update": {
+        "const": "transactions"
+      }
+    },
+    {
+      "target": "$.components.schemas[\"ledger_V2QueryParams\"].oneOf[2].properties.resource.enum",
+      "remove": true
+    },
+    {
+      "target": "$.components.schemas[\"ledger_V2QueryParams\"].oneOf[2].properties.resource",
+      "update": {
+        "const": "logs"
+      }
+    },
+    {
+      "target": "$.components.schemas[\"ledger_V2QueryParams\"].oneOf[3].properties.resource.enum",
+      "remove": true
+    },
+    {
+      "target": "$.components.schemas[\"ledger_V2QueryParams\"].oneOf[3].properties.resource",
+      "update": {
+        "const": "volumes"
+      }
+    },
+    {
+      "target": "$.components.schemas[\"payments_ConnectorConfig\"].discriminator.mapping",
+      "update": {
+        "Stripe": "#/components/schemas/payments_StripeConfig",
+        "Dummypay": "#/components/schemas/payments_DummyPayConfig",
+        "Wise": "#/components/schemas/payments_WiseConfig",
+        "Modulr": "#/components/schemas/payments_ModulrConfig",
+        "Currencycloud": "#/components/schemas/payments_CurrencyCloudConfig",
+        "Bankingcircle": "#/components/schemas/payments_BankingCircleConfig",
+        "Mangopay": "#/components/schemas/payments_MangoPayConfig",
+        "Moneycorp": "#/components/schemas/payments_MoneycorpConfig",
+        "Atlar": "#/components/schemas/payments_AtlarConfig",
+        "Adyen": "#/components/schemas/payments_AdyenConfig",
+        "Generic": "#/components/schemas/payments_GenericConfig"
+      }
+    },
+    {
+      "target": "$.components.schemas[\"payments_V3ConnectorConfig\"].discriminator.mapping",
+      "update": {
+        "Adyen": "#/components/schemas/payments_V3AdyenConfig",
+        "Atlar": "#/components/schemas/payments_V3AtlarConfig",
+        "Bankingbridge": "#/components/schemas/payments_V3BankingbridgeConfig",
+        "Bankingcircle": "#/components/schemas/payments_V3BankingcircleConfig",
+        "Bitstamp": "#/components/schemas/payments_V3BitstampConfig",
+        "Coinbaseprime": "#/components/schemas/payments_V3CoinbaseprimeConfig",
+        "Column": "#/components/schemas/payments_V3ColumnConfig",
+        "Currencycloud": "#/components/schemas/payments_V3CurrencycloudConfig",
+        "Dummypay": "#/components/schemas/payments_V3DummypayConfig",
+        "Fireblocks": "#/components/schemas/payments_V3FireblocksConfig",
+        "Generic": "#/components/schemas/payments_V3GenericConfig",
+        "Increase": "#/components/schemas/payments_V3IncreaseConfig",
+        "Krakenpro": "#/components/schemas/payments_V3KrakenproConfig",
+        "Mangopay": "#/components/schemas/payments_V3MangopayConfig",
+        "Modulr": "#/components/schemas/payments_V3ModulrConfig",
+        "Moneycorp": "#/components/schemas/payments_V3MoneycorpConfig",
+        "Plaid": "#/components/schemas/payments_V3PlaidConfig",
+        "Powens": "#/components/schemas/payments_V3PowensConfig",
+        "Qonto": "#/components/schemas/payments_V3QontoConfig",
+        "Routable": "#/components/schemas/payments_V3RoutableConfig",
+        "Stripe": "#/components/schemas/payments_V3StripeConfig",
+        "Tink": "#/components/schemas/payments_V3TinkConfig",
+        "Wise": "#/components/schemas/payments_V3WiseConfig"
+      }
+    },
+    {
+      "target": "$.components.schemas[\"wallets_Subject\"].discriminator.mapping",
+      "update": {
+        "ACCOUNT": "#/components/schemas/wallets_LedgerAccountSubject",
+        "WALLET": "#/components/schemas/wallets_WalletSubject"
+      }
+    },
+    {
+      "target": "$.components.schemas[\"orchestration_Subject\"].discriminator.mapping",
+      "update": {
+        "ACCOUNT": "#/components/schemas/orchestration_LedgerAccountSubject",
+        "WALLET": "#/components/schemas/orchestration_WalletSubject"
+      }
+    },
+    {
+      "target": "$.components.schemas[\"orchestration_V2Subject\"].discriminator.mapping",
+      "update": {
+        "ACCOUNT": "#/components/schemas/orchestration_V2LedgerAccountSubject",
+        "WALLET": "#/components/schemas/orchestration_V2WalletSubject"
+      }
+    }
+  ]
+}
