@@ -62,14 +62,13 @@ actions:
   - target: $.components.schemas.payments_LegacyPaymentStatus.enum[14]
     remove: true
 
-  # Treat all HTTP error responses as errors. Component specs contribute their
-  # own defaults during merge, so remove the merged value before replacing it.
+  # Preserve each component's typed default error response. Global 4XX/5XX
+  # matchers take precedence over the default schema in generated SDKs and
+  # would turn structured API errors into generic SDK errors.
   - target: $.paths.x-speakeasy-errors
     remove: true
   - target: $.paths
     update:
       x-speakeasy-errors:
         statusCodes:
-          - 4XX
-          - 5XX
           - default
