@@ -42,6 +42,16 @@ build-openapi version="v0.0.0": strip-servers
     mkdir -p releases/build
     speakeasy run -s all
     cd releases && sed -i'' -e 's/SDK_VERSION/{{ version }}/g' build/generate.json
+    just validate-openapi
+
+# Validate invariants introduced by composing namespaced OpenAPI documents.
+validate-openapi:
+    # Every local discriminator mapping must resolve to an existing schema.
+    jq -e '.components.schemas as $schemas | [ $schemas | to_entries[] | select(.value.discriminator.mapping? != null) | .value.discriminator.mapping[] | select(startswith("#/components/schemas/")) | sub("^#/components/schemas/"; "") | select($schemas[.] == null) ] | length == 0' releases/build/generate.json >/dev/null
+    # Ledger query-template helpers rely on these resource constants.
+    test "$(jq -c '[.components.schemas.ledger_V2QueryParams.oneOf[].properties.resource.const]' releases/build/generate.json)" = '["accounts","transactions","logs","volumes"]'
+    # Error responses must not be generated as successful response variants.
+    test "$(jq -c '.paths["x-speakeasy-errors"].statusCodes' releases/build/generate.json)" = '["4XX","5XX","default"]'
 
 # Generate event schemas
 generate-events:
