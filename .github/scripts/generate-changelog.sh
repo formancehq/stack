@@ -18,20 +18,53 @@ ORCHESTRATION_VERSION=$(extract_version "ORCHESTRATION_VERSION")
 RECONCILIATION_VERSION=$(extract_version "RECONCILIATION_VERSION")
 GATEWAY_VERSION=$(extract_version "GATEWAY_VERSION")
 
+# component name | repo | version
+COMPONENTS=(
+  "Ledger|ledger|${LEDGER_VERSION}"
+  "Payments|payments|${PAYMENTS_VERSION}"
+  "Wallets|wallets|${WALLETS_VERSION}"
+  "Webhooks|webhooks|${WEBHOOKS_VERSION}"
+  "Auth|auth|${AUTH_VERSION}"
+  "Search|search|${SEARCH_VERSION}"
+  "Orchestration|flows|${ORCHESTRATION_VERSION}"
+  "Reconciliation|reconciliation|${RECONCILIATION_VERSION}"
+  "Gateway|gateway|${GATEWAY_VERSION}"
+)
+
+# Fetch the release notes body for a given component repo/tag from the public GitHub API.
+fetch_release_notes() {
+  local repo="$1" version="$2"
+  curl -fsSL \
+    -H "Accept: application/vnd.github+json" \
+    "https://api.github.com/repos/formancehq/${repo}/releases/tags/${version}" \
+    | jq -r '.body // ""' 2>/dev/null || true
+}
+
 {
   echo "## Component Versions"
   echo ""
   echo "| Component | Version | Changelog |"
   echo "|-----------|---------|-----------|"
-  echo "| Ledger | \`${LEDGER_VERSION}\` | [Release notes](https://github.com/formancehq/ledger/releases/tag/${LEDGER_VERSION}) |"
-  echo "| Payments | \`${PAYMENTS_VERSION}\` | [Release notes](https://github.com/formancehq/payments/releases/tag/${PAYMENTS_VERSION}) |"
-  echo "| Wallets | \`${WALLETS_VERSION}\` | [Release notes](https://github.com/formancehq/wallets/releases/tag/${WALLETS_VERSION}) |"
-  echo "| Webhooks | \`${WEBHOOKS_VERSION}\` | [Release notes](https://github.com/formancehq/webhooks/releases/tag/${WEBHOOKS_VERSION}) |"
-  echo "| Auth | \`${AUTH_VERSION}\` | [Release notes](https://github.com/formancehq/auth/releases/tag/${AUTH_VERSION}) |"
-  echo "| Search | \`${SEARCH_VERSION}\` | [Release notes](https://github.com/formancehq/search/releases/tag/${SEARCH_VERSION}) |"
-  echo "| Orchestration | \`${ORCHESTRATION_VERSION}\` | [Release notes](https://github.com/formancehq/flows/releases/tag/${ORCHESTRATION_VERSION}) |"
-  echo "| Reconciliation | \`${RECONCILIATION_VERSION}\` | [Release notes](https://github.com/formancehq/reconciliation/releases/tag/${RECONCILIATION_VERSION}) |"
-  echo "| Gateway | \`${GATEWAY_VERSION}\` | [Release notes](https://github.com/formancehq/gateway/releases/tag/${GATEWAY_VERSION}) |"
+  for entry in "${COMPONENTS[@]}"; do
+    IFS='|' read -r name repo version <<< "$entry"
+    echo "| ${name} | \`${version}\` | [Release notes](https://github.com/formancehq/${repo}/releases/tag/${version}) |"
+  done
+
+  echo ""
+  echo "## Product Changelog"
+
+  for entry in "${COMPONENTS[@]}"; do
+    IFS='|' read -r name repo version <<< "$entry"
+    echo ""
+    echo "### ${name} \`${version}\`"
+    echo ""
+    notes=$(fetch_release_notes "$repo" "$version")
+    if [ -n "$notes" ]; then
+      echo "$notes"
+    else
+      echo "_No release notes available._"
+    fi
+  done
 } > "$OUTPUT"
 
 echo "Changelog written to $OUTPUT"
