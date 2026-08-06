@@ -61,7 +61,7 @@ validate-openapi:
     jq -e '[.tags[].name] as $tags | [.paths[] | to_entries[] | select(.key | IN("get", "post", "put", "patch", "delete", "options", "head", "trace")) | .value.tags[]? | select(. as $tag | $tags | index($tag) == null)] | length == 0' releases/build/generate.json >/dev/null
     # Composition cleanups must remain applied when component specs change.
     jq -e '.components.schemas.auth_Scope == null and .components.schemas.auth_ScopeOptions == null' releases/build/generate.json >/dev/null
-    jq -e '[.components.schemas[] | .enum? // empty | select(length != (unique | length))] | length == 0' releases/build/generate.json >/dev/null
+    jq -e '[.. | objects | select(.enum? != null) | .enum | select(length != (unique | length))] | length == 0' releases/build/generate.json >/dev/null
 
 # Generate event schemas
 generate-events:
