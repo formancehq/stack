@@ -2,8 +2,8 @@ speakeasyVersion: 1.791.4
 sources:
     stacks-source:
         sourceNamespace: stacks-source
-        sourceRevisionDigest: sha256:cd7b762a74f4f135c22b7ed63c429980a185a75751f8b2925968c84691ea906d
-        sourceBlobDigest: sha256:c8258b5d360aa032cdb76b11afdd41303785ffd87c076b4d9c30bee69472add2
+        sourceRevisionDigest: sha256:63386e0de2492cf204e4fc939278e627a488687f6f0a26685810f5a8d08a796c
+        sourceBlobDigest: sha256:7654239aa54ec23ece2a055b35030708e91851bc2e476169a92d94380117e151
         tags:
             - latest
             - SDK_VERSION
@@ -35,6 +35,7 @@ workflow:
                 - location: ./releases/base.yaml
             overlays:
                 - location: ./releases/overlays/shared.overlay.yaml
+                - location: ./releases/overlays/generated.overlay.json
             output: ./releases/build/generate.json
             registry:
                 location: registry.speakeasyapi.dev/formance/formance/stacks-source
