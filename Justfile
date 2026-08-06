@@ -55,8 +55,8 @@ validate-openapi:
     jq -e '.components.schemas as $schemas | [ $schemas | .. | objects | select(.discriminator.mapping? != null) | .discriminator.mapping[] | select(type == "string" and startswith("#/components/schemas/")) | sub("^#/components/schemas/"; "") | select($schemas[.] == null) ] | length == 0' releases/build/generate.json >/dev/null
     # Ledger query-template helpers rely on these resource constants.
     jq -e '[.components.schemas.ledger_V2QueryParams.oneOf[].properties.resource | select(.const == null or .enum != null)] | length == 0' releases/build/generate.json >/dev/null
-    # Error responses must not be generated as successful response variants.
-    test "$(jq -c '.paths["x-speakeasy-errors"].statusCodes' releases/build/generate.json)" = '["4XX","5XX","default"]'
+    # Preserve typed default errors instead of shadowing them with generic range matchers.
+    test "$(jq -c '.paths["x-speakeasy-errors"].statusCodes' releases/build/generate.json)" = '["default"]'
     # Every operation tag must be declared globally.
     jq -e '[.tags[].name] as $tags | [.paths[] | to_entries[] | select(.key | IN("get", "post", "put", "patch", "delete", "options", "head", "trace")) | .value.tags[]? | select(. as $tag | $tags | index($tag) == null)] | length == 0' releases/build/generate.json >/dev/null
     # Composition cleanups must remain applied when component specs change.
