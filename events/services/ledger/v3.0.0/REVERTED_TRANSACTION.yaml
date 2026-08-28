@@ -1,0 +1,31 @@
+type: object
+properties:
+  type:
+    enum:
+      - REVERTED_TRANSACTION
+  log:
+    type: object
+    properties:
+      payload:
+        type: object
+        required:
+          - apply
+        properties:
+          apply:
+            allOf:
+              - $ref: "#/definitions/apply"
+              - type: object
+                properties:
+                  log:
+                    type: object
+                    properties:
+                      type:
+                        enum:
+                          - REVERTED_TRANSACTION
+                      data:
+                        type: object
+                        required:
+                          - revertedTransaction
+                        properties:
+                          revertedTransaction:
+                            $ref: "#/definitions/revertedTransaction"
