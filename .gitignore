@@ -41,3 +41,6 @@ node_modules/
 
 # Helm
 *.tgz
+
+# AI coding assistants
+CLAUDE.md
