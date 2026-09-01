@@ -6,6 +6,22 @@ Each "vX" folder contains a "base" folder that contains the base event format, w
 
 For example, an event with "type" == "SAVED_PAYMENT" and "app" == "payments" must have a payload matching schema in the file "payments/SAVED_PAYMENT.yaml".
 
+## Event Envelopes
+
+By default, event schemas are payload schemas composed with `base.yaml`, which
+describes the historical Stack envelope (`app`, `version`, `type`, `date`, and
+`payload`).
+
+A service version can define a complete, version-specific envelope in
+`services/<service>/<version>/base.yaml`. The generator composes each sibling
+event schema with that base through JSON Schema `allOf`; `base.yaml` is not
+published as an event type.
+
+Ledger v3 uses this mechanism because its NATS and Kafka sinks publish the same
+new envelope directly: `type`, `ledger`, `date`, `logSequence`, and the complete
+`log`. It does not contain the historical `app`, `version`, or `payload`
+properties.
+
 ## Payments Versions
 
 We decided to go with stack releases starting at v2.0.x.
