@@ -42,6 +42,7 @@ servers:
 tags:
   - name: ledger.v1
   - name: ledger.v2
+  - name: ledger.v3
   - name: payments.v1
   - name: payments.v3
   - name: auth.v1
@@ -70,6 +71,7 @@ x-tagGroups:
     tags:
       - ledger.v1
       - ledger.v2
+      - ledger.v3
   - name: Payments
     tags:
       - payments.v1

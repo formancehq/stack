@@ -8,6 +8,8 @@ sources:
             - location: ./components/gateway.openapi.yaml
               modelNamespace: gateway
             - location: ./components/ledger.openapi.yaml
+              modelNamespace: ledgerV3
+            - location: ./components/ledger-v2.openapi.yaml
               modelNamespace: ledger
             - location: ./components/payments.openapi.yaml
               modelNamespace: payments

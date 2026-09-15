@@ -1,10 +1,27 @@
 {
   "overlay": "1.0.0",
   "info": {
-    "title": "Generated namespace fixes for the Formance Stack OpenAPI spec",
+    "title": "Generated composition fixes for the Formance Stack OpenAPI spec",
     "version": "0.0.1"
   },
   "actions": [
+    {
+      "target": "$.info",
+      "update": {
+        "title": "Formance Stack API",
+        "description": "Open, modular foundation for unique payments flows\n\n# Introduction\nThis API is documented in **OpenAPI format**.\n\n# Authentication\nFormance Stack offers one forms of authentication:\n  - OAuth2\nOAuth2 - an open protocol to allow secure authorization in a simple\nand standard method from web, mobile and desktop applications.\n<SecurityDefinitions />\n",
+        "contact": {
+          "name": "Formance",
+          "url": "https://www.formance.com",
+          "email": "support@formance.com"
+        },
+        "x-logo": {
+          "url": "https://avatars.githubusercontent.com/u/84325077?s=200&v=4",
+          "altText": "Formance"
+        },
+        "version": "SDK_VERSION"
+      }
+    },
     {
       "target": "$.components.schemas[\"ledger_V2BulkElement\"].discriminator.mapping",
       "update": {
