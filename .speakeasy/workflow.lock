@@ -1,9 +1,9 @@
-speakeasyVersion: 1.796.4
+speakeasyVersion: 1.797.0
 sources:
     stacks-source:
         sourceNamespace: stacks-source
-        sourceRevisionDigest: sha256:e21e54e7818b64f5bd5b04dc7d0f16434b7d6cd22ec399eab0b8b4353ca72c21
-        sourceBlobDigest: sha256:bab4ef7cb2db033bdbfea628f9fa8831eea64b2990bdc91e35552809d3497e9b
+        sourceRevisionDigest: sha256:9df14dce9ad22e9a6989dda36e511ab3ce3973fcad5f1bbfce8118cc49f2e3e6
+        sourceBlobDigest: sha256:da34e684e433e7d236caa00e25f3a97d66ad660153d0201f78ffaecfde5b2b00
         tags:
             - latest
             - SDK_VERSION
@@ -19,6 +19,8 @@ workflow:
                 - location: ./components/gateway.openapi.yaml
                   modelNamespace: gateway
                 - location: ./components/ledger.openapi.yaml
+                  modelNamespace: ledgerV3
+                - location: ./components/ledger-v2.openapi.yaml
                   modelNamespace: ledger
                 - location: ./components/payments.openapi.yaml
                   modelNamespace: payments
