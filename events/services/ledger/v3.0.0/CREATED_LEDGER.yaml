@@ -1,0 +1,15 @@
+type: object
+properties:
+  type:
+    enum:
+      - CREATED_LEDGER
+  log:
+    type: object
+    properties:
+      payload:
+        type: object
+        required:
+          - createLedger
+        properties:
+          createLedger:
+            $ref: "#/definitions/createdLedger"

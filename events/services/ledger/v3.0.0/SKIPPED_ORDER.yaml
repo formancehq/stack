@@ -1,0 +1,26 @@
+type: object
+properties:
+  type:
+    enum:
+      - SKIPPED_ORDER
+  log:
+    type: object
+    properties:
+      payload:
+        type: object
+        required:
+          - apply
+        properties:
+          apply:
+            allOf:
+              - $ref: "#/definitions/apply"
+              - type: object
+                properties:
+                  log:
+                    type: object
+                    properties:
+                      type:
+                        enum:
+                          - ORDER_SKIPPED
+                      data:
+                        $ref: "#/definitions/skippedOrder"

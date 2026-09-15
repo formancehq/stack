@@ -1,0 +1,31 @@
+type: object
+properties:
+  type:
+    enum:
+      - DELETED_METADATA
+  log:
+    type: object
+    properties:
+      payload:
+        type: object
+        required:
+          - apply
+        properties:
+          apply:
+            allOf:
+              - $ref: "#/definitions/apply"
+              - type: object
+                properties:
+                  log:
+                    type: object
+                    properties:
+                      type:
+                        enum:
+                          - DELETE_METADATA
+                      data:
+                        type: object
+                        required:
+                          - deletedMetadata
+                        properties:
+                          deletedMetadata:
+                            $ref: "#/definitions/deletedMetadata"

@@ -1,0 +1,15 @@
+type: object
+properties:
+  type:
+    enum:
+      - DELETED_LEDGER
+  log:
+    type: object
+    properties:
+      payload:
+        type: object
+        required:
+          - deleteLedger
+        properties:
+          deleteLedger:
+            $ref: "#/definitions/deletedLedger"

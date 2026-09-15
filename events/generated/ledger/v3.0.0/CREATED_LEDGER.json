@@ -1,0 +1,474 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": [
+    "type",
+    "ledger",
+    "date",
+    "logSequence",
+    "log"
+  ],
+  "properties": {
+    "type": {
+      "type": "string"
+    },
+    "ledger": {
+      "type": "string",
+      "minLength": 1
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "logSequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "log": {
+      "type": "object",
+      "required": [
+        "sequence",
+        "payload"
+      ],
+      "properties": {
+        "sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "payload": {
+          "type": "object"
+        },
+        "receipt": {
+          "type": "string"
+        },
+        "responseSignature": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    }
+  },
+  "definitions": {
+    "metadataValue": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/metadataValue"
+      }
+    },
+    "posting": {
+      "type": "object",
+      "required": [
+        "source",
+        "destination",
+        "amount",
+        "asset",
+        "color"
+      ],
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "destination": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "asset": {
+          "type": "string"
+        },
+        "color": {
+          "type": "string"
+        }
+      }
+    },
+    "postCommitVolume": {
+      "type": "object",
+      "required": [
+        "asset",
+        "color",
+        "input",
+        "output"
+      ],
+      "properties": {
+        "asset": {
+          "type": "string"
+        },
+        "color": {
+          "type": "string"
+        },
+        "input": {
+          "type": "string"
+        },
+        "output": {
+          "type": "string"
+        }
+      }
+    },
+    "postCommitVolumes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/postCommitVolume"
+        }
+      }
+    },
+    "transaction": {
+      "type": "object",
+      "required": [
+        "postings",
+        "metadata",
+        "id",
+        "reverted"
+      ],
+      "properties": {
+        "postings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/posting"
+          }
+        },
+        "metadata": {
+          "$ref": "#/definitions/metadata"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "reference": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "insertedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "revertedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "revertedByTransactionId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "revertsTransactionId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reverted": {
+          "type": "boolean"
+        },
+        "postCommitVolumes": {
+          "$ref": "#/definitions/postCommitVolumes"
+        }
+      }
+    },
+    "createdTransaction": {
+      "type": "object",
+      "required": [
+        "transaction"
+      ],
+      "properties": {
+        "transaction": {
+          "$ref": "#/definitions/transaction"
+        },
+        "accountMetadata": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/metadata"
+          }
+        },
+        "chapterId": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "revertedTransaction": {
+      "type": "object",
+      "required": [
+        "revertedTransactionId",
+        "revertTransaction"
+      ],
+      "properties": {
+        "revertedTransactionId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "revertTransaction": {
+          "$ref": "#/definitions/transaction"
+        }
+      }
+    },
+    "savedMetadata": {
+      "type": "object",
+      "required": [
+        "targetType",
+        "metadata"
+      ],
+      "properties": {
+        "targetType": {
+          "type": "string",
+          "enum": [
+            "ACCOUNT",
+            "TRANSACTION"
+          ]
+        },
+        "accountId": {
+          "type": "string"
+        },
+        "transactionId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "metadata": {
+          "$ref": "#/definitions/metadata"
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "accountId"
+          ],
+          "properties": {
+            "targetType": {
+              "enum": [
+                "ACCOUNT"
+              ]
+            }
+          }
+        },
+        {
+          "required": [
+            "transactionId"
+          ],
+          "properties": {
+            "targetType": {
+              "enum": [
+                "TRANSACTION"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "deletedMetadata": {
+      "type": "object",
+      "required": [
+        "targetType",
+        "key"
+      ],
+      "properties": {
+        "targetType": {
+          "type": "string",
+          "enum": [
+            "ACCOUNT",
+            "TRANSACTION"
+          ]
+        },
+        "accountId": {
+          "type": "string"
+        },
+        "transactionId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "key": {
+          "type": "string"
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "accountId"
+          ],
+          "properties": {
+            "targetType": {
+              "enum": [
+                "ACCOUNT"
+              ]
+            }
+          }
+        },
+        {
+          "required": [
+            "transactionId"
+          ],
+          "properties": {
+            "targetType": {
+              "enum": [
+                "TRANSACTION"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "createdLedger": {
+      "type": "object",
+      "required": [
+        "name",
+        "createdAt"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "metadataSchema": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "mode": {
+          "type": "integer"
+        },
+        "mirrorSource": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "accountTypes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "defaultEnforcementMode": {
+          "type": "integer"
+        }
+      }
+    },
+    "deletedLedger": {
+      "type": "object",
+      "required": [
+        "name",
+        "deletedAt"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "deletedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "skippedOrder": {
+      "type": "object",
+      "required": [
+        "reason"
+      ],
+      "properties": {
+        "reason": {
+          "type": "string",
+          "enum": [
+            "TRANSACTION_REFERENCE_CONFLICT",
+            "TRANSACTION_ALREADY_REVERTED",
+            "METADATA_NOT_FOUND",
+            "ACCOUNT_TYPE_ALREADY_EXISTS",
+            "ACCOUNT_TYPE_NOT_FOUND"
+          ]
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "apply": {
+      "type": "object",
+      "required": [
+        "ledgerName",
+        "log"
+      ],
+      "properties": {
+        "ledgerName": {
+          "type": "string"
+        },
+        "log": {
+          "type": "object",
+          "required": [
+            "type",
+            "data",
+            "date",
+            "id"
+          ],
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "data": {
+              "type": "object"
+            },
+            "date": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "id": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": [
+            "CREATED_LEDGER"
+          ]
+        },
+        "log": {
+          "type": "object",
+          "properties": {
+            "payload": {
+              "type": "object",
+              "required": [
+                "createLedger"
+              ],
+              "properties": {
+                "createLedger": {
+                  "$ref": "#/definitions/createdLedger"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
