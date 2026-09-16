@@ -6,6 +6,7 @@ sources:
         sourceBlobDigest: sha256:da34e684e433e7d236caa00e25f3a97d66ad660153d0201f78ffaecfde5b2b00
         tags:
             - latest
+            - main
             - SDK_VERSION
 targets: {}
 workflow:
