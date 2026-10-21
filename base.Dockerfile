@@ -1,4 +1,5 @@
-FROM ubuntu:24.04 AS base
+ARG UBUNTU_VERSION=24.04
+FROM ubuntu:${UBUNTU_VERSION} AS base
 RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y ca-certificates curl tzdata && rm -rf /var/lib/apt/lists/*
 
 FROM alpine:3.22 AS certs
