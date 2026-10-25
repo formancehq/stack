@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/fs"
-	"path/filepath"
+	"path"
 	"sort"
 
 	"github.com/pkg/errors"
@@ -21,7 +21,7 @@ var baseEvent string
 var services embed.FS
 
 func ComputeSchema(serviceName, eventName string) (*gojsonschema.Schema, error) {
-	ls, err := services.ReadDir(filepath.Join("services", serviceName))
+	ls, err := services.ReadDir(path.Join("services", serviceName))
 	if err != nil {
 		return nil, errors.Wrapf(err, "reading events directory for service '%s'", serviceName)
 	}
