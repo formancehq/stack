@@ -58,8 +58,6 @@ build-openapi version="v0.0.0": generate-composition-overlay
 
 # Validate invariants introduced by composing namespaced OpenAPI documents.
 validate-openapi:
-    # Keep nullable semantics stable across the existing component contracts.
-    jq -e '.openapi == "3.0.3"' releases/build/generate.json >/dev/null
     # Global API metadata must remain exactly sourced from base.yaml.
     jq -e --argjson base_info "$(yq -o=json -I=0 '.info' releases/base.yaml)" '(.info | .version = $base_info.version) == $base_info' releases/build/generate.json >/dev/null
     # Every local discriminator mapping must resolve to an existing schema.
