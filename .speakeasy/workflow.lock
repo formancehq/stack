@@ -14,8 +14,6 @@ workflow:
     sources:
         stacks-source:
             inputs:
-                - location: ./components/connectivity.openapi.yaml
-                  modelNamespace: connectivity
                 - location: ./components/auth.openapi.yaml
                   modelNamespace: auth
                 - location: ./components/gateway.openapi.yaml
@@ -36,6 +34,8 @@ workflow:
                   modelNamespace: orchestration
                 - location: ./components/reconciliation.openapi.yaml
                   modelNamespace: reconciliation
+                - location: ./components/connectivity.openapi.yaml
+                  modelNamespace: connectivity
                 - location: ./releases/base.yaml
             overlays:
                 - location: ./releases/overlays/shared.overlay.yaml

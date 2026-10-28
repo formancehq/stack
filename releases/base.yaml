@@ -62,9 +62,7 @@ components:
         clientCredentials:
           tokenUrl: "/api/auth/oauth/token"
           refreshUrl: "/api/auth/oauth/token"
-          scopes:
-            connectivity:read: Read Connectivity catalog and connections
-            connectivity:write: Manage Connectivity connections
+          scopes: {}
 
 x-tagGroups:
   - name: Connectivity

@@ -30,8 +30,6 @@ download-specs:
 # Prepend API path prefix to each component spec
 prepend-paths: download-specs
     yq -i '.paths |= (to_entries | map(.key = "/api/connectivity" + .key) | from_entries) | (.paths[] | .. | select(has("operationId"))) |= (.operationId = "connectivity_" + .operationId | .tags = ["connectivity.v1"])' components/connectivity.openapi.yaml
-    yq -i '(.paths[] | .. | select(has("operationId") and (.security == null or (.security | length) > 0))).security = [{"Authorization": ["connectivity:write"]}]' components/connectivity.openapi.yaml
-    yq -i '(.paths[].get | select(has("operationId") and (.security == null or (.security | length) > 0))) |= (.security = [{"Authorization": []}] | .x-formance-required-scopes-any-of = ["connectivity:read", "connectivity:write"] | .description = (.description + "\n\nRequires connectivity:read or connectivity:write. The server enforces scopes.")) | del(.security, .components.securitySchemes.bearerAuth)' components/connectivity.openapi.yaml
     yq -i '.paths |= (to_entries | map(select(.key == "/*").key = "/api/auth" + .key) | from_entries)' components/auth.openapi.yaml
     yq -i '.paths |= (to_entries | map(select(.key == "/*").key = "/api/ledger" + .key) | from_entries) | (.paths[] | .. | select(has("tags")).tags) = ["ledger.v3"]' components/ledger.openapi.yaml
     yq -i '.paths |= (to_entries | map(select(.key == "/*").key = "/api/ledger" + .key) | from_entries) | del(.paths."/api/ledger/_info")' components/ledger-v2.openapi.yaml

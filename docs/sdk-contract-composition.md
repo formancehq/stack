@@ -33,21 +33,18 @@ a successful local build does not establish CI credential access. Never print
 or commit tokens.
 
 Preparation adds `/api/connectivity` to routes, groups operations under
-`connectivity.v1`, and keeps models under the `connectivity` namespace. The
-stack OAuth2 scheme replaces the standalone bearer scheme. Public probes remain
-public; writes declare `connectivity:write`.
-
-Speakeasy rejects two alternatives for one OAuth2 scheme with different scopes.
-Reads therefore declare OAuth2 authentication without a formal scope list and
-carry `x-formance-required-scopes-any-of` plus a description stating the server
-requirement: `connectivity:read` **or** `connectivity:write`. This avoids excluding
-write-only tokens. The server continues to enforce these scopes.
+`connectivity.v1`, and prefixes operation IDs to avoid collisions with other
+components. Models use the `connectivity` namespace. As for Ledger, the source
+bearer authentication and operation descriptions remain unchanged. The API
+server enforces Connectivity scopes; the stack does not rewrite these into
+OAuth2 scope requirements. Composition reuses the existing bearer scheme; tokens
+still need the scopes accepted by the service being called.
 
 Connectivity must provide an OpenAPI 3.0.3 contract, including `allOf` wrappers
 for schema references with annotations such as `readOnly` and descriptions.
 The stack does not convert its dialect. This keeps existing modules’ `nullable`
-fields meaningful in the composed OpenAPI 3.0.3 document. Merge the Connectivity
-compatibility PR before merging this integration.
+fields meaningful in the composed OpenAPI 3.0.3 document. The compatibility change was integrated through
+[Connectivity #493](https://github.com/formancehq/connectivity/pull/493).
 
 ## Publication and downstream SDKs
 
