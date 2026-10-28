@@ -202,6 +202,18 @@ func TestLedgerV3EventSchemas(t *testing.T) {
 	}
 }
 
+func TestEmbeddedServicePathsUseForwardSlashes(t *testing.T) {
+	t.Parallel()
+
+	if _, err := services.ReadDir("services/ledger"); err != nil {
+		t.Fatalf("read embedded ledger versions: %v", err)
+	}
+
+	if _, err := services.ReadDir(`services\ledger`); err == nil {
+		t.Fatal("expected backslash paths to be rejected by embed.FS")
+	}
+}
+
 func TestComputeSchemaUsesLatestVersionContainingEvent(t *testing.T) {
 	t.Parallel()
 
