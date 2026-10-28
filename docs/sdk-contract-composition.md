@@ -13,8 +13,10 @@ nix develop --command just validate-openapi
 ```
 
 The build downloads and prepares contracts, generates the composition overlay,
-merges the documents, and validates the result. It does not upload the contract
-to the Speakeasy registry. `just pre-commit` also regenerates the event schemas.
+merges the documents, and validates the result. Speakeasy uses the registry
+configured in its workflow. For local validation without uploading the contract,
+run Speakeasy with `--skip-upload-spec`. `just pre-commit` also regenerates the
+event schemas.
 
 ## Connectivity source and authentication
 

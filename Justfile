@@ -52,7 +52,7 @@ generate-composition-overlay: strip-servers
 # Build the merged OpenAPI spec using Speakeasy
 build-openapi version="v0.0.0": generate-composition-overlay
     mkdir -p releases/build
-    speakeasy run -s all --skip-upload-spec
+    speakeasy run -s all
     cd releases && sed -i'' -e 's/SDK_VERSION/{{ version }}/g' build/generate.json
     just validate-openapi
 
