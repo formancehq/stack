@@ -1,4 +1,4 @@
-speakeasyVersion: 1.797.0
+speakeasyVersion: 1.804.0
 sources:
     stacks-source:
         sourceNamespace: stacks-source
@@ -14,6 +14,8 @@ workflow:
     sources:
         stacks-source:
             inputs:
+                - location: ./components/connectivity.openapi.yaml
+                  modelNamespace: connectivity
                 - location: ./components/auth.openapi.yaml
                   modelNamespace: auth
                 - location: ./components/gateway.openapi.yaml

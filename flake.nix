@@ -68,6 +68,7 @@
           default = pkgs.mkShell {
             packages = [
               pkgs.jq
+              pkgs.gh
               pkgs.just
               pkgs.nodejs_22
               pkgs.wget

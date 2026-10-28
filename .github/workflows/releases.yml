@@ -17,6 +17,7 @@ jobs:
       - name: Build OpenAPI spec and events
         run: nix develop --impure --command just build ${{github.ref_name}}
         env:
+          GH_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           SPEAKEASY_API_KEY: ${{ secrets.SPEAKEASY_API_KEY }}
       - name: Generate changelog
         run: bash .github/scripts/generate-changelog.sh

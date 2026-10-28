@@ -3,6 +3,8 @@ speakeasyVersion: latest
 sources:
     stacks-source:
         inputs:
+            - location: ./components/connectivity.openapi.yaml
+              modelNamespace: connectivity
             - location: ./components/auth.openapi.yaml
               modelNamespace: auth
             - location: ./components/gateway.openapi.yaml

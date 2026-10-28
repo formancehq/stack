@@ -40,6 +40,7 @@ servers:
           - us-east-1
 
 tags:
+  - name: connectivity.v1
   - name: ledger.v1
   - name: ledger.v2
   - name: ledger.v3
@@ -61,9 +62,14 @@ components:
         clientCredentials:
           tokenUrl: "/api/auth/oauth/token"
           refreshUrl: "/api/auth/oauth/token"
-          scopes: {}
+          scopes:
+            connectivity:read: Read Connectivity catalog and connections
+            connectivity:write: Manage Connectivity connections
 
 x-tagGroups:
+  - name: Connectivity
+    tags:
+      - connectivity.v1
   - name: Auth
     tags:
       - auth.v1
