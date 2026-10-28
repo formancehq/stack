@@ -10,12 +10,12 @@ ORCHESTRATION_VERSION := "v2.6.4"
 RECONCILIATION_VERSION := "v2.5.0"
 GATEWAY_VERSION := "v2.3.2"
 # Connectivity API releases do not yet publish an OpenAPI asset.
-CONNECTIVITY_REF := "main"
+CONNECTIVITY_VERSION := "main"
 
 # Download component OpenAPI specs from GitHub releases or source
 download-specs:
     mkdir -p components
-    gh api -H "Accept: application/vnd.github.raw+json" "repos/formancehq/connectivity/contents/misc/connectivity-api/openapi.yaml?ref={{ CONNECTIVITY_REF }}" > components/connectivity.openapi.yaml
+    gh api -H "Accept: application/vnd.github.raw+json" "repos/formancehq/connectivity/contents/misc/connectivity-api/openapi.yaml?ref={{ CONNECTIVITY_VERSION }}" > components/connectivity.openapi.yaml
     wget -q https://github.com/formancehq/ledger/releases/download/{{ LEDGER_VERSION }}/openapi.yml -O components/ledger.openapi.yaml
     wget -q https://github.com/formancehq/ledger/releases/download/{{ LEDGER_V2_VERSION }}/openapi.yaml -O components/ledger-v2.openapi.yaml
     wget -q https://github.com/formancehq/payments/releases/download/{{ PAYMENTS_VERSION }}/openapi.yaml -O components/payments.openapi.yaml
@@ -29,7 +29,7 @@ download-specs:
 
 # Prepend API path prefix to each component spec
 prepend-paths: download-specs
-    yq -i '.paths |= (to_entries | map(.key = "/api/connectivity" + .key) | from_entries) | (.paths[] | .. | select(has("operationId"))) |= (.operationId = "connectivity_" + .operationId | .tags = ["connectivity.v1"])' components/connectivity.openapi.yaml
+    yq -i '.paths |= (to_entries | map(select(.key == "/*").key = "/api/connectivity" + .key) | from_entries) | (.paths[] | .. | select(has("tags")).tags) = ["connectivity.v1"] | .paths."/api/connectivity/_info".get.operationId = "connectivityInfo"' components/connectivity.openapi.yaml
     yq -i '.paths |= (to_entries | map(select(.key == "/*").key = "/api/auth" + .key) | from_entries)' components/auth.openapi.yaml
     yq -i '.paths |= (to_entries | map(select(.key == "/*").key = "/api/ledger" + .key) | from_entries) | (.paths[] | .. | select(has("tags")).tags) = ["ledger.v3"]' components/ledger.openapi.yaml
     yq -i '.paths |= (to_entries | map(select(.key == "/*").key = "/api/ledger" + .key) | from_entries) | del(.paths."/api/ledger/_info")' components/ledger-v2.openapi.yaml

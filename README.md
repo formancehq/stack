@@ -54,8 +54,3 @@ The Formance Stack is built on open-source, battle tested technologies including
 - **PostgreSQL** - Main storage backend
 - **Kafka/NATS** - Cross-services async communication
 - **Traefik** - Main HTTP gateway
-
-## SDK contract composition
-
-See [SDK contract composition](docs/sdk-contract-composition.md) for building the
-unified OpenAPI contract, updating Connectivity and publishing SDK inputs.
