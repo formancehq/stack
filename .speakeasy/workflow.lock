@@ -1,4 +1,4 @@
-speakeasyVersion: 1.797.0
+speakeasyVersion: 1.804.0
 sources:
     stacks-source:
         sourceNamespace: stacks-source
@@ -34,6 +34,8 @@ workflow:
                   modelNamespace: orchestration
                 - location: ./components/reconciliation.openapi.yaml
                   modelNamespace: reconciliation
+                - location: ./components/connectivity.openapi.yaml
+                  modelNamespace: connectivity
                 - location: ./releases/base.yaml
             overlays:
                 - location: ./releases/overlays/shared.overlay.yaml

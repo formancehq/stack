@@ -40,6 +40,7 @@ servers:
           - us-east-1
 
 tags:
+  - name: connectivity.v1
   - name: ledger.v1
   - name: ledger.v2
   - name: ledger.v3
@@ -64,6 +65,9 @@ components:
           scopes: {}
 
 x-tagGroups:
+  - name: Connectivity
+    tags:
+      - connectivity.v1
   - name: Auth
     tags:
       - auth.v1

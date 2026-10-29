@@ -23,6 +23,8 @@ sources:
               modelNamespace: orchestration
             - location: ./components/reconciliation.openapi.yaml
               modelNamespace: reconciliation
+            - location: ./components/connectivity.openapi.yaml
+              modelNamespace: connectivity
             - location: ./releases/base.yaml
         overlays:
             - location: ./releases/overlays/shared.overlay.yaml
