@@ -18,6 +18,12 @@ RECONCILIATION_VERSION=$(extract_version "RECONCILIATION_VERSION")
 GATEWAY_VERSION=$(extract_version "GATEWAY_VERSION")
 CONNECTIVITY_VERSION=$(extract_version "CONNECTIVITY_VERSION")
 
+if [[ "$LEDGER_VERSION" == v* ]]; then
+  LEDGER_LINK="[Release notes](https://github.com/formancehq/ledger/releases/tag/${LEDGER_VERSION})"
+else
+  LEDGER_LINK="[Source](https://github.com/formancehq/ledger/tree/${LEDGER_VERSION})"
+fi
+
 # Connectivity can be pinned to a branch until its releases publish an OpenAPI asset.
 if [[ "$CONNECTIVITY_VERSION" == v* ]]; then
   CONNECTIVITY_LINK="[Release notes](https://github.com/formancehq/connectivity/releases/tag/${CONNECTIVITY_VERSION})"
@@ -30,7 +36,7 @@ fi
   echo ""
   echo "| Component | Version | Changelog |"
   echo "|-----------|---------|-----------|"
-  echo "| Ledger | \`${LEDGER_VERSION}\` | [Release notes](https://github.com/formancehq/ledger/releases/tag/${LEDGER_VERSION}) |"
+  echo "| Ledger | \`${LEDGER_VERSION}\` | ${LEDGER_LINK} |"
   echo "| Payments | \`${PAYMENTS_VERSION}\` | [Release notes](https://github.com/formancehq/payments/releases/tag/${PAYMENTS_VERSION}) |"
   echo "| Wallets | \`${WALLETS_VERSION}\` | [Release notes](https://github.com/formancehq/wallets/releases/tag/${WALLETS_VERSION}) |"
   echo "| Webhooks | \`${WEBHOOKS_VERSION}\` | [Release notes](https://github.com/formancehq/webhooks/releases/tag/${WEBHOOKS_VERSION}) |"
