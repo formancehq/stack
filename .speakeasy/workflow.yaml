@@ -13,8 +13,6 @@ sources:
               modelNamespace: ledger
             - location: ./components/payments.openapi.yaml
               modelNamespace: payments
-            - location: ./components/search.openapi.yaml
-              modelNamespace: search
             - location: ./components/webhooks.openapi.yaml
               modelNamespace: webhooks
             - location: ./components/wallets.openapi.yaml

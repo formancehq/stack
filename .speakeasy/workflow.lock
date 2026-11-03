@@ -1,9 +1,9 @@
-speakeasyVersion: 1.804.0
+speakeasyVersion: 1.805.0
 sources:
     stacks-source:
         sourceNamespace: stacks-source
-        sourceRevisionDigest: sha256:9df14dce9ad22e9a6989dda36e511ab3ce3973fcad5f1bbfce8118cc49f2e3e6
-        sourceBlobDigest: sha256:da34e684e433e7d236caa00e25f3a97d66ad660153d0201f78ffaecfde5b2b00
+        sourceRevisionDigest: sha256:b73dbb2d674b21be41d30d54ff92dd2e93273f2979cea820d08c1b09c42a6e5e
+        sourceBlobDigest: sha256:7cfe4e476e3917fb3d11aab31bf0d6f968357cee94e0900ce5e15e4268925306
         tags:
             - latest
             - SDK_VERSION
@@ -24,8 +24,6 @@ workflow:
                   modelNamespace: ledger
                 - location: ./components/payments.openapi.yaml
                   modelNamespace: payments
-                - location: ./components/search.openapi.yaml
-                  modelNamespace: search
                 - location: ./components/webhooks.openapi.yaml
                   modelNamespace: webhooks
                 - location: ./components/wallets.openapi.yaml

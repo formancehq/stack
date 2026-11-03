@@ -5,23 +5,22 @@ PAYMENTS_VERSION := "v3.4.4"
 WALLETS_VERSION := "v2.2.1"
 WEBHOOKS_VERSION := "v2.5.4"
 AUTH_VERSION := "v2.5.1"
-SEARCH_VERSION := "v2.1.0"
 ORCHESTRATION_VERSION := "v2.6.4"
 RECONCILIATION_VERSION := "v2.5.0"
 GATEWAY_VERSION := "v2.3.2"
 # Connectivity API releases do not yet publish an OpenAPI asset.
 CONNECTIVITY_VERSION := "main"
 
-# Download component OpenAPI specs from GitHub releases or source
+# Download component OpenAPI specs from GitHub releases or source.
+# Private repositories (gateway, auth) go through gh, which needs GH_TOKEN or gh auth.
 download-specs:
     mkdir -p components
     gh api -H "Accept: application/vnd.github.raw+json" "repos/formancehq/connectivity/contents/misc/connectivity-api/openapi.yaml?ref={{ CONNECTIVITY_VERSION }}" > components/connectivity.openapi.yaml
     wget -q https://github.com/formancehq/ledger/releases/download/{{ LEDGER_VERSION }}/openapi.yml -O components/ledger.openapi.yaml
     wget -q https://github.com/formancehq/ledger/releases/download/{{ LEDGER_V2_VERSION }}/openapi.yaml -O components/ledger-v2.openapi.yaml
     wget -q https://github.com/formancehq/payments/releases/download/{{ PAYMENTS_VERSION }}/openapi.yaml -O components/payments.openapi.yaml
-    wget -q https://raw.githubusercontent.com/formancehq/gateway/{{ GATEWAY_VERSION }}/openapi.yaml -O components/gateway.openapi.yaml
-    wget -q https://github.com/formancehq/auth/releases/download/{{ AUTH_VERSION }}/openapi.yaml -O components/auth.openapi.yaml
-    wget -q https://github.com/formancehq/search/releases/download/{{ SEARCH_VERSION }}/openapi.yaml -O components/search.openapi.yaml
+    gh api -H "Accept: application/vnd.github.raw+json" "repos/formancehq/gateway/contents/openapi.yaml?ref={{ GATEWAY_VERSION }}" > components/gateway.openapi.yaml
+    gh release download {{ AUTH_VERSION }} -R formancehq/auth -p openapi.yaml -O components/auth.openapi.yaml --clobber
     wget -q https://github.com/formancehq/webhooks/releases/download/{{ WEBHOOKS_VERSION }}/openapi.yaml -O components/webhooks.openapi.yaml
     wget -q https://github.com/formancehq/wallets/releases/download/{{ WALLETS_VERSION }}/openapi.yaml -O components/wallets.openapi.yaml
     wget -q https://github.com/formancehq/reconciliation/releases/download/{{ RECONCILIATION_VERSION }}/openapi.yaml -O components/reconciliation.openapi.yaml
@@ -34,7 +33,6 @@ prepend-paths: download-specs
     yq -i '.paths |= (to_entries | map(select(.key == "/*").key = "/api/ledger" + .key) | from_entries) | (.paths[] | .. | select(has("tags")).tags) = ["ledger.v3"]' components/ledger.openapi.yaml
     yq -i '.paths |= (to_entries | map(select(.key == "/*").key = "/api/ledger" + .key) | from_entries) | del(.paths."/api/ledger/_info")' components/ledger-v2.openapi.yaml
     yq -i '.paths |= (to_entries | map(select(.key == "/*").key = "/api/payments" + .key) | from_entries)' components/payments.openapi.yaml
-    yq -i '.paths |= (to_entries | map(select(.key == "/*").key = "/api/search" + .key) | from_entries)' components/search.openapi.yaml
     yq -i '.paths |= (to_entries | map(select(.key == "/*").key = "/api/webhooks" + .key) | from_entries)' components/webhooks.openapi.yaml
     yq -i '.paths |= (to_entries | map(select(.key == "/*").key = "/api/wallets" + .key) | from_entries)' components/wallets.openapi.yaml
     yq -i '.paths |= (to_entries | map(select(.key == "/*").key = "/api/orchestration" + .key) | from_entries)' components/orchestration.openapi.yaml

@@ -35,9 +35,6 @@ github:
 'ee/orchestration':
   - changed-files:
     - any-glob-to-any-file: "ee/orchestration/*"
-'ee/search':
-  - changed-files:
-    - any-glob-to-any-file: "ee/search/*"
 'ee/stargate':
   - changed-files:
     - any-glob-to-any-file: "ee/stargate/*"
