@@ -1,5 +1,5 @@
 # Component versions
-LEDGER_VERSION := "v3.0.0-rc.2"
+LEDGER_VERSION := "main"
 LEDGER_V2_VERSION := "v2.4.17"
 PAYMENTS_VERSION := "v3.4.9"
 WALLETS_VERSION := "v2.2.2"
@@ -16,7 +16,11 @@ CONNECTIVITY_VERSION := "main"
 download-specs:
     mkdir -p components
     gh api -H "Accept: application/vnd.github.raw+json" "repos/formancehq/connectivity/contents/misc/connectivity-api/openapi.yaml?ref={{ CONNECTIVITY_VERSION }}" > components/connectivity.openapi.yaml
-    wget -q https://github.com/formancehq/ledger/releases/download/{{ LEDGER_VERSION }}/openapi.yml -O components/ledger.openapi.yaml
+    if [ "{{ LEDGER_VERSION }}" = "main" ]; then \
+        gh api -H "Accept: application/vnd.github.raw+json" "repos/formancehq/ledger/contents/openapi.yml?ref={{ LEDGER_VERSION }}" > components/ledger.openapi.yaml; \
+    else \
+        wget -q https://github.com/formancehq/ledger/releases/download/{{ LEDGER_VERSION }}/openapi.yml -O components/ledger.openapi.yaml; \
+    fi
     wget -q https://github.com/formancehq/ledger/releases/download/{{ LEDGER_V2_VERSION }}/openapi.yaml -O components/ledger-v2.openapi.yaml
     wget -q https://github.com/formancehq/payments/releases/download/{{ PAYMENTS_VERSION }}/openapi.yaml -O components/payments.openapi.yaml
     gh api -H "Accept: application/vnd.github.raw+json" "repos/formancehq/gateway/contents/openapi.yaml?ref={{ GATEWAY_VERSION }}" > components/gateway.openapi.yaml
