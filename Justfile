@@ -1,6 +1,6 @@
 # Component versions
 LEDGER_VERSION := "main"
-LEDGER_V2_VERSION := "v2.4.17"
+LEDGER_V2_VERSION := "release/v2.4"
 PAYMENTS_VERSION := "v3.4.9"
 WALLETS_VERSION := "v2.2.2"
 WEBHOOKS_VERSION := "v2.5.5"
@@ -21,7 +21,7 @@ download-specs:
     else \
         wget -q https://github.com/formancehq/ledger/releases/download/{{ LEDGER_VERSION }}/openapi.yml -O components/ledger.openapi.yaml; \
     fi
-    wget -q https://github.com/formancehq/ledger/releases/download/{{ LEDGER_V2_VERSION }}/openapi.yaml -O components/ledger-v2.openapi.yaml
+    gh api -H "Accept: application/vnd.github.raw+json" "repos/formancehq/ledger/contents/openapi.yaml?ref={{ LEDGER_V2_VERSION }}" > components/ledger-v2.openapi.yaml
     wget -q https://github.com/formancehq/payments/releases/download/{{ PAYMENTS_VERSION }}/openapi.yaml -O components/payments.openapi.yaml
     gh api -H "Accept: application/vnd.github.raw+json" "repos/formancehq/gateway/contents/openapi.yaml?ref={{ GATEWAY_VERSION }}" > components/gateway.openapi.yaml
     gh release download {{ AUTH_VERSION }} -R formancehq/auth -p openapi.yaml -O components/auth.openapi.yaml --clobber

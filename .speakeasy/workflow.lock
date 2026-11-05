@@ -2,8 +2,8 @@ speakeasyVersion: 1.806.0
 sources:
     stacks-source:
         sourceNamespace: stacks-source
-        sourceRevisionDigest: sha256:6c6af96e77dda871734a75eeae83e7406377f4b9b2ea28e519e3605f5deb686b
-        sourceBlobDigest: sha256:0d867569ba113509e0b316a00ec1947889fbcae62a69d73e9c1fdc60a55147e1
+        sourceRevisionDigest: sha256:18219854288653dc8999f2278caa00de2a30ab3d8eb33247124cb21fb265aa66
+        sourceBlobDigest: sha256:3657a3c23eb0539c2b4e7fb679e6d2883cc01ef2e58741f2209ec2a371b835c9
         tags:
             - latest
             - SDK_VERSION
