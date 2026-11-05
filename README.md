@@ -54,3 +54,15 @@ The Formance Stack is built on open-source, battle tested technologies including
 - **PostgreSQL** - Main storage backend
 - **Kafka/NATS** - Cross-services async communication
 - **Traefik** - Main HTTP gateway
+
+## OpenAPI composition
+
+`just build-openapi` composes the component contracts and validates the result.
+Ledger V1 and V3 both expose `GET /api/ledger/_info` with different response
+models. Both operations remain in the composed document as
+`/api/ledger/_info#ledger` and `/api/ledger/_info#ledgerV3`. These are Speakeasy
+namespace fragments: generated SDK requests use `/api/ledger/_info`.
+
+This preserves `Ledger.V1.GetInfo` and `Ledger.V3.Info`. V2's separate
+`/api/ledger/_/info` operation remains unchanged. Consumers using other OpenAPI
+generators must verify support for namespace fragments.
