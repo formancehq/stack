@@ -35,7 +35,7 @@ prepend-paths: download-specs
     yq -i '.paths |= (to_entries | map(select(.key == "/*").key = "/api/connectivity" + .key) | from_entries) | (.paths[] | .. | select(has("tags")).tags) = ["connectivity.v1"] | .paths."/api/connectivity/_info".get.operationId = "connectivityInfo"' components/connectivity.openapi.yaml
     yq -i '.paths |= (to_entries | map(select(.key == "/*").key = "/api/auth" + .key) | from_entries)' components/auth.openapi.yaml
     yq -i '.paths |= (to_entries | map(select(.key == "/*").key = "/api/ledger" + .key) | from_entries) | (.paths[] | .. | select(has("tags")).tags) = ["ledger.v3"]' components/ledger.openapi.yaml
-    yq -i '.paths |= (to_entries | map(select(.key == "/*").key = "/api/ledger" + .key) | from_entries) | del(.paths."/api/ledger/_info")' components/ledger-v2.openapi.yaml
+    yq -i '.paths |= (to_entries | map(select(.key == "/*").key = "/api/ledger" + .key) | from_entries)' components/ledger-v2.openapi.yaml
     yq -i '.paths |= (to_entries | map(select(.key == "/*").key = "/api/payments" + .key) | from_entries)' components/payments.openapi.yaml
     yq -i '.paths |= (to_entries | map(select(.key == "/*").key = "/api/webhooks" + .key) | from_entries)' components/webhooks.openapi.yaml
     yq -i '.paths |= (to_entries | map(select(.key == "/*").key = "/api/wallets" + .key) | from_entries)' components/wallets.openapi.yaml
@@ -70,8 +70,11 @@ validate-openapi:
     test "$(jq -c '.paths["x-speakeasy-errors"].statusCodes' releases/build/generate.json)" = '["default"]'
     # Every operation tag must be declared globally.
     jq -e '[.tags[].name] as $tags | [.paths[] | to_entries[] | select(.key | IN("get", "post", "put", "patch", "delete", "options", "head", "trace")) | .value.tags[]? | select(. as $tag | $tags | index($tag) == null)] | length == 0' releases/build/generate.json >/dev/null
-    # Namespace conflict suffixes are merge artifacts, never callable API paths.
-    jq -e '[.paths | keys[] | select(contains("#"))] | length == 0' releases/build/generate.json >/dev/null
+    # Speakeasy keeps different operations on the shared Ledger info path under
+    # namespace fragments; generated SDK requests omit those fragments.
+    jq -e '[.paths | keys[] | select(contains("#") and . != "/api/ledger/_info#ledger" and . != "/api/ledger/_info#ledgerV3")] | length == 0' releases/build/generate.json >/dev/null
+    # Preserve both info contracts: V1's data envelope and V3's build metadata.
+    jq -e '.paths["/api/ledger/_info#ledger"].get as $v1 | .paths["/api/ledger/_info#ledgerV3"].get as $v3 | $v1.operationId == "getInfo" and $v1.tags == ["ledger.v1"] and $v1.responses["200"].content["application/json"].schema["$ref"] == "#/components/schemas/ledger_ConfigInfoResponse" and $v3.operationId == "v3Info" and $v3.tags == ["ledger.v3"] and $v3.responses["200"].content["application/json"].schema["$ref"] == "#/components/schemas/ledgerV3_ServerInfo"' releases/build/generate.json >/dev/null
     # Both supported Ledger API generations must remain in the composed spec.
     jq -e '.paths["/api/ledger/v2"] != null and .paths["/api/ledger/v3/"] != null' releases/build/generate.json >/dev/null
     # Composition cleanups must remain applied when component specs change.
