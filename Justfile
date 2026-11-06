@@ -64,21 +64,10 @@ validate-openapi:
     jq -e --argjson base_info "$(yq -o=json -I=0 '.info' releases/base.yaml)" '(.info | .version = $base_info.version) == $base_info' releases/build/generate.json >/dev/null
     # Every local discriminator mapping must resolve to an existing schema.
     jq -e '.components.schemas as $schemas | [ $schemas | .. | objects | select(.discriminator.mapping? != null) | .discriminator.mapping[] | select(type == "string" and startswith("#/components/schemas/")) | sub("^#/components/schemas/"; "") | select($schemas[.] == null) ] | length == 0' releases/build/generate.json >/dev/null
-    # Ledger query-template helpers rely on these resource constants.
-    jq -e '[.components.schemas.ledger_V2QueryParams.oneOf[].properties.resource | select(.const == null or .enum != null)] | length == 0' releases/build/generate.json >/dev/null
     # Preserve typed default errors instead of shadowing them with generic range matchers.
     test "$(jq -c '.paths["x-speakeasy-errors"].statusCodes' releases/build/generate.json)" = '["default"]'
     # Every operation tag must be declared globally.
     jq -e '[.tags[].name] as $tags | [.paths[] | to_entries[] | select(.key | IN("get", "post", "put", "patch", "delete", "options", "head", "trace")) | .value.tags[]? | select(. as $tag | $tags | index($tag) == null)] | length == 0' releases/build/generate.json >/dev/null
-    # Speakeasy keeps different operations on the shared Ledger info path under
-    # namespace fragments; generated SDK requests omit those fragments.
-    jq -e '[.paths | keys[] | select(contains("#") and . != "/api/ledger/_info#ledger" and . != "/api/ledger/_info#ledgerV3")] | length == 0' releases/build/generate.json >/dev/null
-    # Preserve both info contracts: V1's data envelope and V3's build metadata.
-    jq -e '.paths["/api/ledger/_info#ledger"].get as $v1 | .paths["/api/ledger/_info#ledgerV3"].get as $v3 | $v1.operationId == "getInfo" and $v1.tags == ["ledger.v1"] and $v1.responses["200"].content["application/json"].schema["$ref"] == "#/components/schemas/ledger_ConfigInfoResponse" and $v3.operationId == "v3Info" and $v3.tags == ["ledger.v3"] and $v3.responses["200"].content["application/json"].schema["$ref"] == "#/components/schemas/ledgerV3_ServerInfo"' releases/build/generate.json >/dev/null
-    # Both supported Ledger API generations must remain in the composed spec.
-    jq -e '.paths["/api/ledger/v2"] != null and .paths["/api/ledger/v3/"] != null' releases/build/generate.json >/dev/null
-    # Composition cleanups must remain applied when component specs change.
-    jq -e '.components.schemas.auth_Scope == null and .components.schemas.auth_ScopeOptions == null' releases/build/generate.json >/dev/null
     jq -e '[.. | objects | select(.enum? | type == "array") | .enum | select(length != (unique | length))] | length == 0' releases/build/generate.json >/dev/null
 
 # Generate event schemas

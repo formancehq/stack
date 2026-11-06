@@ -58,6 +58,11 @@ The Formance Stack is built on open-source, battle tested technologies including
 ## OpenAPI composition
 
 `just build-openapi` composes the component contracts and validates the result.
+Validation checks canonical API metadata, discriminator references, shared SDK
+error configuration, declared operation tags, and duplicate enum values.
+Component-specific paths and schema shapes are owned by the component contracts;
+Stack does not assert their internal structure.
+
 Ledger V1 and V3 both expose `GET /api/ledger/_info` with different response
 models. Both operations remain in the composed document as
 `/api/ledger/_info#ledger` and `/api/ledger/_info#ledgerV3`. These are Speakeasy
