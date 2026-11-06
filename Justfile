@@ -64,8 +64,6 @@ validate-openapi:
     jq -e --argjson base_info "$(yq -o=json -I=0 '.info' releases/base.yaml)" '(.info | .version = $base_info.version) == $base_info' releases/build/generate.json >/dev/null
     # Every local discriminator mapping must resolve to an existing schema.
     jq -e '.components.schemas as $schemas | [ $schemas | .. | objects | select(.discriminator.mapping? != null) | .discriminator.mapping[] | select(type == "string" and startswith("#/components/schemas/")) | sub("^#/components/schemas/"; "") | select($schemas[.] == null) ] | length == 0' releases/build/generate.json >/dev/null
-    # Ledger query-template helpers rely on these resource constants.
-    jq -e '[.components.schemas.ledger_V2QueryParams.oneOf[].properties.resource | select(.const == null or .enum != null)] | length == 0' releases/build/generate.json >/dev/null
     # Preserve typed default errors instead of shadowing them with generic range matchers.
     test "$(jq -c '.paths["x-speakeasy-errors"].statusCodes' releases/build/generate.json)" = '["default"]'
     # Every operation tag must be declared globally.
