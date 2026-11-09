@@ -1,0 +1,289 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": [
+    "app",
+    "version",
+    "date",
+    "type",
+    "payload"
+  ],
+  "properties": {
+    "idempotency_key": {
+      "type": "string"
+    },
+    "app": {
+      "const": "gateway"
+    },
+    "version": {
+      "const": "v2"
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Publication time; for native gRPC, the RPC termination time."
+    },
+    "type": {
+      "type": "string"
+    },
+    "payload": {
+      "type": "object"
+    }
+  },
+  "definitions": {
+    "auditHeaders": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": {
+        "type": [
+          "array",
+          "null"
+        ],
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "grpcAuditBody": {
+      "type": "object",
+      "required": [
+        "encoding",
+        "bytes_total",
+        "truncated",
+        "complete"
+      ],
+      "properties": {
+        "encoding": {
+          "const": "base64"
+        },
+        "data": {
+          "type": "string",
+          "contentEncoding": "base64",
+          "maxLength": 87384,
+          "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$",
+          "allOf": [
+            {
+              "if": {
+                "minLength": 87384
+              },
+              "then": {
+                "pattern": "==$"
+              }
+            }
+          ],
+          "description": "Base64 prefix of at most 65536 observed gRPC body bytes, including message envelopes and compression. Omitted when empty."
+        },
+        "bytes_total": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bytes observed before finalization, including bytes beyond the capture limit."
+        },
+        "truncated": {
+          "type": "boolean",
+          "description": "Observed bytes exceeded the stored prefix; traffic itself is not truncated."
+        },
+        "complete": {
+          "type": "boolean",
+          "description": "Request EOF was observed, or the response handler completed with a valid gRPC status and no local interruption. This does not prove client consumption."
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "AUDIT"
+        },
+        "payload": {
+          "type": "object",
+          "required": [
+            "id",
+            "trace_id",
+            "actor",
+            "http"
+          ],
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "trace_id": {
+              "type": "string",
+              "description": "OpenTelemetry trace identifier, or an empty string when unavailable."
+            },
+            "actor": {
+              "type": "object",
+              "required": [
+                "organization_id",
+                "stack_id",
+                "ip_address"
+              ],
+              "properties": {
+                "claims": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "token_validation_error": {
+                  "type": "string"
+                },
+                "organization_id": {
+                  "type": "string"
+                },
+                "stack_id": {
+                  "type": "string"
+                },
+                "ip_address": {
+                  "type": "string"
+                }
+              }
+            },
+            "http": {
+              "type": "object",
+              "required": [
+                "request",
+                "response"
+              ],
+              "properties": {
+                "request": {
+                  "type": "object",
+                  "required": [
+                    "method",
+                    "path",
+                    "host",
+                    "header"
+                  ],
+                  "properties": {
+                    "method": {
+                      "type": "string"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "host": {
+                      "type": "string"
+                    },
+                    "header": {
+                      "$ref": "#/definitions/auditHeaders"
+                    },
+                    "query_params": {
+                      "$ref": "#/definitions/auditHeaders"
+                    },
+                    "query_params_truncated": {
+                      "type": "boolean"
+                    },
+                    "body": {
+                      "type": "string",
+                      "description": "HTTP text body. Native gRPC stores binary data in payload.grpc instead."
+                    },
+                    "body_truncated": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "response": {
+                  "type": "object",
+                  "required": [
+                    "status_code",
+                    "headers"
+                  ],
+                  "properties": {
+                    "status_code": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999,
+                      "description": "Observed HTTP status, not the gRPC result. Zero means no response was observed before Caddy's outer error handler ran."
+                    },
+                    "headers": {
+                      "$ref": "#/definitions/auditHeaders"
+                    },
+                    "body": {
+                      "type": "string"
+                    },
+                    "body_truncated": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            },
+            "grpc": {
+              "type": "object",
+              "description": "Optional extension for native HTTP/2 gRPC calls, emitted once at RPC termination by the Gateway adapter.",
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "termination": {
+                        "const": "completed"
+                      }
+                    },
+                    "required": [
+                      "termination"
+                    ]
+                  },
+                  "then": {
+                    "required": [
+                      "status_code"
+                    ]
+                  }
+                }
+              ],
+              "required": [
+                "service",
+                "method",
+                "termination",
+                "request",
+                "response"
+              ],
+              "properties": {
+                "service": {
+                  "type": "string"
+                },
+                "method": {
+                  "type": "string"
+                },
+                "status_code": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 16,
+                  "description": "Observed grpc-status, including zero for OK. Omitted when no valid status was observed; HTTP 200 does not imply OK."
+                },
+                "status_message": {
+                  "type": "string",
+                  "description": "Percent-decoded grpc-message, omitted when empty."
+                },
+                "termination": {
+                  "type": "string",
+                  "enum": [
+                    "completed",
+                    "incomplete",
+                    "gateway_error",
+                    "canceled",
+                    "deadline_exceeded",
+                    "aborted"
+                  ],
+                  "description": "Local termination cause. Completed includes server RPC errors; inspect status_code for the RPC result."
+                },
+                "gateway_status_code": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999,
+                  "description": "Status from a returned Caddy HandlerError, separate from the observed HTTP response."
+                },
+                "request": {
+                  "$ref": "#/definitions/grpcAuditBody"
+                },
+                "response": {
+                  "$ref": "#/definitions/grpcAuditBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
