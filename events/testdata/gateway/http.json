@@ -1,0 +1,55 @@
+{
+  "app": "gateway",
+  "date": "2026-11-09T08:59:37.579078145Z",
+  "idempotency_key": "",
+  "payload": {
+    "actor": {
+      "ip_address": "127.0.0.1",
+      "organization_id": "test-org",
+      "stack_id": "test-stack"
+    },
+    "http": {
+      "request": {
+        "body": "{\"test\":true}",
+        "header": {
+          "Accept-Encoding": [
+            "gzip"
+          ],
+          "Content-Length": [
+            "13"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "Go-http-client/1.1"
+          ]
+        },
+        "host": "127.0.0.1:33049",
+        "method": "POST",
+        "path": "/http",
+        "query_params": {
+          "source": [
+            "fixture"
+          ]
+        }
+      },
+      "response": {
+        "body": "ok",
+        "headers": {
+          "Content-Type": [
+            "text/plain; charset=utf-8"
+          ],
+          "Server": [
+            "Caddy"
+          ]
+        },
+        "status_code": 200
+      }
+    },
+    "id": "68b3d804-f567-40ae-9a5b-3a33f2bf5f40",
+    "trace_id": ""
+  },
+  "type": "AUDIT",
+  "version": "v2"
+}

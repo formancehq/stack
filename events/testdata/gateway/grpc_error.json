@@ -1,0 +1,77 @@
+{
+  "app": "gateway",
+  "date": "2026-11-09T08:59:37.582637231Z",
+  "idempotency_key": "",
+  "payload": {
+    "actor": {
+      "ip_address": "127.0.0.1",
+      "organization_id": "test-org",
+      "stack_id": "test-stack"
+    },
+    "grpc": {
+      "method": "Check",
+      "request": {
+        "bytes_total": 14,
+        "complete": true,
+        "data": "AAAAAAkKB21pc3Npbmc=",
+        "encoding": "base64",
+        "truncated": false
+      },
+      "response": {
+        "bytes_total": 0,
+        "complete": true,
+        "encoding": "base64",
+        "truncated": false
+      },
+      "service": "grpc.health.v1.Health",
+      "status_code": 5,
+      "status_message": "unknown service",
+      "termination": "completed"
+    },
+    "http": {
+      "request": {
+        "header": {
+          "Content-Type": [
+            "application/grpc"
+          ],
+          "Grpc-Accept-Encoding": [
+            "gzip"
+          ],
+          "Grpc-Timeout": [
+            "4998692u"
+          ],
+          "Te": [
+            "trailers"
+          ],
+          "User-Agent": [
+            "grpc-go/1.83.2"
+          ]
+        },
+        "host": "127.0.0.1:33049",
+        "method": "POST",
+        "path": "/grpc.health.v1.Health/Check"
+      },
+      "response": {
+        "headers": {
+          "Content-Type": [
+            "application/grpc"
+          ],
+          "Grpc-Message": [
+            "unknown service"
+          ],
+          "Grpc-Status": [
+            "5"
+          ],
+          "Via": [
+            "2.0 Caddy"
+          ]
+        },
+        "status_code": 200
+      }
+    },
+    "id": "1891fef5-ab57-4f6a-baef-e3068b4c8b9d",
+    "trace_id": ""
+  },
+  "type": "AUDIT",
+  "version": "v2"
+}

@@ -1,0 +1,66 @@
+{
+  "app": "gateway",
+  "date": "2026-11-09T08:59:37.583250543Z",
+  "idempotency_key": "",
+  "payload": {
+    "actor": {
+      "ip_address": "127.0.0.1",
+      "organization_id": "test-org",
+      "stack_id": "test-stack"
+    },
+    "grpc": {
+      "gateway_status_code": 502,
+      "method": "Watch",
+      "request": {
+        "bytes_total": 0,
+        "complete": false,
+        "encoding": "base64",
+        "truncated": false
+      },
+      "response": {
+        "bytes_total": 0,
+        "complete": false,
+        "encoding": "base64",
+        "truncated": false
+      },
+      "service": "grpc.health.v1.Health",
+      "termination": "gateway_error"
+    },
+    "http": {
+      "request": {
+        "header": {
+          "Content-Type": [
+            "application/grpc"
+          ],
+          "Grpc-Accept-Encoding": [
+            "gzip"
+          ],
+          "Grpc-Timeout": [
+            "4998029u"
+          ],
+          "Te": [
+            "trailers"
+          ],
+          "User-Agent": [
+            "grpc-go/1.83.2"
+          ]
+        },
+        "host": "127.0.0.1:33049",
+        "method": "POST",
+        "path": "/grpc.health.v1.Health/Watch"
+      },
+      "response": {
+        "headers": {
+          "Server": [
+            "Caddy"
+          ]
+        },
+        "status_code": 0
+      }
+    },
+    "id": "5b6ab8da-bef2-497f-96a0-ee937f50fc9c",
+    "trace_id": ""
+  },
+  "type": "AUDIT",
+  "version": "v2"
+}
