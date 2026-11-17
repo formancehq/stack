@@ -214,6 +214,43 @@ func TestEmbeddedServicePathsUseForwardSlashes(t *testing.T) {
 	}
 }
 
+func TestSucceededTriggerEnforcesWorkflowInstanceIDType(t *testing.T) {
+	t.Parallel()
+
+	const envelope = `{
+		"app":"orchestration",
+		"version":"v2",
+		"date":"2026-11-17T12:00:00Z",
+		"type":"SUCCEEDED_TRIGGER",
+		"payload":{
+			"id":"11111111-1111-1111-1111-111111111111",
+			"triggerID":"22222222-2222-2222-2222-222222222222",
+			"workflowInstanceID":%s
+		}
+	}`
+
+	for _, test := range []struct {
+		name      string
+		value     string
+		wantError bool
+	}{
+		{"string instance id", `"33333333-3333-3333-3333-333333333333"`, false},
+		{"integer instance id", `42`, true},
+		{"empty instance id", `""`, true},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			data := fmt.Sprintf(envelope, test.value)
+			err := Check([]byte(data), "orchestration", "SUCCEEDED_TRIGGER")
+			if test.wantError && err == nil {
+				t.Fatal("expected a non-string or empty workflowInstanceID to be rejected")
+			}
+			if !test.wantError && err != nil {
+				t.Fatalf("valid event rejected: %v", err)
+			}
+		})
+	}
+}
+
 func TestComputeSchemaUsesLatestVersionContainingEvent(t *testing.T) {
 	t.Parallel()
 
