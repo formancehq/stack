@@ -6,6 +6,9 @@ properties:
   triggerID:
     type: string
     minLength: 1
+  workflowInstanceID:
+    type: string
+    minLength: 1
 required:
   - id
   - triggerID
