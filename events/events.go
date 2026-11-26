@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"path"
 	"sort"
+	"sync"
 
 	"github.com/pkg/errors"
 	"github.com/xeipuuv/gojsonschema"
@@ -20,7 +21,28 @@ var baseEvent string
 //go:embed services
 var services embed.FS
 
+type versionedSchemaKey struct {
+	service string
+	version string
+	event   string
+}
+
+type latestSchemaKey struct {
+	service string
+	event   string
+}
+
+var (
+	versionedSchemaCache sync.Map
+	latestSchemaCache    sync.Map
+)
+
 func ComputeSchema(serviceName, eventName string) (*gojsonschema.Schema, error) {
+	key := latestSchemaKey{service: serviceName, event: eventName}
+	if cached, ok := latestSchemaCache.Load(key); ok {
+		return cached.(*gojsonschema.Schema), nil
+	}
+
 	ls, err := services.ReadDir(path.Join("services", serviceName))
 	if err != nil {
 		return nil, errors.Wrapf(err, "reading events directory for service '%s'", serviceName)
@@ -43,7 +65,12 @@ func ComputeSchema(serviceName, eventName string) (*gojsonschema.Schema, error) 
 	for _, version := range versions {
 		_, err := services.ReadFile(fmt.Sprintf("services/%s/%s/%s.yaml", serviceName, version, eventName))
 		if err == nil {
-			return ComputeSchemaForVersion(serviceName, version, eventName)
+			schema, err := ComputeSchemaForVersion(serviceName, version, eventName)
+			if err != nil {
+				return nil, err
+			}
+			actual, _ := latestSchemaCache.LoadOrStore(key, schema)
+			return actual.(*gojsonschema.Schema), nil
 		}
 		if !errors.Is(err, fs.ErrNotExist) {
 			return nil, err
@@ -58,6 +85,11 @@ func ComputeSchema(serviceName, eventName string) (*gojsonschema.Schema, error) 
 // the event-specific constraints through allOf. Older versions keep using the
 // historical shared envelope with the event schema injected under payload.
 func ComputeSchemaForVersion(serviceName, version, eventName string) (*gojsonschema.Schema, error) {
+	key := versionedSchemaKey{service: serviceName, version: version, event: eventName}
+	if cached, ok := versionedSchemaCache.Load(key); ok {
+		return cached.(*gojsonschema.Schema), nil
+	}
+
 	eventData, err := services.ReadFile(fmt.Sprintf("services/%s/%s/%s.yaml", serviceName, version, eventName))
 	if err != nil {
 		return nil, err
@@ -68,6 +100,7 @@ func ComputeSchemaForVersion(serviceName, version, eventName string) (*gojsonsch
 		return nil, err
 	}
 
+	var schema *gojsonschema.Schema
 	versionBaseData, err := services.ReadFile(fmt.Sprintf("services/%s/%s/base.yaml", serviceName, version))
 	if err == nil {
 		base := map[string]any{}
@@ -78,24 +111,34 @@ func ComputeSchemaForVersion(serviceName, version, eventName string) (*gojsonsch
 		allOf, _ := base["allOf"].([]any)
 		base["allOf"] = append(allOf, event)
 
-		return compileSchema(base)
-	}
-	if !errors.Is(err, fs.ErrNotExist) {
-		return nil, err
+		schema, err = compileSchema(base)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		if !errors.Is(err, fs.ErrNotExist) {
+			return nil, err
+		}
+
+		base := map[string]any{}
+		if err := yaml.Unmarshal([]byte(baseEvent), &base); err != nil {
+			return nil, err
+		}
+
+		properties, ok := base["properties"].(map[string]any)
+		if !ok {
+			return nil, errors.New("base event schema has no properties object")
+		}
+		properties["payload"] = event
+
+		schema, err = compileSchema(base)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	base := map[string]any{}
-	if err := yaml.Unmarshal([]byte(baseEvent), &base); err != nil {
-		return nil, err
-	}
-
-	properties, ok := base["properties"].(map[string]any)
-	if !ok {
-		return nil, errors.New("base event schema has no properties object")
-	}
-	properties["payload"] = event
-
-	return compileSchema(base)
+	actual, _ := versionedSchemaCache.LoadOrStore(key, schema)
+	return actual.(*gojsonschema.Schema), nil
 }
 
 func compileSchema(schema map[string]any) (*gojsonschema.Schema, error) {
@@ -126,7 +169,7 @@ func CheckForVersion(data []byte, serviceName, version, eventName string) error 
 }
 
 func validate(data []byte, schema *gojsonschema.Schema) error {
-	result, err := schema.Validate(gojsonschema.NewStringLoader(string(data)))
+	result, err := schema.Validate(gojsonschema.NewBytesLoader(data))
 	if err != nil {
 		return errors.Wrap(err, "validating schema")
 	}
