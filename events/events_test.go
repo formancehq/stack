@@ -2,6 +2,7 @@ package events
 
 import (
 	"fmt"
+	"sync"
 	"testing"
 )
 
@@ -236,5 +237,90 @@ func TestComputeSchemaUsesLatestVersionContainingEvent(t *testing.T) {
 
 	if err := Check(legacyEvent, "ledger", "COMMITTED_TRANSACTIONS"); err != nil {
 		t.Fatalf("validate legacy event from newest version containing it: %v", err)
+	}
+}
+
+func TestComputeSchemaCachesCompiledSchemas(t *testing.T) {
+	first, err := ComputeSchema("ledger", "COMMITTED_TRANSACTIONS")
+	if err != nil {
+		t.Fatalf("first ComputeSchema: %v", err)
+	}
+	second, err := ComputeSchema("ledger", "COMMITTED_TRANSACTIONS")
+	if err != nil {
+		t.Fatalf("second ComputeSchema: %v", err)
+	}
+	if first != second {
+		t.Fatalf("expected ComputeSchema to return cached *gojsonschema.Schema instance")
+	}
+
+	firstVersioned, err := ComputeSchemaForVersion("ledger", "v2.0.0", "COMMITTED_TRANSACTIONS")
+	if err != nil {
+		t.Fatalf("first ComputeSchemaForVersion: %v", err)
+	}
+	secondVersioned, err := ComputeSchemaForVersion("ledger", "v2.0.0", "COMMITTED_TRANSACTIONS")
+	if err != nil {
+		t.Fatalf("second ComputeSchemaForVersion: %v", err)
+	}
+	if firstVersioned != secondVersioned {
+		t.Fatalf("expected ComputeSchemaForVersion to return cached *gojsonschema.Schema instance")
+	}
+	if first != firstVersioned {
+		t.Fatalf("expected ComputeSchema to share cached instance with ComputeSchemaForVersion")
+	}
+
+	if _, err := ComputeSchema("ledger", "DOES_NOT_EXIST"); err == nil {
+		t.Fatal("expected error for unknown event")
+	}
+	if _, err := ComputeSchemaForVersion("ledger", "v99.0.0", "COMMITTED_TRANSACTIONS"); err == nil {
+		t.Fatal("expected error for unknown version")
+	}
+}
+
+func TestConcurrentCheckAndComputeSchema(t *testing.T) {
+	validEvent := []byte(`{
+		"app":"ledger",
+		"version":"v2",
+		"date":"2026-08-28T22:29:41Z",
+		"type":"COMMITTED_TRANSACTIONS",
+		"payload":{
+			"ledger":"orders",
+			"transactions":[{
+				"postings":[],
+				"metadata":{},
+				"id":42,
+				"timestamp":"2026-08-28T22:29:41Z",
+				"reverted":false
+			}]
+		}
+	}`)
+	invalidEvent := []byte(`{"app":"ledger","version":"v2"}`)
+
+	const goroutines = 16
+	var wg sync.WaitGroup
+	errs := make(chan error, goroutines*4)
+
+	for i := 0; i < goroutines; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if _, err := ComputeSchema("ledger", "COMMITTED_TRANSACTIONS"); err != nil {
+				errs <- fmt.Errorf("ComputeSchema: %w", err)
+			}
+			if _, err := ComputeSchemaForVersion("ledger", "v2.0.0", "COMMITTED_TRANSACTIONS"); err != nil {
+				errs <- fmt.Errorf("ComputeSchemaForVersion: %w", err)
+			}
+			if err := Check(validEvent, "ledger", "COMMITTED_TRANSACTIONS"); err != nil {
+				errs <- fmt.Errorf("Check valid: %w", err)
+			}
+			if err := CheckForVersion(invalidEvent, "ledger", "v2.0.0", "COMMITTED_TRANSACTIONS"); err == nil {
+				errs <- fmt.Errorf("CheckForVersion invalid: expected error, got nil")
+			}
+		}()
+	}
+
+	wg.Wait()
+	close(errs)
+	for err := range errs {
+		t.Error(err)
 	}
 }
